@@ -1,6 +1,6 @@
 #include <iostream>
-#include <xaml/conv.hpp>
-#include <xaml/event.hpp>
+#include <xaml/ui/conv.hpp>
+#include <xaml/ui/event.hpp>
 
 using namespace std;
 using namespace xaml;
