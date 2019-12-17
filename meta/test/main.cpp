@@ -14,6 +14,8 @@ public:
     int add(int x, int y) { return x + y; }
     int minus(int x, int y) { return x - y; }
 
+    ~calculator() override {}
+
     static void register_class() noexcept
     {
         REGISTER_TYPE(calculator);

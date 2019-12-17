@@ -9,6 +9,5 @@ install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 file(GLOB TEST_SOURCE "test/*.cpp")
 add_executable(ui_test ${TEST_SOURCE})
 
-find_library(META_LIBRARY xaml_meta PATH_SUFFIXES ../meta)
 include_directories(../meta/include)
-target_link_libraries(ui_test ${META_LIBRARY})
+target_link_libraries(ui_test xaml_meta)
