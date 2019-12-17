@@ -25,9 +25,9 @@ namespace xaml
         type_map.emplace((string)name, type);
     }
 
-    static unordered_multimap<type_index, shared_ptr<details::type_erased_function>> ctor_map;
+    static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;
 
-    shared_ptr<details::type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
+    shared_ptr<__type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
     {
         auto its = ctor_map.equal_range(type);
         for (auto it = its.first; it != its.second; ++it)
@@ -40,14 +40,14 @@ namespace xaml
         return nullptr;
     }
 
-    void __add_constructor(type_index type, shared_ptr<details::type_erased_function> ctor) noexcept
+    void __add_constructor(type_index type, shared_ptr<__type_erased_function> ctor) noexcept
     {
         ctor_map.emplace(type, ctor);
     }
 
-    static unordered_map<type_index, unordered_multimap<string, shared_ptr<details::type_erased_function>>> method_map;
+    static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> method_map;
 
-    shared_ptr<details::type_erased_function> __get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    shared_ptr<__type_erased_function> __get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
     {
         auto its = method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -60,7 +60,7 @@ namespace xaml
         return nullptr;
     }
 
-    void __add_method(type_index type, string_view name, shared_ptr<details::type_erased_function> func) noexcept
+    void __add_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
         method_map[type].emplace((string)name, func);
     }

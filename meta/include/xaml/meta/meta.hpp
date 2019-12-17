@@ -58,43 +58,40 @@ namespace xaml
         __register_type(name, std::type_index(typeid(TChild)));
     }
 
-    namespace details
+    struct __type_erased_function
     {
-        struct type_erased_function
+        virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;
+        virtual bool is_same_return_type(std::type_index type) const noexcept = 0;
+        virtual ~__type_erased_function() {}
+    };
+
+    template <typename T>
+    struct __type_erased_function_impl;
+
+    template <typename Return, typename... Args>
+    struct __type_erased_function_impl<Return(Args...)> : __type_erased_function
+    {
+    private:
+        static inline bool is_same_arg_type_impl(std::initializer_list<std::type_index> lhs, std::initializer_list<std::type_index> rhs)
         {
-            virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;
-            virtual bool is_same_return_type(std::type_index type) const noexcept = 0;
-            virtual ~type_erased_function() {}
-        };
+            return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+        }
 
-        template <typename T>
-        struct type_erased_function_impl;
-
-        template <typename Return, typename... Args>
-        struct type_erased_function_impl<Return(Args...)> : type_erased_function
+    public:
+        bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept override
         {
-        private:
-            static inline bool is_same_arg_type_impl(std::initializer_list<std::type_index> lhs, std::initializer_list<std::type_index> rhs)
-            {
-                return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-            }
+            return is_same_arg_type_impl({ std::type_index(typeid(Args))... }, types);
+        }
+        bool is_same_return_type(std::type_index type) const noexcept override
+        {
+            return type == std::type_index(typeid(Return));
+        }
+        ~__type_erased_function_impl() override {}
 
-        public:
-            bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept override
-            {
-                return is_same_arg_type_impl({ std::type_index(typeid(Args))... }, types);
-            }
-            bool is_same_return_type(std::type_index type) const noexcept override
-            {
-                return type == std::type_index(typeid(Return));
-            }
-            ~type_erased_function_impl() override {}
+        std::function<Return(Args...)> func;
+    };
 
-            std::function<Return(Args...)> func;
-        };
-    } // namespace details
-
-    std::shared_ptr<details::type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
+    std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename... Args>
     std::optional<std::function<std::shared_ptr<meta_class>(Args...)>> get_constructor(std::type_index type) noexcept
@@ -102,7 +99,7 @@ namespace xaml
         auto ctor = __get_constructor(type, { std::type_index(typeid(Args))... });
         if (ctor)
         {
-            return std::make_optional<std::function<std::shared_ptr<meta_class>(Args...)>>(std::reinterpret_pointer_cast<details::type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>(ctor)->func);
+            return std::make_optional<std::function<std::shared_ptr<meta_class>(Args...)>>(std::reinterpret_pointer_cast<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>(ctor)->func);
         }
         else
         {
@@ -124,12 +121,12 @@ namespace xaml
         }
     }
 
-    void __add_constructor(std::type_index type, std::shared_ptr<details::type_erased_function> ctor) noexcept;
+    void __add_constructor(std::type_index type, std::shared_ptr<__type_erased_function> ctor) noexcept;
 
     template <typename TChild, typename... Args>
     void add_constructor_ex(std::function<std::shared_ptr<meta_class>(Args...)>&& ctor) noexcept
     {
-        auto c = std::make_shared<details::type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>();
+        auto c = std::make_shared<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>();
         c->func = ctor;
         __add_constructor(std::type_index(typeid(TChild)), c);
     }
@@ -139,7 +136,53 @@ namespace xaml
         add_constructor_ex<TChild, Args...>(std::function<std::shared_ptr<meta_class>(Args...)>([](Args... args) -> std::shared_ptr<meta_class> { return std::make_shared<TChild>(std::forward<Args>(args)...); }));
     }
 
-    std::shared_ptr<details::type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+    template <typename T>
+    struct __type_erased_this_function_impl;
+
+    template <typename Return, typename... Args>
+    struct __type_erased_this_function_impl<Return(Args...)> : __type_erased_function
+    {
+    private:
+        static inline bool is_same_arg_type_impl(std::initializer_list<std::type_index> lhs, std::initializer_list<std::type_index> rhs)
+        {
+            return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+        }
+
+    public:
+        bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept override
+        {
+            return is_same_arg_type_impl({ std::type_index(typeid(std::shared_ptr<meta_class>)), std::type_index(typeid(Args))... }, types);
+        }
+        bool is_same_return_type(std::type_index type) const noexcept override
+        {
+            return type == std::type_index(typeid(Return));
+        }
+        ~__type_erased_this_function_impl() override {}
+
+        std::function<Return(std::shared_ptr<meta_class>, Args...)> func;
+        template <typename T, typename F>
+        void set_func(F&& f)
+        {
+            func = std::function<Return(std::shared_ptr<meta_class>, Args...)>([f](std::shared_ptr<meta_class> self, Args... args) -> Return { return std::mem_fn(f)(std::reinterpret_pointer_cast<T>(self).get(), std::forward<Args>(args)...); });
+        }
+    };
+
+    template <typename T>
+    struct __remove_const_func
+    {
+        using type = T;
+    };
+
+    template <typename Return, typename... Args>
+    struct __remove_const_func<Return(Args...) const>
+    {
+        using type = Return(Args...);
+    };
+
+    template <typename T>
+    using __remove_const_func_t = typename __remove_const_func<T>::type;
+
+    std::shared_ptr<__type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename Return, typename... Args>
     std::optional<std::function<Return(std::shared_ptr<meta_class>, Args...)>> get_method(std::type_index type, std::string_view name) noexcept
@@ -147,7 +190,7 @@ namespace xaml
         auto m = __get_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(std::shared_ptr<meta_class>)), std::type_index(typeid(Args))... });
         if (m)
         {
-            return std::make_optional<std::function<Return(std::shared_ptr<meta_class>, Args...)>>(std::reinterpret_pointer_cast<details::type_erased_function_impl<Return(std::shared_ptr<meta_class>, Args...)>>(m)->func);
+            return std::make_optional<std::function<Return(std::shared_ptr<meta_class>, Args...)>>(std::reinterpret_pointer_cast<__type_erased_this_function_impl<Return(Args...)>>(m)->func);
         }
         else
         {
@@ -169,13 +212,21 @@ namespace xaml
         }
     }
 
-    void __add_method(std::type_index type, std::string_view name, std::shared_ptr<details::type_erased_function> func) noexcept;
+    void __add_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+
+    template <typename T, typename TMethod>
+    void add_method(std::string_view name, TMethod T::*func) noexcept
+    {
+        auto f = std::make_shared<__type_erased_this_function_impl<__remove_const_func_t<TMethod>>>();
+        f->set_func<T>(func);
+        __add_method(std::type_index(typeid(T)), name, f);
+    }
 
     template <typename T, typename Return, typename... Args>
-    void add_method(std::string_view name, Return (T::*func)(Args...)) noexcept
+    void add_method_ex(std::string_view name, std::function<Return(std::shared_ptr<meta_class>, Args...)> func)
     {
-        auto f = std::make_shared<details::type_erased_function_impl<Return(std::shared_ptr<meta_class>, Args...)>>();
-        f->func = std::function<Return(std::shared_ptr<meta_class>, Args...)>([func](std::shared_ptr<meta_class> self, Args... args) -> Return { return std::mem_fn(func)((T*)self.get(), std::forward<Args>(args)...); });
+        auto f = std::make_shared<__type_erased_this_function_impl<__remove_const_func_t<Return(Args...)>>>();
+        f->func = func;
         __add_method(std::type_index(typeid(T)), name, f);
     }
 } // namespace xaml
