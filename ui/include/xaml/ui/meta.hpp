@@ -243,28 +243,41 @@ namespace xaml
         }
     }
 
-    template <typename T, typename... Args, typename TInvoke>
-    void add_event_invoke(std::string_view name, TInvoke T::*invoker)
+    template <typename T, typename... Args, typename TGet>
+    void __add_event_invoke(std::string_view name, TGet T::*getter)
     {
-        if (invoker)
+        if (getter)
         {
             std::string ename = __event_name(name);
             add_method_ex<T, void, Args...>(
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, Args...)>(
-                    [invoker](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        std::mem_fn(invoker)(std::reinterpret_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
+                    [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
+                        std::mem_fn(getter)(std::reinterpret_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
                     }));
         }
     }
 
-    template <typename T, typename... Args, typename TAdd, typename TRemove, typename TInvoke>
-    void add_event(std::string_view name, TAdd T::*adder, TRemove T::*remover, TInvoke T::*invoker)
+    template <typename T, typename... Args, typename TAdd, typename TRemove, typename TGet>
+    void add_event(std::string_view name, TAdd T::*adder, TRemove T::*remover, TGet T::*getter)
     {
         add_event_add<T, Args...>(name, adder);
         add_event_remove<T, Args...>(name, remover);
-        add_event_invoke<T, Args...>(name, invoker);
+        __add_event_invoke<T, Args...>(name, getter);
     }
+
+    template <typename T, typename TEvent>
+    struct __add_event_deduce_helper;
+
+    template <typename T, typename... Args>
+    struct __add_event_deduce_helper<T, event<Args...>>
+    {
+        template <typename TAdd, typename TRemove, typename TGet>
+        void operator()(std::string_view name, TAdd T::*adder, TRemove T::*remover, TGet T::*getter) const
+        {
+            add_event<T, Args...>(name, adder, remover, getter);
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_META_HPP

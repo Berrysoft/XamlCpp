@@ -21,6 +21,7 @@ namespace xaml
     template <typename TChild>
     struct meta_class_impl : meta_class
     {
+        using self_type = TChild;
         std::type_index this_type_index() const noexcept override final { return std::type_index(typeid(TChild)); }
         virtual ~meta_class_impl() override {}
     };
