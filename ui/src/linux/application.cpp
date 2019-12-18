@@ -18,4 +18,11 @@ namespace xaml
         gtk_main();
         return 0;
     }
+
+    void application::decrease_quit()
+    {
+        wnd_num--;
+        if (!wnd_num)
+            gtk_main_quit();
+    }
 } // namespace xaml

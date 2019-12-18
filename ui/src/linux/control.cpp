@@ -41,4 +41,35 @@ namespace xaml
             gtk_window_set_title(GTK_WINDOW(widget), value.data());
         }
     }
+
+    point control::get_location() const
+    {
+        GtkAllocation allocation = {};
+        gtk_widget_get_allocation(widget, &allocation);
+        return { allocation.x, allocation.y };
+    }
+
+    void control::set_location(point value)
+    {
+        if (GTK_IS_WINDOW(widget))
+        {
+            gtk_window_move(GTK_WINDOW(widget), value.x, value.y);
+        }
+        else
+        {
+            gdk_window_move(gtk_widget_get_window(widget), value.x, value.y);
+        }
+    }
+
+    size control::get_size() const
+    {
+        GtkAllocation allocation = {};
+        gtk_widget_get_allocation(widget, &allocation);
+        return { allocation.width, allocation.height };
+    }
+
+    void control::set_size(size value)
+    {
+        gdk_window_resize(gtk_widget_get_window(widget), value.width, value.height);
+    }
 } // namespace xaml

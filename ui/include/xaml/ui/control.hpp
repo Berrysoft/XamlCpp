@@ -67,7 +67,7 @@ namespace xaml
         constexpr operator bool() const noexcept { return widget; }
 
     protected:
-        void create(GtkWidget* w) { widget = w; }
+        void set_widget(GtkWidget* w) noexcept { widget = w; }
 #endif
 
     private:

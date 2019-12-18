@@ -15,6 +15,10 @@ namespace xaml
 
         int wnd_num;
 
+#ifdef XAML_UI_LINUX
+        void decrease_quit();
+#endif
+
         static std::shared_ptr<application> _current;
 
     public:
