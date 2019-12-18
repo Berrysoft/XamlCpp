@@ -7,7 +7,7 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
-#elif defined(XAML_UI_LINUX)
+#elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #endif
 
@@ -58,7 +58,7 @@ namespace xaml
 
         friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-#elif defined(XAML_UI_LINUX)
+#elif defined(XAML_UI_GTK3)
     private:
         GtkWidget* widget;
 

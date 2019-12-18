@@ -15,7 +15,7 @@ namespace xaml
 
         int wnd_num;
 
-#ifdef XAML_UI_LINUX
+#ifdef XAML_UI_GTK3
         void decrease_quit();
 #endif
 
