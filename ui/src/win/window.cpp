@@ -1,8 +1,11 @@
-#include <xaml/ui/window.hpp>
 #include <wil/result_macros.h>
+#include <xaml/ui/application.hpp>
+#include <xaml/ui/window.hpp>
 
 namespace xaml
 {
+    window::~window() {}
+
     void window::create()
     {
         window_create_params params = {};
@@ -14,6 +17,7 @@ namespace xaml
         params.width = CW_USEDEFAULT;
         params.height = CW_USEDEFAULT;
         this->control::create(params);
+        application::current()->wnd_num++;
     }
 
     void window::show()
@@ -24,5 +28,27 @@ namespace xaml
         }
         ShowWindow(hWnd, SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(hWnd));
+    }
+
+    LRESULT window::wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_CLOSE:
+        {
+            bool handled = false;
+            //on_closing(*this, handled);
+            if (handled)
+            {
+                return 0;
+            }
+            //ismodal = false;
+            break;
+        }
+        case WM_DESTROY:
+            application::current()->wnd_num--;
+            break;
+        }
+        return container::wnd_proc(msg);
     }
 } // namespace xaml

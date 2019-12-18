@@ -36,7 +36,7 @@ namespace xaml
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-    class control : private std::enable_shared_from_this<control>
+    class control : public std::enable_shared_from_this<control>
     {
         friend class container;
         friend class window;

@@ -3,8 +3,12 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/control.hpp>
 
+using namespace std;
+
 namespace xaml
 {
+    shared_ptr<application> application::_current;
+
     static BOOL take_over_message(MSG& msg)
     {
         BOOL bRet = GetMessage(&msg, nullptr, 0, 0);
@@ -31,10 +35,14 @@ namespace xaml
         return RegisterClassEx(&cls);
     }
 
+    void application::init()
+    {
+        _current = shared_from_this();
+        THROW_IF_WIN32_BOOL_FALSE(register_window_class());
+    }
+
     int application::run()
     {
-        THROW_IF_WIN32_BOOL_FALSE(register_window_class());
-        _current = shared_from_this();
         MSG msg;
         while (take_over_message(msg))
         {

@@ -14,7 +14,13 @@ namespace xaml
     protected:
         void create() override;
 
+#ifdef XAML_UI_WINDOWS
+        virtual LRESULT wnd_proc(window_message const& msg) override;
+#endif
+
     public:
+        ~window() override;
+
         void show();
     };
 } // namespace xaml

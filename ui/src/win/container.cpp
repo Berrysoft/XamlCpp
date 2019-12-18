@@ -4,6 +4,8 @@ using namespace std;
 
 namespace xaml
 {
+    container::~container() {}
+
     void container::add_children(shared_ptr<control> const& child)
     {
         if (child)

@@ -14,6 +14,8 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
     public:
+        virtual ~container() override;
+
         void add_children(std::shared_ptr<control> const& child);
         void remove_children(std::shared_ptr<control> const& child);
     };

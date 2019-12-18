@@ -8,7 +8,7 @@ using namespace std;
 
 namespace xaml
 {
-    static map<HWND, shared_ptr<control>> window_map;
+    static map<HWND, weak_ptr<control>> window_map;
 
     control::control() : hWnd(nullptr) {}
 
@@ -20,7 +20,7 @@ namespace xaml
             params.parent ? params.parent->hWnd : nullptr,
             nullptr, GetModuleHandle(nullptr), nullptr);
         THROW_IF_NULL_ALLOC(hWnd);
-        window_map[hWnd] = shared_from_this();
+        window_map[hWnd] = weak_from_this();
     }
 
     control::~control()
@@ -42,9 +42,9 @@ namespace xaml
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
-        shared_ptr<control> wnd = window_map[hWnd];
-        if (wnd)
-            return wnd->wnd_proc(msg);
+        auto wnd = window_map[hWnd];
+        if (auto w = wnd.lock())
+            return w->wnd_proc(msg);
         else
             return def_callback(msg);
     }
