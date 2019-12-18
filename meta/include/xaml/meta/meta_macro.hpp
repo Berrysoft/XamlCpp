@@ -3,7 +3,7 @@
 
 #include <xaml/meta/meta.hpp>
 
-#define REGISTER_TYPE() ::xaml::register_type<self_type>(self_type::class_name)
+#define REGISTER_TYPE() ::xaml::register_type<self_type>(self_type::namespace_name, self_type::class_name)
 
 #define ADD_CTOR(...) ::xaml::add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ::xaml::add_constructor<self_type>()

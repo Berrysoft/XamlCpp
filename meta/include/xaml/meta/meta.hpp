@@ -16,7 +16,7 @@ namespace xaml
 {
     struct meta_class
     {
-        virtual std::type_index this_type_index() const noexcept = 0;
+        virtual std::type_index this_type() const noexcept = 0;
         virtual ~meta_class() {}
     };
 
@@ -24,7 +24,7 @@ namespace xaml
     struct meta_class_impl : meta_class
     {
         using self_type = TChild;
-        std::type_index this_type_index() const noexcept override final { return std::type_index(typeid(TChild)); }
+        std::type_index this_type() const noexcept override final { return std::type_index(typeid(TChild)); }
         virtual ~meta_class_impl() override {}
     };
 
@@ -53,14 +53,14 @@ namespace xaml
         __register_class_helper<T...>{}();
     }
 
-    std::optional<std::type_index> get_type_index(std::string_view name) noexcept;
+    std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
 
-    void __register_type(std::string_view name, std::type_index type) noexcept;
+    void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
 
     template <typename TChild>
-    void register_type(std::string_view name) noexcept
+    void register_type(std::string_view ns, std::string_view name) noexcept
     {
-        __register_type(name, std::type_index(typeid(TChild)));
+        __register_type(ns, name, std::type_index(typeid(TChild)));
     }
 
     struct __type_erased_function
@@ -230,7 +230,7 @@ namespace xaml
     template <typename Return, typename... Args>
     __optional_return_t<Return> invoke_method(std::shared_ptr<meta_class> obj, std::string_view name, Args... args) noexcept
     {
-        auto m = get_method<Return, Args...>(obj->this_type_index(), name);
+        auto m = get_method<Return, Args...>(obj->this_type(), name);
         if (m)
         {
             if constexpr (std::is_same_v<Return, void>)

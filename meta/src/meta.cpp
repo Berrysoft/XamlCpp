@@ -5,12 +5,13 @@ using namespace std;
 
 namespace xaml
 {
-    static unordered_map<string, type_index> type_map;
+    static unordered_map<string, unordered_map<string, type_index>> type_map;
 
-    optional<type_index> get_type_index(string_view name) noexcept
+    optional<type_index> get_type(string_view ns, string_view name) noexcept
     {
-        auto it = type_map.find((string)name);
-        if (it != type_map.end())
+        string sns{ ns };
+        auto it = type_map[sns].find((string)name);
+        if (it != type_map[sns].end())
         {
             return make_optional(it->second);
         }
@@ -20,9 +21,9 @@ namespace xaml
         }
     }
 
-    void __register_type(string_view name, type_index type) noexcept
+    void __register_type(string_view ns, string_view name, type_index type) noexcept
     {
-        type_map.emplace((string)name, type);
+        type_map[(string)ns].emplace((string)name, type);
     }
 
     static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;

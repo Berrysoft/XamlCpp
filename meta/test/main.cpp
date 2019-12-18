@@ -8,6 +8,7 @@ using namespace xaml;
 class calculator : public meta_class_impl<calculator>
 {
 public:
+    static constexpr std::string_view namespace_name = "";
     static constexpr std::string_view class_name = "calculator";
 
     PROP_EVENT(value, int)
@@ -32,7 +33,7 @@ int main()
 {
     register_class<calculator>();
 
-    auto t = *get_type_index("calculator");
+    auto t = *get_type("", "calculator");
     auto mc = construct(t);
     auto ev = get_event<calculator const&, int>(t, "value_changed");
     auto token = ev.add(mc, function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
