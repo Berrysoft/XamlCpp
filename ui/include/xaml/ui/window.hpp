@@ -6,9 +6,10 @@
 
 namespace xaml
 {
-    class window : public container, private meta_class_impl<window>
+    class window : public container, public meta_class_impl<window>
     {
     private:
+        static constexpr std::string_view namespace_name = "xaml";
         static constexpr std::string_view class_name = "window";
 
 #ifdef XAML_UI_WINDOWS
@@ -17,9 +18,15 @@ namespace xaml
 
     public:
         window();
-        ~window() override;
+        virtual ~window() override;
 
         void show();
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE();
+            ADD_CTOR_DEF();
+        }
     };
 } // namespace xaml
 

@@ -78,4 +78,28 @@ namespace xaml
     {
         THROW_IF_WIN32_BOOL_FALSE(SetWindowText(hWnd, value.data()));
     }
+
+    point control::get_location() const
+    {
+        RECT rect = {};
+        THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(hWnd, &rect));
+        return { rect.left, rect.top };
+    }
+
+    void control::set_location(point value)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(hWnd, HWND_TOP, value.x, value.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE));
+    }
+
+    size control::get_size() const
+    {
+        RECT rect = {};
+        THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(hWnd, &rect));
+        return { rect.right - rect.left, rect.bottom - rect.top };
+    }
+
+    void control::set_size(size value)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(hWnd, HWND_TOP, 0, 0, value.width, value.height, SWP_NOZORDER | SWP_NOMOVE));
+    }
 } // namespace xaml

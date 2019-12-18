@@ -16,5 +16,6 @@ int main()
     auto wnd = make_shared<window>();
     wnd->set_text(U("Test Window"));
     wnd->show();
+    wnd->set_size({ 400, 300 });
     return app->run();
 }

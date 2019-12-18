@@ -22,8 +22,8 @@ namespace xaml
 
     void window::show()
     {
-        ShowWindow(hWnd, SW_SHOW);
-        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(hWnd));
+        ShowWindow(get_handle(), SW_SHOW);
+        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
 
     LRESULT window::wnd_proc(window_message const& msg)

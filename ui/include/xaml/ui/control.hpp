@@ -2,6 +2,7 @@
 #define XAML_UI_CONTROL_HPP
 
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/ui/drawing.hpp>
 #include <xaml/ui/strings.hpp>
 
 #ifdef XAML_UI_WINDOWS
@@ -40,9 +41,6 @@ namespace xaml
 
     class control : public std::enable_shared_from_this<control>
     {
-        friend class container;
-        friend class window;
-
 #ifdef XAML_UI_WINDOWS
     private:
         HWND hWnd;
@@ -52,6 +50,8 @@ namespace xaml
         constexpr operator bool() const noexcept { return hWnd; }
 
     protected:
+        void set_handle(HWND h) noexcept { hWnd = h; }
+
         void create(window_create_params const& params);
 
         virtual LRESULT wnd_proc(window_message const& msg);
@@ -83,6 +83,22 @@ namespace xaml
 
         string_t get_text() const;
         void set_text(string_view_t value);
+
+        point get_location() const;
+        void set_location(point value);
+
+        int get_x() const { return get_location().x; }
+        int get_y() const { return get_location().y; }
+        void set_x(int value) { set_location({ value, get_y() }); }
+        void set_y(int value) { set_location({ get_x(), value }); }
+
+        size get_size() const;
+        void set_size(size value);
+
+        int get_width() const { return get_size().width; }
+        int get_height() const { return get_size().height; }
+        void set_width(int value) { set_size({ value, get_height() }); }
+        void set_height(int value) { set_size({ get_width(), value }); }
     };
 } // namespace xaml
 
