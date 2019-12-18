@@ -13,4 +13,3 @@ install(TARGETS xaml_meta EXPORT xaml_meta_targets LIBRARY DESTINATION lib)
 file(GLOB TEST_SOURCE "test/*.cpp")
 add_executable(meta_test ${TEST_SOURCE})
 target_link_libraries(meta_test xaml_meta)
-
