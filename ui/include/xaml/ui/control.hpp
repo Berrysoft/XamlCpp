@@ -81,9 +81,6 @@ namespace xaml
         control();
         virtual ~control();
 
-        string_t get_text() const;
-        void set_text(string_view_t value);
-
         point get_location() const;
         void set_location(point value);
 

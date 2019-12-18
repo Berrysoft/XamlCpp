@@ -22,6 +22,9 @@ namespace xaml
 
         void show();
 
+        string_t get_title() const;
+        void set_title(string_view_t value);
+
         static void register_class() noexcept
         {
             REGISTER_TYPE();

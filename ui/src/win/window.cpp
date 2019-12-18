@@ -47,4 +47,17 @@ namespace xaml
         }
         return container::wnd_proc(msg);
     }
+
+    string_t window::get_title() const
+    {
+        int count = GetWindowTextLength(get_handle());
+        string_t result(count, L'\0');
+        GetWindowText(get_handle(), result.data(), count);
+        return result;
+    }
+
+    void window::set_title(string_view_t value)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), value.data()));
+    }
 } // namespace xaml

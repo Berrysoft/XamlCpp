@@ -66,19 +66,6 @@ namespace xaml
         }
     }
 
-    string_t control::get_text() const
-    {
-        int count = GetWindowTextLength(hWnd);
-        string_t result(count, L'\0');
-        GetWindowText(hWnd, result.data(), count);
-        return result;
-    }
-
-    void control::set_text(string_view_t value)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(hWnd, value.data()));
-    }
-
     point control::get_location() const
     {
         RECT rect = {};

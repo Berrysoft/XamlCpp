@@ -14,7 +14,7 @@ int main()
     auto app = make_shared<application>();
     app->init();
     auto wnd = make_shared<window>();
-    wnd->set_text(U("Test Window"));
+    wnd->set_title(U("Test Window"));
     wnd->show();
     wnd->set_location({ 100, 100 });
     wnd->set_size({ 800, 600 });

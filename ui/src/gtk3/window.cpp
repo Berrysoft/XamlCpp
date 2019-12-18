@@ -23,4 +23,14 @@ namespace xaml
     {
         gtk_widget_show_all(get_widget());
     }
+
+    string_t window::get_title() const
+    {
+        return gtk_window_get_title(GTK_WINDOW(get_widget()));
+    }
+
+    void window::set_title(string_view_t value)
+    {
+        gtk_window_set_title(GTK_WINDOW(get_widget()), value.data());
+    }
 } // namespace xaml

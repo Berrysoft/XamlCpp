@@ -25,23 +25,6 @@ namespace xaml
 
     control::~control() {}
 
-    string_t control::get_text() const
-    {
-        if (GTK_IS_WINDOW(widget))
-        {
-            return gtk_window_get_title(GTK_WINDOW(widget));
-        }
-        return {};
-    }
-
-    void control::set_text(string_view_t value)
-    {
-        if (GTK_IS_WINDOW(widget))
-        {
-            gtk_window_set_title(GTK_WINDOW(widget), value.data());
-        }
-    }
-
     point control::get_location() const
     {
         GtkAllocation allocation = {};
