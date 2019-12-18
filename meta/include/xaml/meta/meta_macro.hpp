@@ -25,8 +25,8 @@ public:                     \
     PROP_RD(name, type)      \
     void set_##name(type const& value) { m_##name = value; }
 
-#define ADD_PROP_TYPE(name, type) ::xaml::add_property<self_type, type>(#name, &self_type::get_##name, &self_type::set_##name)
-#define ADD_PROP_TYPE_RD(name, type) ::xaml::add_property_read<self_type, type>(#name, &self_type::get_##name)
+#define ADD_PROP_TYPE(name, type) ::xaml::add_property_ex<self_type, type>(#name, ::std::function<type(self_type*)>([](self_type* self) -> type { return self->get_##name(); }), ::std::function<void(self_type*, type)>([](self_type* self, type value) -> void { self->set_##name(value); }))
+#define ADD_PROP_TYPE_RD(name, type) ::xaml::add_property_read_ex<self_type, type>(#name, ::std::function<type(self_type*)>([](self_type* self) -> type { return self->get_##name(); }))
 
 #define __GET_PROP_TYPE(name) decltype(::std::declval<self_type*>()->get_##name())
 

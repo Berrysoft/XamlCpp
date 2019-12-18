@@ -29,6 +29,13 @@ namespace xaml
         {
             REGISTER_TYPE();
             ADD_CTOR_DEF();
+            ADD_PROP(title);
+            ADD_PROP(location);
+            ADD_PROP(x);
+            ADD_PROP(y);
+            ADD_PROP(size);
+            ADD_PROP(width);
+            ADD_PROP(height);
         }
     };
 } // namespace xaml
