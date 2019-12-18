@@ -1,4 +1,4 @@
-project(XamlMeta)
+project(XamlMeta CXX)
 
 include_directories(include)
 

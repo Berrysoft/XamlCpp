@@ -10,9 +10,8 @@
 
 namespace xaml
 {
+    class container;
 #ifdef XAML_UI_WINDOWS
-    class control;
-
     struct window_message
     {
         HWND hWnd;
@@ -31,20 +30,23 @@ namespace xaml
         int y;
         int width;
         int height;
-        control* parent;
+        container* parent;
     };
 
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-    class control : meta_class_impl<control>
+    class control : private std::enable_shared_from_this<control>
     {
+        friend class container;
+        friend class window;
+
 #ifdef XAML_UI_WINDOWS
     private:
         HWND hWnd;
 
     public:
-        constexpr HWND handle() const noexcept { return hWnd; }
+        constexpr HWND get_handle() const noexcept { return hWnd; }
         constexpr operator bool() const noexcept { return hWnd; }
 
     protected:
@@ -55,9 +57,22 @@ namespace xaml
         friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
+    protected:
+        virtual void create() = 0;
+
+    private:
+        std::shared_ptr<container> _parent;
+
+    public:
+        std::shared_ptr<container> get_parent() const { return _parent; }
+        void set_parent(std::shared_ptr<container> const& value);
+
     public:
         control();
         virtual ~control();
+
+        string_t get_text() const;
+        void set_text(string_view_t value);
     };
 } // namespace xaml
 

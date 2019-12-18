@@ -20,6 +20,10 @@ public:                     \
     PROP_RD(name, type)  \
     void set_##name(type value) { m_##name = value; }
 
+#define PROP_REF(name, type) \
+    PROP_RD(name, type)      \
+    void set_##name(type const& value) { m_##name = value; }
+
 #define ADD_PROP_TYPE(name, type) ::xaml::add_property<self_type, type>(#name, &self_type::get_##name, &self_type::set_##name)
 #define ADD_PROP_TYPE_RD(name, type) ::xaml::add_property_read<self_type, type>(#name, &self_type::get_##name)
 
@@ -45,6 +49,18 @@ public:                                                                         
     PROP_RD(name, type)                           \
     EVENT(name##_changed, self_type const&, type) \
     void set_##name(type value)                   \
+    {                                             \
+        if (m_##name != value)                    \
+        {                                         \
+            m_##value = value;                    \
+            m_##name##_changed(*this, value);     \
+        }                                         \
+    }
+
+#define PROP_REF_EVENT(name, type)                \
+    PROP_RD(name, type)                           \
+    EVENT(name##_changed, self_type const&, type) \
+    void set_##name(type const& value)            \
     {                                             \
         if (m_##name != value)                    \
         {                                         \

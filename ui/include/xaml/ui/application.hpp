@@ -6,13 +6,19 @@
 
 namespace xaml
 {
-    class application : public meta_class_impl<application>
+    class application : public meta_class_impl<application>, private std::enable_shared_from_this<application>
     {
     private:
+        static constexpr std::string_view class_name = "application";
+
         int wnd_num;
+
+        static std::shared_ptr<application> _current;
 
     public:
         int run();
+
+        static std::shared_ptr<application> current() { return _current; }
     };
 } // namespace xaml
 

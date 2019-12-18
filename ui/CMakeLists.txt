@@ -1,4 +1,4 @@
-project(XamlUI)
+project(XamlUI CXX)
 
 include_directories(include)
 
@@ -7,12 +7,13 @@ include_directories(../meta/include)
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
 
 if(WIN32)
-add_definitions(-DUNICODE -D_UNICODE -DXAML_UI_WINDOWS -DVC_EXTRALEAN -DWIN32_LEAN_AND_MEAN)
-
-if(NOT WIL_DIR)
-find_package(WIL)
+if(NOT EXISTS ${VCPKG_ROOT})
+message(FATAL_ERROR "Need vcpkg root set as VCPKG_ROOT.")
 endif()
-include_directories(${WIL_DIR})
+
+include_directories(${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/include)
+
+add_definitions(-DUNICODE -D_UNICODE -DXAML_UI_WINDOWS -DVC_EXTRALEAN -DWIN32_LEAN_AND_MEAN)
 
 file(GLOB UI_SOURCE "src/win/*.cpp")
 endif()
