@@ -19,6 +19,7 @@ namespace xaml
 #endif
 
     public:
+        window();
         ~window() override;
 
         void show();

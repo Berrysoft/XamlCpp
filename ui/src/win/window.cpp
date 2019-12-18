@@ -4,6 +4,11 @@
 
 namespace xaml
 {
+    window::window() : container()
+    {
+        create();
+    }
+
     window::~window() {}
 
     void window::create()
@@ -22,10 +27,6 @@ namespace xaml
 
     void window::show()
     {
-        if (!hWnd)
-        {
-            create();
-        }
         ShowWindow(hWnd, SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(hWnd));
     }
