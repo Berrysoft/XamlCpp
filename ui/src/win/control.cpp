@@ -8,7 +8,7 @@ using namespace std;
 
 namespace xaml
 {
-    static map<HWND, weak_ptr<control>> window_map;
+    static map<HWND, control*> window_map;
 
     control::control() : hWnd(nullptr) {}
 
@@ -20,7 +20,7 @@ namespace xaml
             params.parent ? params.parent->hWnd : nullptr,
             nullptr, GetModuleHandle(nullptr), nullptr);
         THROW_IF_NULL_ALLOC(hWnd);
-        window_map[hWnd] = weak_from_this();
+        window_map[hWnd] = this;
     }
 
     control::~control()
@@ -43,8 +43,8 @@ namespace xaml
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd];
-        if (auto w = wnd.lock())
-            return w->wnd_proc(msg);
+        if (wnd)
+            return wnd->wnd_proc(msg);
         else
             return def_callback(msg);
     }
@@ -62,7 +62,6 @@ namespace xaml
                 value->add_children(shared_from_this());
             }
             _parent = value;
-            create();
             SetParent(hWnd, _parent->get_handle());
         }
     }

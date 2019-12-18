@@ -6,13 +6,6 @@ namespace xaml
 {
     window::window() : container()
     {
-        create();
-    }
-
-    window::~window() {}
-
-    void window::create()
-    {
         window_create_params params = {};
         params.class_name = U("XamlWindow");
         params.window_name = {};
@@ -24,6 +17,8 @@ namespace xaml
         this->control::create(params);
         application::current()->wnd_num++;
     }
+
+    window::~window() {}
 
     void window::show()
     {

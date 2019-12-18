@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    void window::create()
+    window::window() : container()
     {
         widget = gtk_window_new(GTK_WINDOW_TOPLEVEL);
     }
@@ -14,10 +14,6 @@ namespace xaml
 
     void window::show()
     {
-        if (!widget)
-        {
-            create();
-        }
         gtk_widget_show_all(widget);
     }
 } // namespace xaml

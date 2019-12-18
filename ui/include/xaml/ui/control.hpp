@@ -70,9 +70,6 @@ namespace xaml
         void create(GtkWidget* w) { widget = w; }
 #endif
 
-    protected:
-        virtual void create() = 0;
-
     private:
         std::shared_ptr<container> _parent;
 

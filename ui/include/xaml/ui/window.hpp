@@ -11,9 +11,6 @@ namespace xaml
     private:
         static constexpr std::string_view class_name = "window";
 
-    protected:
-        void create() override;
-
 #ifdef XAML_UI_WINDOWS
         virtual LRESULT wnd_proc(window_message const& msg) override;
 #endif
