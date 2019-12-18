@@ -6,6 +6,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
+#elif defined(XAML_UI_LINUX)
+#include <gtk/gtk.h>
 #endif
 
 namespace xaml
@@ -55,6 +57,17 @@ namespace xaml
         virtual LRESULT wnd_proc(window_message const& msg);
 
         friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
+#elif defined(XAML_UI_LINUX)
+    private:
+        GtkWidget* widget;
+
+    public:
+        constexpr GtkWidget* get_widget() const noexcept { return widget; }
+        constexpr operator bool() const noexcept { return widget; }
+
+    protected:
+        void create(GtkWidget* w) { widget = w; }
 #endif
 
     protected:

@@ -5,7 +5,8 @@
 
 #define REGISTER_TYPE() ::xaml::register_type<self_type>(self_type::class_name)
 
-#define ADD_CTOR(...) ::xaml::add_constructor<self_type, ##__VA_ARGS__>()
+#define ADD_CTOR(...) ::xaml::add_constructor<self_type, __VA_ARGS__>()
+#define ADD_CTOR_DEF() ::xaml::add_constructor<self_type>()
 
 #define ADD_METHOD(name) ::xaml::add_method<self_type>(#name, &self_type::name)
 

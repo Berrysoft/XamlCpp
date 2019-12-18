@@ -21,7 +21,7 @@ public:
     static void register_class() noexcept
     {
         REGISTER_TYPE();
-        ADD_CTOR();
+        ADD_CTOR_DEF();
         ADD_METHOD(plus);
         ADD_METHOD(minus);
         ADD_PROP_EVENT(value);

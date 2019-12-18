@@ -11,6 +11,9 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     protected:
         std::map<HWND, std::shared_ptr<control>> _children;
+#elif defined(XAML_UI_LINUX)
+    protected:
+        std::map<GtkContainer*, std::shared_ptr<control>> _children;
 #endif // XAML_UI_WINDOWS
 
     public:
