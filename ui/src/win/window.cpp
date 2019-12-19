@@ -8,7 +8,6 @@ namespace xaml
     {
         window_create_params params = {};
         params.class_name = U("XamlWindow");
-        params.window_name = {};
         params.style = WS_OVERLAPPEDWINDOW;
         params.x = CW_USEDEFAULT;
         params.y = CW_USEDEFAULT;

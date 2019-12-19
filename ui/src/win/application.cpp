@@ -1,3 +1,5 @@
+#pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+
 #include <Windows.h>
 #include <shellapi.h>
 #include <wil/resource.h>
@@ -58,6 +60,7 @@ namespace xaml
     {
         _current = shared_from_this();
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
+        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
     }
 
     int application::run()

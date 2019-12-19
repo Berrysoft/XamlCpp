@@ -1,5 +1,6 @@
 #include <iostream>
 #include <xaml/ui/application.hpp>
+#include <xaml/ui/button.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -22,5 +23,9 @@ int main(int argc, char** argv)
     wnd->show();
     wnd->set_location({ 100, 100 });
     wnd->set_size({ 800, 600 });
+    auto btn = make_shared<button>();
+    wnd->add_children(btn);
+    btn->set_location({ 100, 100 });
+    btn->set_text(U("Hello world!"));
     return app->run();
 }

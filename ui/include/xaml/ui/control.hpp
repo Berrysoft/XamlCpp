@@ -66,6 +66,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     protected:
         void create(window_create_params const& params);
+        virtual void create() = 0;
 
         virtual LRESULT wnd_proc(window_message const& msg);
 

@@ -21,6 +21,8 @@ namespace xaml
             nullptr, GetModuleHandle(nullptr), nullptr);
         THROW_IF_NULL_ALLOC(_handle);
         window_map[_handle] = this;
+        HFONT defaultFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
+        SendMessage(_handle, WM_SETFONT, (WPARAM)defaultFont, TRUE);
     }
 
     control::~control()
@@ -62,6 +64,7 @@ namespace xaml
                 value->add_children(shared_from_this());
             }
             _parent = value;
+            this->create();
             SetParent(_handle, _parent->get_handle());
         }
     }

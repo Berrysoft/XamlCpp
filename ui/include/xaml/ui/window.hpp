@@ -14,6 +14,8 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
         virtual LRESULT wnd_proc(window_message const& msg) override;
+
+        virtual void create() override {}
 #endif
 
     public:
