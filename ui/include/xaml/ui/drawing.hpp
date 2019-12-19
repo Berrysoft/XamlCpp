@@ -14,6 +14,12 @@ namespace xaml
         int x;
         int y;
     };
+
+    struct rectangle
+    {
+        int x, y;
+        int width, height;
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_DRAWING_HPP
