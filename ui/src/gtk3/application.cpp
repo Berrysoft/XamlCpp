@@ -5,7 +5,8 @@ using namespace std;
 
 namespace xaml
 {
-    shared_ptr<application> application::_current;
+    static shared_ptr<application> _current;
+    shared_ptr<application> application::current() { return _current; }
 
     void application::init()
     {

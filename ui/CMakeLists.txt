@@ -1,26 +1,14 @@
-project(XamlUI CXX)
+if(${BUILD_COCOA})
+    project(XamlUI OBJCXX)
+else()
+    project(XamlUI CXX)
+endif()
 
 include_directories(include)
 
 include_directories(../meta/include)
 
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
-
-set(BUILD_WINDOWS OFF CACHE BOOL "Build for Windows with Windows API")
-set(BUILD_COCOA OFF CACHE BOOL "Build for Mac with Cocoa")
-set(BUILD_GTK3 OFF CACHE BOOL "Build with GTK3")
-
-if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
-    if(WIN32)
-        set(BUILD_WINDOWS ON)
-    elseif(UNIX)
-        if(APPLE)
-            set(BUILD_COCOA ON)
-        else()
-            set(BUILD_GTK3 ON)
-        endif()
-    endif()
-endif()
 
 if(${BUILD_WINDOWS})
     if(NOT EXISTS ${VCPKG_ROOT})
@@ -35,7 +23,7 @@ if(${BUILD_WINDOWS})
 elseif(${BUILD_COCOA})
     add_definitions(-DXAML_UI_COCOA)
 
-    file(GLOB UI_SOURCE "src/cocoa/*.cpp")
+    file(GLOB UI_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
     add_definitions(-DXAML_UI_GTK3)
 

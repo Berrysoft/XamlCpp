@@ -19,13 +19,11 @@ namespace xaml
         void decrease_quit();
 #endif
 
-        static std::shared_ptr<application> _current;
-
     public:
         void init();
         int run();
 
-        static std::shared_ptr<application> current() { return _current; }
+        static std::shared_ptr<application> current();
     };
 } // namespace xaml
 
