@@ -5,11 +5,26 @@ using namespace std;
 
 namespace xaml
 {
+    static unordered_map<string, string> namespace_map;
     static unordered_map<string, unordered_map<string, type_index>> type_map;
+
+    static string get_real_namespace(string_view ns)
+    {
+        string sns{ ns };
+        auto it = namespace_map.find(sns);
+        if (it != namespace_map.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return sns;
+        }
+    }
 
     optional<type_index> get_type(string_view ns, string_view name) noexcept
     {
-        string sns{ ns };
+        string sns{ get_real_namespace(ns) };
         auto it = type_map[sns].find((string)name);
         if (it != type_map[sns].end())
         {
@@ -23,7 +38,12 @@ namespace xaml
 
     void __register_type(string_view ns, string_view name, type_index type) noexcept
     {
-        type_map[(string)ns].emplace((string)name, type);
+        type_map[get_real_namespace(ns)].emplace((string)name, type);
+    }
+
+    void add_xml_namespace(string_view xmlns, string_view ns) noexcept
+    {
+        namespace_map.emplace((string)xmlns, (string)ns);
     }
 
     static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;

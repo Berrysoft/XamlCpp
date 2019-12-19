@@ -63,6 +63,8 @@ namespace xaml
         __register_type(ns, name, std::type_index(typeid(TChild)));
     }
 
+    void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
+
     struct __type_erased_function
     {
         virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;
