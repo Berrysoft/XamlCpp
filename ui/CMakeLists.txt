@@ -1,8 +1,11 @@
+project(XamlUI CXX)
+
 if(${BUILD_COCOA})
-    cmake_minimum_required(VERSION 3.16)
-    project(XamlUI OBJCXX)
-else()
-    project(XamlUI CXX)
+    if(CMAKE_VERSION VERSION_LESS 3.16)
+        set(CMAKE_CXX_FLAGS "#{CMAKE_CXX_FLAGS} -x objective-c++")
+    else()
+        enable_language(OBJCXX)
+    endif()
 endif()
 
 include_directories(include)

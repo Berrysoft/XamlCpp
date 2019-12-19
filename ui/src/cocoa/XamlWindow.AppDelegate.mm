@@ -1,4 +1,4 @@
-#import "XamlWindow.AppDelegate.h"
+#import <internal/cocoa/XamlWindow.AppDelegate.h>
 
 @implementation XamlAppDelegate : NSObject
 
