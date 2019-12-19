@@ -26,6 +26,7 @@ int main(int argc, char** argv)
     auto btn = make_shared<button>();
     wnd->add_children(btn);
     btn->set_location({ 100, 100 });
+    btn->set_size({ 150, 50 });
     btn->set_text(U("Hello world!"));
     return app->run();
 }

@@ -13,8 +13,8 @@ namespace xaml
         if (child)
         {
             child->set_parent(reinterpret_pointer_cast<container>(shared_from_this()));
+            _children.emplace(GTK_CONTAINER(child->get_handle()), child);
         }
-        _children.emplace(GTK_CONTAINER(child->get_handle()), child);
     }
 
     void container::remove_children(shared_ptr<control> const& child)
