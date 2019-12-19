@@ -14,12 +14,12 @@ namespace xaml
         {
             child->set_parent(reinterpret_pointer_cast<container>(shared_from_this()));
         }
-        _children.emplace(GTK_CONTAINER(child->get_widget()), child);
+        _children.emplace(GTK_CONTAINER(child->get_handle()), child);
     }
 
     void container::remove_children(shared_ptr<control> const& child)
     {
         child->set_parent(nullptr);
-        _children.erase(GTK_CONTAINER(child->get_widget()));
+        _children.erase(GTK_CONTAINER(child->get_handle()));
     }
 } // namespace xaml

@@ -9,6 +9,7 @@ using namespace std;
 
 namespace xaml
 {
+#ifdef UNICODE
     application::application(LPWSTR lpCmdLine) : wnd_num(0)
     {
         int argc;
@@ -22,6 +23,7 @@ namespace xaml
             }
         }
     }
+#endif // UNICODE
 
     static shared_ptr<application> _current;
     shared_ptr<application> application::current() { return _current; }

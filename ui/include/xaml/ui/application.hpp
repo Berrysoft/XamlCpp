@@ -32,7 +32,7 @@ namespace xaml
             }
         }
         application() : application(0, nullptr) {}
-#ifdef XAML_UI_WINDOWS
+#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
         application(char_t* lpCmdLine);
 #endif // XAML_UI_WINDOWS
 

@@ -9,11 +9,14 @@
 #include <Windows.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/objc.hpp>
 #endif
 
 namespace xaml
 {
     class container;
+
 #ifdef XAML_UI_WINDOWS
     struct window_message
     {
@@ -41,33 +44,32 @@ namespace xaml
 
     class control : public std::enable_shared_from_this<control>
     {
+    public:
 #ifdef XAML_UI_WINDOWS
+        using native_handle_type = HWND;
+#elif defined(XAML_UI_GTK3)
+        using native_handle_type = GtkWidget*;
+#elif defined(XAML_UI_COCOA)
+        using native_handle_type = OBJC_OBJECT(NSWindow);
+#endif // XAML_UI_WINDOWS
+
     private:
-        HWND hWnd;
+        native_handle_type _handle;
 
     public:
-        constexpr HWND get_handle() const noexcept { return hWnd; }
-        constexpr operator bool() const noexcept { return hWnd; }
+        constexpr native_handle_type get_handle() const noexcept { return _handle; }
+        constexpr operator bool() const noexcept { return _handle; }
 
     protected:
-        void set_handle(HWND h) noexcept { hWnd = h; }
+        void set_handle(native_handle_type h) noexcept { _handle = h; }
 
+#ifdef XAML_UI_WINDOWS
+    protected:
         void create(window_create_params const& params);
 
         virtual LRESULT wnd_proc(window_message const& msg);
 
         friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
-#elif defined(XAML_UI_GTK3)
-    private:
-        GtkWidget* widget;
-
-    public:
-        constexpr GtkWidget* get_widget() const noexcept { return widget; }
-        constexpr operator bool() const noexcept { return widget; }
-
-    protected:
-        void set_widget(GtkWidget* w) noexcept { widget = w; }
 #endif
 
     private:
