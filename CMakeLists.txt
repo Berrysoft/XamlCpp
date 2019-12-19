@@ -22,3 +22,4 @@ endif()
 
 add_subdirectory(meta)
 add_subdirectory(ui)
+add_subdirectory(xaml)
