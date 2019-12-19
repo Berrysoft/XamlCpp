@@ -2,7 +2,10 @@
 #define XAML_UI_APPLICATION_HPP
 
 #include <memory>
+#include <string>
+#include <vector>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/ui/strings.hpp>
 
 namespace xaml
 {
@@ -14,13 +17,27 @@ namespace xaml
         friend class window;
 
         int wnd_num;
+        std::vector<string_t> _cmd_lines;
 
 #ifdef XAML_UI_GTK3
         void decrease_quit();
 #endif
 
     public:
+        application(int argc, char_t** argv) : wnd_num(0)
+        {
+            for (int i = 0; i < argc; i++)
+            {
+                _cmd_lines.push_back(argv[i]);
+            }
+        }
+        application() : application(0, nullptr) {}
+#ifdef XAML_UI_WINDOWS
+        application(char_t* lpCmdLine);
+#endif // XAML_UI_WINDOWS
+
         void init();
+        const std::vector<string_t>& get_cmd_lines() const noexcept { return _cmd_lines; }
         int run();
 
         static std::shared_ptr<application> current();

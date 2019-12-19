@@ -1,4 +1,6 @@
 #include <Windows.h>
+#include <shellapi.h>
+#include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/control.hpp>
@@ -7,6 +9,20 @@ using namespace std;
 
 namespace xaml
 {
+    application::application(LPWSTR lpCmdLine) : wnd_num(0)
+    {
+        int argc;
+        LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+        if (argv)
+        {
+            wil::unique_array_ptr<LPWSTR, wil::hlocal_deleter> args(argv, argc);
+            for (int i = 0; i < argc; i++)
+            {
+                _cmd_lines.push_back(args[i]);
+            }
+        }
+    }
+
     static shared_ptr<application> _current;
     shared_ptr<application> application::current() { return _current; }
 

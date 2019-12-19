@@ -6,12 +6,16 @@ using namespace std;
 using namespace xaml;
 
 #ifdef XAML_UI_WINDOWS
-INT wWinMain(HINSTANCE, HINSTANCE, PWSTR, INT)
+INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 #else
-int main()
+int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
-    auto app = make_shared<application>();
+#ifdef XAML_UI_WINDOWS
+    auto app = make_shared<application>(lpCmdLine);
+#else
+    auto app = make_shared<application>(argc, argv);
+#endif // XAML_UI_WINDOWS
     app->init();
     auto wnd = make_shared<window>();
     wnd->set_title(U("Test Window"));

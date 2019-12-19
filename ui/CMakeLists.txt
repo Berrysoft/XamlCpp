@@ -1,4 +1,5 @@
 if(${BUILD_COCOA})
+    cmake_minimum_required(VERSION 3.16)
     project(XamlUI OBJCXX)
 else()
     project(XamlUI CXX)
