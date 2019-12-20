@@ -22,6 +22,12 @@ namespace xaml
         virtual std::optional<LRESULT> wnd_proc(window_message const& msg) override;
 #endif
 
+#ifdef XAML_UI_GTK3
+    private:
+        static gboolean invoke_draw(gpointer data);
+        static void on_size_allocate(GtkWidget* widget, GdkRectangle* allocation, gpointer data);
+#endif
+
     public:
         void draw(rectangle const& region) override;
 
@@ -32,6 +38,7 @@ namespace xaml
         void show();
 
     private:
+        bool showed{ false };
         std::atomic<bool> resizing{ false };
 
         point m_location{ 0, 0 };

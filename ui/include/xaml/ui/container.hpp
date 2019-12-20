@@ -18,6 +18,9 @@ namespace xaml
         bool is_container() const override final { return true; }
         bool is_multicontainer() const override final { return false; }
 
+        EVENT(child_changed, container const&, std::shared_ptr<control>)
+
+    public:
         std::shared_ptr<control> get_child() const noexcept { return m_child; }
         void set_child(std::shared_ptr<control> const& value)
         {
@@ -25,13 +28,15 @@ namespace xaml
             {
                 m_child = value;
                 m_child->set_parent(std::reinterpret_pointer_cast<container>(shared_from_this()));
+                m_child_changed(*this, value);
             }
         }
     };
 
 #define ADD_CONTAINER_MEMBERS() \
     ADD_CONTROL_MEMBERS();      \
-    ADD_PROP(child)
+    ADD_PROP(child);            \
+    ADD_EVENT(child_changed)
 
     class multicontainer : public control
     {

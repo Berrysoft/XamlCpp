@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
     btn->set_text(U("Hello"));
-    btn->add_click([wnd](button const&) { msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info); });
+    btn->add_click([wnd, btn](button const&) { msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info); btn->set_text(U("Hello world!")); });
     g->add_child(btn);
     g->set_column(btn, 1);
     g->set_row(btn, 1);

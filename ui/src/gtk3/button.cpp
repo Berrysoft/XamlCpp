@@ -1,4 +1,7 @@
 #include <xaml/ui/button.hpp>
+#include <cmath>
+
+using namespace std;
 
 namespace xaml
 {
@@ -19,7 +22,7 @@ namespace xaml
             g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
         }
         rectangle real = region - get_margin();
-        gtk_widget_set_size_request(get_handle(), real.width, real.height);
+        gtk_widget_set_size_request(get_handle(), (int)round(real.width), (int)round(real.height));
         gtk_button_set_label(GTK_BUTTON(get_handle()), m_text.c_str());
     }
 

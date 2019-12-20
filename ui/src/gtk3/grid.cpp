@@ -50,6 +50,8 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_fixed_new());
+            if (get_parent())
+                gtk_container_add(GTK_CONTAINER(get_parent()->get_handle()), get_handle());
         }
         rectangle real = region - get_margin();
         vector<double> columns = get_real_length(m_columns, real.width);
