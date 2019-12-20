@@ -33,6 +33,8 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         void draw(rectangle const& region) override;
+
+        LRESULT wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     public:

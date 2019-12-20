@@ -12,7 +12,7 @@
 
 #define PROP_RD(name, type) \
 private:                    \
-    type m_##name;          \
+    type m_##name{};        \
                             \
 public:                     \
     type get_##name() const { return m_##name; }
@@ -35,7 +35,7 @@ public:                     \
 
 #define EVENT(name, ...)                                                                                                         \
 private:                                                                                                                         \
-    ::xaml::event<__VA_ARGS__> m_##name;                                                                                         \
+    ::xaml::event<__VA_ARGS__> m_##name{};                                                                                       \
     ::xaml::event<__VA_ARGS__>& get_##name() { return m_##name; }                                                                \
                                                                                                                                  \
 public:                                                                                                                          \

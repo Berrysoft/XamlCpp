@@ -6,6 +6,10 @@
 
 namespace xaml
 {
+#ifdef XAML_UI_WINDOWS
+    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+#endif // XAML_UI_WINDOWS
+
     class window : public container, public meta_class_impl<window>
     {
     private:
@@ -13,6 +17,7 @@ namespace xaml
         static constexpr std::string_view class_name = "window";
 
 #ifdef XAML_UI_WINDOWS
+    public:
         virtual LRESULT wnd_proc(window_message const& msg) override;
 
         void draw(rectangle const& region) override;
@@ -25,7 +30,7 @@ namespace xaml
         void show();
 
     private:
-        point m_location;
+        point m_location{ 0, 0 };
 
     public:
         constexpr point get_location() const noexcept { return m_location; }
@@ -37,7 +42,7 @@ namespace xaml
         void set_y(double value) { set_location({ get_x(), value }); }
 
     private:
-        string_t m_title;
+        string_t m_title{};
 
     public:
         string_view_t get_title() const noexcept { return m_title; }

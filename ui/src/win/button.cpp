@@ -3,7 +3,34 @@
 
 namespace xaml
 {
-    button::button() : common_control() {}
+    button::button() : common_control()
+    {
+        add_text_changed([this](button const&, string_view_t t) { if(get_handle()) THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), t.data())); });
+    }
+
+    LRESULT button::wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_COMMAND:
+        {
+            HWND h = (HWND)msg.lParam;
+            if (get_handle() == h)
+            {
+                switch (HIWORD(msg.wParam))
+                {
+                case BN_CLICKED:
+                    m_click(*this);
+                    break;
+                case BN_DOUBLECLICKED:
+                    m_dbclick(*this);
+                    break;
+                }
+            }
+        }
+        }
+        return common_control::wnd_proc(msg);
+    }
 
     void button::draw(rectangle const& region)
     {

@@ -16,15 +16,15 @@ namespace xaml
 
         friend class window;
 
-        int wnd_num;
-        std::vector<string_t> _cmd_lines;
+        int wnd_num{ 0 };
+        std::vector<string_t> _cmd_lines{};
 
 #ifdef XAML_UI_GTK3
         void decrease_quit();
 #endif
 
     public:
-        application(int argc, char_t** argv) : wnd_num(0)
+        application(int argc, char_t** argv)
         {
             for (int i = 0; i < argc; i++)
             {

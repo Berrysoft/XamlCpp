@@ -17,17 +17,31 @@ namespace xaml
         virtual ~button() override;
 
 #ifdef XAML_UI_WINDOWS
+    public:
         void draw(rectangle const& region) override;
+        LRESULT wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     private:
-        string_t m_text;
+        string_t m_text{};
 
     public:
         string_view_t get_text() const { return m_text; }
-        void set_text(string_view_t value) { m_text = (string_t)value; }
+        void set_text(string_view_t value)
+        {
+            if (m_text != value)
+            {
+                m_text = (string_t)value;
+                m_text_changed(*this, m_text);
+            }
+        }
+
+        EVENT(text_changed, button const&, string_view_t)
 
         PROP(is_default, bool)
+
+        EVENT(click, button const&)
+        EVENT(dbclick, button const&)
 
     public:
         static void register_class() noexcept

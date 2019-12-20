@@ -5,14 +5,14 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <xaml/ui/application.hpp>
-#include <xaml/ui/control.hpp>
+#include <xaml/ui/window.hpp>
 
 using namespace std;
 
 namespace xaml
 {
 #ifdef UNICODE
-    application::application(LPWSTR lpCmdLine) : wnd_num(0)
+    application::application(LPWSTR lpCmdLine)
     {
         int argc;
         LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);

@@ -10,7 +10,7 @@ namespace xaml
     class container : public control
     {
     private:
-        std::shared_ptr<control> m_child;
+        std::shared_ptr<control> m_child{ nullptr };
 
     public:
         container();
@@ -34,9 +34,9 @@ namespace xaml
     {
     protected:
 #ifdef XAML_UI_WINDOWS
-        std::unordered_map<HWND, std::shared_ptr<control>> m_children;
+        std::unordered_map<HWND, std::shared_ptr<control>> m_children{};
 #else
-        std::vector<std::shared_ptr<control>> m_children;
+        std::vector<std::shared_ptr<control>> m_children{};
 #endif // XAML_UI_WINDOWS
 
     public:

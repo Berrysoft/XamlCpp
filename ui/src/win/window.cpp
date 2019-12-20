@@ -1,16 +1,34 @@
+#include <unordered_map>
 #include <wil/result_macros.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
+using namespace std;
+
 namespace xaml
 {
+    static unordered_map<HWND, weak_ptr<control>> window_map;
+
+    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+    {
+        window_message msg = { hWnd, Msg, wParam, lParam };
+        auto wnd = window_map[hWnd].lock();
+        if (wnd)
+            return wnd->wnd_proc(msg);
+        else
+            return DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
+    }
+
     static constexpr rectangle get_rect(RECT const& r) { return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) }; }
 
     window::window() : container()
     {
     }
 
-    window::~window() {}
+    window::~window()
+    {
+        window_map.erase(get_handle());
+    }
 
     void window::draw(rectangle const& region)
     {
@@ -25,6 +43,7 @@ namespace xaml
             params.height = CW_USEDEFAULT;
             this->control::create(params);
             application::current()->wnd_num++;
+            window_map[get_handle()] = weak_from_this();
         }
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
         THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
@@ -62,6 +81,9 @@ namespace xaml
             application::current()->wnd_num--;
             break;
         }
-        return container::wnd_proc(msg);
+        if (get_child())
+            return get_child()->wnd_proc(msg);
+        else
+            return container::wnd_proc(msg);
     }
 } // namespace xaml

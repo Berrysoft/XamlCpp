@@ -40,8 +40,6 @@ namespace xaml
         int height;
         control* parent;
     };
-
-    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
     class control : public std::enable_shared_from_this<control>
@@ -72,10 +70,7 @@ namespace xaml
     public:
         virtual void draw(rectangle const& region) = 0;
 
-    protected:
         virtual LRESULT wnd_proc(window_message const& msg);
-
-        friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
     public:
@@ -96,7 +91,7 @@ namespace xaml
         virtual bool is_multicontainer() const = 0;
 
     private:
-        size m_size{ 0 };
+        size m_size{ 0, 0 };
 
         EVENT(size_changed, control const&, size)
 
