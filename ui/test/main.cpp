@@ -1,6 +1,7 @@
 #include <iostream>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
+#include <xaml/ui/grid.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -20,13 +21,23 @@ int main(int argc, char** argv)
     app->init();
     auto wnd = make_shared<window>();
     wnd->set_title(U("Test Window"));
-    wnd->show();
     wnd->set_location({ 100, 100 });
     wnd->set_size({ 800, 600 });
+    auto g = make_shared<grid>();
+    g->add_column({ 1, grid_layout::star });
+    g->add_column({ 1, grid_layout::star });
+    g->add_column({ 1, grid_layout::star });
+    g->add_row({ 1, grid_layout::star });
+    g->add_row({ 1, grid_layout::star });
+    g->add_row({ 1, grid_layout::star });
+    wnd->set_child(g);
     auto btn = make_shared<button>();
-    wnd->add_children(btn);
-    btn->set_location({ 100, 100 });
+    btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
     btn->set_text(U("Hello world!"));
+    g->add_child(btn);
+    g->set_column(btn, 1);
+    g->set_row(btn, 1);
+    wnd->show();
     return app->run();
 }

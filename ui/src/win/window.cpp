@@ -4,25 +4,43 @@
 
 namespace xaml
 {
+    static constexpr rectangle get_rect(RECT const& r) { return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) }; }
+
     window::window() : container()
     {
-        window_create_params params = {};
-        params.class_name = U("XamlWindow");
-        params.style = WS_OVERLAPPEDWINDOW;
-        params.x = CW_USEDEFAULT;
-        params.y = CW_USEDEFAULT;
-        params.width = CW_USEDEFAULT;
-        params.height = CW_USEDEFAULT;
-        this->control::create(params);
-        application::current()->wnd_num++;
     }
 
     window::~window() {}
 
-    void window::show()
+    void window::draw(rectangle const& region)
     {
+        if (!get_handle())
+        {
+            window_create_params params = {};
+            params.class_name = U("XamlWindow");
+            params.style = WS_OVERLAPPEDWINDOW;
+            params.x = CW_USEDEFAULT;
+            params.y = CW_USEDEFAULT;
+            params.width = CW_USEDEFAULT;
+            params.height = CW_USEDEFAULT;
+            this->control::create(params);
+            application::current()->wnd_num++;
+        }
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
+        if (get_child())
+        {
+            RECT r = {};
+            THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
+            get_child()->draw(get_rect(r));
+        }
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
+    }
+
+    void window::show()
+    {
+        draw({ 0, 0, 0, 0 });
     }
 
     LRESULT window::wnd_proc(window_message const& msg)
@@ -45,18 +63,5 @@ namespace xaml
             break;
         }
         return container::wnd_proc(msg);
-    }
-
-    string_t window::get_title() const
-    {
-        int count = GetWindowTextLength(get_handle());
-        string_t result(count, L'\0');
-        GetWindowText(get_handle(), result.data(), count);
-        return result;
-    }
-
-    void window::set_title(string_view_t value)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), value.data()));
     }
 } // namespace xaml

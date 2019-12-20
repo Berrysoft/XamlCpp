@@ -15,7 +15,7 @@ private:                    \
     type m_##name;          \
                             \
 public:                     \
-    type get_##name() { return m_##name; }
+    type get_##name() const { return m_##name; }
 
 #define PROP(name, type) \
     PROP_RD(name, type)  \
@@ -53,7 +53,7 @@ public:                                                                         
     {                                             \
         if (m_##name != value)                    \
         {                                         \
-            m_##value = value;                    \
+            m_##name = value;                     \
             m_##name##_changed(*this, value);     \
         }                                         \
     }
@@ -65,7 +65,7 @@ public:                                                                         
     {                                             \
         if (m_##name != value)                    \
         {                                         \
-            m_##value = value;                    \
+            m_##name = value;                     \
             m_##name##_changed(*this, value);     \
         }                                         \
     }

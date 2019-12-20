@@ -6,7 +6,7 @@
 
 namespace xaml
 {
-    class button : public control, public meta_class_impl<button>
+    class button : public common_control, public meta_class_impl<button>
     {
     private:
         static constexpr std::string_view namespace_name = "xaml";
@@ -17,26 +17,24 @@ namespace xaml
         virtual ~button() override;
 
 #ifdef XAML_UI_WINDOWS
-        void create() override;
+        void draw(rectangle const& region) override;
 #endif // XAML_UI_WINDOWS
 
-        string_t get_text() const;
-        void set_text(string_view_t value);
+    private:
+        string_t m_text;
 
-        bool get_is_default() const;
-        void set_is_default(bool value);
+    public:
+        string_view_t get_text() const { return m_text; }
+        void set_text(string_view_t value) { m_text = (string_t)value; }
 
+        PROP(is_default, bool)
+
+    public:
         static void register_class() noexcept
         {
             REGISTER_TYPE();
             ADD_CTOR_DEF();
             ADD_PROP(text);
-            ADD_PROP(location);
-            ADD_PROP(x);
-            ADD_PROP(y);
-            ADD_PROP(size);
-            ADD_PROP(width);
-            ADD_PROP(height);
             ADD_PROP(is_default);
         }
     };

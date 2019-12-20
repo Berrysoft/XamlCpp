@@ -10,25 +10,25 @@ namespace xaml
 {
     static map<HWND, control*> window_map;
 
-    control::control() : _handle(nullptr) {}
+    control::control() {}
 
     void control::create(window_create_params const& params)
     {
-        _handle = CreateWindowEx(
+        set_handle(CreateWindowEx(
             params.ex_style, params.class_name.c_str(), params.window_name.c_str(),
             params.style, params.x, params.y, params.width, params.height,
-            params.parent ? params.parent->_handle : nullptr,
-            nullptr, GetModuleHandle(nullptr), nullptr);
-        THROW_IF_NULL_ALLOC(_handle);
-        window_map[_handle] = this;
+            params.parent ? params.parent->get_handle() : nullptr,
+            nullptr, GetModuleHandle(nullptr), nullptr));
+        THROW_IF_NULL_ALLOC(get_handle());
+        window_map[get_handle()] = this;
         HFONT defaultFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-        SendMessage(_handle, WM_SETFONT, (WPARAM)defaultFont, TRUE);
+        SendMessage(get_handle(), WM_SETFONT, (WPARAM)defaultFont, TRUE);
     }
 
     control::~control()
     {
-        SendMessage(_handle, WM_CLOSE, 0, 0);
-        window_map.erase(_handle);
+        SendMessage(get_handle(), WM_CLOSE, 0, 0);
+        window_map.erase(get_handle());
     }
 
     static LRESULT CALLBACK def_callback(const window_message& msg)
@@ -51,45 +51,26 @@ namespace xaml
             return def_callback(msg);
     }
 
-    void control::set_parent(shared_ptr<container> const& value)
+    void control::set_parent(shared_ptr<control> const& value)
     {
-        if (_parent != value)
+        if (m_parent != value && value->is_container())
         {
-            if (_parent)
+            if (m_parent)
             {
-                _parent->remove_children(shared_from_this());
+                if (m_parent->is_multicontainer())
+                    reinterpret_pointer_cast<multicontainer>(m_parent)->remove_child(shared_from_this());
+                else
+                    reinterpret_pointer_cast<container>(m_parent)->set_child(nullptr);
             }
             if (value)
             {
-                value->add_children(shared_from_this());
+                if (value->is_multicontainer())
+                    reinterpret_pointer_cast<multicontainer>(value)->add_child(shared_from_this());
+                else
+                    reinterpret_pointer_cast<container>(value)->set_child(shared_from_this());
             }
-            _parent = value;
-            this->create();
-            SetParent(_handle, _parent->get_handle());
+            m_parent = value;
+            m_parent_changed(*this, value);
         }
-    }
-
-    point control::get_location() const
-    {
-        RECT rect = {};
-        THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(_handle, &rect));
-        return { rect.left, rect.top };
-    }
-
-    void control::set_location(point value)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(_handle, HWND_TOP, value.x, value.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE));
-    }
-
-    size control::get_size() const
-    {
-        RECT rect = {};
-        THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(_handle, &rect));
-        return { rect.right - rect.left, rect.bottom - rect.top };
-    }
-
-    void control::set_size(size value)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(_handle, HWND_TOP, 0, 0, value.width, value.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 } // namespace xaml

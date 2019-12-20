@@ -16,6 +16,8 @@
 namespace xaml
 {
     class container;
+    class multicontainer;
+    class control;
 
 #ifdef XAML_UI_WINDOWS
     struct window_message
@@ -36,7 +38,7 @@ namespace xaml
         int y;
         int width;
         int height;
-        container* parent;
+        control* parent;
     };
 
     LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -54,51 +56,106 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
     private:
-        native_handle_type _handle;
+        native_handle_type m_handle{ nullptr };
 
     public:
-        constexpr native_handle_type get_handle() const noexcept { return _handle; }
-        constexpr operator bool() const noexcept { return _handle; }
+        virtual native_handle_type get_handle() const noexcept { return m_handle; }
+        virtual operator bool() const noexcept { return m_handle; }
 
     protected:
-        void set_handle(native_handle_type h) noexcept { _handle = h; }
+        virtual void set_handle(native_handle_type h) noexcept { m_handle = h; }
 
 #ifdef XAML_UI_WINDOWS
     protected:
         void create(window_create_params const& params);
-        virtual void create() = 0;
 
+    public:
+        virtual void draw(rectangle const& region) = 0;
+
+    protected:
         virtual LRESULT wnd_proc(window_message const& msg);
 
         friend LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 #endif
 
-    private:
-        std::shared_ptr<container> _parent;
-
-    public:
-        std::shared_ptr<container> get_parent() const { return _parent; }
-        void set_parent(std::shared_ptr<container> const& value);
-
     public:
         control();
         virtual ~control();
 
-        point get_location() const;
-        void set_location(point value);
+        EVENT(parent_changed, control const&, std::shared_ptr<control>)
 
-        int get_x() const { return get_location().x; }
-        int get_y() const { return get_location().y; }
-        void set_x(int value) { set_location({ value, get_y() }); }
-        void set_y(int value) { set_location({ get_x(), value }); }
+    private:
+        std::shared_ptr<control> m_parent{ nullptr };
 
-        size get_size() const;
-        void set_size(size value);
+    public:
+        std::shared_ptr<control> get_parent() const { return m_parent; }
+        void set_parent(std::shared_ptr<control> const& value);
 
-        int get_width() const { return get_size().width; }
-        int get_height() const { return get_size().height; }
-        void set_width(int value) { set_size({ value, get_height() }); }
-        void set_height(int value) { set_size({ get_width(), value }); }
+    public:
+        virtual bool is_container() const = 0;
+        virtual bool is_multicontainer() const = 0;
+
+    private:
+        size m_size{ 0 };
+
+        EVENT(size_changed, control const&, size)
+
+    public:
+        constexpr double get_width() const noexcept { return m_size.width; }
+        void set_width(double value)
+        {
+            if (m_size.width != value)
+            {
+                m_size.width = value;
+                m_size_changed(*this, get_size());
+            }
+        }
+
+        constexpr double get_height() const noexcept { return m_size.height; }
+        void set_height(double value)
+        {
+            if (m_size.height != value)
+            {
+                m_size.height = value;
+                m_size_changed(*this, get_size());
+            }
+        }
+
+        constexpr size get_size() const { return m_size; }
+        void set_size(size value)
+        {
+            if (m_size != value)
+            {
+                m_size = value;
+                m_size_changed(*this, get_size());
+            }
+        }
+
+        EVENT(margin_changed, control const&, margin)
+
+    private:
+        margin m_margin{ 0, 0, 0, 0 };
+
+    public:
+        constexpr margin get_margin() const noexcept { return m_margin; }
+        void set_margin(margin const& value)
+        {
+            if (m_margin != value)
+            {
+                m_margin = value;
+                m_margin_changed(*this, value);
+            }
+        }
+    };
+
+    class common_control : public control
+    {
+    public:
+        common_control() : control() {}
+        virtual ~common_control() override {}
+
+        bool is_container() const override final { return false; }
+        bool is_multicontainer() const override final { return false; }
     };
 } // namespace xaml
 

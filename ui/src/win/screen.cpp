@@ -11,7 +11,7 @@ namespace xaml
         return GetDpiForWindow(GetDesktopWindow());
     }
 
-    static constexpr rectangle get_rect(RECT const& r) { return { r.left, r.top, r.right - r.left, r.bottom - r.top }; }
+    static constexpr rectangle get_rect(RECT const& r) { return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) }; }
 
     static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
     {

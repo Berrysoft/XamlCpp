@@ -8,21 +8,25 @@ namespace xaml
 
     container::~container() {}
 
-    void container::add_children(shared_ptr<control> const& child)
+    multicontainer::multicontainer() : control() {}
+
+    multicontainer::~multicontainer() {}
+
+    void multicontainer::add_child(shared_ptr<control> const& child)
     {
         if (child)
         {
-            if (_children.find(child->get_handle()) == _children.end())
+            if (m_children.find(child->get_handle()) == m_children.end())
             {
-                _children.emplace(child->get_handle(), child);
+                m_children.emplace(child->get_handle(), child);
                 child->set_parent(reinterpret_pointer_cast<container>(shared_from_this()));
             }
         }
     }
 
-    void container::remove_children(shared_ptr<control> const& child)
+    void multicontainer::remove_child(shared_ptr<control> const& child)
     {
-        _children.erase(child->get_handle());
-        child->set_parent(nullptr);
+        m_children.erase(child->get_handle());
+        child->set_parent(shared_ptr<multicontainer>{});
     }
 } // namespace xaml

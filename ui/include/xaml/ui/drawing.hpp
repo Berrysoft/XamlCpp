@@ -5,21 +5,34 @@ namespace xaml
 {
     struct size
     {
-        int width;
-        int height;
+        double width;
+        double height;
     };
+
+    constexpr bool operator==(size lhs, size rhs) { return lhs.width == rhs.width && lhs.height == rhs.height; }
+    constexpr bool operator!=(size lhs, size rhs) { return !(lhs == rhs); }
 
     struct point
     {
-        int x;
-        int y;
+        double x;
+        double y;
     };
 
     struct rectangle
     {
-        int x, y;
-        int width, height;
+        double x, y;
+        double width, height;
     };
-} // namespace xaml
 
+    struct margin
+    {
+        double left;
+        double top;
+        double right;
+        double bottom;
+    };
+
+    constexpr bool operator==(margin const& lhs, margin const& rhs) { return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom; }
+    constexpr bool operator!=(margin const& lhs, margin const& rhs) { return !(lhs == rhs); }
+} // namespace xaml
 #endif // !XAML_UI_DRAWING_HPP

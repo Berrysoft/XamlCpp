@@ -3,49 +3,35 @@
 
 namespace xaml
 {
-    button::button() : control() {}
+    button::button() : common_control() {}
 
-    void button::create()
+    void button::draw(rectangle const& region)
     {
-        window_create_params params = {};
-        params.class_name = U("BUTTON");
-        params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
-        params.x = 0;
-        params.y = 0;
-        params.width = 100;
-        params.height = 50;
-        params.parent = get_parent().get();
-        this->control::create(params);
-    }
-
-    button::~button() {}
-
-    string_t button::get_text() const
-    {
-        int count = GetWindowTextLength(get_handle());
-        string_t result(count, L'\0');
-        GetWindowText(get_handle(), result.data(), count);
-        return result;
-    }
-
-    void button::set_text(string_view_t value)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), value.data()));
-    }
-
-    bool button::get_is_default() const
-    {
+        if (!get_handle())
+        {
+            window_create_params params = {};
+            params.class_name = U("BUTTON");
+            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
+            params.x = 0;
+            params.y = 0;
+            params.width = 100;
+            params.height = 50;
+            params.parent = get_parent().get();
+            this->create(params);
+        }
+        int x = region.x + get_margin().left;
+        int y = region.y + get_margin().top;
+        int width = region.width - get_margin().left - get_margin().right;
+        int height = region.height - get_margin().top - get_margin().bottom;
+        THROW_IF_WIN32_BOOL_FALSE(MoveWindow(get_handle(), x, y, width, height, TRUE));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_text.c_str()));
         auto style = GetWindowLongPtr(get_handle(), GWL_STYLE);
-        return (style & BS_DEFPUSHBUTTON) == BS_DEFPUSHBUTTON;
-    }
-
-    void button::set_is_default(bool value)
-    {
-        auto style = GetWindowLongPtr(get_handle(), GWL_STYLE);
-        if (value)
+        if (m_is_default)
             style |= BS_DEFPUSHBUTTON;
         else
             style &= ~BS_DEFPUSHBUTTON;
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);
     }
+
+    button::~button() {}
 } // namespace xaml
