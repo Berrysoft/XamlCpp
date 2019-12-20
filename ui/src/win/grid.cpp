@@ -15,13 +15,13 @@ namespace xaml
         return get_parent() ? get_parent()->get_handle() : nullptr;
     }
 
-    LRESULT grid::wnd_proc(window_message const& msg)
+    optional<LRESULT> grid::wnd_proc(window_message const& msg)
     {
-        for (auto& c : m_children)
+        for (auto c : m_children)
         {
             c->wnd_proc(msg);
         }
-        return multicontainer::wnd_proc(msg);
+        return nullopt;
     }
 
     static vector<double> get_real_length(vector<grid_length> const& lengths, double total)

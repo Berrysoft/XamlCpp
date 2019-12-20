@@ -1,6 +1,8 @@
 #include <wil/result_macros.h>
 #include <xaml/ui/button.hpp>
 
+using namespace std;
+
 namespace xaml
 {
     button::button() : common_control()
@@ -8,7 +10,7 @@ namespace xaml
         add_text_changed([this](button const&, string_view_t t) { if(get_handle()) THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), t.data())); });
     }
 
-    LRESULT button::wnd_proc(window_message const& msg)
+    optional<LRESULT> button::wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
@@ -26,7 +28,7 @@ namespace xaml
             }
         }
         }
-        return common_control::wnd_proc(msg);
+        return nullopt;
     }
 
     void button::draw(rectangle const& region)

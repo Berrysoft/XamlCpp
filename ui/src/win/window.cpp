@@ -1,8 +1,8 @@
+#include <internal/win/drawing.hpp>
 #include <unordered_map>
 #include <wil/result_macros.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
-#include <internal/win/drawing.hpp>
 
 using namespace std;
 
@@ -14,14 +14,14 @@ namespace xaml
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd].lock();
-        if (wnd)
-            return wnd->wnd_proc(msg);
-        else
-            return DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
+        auto result = wnd ? wnd->wnd_proc(msg) : nullopt;
+        return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 
     window::window() : container()
     {
+        add_location_changed([this](window const&, point) { if (!resizing) draw({ 0, 0, 0, 0 }); });
+        add_size_changed([this](control const&, size) { if (!resizing) draw({ 0, 0, 0, 0 }); });
     }
 
     window::~window()
@@ -52,28 +52,41 @@ namespace xaml
             THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
             get_child()->draw(get_rect(r));
         }
-        ShowWindow(get_handle(), SW_SHOW);
-        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
 
     void window::show()
     {
         draw({ 0, 0, 0, 0 });
+        ShowWindow(get_handle(), SW_SHOW);
+        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
 
-    LRESULT window::wnd_proc(window_message const& msg)
+    optional<LRESULT> window::wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
+        case WM_SIZE:
+        {
+            if (!resizing)
+            {
+                resizing = true;
+                RECT rect = {};
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                rectangle r = get_rect(rect);
+                set_location({ r.x, r.y });
+                set_size({ r.width, r.height });
+                draw({ 0, 0, 0, 0 });
+                resizing = false;
+            }
+        }
         case WM_CLOSE:
         {
             bool handled = false;
-            //on_closing(*this, handled);
+            m_closing(*this, handled);
             if (handled)
             {
                 return 0;
             }
-            //ismodal = false;
             break;
         }
         case WM_DESTROY:
@@ -83,6 +96,6 @@ namespace xaml
         if (get_child())
             return get_child()->wnd_proc(msg);
         else
-            return container::wnd_proc(msg);
+            return nullopt;
     }
 } // namespace xaml

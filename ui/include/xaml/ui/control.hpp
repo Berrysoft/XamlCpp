@@ -7,6 +7,7 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
+#include <optional>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA)
@@ -68,7 +69,7 @@ namespace xaml
         void create(window_create_params const& params);
 
     public:
-        virtual LRESULT wnd_proc(window_message const& msg);
+        virtual std::optional<LRESULT> wnd_proc(window_message const& msg) { return std::nullopt; }
 #endif
 
     public:

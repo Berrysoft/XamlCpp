@@ -36,7 +36,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        LRESULT wnd_proc(window_message const& msg) override;
+        std::optional<LRESULT> wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     public:
