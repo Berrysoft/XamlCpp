@@ -20,8 +20,8 @@ namespace xaml
 
     window::window() : container()
     {
-        add_location_changed([this](window const&, point) { if (!resizing) draw({ 0, 0, 0, 0 }); });
-        add_size_changed([this](control const&, size) { if (!resizing) draw({ 0, 0, 0, 0 }); });
+        add_location_changed([this](window const&, point) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
+        add_size_changed([this](control const&, size) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
     }
 
     window::~window()
@@ -59,6 +59,7 @@ namespace xaml
         draw({ 0, 0, 0, 0 });
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
+        showed = true;
     }
 
     optional<LRESULT> window::wnd_proc(window_message const& msg)
@@ -67,7 +68,7 @@ namespace xaml
         {
         case WM_SIZE:
         {
-            if (!resizing)
+            if (showed && !resizing)
             {
                 resizing = true;
                 RECT rect = {};
