@@ -18,9 +18,8 @@ namespace xaml
             set_handle(gtk_button_new());
             g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
         }
-        int width = region.width - get_margin().left - get_margin().right;
-        int height = region.height - get_margin().top - get_margin().bottom;
-        gtk_widget_set_size_request(get_handle(), width, height);
+        rectangle real = region - get_margin();
+        gtk_widget_set_size_request(get_handle(), real.width, real.height);
         gtk_button_set_label(GTK_BUTTON(get_handle()), m_text.c_str());
     }
 

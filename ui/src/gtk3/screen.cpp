@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <internal/gtk3/drawing_internal.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;
@@ -24,10 +25,10 @@ namespace xaml
         for (int i = 0; i < n; i++)
         {
             GdkMonitor* m = gdk_display_get_monitor(display, i);
-            monitor props = {};
-            gdk_monitor_get_geometry(m, (GdkRectangle*)&props.region);
-            gdk_monitor_get_workarea(m, (GdkRectangle*)&props.client);
-            ms.push_back(move(props));
+            GdkRectangle geo, work;
+            gdk_monitor_get_geometry(m, &geo);
+            gdk_monitor_get_workarea(m, &work);
+            ms.push_back({ get_rect(geo), get_rect(work) });
         }
         return ms;
     }
