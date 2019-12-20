@@ -2,6 +2,7 @@
 #include <wil/result_macros.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
+#include <internal/win/drawing.hpp>
 
 using namespace std;
 
@@ -18,8 +19,6 @@ namespace xaml
         else
             return DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
-
-    static constexpr rectangle get_rect(RECT const& r) { return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) }; }
 
     window::window() : container()
     {

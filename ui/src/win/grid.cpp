@@ -17,9 +17,9 @@ namespace xaml
 
     LRESULT grid::wnd_proc(window_message const& msg)
     {
-        for (auto pair : m_children)
+        for (auto& c : m_children)
         {
-            pair.second->wnd_proc(msg);
+            c->wnd_proc(msg);
         }
         return multicontainer::wnd_proc(msg);
     }
@@ -59,18 +59,15 @@ namespace xaml
 
     void grid::draw(rectangle const& region)
     {
-        double x = region.x + get_margin().left;
-        double y = region.y + get_margin().top;
-        double width = region.width - get_margin().left - get_margin().right;
-        double height = region.height - get_margin().top - get_margin().bottom;
-        vector<double> columns = get_real_length(m_columns, width);
-        vector<double> rows = get_real_length(m_rows, height);
-        for (auto pair : m_children)
+        rectangle real = region - get_margin();
+        vector<double> columns = get_real_length(m_columns, real.width);
+        vector<double> rows = get_real_length(m_rows, real.height);
+        for (auto& c : m_children)
         {
-            auto index = m_indecies[pair.second];
-            double subx = (index.column > 0 ? columns[index.column - 1] : 0) + x;
-            double suby = (index.row > 0 ? rows[index.row - 1] : 0) + y;
-            pair.second->draw({ subx, suby, columns[index.column], rows[index.row] });
+            auto index = m_indecies[c];
+            double subx = (index.column > 0 ? columns[index.column - 1] : 0) + real.x;
+            double suby = (index.row > 0 ? rows[index.row - 1] : 0) + real.y;
+            c->draw({ subx, suby, columns[index.column], rows[index.row] });
         }
     }
 } // namespace xaml

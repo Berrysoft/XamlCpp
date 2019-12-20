@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <wil/result_macros.h>
 #include <xaml/ui/screen.hpp>
+#include <internal/win/drawing.hpp>
 
 using namespace std;
 
@@ -10,8 +11,6 @@ namespace xaml
     {
         return GetDpiForWindow(GetDesktopWindow());
     }
-
-    static constexpr rectangle get_rect(RECT const& r) { return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) }; }
 
     static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
     {

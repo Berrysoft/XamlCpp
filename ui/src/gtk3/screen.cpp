@@ -1,5 +1,5 @@
 #include <gtk/gtk.h>
-#include <internal/gtk3/drawing_internal.hpp>
+#include <internal/gtk3/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;

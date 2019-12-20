@@ -1,7 +1,6 @@
 #ifndef XAML_UI_CONTAINER_HPP
 #define XAML_UI_CONTAINER_HPP
 
-#include <unordered_map>
 #include <vector>
 #include <xaml/ui/control.hpp>
 
@@ -33,11 +32,7 @@ namespace xaml
     class multicontainer : public control
     {
     protected:
-#ifdef XAML_UI_WINDOWS
-        std::unordered_map<HWND, std::shared_ptr<control>> m_children{};
-#else
         std::vector<std::shared_ptr<control>> m_children{};
-#endif // XAML_UI_WINDOWS
 
     public:
         multicontainer();

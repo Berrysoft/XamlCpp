@@ -54,7 +54,7 @@ namespace xaml
         rectangle real = region - get_margin();
         vector<double> columns = get_real_length(m_columns, real.width);
         vector<double> rows = get_real_length(m_rows, real.height);
-        for (auto c : m_children)
+        for (auto& c : m_children)
         {
             auto index = m_indecies[c];
             double subx = (index.column > 0 ? columns[index.column - 1] : 0) + real.x;
