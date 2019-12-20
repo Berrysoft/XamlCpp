@@ -5,54 +5,33 @@ using namespace std;
 
 namespace xaml
 {
-    void control::set_parent(shared_ptr<container> const& value)
+    control::control() {}
+
+    control::~control()
     {
-        if (_parent != value)
+        if (get_handle()) gtk_widget_destroy(get_handle());
+    }
+
+    void control::set_parent(shared_ptr<control> const& value)
+    {
+        if (m_parent != value && value->is_container())
         {
-            if (_parent)
+            if (m_parent)
             {
-                gtk_container_remove(GTK_CONTAINER(_parent->get_handle()), _handle);
+                if (m_parent->is_multicontainer())
+                    reinterpret_pointer_cast<multicontainer>(m_parent)->remove_child(shared_from_this());
+                else
+                    reinterpret_pointer_cast<container>(m_parent)->set_child(nullptr);
             }
             if (value)
             {
-                gtk_container_add(GTK_CONTAINER(value->get_handle()), _handle);
+                if (value->is_multicontainer())
+                    reinterpret_pointer_cast<multicontainer>(value)->add_child(shared_from_this());
+                else
+                    reinterpret_pointer_cast<container>(value)->set_child(shared_from_this());
             }
-            _parent = value;
+            m_parent = value;
+            m_parent_changed(*this, value);
         }
-    }
-
-    control::control() : _handle(nullptr) {}
-
-    control::~control() {}
-
-    point control::get_location() const
-    {
-        GtkAllocation allocation = {};
-        gtk_widget_get_allocation(_handle, &allocation);
-        return { allocation.x, allocation.y };
-    }
-
-    void control::set_location(point value)
-    {
-        if (GTK_IS_WINDOW(_handle))
-        {
-            gtk_window_move(GTK_WINDOW(_handle), value.x, value.y);
-        }
-        else
-        {
-            gdk_window_move(gtk_widget_get_window(_handle), value.x, value.y);
-        }
-    }
-
-    size control::get_size() const
-    {
-        GtkAllocation allocation = {};
-        gtk_widget_get_allocation(_handle, &allocation);
-        return { allocation.width, allocation.height };
-    }
-
-    void control::set_size(size value)
-    {
-        gdk_window_resize(gtk_widget_get_window(_handle), value.width, value.height);
     }
 } // namespace xaml

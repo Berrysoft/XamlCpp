@@ -19,9 +19,10 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         virtual LRESULT wnd_proc(window_message const& msg) override;
-
-        void draw(rectangle const& region) override;
 #endif
+
+    public:
+        void draw(rectangle const& region) override;
 
     public:
         window();

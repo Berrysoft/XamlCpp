@@ -68,14 +68,14 @@ namespace xaml
         void create(window_create_params const& params);
 
     public:
-        virtual void draw(rectangle const& region) = 0;
-
         virtual LRESULT wnd_proc(window_message const& msg);
 #endif
 
     public:
         control();
         virtual ~control();
+
+        virtual void draw(rectangle const& region) = 0;
 
         EVENT(parent_changed, control const&, std::shared_ptr<control>)
 

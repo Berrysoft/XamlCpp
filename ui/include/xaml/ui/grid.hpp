@@ -32,15 +32,18 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        void draw(rectangle const& region) override;
-
         LRESULT wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     public:
+        void draw(rectangle const& region) override;
+
+#ifdef XAML_UI_WINDOWS
+    public:
         using native_handle_type = typename control::native_handle_type;
 
         native_handle_type get_handle() const noexcept override;
+#endif // XAML_UI_WINDOWS
 
     private:
         std::vector<grid_length> m_columns;

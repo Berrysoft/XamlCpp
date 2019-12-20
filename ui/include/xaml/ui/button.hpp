@@ -18,9 +18,16 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        void draw(rectangle const& region) override;
         LRESULT wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_GTK3
+    private:
+        static void on_clicked(GtkButton* button, gpointer data);
+#endif // XAML_UI_GTK3
+
+    public:
+        void draw(rectangle const& region) override;
 
     private:
         string_t m_text{};
