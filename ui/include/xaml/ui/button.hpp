@@ -48,15 +48,20 @@ namespace xaml
         PROP(is_default, bool)
 
         EVENT(click, button const&)
-        EVENT(dbclick, button const&)
 
     public:
+#define ADD_BUTTON_MEMBERS()      \
+    ADD_COMMON_CONTROL_MEMBERS(); \
+    ADD_PROP(text);               \
+    ADD_EVENT(text_changed);      \
+    ADD_PROP(is_default);         \
+    ADD_EVENT(click)
+
         static void register_class() noexcept
         {
             REGISTER_TYPE();
             ADD_CTOR_DEF();
-            ADD_PROP(text);
-            ADD_PROP(is_default);
+            ADD_BUTTON_MEMBERS();
         }
     };
 } // namespace xaml

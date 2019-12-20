@@ -22,9 +22,6 @@ namespace xaml
                 case BN_CLICKED:
                     m_click(*this);
                     break;
-                case BN_DOUBLECLICKED:
-                    m_dbclick(*this);
-                    break;
                 }
             }
         }

@@ -29,6 +29,10 @@ namespace xaml
         }
     };
 
+#define ADD_CONTAINER_MEMBERS() \
+    ADD_CONTROL_MEMBERS();      \
+    ADD_PROP(child)
+
     class multicontainer : public control
     {
     protected:
@@ -44,6 +48,9 @@ namespace xaml
         void add_child(std::shared_ptr<control> const& child);
         void remove_child(std::shared_ptr<control> const& child);
     };
+
+#define ADD_MULTICONTAINER_MEMBERS() ADD_CONTROL_MEMBERS()
+
 } // namespace xaml
 
 #endif // !XAML_UI_CONTAINER_HPP

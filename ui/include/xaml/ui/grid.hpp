@@ -26,6 +26,10 @@ namespace xaml
 
     class grid : public multicontainer, public meta_class_impl<grid>
     {
+    private:
+        static constexpr std::string_view namespace_name = "xaml";
+        static constexpr std::string_view class_name = "grid";
+
     public:
         grid();
         ~grid() override;
@@ -59,6 +63,15 @@ namespace xaml
     public:
         void set_column(std::shared_ptr<control> const& c, size_t col) { m_indecies[c].column = col; }
         void set_row(std::shared_ptr<control> const& c, size_t row) { m_indecies[c].row = row; }
+
+#define ADD_GRID_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE();
+            ADD_CTOR_DEF();
+            ADD_GRID_MEMBERS();
+        }
     };
 } // namespace xaml
 

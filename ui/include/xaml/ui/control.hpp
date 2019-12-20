@@ -143,6 +143,14 @@ namespace xaml
         }
     };
 
+#define ADD_CONTROL_MEMBERS() \
+    ADD_PROP(size);           \
+    ADD_PROP(width);          \
+    ADD_PROP(height);         \
+    ADD_PROP(margin);         \
+    ADD_EVENT(size_changed);  \
+    ADD_EVENT(margin_changed)
+
     class common_control : public control
     {
     public:
@@ -152,6 +160,8 @@ namespace xaml
         bool is_container() const override final { return false; }
         bool is_multicontainer() const override final { return false; }
     };
+
+#define ADD_COMMON_CONTROL_MEMBERS() ADD_CONTROL_MEMBERS()
 } // namespace xaml
 
 #endif // !XAML_UI_CONTROL_HPP

@@ -34,7 +34,7 @@ public:                     \
 #define ADD_PROP_RD(name) ADD_PROP_TYPE_RD(name, __GET_PROP_TYPE(name))
 
 #define EVENT(name, ...)                                                                                                         \
-private:                                                                                                                         \
+protected:                                                                                                                       \
     ::xaml::event<__VA_ARGS__> m_##name{};                                                                                       \
     ::xaml::event<__VA_ARGS__>& get_##name() { return m_##name; }                                                                \
                                                                                                                                  \
@@ -42,9 +42,9 @@ public:                                                                         
     typename ::xaml::event<__VA_ARGS__>::token_type add_##name(::std::function<void(__VA_ARGS__)>&& f) { return m_##name += f; } \
     void remove_##name(typename ::xaml::event<__VA_ARGS__>::token_type token) { m_##name -= token; }
 
-#define ADD_EVENT(name)                                                                             \
-    ::xaml::__add_event_deduce_helper<self_type, decltype(::std::declval<self_type>().m_##name)>{}( \
-        #name, &self_type::add_##name, &self_type::remove_##name, &self_type::get_##name)
+#define ADD_EVENT(name)                                                    \
+    ::xaml::__add_event_deduce_helper<self_type, __GET_PROP_TYPE(name)>{}( \
+        #name, [](self_type * self, auto f) -> typename event_info::token_type { return self->add_##name(::std::move(f)); }, [](self_type* self, typename event_info::token_type token) -> void { self->remove_##name(token); }, [](self_type* self) -> __GET_PROP_TYPE(name) { return self->get_##name(); })
 
 #define PROP_EVENT(name, type)                    \
     PROP_RD(name, type)                           \

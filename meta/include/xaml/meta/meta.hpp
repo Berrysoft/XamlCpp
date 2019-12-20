@@ -519,7 +519,7 @@ namespace xaml
     }
 
     template <typename T, typename... Args, typename TGet>
-    void __add_event_invoke(std::string_view name, TGet T::*getter)
+    void add_event_invoke(std::string_view name, TGet T::*getter)
     {
         if (getter)
         {
@@ -538,19 +538,76 @@ namespace xaml
     {
         add_event_add<T, Args...>(name, adder);
         add_event_remove<T, Args...>(name, remover);
-        __add_event_invoke<T, Args...>(name, getter);
+        add_event_invoke<T, Args...>(name, getter);
+    }
+
+    template <typename T, typename... Args>
+    void add_event_add_ex(std::string_view name, std::function<typename event_info::token_type(T*, std::function<void(Args...)>)> adder)
+    {
+        if (adder)
+        {
+            std::string ename = __event_name(name);
+            add_method_ex<T, typename event_info::token_type, std::shared_ptr<__type_erased_function>>(
+                ename,
+                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
+                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
+                        if (handler->is_same_arg_type<Args...>())
+                        {
+                            auto h = std::reinterpret_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
+                            return adder(std::reinterpret_pointer_cast<T>(self).get(), std::move(h->func));
+                        }
+                        return 0;
+                    }));
+        }
+    }
+
+    template <typename T, typename... Args>
+    void add_event_remove_ex(std::string_view name, std::function<void(T*, typename event_info::token_type)> remover)
+    {
+        if (remover)
+        {
+            std::string ename = __event_name(name);
+            add_method_ex<T, void, typename event_info::token_type>(
+                ename,
+                std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
+                    [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
+                        remover(std::reinterpret_pointer_cast<T>(self).get(), token);
+                    }));
+        }
+    }
+
+    template <typename T, typename... Args>
+    void add_event_invoke_ex(std::string_view name, std::function<event<Args...>&(T*)> getter)
+    {
+        if (getter)
+        {
+            std::string ename = __event_name(name);
+            add_method_ex<T, void, Args...>(
+                ename,
+                std::function<void(std::shared_ptr<meta_class>, Args...)>(
+                    [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
+                        getter(std::reinterpret_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                    }));
+        }
+    }
+
+    template <typename T, typename... Args>
+    void add_event_ex(std::string_view name, std::function<typename event_info::token_type(T*, std::function<void(Args...)>)> adder, std::function<void(T*, typename event_info::token_type)> remover, std::function<event<Args...>&(T*)> getter)
+    {
+        add_event_add_ex<T, Args...>(name, adder);
+        add_event_remove_ex<T, Args...>(name, remover);
+        add_event_invoke_ex<T, Args...>(name, getter);
     }
 
     template <typename T, typename TEvent>
     struct __add_event_deduce_helper;
 
     template <typename T, typename... Args>
-    struct __add_event_deduce_helper<T, event<Args...>>
+    struct __add_event_deduce_helper<T, event<Args...>&>
     {
-        template <typename TAdd, typename TRemove, typename TGet>
-        void operator()(std::string_view name, TAdd T::*adder, TRemove T::*remover, TGet T::*getter) const
+        void operator()(std::string_view name, std::function<typename event_info::token_type(T*, std::function<void(Args...)>)> adder, std::function<void(T*, typename event_info::token_type)> remover, std::function<event<Args...>&(T*)> getter) const
         {
-            add_event<T, Args...>(name, adder, remover, getter);
+            add_event_ex<T, Args...>(name, std::move(adder), std::move(remover), std::move(getter));
         }
     };
 } // namespace xaml

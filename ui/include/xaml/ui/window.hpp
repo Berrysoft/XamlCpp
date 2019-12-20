@@ -49,11 +49,18 @@ namespace xaml
         string_view_t get_title() const noexcept { return m_title; }
         void set_title(string_view_t value) { m_title = (string_t)value; }
 
+#define ADD_WINDOW_MEMBERS() \
+    ADD_CONTAINER_MEMBERS(); \
+    ADD_PROP(title);         \
+    ADD_PROP(location);      \
+    ADD_PROP(x);             \
+    ADD_PROP(y)
+
         static void register_class() noexcept
         {
             REGISTER_TYPE();
             ADD_CTOR_DEF();
-            ADD_PROP(title);
+            ADD_WINDOW_MEMBERS();
         }
     };
 } // namespace xaml
