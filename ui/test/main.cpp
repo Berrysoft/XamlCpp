@@ -2,6 +2,7 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
 #include <xaml/ui/grid.hpp>
+#include <xaml/ui/msgbox.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -34,8 +35,8 @@ int main(int argc, char** argv)
     auto btn = make_shared<button>();
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
-    btn->set_text(U("Hello!"));
-    btn->add_click([btn](button const&) { btn->set_text(U("Hello world!")); });
+    btn->set_text(U("Hello"));
+    btn->add_click([wnd](button const&) { msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info); });
     g->add_child(btn);
     g->set_column(btn, 1);
     g->set_row(btn, 1);
