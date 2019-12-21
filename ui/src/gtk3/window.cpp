@@ -1,4 +1,4 @@
-#include <cmath>
+#include <internal/gtk3/drawing.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -8,8 +8,9 @@ namespace xaml
 {
     window::window() : container()
     {
-        add_location_changed([this](window const&, point) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
-        add_size_changed([this](control const&, size) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
+        add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
     }
 
     window::~window()
@@ -28,50 +29,56 @@ namespace xaml
                 G_CALLBACK(+[](GtkWidget* w, gpointer arg) { application::current()->decrease_quit(); }),
                 this);
             g_signal_connect(
-                G_OBJECT(get_handle()), "size-allocate",
-                G_CALLBACK(window::on_size_allocate),
+                G_OBJECT(get_handle()), "configure-event",
+                G_CALLBACK(window::on_configure_event),
                 this);
         }
         if (!resizing)
         {
-            gtk_window_resize(GTK_WINDOW(get_handle()), (int)round(get_width()), (int)round(get_height()));
+            gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
             gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
         }
-        gtk_window_set_title(GTK_WINDOW(get_handle()), m_title.data());
+        draw_title();
         if (get_child())
         {
-            get_child()->draw({ 0, 0, get_width(), get_height() });
+            draw_child();
         }
         gtk_widget_show_all(get_handle());
     }
 
+    void window::draw_title()
+    {
+        gtk_window_set_title(GTK_WINDOW(get_handle()), m_title.data());
+    }
+
+    void window::draw_child()
+    {
+        get_child()->draw({ 0, 0, get_width(), get_height() });
+    }
+
     void window::show()
     {
-        draw({ 0, 0, 0, 0 });
-        showed = true;
+        draw({});
     }
 
     gboolean window::invoke_draw(gpointer data)
     {
         window* self = (window*)data;
-        self->draw({ 0, 0, 0, 0 });
+        self->draw({});
         self->resizing = false;
         return false;
     }
 
-    void window::on_size_allocate(GtkWidget* widget, GdkRectangle* allocation, gpointer data)
+    gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
     {
         window* self = (window*)data;
-        if (self->showed && !self->resizing)
+        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->resizing)
         {
             self->resizing = true;
-            int x, y;
-            gtk_window_get_position(GTK_WINDOW(widget), &x, &y);
-            self->set_location({ (double)x, (double)y });
-            int width, height;
-            gtk_window_get_size(GTK_WINDOW(widget), &width, &height);
-            self->set_size({ (double)width, (double)height });
+            self->set_location({ (double)event->configure.x, (double)event->configure.y });
+            self->set_size({ (double)event->configure.width, (double)event->configure.height });
             gdk_threads_add_idle(window::invoke_draw, data);
         }
+        return FALSE;
     }
 } // namespace xaml

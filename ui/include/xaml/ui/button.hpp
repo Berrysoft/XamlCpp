@@ -30,6 +30,11 @@ namespace xaml
         void draw(rectangle const& region) override;
 
     private:
+        void draw_size();
+        void draw_text();
+        void draw_default();
+
+    private:
         string_t m_text{};
 
     public:

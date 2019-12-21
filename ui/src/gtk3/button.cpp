@@ -1,5 +1,5 @@
+#include <internal/gtk3/drawing.hpp>
 #include <xaml/ui/button.hpp>
-#include <cmath>
 
 using namespace std;
 
@@ -7,7 +7,8 @@ namespace xaml
 {
     button::button() : common_control()
     {
-        add_text_changed([this](button const&, string_view_t t) { if(get_handle()) gtk_button_set_label(GTK_BUTTON(get_handle()), t.data()); });
+        add_text_changed([this](button const&, string_view_t) { if(get_handle()) draw_text(); });
+        add_size_changed([this](control const&, size) { if(get_handle()) draw_size(); });
     }
 
     button::~button()
@@ -22,9 +23,21 @@ namespace xaml
             g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
         }
         rectangle real = region - get_margin();
-        gtk_widget_set_size_request(get_handle(), (int)round(real.width), (int)round(real.height));
+        set_size({ real.width, real.height });
+        draw_text();
+    }
+
+    void button::draw_text()
+    {
         gtk_button_set_label(GTK_BUTTON(get_handle()), m_text.c_str());
     }
+
+    void button::draw_size()
+    {
+        gtk_widget_set_size_request(get_handle(), get_rwidth(get_width()), get_rheight(get_height()));
+    }
+
+    void button::draw_default() {}
 
     void button::on_clicked(GtkButton*, gpointer data)
     {

@@ -25,11 +25,15 @@ namespace xaml
 #ifdef XAML_UI_GTK3
     private:
         static gboolean invoke_draw(gpointer data);
-        static void on_size_allocate(GtkWidget* widget, GdkRectangle* allocation, gpointer data);
+        static gboolean on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data);
 #endif
 
     public:
         void draw(rectangle const& region) override;
+
+    private:
+        void draw_title();
+        void draw_child();
 
     public:
         window();
@@ -38,7 +42,6 @@ namespace xaml
         void show();
 
     private:
-        bool showed{ false };
         std::atomic<bool> resizing{ false };
 
         point m_location{ 0, 0 };
@@ -80,6 +83,8 @@ namespace xaml
     private:
         string_t m_title{};
 
+        EVENT(title_changed, window const&, string_view_t)
+
     public:
         string_view_t get_title() const noexcept { return m_title; }
         void set_title(string_view_t value) { m_title = (string_t)value; }
@@ -87,6 +92,7 @@ namespace xaml
 #define ADD_WINDOW_MEMBERS()     \
     ADD_CONTAINER_MEMBERS();     \
     ADD_PROP(title);             \
+    ADD_EVENT(title_changed);    \
     ADD_PROP(location);          \
     ADD_PROP(x);                 \
     ADD_PROP(y);                 \
