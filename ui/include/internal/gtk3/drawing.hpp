@@ -9,13 +9,13 @@ namespace xaml
 {
     constexpr rectangle get_rect(GdkRectangle const& rect) { return { (double)rect.x, (double)rect.y, (double)rect.width, (double)rect.height }; }
 
-    constexpr int get_rwidth(double request)
+    inline int get_rwidth(double request)
     {
         int r = (int)round(request);
         return r < 0 ? 0 : r;
     }
 
-    constexpr int get_rheight(double request)
+    inline int get_rheight(double request)
     {
         int r = (int)round(request);
         return r < 1 ? 1 : r;
