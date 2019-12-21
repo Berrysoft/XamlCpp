@@ -50,7 +50,7 @@ namespace xaml
 
         EVENT(text_changed, button const&, string_view_t)
 
-        PROP(is_default, bool)
+        PROP_EVENT(is_default, bool)
 
         EVENT(click, button const&)
 
@@ -59,7 +59,7 @@ namespace xaml
     ADD_COMMON_CONTROL_MEMBERS(); \
     ADD_PROP(text);               \
     ADD_EVENT(text_changed);      \
-    ADD_PROP(is_default);         \
+    ADD_PROP_EVENT(is_default);   \
     ADD_EVENT(click)
 
         static void register_class() noexcept

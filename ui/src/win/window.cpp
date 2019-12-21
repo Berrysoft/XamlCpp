@@ -20,8 +20,9 @@ namespace xaml
 
     window::window() : container()
     {
-        add_location_changed([this](window const&, point) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
-        add_size_changed([this](control const&, size) { if (showed && !resizing) draw({ 0, 0, 0, 0 }); });
+        add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
     }
 
     window::~window()
@@ -45,21 +46,30 @@ namespace xaml
             window_map[get_handle()] = weak_from_this();
         }
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
+        draw_title();
         if (get_child())
         {
-            RECT r = {};
-            THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
-            get_child()->draw(get_rect(r));
+            draw_child();
         }
+    }
+
+    void window::draw_title()
+    {
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
+    }
+
+    void window::draw_child()
+    {
+        RECT r = {};
+        THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
+        get_child()->draw(get_rect(r));
     }
 
     void window::show()
     {
-        draw({ 0, 0, 0, 0 });
+        draw({});
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
-        showed = true;
     }
 
     optional<LRESULT> window::wnd_proc(window_message const& msg)
@@ -68,7 +78,7 @@ namespace xaml
         {
         case WM_SIZE:
         {
-            if (showed && !resizing)
+            if (get_handle() && !resizing)
             {
                 resizing = true;
                 RECT rect = {};
@@ -76,7 +86,7 @@ namespace xaml
                 rectangle r = get_rect(rect);
                 set_location({ r.x, r.y });
                 set_size({ r.width, r.height });
-                draw({ 0, 0, 0, 0 });
+                draw({});
                 resizing = false;
             }
         }
