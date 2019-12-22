@@ -26,7 +26,7 @@ namespace xaml
             application::current()->wnd_num++;
             g_signal_connect(
                 G_OBJECT(get_handle()), "destroy",
-                G_CALLBACK(+[](GtkWidget* w, gpointer arg) { application::current()->decrease_quit(); }),
+                G_CALLBACK(window::on_destroy),
                 this);
             g_signal_connect(
                 G_OBJECT(get_handle()), "configure-event",
@@ -67,6 +67,11 @@ namespace xaml
         self->draw({});
         self->resizing = false;
         return false;
+    }
+
+    void window::on_destroy(GtkWidget* w, gpointer arg)
+    {
+        application::current()->decrease_quit();
     }
 
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
