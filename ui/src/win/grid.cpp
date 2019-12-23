@@ -12,11 +12,6 @@ namespace xaml
 
     grid::~grid() {}
 
-    typename grid::native_handle_type grid::get_handle() const noexcept
-    {
-        return get_parent() ? get_parent()->get_handle() : nullptr;
-    }
-
     optional<LRESULT> grid::wnd_proc(window_message const& msg)
     {
         for (auto c : m_children)
@@ -61,6 +56,7 @@ namespace xaml
 
     void grid::draw(rectangle const& region)
     {
+        set_handle(get_parent()->get_handle());
         rectangle real = region - get_margin();
         vector<double> columns = get_real_length(m_columns, real.width);
         vector<double> rows = get_real_length(m_rows, real.height);

@@ -58,11 +58,11 @@ namespace xaml
         native_handle_type m_handle{ nullptr };
 
     public:
-        virtual native_handle_type get_handle() const noexcept { return m_handle; }
-        virtual operator bool() const noexcept { return m_handle; }
+        constexpr native_handle_type get_handle() const noexcept { return m_handle; }
+        operator bool() const noexcept { return m_handle; }
 
     protected:
-        virtual void set_handle(native_handle_type h) noexcept { m_handle = h; }
+        void set_handle(native_handle_type h) noexcept { m_handle = h; }
 
 #ifdef XAML_UI_WINDOWS
     protected:

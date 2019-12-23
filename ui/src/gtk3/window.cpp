@@ -56,7 +56,7 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->draw({ 0, 0, get_width(), get_height() });
+        get_child()->draw(get_client_region());
     }
 
     void window::draw_resizable()
@@ -69,11 +69,11 @@ namespace xaml
         draw({});
     }
 
-    size window::get_client_size() const
+    rectangle window::get_client_region() const
     {
         gint width, height;
         gtk_window_get_size(GTK_WINDOW(get_handle()), &width, &height);
-        return { (double)width, (double)height };
+        return { 0, 0, (double)width, (double)height };
     }
 
     gboolean window::invoke_draw(gpointer data)
