@@ -65,7 +65,7 @@ namespace xaml
             double suby = (index.row > 0 ? rows[index.row - 1] : 0) + real.y;
             rectangle subregion = { subx, suby, columns[index.column], rows[index.row] };
             c->draw(subregion);
-            rectangle subreal = subregion - get_margin();
+            rectangle subreal = subregion - c->get_margin();
             if (new_draw)
                 gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);
             else

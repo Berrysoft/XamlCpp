@@ -5,12 +5,19 @@ using namespace std;
 
 namespace xaml
 {
-    static shared_ptr<application> _current;
-    shared_ptr<application> application::current() { return _current; }
+    static shared_ptr<application> s_current;
 
-    void application::init()
+    shared_ptr<application> application::init(int argc, char** argv)
     {
-        _current = shared_from_this();
+        s_current = make_shared<application>(argc, argv);
+        s_current->init_components();
+        return s_current;
+    }
+
+    shared_ptr<application> application::current() { return s_current; }
+
+    void application::init_components()
+    {
         gtk_init(0, nullptr);
     }
 
@@ -18,12 +25,5 @@ namespace xaml
     {
         gtk_main();
         return 0;
-    }
-
-    void application::decrease_quit()
-    {
-        wnd_num--;
-        if (!wnd_num)
-            gtk_main_quit();
     }
 } // namespace xaml

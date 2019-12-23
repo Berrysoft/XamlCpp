@@ -35,12 +35,15 @@ namespace xaml
     private:
         void draw_title();
         void draw_child();
+        void draw_resizable();
 
     public:
         window();
         virtual ~window() override;
 
         void show();
+
+        PROP_EVENT(resizable, bool)
 
     private:
         std::atomic<bool> resizing{ false };
@@ -79,6 +82,8 @@ namespace xaml
             }
         }
 
+        size get_client_size() const;
+
         EVENT(closing, window const&, bool&)
 
     private:
@@ -90,15 +95,15 @@ namespace xaml
         string_view_t get_title() const noexcept { return m_title; }
         void set_title(string_view_t value) { m_title = (string_t)value; }
 
-#define ADD_WINDOW_MEMBERS()     \
-    ADD_CONTAINER_MEMBERS();     \
-    ADD_PROP(title);             \
-    ADD_EVENT(title_changed);    \
-    ADD_PROP(location);          \
-    ADD_PROP(x);                 \
-    ADD_PROP(y);                 \
-    ADD_EVENT(location_changed); \
-    ADD_EVENT(closing)
+#define ADD_WINDOW_MEMBERS()  \
+    ADD_CONTAINER_MEMBERS();  \
+    ADD_PROP(title);          \
+    ADD_EVENT(title_changed); \
+    ADD_PROP_EVENT(location); \
+    ADD_PROP(x);              \
+    ADD_PROP(y);              \
+    ADD_EVENT(closing);       \
+    ADD_PROP_EVENT(resizable)
 
         static void register_class() noexcept
         {

@@ -14,8 +14,7 @@ int main()
         if (des)
         {
             auto wnd = static_pointer_cast<window>(des.deserialize());
-            auto app = make_shared<application>();
-            app->init();
+            auto app = application::init();
             wnd->set_size({ 800, 600 });
             wnd->show();
             app->run();

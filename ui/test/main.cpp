@@ -18,15 +18,15 @@ int main(int argc, char** argv)
     init_meta();
 
 #ifdef XAML_UI_WINDOWS
-    auto app = make_shared<application>(lpCmdLine);
+    auto app = application::init(lpCmdLine);
 #else
-    auto app = make_shared<application>(argc, argv);
+    auto app = application::init(argc, argv);
 #endif // XAML_UI_WINDOWS
-    app->init();
     auto wnd = make_shared<window>();
     wnd->set_title(U("Test Window"));
     wnd->set_location({ 100, 100 });
     wnd->set_size({ 800, 600 });
+    wnd->set_resizable(false);
     auto g = make_shared<grid>();
     g->add_column({ 1, grid_layout::star });
     g->add_column({ 1, grid_layout::star });

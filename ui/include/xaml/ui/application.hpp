@@ -18,35 +18,38 @@ namespace xaml
         friend class window;
 
         int wnd_num{ 0 };
-        std::vector<string_t> _cmd_lines{};
-
-#ifdef XAML_UI_GTK3
-        void decrease_quit();
-#endif
+        std::vector<string_t> m_cmd_lines{};
 
     public:
         application(int argc, char_t** argv)
         {
             for (int i = 0; i < argc; i++)
             {
-                _cmd_lines.push_back(argv[i]);
+                m_cmd_lines.push_back(argv[i]);
             }
         }
-        application() : application(0, nullptr) {}
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
         application(char_t* lpCmdLine);
 #endif // XAML_UI_WINDOWS
 
-        void init();
-        const std::vector<string_t>& get_cmd_lines() const noexcept { return _cmd_lines; }
+        void init_components();
+
+    public:
+        virtual ~application() {}
+
+        const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
         int run();
 
+        static std::shared_ptr<application> init(int argc, char_t** argv);
+        static std::shared_ptr<application> init() { return init(0, nullptr); }
+#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
+        static std::shared_ptr<application> init(char_t* lpCmdLine);
+#endif // XAML_UI_WINDOWS
         static std::shared_ptr<application> current();
 
         static void register_class() noexcept
         {
             REGISTER_TYPE();
-            ADD_CTOR_DEF();
         }
     };
 } // namespace xaml

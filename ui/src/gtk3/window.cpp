@@ -6,11 +6,12 @@ using namespace std;
 
 namespace xaml
 {
-    window::window() : container()
+    window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
         add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
         add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
+        add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
     window::~window()
@@ -36,6 +37,7 @@ namespace xaml
         if (!resizing)
         {
             gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
+            gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
             gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
         }
         draw_title();
@@ -44,6 +46,7 @@ namespace xaml
             draw_child();
         }
         gtk_widget_show_all(get_handle());
+        draw_resizable();
     }
 
     void window::draw_title()
@@ -56,9 +59,21 @@ namespace xaml
         get_child()->draw({ 0, 0, get_width(), get_height() });
     }
 
+    void window::draw_resizable()
+    {
+        gtk_window_set_resizable(GTK_WINDOW(get_handle()), m_resizable ? TRUE : FALSE);
+    }
+
     void window::show()
     {
         draw({});
+    }
+
+    size window::get_client_size() const
+    {
+        gint width, height;
+        gtk_window_get_size(GTK_WINDOW(get_handle()), &width, &height);
+        return { (double)width, (double)height };
     }
 
     gboolean window::invoke_draw(gpointer data)
@@ -71,7 +86,7 @@ namespace xaml
 
     void window::on_destroy(GtkWidget* w, gpointer arg)
     {
-        application::current()->decrease_quit();
+        if (!(--application::current()->wnd_num)) gtk_main_quit();
     }
 
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
