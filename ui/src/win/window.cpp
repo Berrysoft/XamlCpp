@@ -18,11 +18,12 @@ namespace xaml
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 
-    window::window() : container()
+    window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
         add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
         add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
+        add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
     window::~window()
@@ -46,6 +47,7 @@ namespace xaml
             window_map[get_handle()] = weak_from_this();
         }
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+        draw_resizable();
         draw_title();
         if (get_child())
         {
@@ -60,9 +62,17 @@ namespace xaml
 
     void window::draw_child()
     {
-        RECT r = {};
-        THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
-        get_child()->draw(get_rect(r));
+        get_child()->draw(get_client_region());
+    }
+
+    void window::draw_resizable()
+    {
+        LONG_PTR style = GetWindowLongPtr(get_handle(), GWL_STYLE);
+        if (m_resizable)
+            style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
+        else
+            style &= (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX);
+        SetWindowLongPtr(get_handle(), GWL_STYLE, style);
     }
 
     void window::show()
@@ -70,6 +80,13 @@ namespace xaml
         draw({});
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
+    }
+
+    rectangle window::get_client_region() const
+    {
+        RECT r = {};
+        THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
+        return get_rect(r);
     }
 
     optional<LRESULT> window::wnd_proc(window_message const& msg)

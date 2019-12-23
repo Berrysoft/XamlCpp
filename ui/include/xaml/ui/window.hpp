@@ -20,14 +20,14 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         virtual std::optional<LRESULT> wnd_proc(window_message const& msg) override;
-#endif
+#endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
     private:
         static gboolean invoke_draw(gpointer data);
         static void on_destroy(GtkWidget* w, gpointer arg);
         static gboolean on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data);
-#endif
+#endif // XAML_UI_GTK3
 
     public:
         void draw(rectangle const& region) override;
@@ -82,7 +82,7 @@ namespace xaml
             }
         }
 
-        size get_client_size() const;
+        rectangle get_client_region() const;
 
         EVENT(closing, window const&, bool&)
 

@@ -21,14 +21,32 @@ namespace xaml
             wil::unique_array_ptr<LPWSTR, wil::hlocal_deleter> args(argv, argc);
             for (int i = 0; i < argc; i++)
             {
-                _cmd_lines.push_back(args[i]);
+                m_cmd_lines.push_back(args[i]);
             }
         }
     }
 #endif // UNICODE
 
-    static shared_ptr<application> _current;
-    shared_ptr<application> application::current() { return _current; }
+    static shared_ptr<application> s_current;
+
+    shared_ptr<application> application::init(int argc, char_t** argv)
+    {
+        s_current = make_shared<application>(argc, argv);
+        s_current->init_components();
+        return s_current;
+    }
+
+    shared_ptr<application> application::init(LPWSTR lpCmdLine)
+    {
+        s_current = make_shared<application>(lpCmdLine);
+        s_current->init_components();
+        return s_current;
+    }
+
+    shared_ptr<application> application::current()
+    {
+        return s_current;
+    }
 
     static BOOL take_over_message(MSG& msg)
     {
@@ -56,9 +74,8 @@ namespace xaml
         return RegisterClassEx(&cls);
     }
 
-    void application::init()
+    void application::init_components()
     {
-        _current = shared_from_this();
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
     }
