@@ -35,6 +35,7 @@ namespace xaml
         xmlTextReaderPtr reader;
 
     public:
+        constexpr bool is_open() const noexcept { return reader; }
         void open(std::string_view file);
         constexpr operator bool() const noexcept { return reader; }
 

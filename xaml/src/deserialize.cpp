@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <locale>
 #include <sstream>
 #include <stack>
@@ -5,6 +6,7 @@
 #include <xaml/ui/control.hpp>
 
 using namespace std;
+using namespace std::filesystem;
 
 namespace xaml
 {
@@ -84,7 +86,7 @@ namespace xaml
 
     void deserializer::open(string_view file)
     {
-        reader = xmlReaderForFile(file.data(), nullptr, 0);
+        reader = xmlNewTextReaderFilename(absolute(file).string().c_str());
     }
 
     int deserializer::deserialize_members(shared_ptr<meta_class> mc)
