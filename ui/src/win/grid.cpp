@@ -4,6 +4,8 @@ using namespace std;
 
 namespace xaml
 {
+    unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
+
     grid::grid() : multicontainer()
     {
     }

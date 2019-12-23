@@ -5,6 +5,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <xaml/meta/meta.hpp>
 
 namespace xaml
@@ -43,6 +44,7 @@ namespace xaml
 
     private:
         int deserialize_members(std::shared_ptr<meta_class> mc);
+        std::tuple<int, std::shared_ptr<meta_class>> deserialize_impl();
         void clean_up(int ret);
 
     public:

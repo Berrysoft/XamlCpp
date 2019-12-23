@@ -1,6 +1,7 @@
 #ifndef XAML_UI_GRID_HPP
 #define XAML_UI_GRID_HPP
 
+#include <memory>
 #include <unordered_map>
 #include <vector>
 #include <xaml/ui/container.hpp>
@@ -21,7 +22,7 @@ namespace xaml
 
     struct grid_index
     {
-        size_t column, row;
+        std::size_t column, row;
     };
 
     class grid : public multicontainer, public meta_class_impl<grid>
@@ -58,11 +59,13 @@ namespace xaml
         void add_row(grid_length length) { m_rows.push_back(std::move(length)); }
 
     private:
-        std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;
+        static std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;
 
     public:
-        void set_column(std::shared_ptr<control> const& c, size_t col) { m_indecies[c].column = col; }
-        void set_row(std::shared_ptr<control> const& c, size_t row) { m_indecies[c].row = row; }
+        static void set_column(std::shared_ptr<control> const& c, std::size_t col) { m_indecies[c].column = col; }
+        static std::size_t get_column(std::shared_ptr<control> const& c) { return m_indecies[c].column; }
+        static void set_row(std::shared_ptr<control> const& c, std::size_t row) { m_indecies[c].row = row; }
+        static std::size_t get_row(std::shared_ptr<control> const& c) { return m_indecies[c].row; }
 
 #define ADD_GRID_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
 

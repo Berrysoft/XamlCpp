@@ -1,4 +1,5 @@
 #include <sstream>
+#include <stack>
 #include <xaml/deserialize.hpp>
 
 using namespace std;
@@ -55,9 +56,51 @@ namespace xaml
 
     int xaml_deserializer::deserialize_members(shared_ptr<meta_class> mc)
     {
-        int ret;
-        while ((ret = xmlTextReaderRead(reader)) == 1)
+        int ret = 1;
+        while (ret == 1)
         {
+            switch (xmlTextReaderNodeType(reader))
+            {
+            case XML_ELEMENT_NODE:
+            {
+                int count = xmlTextReaderAttributeCount(reader);
+                for (int i = 0; i < count; i++)
+                {
+                    xmlTextReaderMoveToAttributeNo(reader, i);
+                    string_view attr_name = (const char*)xmlTextReaderConstName(reader);
+                    auto prop = get_property(mc->this_type(), attr_name);
+                    if (prop.can_write())
+                    {
+                        string_view attr_name = (const char*)xmlTextReaderConstValue(reader);
+                        prop.set(mc, attr_name);
+                    }
+                }
+                xmlTextReaderMoveToElement(reader);
+                break;
+            }
+            case XML_TEXT_NODE:
+            case XML_CDATA_SECTION_NODE:
+                // TODO: default property
+                break;
+            case XML_ELEMENT_DECL:
+            {
+                string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
+                string_view name = (const char*)xmlTextReaderConstName(reader);
+                auto t = *get_type(ns, name);
+                if (mc->this_type() != t)
+                {
+                    return ret;
+                }
+                break;
+            }
+            }
+            ret = xmlTextReaderRead(reader);
+            if (xmlTextReaderNodeType(reader) == XML_ELEMENT_NODE)
+            {
+                string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
+                string_view name = (const char*)xmlTextReaderConstName(reader);
+                auto t = *get_type(ns, name);
+            }
         }
         return ret;
     }
@@ -72,7 +115,7 @@ namespace xaml
         }
     }
 
-    shared_ptr<meta_class> xaml_deserializer::deserialize()
+    tuple<int, shared_ptr<meta_class>> xaml_deserializer::deserialize_impl()
     {
         int ret = xmlTextReaderRead(reader);
         if (ret == 1)
@@ -91,15 +134,21 @@ namespace xaml
                 {
                     throw xaml_no_default_constructor(*t);
                 }
-                return mc;
+                return make_tuple(ret, mc);
             }
             else
             {
                 throw xaml_bad_type(ns, name);
             }
         }
+        return make_tuple(ret, shared_ptr<meta_class>{});
+    }
+
+    shared_ptr<meta_class> xaml_deserializer::deserialize()
+    {
+        auto [ret, result] = deserialize_impl();
         clean_up(ret);
-        return nullptr;
+        return result;
     }
 
     void xaml_deserializer::deserialize(shared_ptr<meta_class> mc)
