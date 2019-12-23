@@ -16,14 +16,14 @@ file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
 
 if(${BUILD_WINDOWS})
     find_package(WIL REQUIRED)
-    include_directories(${WIL_INCLUDE_DIR})
+    include_directories(${WIL_INCLUDE_DIRS})
 
     file(GLOB UI_SOURCE "src/win/*.cpp")
 elseif(${BUILD_COCOA})
     file(GLOB UI_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
-    include_directories(${GTK3_INCLUDE_DIR})
+    include_directories(${GTK3_INCLUDE_DIRS})
 
     file(GLOB UI_SOURCE "src/gtk3/*.cpp")
 endif()

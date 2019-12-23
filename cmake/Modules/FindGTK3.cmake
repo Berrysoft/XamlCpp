@@ -15,6 +15,6 @@ else()
     find_library(GTK_gobject_LIBRARY gobject-2.0)
 
     set(GTK3_FOUND TRUE)
-    set(GTK3_INCLUDE_DIR ${GTK_gtk_INCLUDE_PATH} ${GTK_glibconfig_INCLUDE_PATH} ${GTK_glib_INCLUDE_PATH})
+    set(GTK3_INCLUDE_DIRS ${GTK_gtk_INCLUDE_PATH} ${GTK_glibconfig_INCLUDE_PATH} ${GTK_glib_INCLUDE_PATH})
     set(GTK3_LIBRARIES ${GTK_gtk_LIBRARY} ${GTK_gdk_LIBRARY} ${GTK_glib_LIBRARY} ${GTK_gobject_LIBRARY})
 endif()

@@ -152,7 +152,7 @@ namespace xaml
     {
         xmlFreeTextReader(reader);
         reader = nullptr;
-        if (ret)
+        if (ret < 0)
         {
             throw xaml_parse_error();
         }
