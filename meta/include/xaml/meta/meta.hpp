@@ -120,7 +120,7 @@ namespace xaml
         if (ctor)
         {
             return std::function<std::shared_ptr<meta_class>(Args...)>(
-                std::reinterpret_pointer_cast<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>(ctor)->func);
+                std::static_pointer_cast<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>(ctor)->func);
         }
         else
         {
@@ -177,7 +177,7 @@ namespace xaml
         {
             this->func = std::function<Return(std::shared_ptr<meta_class>, Args...)>(
                 [f](std::shared_ptr<meta_class> self, Args... args) -> Return {
-                    return std::mem_fn(f)(std::reinterpret_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
+                    return std::mem_fn(f)(std::static_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
                 });
         }
     };
@@ -206,7 +206,7 @@ namespace xaml
         if (m)
         {
             return std::function<Return(std::shared_ptr<meta_class>, Args...)>(
-                std::reinterpret_pointer_cast<__type_erased_this_function_impl<Return(Args...)>>(m)->func);
+                std::static_pointer_cast<__type_erased_this_function_impl<Return(Args...)>>(m)->func);
         }
         else
         {
@@ -341,7 +341,7 @@ namespace xaml
                 pname,
                 std::function<std::any(std::shared_ptr<meta_class>)>(
                     [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return std::mem_fn(getter)(std::reinterpret_pointer_cast<T>(self).get());
+                        return std::mem_fn(getter)(std::static_pointer_cast<T>(self).get());
                     }));
         }
     }
@@ -356,7 +356,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        std::mem_fn(setter)(std::reinterpret_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
+                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
                     }));
         }
     }
@@ -378,7 +378,7 @@ namespace xaml
                 pname,
                 std::function<std::any(std::shared_ptr<meta_class>)>(
                     [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::reinterpret_pointer_cast<T>(self).get());
+                        return getter(std::static_pointer_cast<T>(self).get());
                     }));
         }
     }
@@ -393,7 +393,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::reinterpret_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
+                        setter(std::static_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
                     }));
         }
     }
@@ -453,7 +453,7 @@ namespace xaml
         {
             if (match_arg_type<Args...>())
             {
-                auto i = std::reinterpret_pointer_cast<__type_erased_function_impl<void(std::shared_ptr<meta_class>, Args...)>>(invoker);
+                auto i = std::static_pointer_cast<__type_erased_function_impl<void(std::shared_ptr<meta_class>, Args...)>>(invoker);
                 i->func(self, std::forward<Args>(args)...);
             }
         }
@@ -495,8 +495,8 @@ namespace xaml
                     [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
                         if (handler->is_same_arg_type<Args...>())
                         {
-                            auto h = std::reinterpret_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return std::mem_fn(adder)(std::reinterpret_pointer_cast<T>(self).get(), std::move(h->func));
+                            auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
+                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), std::move(h->func));
                         }
                         return 0;
                     }));
@@ -513,7 +513,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
                     [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        std::mem_fn(remover)(std::reinterpret_pointer_cast<T>(self).get(), token);
+                        std::mem_fn(remover)(std::static_pointer_cast<T>(self).get(), token);
                     }));
         }
     }
@@ -528,7 +528,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, Args...)>(
                     [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        std::mem_fn(getter)(std::reinterpret_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                        std::mem_fn(getter)(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
                     }));
         }
     }
@@ -553,8 +553,8 @@ namespace xaml
                     [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
                         if (handler->is_same_arg_type<Args...>())
                         {
-                            auto h = std::reinterpret_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return adder(std::reinterpret_pointer_cast<T>(self).get(), std::move(h->func));
+                            auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
+                            return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
                         }
                         return 0;
                     }));
@@ -571,7 +571,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
                     [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        remover(std::reinterpret_pointer_cast<T>(self).get(), token);
+                        remover(std::static_pointer_cast<T>(self).get(), token);
                     }));
         }
     }
@@ -586,7 +586,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, Args...)>(
                     [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        getter(std::reinterpret_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                        getter(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
                     }));
         }
     }

@@ -29,7 +29,7 @@ namespace xaml
         ~xaml_parse_error() override {}
     };
 
-    class xaml_deserializer
+    class deserializer
     {
     private:
         xmlTextReaderPtr reader;
@@ -38,9 +38,9 @@ namespace xaml
         void open(std::string_view file);
         constexpr operator bool() const noexcept { return reader; }
 
-        xaml_deserializer();
-        xaml_deserializer(std::string_view file) : xaml_deserializer() { open(file); }
-        ~xaml_deserializer();
+        deserializer();
+        deserializer(std::string_view file) : deserializer() { open(file); }
+        ~deserializer();
 
     private:
         int deserialize_members(std::shared_ptr<meta_class> mc);

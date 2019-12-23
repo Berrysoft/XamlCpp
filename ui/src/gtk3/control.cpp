@@ -19,16 +19,16 @@ namespace xaml
             if (m_parent)
             {
                 if (m_parent->is_multicontainer())
-                    reinterpret_pointer_cast<multicontainer>(m_parent)->remove_child(shared_from_this());
+                    static_pointer_cast<multicontainer>(m_parent)->remove_child(shared_from_this());
                 else
-                    reinterpret_pointer_cast<container>(m_parent)->set_child(nullptr);
+                    static_pointer_cast<container>(m_parent)->set_child(nullptr);
             }
             if (value)
             {
                 if (value->is_multicontainer())
-                    reinterpret_pointer_cast<multicontainer>(value)->add_child(shared_from_this());
+                    static_pointer_cast<multicontainer>(value)->add_child(shared_from_this());
                 else
-                    reinterpret_pointer_cast<container>(value)->set_child(shared_from_this());
+                    static_pointer_cast<container>(value)->set_child(shared_from_this());
             }
             m_parent = value;
             m_parent_changed(*this, value);

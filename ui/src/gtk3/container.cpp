@@ -20,7 +20,7 @@ namespace xaml
             if (it == m_children.end())
             {
                 m_children.push_back(child);
-                child->set_parent(reinterpret_pointer_cast<container>(shared_from_this()));
+                child->set_parent(static_pointer_cast<container>(shared_from_this()));
             }
         }
     }

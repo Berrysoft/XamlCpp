@@ -10,6 +10,7 @@ namespace xaml
 {
     inline void init_meta() noexcept
     {
+        add_xml_namespace("https://github.com/Berrysoft/XamlCpp/", "xaml");
         register_class<
             application,
             window,

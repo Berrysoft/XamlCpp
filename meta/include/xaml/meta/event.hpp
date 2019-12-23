@@ -14,8 +14,8 @@ namespace xaml
         using token_type = std::size_t;
 
     private:
-        std::map<token_type, handler_type> m_handlers;
-        token_type m_index;
+        std::map<token_type, handler_type> m_handlers{};
+        token_type m_index{ 0 };
 
         void generate_new_index() { m_index++; }
 

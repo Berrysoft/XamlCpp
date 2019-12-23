@@ -1,6 +1,8 @@
+#include <locale>
 #include <sstream>
 #include <stack>
 #include <xaml/deserialize.hpp>
+#include <xaml/ui/control.hpp>
 
 using namespace std;
 
@@ -39,22 +41,53 @@ namespace xaml
     {
     }
 
-    xaml_deserializer::xaml_deserializer()
+    static inline string_view get_string_view(const xmlChar* str)
+    {
+        if (str)
+        {
+            return (const char*)str;
+        }
+        else
+        {
+            return {};
+        }
+    }
+
+#ifdef UNICODE
+    static inline string_t get_conv_string(string_view str)
+    {
+        mbstate_t mb = mbstate_t();
+        string_t internal(str.size(), U('\0'));
+        auto& f = use_facet<codecvt<char_t, char, mbstate_t>>(locale());
+        const char* from_next;
+        char_t* to_next;
+        f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
+        internal.resize(to_next - &internal.front());
+        return internal;
+    }
+#else
+    static constexpr string_view_t get_conv_string(string_view str)
+    {
+        return str;
+    }
+#endif // UNICODE
+
+    deserializer::deserializer()
     {
         LIBXML_TEST_VERSION;
     }
 
-    xaml_deserializer::~xaml_deserializer()
+    deserializer::~deserializer()
     {
         xmlCleanupMemory();
     }
 
-    void xaml_deserializer::open(string_view file)
+    void deserializer::open(string_view file)
     {
         reader = xmlReaderForFile(file.data(), nullptr, 0);
     }
 
-    int xaml_deserializer::deserialize_members(shared_ptr<meta_class> mc)
+    int deserializer::deserialize_members(shared_ptr<meta_class> mc)
     {
         int ret = 1;
         while (ret == 1)
@@ -67,12 +100,12 @@ namespace xaml
                 for (int i = 0; i < count; i++)
                 {
                     xmlTextReaderMoveToAttributeNo(reader, i);
-                    string_view attr_name = (const char*)xmlTextReaderConstName(reader);
+                    string_view attr_name = get_string_view(xmlTextReaderConstName(reader));
                     auto prop = get_property(mc->this_type(), attr_name);
                     if (prop.can_write())
                     {
-                        string_view attr_name = (const char*)xmlTextReaderConstValue(reader);
-                        prop.set(mc, attr_name);
+                        string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                        prop.set(mc, (string_view_t)get_conv_string(attr_value));
                     }
                 }
                 xmlTextReaderMoveToElement(reader);
@@ -84,8 +117,8 @@ namespace xaml
                 break;
             case XML_ELEMENT_DECL:
             {
-                string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
-                string_view name = (const char*)xmlTextReaderConstName(reader);
+                string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+                string_view name = get_string_view(xmlTextReaderConstName(reader));
                 auto t = *get_type(ns, name);
                 if (mc->this_type() != t)
                 {
@@ -97,15 +130,25 @@ namespace xaml
             ret = xmlTextReaderRead(reader);
             if (xmlTextReaderNodeType(reader) == XML_ELEMENT_NODE)
             {
-                string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
-                string_view name = (const char*)xmlTextReaderConstName(reader);
-                auto t = *get_type(ns, name);
+                auto [ret, child] = deserialize_impl();
+                if (!child)
+                {
+                    clean_up(ret);
+                }
+                else
+                {
+                    auto prop = get_property(mc->this_type(), "child");
+                    if (prop.can_write())
+                    {
+                        prop.set(mc, dynamic_pointer_cast<control>(child));
+                    }
+                }
             }
         }
         return ret;
     }
 
-    void xaml_deserializer::clean_up(int ret)
+    void deserializer::clean_up(int ret)
     {
         xmlFreeTextReader(reader);
         reader = nullptr;
@@ -115,51 +158,52 @@ namespace xaml
         }
     }
 
-    tuple<int, shared_ptr<meta_class>> xaml_deserializer::deserialize_impl()
+    tuple<int, shared_ptr<meta_class>> deserializer::deserialize_impl()
     {
-        int ret = xmlTextReaderRead(reader);
-        if (ret == 1)
+        string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+        string_view name = get_string_view(xmlTextReaderConstName(reader));
+        auto t = get_type(ns, name);
+        if (t)
         {
-            string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
-            string_view name = (const char*)xmlTextReaderConstName(reader);
-            auto t = get_type(ns, name);
-            if (t)
+            auto mc = construct(*t);
+            int ret = 1;
+            if (mc)
             {
-                auto mc = construct(*t);
-                if (mc)
-                {
-                    ret = deserialize_members(mc);
-                }
-                else
-                {
-                    throw xaml_no_default_constructor(*t);
-                }
-                return make_tuple(ret, mc);
+                ret = deserialize_members(mc);
             }
             else
             {
-                throw xaml_bad_type(ns, name);
+                throw xaml_no_default_constructor(*t);
             }
+            return make_tuple(ret, mc);
         }
-        return make_tuple(ret, shared_ptr<meta_class>{});
+        else
+        {
+            throw xaml_bad_type(ns, name);
+        }
     }
 
-    shared_ptr<meta_class> xaml_deserializer::deserialize()
+    shared_ptr<meta_class> deserializer::deserialize()
     {
-        auto [ret, result] = deserialize_impl();
+        int ret = xmlTextReaderRead(reader);
+        shared_ptr<meta_class> result;
+        if (ret == 1)
+        {
+            std::tie(ret, result) = deserialize_impl();
+        }
         clean_up(ret);
         return result;
     }
 
-    void xaml_deserializer::deserialize(shared_ptr<meta_class> mc)
+    void deserializer::deserialize(shared_ptr<meta_class> mc)
     {
         if (mc)
         {
             int ret = xmlTextReaderRead(reader);
             if (ret == 1)
             {
-                string_view ns = (const char*)xmlTextReaderConstNamespaceUri(reader);
-                string_view name = (const char*)xmlTextReaderConstName(reader);
+                string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+                string_view name = get_string_view(xmlTextReaderConstName(reader));
                 auto t = get_type(ns, name);
                 if (t && mc->this_type() == *t)
                 {

@@ -2,6 +2,7 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
 #include <xaml/ui/grid.hpp>
+#include <xaml/ui/meta.hpp>
 #include <xaml/ui/msgbox.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -14,6 +15,8 @@ INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
+    init_meta();
+
 #ifdef XAML_UI_WINDOWS
     auto app = make_shared<application>(lpCmdLine);
 #else
@@ -32,7 +35,7 @@ int main(int argc, char** argv)
     g->add_row({ 1, grid_layout::star });
     g->add_row({ 1, grid_layout::star });
     wnd->set_child(g);
-    auto btn = make_shared<button>();
+    auto btn = static_pointer_cast<button>(construct(*get_type("xaml", "button")));
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
     btn->set_text(U("Hello"));

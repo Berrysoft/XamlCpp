@@ -15,19 +15,13 @@ include_directories(../meta/include)
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
 
 if(${BUILD_WINDOWS})
-    add_definitions(-DUNICODE -D_UNICODE -DXAML_UI_WINDOWS -DVC_EXTRALEAN -DWIN32_LEAN_AND_MEAN)
-
     find_package(WIL REQUIRED)
     include_directories(${WIL_INCLUDE_DIR})
 
     file(GLOB UI_SOURCE "src/win/*.cpp")
 elseif(${BUILD_COCOA})
-    add_definitions(-DXAML_UI_COCOA)
-
     file(GLOB UI_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
-    add_definitions(-DXAML_UI_GTK3)
-
     find_package(GTK3 REQUIRED)
     include_directories(${GTK3_INCLUDE_DIR})
 
