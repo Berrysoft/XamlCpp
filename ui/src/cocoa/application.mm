@@ -2,18 +2,15 @@
 #import <internal/cocoa/XamlWindow.AppDelegate.h>
 #include <xaml/ui/application.hpp>
 
+using namespace std;
+
 namespace xaml
 {
-    static shared_ptr<application> _current;
-    shared_ptr<application> application::current() { return _current; }
-
-    void application::init()
+    void application::init_components()
     {
-        _current = shared_from_this();
-
         [NSAutoreleasePool new];
         [NSApplication sharedApplication];
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+        // [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
         id menubar = [[NSMenu new] autorelease];
         id appMenuItem = [[NSMenuItem new] autorelease];
         [menubar addItem:appMenuItem];
@@ -35,5 +32,6 @@ namespace xaml
     int application::run()
     {
         [NSApp run];
+        return 0;
     }
 }

@@ -51,7 +51,7 @@ namespace xaml
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = GtkWidget*;
 #elif defined(XAML_UI_COCOA)
-        using native_handle_type = OBJC_OBJECT(NSWindow);
+        using native_handle_type = OBJC_OBJECT(NSResponder);
 #endif // XAML_UI_WINDOWS
 
     private:

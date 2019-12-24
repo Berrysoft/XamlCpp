@@ -27,24 +27,12 @@ namespace xaml
     }
 #endif // UNICODE
 
-    static shared_ptr<application> s_current;
-
-    shared_ptr<application> application::init(int argc, char_t** argv)
-    {
-        s_current = shared_ptr<application>(new application(argc, argv));
-        s_current->init_components();
-        return s_current;
-    }
+    extern shared_ptr<application> s_current;
 
     shared_ptr<application> application::init(LPWSTR lpCmdLine)
     {
         s_current = shared_ptr<application>(new application(lpCmdLine));
         s_current->init_components();
-        return s_current;
-    }
-
-    shared_ptr<application> application::current()
-    {
         return s_current;
     }
 
