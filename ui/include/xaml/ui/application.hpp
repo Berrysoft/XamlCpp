@@ -20,7 +20,7 @@ namespace xaml
         int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
 
-    public:
+    private:
         application(int argc, char_t** argv)
         {
             for (int i = 0; i < argc; i++)

@@ -31,14 +31,14 @@ namespace xaml
 
     shared_ptr<application> application::init(int argc, char_t** argv)
     {
-        s_current = make_shared<application>(argc, argv);
+        s_current = shared_ptr<application>(new application(argc, argv));
         s_current->init_components();
         return s_current;
     }
 
     shared_ptr<application> application::init(LPWSTR lpCmdLine)
     {
-        s_current = make_shared<application>(lpCmdLine);
+        s_current = shared_ptr<application>(new application(lpCmdLine));
         s_current->init_components();
         return s_current;
     }

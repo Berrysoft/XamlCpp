@@ -12,11 +12,11 @@ namespace xaml
 
     grid::~grid() {}
 
-    optional<LRESULT> grid::wnd_proc(window_message const& msg)
+    optional<LRESULT> grid::__wnd_proc(window_message const& msg)
     {
         for (auto c : m_children)
         {
-            c->wnd_proc(msg);
+            c->__wnd_proc(msg);
         }
         return nullopt;
     }
@@ -54,7 +54,7 @@ namespace xaml
         return result;
     }
 
-    void grid::draw(rectangle const& region)
+    void grid::__draw(rectangle const& region)
     {
         set_handle(get_parent()->get_handle());
         rectangle real = region - get_margin();
@@ -65,7 +65,7 @@ namespace xaml
             auto index = m_indecies[c];
             double subx = (index.column > 0 ? columns[index.column - 1] : 0) + real.x;
             double suby = (index.row > 0 ? rows[index.row - 1] : 0) + real.y;
-            c->draw({ subx, suby, columns[index.column], rows[index.row] });
+            c->__draw({ subx, suby, columns[index.column], rows[index.row] });
         }
     }
 } // namespace xaml

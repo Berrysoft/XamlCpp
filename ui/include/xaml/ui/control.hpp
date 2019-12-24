@@ -69,14 +69,14 @@ namespace xaml
         void create(window_create_params const& params);
 
     public:
-        virtual std::optional<LRESULT> wnd_proc(window_message const& msg) { return std::nullopt; }
+        virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
 #endif
 
     public:
         control();
         virtual ~control();
 
-        virtual void draw(rectangle const& region) = 0;
+        virtual void __draw(rectangle const& region) = 0;
 
         EVENT(parent_changed, control const&, std::shared_ptr<control>)
 

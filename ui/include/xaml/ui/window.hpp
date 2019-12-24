@@ -19,7 +19,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        virtual std::optional<LRESULT> wnd_proc(window_message const& msg) override;
+        virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -30,7 +30,7 @@ namespace xaml
 #endif // XAML_UI_GTK3
 
     public:
-        void draw(rectangle const& region) override;
+        void __draw(rectangle const& region) override;
 
     private:
         void draw_title();

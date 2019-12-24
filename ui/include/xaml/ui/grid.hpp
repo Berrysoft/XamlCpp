@@ -37,11 +37,11 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        std::optional<LRESULT> wnd_proc(window_message const& msg) override;
+        std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     public:
-        void draw(rectangle const& region) override;
+        void __draw(rectangle const& region) override;
 
     private:
         std::vector<grid_length> m_columns;

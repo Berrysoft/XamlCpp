@@ -12,7 +12,7 @@ namespace xaml
         add_is_default_changed([this](button const&, bool) { if (get_handle()) draw_default(); });
     }
 
-    optional<LRESULT> button::wnd_proc(window_message const& msg)
+    optional<LRESULT> button::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
@@ -33,7 +33,7 @@ namespace xaml
         return nullopt;
     }
 
-    void button::draw(rectangle const& region)
+    void button::__draw(rectangle const& region)
     {
         if (!get_handle())
         {

@@ -14,15 +14,15 @@ namespace xaml
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd].lock();
-        auto result = wnd ? wnd->wnd_proc(msg) : nullopt;
+        auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 
     window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) __draw({}); });
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
@@ -31,7 +31,7 @@ namespace xaml
         window_map.erase(get_handle());
     }
 
-    void window::draw(rectangle const& region)
+    void window::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -62,7 +62,7 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->draw(get_client_region());
+        get_child()->__draw(get_client_region());
     }
 
     void window::draw_resizable()
@@ -77,7 +77,7 @@ namespace xaml
 
     void window::show()
     {
-        draw({});
+        __draw({});
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
@@ -89,7 +89,7 @@ namespace xaml
         return get_rect(r);
     }
 
-    optional<LRESULT> window::wnd_proc(window_message const& msg)
+    optional<LRESULT> window::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
@@ -103,7 +103,7 @@ namespace xaml
                 rectangle r = get_rect(rect);
                 set_location({ r.x, r.y });
                 set_size({ r.width, r.height });
-                draw({});
+                __draw({});
                 resizing = false;
             }
         }
@@ -122,7 +122,7 @@ namespace xaml
             break;
         }
         if (get_child())
-            return get_child()->wnd_proc(msg);
+            return get_child()->__wnd_proc(msg);
         else
             return nullopt;
     }
