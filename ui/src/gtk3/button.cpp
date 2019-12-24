@@ -15,7 +15,7 @@ namespace xaml
     {
     }
 
-    void button::draw(rectangle const& region)
+    void button::__draw(rectangle const& region)
     {
         if (!get_handle())
         {

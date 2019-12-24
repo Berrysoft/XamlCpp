@@ -46,7 +46,7 @@ namespace xaml
         return result;
     }
 
-    void grid::draw(rectangle const& region)
+    void grid::__draw(rectangle const& region)
     {
         bool new_draw = !get_handle();
         if (!get_handle())
@@ -64,7 +64,7 @@ namespace xaml
             double subx = (index.column > 0 ? columns[index.column - 1] : 0) + real.x;
             double suby = (index.row > 0 ? rows[index.row - 1] : 0) + real.y;
             rectangle subregion = { subx, suby, columns[index.column], rows[index.row] };
-            c->draw(subregion);
+            c->__draw(subregion);
             rectangle subreal = subregion - c->get_margin();
             if (new_draw)
                 gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);

@@ -7,7 +7,7 @@ using namespace std;
 
 namespace xaml
 {
-    void drawing_context::draw_arc(rectangle region, double start_angle, double end_angle)
+    void drawing_context::draw_arc(rectangle const& region, double start_angle, double end_angle)
     {
         double a = region.width / 2;
         double b = region.height / 2;
@@ -19,10 +19,10 @@ namespace xaml
         double r2 = a * b / sqrt(b * b * ct2 * ct2 + a * a * st2 * st2);
         double cpx = region.x + region.width / 2;
         double cpy = region.y + region.height / 2;
-        THROW_IF_WIN32_BOOL_FALSE(Arc(m_handle, region.x, region.y, region.x + region.width, region.y + region.height, cpx + r1 * ct1, cpy - r1 * st1, cpx + r2 * ct2, cpy - r2 * st2));
+        THROW_IF_WIN32_BOOL_FALSE(Arc(m_handle, region.x, region.y, region.x + region.width, region.y + region.height, cpx + r1 * ct1, cpy + r1 * st1, cpx + r2 * ct2, cpy + r2 * st2));
     }
 
-    void drawing_context::draw_ellipse(rectangle region)
+    void drawing_context::draw_ellipse(rectangle const& region)
     {
         THROW_IF_WIN32_BOOL_FALSE(Ellipse(m_handle, region.x, region.y, region.x + region.width, region.y + region.height));
     }
@@ -33,12 +33,12 @@ namespace xaml
         THROW_IF_WIN32_BOOL_FALSE(LineTo(m_handle, endp.x, endp.y));
     }
 
-    void drawing_context::draw_rect(rectangle rect)
+    void drawing_context::draw_rect(rectangle const& rect)
     {
         THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_handle, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height));
     }
 
-    void drawing_context::draw_round_rect(rectangle rect, size round)
+    void drawing_context::draw_round_rect(rectangle const& rect, size round)
     {
         THROW_IF_WIN32_BOOL_FALSE(RoundRect(m_handle, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, round.width, round.height));
     }

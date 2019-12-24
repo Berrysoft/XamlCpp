@@ -11,6 +11,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = HDC;
+#elif defined(XAML_UI_GTK3)
+        using native_handle_type = cairo_t*;
 #endif // XAML_UI_WINDOWS
 
     private:
@@ -20,11 +22,11 @@ namespace xaml
         constexpr native_handle_type get_handle() const noexcept { return m_handle; }
 
     public:
-        void draw_arc(rectangle region, double start_angle, double end_angle);
-        void draw_ellipse(rectangle region);
+        void draw_arc(rectangle const& region, double start_angle, double end_angle);
+        void draw_ellipse(rectangle const& region);
         void draw_line(point startp, point endp);
-        void draw_rect(rectangle rect);
-        void draw_round_rect(rectangle rect, size round);
+        void draw_rect(rectangle const& rect);
+        void draw_round_rect(rectangle const& rect, size round);
         void draw_string(point p, string_view_t str);
     };
 

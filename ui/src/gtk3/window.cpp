@@ -9,8 +9,8 @@ namespace xaml
     window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) draw({}); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) __draw({}); });
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
@@ -19,7 +19,7 @@ namespace xaml
         gtk_window_close(GTK_WINDOW(get_handle()));
     }
 
-    void window::draw(rectangle const& region)
+    void window::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -56,7 +56,7 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->draw(get_client_region());
+        get_child()->__draw(get_client_region());
     }
 
     void window::draw_resizable()
@@ -66,7 +66,7 @@ namespace xaml
 
     void window::show()
     {
-        draw({});
+        __draw({});
     }
 
     rectangle window::get_client_region() const
@@ -79,7 +79,7 @@ namespace xaml
     gboolean window::invoke_draw(gpointer data)
     {
         window* self = (window*)data;
-        self->draw({});
+        self->__draw({});
         self->resizing = false;
         return false;
     }
