@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <map>
 #include <wil/result_macros.h>
+#include <xaml/ui/application.hpp>
 #include <xaml/ui/container.hpp>
 #include <xaml/ui/control.hpp>
 
@@ -18,8 +19,7 @@ namespace xaml
             params.parent ? params.parent->get_handle() : nullptr,
             nullptr, GetModuleHandle(nullptr), nullptr));
         THROW_IF_NULL_ALLOC(get_handle());
-        HFONT defaultFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-        SendMessage(get_handle(), WM_SETFONT, (WPARAM)defaultFont, TRUE);
+        SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
     }
 
     control::~control()

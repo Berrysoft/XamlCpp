@@ -74,10 +74,21 @@ namespace xaml
         return RegisterClassEx(&cls);
     }
 
+    static HFONT s_default_font;
+
     void application::init_components()
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+        NONCLIENTMETRICS ncm;
+        ncm.cbSize = sizeof(ncm);
+        THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0));
+        s_default_font = CreateFontIndirect(&ncm.lfMessageFont);
+    }
+
+    HFONT application::__default_font() const
+    {
+        return s_default_font;
     }
 
     int application::run()

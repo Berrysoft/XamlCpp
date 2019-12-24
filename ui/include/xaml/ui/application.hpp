@@ -7,6 +7,10 @@
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/strings.hpp>
 
+#ifdef XAML_UI_WINDOWS
+#include <Windows.h>
+#endif // XAML_UI_WINDOWS
+
 namespace xaml
 {
     class application : public meta_class_impl<application>, public std::enable_shared_from_this<application>
@@ -29,7 +33,7 @@ namespace xaml
             }
         }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        application(char_t* lpCmdLine);
+        application(LPWSTR lpCmdLine);
 #endif // XAML_UI_WINDOWS
 
         void init_components();
@@ -43,9 +47,13 @@ namespace xaml
         static std::shared_ptr<application> init(int argc, char_t** argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        static std::shared_ptr<application> init(char_t* lpCmdLine);
+        static std::shared_ptr<application> init(LPWSTR lpCmdLine);
 #endif // XAML_UI_WINDOWS
         static std::shared_ptr<application> current();
+
+#ifdef XAML_UI_WINDOWS
+        HFONT __default_font() const;
+#endif // XAML_UI_WINDOWS
 
         static void register_class() noexcept
         {
