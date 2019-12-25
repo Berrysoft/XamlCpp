@@ -12,13 +12,28 @@
 
 namespace xaml
 {
+#ifdef XAML_UI_GTK3
+    struct __cairo_fill_t
+    {
+        color fill;
+    };
+
+    struct __cairo_stroke_t
+    {
+        color stroke;
+        double width;
+    };
+#endif
+
     class drawing_brush
     {
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::SolidBrush;
-        using native_handle_type = native_object_type const*;
+#else
+        using native_object_type = __cairo_fill_t;
 #endif // XAML_UI_WINDOWS
+        using native_handle_type = native_object_type const*;
 
     private:
         native_object_type m_object;
@@ -29,12 +44,7 @@ namespace xaml
         color get_color() const;
         void set_color(color value);
 
-#ifdef XAML_UI_WINDOWS
-        constexpr native_handle_type get_handle() const noexcept
-        {
-            return &m_object;
-        }
-#endif // XAML_UI_WINDOWS
+        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
 
     class drawing_pen
@@ -42,8 +52,10 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Pen;
-        using native_handle_type = native_object_type const*;
+#else
+        using native_object_type = __cairo_stroke_t;
 #endif // XAML_UI_WINDOWS
+        using native_handle_type = native_object_type const*;
 
     private:
         native_object_type m_object;
@@ -57,12 +69,7 @@ namespace xaml
         double get_width() const;
         void set_width(double value);
 
-#ifdef XAML_UI_WINDOWS
-        constexpr native_handle_type get_handle() const noexcept
-        {
-            return &m_object;
-        }
-#endif // XAML_UI_WINDOWS
+        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
 
     class drawing_context
@@ -81,6 +88,15 @@ namespace xaml
         constexpr native_handle_type get_handle() const noexcept { return m_handle; }
 
         drawing_context(native_handle_type handle);
+
+#ifdef XAML_UI_GTK3
+    private:
+        void set_pen(drawing_pen const& pen);
+        void set_brush(drawing_brush const& brush);
+        void path_arc(rectangle const& region, double start_angle, double end_angle);
+        void path_rect(rectangle const& rect);
+        void path_round_rect(rectangle const& rect, size round);
+#endif // XAML_UI_GTK3
 
     public:
         void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
@@ -115,6 +131,11 @@ namespace xaml
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_GTK3
+    private:
+        static gboolean on_draw(GtkWidget* widget, cairo_t* cr, gpointer data);
+#endif // XAML_UI_GTK3
 
     public:
         EVENT(redraw, canvas const&, drawing_context&)

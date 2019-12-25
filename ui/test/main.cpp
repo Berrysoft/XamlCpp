@@ -40,7 +40,10 @@ int main(int argc, char** argv)
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
     btn->set_text(U("Hello"));
-    btn->add_click([wnd, btn](button const&) { msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info); btn->set_text(U("Hello world!")); });
+    btn->add_click([wnd, btn](button const&) {
+        msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info);
+        btn->set_text(U("Hello world!"));
+    });
     g->add_child(btn);
     grid::set_column(btn, 1);
     grid::set_row(btn, 1);

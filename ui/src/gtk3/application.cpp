@@ -15,4 +15,8 @@ namespace xaml
         gtk_main();
         return 0;
     }
+
+    application::~application()
+    {
+    }
 } // namespace xaml

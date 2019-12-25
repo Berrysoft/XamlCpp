@@ -15,14 +15,14 @@ namespace xaml
                 gtk_container_add(GTK_CONTAINER(get_parent()->get_handle()), get_handle());
         }
         rectangle real = region - get_margin();
-        vector<double> columns = get_real_length(m_columns, real.width);
-        vector<double> rows = get_real_length(m_rows, real.height);
+        vector<tuple<double, double>> columns = get_real_length(m_columns, real.width);
+        vector<tuple<double, double>> rows = get_real_length(m_rows, real.height);
         for (auto& c : m_children)
         {
             auto index = m_indecies[c];
-            double subx = (index.column > 0 ? columns[index.column - 1] : 0) + real.x;
-            double suby = (index.row > 0 ? rows[index.row - 1] : 0) + real.y;
-            rectangle subregion = { subx, suby, columns[index.column], rows[index.row] };
+            double subx = get<1>(columns[index.column]) + real.x;
+            double suby = get<1>(rows[index.row]) + real.y;
+            rectangle subregion = { subx, suby, get<0>(columns[index.column]), get<0>(rows[index.row]) };
             c->__draw(subregion);
             rectangle subreal = subregion - c->get_margin();
             if (new_draw)
