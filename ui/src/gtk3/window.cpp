@@ -81,7 +81,7 @@ namespace xaml
         window* self = (window*)data;
         self->__draw({});
         self->resizing = false;
-        return false;
+        return FALSE;
     }
 
     void window::on_destroy(GtkWidget* w, gpointer arg)
