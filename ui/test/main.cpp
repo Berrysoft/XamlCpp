@@ -1,6 +1,7 @@
 #include <iostream>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
+#include <xaml/ui/canvas.hpp>
 #include <xaml/ui/grid.hpp>
 #include <xaml/ui/meta.hpp>
 #include <xaml/ui/msgbox.hpp>
@@ -26,7 +27,6 @@ int main(int argc, char** argv)
     wnd->set_title(U("Test Window"));
     wnd->set_location({ 100, 100 });
     wnd->set_size({ 800, 600 });
-    wnd->set_resizable(false);
     auto g = make_shared<grid>();
     g->add_column({ 1, grid_layout::star });
     g->add_column({ 1, grid_layout::star });
@@ -43,6 +43,16 @@ int main(int argc, char** argv)
     g->add_child(btn);
     grid::set_column(btn, 1);
     grid::set_row(btn, 1);
+    auto cv = make_shared<canvas>();
+    cv->set_margin({ 10, 10, 10, 10 });
+    cv->add_redraw([](canvas const& cv, drawing_context& dc) {
+        auto cx = cv.get_width() / 2;
+        auto cy = cv.get_height() / 2;
+        dc.draw_ellipse({ cx - 50, cy - 50, 100, 100 });
+    });
+    g->add_child(cv);
+    grid::set_column(cv, 0);
+    grid::set_row(cv, 2);
     wnd->show();
     return app->run();
 }

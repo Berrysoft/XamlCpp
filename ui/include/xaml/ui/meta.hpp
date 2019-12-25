@@ -3,6 +3,7 @@
 
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
+#include <xaml/ui/canvas.hpp>
 #include <xaml/ui/grid.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -15,7 +16,8 @@ namespace xaml
             application,
             window,
             grid,
-            button>();
+            button,
+            canvas>();
     }
 } // namespace xaml
 

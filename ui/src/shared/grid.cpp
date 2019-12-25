@@ -4,12 +4,12 @@ using namespace std;
 
 namespace xaml
 {
-    vector<double> get_real_length(vector<grid_length> const& lengths, double total)
+    vector<tuple<double, double>> get_real_length(vector<grid_length> const& lengths, double total)
     {
-        vector<double> result(lengths.size());
+        vector<tuple<double, double>> result(lengths.size());
         if (result.empty())
         {
-            result.push_back(total);
+            result.push_back(make_tuple(0, total));
             return result;
         }
         double total_star = 0;
@@ -19,7 +19,7 @@ namespace xaml
             switch (lengths[i].layout)
             {
             case grid_layout::abs:
-                result[i] = lengths[i].value;
+                get<0>(result[i]) = lengths[i].value;
                 total_remain -= lengths[i].value;
                 break;
             case grid_layout::star:
@@ -31,7 +31,11 @@ namespace xaml
         {
             if (lengths[i].layout == grid_layout::star)
             {
-                result[i] = total_remain * lengths[i].value / total_star;
+                get<0>(result[i]) = total_remain * lengths[i].value / total_star;
+            }
+            if (i)
+            {
+                get<1>(result[i]) = get<0>(result[i - 1]) + get<1>(result[i - 1]);
             }
         }
         return result;

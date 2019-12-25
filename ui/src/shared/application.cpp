@@ -6,7 +6,7 @@ namespace xaml
 {
     shared_ptr<application> s_current;
 
-    shared_ptr<application> application::init(int argc, char** argv)
+    shared_ptr<application> application::init(int argc, char_t** argv)
     {
         s_current = shared_ptr<application>(new application(argc, argv));
         s_current->init_components();
