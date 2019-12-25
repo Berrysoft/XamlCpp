@@ -27,8 +27,9 @@ namespace xaml
     struct __cairo_font_t
     {
         string_t font_family;
-        font_weight weight;
+        double size;
         bool italic;
+        bool bold;
     };
 #endif
 
@@ -93,16 +94,16 @@ namespace xaml
         native_object_type m_object;
 
     public:
-        drawing_font(string_view_t family, font_weight weight, bool italic);
+        drawing_font(string_view_t family, double size, bool italic, bool bold);
 
         string_view_t get_font_family() const;
         void set_font_family(string_view_t value);
 
-        font_weight get_weight() const;
-        void set_weight(font_weight value);
+        double get_size() const;
 
         bool get_italic() const;
-        void set_italic(bool value);
+
+        bool get_bold() const;
 
         constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };

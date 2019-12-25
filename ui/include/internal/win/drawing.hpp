@@ -12,6 +12,11 @@ namespace xaml
 
     inline Gdiplus::PointF get_PointF(point p) { return { (float)p.x, (float)p.y }; }
     inline Gdiplus::RectF get_RectF(rectangle const& r) { return { (float)r.x, (float)r.y, (float)r.width, (float)r.height }; }
+
+    constexpr INT get_font_style(bool italic, bool bold)
+    {
+        return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
+    }
 } // namespace xaml
 
 #endif // !XAML_UI_INTERNAL_WINDOWS_DRAWING_HPP

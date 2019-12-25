@@ -21,7 +21,7 @@ namespace xaml
 
     void drawing_pen::set_width(double value) { m_object.width = value; }
 
-    drawing_font::drawing_font(string_view_t family, font_weight weight, bool italic) : m_object({ (string_t)family, weight, italic }) {}
+    drawing_font::drawing_font(string_view_t family, font_weight weight, double size, bool italic) : m_object({ (string_t)family, weight, size, italic }) {}
 
     string_view_t drawing_font::get_font_family() const { return m_object.font_family; }
 

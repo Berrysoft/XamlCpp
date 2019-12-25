@@ -53,6 +53,25 @@ namespace xaml
         m_object.SetWidth((float)value);
     }
 
+    drawing_font::drawing_font(string_view_t family, double size, bool italic, bool bold) : m_object(family.data(), size, get_font_style(italic, bold))
+    {
+    }
+
+    double drawing_font::get_size() const
+    {
+        return m_object.GetSize();
+    }
+
+    bool drawing_font::get_italic() const
+    {
+        return m_object.GetStyle() & FontStyleItalic;
+    }
+
+    bool drawing_font::get_bold() const
+    {
+        return m_object.GetStyle() & FontStyleBold;
+    }
+
     drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
     {
     }
@@ -90,6 +109,11 @@ namespace xaml
     void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
         m_handle->FillRectangle(brush.get_handle(), get_RectF(rect));
+    }
+
+    void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
+    {
+        m_handle->DrawString(str.data(), str.length(), font.get_handle(), get_PointF(p), brush.get_handle());
     }
 
     canvas::canvas() : common_control()
