@@ -76,5 +76,19 @@ namespace xaml
 
     constexpr bool operator==(color lhs, color rhs) { return (std::int32_t)lhs == (std::int32_t)rhs; }
     constexpr bool operator!=(color lhs, color rhs) { return !(lhs == rhs); }
+
+    enum class font_weight
+    {
+        unspecified,
+        thin,
+        extra_light,
+        light,
+        regular,
+        meduim,
+        semi_bold,
+        bold,
+        extra_bold,
+        heavy
+    };
 } // namespace xaml
 #endif // !XAML_UI_DRAWING_HPP

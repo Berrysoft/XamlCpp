@@ -1,5 +1,6 @@
 #include <cairo/cairo.h>
 #include <cmath>
+#include <internal/gtk3/drawing.hpp>
 #include <xaml/ui/canvas.hpp>
 
 namespace xaml
@@ -19,6 +20,20 @@ namespace xaml
     double drawing_pen::get_width() const { return m_object.width; }
 
     void drawing_pen::set_width(double value) { m_object.width = value; }
+
+    drawing_font::drawing_font(string_view_t family, font_weight weight, bool italic) : m_object({ (string_t)family, weight, italic }) {}
+
+    string_view_t drawing_font::get_font_family() const { return m_object.font_family; }
+
+    void drawing_font::set_font_family(string_view_t value) { m_object.font_family = (string_t)value; }
+
+    font_weight drawing_font::get_weight() const { return m_object.weight; }
+
+    void drawing_font::set_weight(font_weight value) { m_object.weight = value; }
+
+    bool drawing_font::get_italic() const { return m_object.italic; }
+
+    void drawing_font::set_italic(bool value) { m_object.italic = value; }
 
     drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
     {
@@ -124,6 +139,14 @@ namespace xaml
         path_round_rect(rect, round);
         set_brush(brush);
         cairo_stroke(m_handle);
+    }
+
+    void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
+    {
+        set_brush(brush);
+        cairo_select_font_face(m_handle, font.get_font_family().data(), font.get_italic() ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, get_font_weight(font.get_weight()));
+        cairo_move_to(m_handle, p.x, p.y);
+        cairo_show_text(m_handle, str.data());
     }
 
     canvas::canvas() : common_control() {}

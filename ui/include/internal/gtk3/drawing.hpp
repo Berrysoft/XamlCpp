@@ -20,6 +20,14 @@ namespace xaml
         int r = (int)round(request);
         return r < 1 ? 1 : r;
     }
+
+    constexpr cairo_font_weight_t get_font_weight(font_weight weight)
+    {
+        if ((std::int32_t)weight < (std::int32_t)font_weight::semi_bold)
+            return CAIRO_FONT_WEIGHT_NORMAL;
+        else
+            return CAIRO_FONT_WEIGHT_BOLD;
+    }
 } // namespace xaml
 
 #endif // !XAML_UI_INTERNAL_GTK3_DRAWING_HPP

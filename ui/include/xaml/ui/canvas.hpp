@@ -23,6 +23,13 @@ namespace xaml
         color stroke;
         double width;
     };
+
+    struct __cairo_font_t
+    {
+        string_t font_family;
+        font_weight weight;
+        bool italic;
+    };
 #endif
 
     class drawing_brush
@@ -30,9 +37,9 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::SolidBrush;
-#else
+#elif defined(XAML_UI_GTK3)
         using native_object_type = __cairo_fill_t;
-#endif // XAML_UI_WINDOWS
+#endif
         using native_handle_type = native_object_type const*;
 
     private:
@@ -52,9 +59,9 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Pen;
-#else
+#elif defined(XAML_UI_GTK3)
         using native_object_type = __cairo_stroke_t;
-#endif // XAML_UI_WINDOWS
+#endif
         using native_handle_type = native_object_type const*;
 
     private:
@@ -72,6 +79,34 @@ namespace xaml
         constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
 
+    class drawing_font
+    {
+    public:
+#ifdef XAML_UI_WINDOWS
+        using native_object_type = Gdiplus::Font;
+#elif defined(XAML_UI_GTK3)
+        using native_object_type = __cairo_font_t;
+#endif
+        using native_handle_type = native_object_type const*;
+
+    private:
+        native_object_type m_object;
+
+    public:
+        drawing_font(string_view_t family, font_weight weight, bool italic);
+
+        string_view_t get_font_family() const;
+        void set_font_family(string_view_t value);
+
+        font_weight get_weight() const;
+        void set_weight(font_weight value);
+
+        bool get_italic() const;
+        void set_italic(bool value);
+
+        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
+    };
+
     class drawing_context
     {
     public:
@@ -79,7 +114,7 @@ namespace xaml
         using native_handle_type = Gdiplus::Graphics*;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = cairo_t*;
-#endif // XAML_UI_WINDOWS
+#endif
 
     private:
         native_handle_type m_handle;
@@ -108,7 +143,7 @@ namespace xaml
         void fill_rect(drawing_brush const& brush, rectangle const& rect);
         void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
         void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
-        void draw_string(drawing_brush const& brush, point p, string_view_t str);
+        void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
     class canvas : public common_control, public meta_class_impl<canvas>
