@@ -4,53 +4,97 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/canvas.hpp>
+#include <xaml/ui/window.hpp>
 
 using namespace std;
+using namespace Gdiplus;
 
 namespace xaml
 {
-    void drawing_context::draw_arc(rectangle const& region, double start_angle, double end_angle)
+    drawing_brush::drawing_brush(color c) : m_object(Color((int32_t)c))
     {
-        double a = region.width / 2;
-        double b = region.height / 2;
-        double ct1 = cos(start_angle);
-        double st1 = sin(start_angle);
-        double ct2 = cos(end_angle);
-        double st2 = sin(end_angle);
-        double r1 = a * b / sqrt(b * b * ct1 * ct1 + a * a * st1 * st1);
-        double r2 = a * b / sqrt(b * b * ct2 * ct2 + a * a * st2 * st2);
-        double cpx = region.x + region.width / 2;
-        double cpy = region.y + region.height / 2;
-        THROW_IF_WIN32_BOOL_FALSE(Arc(m_handle, region.x, region.y, region.x + region.width, region.y + region.height, cpx + r1 * ct1, cpy + r1 * st1, cpx + r2 * ct2, cpy + r2 * st2));
     }
 
-    void drawing_context::draw_ellipse(rectangle const& region)
+    color drawing_brush::get_color() const
     {
-        THROW_IF_WIN32_BOOL_FALSE(Ellipse(m_handle, region.x, region.y, region.x + region.width, region.y + region.height));
+        Color c;
+        m_object.GetColor(&c);
+        return color::from_argb(c.GetValue());
     }
 
-    void drawing_context::draw_line(point startp, point endp)
+    void drawing_brush::set_color(color value)
     {
-        THROW_IF_WIN32_BOOL_FALSE(MoveToEx(m_handle, startp.x, startp.y, NULL));
-        THROW_IF_WIN32_BOOL_FALSE(LineTo(m_handle, endp.x, endp.y));
+        m_object.SetColor(Color((int32_t)value));
     }
 
-    void drawing_context::draw_rect(rectangle const& rect)
+    drawing_pen::drawing_pen(color c, double width) : m_object(Color((int32_t)c), (float)width)
     {
-        THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_handle, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height));
     }
 
-    void drawing_context::draw_round_rect(rectangle const& rect, size round)
+    color drawing_pen::get_color() const
     {
-        THROW_IF_WIN32_BOOL_FALSE(RoundRect(m_handle, rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, round.width, round.height));
+        Color c;
+        m_object.GetColor(&c);
+        return color::from_argb(c.GetValue());
     }
 
-    void drawing_context::draw_string(point p, string_view_t str)
+    void drawing_pen::set_color(color value)
     {
-        THROW_IF_WIN32_BOOL_FALSE(TextOut(m_handle, p.x, p.y, str.data(), str.size()));
+        m_object.SetColor(Color((int32_t)value));
     }
 
-    canvas::canvas() : common_control() {}
+    double drawing_pen::get_width() const
+    {
+        return m_object.GetWidth();
+    }
+
+    void drawing_pen::set_width(double value)
+    {
+        m_object.SetWidth((float)value);
+    }
+
+    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
+    {
+    }
+
+    void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
+    {
+        m_handle->DrawArc(pen.get_handle(), get_RectF(region), start_angle, end_angle);
+    }
+
+    void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
+    {
+        m_handle->FillPie(brush.get_handle(), get_RectF(region), start_angle, end_angle);
+    }
+
+    void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
+    {
+        m_handle->DrawEllipse(pen.get_handle(), get_RectF(region));
+    }
+
+    void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
+    {
+        m_handle->FillEllipse(brush.get_handle(), get_RectF(region));
+    }
+
+    void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
+    {
+        m_handle->DrawLine(pen.get_handle(), get_PointF(startp), get_PointF(endp));
+    }
+
+    void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
+    {
+        m_handle->DrawRectangle(pen.get_handle(), get_RectF(rect));
+    }
+
+    void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
+    {
+        m_handle->FillRectangle(brush.get_handle(), get_RectF(rect));
+    }
+
+    canvas::canvas() : common_control()
+    {
+    }
 
     canvas::~canvas() {}
 
@@ -62,11 +106,16 @@ namespace xaml
             {
             case WM_PAINT:
             {
-                PAINTSTRUCT ps;
-                auto hDC = wil::BeginPaint(get_handle(), &ps);
-                drawing_context dc{ m_store_dc.get() };
+                rectangle region = m_real_region;
+                THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), -1, -1, region.width + 1, region.height + 1));
+                Graphics g{ m_store_dc.get() };
+                g.SetPageUnit(UnitPixel);
+                drawing_context dc{ &g };
                 m_redraw(*this, dc);
-                BitBlt(hDC.get(), m_real_region.x, m_real_region.y, m_real_region.width, m_real_region.height, m_store_dc.get(), 0, 0, SRCCOPY);
+                if (auto wnd = __get_window(get_handle()).lock())
+                {
+                    reinterpret_pointer_cast<window>(wnd)->__copy_hdc(m_real_region, m_store_dc.get());
+                }
             }
             }
         }
@@ -81,6 +130,5 @@ namespace xaml
         m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
         wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), m_real_region.width, m_real_region.height) };
         wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
-        THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle(), nullptr, TRUE));
     }
 } // namespace xaml

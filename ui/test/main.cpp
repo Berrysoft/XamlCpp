@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
@@ -48,7 +49,9 @@ int main(int argc, char** argv)
     cv->add_redraw([](canvas const& cv, drawing_context& dc) {
         auto cx = cv.get_width() / 2;
         auto cy = cv.get_height() / 2;
-        dc.draw_ellipse({ cx - 50, cy - 50, 100, 100 });
+        auto r = (min)(cx, cy) - 2;
+        drawing_pen pen{ { 255, 0, 0, 0 } };
+        dc.draw_ellipse(pen, { cx - r, cy - r, r * 2, r * 2 });
     });
     g->add_child(cv);
     grid::set_column(cv, 0);

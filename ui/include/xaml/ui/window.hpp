@@ -5,10 +5,15 @@
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/container.hpp>
 
+#ifdef XAML_UI_WINDOWS
+#include <wil/resource.h>
+#endif // XAML_UI_WINDOWS
+
 namespace xaml
 {
 #ifdef XAML_UI_WINDOWS
-    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+    LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+    std::weak_ptr<control> __get_window(HWND hWnd);
 #endif // XAML_UI_WINDOWS
 
     class window : public container, public meta_class_impl<window>
@@ -18,8 +23,12 @@ namespace xaml
         static constexpr std::string_view class_name = "window";
 
 #ifdef XAML_UI_WINDOWS
+    private:
+        wil::unique_hdc_window m_store_dc{ nullptr };
+
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        void __copy_hdc(rectangle const& region, HDC hDC);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3

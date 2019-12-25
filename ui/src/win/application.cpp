@@ -1,13 +1,16 @@
 #pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 #include <Windows.h>
+#include <gdiplus.h>
 #include <shellapi.h>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
+using namespace Gdiplus;
 
 namespace xaml
 {
@@ -52,11 +55,11 @@ namespace xaml
     {
         WNDCLASSEX cls = {};
         cls.cbSize = sizeof(WNDCLASSEX);
-        cls.lpfnWndProc = wnd_callback;
+        cls.lpfnWndProc = __wnd_callback;
         cls.cbClsExtra = 0;
         cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
         cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        cls.hbrBackground = static_cast<HBRUSH>(GetStockObject(WHITE_BRUSH));
+        cls.hbrBackground = GetStockBrush(WHITE_BRUSH);
         cls.lpszClassName = U("XamlWindow");
         cls.hInstance = GetModuleHandle(NULL);
         return RegisterClassEx(&cls);
@@ -72,6 +75,13 @@ namespace xaml
         ncm.cbSize = sizeof(ncm);
         THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0));
         s_default_font = CreateFontIndirect(&ncm.lfMessageFont);
+        GdiplusStartupInput gdiplusStartupInput;
+        GdiplusStartup(&m_gdiplus_oken, &gdiplusStartupInput, NULL);
+    }
+
+    application::~application()
+    {
+        GdiplusShutdown(m_gdiplus_oken);
     }
 
     HFONT application::__default_font() const

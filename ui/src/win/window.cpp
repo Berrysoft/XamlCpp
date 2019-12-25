@@ -1,6 +1,7 @@
 #include <internal/win/drawing.hpp>
 #include <unordered_map>
 #include <wil/result_macros.h>
+#include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -10,12 +11,17 @@ namespace xaml
 {
     static unordered_map<HWND, weak_ptr<control>> window_map;
 
-    LRESULT CALLBACK wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd].lock();
         auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
+    }
+
+    weak_ptr<control> __get_window(HWND hWnd)
+    {
+        return window_map[hWnd];
     }
 
     window::window() : container(), m_resizable(true)
@@ -49,10 +55,16 @@ namespace xaml
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
         draw_resizable();
         draw_title();
+        auto wnd_dc = wil::GetDC(get_handle());
+        m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
+        rectangle cr = get_client_region();
+        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), cr.width, cr.height) };
+        wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
         if (get_child())
         {
             draw_child();
         }
+        InvalidateRect(get_handle(), nullptr, FALSE);
     }
 
     void window::draw_title()
@@ -89,8 +101,15 @@ namespace xaml
         return get_rect(r);
     }
 
+    void window::__copy_hdc(rectangle const& region, HDC hDC)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(BitBlt(m_store_dc.get(), region.x, region.y, region.width, region.height, hDC, 0, 0, SRCCOPY));
+    }
+
     optional<LRESULT> window::__wnd_proc(window_message const& msg)
     {
+        PAINTSTRUCT ps;
+        wil::unique_hdc_paint hDC;
         switch (msg.Msg)
         {
         case WM_SIZE:
@@ -106,6 +125,16 @@ namespace xaml
                 __draw({});
                 resizing = false;
             }
+            break;
+        }
+        case WM_PAINT:
+        {
+            hDC = wil::BeginPaint(get_handle(), &ps);
+            rectangle region = get_client_region();
+            THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), region.x - 1, region.y - 1, region.width + 1, region.height + 1));
+            auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), region.x, region.y, region.width, region.height, m_store_dc.get(), 0, 0, SRCCOPY));
+            return result;
         }
         case WM_CLOSE:
         {
@@ -121,9 +150,6 @@ namespace xaml
             application::current()->wnd_num--;
             break;
         }
-        if (get_child())
-            return get_child()->__wnd_proc(msg);
-        else
-            return nullopt;
+        return get_child() ? get_child()->__wnd_proc(msg) : nullopt;
     }
 } // namespace xaml

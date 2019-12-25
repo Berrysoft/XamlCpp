@@ -5,16 +5,71 @@
 #include <xaml/ui/drawing.hpp>
 
 #ifdef XAML_UI_WINDOWS
+#include <gdiplus.h>
+#include <memory>
 #include <wil/resource.h>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
 {
+    class drawing_brush
+    {
+    public:
+#ifdef XAML_UI_WINDOWS
+        using native_object_type = Gdiplus::SolidBrush;
+        using native_handle_type = native_object_type const*;
+#endif // XAML_UI_WINDOWS
+
+    private:
+        native_object_type m_object;
+
+    public:
+        drawing_brush(color c);
+
+        color get_color() const;
+        void set_color(color value);
+
+#ifdef XAML_UI_WINDOWS
+        constexpr native_handle_type get_handle() const noexcept
+        {
+            return &m_object;
+        }
+#endif // XAML_UI_WINDOWS
+    };
+
+    class drawing_pen
+    {
+    public:
+#ifdef XAML_UI_WINDOWS
+        using native_object_type = Gdiplus::Pen;
+        using native_handle_type = native_object_type const*;
+#endif // XAML_UI_WINDOWS
+
+    private:
+        native_object_type m_object;
+
+    public:
+        drawing_pen(color c, double width = 1.0);
+
+        color get_color() const;
+        void set_color(color value);
+
+        double get_width() const;
+        void set_width(double value);
+
+#ifdef XAML_UI_WINDOWS
+        constexpr native_handle_type get_handle() const noexcept
+        {
+            return &m_object;
+        }
+#endif // XAML_UI_WINDOWS
+    };
+
     class drawing_context
     {
     public:
 #ifdef XAML_UI_WINDOWS
-        using native_handle_type = HDC;
+        using native_handle_type = Gdiplus::Graphics*;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = cairo_t*;
 #endif // XAML_UI_WINDOWS
@@ -25,15 +80,19 @@ namespace xaml
     public:
         constexpr native_handle_type get_handle() const noexcept { return m_handle; }
 
-        drawing_context(native_handle_type handle) : m_handle(handle) {}
+        drawing_context(native_handle_type handle);
 
     public:
-        void draw_arc(rectangle const& region, double start_angle, double end_angle);
-        void draw_ellipse(rectangle const& region);
-        void draw_line(point startp, point endp);
-        void draw_rect(rectangle const& rect);
-        void draw_round_rect(rectangle const& rect, size round);
-        void draw_string(point p, string_view_t str);
+        void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
+        void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle);
+        void draw_ellipse(drawing_pen const& pen, rectangle const& region);
+        void fill_ellipse(drawing_brush const& brush, rectangle const& region);
+        void draw_line(drawing_pen const& pen, point startp, point endp);
+        void draw_rect(drawing_pen const& pen, rectangle const& rect);
+        void fill_rect(drawing_brush const& brush, rectangle const& rect);
+        void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
+        void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
+        void draw_string(drawing_brush const& brush, point p, string_view_t str);
     };
 
     class canvas : public common_control, public meta_class_impl<canvas>

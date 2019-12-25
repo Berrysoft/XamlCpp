@@ -24,6 +24,11 @@ namespace xaml
         int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
 
+        #ifdef XAML_UI_WINDOWS
+        ULONG_PTR m_gdiplus_oken;
+#endif // XAML_UI_WINDOWS
+
+
     private:
         application(int argc, char_t** argv)
         {
@@ -39,7 +44,7 @@ namespace xaml
         void init_components();
 
     public:
-        virtual ~application() {}
+        virtual ~application();
 
         const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
         int run();
