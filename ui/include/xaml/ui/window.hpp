@@ -38,6 +38,12 @@ namespace xaml
         static gboolean on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_did_resize();
+        bool __on_should_close();
+#endif // XAML_UI_COCOA
+
     public:
         void __draw(rectangle const& region) override;
 

@@ -7,9 +7,13 @@ namespace xaml
 {
     button::button() : common_control()
     {
-        add_text_changed([this](button const&, string_view_t t) { if(get_handle()) draw_text(); });
+        add_text_changed([this](button const&, string_view_t) { if(get_handle()) draw_text(); });
         add_size_changed([this](control const&, size) { if(get_handle()) draw_size(); });
         add_is_default_changed([this](button const&, bool) { if (get_handle()) draw_default(); });
+    }
+
+    button::~button()
+    {
     }
 
     optional<LRESULT> button::__wnd_proc(window_message const& msg)
@@ -72,9 +76,5 @@ namespace xaml
         else
             style &= ~BS_DEFPUSHBUTTON;
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);
-    }
-
-    button::~button()
-    {
     }
 } // namespace xaml

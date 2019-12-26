@@ -26,6 +26,11 @@ namespace xaml
         static void on_clicked(GtkButton* button, gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_action();
+#endif // XAML_UI_COCOA
+
     public:
         void __draw(rectangle const& region) override;
 

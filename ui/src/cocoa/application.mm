@@ -1,6 +1,30 @@
-#import <Cocoa/Cocoa.h>
-#import <internal/cocoa/XamlWindow.AppDelegate.h>
+#import <internal/cocoa/global.h>
+
+#import <internal/cocoa/XamlApplicationDelegate.h>
 #include <xaml/ui/application.hpp>
+
+@implementation XamlApplicationDelegate : XamlDelegate
+
+- (id)init
+{
+    if (self = [super init])
+    {
+        // allocate and initialize window and stuff here ..
+    }
+    return self;
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification*)notification
+{
+    [NSApp activateIgnoringOtherApps:YES];
+}
+
+- (void)dealloc
+{
+    [super dealloc];
+}
+
+@end
 
 using namespace std;
 
@@ -25,7 +49,7 @@ namespace xaml
         [appMenu addItem:quitMenuItem];
         [appMenuItem setSubmenu:appMenu];
 
-        XamlAppDelegate* appDelegate = [[XamlAppDelegate new] autorelease];
+        XamlApplicationDelegate* appDelegate = [[[XamlApplicationDelegate alloc] initWithClassPointer:this] autorelease];
         [[NSApplication sharedApplication] setDelegate:appDelegate];
     }
 

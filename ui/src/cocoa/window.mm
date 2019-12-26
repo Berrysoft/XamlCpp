@@ -1,4 +1,6 @@
-#import <Cocoa/Cocoa.h>
+#import <internal/cocoa/global.h>
+
+#import <internal/cocoa/XamlWindowDelegate.h>
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -13,6 +15,20 @@ typedef enum NSWindowStyleMask : NSUInteger
     NSWindowStyleMaskResizable = 1 << 3
 } NSWindowStyleMask;
 #endif // XAML_UI_USE_GNUSTEP
+
+@implementation XamlWindowDelegate : XamlDelegate
+- (void)windowDidResize:(NSNotification*)notification
+{
+    xaml::window* window = (xaml::window*)self->classPointer;
+    window->__on_did_resize();
+}
+
+- (BOOL)windowShouldClose:(NSWindow*)sender
+{
+    xaml::window* window = (xaml::window*)self->classPointer;
+    return window->__on_should_close() ? YES : NO;
+}
+@end
 
 using namespace std;
 
@@ -41,6 +57,8 @@ namespace xaml
                           styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable
                             backing:NSBackingStoreBuffered
                               defer:false];
+            XamlWindowDelegate* delegate = [[[XamlWindowDelegate alloc] initWithClassPointer:this] autorelease];
+            window.delegate = delegate;
             set_handle(window);
             application::current()->wnd_num++;
         }
@@ -97,5 +115,22 @@ namespace xaml
         NSWindow* window = (NSWindow*)get_handle();
         NSRect frame = [[window contentView] frame];
         return get_rect(frame);
+    }
+
+    void window::__on_did_resize()
+    {
+        NSWindow* window = (NSWindow*)get_handle();
+        NSRect frame = window.frame;
+        resizing = true;
+        set_size(xaml::get_size(frame.size));
+        __draw({});
+        resizing = false;
+    }
+
+    bool window::__on_should_close()
+    {
+        bool handled;
+        m_closing(*this, handled);
+        return !handled;
     }
 }

@@ -156,10 +156,24 @@ namespace xaml
     {
     public:
         common_control() : control() {}
-        virtual ~common_control() override {}
+        virtual ~common_control() override;
 
         bool is_container() const override final { return false; }
         bool is_multicontainer() const override final { return false; }
+
+#ifdef XAML_UI_COCOA
+    public:
+        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
+
+    private:
+        __native_delegate_type m_delegate;
+
+    public:
+        constexpr __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
+
+    protected:
+        void __set_delegate(__native_delegate_type value) { m_delegate = value; }
+#endif // XAML_UI_COCOA
     };
 
 #define ADD_COMMON_CONTROL_MEMBERS() ADD_CONTROL_MEMBERS()
