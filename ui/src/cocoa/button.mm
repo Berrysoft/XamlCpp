@@ -6,6 +6,7 @@
 
 #ifdef XAML_UI_USE_GNUSTEP
 constexpr NSBezelStyle NSBezelStyleRounded = NSRoundedBezelStyle;
+constexpr NSBezelStyle NSBezelStyleRoundRect = NSRoundRectBezelStyle;
 #endif // XAML_UI_USE_GNUSTEP
 
 @implementation XamlButtonDelegate : XamlDelegate
@@ -49,9 +50,11 @@ namespace xaml
         }
         rectangle real = region - get_margin();
         NSButton* button = (NSButton*)get_handle();
-        [button setBezelStyle:NSBezelStyleRounded];
+        [button setBezelStyle:NSBezelStyleRoundRect];
+        NSWindow* window = (NSWindow*)get_parent()->get_handle();
+        NSRect parent_frame = [window.contentView frame];
         NSRect frame = button.frame;
-        frame.origin = { real.x, real.y };
+        frame.origin = { real.x, parent_frame.size.height - real.height - real.y };
         button.frame = frame;
         set_size({ real.width, real.height });
         draw_text();

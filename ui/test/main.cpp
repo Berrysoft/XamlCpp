@@ -46,7 +46,7 @@ int main(int argc, char** argv)
     });
     g->add_child(btn);
     grid::set_column(btn, 1);
-    grid::set_row(btn, 1);
+    grid::set_row(btn, 0);
     auto cv = make_shared<canvas>();
     cv->set_margin({ 10, 10, 10, 10 });
     cv->add_redraw([](canvas const& cv, drawing_context& dc) {

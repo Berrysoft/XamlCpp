@@ -118,7 +118,7 @@ namespace xaml
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = drawing_t*;
 #elif defined(XAML_UI_COCOA)
-        using native_handle_type = OBJC_OBJECT(CGContext);
+        using native_handle_type = OBJC_OBJECT(NSGraphicsContext);
 #endif
 
     private:

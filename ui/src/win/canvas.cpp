@@ -116,9 +116,7 @@ namespace xaml
         m_handle->DrawString(str.data(), str.length(), font.get_handle(), get_PointF(p), brush.get_handle());
     }
 
-    canvas::canvas() : common_control()
-    {
-    }
+    canvas::canvas() : common_control() {}
 
     canvas::~canvas() {}
 

@@ -17,8 +17,8 @@ namespace xaml
         vector<monitor> ms;
         for (NSScreen* screen in [NSScreen screens])
         {
-            NSRect frame = [screen frame];
-            NSRect vframe = [screen visibleFrame];
+            NSRect frame = screen.frame;
+            NSRect vframe = screen.visibleFrame;
             ms.push_back({ get_rect(frame), get_rect(vframe) });
         }
         return ms;
