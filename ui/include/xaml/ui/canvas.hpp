@@ -8,23 +8,25 @@
 #include <gdiplus.h>
 #include <memory>
 #include <wil/resource.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
 {
-#ifdef XAML_UI_GTK3
-    struct __cairo_fill_t
+#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+    struct __drawing_fill_t
     {
         color fill;
     };
 
-    struct __cairo_stroke_t
+    struct __drawing_stroke_t
     {
         color stroke;
         double width;
     };
 
-    struct __cairo_font_t
+    struct __drawing_font_t
     {
         string_t font_family;
         double size;
@@ -38,8 +40,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::SolidBrush;
-#elif defined(XAML_UI_GTK3)
-        using native_object_type = __cairo_fill_t;
+#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+        using native_object_type = __drawing_fill_t;
 #endif
         using native_handle_type = native_object_type const*;
 
@@ -60,8 +62,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Pen;
-#elif defined(XAML_UI_GTK3)
-        using native_object_type = __cairo_stroke_t;
+#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+        using native_object_type = __drawing_stroke_t;
 #endif
         using native_handle_type = native_object_type const*;
 
@@ -85,8 +87,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Font;
-#elif defined(XAML_UI_GTK3)
-        using native_object_type = __cairo_font_t;
+#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+        using native_object_type = __drawing_font_t;
 #endif
         using native_handle_type = native_object_type const*;
 
@@ -114,7 +116,9 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = Gdiplus::Graphics*;
 #elif defined(XAML_UI_GTK3)
-        using native_handle_type = cairo_t*;
+        using native_handle_type = drawing_t*;
+#elif defined(XAML_UI_COCOA)
+        using native_handle_type = OBJC_OBJECT(CGContext);
 #endif
 
     private:
@@ -170,7 +174,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static gboolean on_draw(GtkWidget* widget, cairo_t* cr, gpointer data);
+        static gboolean on_draw(GtkWidget* widget, drawing_t* cr, gpointer data);
 #endif // XAML_UI_GTK3
 
     public:

@@ -18,20 +18,25 @@ namespace xaml
         id appMenu = [[NSMenu new] autorelease];
         id appName = [[NSProcessInfo processInfo] processName];
         id quitTitle = [@"Quit " stringByAppendingString:appName];
-        id quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
-                                                      action:@selector(terminate:)
-                                               keyEquivalent:@"q"] autorelease];
+        id quitMenuItem = [[[NSMenuItem alloc]
+            initWithTitle:quitTitle
+                   action:@selector(terminate:)
+            keyEquivalent:@"q"] autorelease];
         [appMenu addItem:quitMenuItem];
         [appMenuItem setSubmenu:appMenu];
 
-        XamlAppDelegate* appDelegate = [[[XamlAppDelegate alloc] init] autorelease];
-        NSApplication* application = [NSApplication sharedApplication];
-        [application setDelegate:appDelegate];
+        XamlAppDelegate* appDelegate = [[XamlAppDelegate new] autorelease];
+        [[NSApplication sharedApplication] setDelegate:appDelegate];
     }
 
     int application::run()
     {
         [NSApp run];
         return 0;
+    }
+
+    application::~application()
+    {
+        [NSApp terminate:nil];
     }
 }
