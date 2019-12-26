@@ -70,7 +70,7 @@ namespace xaml
             NSRect frame = [window frame];
             frame.size = { fw, fh };
             frame.origin.x = (CGFloat)get_x();
-            frame.origin.y = -frame.size.height - (CGFloat)get_y();
+            frame.origin.y = (CGFloat)get_y();
             [window setFrame:frame display:YES];
         }
         draw_title();

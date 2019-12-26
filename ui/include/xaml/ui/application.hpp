@@ -24,10 +24,9 @@ namespace xaml
         int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
 
-        #ifdef XAML_UI_WINDOWS
+#ifdef XAML_UI_WINDOWS
         ULONG_PTR m_gdiplus_oken;
 #endif // XAML_UI_WINDOWS
-
 
     private:
         application(int argc, char_t** argv)
