@@ -24,7 +24,7 @@ namespace xaml
         case msgbox_style::info:
             return NSAlertStyleInformational;
         default:
-            return NSCriticalAlertStyle;
+            return NSAlertStyleCritical;
         }
     }
 

@@ -66,6 +66,7 @@ namespace xaml
         NSButton* button = (NSButton*)get_handle();
         NSString* ns_title = [[NSString stringWithUTF8String:m_text.c_str()] autorelease];
         button.title = ns_title;
+        NSLog(@"Here");
     }
 
     void button::draw_size()
@@ -86,7 +87,7 @@ namespace xaml
         }
         else
         {
-            button.keyEquivalent = nil;
+            button.keyEquivalent = @"";
             [button highlight:NO];
         }
     }

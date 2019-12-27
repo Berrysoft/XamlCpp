@@ -45,6 +45,7 @@ namespace xaml
     window::~window()
     {
         [(NSWindow*)get_handle() close];
+        [((NSWindow*)get_handle()).delegate release];
     }
 
     void window::__draw(rectangle const& region)
@@ -56,8 +57,8 @@ namespace xaml
                 initWithContentRect:frame
                           styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable
                             backing:NSBackingStoreBuffered
-                              defer:false];
-            XamlWindowDelegate* delegate = [[[XamlWindowDelegate alloc] initWithClassPointer:this] autorelease];
+                              defer:NO];
+            XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
             window.delegate = delegate;
             set_handle(window);
             application::current()->wnd_num++;
@@ -65,6 +66,7 @@ namespace xaml
         NSWindow* window = (NSWindow*)get_handle();
         if (!resizing)
         {
+            resizing = true;
             CGFloat fw = (CGFloat)get_width();
             CGFloat fh = (CGFloat)get_height();
             NSRect frame = [window frame];
@@ -74,6 +76,7 @@ namespace xaml
             NSRect screen_frame = screen.visibleFrame;
             frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
             [window setFrame:frame display:YES];
+            resizing = false;
         }
         draw_title();
         if (get_child())
@@ -81,7 +84,6 @@ namespace xaml
             draw_child();
         }
         draw_resizable();
-        [window makeKeyAndOrderFront:nil];
     }
 
     void window::draw_title()
@@ -110,6 +112,8 @@ namespace xaml
     void window::show()
     {
         __draw({});
+        NSWindow* window = (NSWindow*)get_handle();
+        [window makeKeyAndOrderFront:nil];
     }
 
     rectangle window::get_client_region() const
@@ -123,10 +127,13 @@ namespace xaml
     {
         NSWindow* window = (NSWindow*)get_handle();
         NSRect frame = window.frame;
-        resizing = true;
-        set_size(xaml::get_size(frame.size));
-        __draw({});
-        resizing = false;
+        if (!resizing)
+        {
+            resizing = true;
+            set_size(xaml::get_size(frame.size));
+            __draw({});
+            resizing = false;
+        }
     }
 
     bool window::__on_should_close()

@@ -19,7 +19,10 @@ namespace xaml
             double subx = get<1>(columns[index.column]) + real.x;
             double suby = get<1>(rows[index.row]) + real.y;
             c->__draw({ subx, suby, get<0>(columns[index.column]), get<0>(rows[index.row]) });
-            [window.contentView addSubview:(NSView*)c->get_handle()];
+            if (c->get_handle() && c->get_handle() != get_handle())
+            {
+                [window.contentView addSubview:(NSView*)c->get_handle()];
+            }
         }
     }
 }

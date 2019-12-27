@@ -39,8 +39,10 @@ namespace xaml
     {
         [NSAutoreleasePool new];
         [NSApplication sharedApplication];
-
-        XamlApplicationDelegate* appDelegate = [[[XamlApplicationDelegate alloc] initWithClassPointer:this] autorelease];
+#ifndef XAML_UI_USE_GNUSTEP
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+#endif // !XAML_UI_USE_GNUSTEP
+        XamlApplicationDelegate* appDelegate = [[XamlApplicationDelegate alloc] initWithClassPointer:this];
         [[NSApplication sharedApplication] setDelegate:appDelegate];
     }
 
@@ -53,5 +55,6 @@ namespace xaml
     application::~application()
     {
         [NSApp terminate:nil];
+        [[NSApplication sharedApplication].delegate release];
     }
 }
