@@ -74,7 +74,7 @@ namespace xaml
 
 #ifdef XAML_UI_COCOA
     public:
-        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
+        using __native_delegate_type = OBJC_INTERNAL_OBJECT(XamlDelegate);
 
     private:
         __native_delegate_type m_delegate;

@@ -1,5 +1,4 @@
 #include <functional>
-#import <internal/cocoa/global.h>
 #include <xaml/ui/canvas.hpp>
 
 using namespace std;

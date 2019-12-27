@@ -1,5 +1,3 @@
-#import <internal/cocoa/global.h>
-
 #import <internal/cocoa/XamlButtonDelegate.h>
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/button.hpp>

@@ -1,5 +1,3 @@
-#import <internal/cocoa/global.h>
-
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 

@@ -1,4 +1,3 @@
-#import <internal/cocoa/global.h>
 #include <internal/shared/grid.hpp>
 #include <xaml/ui/grid.hpp>
 

@@ -1,4 +1,4 @@
-#import <internal/cocoa/global.h>
+#import <internal/cocoa/XamlDelegate.h>
 
 @implementation XamlDelegate : NSObject
 @synthesize classPointer;

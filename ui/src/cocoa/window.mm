@@ -1,5 +1,4 @@
-#import <internal/cocoa/global.h>
-
+#import <internal/cocoa/XamlWindowDelegate.h>
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>

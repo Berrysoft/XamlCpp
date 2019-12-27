@@ -1,5 +1,3 @@
-#import <internal/cocoa/global.h>
-
 #include <xaml/ui/msgbox.hpp>
 
 using namespace std;
