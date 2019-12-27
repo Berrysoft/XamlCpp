@@ -1,3 +1,4 @@
+#include <functional>
 #import <internal/cocoa/global.h>
 #include <xaml/ui/canvas.hpp>
 
@@ -14,28 +15,63 @@ namespace xaml
         return [[NSColor colorWithCalibratedRed:c.r green:c.g blue:c.b alpha:c.a] autorelease];
     }
 
-    void drawing_context::draw_ellipse(const drawing_pen& pen, const rectangle& region)
+    static void draw_ns_graphics(NSGraphicsContext* graphics, function<void()> func)
     {
         [NSGraphicsContext saveGraphicsState];
-        [NSGraphicsContext setCurrentContext:m_handle];
-        NSBezierPath* ellipse = [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, region.y, region.width, region.height)] autorelease];
-        [ellipse setLineWidth:pen.get_width()];
-        [get_NSColor(pen.get_color()) set];
-        [ellipse stroke];
+        [NSGraphicsContext setCurrentContext:graphics];
+        func();
         [NSGraphicsContext restoreGraphicsState];
+    }
+
+    static void set_pen(NSBezierPath* path, drawing_pen const& pen)
+    {
+        [path setLineWidth:pen.get_width()];
+        [get_NSColor(pen.get_color()) setStroke];
+    }
+
+    static void set_brush(NSBezierPath* path, drawing_brush const& brush)
+    {
+        [get_NSColor(brush.get_color()) setFill];
+    }
+
+    NSBezierPath* drawing_context::path_ellipse(rectangle const& region)
+    {
+        return [[NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, m_size.height - region.height - region.y, region.width, region.height)] autorelease];
+    }
+
+    void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
+    {
+        draw_ns_graphics(m_handle, [&]() -> void {
+            NSBezierPath* ellipse = path_ellipse(region);
+            set_pen(ellipse, pen);
+            [ellipse stroke];
+        });
+    }
+
+    void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
+    {
+        draw_ns_graphics(m_handle, [&]() -> void {
+            NSBezierPath* ellipse = path_ellipse(region);
+            set_brush(ellipse, brush);
+            [ellipse fill];
+        });
     }
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
-        [NSGraphicsContext saveGraphicsState];
-        [NSGraphicsContext setCurrentContext:m_handle];
-        NSBezierPath* line = [[NSBezierPath bezierPath] autorelease];
-        [line moveToPoint:NSMakePoint(startp.x, startp.y)];
-        [line lineToPoint:NSMakePoint(endp.x, endp.y)];
-        [line setLineWidth:pen.get_width()];
-        [get_NSColor(pen.get_color()) set];
-        [line stroke];
-        [NSGraphicsContext restoreGraphicsState];
+
+        draw_ns_graphics(m_handle, [&]() -> void {
+            NSBezierPath* line = [[NSBezierPath bezierPath] autorelease];
+            [line moveToPoint:NSMakePoint(startp.x, startp.y)];
+            [line lineToPoint:NSMakePoint(endp.x, endp.y)];
+            set_pen(line, pen);
+            [line stroke];
+        });
+    }
+
+    NSBezierPath* drawing_context::path_rect(rectangle const& rect)
+    {
+        return [[NSBezierPath bezierPathWithRect:NSMakeRect(rect.x, m_size.height - rect.height - rect.y, rect.width, rect.height)] autorelease];
     }
 
     canvas::canvas() : common_control() {}

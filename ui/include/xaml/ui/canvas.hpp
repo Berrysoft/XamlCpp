@@ -129,6 +129,10 @@ namespace xaml
 
         drawing_context(native_handle_type handle);
 
+#ifdef XAML_UI_COCOA
+        PROP(size, size)
+#endif // XAML_UI_COCOA
+
 #ifdef XAML_UI_GTK3
     private:
         void set_pen(drawing_pen const& pen);
@@ -137,6 +141,14 @@ namespace xaml
         void path_rect(rectangle const& rect);
         void path_round_rect(rectangle const& rect, size round);
 #endif // XAML_UI_GTK3
+
+#ifdef XAML_UI_COCOA
+    private:
+        using path_type = OBJC_OBJECT(NSBezierPath);
+
+        path_type path_ellipse(rectangle const& region);
+        path_type path_rect(rectangle const& rect);
+#endif // XAML_UI_COCOA
 
     public:
         void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);

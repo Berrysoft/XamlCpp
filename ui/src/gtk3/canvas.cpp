@@ -49,7 +49,7 @@ namespace xaml
         draw_arc(pen, region, 0, 2 * M_PI);
     }
 
-    void drawing_context::fill_ellipse(const drawing_brush& brush, const rectangle& region)
+    void drawing_context::fill_ellipse(drawing_brush const& brush, const rectangle& region)
     {
         fill_pie(brush, region, 0, 2 * M_PI);
     }
@@ -76,7 +76,7 @@ namespace xaml
         cairo_stroke(m_handle);
     }
 
-    void drawing_context::fill_rect(const drawing_brush& brush, const rectangle& rect)
+    void drawing_context::fill_rect(drawing_brush const& brush, const rectangle& rect)
     {
         path_rect(rect);
         set_brush(brush);
@@ -104,7 +104,7 @@ namespace xaml
         cairo_stroke(m_handle);
     }
 
-    void drawing_context::fill_round_rect(const drawing_brush& brush, const rectangle& rect, size round)
+    void drawing_context::fill_round_rect(drawing_brush const& brush, const rectangle& rect, size round)
     {
         path_round_rect(rect, round);
         set_brush(brush);
