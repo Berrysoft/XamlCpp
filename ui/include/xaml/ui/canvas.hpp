@@ -116,7 +116,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = Gdiplus::Graphics*;
 #elif defined(XAML_UI_GTK3)
-        using native_handle_type = drawing_t*;
+        using native_handle_type = cairo_t*;
 #elif defined(XAML_UI_COCOA)
         using native_handle_type = OBJC_OBJECT(NSGraphicsContext);
 #endif
@@ -187,7 +187,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static gboolean on_draw(GtkWidget* widget, drawing_t* cr, gpointer data);
+        static gboolean on_draw(GtkWidget* widget, cairo_t* cr, gpointer data);
 #endif // XAML_UI_GTK3
 
     public:

@@ -170,7 +170,7 @@ namespace xaml
     {
     public:
         common_control() : control() {}
-        virtual ~common_control() override;
+        virtual ~common_control() override {}
 
         bool is_container() const override final { return false; }
         bool is_multicontainer() const override final { return false; }

@@ -7,8 +7,4 @@ namespace xaml
     control::~control()
     {
     }
-
-    common_control::~common_control()
-    {
-    }
 }
