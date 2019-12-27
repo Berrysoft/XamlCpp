@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/ui/objc.hpp>
 #include <xaml/ui/strings.hpp>
 
 #ifdef XAML_UI_WINDOWS
@@ -39,6 +40,20 @@ namespace xaml
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
         application(LPWSTR lpCmdLine);
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_COCOA
+    private:
+        using __native_delegate_type = OBJC_OBJECT(XamlApplicationDelegate);
+
+    private:
+        __native_delegate_type m_delegate;
+
+    public:
+        inline __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
+
+    protected:
+        void __set_delegate(__native_delegate_type value) { m_delegate = value; }
+#endif // XAML_UI_COCOA
 
         void init_components();
 

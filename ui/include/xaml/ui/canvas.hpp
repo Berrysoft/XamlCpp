@@ -125,7 +125,7 @@ namespace xaml
         native_handle_type m_handle;
 
     public:
-        constexpr native_handle_type get_handle() const noexcept { return m_handle; }
+        inline native_handle_type get_handle() const noexcept { return m_handle; }
 
         drawing_context(native_handle_type handle);
 
@@ -148,6 +148,7 @@ namespace xaml
 
         path_type path_ellipse(rectangle const& region);
         path_type path_rect(rectangle const& rect);
+        path_type path_round_rect(rectangle const& rect, size round);
 #endif // XAML_UI_COCOA
 
     public:

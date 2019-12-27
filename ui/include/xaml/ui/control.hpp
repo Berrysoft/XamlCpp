@@ -58,7 +58,7 @@ namespace xaml
         native_handle_type m_handle{ nullptr };
 
     public:
-        constexpr native_handle_type get_handle() const noexcept { return m_handle; }
+        inline native_handle_type get_handle() const noexcept { return m_handle; }
         operator bool() const noexcept { return m_handle; }
 
     protected:
@@ -71,6 +71,20 @@ namespace xaml
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
 #endif
+
+#ifdef XAML_UI_COCOA
+    public:
+        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
+
+    private:
+        __native_delegate_type m_delegate;
+
+    public:
+        inline __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
+
+    protected:
+        void __set_delegate(__native_delegate_type value) { m_delegate = value; }
+#endif // XAML_UI_COCOA
 
     public:
         control();
@@ -160,20 +174,6 @@ namespace xaml
 
         bool is_container() const override final { return false; }
         bool is_multicontainer() const override final { return false; }
-
-#ifdef XAML_UI_COCOA
-    public:
-        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
-
-    private:
-        __native_delegate_type m_delegate;
-
-    public:
-        constexpr __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
-
-    protected:
-        void __set_delegate(__native_delegate_type value) { m_delegate = value; }
-#endif // XAML_UI_COCOA
     };
 
 #define ADD_COMMON_CONTROL_MEMBERS() ADD_CONTROL_MEMBERS()

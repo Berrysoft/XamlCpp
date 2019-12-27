@@ -1,6 +1,5 @@
 #import <internal/cocoa/global.h>
 
-#import <internal/cocoa/XamlWindowDelegate.h>
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -45,7 +44,6 @@ namespace xaml
     window::~window()
     {
         [(NSWindow*)get_handle() close];
-        [((NSWindow*)get_handle()).delegate release];
     }
 
     void window::__draw(rectangle const& region)
@@ -59,6 +57,7 @@ namespace xaml
                             backing:NSBackingStoreBuffered
                               defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
+            __set_delegate(delegate);
             window.delegate = delegate;
             set_handle(window);
             application::current()->wnd_num++;
@@ -89,7 +88,7 @@ namespace xaml
     void window::draw_title()
     {
         NSWindow* window = (NSWindow*)get_handle();
-        NSString* nstitle = [[NSString stringWithUTF8String:m_title.data()] autorelease];
+        NSString* nstitle = [NSString stringWithUTF8String:m_title.data()];
         [window setTitle:nstitle];
     }
 

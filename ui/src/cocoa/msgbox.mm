@@ -30,9 +30,9 @@ namespace xaml
 
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
-        NSAlert* alert = [[NSAlert new] autorelease];
-        NSString* title_str = [[NSString stringWithUTF8String:title.data()] autorelease];
-        NSString* msg_str = [[NSString stringWithUTF8String:message.data()] autorelease];
+        NSAlert* alert = [NSAlert new];
+        NSString* title_str = [NSString stringWithUTF8String:title.data()];
+        NSString* msg_str = [NSString stringWithUTF8String:message.data()];
         [alert setMessageText:title_str];
         [alert setInformativeText:msg_str];
         alert.alertStyle = get_style(style);
