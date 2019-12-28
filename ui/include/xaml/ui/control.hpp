@@ -87,7 +87,10 @@ namespace xaml
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
-        virtual size __get_compact_size() = 0;
+        virtual size __get_compact_size() const = 0;
+#else
+    public:
+        size __get_compact_size() const { return get_size(); }
 #endif
 
 #ifdef XAML_UI_COCOA
@@ -123,10 +126,8 @@ namespace xaml
         virtual bool is_container() const = 0;
         virtual bool is_multicontainer() const = 0;
 
-#ifdef XAML_UI_WINDOWS
     protected:
         virtual void __parent_redraw();
-#endif // XAML_UI_WINDOWS
 
     private:
         size m_size{ 0, 0 };

@@ -63,6 +63,45 @@ namespace xaml
         return result;
     }
 
+    rectangle get_real_region(shared_ptr<control> c, rectangle max_region)
+    {
+        double cwidth = c->__get_compact_size().width + c->get_margin().left + c->get_margin().right;
+        switch (c->get_halignment())
+        {
+        case halignment_t::left:
+            max_region.width = cwidth;
+            break;
+        case halignment_t::center:
+            max_region.x += (max_region.width - cwidth) / 2;
+            max_region.width = cwidth;
+            break;
+        case halignment_t::right:
+            max_region.x += max_region.width - cwidth;
+            max_region.width = cwidth;
+            break;
+        default:
+            break;
+        }
+        double cheight = c->__get_compact_size().height + c->get_margin().top + c->get_margin().bottom;
+        switch (c->get_valignment())
+        {
+        case valignment_t::top:
+            max_region.height = cheight;
+            break;
+        case valignment_t::center:
+            max_region.y += (max_region.height - cheight) / 2;
+            max_region.height = cheight;
+            break;
+        case valignment_t::bottom:
+            max_region.y += max_region.height - cheight;
+            max_region.height = cheight;
+            break;
+        default:
+            break;
+        }
+        return max_region;
+    }
+
     unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
 
     grid::grid() : multicontainer()

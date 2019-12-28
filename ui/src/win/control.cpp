@@ -30,12 +30,6 @@ namespace xaml
         return xaml::get_size(s);
     }
 
-    void control::__parent_redraw()
-    {
-        if (get_parent())
-            get_parent()->__parent_redraw();
-    }
-
     control::~control()
     {
         SendMessage(get_handle(), WM_CLOSE, 0, 0);

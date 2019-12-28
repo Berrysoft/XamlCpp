@@ -29,4 +29,10 @@ namespace xaml
             m_parent_changed(*this, value);
         }
     }
+
+    void control::__parent_redraw()
+    {
+        if (get_parent())
+            get_parent()->__parent_redraw();
+    }
 } // namespace xaml
