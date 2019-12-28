@@ -193,6 +193,11 @@ namespace xaml
         static gboolean on_draw(GtkWidget* widget, cairo_t* cr, gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_draw_rect();
+#endif // XAML_UI_COCOA
+
     public:
         EVENT(redraw, canvas const&, drawing_context&)
 
