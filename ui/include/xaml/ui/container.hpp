@@ -52,6 +52,7 @@ namespace xaml
 
         void add_child(std::shared_ptr<control> const& child);
         void remove_child(std::shared_ptr<control> const& child);
+        std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
     };
 
 #define ADD_MULTICONTAINER_MEMBERS() ADD_CONTROL_MEMBERS()

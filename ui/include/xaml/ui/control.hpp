@@ -43,6 +43,22 @@ namespace xaml
     };
 #endif
 
+    enum class halignment_t
+    {
+        stretch,
+        left,
+        center,
+        right
+    };
+
+    enum class valignment_t
+    {
+        stretch,
+        top,
+        center,
+        bottom
+    };
+
     class control : public std::enable_shared_from_this<control>
     {
     public:
@@ -66,10 +82,12 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     protected:
-        void create(window_create_params const& params);
+        void __create(window_create_params const& params);
+        size __measure_text_size(string_view_t str);
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
+        virtual size __get_compact_size() = 0;
 #endif
 
 #ifdef XAML_UI_COCOA
@@ -104,6 +122,11 @@ namespace xaml
     public:
         virtual bool is_container() const = 0;
         virtual bool is_multicontainer() const = 0;
+
+#ifdef XAML_UI_WINDOWS
+    protected:
+        virtual void __parent_redraw();
+#endif // XAML_UI_WINDOWS
 
     private:
         size m_size{ 0, 0 };
@@ -156,15 +179,16 @@ namespace xaml
                 m_margin_changed(*this, value);
             }
         }
+
+        PROP(halignment, halignment_t)
+        PROP(valignment, valignment_t)
     };
 
 #define ADD_CONTROL_MEMBERS() \
-    ADD_PROP(size);           \
+    ADD_PROP_EVENT(size);     \
     ADD_PROP(width);          \
     ADD_PROP(height);         \
-    ADD_PROP(margin);         \
-    ADD_EVENT(size_changed);  \
-    ADD_EVENT(margin_changed)
+    ADD_PROP_EVENT(margin)
 
     class common_control : public control
     {

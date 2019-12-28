@@ -26,6 +26,10 @@ namespace xaml
     private:
         wil::unique_hdc_window m_store_dc{ nullptr };
 
+    protected:
+        size __get_compact_size() override { return get_size(); }
+        void __parent_redraw() override;
+
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
         void __copy_hdc(rectangle const& region, HDC hDC);

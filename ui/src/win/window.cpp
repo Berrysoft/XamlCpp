@@ -48,7 +48,7 @@ namespace xaml
             params.y = CW_USEDEFAULT;
             params.width = CW_USEDEFAULT;
             params.height = CW_USEDEFAULT;
-            this->control::create(params);
+            this->__create(params);
             application::current()->wnd_num++;
             window_map[get_handle()] = weak_from_this();
         }
@@ -65,6 +65,11 @@ namespace xaml
             draw_child();
         }
         InvalidateRect(get_handle(), nullptr, FALSE);
+    }
+
+    void window::__parent_redraw()
+    {
+        __draw({});
     }
 
     void window::draw_title()
@@ -123,6 +128,19 @@ namespace xaml
                 set_location({ r.x, r.y });
                 set_size({ r.width, r.height });
                 __draw({});
+                resizing = false;
+            }
+            break;
+        }
+        case WM_MOVE:
+        {
+            if (get_handle() && !resizing)
+            {
+                resizing = true;
+                RECT rect = {};
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                rectangle r = get_rect(rect);
+                set_location({ r.x, r.y });
                 resizing = false;
             }
             break;

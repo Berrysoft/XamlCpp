@@ -7,8 +7,20 @@ namespace xaml
 {
     button::button() : common_control()
     {
-        add_text_changed([this](button const&, string_view_t) { if(get_handle()) draw_text(); });
-        add_size_changed([this](control const&, size) { if(get_handle()) draw_size(); });
+        add_text_changed([this](button const&, string_view_t) {
+            if (get_handle())
+            {
+                draw_text();
+                __parent_redraw();
+            }
+        });
+        add_size_changed([this](control const&, size) {
+            if (get_handle())
+            {
+                draw_size();
+                __parent_redraw();
+            }
+        });
         add_is_default_changed([this](button const&, bool) { if (get_handle()) draw_default(); });
     }
 
@@ -37,6 +49,12 @@ namespace xaml
         return nullopt;
     }
 
+    size button::__get_compact_size()
+    {
+        size msize = __measure_text_size(m_text);
+        return { msize.width + 15, msize.height + 15 };
+    }
+
     void button::__draw(rectangle const& region)
     {
         if (!get_handle())
@@ -49,7 +67,7 @@ namespace xaml
             params.width = 100;
             params.height = 50;
             params.parent = get_parent().get();
-            this->create(params);
+            this->__create(params);
         }
         rectangle real = region - get_margin();
         SetWindowPos(get_handle(), HWND_TOP, real.x, real.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);

@@ -11,7 +11,8 @@ namespace xaml
     enum class grid_layout
     {
         abs,
-        star
+        star,
+        compact
     };
 
     struct grid_length
@@ -36,6 +37,9 @@ namespace xaml
         ~grid() override;
 
 #ifdef XAML_UI_WINDOWS
+    protected:
+        size __get_compact_size() override { return get_size(); }
+
     public:
         std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS

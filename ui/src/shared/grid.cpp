@@ -1,10 +1,26 @@
+#include <algorithm>
 #include <internal/shared/grid.hpp>
 
 using namespace std;
 
 namespace xaml
 {
-    vector<tuple<double, double>> get_real_length(vector<grid_length> const& lengths, double total)
+    static double get_max_compact(size_t index, vector<shared_ptr<control>> const& children, bool vertical)
+    {
+        double result = 0;
+        for (auto& c : children)
+        {
+            if ((vertical ? grid::get_row(c) : grid::get_column(c)) == index)
+            {
+                auto csize = c->__get_compact_size();
+                auto len = vertical ? (csize.height + c->get_margin().top + c->get_margin().bottom) : (csize.width + c->get_margin().left + c->get_margin().right);
+                result = (max)(result, len);
+            }
+        }
+        return result;
+    }
+
+    vector<tuple<double, double>> get_real_length(vector<grid_length> const& lengths, vector<shared_ptr<control>> const& children, double total, bool vertical)
     {
         vector<tuple<double, double>> result(lengths.size());
         if (result.empty())
@@ -25,6 +41,12 @@ namespace xaml
             case grid_layout::star:
                 total_star += lengths[i].value;
                 break;
+            case grid_layout::compact:
+            {
+                get<0>(result[i]) = get_max_compact(i, children, vertical);
+                total_remain -= get<0>(result[i]);
+                break;
+            }
             }
         }
         for (size_t i = 0; i < lengths.size(); i++)

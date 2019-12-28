@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    std::vector<std::tuple<double, double>> get_real_length(std::vector<grid_length> const& lengths, double total);
+    std::vector<std::tuple<double, double>> get_real_length(std::vector<grid_length> const& lengths, std::vector<std::shared_ptr<control>> const& children, double total, bool vertical);
 } // namespace xaml
 
 #endif // !XAML_UI_INTERNAL_SHARED_GRID_HPP
