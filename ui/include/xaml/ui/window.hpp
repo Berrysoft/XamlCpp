@@ -27,7 +27,7 @@ namespace xaml
         wil::unique_hdc_window m_store_dc{ nullptr };
 
     protected:
-        size __get_compact_size() override { return get_size(); }
+        size __get_compact_size() const override { return get_size(); }
         void __parent_redraw() override;
 
     public:

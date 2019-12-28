@@ -38,7 +38,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     protected:
-        size __get_compact_size() override { return get_size(); }
+        size __get_compact_size() const override { return get_size(); }
 
     public:
         std::optional<LRESULT> __wnd_proc(window_message const& msg) override;

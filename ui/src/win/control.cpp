@@ -22,7 +22,7 @@ namespace xaml
         SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
     }
 
-    size control::__measure_text_size(string_view_t str)
+    size control::__measure_text_size(string_view_t str) const
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
         SIZE s = {};

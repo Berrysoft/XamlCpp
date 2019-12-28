@@ -182,7 +182,7 @@ namespace xaml
         wil::unique_hdc_window m_store_dc;
 
     protected:
-        size __get_compact_size() override { return get_size(); }
+        size __get_compact_size() const override { return get_size(); }
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;

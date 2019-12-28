@@ -49,7 +49,7 @@ namespace xaml
         return nullopt;
     }
 
-    size button::__get_compact_size()
+    size button::__get_compact_size() const
     {
         size msize = __measure_text_size(m_text);
         return { msize.width + 15, msize.height + 15 };
