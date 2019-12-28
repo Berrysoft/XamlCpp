@@ -44,7 +44,7 @@ namespace xaml
         std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
-#ifdef XAML_UI_GTK3
+#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
     private:
         std::unordered_map<std::shared_ptr<control>, bool> m_put_map{};
 #endif // XAML_UI_GTK3

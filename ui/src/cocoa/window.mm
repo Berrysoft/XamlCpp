@@ -84,6 +84,12 @@ namespace xaml
         draw_resizable();
     }
 
+    void window::__parent_redraw()
+    {
+        if (get_handle())
+            __draw({});
+    }
+
     void window::draw_title()
     {
         NSWindow* window = (NSWindow*)get_handle();
