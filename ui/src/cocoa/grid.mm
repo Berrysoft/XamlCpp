@@ -19,7 +19,7 @@ namespace xaml
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
-        NSWindow* window = (NSWindow*)get_handle();
+        NSView* view = get_handle();
         for (auto& c : m_children)
         {
             auto index = m_indecies[c];
@@ -30,7 +30,7 @@ namespace xaml
             {
                 if (!m_put_map[c])
                 {
-                    [window.contentView addSubview:(NSView*)c->get_handle()];
+                    [view addSubview:(NSView*)c->get_handle()];
                     m_put_map[c] = true;
                 }
             }

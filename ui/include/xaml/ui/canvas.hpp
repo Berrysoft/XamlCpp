@@ -130,7 +130,12 @@ namespace xaml
         drawing_context(native_handle_type handle);
 
 #ifdef XAML_UI_COCOA
-        PROP(size, size)
+    private:
+        size m_size;
+
+    public:
+        constexpr size __get_size() const noexcept { return m_size; }
+        void __set_size(size value) { m_size = value; }
 #endif // XAML_UI_COCOA
 
 #ifdef XAML_UI_GTK3

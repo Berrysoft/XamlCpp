@@ -47,7 +47,6 @@ namespace xaml
 
     NSBezierPath* drawing_context::path_ellipse(rectangle const& region)
     {
-        NSLog(@"y:%lf, width:%lf", m_size.height - region.height - region.y, region.width);
         return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, m_size.height - region.height - region.y, region.width, region.height)];
     }
 
@@ -129,8 +128,8 @@ namespace xaml
         }
         m_real_region = region - get_margin();
         XamlCanvasView* view = (XamlCanvasView*)get_handle();
-        NSWindow* window = (NSWindow*)get_parent()->get_handle();
-        NSRect frame = window.contentView.frame;
+        NSView* pview = get_parent()->get_handle();
+        NSRect frame = pview.frame;
         view.frame = NSMakeRect(m_real_region.x, frame.size.height - m_real_region.height - m_real_region.y, m_real_region.width, m_real_region.height);
         [view setNeedsDisplay:YES];
     }
@@ -138,7 +137,7 @@ namespace xaml
     void canvas::__on_draw_rect()
     {
         drawing_context dc{ nullptr };
-        dc.set_size({ m_real_region.width, m_real_region.height });
+        dc.__set_size({ m_real_region.width, m_real_region.height });
         m_redraw(*this, dc);
     }
 }

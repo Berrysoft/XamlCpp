@@ -43,6 +43,18 @@ namespace xaml
 
 #ifdef XAML_UI_COCOA
     public:
+        using __native_window_type = OBJC_OBJECT(NSWindow);
+
+    private:
+        __native_window_type m_window;
+
+    public:
+        inline __native_window_type __get_window() const { return m_window; }
+
+    protected:
+        void __set_window(__native_window_type value) { m_window = value; }
+
+    public:
         void __on_did_resize();
         bool __on_should_close();
 #endif // XAML_UI_COCOA

@@ -23,15 +23,15 @@ namespace xaml
 {
     window::window() : container(), m_resizable(true)
     {
-        add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) __draw({}); });
-        add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
+        add_title_changed([this](window const&, string_view_t) { if (__get_window()) draw_title(); });
+        add_location_changed([this](window const&, point) { if (__get_window() && !resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (__get_window() && !resizing) __draw({}); });
+        add_resizable_changed([this](control const&, bool) { if(__get_window()) draw_resizable(); });
     }
 
     window::~window()
     {
-        [(NSWindow*)get_handle() close];
+        [__get_window() close];
     }
 
     void window::__draw(rectangle const& region)
@@ -46,10 +46,11 @@ namespace xaml
                               defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
             window.delegate = delegate;
-            set_handle(window);
+            __set_window(window);
+            set_handle(window.contentView);
             application::current()->wnd_num++;
         }
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         if (!resizing)
         {
             resizing = true;
@@ -74,13 +75,13 @@ namespace xaml
 
     void window::__parent_redraw()
     {
-        if (get_handle())
+        if (__get_window())
             __draw({});
     }
 
     void window::draw_title()
     {
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         NSString* nstitle = [NSString stringWithUTF8String:m_title.data()];
         [window setTitle:nstitle];
     }
@@ -92,7 +93,7 @@ namespace xaml
 
     void window::draw_resizable()
     {
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         if (m_resizable)
             window.styleMask |= NSWindowStyleMaskResizable;
         else
@@ -102,20 +103,20 @@ namespace xaml
     void window::show()
     {
         __draw({});
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         [window makeKeyAndOrderFront:nil];
     }
 
     rectangle window::get_client_region() const
     {
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         NSRect frame = [[window contentView] frame];
         return get_rect(frame);
     }
 
     void window::__on_did_resize()
     {
-        NSWindow* window = (NSWindow*)get_handle();
+        NSWindow* window = __get_window();
         NSRect frame = window.frame;
         if (!resizing)
         {

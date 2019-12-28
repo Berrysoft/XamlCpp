@@ -56,8 +56,8 @@ namespace xaml
         rectangle real = region - get_margin();
         NSButton* button = (NSButton*)get_handle();
         [button setBezelStyle:NSBezelStyleRounded];
-        NSWindow* window = (NSWindow*)get_parent()->get_handle();
-        NSRect parent_frame = [window.contentView frame];
+        NSView* view = get_parent()->get_handle();
+        NSRect parent_frame = [view frame];
         NSRect frame = button.frame;
         frame.origin = { real.x, parent_frame.size.height - real.height - real.y };
         button.frame = frame;
