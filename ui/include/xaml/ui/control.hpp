@@ -12,6 +12,9 @@
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA)
 #include <xaml/ui/objc.hpp>
+#if __OBJC__
+#import <xaml/ui/cocoa/XamlDelegate.h>
+#endif // __OBJC__
 #endif
 
 namespace xaml
@@ -95,7 +98,7 @@ namespace xaml
 
 #ifdef XAML_UI_COCOA
     public:
-        using __native_delegate_type = OBJC_INTERNAL_OBJECT(XamlDelegate);
+        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
 
     private:
         __native_delegate_type m_delegate;

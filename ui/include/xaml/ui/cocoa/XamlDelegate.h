@@ -1,5 +1,4 @@
 #import <Cocoa/Cocoa.h>
-#define XAML_UI_COCOA_INTERNAL
 
 @interface XamlDelegate : NSObject
 {
