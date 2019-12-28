@@ -56,8 +56,8 @@ namespace xaml
                             backing:NSBackingStoreBuffered
                               defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
-            __set_delegate(delegate);
             window.delegate = delegate;
+            //__set_delegate(delegate);
             set_handle(window);
             application::current()->wnd_num++;
         }
