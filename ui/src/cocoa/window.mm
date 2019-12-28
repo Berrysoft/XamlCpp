@@ -46,7 +46,6 @@ namespace xaml
                               defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
             window.delegate = delegate;
-            //__set_delegate(delegate);
             set_handle(window);
             application::current()->wnd_num++;
         }
@@ -60,7 +59,7 @@ namespace xaml
             frame.size = { fw, fh };
             frame.origin.x = (CGFloat)get_x();
             NSScreen* screen = window.screen;
-            NSRect screen_frame = screen.visibleFrame;
+            NSRect screen_frame = screen.frame;
             frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
             [window setFrame:frame display:YES];
             resizing = false;
