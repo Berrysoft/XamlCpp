@@ -19,7 +19,6 @@ namespace xaml
             for (auto& c : m_children)
             {
                 c->__draw(rectangle{ 0, 0, 1, 1 } + c->get_margin());
-                gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), 0, 0);
             }
         }
         rectangle real = region - get_margin();
@@ -34,6 +33,11 @@ namespace xaml
             subrect = get_real_region(c, subrect);
             c->__draw(subrect);
             rectangle subreal = subrect - c->get_margin();
+            if (!m_put_map[c])
+            {
+                gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);
+                m_put_map[c] = true;
+            }
             gtk_fixed_move(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);
         }
     }

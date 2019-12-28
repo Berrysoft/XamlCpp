@@ -28,7 +28,6 @@ namespace xaml
 
     protected:
         size __get_compact_size() const override { return get_size(); }
-        void __parent_redraw() override;
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
@@ -50,6 +49,9 @@ namespace xaml
 
     public:
         void __draw(rectangle const& region) override;
+
+    protected:
+        void __parent_redraw() override;
 
     private:
         void draw_title();

@@ -49,6 +49,12 @@ namespace xaml
         draw_resizable();
     }
 
+    void window::__parent_redraw()
+    {
+        if (get_handle())
+            __draw({});
+    }
+
     void window::draw_title()
     {
         gtk_window_set_title(GTK_WINDOW(get_handle()), m_title.data());
