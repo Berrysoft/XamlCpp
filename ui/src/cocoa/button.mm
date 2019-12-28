@@ -2,10 +2,6 @@
 #include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/button.hpp>
 
-#ifdef XAML_UI_USE_GNUSTEP
-constexpr NSBezelStyle NSBezelStyleRounded = NSRoundedBezelStyle;
-#endif // XAML_UI_USE_GNUSTEP
-
 @implementation XamlButtonDelegate : XamlDelegate
 - (NSButton*)newButton
 {

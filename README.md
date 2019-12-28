@@ -12,7 +12,7 @@ XamlCpp is a cross-platform GUI framework. With some simple, platform-specific w
 |-|-|-|-|
 |Win32|Windows API, GDI+|Windows|Windows|
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
-|Cocoa|NeXTStep/GNUStep|Windows, Linux, MacOS|MacOS|
+|Cocoa|NeXTStep|MacOS|MacOS|
 |WinRT*|Windows Runtime|Windows|Windows|
 
 \* On plan

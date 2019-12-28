@@ -2,14 +2,6 @@
 
 using namespace std;
 
-#ifdef XAML_UI_USE_GNUSTEP
-constexpr NSAlertStyle NSAlertStyleCritical = NSCriticalAlertStyle;
-constexpr NSAlertStyle NSAlertStyleInformational = NSInformationalAlertStyle;
-constexpr NSAlertStyle NSAlertStyleWarning = NSWarningAlertStyle;
-
-typedef NSInteger NSModalResponse;
-#endif // XAML_UI_USE_GNUSTEP
-
 namespace xaml
 {
     NSAlertStyle get_style(msgbox_style style)

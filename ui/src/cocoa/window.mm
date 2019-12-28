@@ -3,17 +3,6 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
-#ifdef XAML_UI_USE_GNUSTEP
-typedef enum NSWindowStyleMask : NSUInteger
-{
-    NSWindowStyleMaskBorderless = 0,
-    NSWindowStyleMaskTitled = 1 << 0,
-    NSWindowStyleMaskClosable = 1 << 1,
-    NSWindowStyleMaskMiniaturizable = 1 << 2,
-    NSWindowStyleMaskResizable = 1 << 3
-} NSWindowStyleMask;
-#endif // XAML_UI_USE_GNUSTEP
-
 @implementation XamlWindowDelegate : XamlDelegate
 - (void)windowDidResize:(NSNotification*)notification
 {
@@ -104,13 +93,11 @@ namespace xaml
 
     void window::draw_resizable()
     {
-#ifndef XAML_UI_USE_GNUSTEP
         NSWindow* window = (NSWindow*)get_handle();
         if (m_resizable)
             window.styleMask |= NSWindowStyleMaskResizable;
         else
             window.styleMask &= ~NSWindowStyleMaskResizable;
-#endif // !XAML_UI_USE_GNUSTEP
     }
 
     void window::show()

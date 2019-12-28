@@ -20,9 +20,7 @@ namespace xaml
     void application::init_components()
     {
         [NSApplication sharedApplication];
-#ifndef XAML_UI_USE_GNUSTEP
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-#endif // !XAML_UI_USE_GNUSTEP
         XamlApplicationDelegate* appDelegate = [[XamlApplicationDelegate alloc] initWithClassPointer:this];
         [[NSApplication sharedApplication] setDelegate:appDelegate];
     }
