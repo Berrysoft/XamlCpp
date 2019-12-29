@@ -134,10 +134,11 @@ namespace xaml
                 g.SetPageUnit(UnitPixel);
                 drawing_context dc{ &g };
                 m_redraw(*this, dc);
-                if (auto wnd = __get_window(get_handle()).lock())
+                if (auto wnd = __get_window(get_handle()))
                 {
-                    reinterpret_pointer_cast<window>(wnd)->__copy_hdc(m_real_region, m_store_dc.get());
+                    wnd->__copy_hdc(m_real_region, m_store_dc.get());
                 }
+                break;
             }
             }
         }

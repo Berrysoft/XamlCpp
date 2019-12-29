@@ -19,9 +19,13 @@ namespace xaml
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 
-    weak_ptr<control> __get_window(HWND hWnd)
+    shared_ptr<window> __get_window(HWND hWnd)
     {
-        return window_map[hWnd];
+        if (auto wnd = window_map[hWnd].lock())
+        {
+            return reinterpret_pointer_cast<window>(wnd);
+        }
+        return nullptr;
     }
 
     window::window() : container(), m_resizable(true)
@@ -52,7 +56,10 @@ namespace xaml
             application::current()->wnd_num++;
             window_map[get_handle()] = weak_from_this();
         }
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+        if (!resizing)
+        {
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+        }
         draw_resizable();
         draw_title();
         auto wnd_dc = wil::GetDC(get_handle());
@@ -119,9 +126,8 @@ namespace xaml
         {
         case WM_SIZE:
         {
-            if (get_handle() && !resizing)
+            if (get_handle() && !resizing.exchange(true))
             {
-                resizing = true;
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = get_rect(rect);
@@ -134,9 +140,8 @@ namespace xaml
         }
         case WM_MOVE:
         {
-            if (get_handle() && !resizing)
+            if (get_handle() && !resizing.exchange(true))
             {
-                resizing = true;
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = get_rect(rect);

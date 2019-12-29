@@ -12,8 +12,10 @@
 namespace xaml
 {
 #ifdef XAML_UI_WINDOWS
+    class window;
+
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-    std::weak_ptr<control> __get_window(HWND hWnd);
+    std::shared_ptr<window> __get_window(HWND hWnd);
 #endif // XAML_UI_WINDOWS
 
     class window : public container, public meta_class_impl<window>

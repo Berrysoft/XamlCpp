@@ -17,13 +17,27 @@
 
 namespace xaml
 {
-    class timer : std::enable_shared_from_this<timer>
+    class timer
     {
     private:
         std::atomic<bool> m_enabled;
 
     public:
         bool is_enabled() const noexcept { return m_enabled; }
+
+#ifdef XAML_UI_WINDOWS
+    private:
+        UINT_PTR m_id;
+
+    public:
+        constexpr UINT_PTR __get_id() const noexcept { return m_id; }
+
+    protected:
+        void __set_id(UINT_PTR value) { m_id = value; }
+
+    private:
+        static void CALLBACK on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed);
+#endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
     private:
@@ -62,6 +76,7 @@ namespace xaml
 
     public:
         timer(std::chrono::milliseconds interval = std::chrono::milliseconds{ 1 }) : m_interval(interval) {}
+        ~timer() { stop(); }
 
     public:
         void start();
