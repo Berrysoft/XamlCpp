@@ -19,6 +19,7 @@ namespace xaml
             for (auto& c : m_children)
             {
                 c->__draw(rectangle{ 0, 0, 1, 1 } + c->get_margin());
+                c->__size_to_fit();
             }
         }
         rectangle real = region - get_margin();

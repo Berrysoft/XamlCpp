@@ -21,13 +21,9 @@ namespace xaml
         size __get_compact_size() const override;
 #endif // XAML_UI_WINDOWS
 
-#ifdef XAML_UI_COCOA
-    public:
-        void __size_to_fit() override;
-#endif // XAML_UI_COCOA
-
     public:
         void __draw(rectangle const& region) override;
+        void __size_to_fit() override;
 
     private:
         void draw_size();
