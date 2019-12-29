@@ -1,3 +1,4 @@
+#include <internal/shared/atomic_guard.hpp>
 #include <internal/win/drawing.hpp>
 #include <unordered_map>
 #include <wil/result_macros.h>
@@ -31,8 +32,8 @@ namespace xaml
     window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) __draw({}); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !m_resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !m_resizing) __draw({}); });
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
@@ -56,9 +57,12 @@ namespace xaml
             application::current()->wnd_num++;
             window_map[get_handle()] = weak_from_this();
         }
-        if (!resizing)
         {
-            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+            atomic_guard guard(m_resizing);
+            if (!guard.exchange(true))
+            {
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+            }
         }
         draw_resizable();
         draw_title();
@@ -126,7 +130,8 @@ namespace xaml
         {
         case WM_SIZE:
         {
-            if (get_handle() && !resizing.exchange(true))
+            atomic_guard guard(m_resizing);
+            if (get_handle() && !guard.exchange(true))
             {
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
@@ -134,19 +139,18 @@ namespace xaml
                 set_location({ r.x, r.y });
                 set_size({ r.width, r.height });
                 __draw({});
-                resizing = false;
             }
             break;
         }
         case WM_MOVE:
         {
-            if (get_handle() && !resizing.exchange(true))
+            atomic_guard guard(m_resizing);
+            if (get_handle() && !guard.exchange(true))
             {
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = get_rect(rect);
                 set_location({ r.x, r.y });
-                resizing = false;
             }
             break;
         }

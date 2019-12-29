@@ -81,7 +81,7 @@ namespace xaml
         PROP_EVENT(resizable, bool)
 
     private:
-        std::atomic<bool> resizing{ false };
+        std::atomic<bool> m_resizing{ false };
 
         point m_location{ 0, 0 };
 
