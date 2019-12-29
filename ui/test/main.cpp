@@ -6,6 +6,7 @@
 #include <xaml/ui/grid.hpp>
 #include <xaml/ui/meta.hpp>
 #include <xaml/ui/msgbox.hpp>
+#include <xaml/ui/timer.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -40,9 +41,15 @@ int main(int argc, char** argv)
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_size({ 150, 50 });
     btn->set_text(U("Hello"));
-    btn->add_click([wnd, btn](button const&) {
+    auto tmr = make_shared<timer>(chrono::milliseconds(2000));
+    int count = 0;
+    tmr->add_tick([wnd, tmr, &count](timer const&) {
         msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info);
+        if (++count >= 3) tmr->stop();
+    });
+    btn->add_click([btn, tmr](button const&) {
         btn->set_text(U("Hello world!"));
+        tmr->start();
     });
     btn->set_valignment(valignment_t::center);
     g->add_child(btn);
