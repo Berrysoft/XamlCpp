@@ -86,14 +86,6 @@ namespace xaml
         return { 0, 0, (double)width, (double)height };
     }
 
-    gboolean window::invoke_draw(gpointer data)
-    {
-        window* self = (window*)data;
-        self->__draw({});
-        self->m_resizing = false;
-        return FALSE;
-    }
-
     void window::on_destroy(GtkWidget* w, gpointer arg)
     {
         if (!(--application::current()->wnd_num)) gtk_main_quit();
@@ -106,7 +98,8 @@ namespace xaml
         {
             self->set_location({ (double)event->configure.x, (double)event->configure.y });
             self->set_size({ (double)event->configure.width, (double)event->configure.height });
-            gdk_threads_add_idle(window::invoke_draw, data);
+            self->__draw({});
+            self->m_resizing = false;
         }
         return FALSE;
     }

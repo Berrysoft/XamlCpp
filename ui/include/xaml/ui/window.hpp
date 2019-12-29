@@ -35,7 +35,6 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static gboolean invoke_draw(gpointer data);
         static void on_destroy(GtkWidget* w, gpointer arg);
         static gboolean on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data);
 #endif // XAML_UI_GTK3
