@@ -21,10 +21,13 @@ namespace xaml
 {
     class timer : std::enable_shared_from_this<timer>
     {
-#ifdef XAML_UI_GTK3
     private:
         std::atomic<bool> m_enabled;
 
+    public:
+        bool is_enabled() const noexcept { return m_enabled; }
+
+#ifdef XAML_UI_GTK3
     private:
         static gboolean on_timeout(gpointer data);
 #endif // XAML_UI_GTK3
