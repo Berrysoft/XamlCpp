@@ -17,9 +17,6 @@ namespace xaml
         virtual ~button() override;
 
 #ifdef XAML_UI_WINDOWS
-    protected:
-        size __get_compact_size() const override;
-
     public:
         std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS

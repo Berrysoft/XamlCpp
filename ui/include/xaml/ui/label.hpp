@@ -16,11 +16,6 @@ namespace xaml
         label();
         ~label() override;
 
-#ifdef XAML_UI_WINDOWS
-    protected:
-        size __get_compact_size() const override;
-#endif // XAML_UI_WINDOWS
-
     public:
         void __draw(rectangle const& region) override;
         void __size_to_fit() override;

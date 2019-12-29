@@ -48,12 +48,6 @@ namespace xaml
         return nullopt;
     }
 
-    size button::__get_compact_size() const
-    {
-        size msize = __measure_text_size(m_text);
-        return { msize.width + 15, msize.height + 15 };
-    }
-
     void button::__draw(rectangle const& region)
     {
         if (!get_handle())
@@ -69,15 +63,17 @@ namespace xaml
             this->__create(params);
         }
         rectangle real = region - get_margin();
-        SetWindowPos(get_handle(), HWND_TOP, real.x, real.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
-        set_size({ real.width, real.height });
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, real.x, real.y, real.width, real.height, SWP_NOZORDER));
+        __set_size_noevent({ real.width, real.height });
         draw_text();
         draw_default();
+        SetParent(get_handle(), get_parent()->get_handle());
+        ShowWindow(get_handle(), SW_SHOW);
     }
 
     void button::draw_size()
     {
-        SetWindowPos(get_handle(), HWND_TOP, 0, 0, get_width(), get_height(), SWP_NOZORDER | SWP_NOMOVE);
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, get_width(), get_height(), SWP_NOZORDER | SWP_NOMOVE));
     }
 
     void button::draw_text()
@@ -93,5 +89,12 @@ namespace xaml
         else
             style &= ~BS_DEFPUSHBUTTON;
         Button_SetStyle(get_handle(), style, FALSE);
+    }
+
+    void button::__size_to_fit()
+    {
+        size msize = __measure_text_size(m_text);
+        __set_size_noevent({ msize.width + 15, msize.height + 15 });
+        draw_size();
     }
 } // namespace xaml

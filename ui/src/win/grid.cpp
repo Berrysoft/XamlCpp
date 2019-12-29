@@ -16,7 +16,16 @@ namespace xaml
 
     void grid::__draw(rectangle const& region)
     {
+        bool new_draw = !get_handle();
         set_handle(get_parent()->get_handle());
+        if (new_draw)
+        {
+            for (auto& c : m_children)
+            {
+                c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
+                c->__size_to_fit();
+            }
+        }
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);

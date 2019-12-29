@@ -37,9 +37,6 @@ namespace xaml
         ~grid() override;
 
 #ifdef XAML_UI_WINDOWS
-    protected:
-        size __get_compact_size() const override { return get_size(); }
-
     public:
         std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
