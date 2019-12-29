@@ -32,6 +32,23 @@ namespace xaml
         static gboolean on_timeout(gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        using __native_handle_type = OBJC_OBJECT(NSTimer);
+
+    private:
+        __native_handle_type m_handle;
+
+    public:
+        inline __native_handle_type __get_handle() const noexcept { return m_handle; }
+
+    protected:
+        void __set_handle(__native_handle_type value) OBJC_BLOCK({ m_handle = value; });
+
+    public:
+        void __on_tick();
+#endif // XAML_UI_COCOA
+
     private:
         std::chrono::milliseconds m_interval;
 

@@ -81,7 +81,7 @@ namespace xaml
         operator bool() const noexcept { return m_handle; }
 
     protected:
-        void set_handle(native_handle_type h) noexcept { m_handle = h; }
+        void set_handle(native_handle_type h) noexcept OBJC_BLOCK({ m_handle = h; });
 
 #ifdef XAML_UI_WINDOWS
     protected:
@@ -107,7 +107,7 @@ namespace xaml
         inline __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
 
     protected:
-        void __set_delegate(__native_delegate_type value) { m_delegate = value; }
+        void __set_delegate(__native_delegate_type value) OBJC_BLOCK({ m_delegate = value; });
 #endif // XAML_UI_COCOA
 
     public:
