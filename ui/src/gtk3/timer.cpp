@@ -1,7 +1,6 @@
 #include <xaml/ui/timer.hpp>
 
 using namespace std;
-using namespace std::chrono;
 
 namespace xaml
 {

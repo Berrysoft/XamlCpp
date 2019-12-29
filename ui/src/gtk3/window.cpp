@@ -1,4 +1,5 @@
 #include <internal/gtk3/drawing.hpp>
+#include <internal/shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -9,8 +10,8 @@ namespace xaml
     window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !resizing) __draw({}); });
+        add_location_changed([this](window const&, point) { if (get_handle() && !m_resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (get_handle() && !m_resizing) __draw({}); });
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
@@ -34,12 +35,14 @@ namespace xaml
                 G_CALLBACK(window::on_configure_event),
                 this);
         }
-        if (!resizing.exchange(true))
         {
-            gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
-            gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
-            gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
-            resizing = false;
+            atomic_guard guard{ m_resizing };
+            if (!guard.exchange(true))
+            {
+                gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
+                gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
+                gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
+            }
         }
         draw_title();
         if (get_child())
@@ -87,7 +90,7 @@ namespace xaml
     {
         window* self = (window*)data;
         self->__draw({});
-        self->resizing = false;
+        self->m_resizing = false;
         return FALSE;
     }
 
@@ -99,7 +102,7 @@ namespace xaml
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
     {
         window* self = (window*)data;
-        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->resizing.exchange(true))
+        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->m_resizing.exchange(true))
         {
             self->set_location({ (double)event->configure.x, (double)event->configure.y });
             self->set_size({ (double)event->configure.width, (double)event->configure.height });

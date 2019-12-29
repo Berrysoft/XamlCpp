@@ -51,6 +51,9 @@ int main(int argc, char** argv)
     grid::set_column(btn, 1);
     grid::set_row(btn, 1);
     auto lb = make_shared<label>();
+    lb->set_margin({ 10, 10, 10, 10 });
+    lb->set_text_halignment(halignment_t::right);
+    lb->set_valignment(valignment_t::center);
     lb->set_text(U("This is a label."));
     g->add_child(lb);
     grid::set_column(lb, 0);
