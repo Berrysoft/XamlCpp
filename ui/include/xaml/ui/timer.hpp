@@ -5,16 +5,14 @@
 #include <chrono>
 #include <memory>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/ui/objc.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
-#elif defined(XAML_UI_COCOA)
-#include <xaml/ui/objc.hpp>
-#if __OBJC__
+#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
 #import <Cocoa/Cocoa.h>
-#endif // __OBJC__
 #endif
 
 namespace xaml

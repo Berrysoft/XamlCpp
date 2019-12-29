@@ -3,6 +3,7 @@
 
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/drawing.hpp>
+#include <xaml/ui/objc.hpp>
 #include <xaml/ui/strings.hpp>
 
 #ifdef XAML_UI_WINDOWS
@@ -10,11 +11,8 @@
 #include <optional>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
-#elif defined(XAML_UI_COCOA)
-#include <xaml/ui/objc.hpp>
-#if __OBJC__
+#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
 #import <xaml/ui/cocoa/XamlDelegate.h>
-#endif // __OBJC__
 #endif
 
 namespace xaml
