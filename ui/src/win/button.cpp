@@ -1,4 +1,5 @@
 #include <wil/result_macros.h>
+#include <windowsx.h>
 #include <xaml/ui/button.hpp>
 
 using namespace std;
@@ -24,9 +25,7 @@ namespace xaml
         add_is_default_changed([this](button const&, bool) { if (get_handle()) draw_default(); });
     }
 
-    button::~button()
-    {
-    }
+    button::~button() {}
 
     optional<LRESULT> button::__wnd_proc(window_message const& msg)
     {
@@ -83,7 +82,7 @@ namespace xaml
 
     void button::draw_text()
     {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_text.c_str()));
+        THROW_IF_WIN32_BOOL_FALSE(Button_SetText(get_handle(), m_text.c_str()));
     }
 
     void button::draw_default()
@@ -93,6 +92,6 @@ namespace xaml
             style |= BS_DEFPUSHBUTTON;
         else
             style &= ~BS_DEFPUSHBUTTON;
-        SetWindowLongPtr(get_handle(), GWL_STYLE, style);
+        Button_SetStyle(get_handle(), style, FALSE);
     }
 } // namespace xaml

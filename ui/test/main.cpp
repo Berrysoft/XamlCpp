@@ -1,13 +1,8 @@
 #include <algorithm>
 #include <iostream>
-#include <xaml/ui/application.hpp>
-#include <xaml/ui/button.hpp>
-#include <xaml/ui/canvas.hpp>
-#include <xaml/ui/grid.hpp>
 #include <xaml/ui/meta.hpp>
 #include <xaml/ui/msgbox.hpp>
 #include <xaml/ui/timer.hpp>
-#include <xaml/ui/window.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -55,6 +50,11 @@ int main(int argc, char** argv)
     g->add_child(btn);
     grid::set_column(btn, 1);
     grid::set_row(btn, 1);
+    auto lb = make_shared<label>();
+    lb->set_text(U("This is a label."));
+    g->add_child(lb);
+    grid::set_column(lb, 0);
+    grid::set_row(lb, 1);
     auto cv = make_shared<canvas>();
     cv->set_margin({ 10, 10, 10, 10 });
     cv->add_redraw([](canvas const& cv, drawing_context& dc) {

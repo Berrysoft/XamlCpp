@@ -5,6 +5,7 @@
 #include <xaml/ui/button.hpp>
 #include <xaml/ui/canvas.hpp>
 #include <xaml/ui/grid.hpp>
+#include <xaml/ui/label.hpp>
 #include <xaml/ui/window.hpp>
 
 namespace xaml
@@ -17,7 +18,8 @@ namespace xaml
             window,
             grid,
             button,
-            canvas>();
+            canvas,
+            label>();
     }
 } // namespace xaml
 

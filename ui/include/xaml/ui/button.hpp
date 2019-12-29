@@ -65,8 +65,7 @@ namespace xaml
     public:
 #define ADD_BUTTON_MEMBERS()      \
     ADD_COMMON_CONTROL_MEMBERS(); \
-    ADD_PROP(text);               \
-    ADD_EVENT(text_changed);      \
+    ADD_PROP_EVENT(text);         \
     ADD_PROP_EVENT(is_default);   \
     ADD_EVENT(click)
 
