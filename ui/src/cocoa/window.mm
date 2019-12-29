@@ -1,5 +1,6 @@
 #import <internal/cocoa/XamlWindowDelegate.h>
 #include <internal/cocoa/drawing.hpp>
+#include <internal/shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -24,8 +25,8 @@ namespace xaml
     window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (__get_window()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (__get_window() && !resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (__get_window() && !resizing) __draw({}); });
+        add_location_changed([this](window const&, point) { if (__get_window() && !m_resizing) __draw({}); });
+        add_size_changed([this](control const&, size) { if (__get_window() && !m_resizing) __draw({}); });
         add_resizable_changed([this](control const&, bool) { if(__get_window()) draw_resizable(); });
     }
 
@@ -51,18 +52,20 @@ namespace xaml
             application::current()->wnd_num++;
         }
         NSWindow* window = __get_window();
-        if (!resizing.exchange(true))
         {
-            CGFloat fw = (CGFloat)get_width();
-            CGFloat fh = (CGFloat)get_height();
-            NSRect frame = [window frame];
-            frame.size = { fw, fh };
-            frame.origin.x = (CGFloat)get_x();
-            NSScreen* screen = window.screen;
-            NSRect screen_frame = screen.frame;
-            frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
-            [window setFrame:frame display:YES];
-            resizing = false;
+            atomic_guard guard{ m_resizing };
+            if (!guard.exchange(true))
+            {
+                CGFloat fw = (CGFloat)get_width();
+                CGFloat fh = (CGFloat)get_height();
+                NSRect frame = [window frame];
+                frame.size = { fw, fh };
+                frame.origin.x = (CGFloat)get_x();
+                NSScreen* screen = window.screen;
+                NSRect screen_frame = screen.frame;
+                frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
+                [window setFrame:frame display:YES];
+            }
         }
         draw_title();
         if (get_child())
@@ -117,11 +120,13 @@ namespace xaml
     {
         NSWindow* window = __get_window();
         NSRect frame = window.frame;
-        if (!resizing.exchange(true))
         {
-            set_size(xaml::get_size(frame.size));
-            __draw({});
-            resizing = false;
+            atomic_guard guard{ m_resizing };
+            if (!guard.exchange(true))
+            {
+                set_size(xaml::get_size(frame.size));
+                __draw({});
+            }
         }
     }
 

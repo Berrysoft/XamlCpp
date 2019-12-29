@@ -88,10 +88,6 @@ namespace xaml
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
-        virtual size __get_compact_size() const = 0;
-#else
-    public:
-        size __get_compact_size() const { return get_size(); }
 #endif
 
 #ifdef XAML_UI_COCOA
@@ -113,6 +109,7 @@ namespace xaml
         virtual ~control();
 
         virtual void __draw(rectangle const& region) = 0;
+        virtual void __size_to_fit();
 
         EVENT(parent_changed, control const&, std::shared_ptr<control>)
 
@@ -165,6 +162,9 @@ namespace xaml
                 m_size_changed(*this, get_size());
             }
         }
+
+    protected:
+        void __set_size_noevent(size value) { m_size = value; }
 
         EVENT(margin_changed, control const&, margin)
 

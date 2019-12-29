@@ -1,6 +1,7 @@
 #ifndef XAML_UI_LABEL_HPP
 #define XAML_UI_LABEL_HPP
 
+#include <atomic>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
@@ -19,6 +20,11 @@ namespace xaml
     protected:
         size __get_compact_size() const override;
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_COCOA
+    public:
+        void __size_to_fit() override;
+#endif // XAML_UI_COCOA
 
     public:
         void __draw(rectangle const& region) override;

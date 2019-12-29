@@ -35,4 +35,6 @@ namespace xaml
         if (get_parent())
             get_parent()->__parent_redraw();
     }
+
+    void control::__size_to_fit() {}
 } // namespace xaml

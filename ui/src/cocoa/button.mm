@@ -60,8 +60,9 @@ namespace xaml
         NSRect parent_frame = [view frame];
         NSRect frame = button.frame;
         frame.origin = { real.x, parent_frame.size.height - real.height - real.y };
+        frame.size = { real.width, real.height };
         button.frame = frame;
-        set_size({ real.width, real.height });
+        __set_size_noevent({ real.width, real.height });
         draw_text();
         draw_default();
     }
@@ -99,5 +100,13 @@ namespace xaml
     void button::__on_action()
     {
         m_click(*this);
+    }
+
+    void button::__size_to_fit()
+    {
+        NSButton* button = (NSButton*)get_handle();
+        [button sizeToFit];
+        NSRect frame = button.frame;
+        __set_size_noevent(xaml::get_size(frame.size));
     }
 }
