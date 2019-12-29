@@ -34,11 +34,12 @@ namespace xaml
                 G_CALLBACK(window::on_configure_event),
                 this);
         }
-        if (!resizing)
+        if (!resizing.exchange(true))
         {
             gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
             gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
             gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
+            resizing = false;
         }
         draw_title();
         if (get_child())
@@ -98,9 +99,8 @@ namespace xaml
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
     {
         window* self = (window*)data;
-        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->resizing)
+        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->resizing.exchange(true))
         {
-            self->resizing = true;
             self->set_location({ (double)event->configure.x, (double)event->configure.y });
             self->set_size({ (double)event->configure.width, (double)event->configure.height });
             gdk_threads_add_idle(window::invoke_draw, data);

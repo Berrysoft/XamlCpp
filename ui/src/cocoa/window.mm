@@ -51,9 +51,8 @@ namespace xaml
             application::current()->wnd_num++;
         }
         NSWindow* window = __get_window();
-        if (!resizing)
+        if (!resizing.exchange(true))
         {
-            resizing = true;
             CGFloat fw = (CGFloat)get_width();
             CGFloat fh = (CGFloat)get_height();
             NSRect frame = [window frame];
@@ -118,9 +117,8 @@ namespace xaml
     {
         NSWindow* window = __get_window();
         NSRect frame = window.frame;
-        if (!resizing)
+        if (!resizing.exchange(true))
         {
-            resizing = true;
             set_size(xaml::get_size(frame.size));
             __draw({});
             resizing = false;
