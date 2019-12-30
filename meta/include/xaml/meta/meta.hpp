@@ -113,6 +113,90 @@ namespace xaml
         std::function<Return(Args...)> func;
     };
 
+    template <typename T>
+    struct __optional_return
+    {
+        using type = std::optional<T>;
+    };
+
+    template <>
+    struct __optional_return<void>
+    {
+        using type = bool;
+    };
+
+    template <typename T>
+    using __optional_return_t = typename __optional_return<T>::type;
+
+    std::shared_ptr<__type_erased_function> __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+
+    template <typename Return, typename... Args>
+    std::function<Return(Args...)> get_static_method(std::type_index type, std::string_view name) noexcept
+    {
+        auto method = __get_static_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
+        if (method)
+        {
+            return std::function<Return(Args...)>(std::static_pointer_cast<__type_erased_function_impl<Return(Args...)>>(method)->func);
+        }
+        else
+        {
+            return {};
+        }
+    }
+
+    template <typename Return, typename... Args>
+    __optional_return_t<Return> invoke_static_method(std::type_index type, std::string_view name, Args... args)
+    {
+        auto m = get_static_method<Return, Args...>(type, name);
+        if (m)
+        {
+            if constexpr (std::is_same_v<Return, void>)
+            {
+                m(std::forward<Args>(args)...);
+                return true;
+            }
+            else
+            {
+                return std::make_optional<Return>(m(std::forward<Args>(args)...));
+            }
+        }
+        else
+        {
+            if constexpr (std::is_same_v<Return, void>)
+            {
+                return false;
+            }
+            else
+            {
+                return std::nullopt;
+            }
+        }
+    }
+
+    void __add_static_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+
+    template <typename T, typename Return, typename... Args>
+    void add_static_method(std::string_view name, Return (*func)(Args...)) noexcept
+    {
+        if (func)
+        {
+            auto f = std::make_shared<__type_erased_function_impl<Return(Args...)>>();
+            f->func = func;
+            __add_static_method(std::type_index(typeid(T)), name, f);
+        }
+    }
+
+    template <typename T, typename Return, typename... Args>
+    void add_static_method_ex(std::string_view name, std::function<Return(Args...)> func)
+    {
+        if (func)
+        {
+            auto f = std::make_shared<__type_erased_function_impl<Return(Args...)>>();
+            f->func = func;
+            __add_static_method(std::type_index(typeid(T)), name, f);
+        }
+    }
+
     std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename... Args>
@@ -216,21 +300,6 @@ namespace xaml
         }
     }
 
-    template <typename T>
-    struct __optional_return
-    {
-        using type = std::optional<T>;
-    };
-
-    template <>
-    struct __optional_return<void>
-    {
-        using type = bool;
-    };
-
-    template <typename T>
-    using __optional_return_t = typename __optional_return<T>::type;
-
     template <typename Return, typename... Args>
     __optional_return_t<Return> invoke_method(std::shared_ptr<meta_class> obj, std::string_view name, Args... args) noexcept
     {
@@ -316,11 +385,17 @@ namespace xaml
         }
 
         friend property_info get_property(std::type_index type, std::string_view name);
+        friend property_info get_attach_property(std::type_index type, std::string_view name);
     };
 
     inline std::string __property_name(std::string_view name)
     {
         return "prop@" + (std::string)name;
+    }
+
+    inline std::string __attach_property_name(std::string_view name)
+    {
+        return "aprop@" + (std::string)name;
     }
 
     inline property_info get_property(std::type_index type, std::string_view name)
@@ -330,6 +405,16 @@ namespace xaml
         std::string pname = __property_name(name);
         info.getter = get_method<std::any>(type, pname);
         info.setter = get_method<void, std::any>(type, pname);
+        return info;
+    }
+
+    inline property_info get_attach_property(std::type_index type, std::string_view name)
+    {
+        property_info info = {};
+        info._name = name;
+        std::string pname = __attach_property_name(name);
+        info.getter = get_static_method<std::any, std::shared_ptr<meta_class>>(type, pname);
+        info.setter = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, pname);
         return info;
     }
 
@@ -368,6 +453,43 @@ namespace xaml
     {
         add_property_read<T, TValue>(name, getter);
         add_property_write<T, TValue>(name, setter);
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TGet>
+    void add_attach_property_read(std::string_view name, TGet&& getter)
+    {
+        if (getter)
+        {
+            std::string pname = __attach_property_name(name);
+            add_static_method_ex<T, std::any, std::shared_ptr<meta_class>>(
+                pname,
+                std::function<std::any(std::shared_ptr<meta_class>)>(
+                    [getter](std::shared_ptr<meta_class> self) -> std::any {
+                        return getter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self));
+                    }));
+        }
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TSet>
+    void add_attach_property_write(std::string_view name, TSet&& setter)
+    {
+        if (setter)
+        {
+            std::string pname = __attach_property_name(name);
+            add_static_method_ex<T, void, std::shared_ptr<meta_class>, std::any>(
+                pname,
+                std::function<void(std::shared_ptr<meta_class>, std::any)>(
+                    [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
+                        setter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), __value_converter_traits<TValue>::convert(value));
+                    }));
+        }
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TGet, typename TSet>
+    void add_attach_property(std::string_view name, TGet&& getter, TSet&& setter)
+    {
+        add_attach_property_read<T, TChild, TValue>(name, getter);
+        add_attach_property_write<T, TChild, TValue>(name, setter);
     }
 
     template <typename T, typename TValue>

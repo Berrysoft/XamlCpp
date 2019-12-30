@@ -10,6 +10,8 @@
 
 #define ADD_METHOD(name) ::xaml::add_method<self_type>(#name, &self_type::name)
 
+#define ADD_STATIC_METHOD(name) ::xaml::add_static_method<self_type>(#name, self_type::name)
+
 #define PROP_RD(name, type) \
 private:                    \
     type m_##name{};        \
@@ -32,6 +34,12 @@ public:                     \
 
 #define ADD_PROP(name) ADD_PROP_TYPE(name, __GET_PROP_TYPE(name))
 #define ADD_PROP_RD(name) ADD_PROP_TYPE_RD(name, __GET_PROP_TYPE(name))
+
+#define ADD_ATTACH_PROP_TYPE(name, ctype, rtype) ::xaml::add_attach_property<self_type, ctype, rtype>(#name, self_type::get_##name, self_type::set_##name)
+
+#define __GET_ATTACH_PROP_TYPE(name, ctype) decltype(self_type::get_##name(::std::declval<ctype>()))
+
+#define ADD_ATTACH_PROP(name, ctype) ADD_ATTACH_PROP_TYPE(name, ctype, __GET_ATTACH_PROP_TYPE(name, ctype))
 
 #define EVENT(name, ...)                                                                                                         \
 protected:                                                                                                                       \

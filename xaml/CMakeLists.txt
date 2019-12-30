@@ -27,7 +27,11 @@ install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(TARGETS xaml EXPORT xaml_targets LIBRARY DESTINATION lib)
 
 file(GLOB TEST_SOURCE "test/*.cpp")
-add_executable(xaml_test ${TEST_SOURCE})
+if(${BUILD_WINDOWS})
+    add_executable(xaml_test WIN32 ${TEST_SOURCE})
+else()
+    add_executable(xaml_test ${TEST_SOURCE})
+endif()
 target_link_libraries(xaml_test xaml)
 
 configure_file(test/test.xaml test.xaml COPYONLY)

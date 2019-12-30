@@ -163,10 +163,12 @@ namespace xaml
         static void set_row(std::shared_ptr<control> const& c, std::size_t row) { m_indecies[c].row = row; }
         static std::size_t get_row(std::shared_ptr<control> const& c) { return m_indecies[c].row; }
 
-#define ADD_GRID_MEMBERS()        \
-    ADD_MULTICONTAINER_MEMBERS(); \
-    ADD_PROP(columns);            \
-    ADD_PROP(rows)
+#define ADD_GRID_MEMBERS()                             \
+    ADD_MULTICONTAINER_MEMBERS();                      \
+    ADD_PROP(columns);                                 \
+    ADD_PROP(rows);                                    \
+    ADD_ATTACH_PROP(column, std::shared_ptr<control>); \
+    ADD_ATTACH_PROP(row, std::shared_ptr<control>)
 
         static void register_class() noexcept
         {

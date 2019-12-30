@@ -80,18 +80,41 @@ namespace xaml
             case XML_ELEMENT_NODE:
             {
                 int count = xmlTextReaderAttributeCount(reader);
+                string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                 for (int i = 0; i < count; i++)
                 {
                     xmlTextReaderMoveToAttributeNo(reader, i);
-                    string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                     string_view attr_name = get_string_view(xmlTextReaderConstName(reader));
                     if (attr_ns != "xmlns" && attr_name != "xmlns")
                     {
-                        auto prop = get_property(mc->this_type(), attr_name);
-                        if (prop.can_write())
+                        size_t dm_index = attr_name.find_first_of('.');
+                        if (dm_index != string_view::npos)
                         {
-                            string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                            prop.set(mc, attr_value);
+                            string_view class_name = attr_name.substr(0, dm_index);
+                            string_view attach_prop_name = attr_name.substr(dm_index + 1);
+                            auto t = get_type(attr_ns, class_name);
+                            if (t)
+                            {
+                                auto prop = get_attach_property(*t, attach_prop_name);
+                                if (prop.can_write())
+                                {
+                                    string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                                    prop.set(mc, attr_value);
+                                }
+                            }
+                            else
+                            {
+                                throw xaml_bad_type(attr_ns, class_name);
+                            }
+                        }
+                        else
+                        {
+                            auto prop = get_property(mc->this_type(), attr_name);
+                            if (prop.can_write())
+                            {
+                                string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                                prop.set(mc, attr_value);
+                            }
                         }
                     }
                 }

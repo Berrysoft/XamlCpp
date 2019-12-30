@@ -46,6 +46,26 @@ namespace xaml
         namespace_map.emplace((string)xmlns, (string)ns);
     }
 
+    static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> static_method_map;
+
+    shared_ptr<__type_erased_function> __get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    {
+        auto its = static_method_map[type].equal_range((string)name);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
+            {
+                return it->second;
+            }
+        }
+        return nullptr;
+    }
+
+    void __add_static_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
+    {
+        static_method_map[type].emplace((string)name, func);
+    }
+
     static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;
 
     shared_ptr<__type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept

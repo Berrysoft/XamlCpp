@@ -5,11 +5,11 @@
 using namespace std;
 using namespace xaml;
 
-#ifdef UNICODE
-int wmain(int argc, wchar_t** argv)
+#ifdef XAML_UI_WINDOWS
+INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 #else
 int main(int argc, char** argv)
-#endif // UNICODE
+#endif // XAML_UI_WINDOWS
 {
     init_meta();
     try
@@ -18,7 +18,11 @@ int main(int argc, char** argv)
         if (des)
         {
             auto wnd = static_pointer_cast<window>(des.deserialize());
+#ifdef XAML_UI_WINDOWS
+            auto app = application::init(lpCmdLine);
+#else
             auto app = application::init(argc, argv);
+#endif // XAML_UI_WINDOWS
             wnd->show();
             return app->run();
         }

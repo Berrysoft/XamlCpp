@@ -17,6 +17,8 @@ public:
     void plus(int x, int y) { set_value(x + y); }
     void minus(int x, int y) { set_value(x - y); }
 
+    static int multiply(int x, int y) { return x * y; }
+
     ~calculator() override {}
 
     static void register_class() noexcept
@@ -25,6 +27,7 @@ public:
         ADD_CTOR_DEF();
         ADD_METHOD(plus);
         ADD_METHOD(minus);
+        ADD_STATIC_METHOD(multiply);
         ADD_PROP_EVENT(value);
     }
 };
@@ -43,4 +46,5 @@ int main()
     prop.set(mc, L"200"sv);
     ev.remove(mc, token);
     invoke_method<void>(mc, "minus", 1, 1);
+    cout << "3 * 7 = " << *invoke_static_method<int>(t, "multiply", 3, 7) << endl;
 }
