@@ -25,7 +25,7 @@ namespace xaml
         vector<tuple<double, double>> result(lengths.size());
         if (result.empty())
         {
-            result.push_back(make_tuple(0, total));
+            result.push_back(make_tuple(total, 0));
             return result;
         }
         double total_star = 0;

@@ -55,7 +55,10 @@ namespace xaml
         std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
     };
 
-#define ADD_MULTICONTAINER_MEMBERS() ADD_CONTROL_MEMBERS()
+#define ADD_MULTICONTAINER_MEMBERS() \
+    ADD_CONTROL_MEMBERS();           \
+    ADD_METHOD(add_child);           \
+    ADD_METHOD(remove_child)
 
 } // namespace xaml
 

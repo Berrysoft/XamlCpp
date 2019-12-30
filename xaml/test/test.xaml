@@ -1,3 +1,6 @@
-<window xmlns="https://github.com/Berrysoft/XamlCpp/" title="Test Window" x="200" y="100" width="800" height="600">
-  <button text="Hello!"/>
+<window xmlns="https://github.com/Berrysoft/XamlCpp/"
+        title="Test Window" location="200, 100" size="800, 600">
+  <grid margin="10">
+    <button text="Hello!"/>
+  </grid>
 </window>

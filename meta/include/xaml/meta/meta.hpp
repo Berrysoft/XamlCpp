@@ -262,8 +262,8 @@ namespace xaml
 
     void __add_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
 
-    template <typename T, typename TMethod>
-    void add_method(std::string_view name, TMethod T::*func) noexcept
+    template <typename T, typename TBase, typename TMethod>
+    void add_method(std::string_view name, TMethod TBase::*func) noexcept
     {
         if (func)
         {

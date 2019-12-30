@@ -2,9 +2,17 @@
 #define XAML_UI_DRAWING_HPP
 
 #include <cstdint>
+#include <tuple>
+#include <xaml/meta/conv.hpp>
 
 namespace xaml
 {
+    template <typename TChar>
+    constexpr std::basic_string_view<TChar> __delimeter{ " ," };
+
+    template <>
+    constexpr std::wstring_view __delimeter<wchar_t>{ L" ," };
+
     struct size
     {
         double width;
@@ -33,6 +41,93 @@ namespace xaml
     constexpr point operator*(point lhs, double rhs) { return { lhs.x * rhs, lhs.y * rhs }; }
     constexpr point operator*(double lhs, point rhs) { return rhs * lhs; }
     constexpr point operator/(point lhs, double rhs) { return lhs * (1 / rhs); }
+
+    template <typename TChar>
+    inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str)
+    {
+        size_t index = str.find_first_of(__delimeter<TChar>);
+        if (index == std::basic_string_view<TChar>::npos)
+        {
+            double d = stof<double>(str);
+            return std::make_tuple(d, d);
+        }
+        size_t index2 = str.find_first_not_of(__delimeter<TChar>, index);
+        return std::make_tuple(stof<double>(str.substr(0, index)), stof<double>(str.substr(index2)));
+    }
+
+    inline std::tuple<double, double> stot2d(std::string_view str) { return __stot2d<char>(str); }
+    inline std::tuple<double, double> stot2d(std::wstring_view str) { return __stot2d<wchar_t>(str); }
+
+    template <typename T>
+    struct __can_stot2d : std::false_type
+    {
+    };
+
+    template <>
+    struct __can_stot2d<size> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot2d<point> : std::true_type
+    {
+    };
+
+    template <typename T>
+    constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
+
+    template <typename T>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stot2d_v<T>>>
+    {
+        static T convert(std::any value)
+        {
+            if (value.type() == typeid(T))
+            {
+                return std::any_cast<T>(value);
+            }
+            else if (value.type() == typeid(std::tuple<double, double>))
+            {
+                auto [d1, d2] = std::any_cast<std::tuple<double, double>>(value);
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(std::string))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<std::string>(value));
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<std::string_view>(value));
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<const char*>(value));
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<std::wstring>(value));
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<std::wstring_view>(value));
+                return { d1, d2 };
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                auto [d1, d2] = stot2d(std::any_cast<const wchar_t*>(value));
+                return { d1, d2 };
+            }
+            else
+            {
+                return {};
+            }
+        }
+
+        static std::any convert_back(T value) { return value; }
+    };
 
     struct rectangle
     {
@@ -66,6 +161,103 @@ namespace xaml
     constexpr margin operator*(margin const& lhs, double rhs) { return { lhs.left * rhs, lhs.top * rhs, lhs.right * rhs, lhs.bottom * rhs }; }
     constexpr margin operator*(double lhs, margin const& rhs) { return rhs * lhs; }
     constexpr margin operator/(margin const& lhs, double rhs) { return lhs * (1 / rhs); }
+
+    template <typename TChar>
+    inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str)
+    {
+        size_t len1 = str.find_first_of(__delimeter<TChar>);
+        if (len1 == std::basic_string_view<TChar>::npos)
+        {
+            double d = stof<double>(str);
+            return std::make_tuple(d, d, d, d);
+        }
+        size_t index2 = str.find_first_not_of(__delimeter<TChar>, len1);
+        size_t len2 = str.find_first_of(__delimeter<TChar>, index2);
+        if (len2 == std::basic_string_view<TChar>::npos)
+        {
+            double d1 = stof<double>(str.substr(0, len1));
+            double d2 = stof<double>(str.substr(index2));
+            return std::make_tuple(d1, d2, d1, d2);
+        }
+        size_t index3 = str.find_first_not_of(__delimeter<TChar>, len2);
+        size_t len3 = str.find_first_of(__delimeter<TChar>, index3);
+        size_t index4 = str.find_first_not_of(__delimeter<TChar>, len3);
+        return std::make_tuple(stof<double>(str.substr(0, len1)), stof<double>(str.substr(index2, len2 - index2)), stof<double>(str.substr(index3, len3 - index3)), stof<double>(str.substr(index4)));
+    }
+
+    inline std::tuple<double, double, double, double> stot4d(std::string_view str) { return __stot4d<char>(str); }
+    inline std::tuple<double, double, double, double> stot4d(std::wstring_view str) { return __stot4d<wchar_t>(str); }
+
+    template <typename T>
+    struct __can_stot4d : std::false_type
+    {
+    };
+
+    template <>
+    struct __can_stot4d<rectangle> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot4d<margin> : std::true_type
+    {
+    };
+
+    template <typename T>
+    constexpr bool __can_stot4d_v = __can_stot4d<T>::value;
+
+    template <typename T>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stot4d_v<T>>>
+    {
+        static T convert(std::any value)
+        {
+            if (value.type() == typeid(T))
+            {
+                return std::any_cast<T>(value);
+            }
+            else if (value.type() == typeid(std::tuple<double, double, double, double>))
+            {
+                auto [d1, d2, d3, d4] = std::any_cast<std::tuple<double, double, double, double>>(value);
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(std::string))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::string>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::string_view>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<const char*>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::wstring>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::wstring_view>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                auto [d1, d2, d3, d4] = stot4d(std::any_cast<const wchar_t*>(value));
+                return { d1, d2, d3, d4 };
+            }
+            else
+            {
+                return {};
+            }
+        }
+
+        static std::any convert_back(T value) { return value; }
+    };
 
     struct alignas(1) color
     {

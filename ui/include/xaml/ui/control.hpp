@@ -190,7 +190,9 @@ namespace xaml
     ADD_PROP_EVENT(size);     \
     ADD_PROP(width);          \
     ADD_PROP(height);         \
-    ADD_PROP_EVENT(margin)
+    ADD_PROP_EVENT(margin);   \
+    ADD_METHOD(is_container); \
+    ADD_METHOD(is_multicontainer)
 
     class common_control : public control
     {

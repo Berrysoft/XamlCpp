@@ -143,10 +143,22 @@ namespace xaml
                 }
                 else
                 {
-                    auto prop = get_property(mc->this_type(), "child");
-                    if (prop.can_write())
+                    bool is_container = invoke_method<bool>(mc, "is_container").value_or(false);
+                    if (is_container)
                     {
-                        prop.set(mc, dynamic_pointer_cast<control>(child));
+                        bool is_multicontainer = invoke_method<bool>(mc, "is_multicontainer").value_or(false);
+                        if (!is_multicontainer)
+                        {
+                            auto prop = get_property(mc->this_type(), "child");
+                            if (prop.can_write())
+                            {
+                                prop.set(mc, dynamic_pointer_cast<control>(child));
+                            }
+                        }
+                        else
+                        {
+                            invoke_method<void>(mc, "add_child", dynamic_pointer_cast<control>(child));
+                        }
                     }
                 }
             }
