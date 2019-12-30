@@ -120,6 +120,16 @@ namespace xaml
         std::shared_ptr<control> get_parent() const { return m_parent; }
         void set_parent(std::shared_ptr<control> const& value);
 
+    private:
+        std::shared_ptr<meta_class> m_data_context{ nullptr };
+
+    public:
+        std::shared_ptr<meta_class> get_data_context() const { return m_data_context ? m_data_context : (m_parent ? m_parent->get_data_context() : nullptr); }
+        void set_data_context(std::shared_ptr<meta_class> const& value) { m_data_context = value; }
+
+    public:
+        virtual std::shared_ptr<control> get_root_window() { return m_parent; }
+
     public:
         virtual bool is_container() const = 0;
         virtual bool is_multicontainer() const = 0;
@@ -184,15 +194,22 @@ namespace xaml
 
         PROP(halignment, halignment_t)
         PROP(valignment, valignment_t)
-    };
 
 #define ADD_CONTROL_MEMBERS() \
+    ADD_PROP(data_context);   \
     ADD_PROP_EVENT(size);     \
     ADD_PROP(width);          \
     ADD_PROP(height);         \
     ADD_PROP_EVENT(margin);   \
     ADD_METHOD(is_container); \
     ADD_METHOD(is_multicontainer)
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE(xaml, control);
+            ADD_CONTROL_MEMBERS();
+        }
+    };
 
     class common_control : public control
     {
@@ -202,9 +219,15 @@ namespace xaml
 
         bool is_container() const override final { return false; }
         bool is_multicontainer() const override final { return false; }
-    };
 
 #define ADD_COMMON_CONTROL_MEMBERS() ADD_CONTROL_MEMBERS()
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE(xaml, common_control);
+            ADD_COMMON_CONTROL_MEMBERS();
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_CONTROL_HPP

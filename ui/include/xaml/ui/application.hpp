@@ -17,9 +17,6 @@ namespace xaml
     class application : public meta_class_impl<application>, public std::enable_shared_from_this<application>
     {
     private:
-        static constexpr std::string_view namespace_name = "xaml";
-        static constexpr std::string_view class_name = "application";
-
         friend class window;
 
         int wnd_num{ 0 };
@@ -62,7 +59,7 @@ namespace xaml
 
         static void register_class() noexcept
         {
-            REGISTER_TYPE();
+            REGISTER_TYPE(xaml, application);
         }
     };
 } // namespace xaml

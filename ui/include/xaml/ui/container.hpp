@@ -31,12 +31,19 @@ namespace xaml
                 m_child_changed(*this, value);
             }
         }
-    };
 
+    public:
 #define ADD_CONTAINER_MEMBERS() \
     ADD_CONTROL_MEMBERS();      \
     ADD_PROP(child);            \
     ADD_EVENT(child_changed)
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE(xaml, container);
+            ADD_CONTAINER_MEMBERS();
+        }
+    };
 
     class multicontainer : public control
     {
@@ -53,13 +60,19 @@ namespace xaml
         void add_child(std::shared_ptr<control> const& child);
         void remove_child(std::shared_ptr<control> const& child);
         std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
-    };
 
+    public:
 #define ADD_MULTICONTAINER_MEMBERS() \
     ADD_CONTROL_MEMBERS();           \
     ADD_METHOD(add_child);           \
     ADD_METHOD(remove_child)
 
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE(xaml, multicontainer);
+            ADD_MULTICONTAINER_MEMBERS();
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_CONTAINER_HPP

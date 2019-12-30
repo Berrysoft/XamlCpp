@@ -12,6 +12,7 @@ public:
     static constexpr std::string_view class_name = "calculator";
 
     PROP_EVENT(value, int)
+    EVENT(value_changed, calculator const&, int)
 
 public:
     void plus(int x, int y) { set_value(x + y); }
@@ -23,7 +24,7 @@ public:
 
     static void register_class() noexcept
     {
-        REGISTER_TYPE();
+        REGISTER_TYPE(, calculator);
         ADD_CTOR_DEF();
         ADD_METHOD(plus);
         ADD_METHOD(minus);

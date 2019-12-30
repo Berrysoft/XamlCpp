@@ -18,12 +18,8 @@ namespace xaml
     std::shared_ptr<window> __get_window(HWND hWnd);
 #endif // XAML_UI_WINDOWS
 
-    class window : public container, public meta_class_impl<window>
+    class window : public container /*, public meta_class_impl<window>*/
     {
-    private:
-        static constexpr std::string_view namespace_name = "xaml";
-        static constexpr std::string_view class_name = "window";
-
 #ifdef XAML_UI_WINDOWS
     private:
         wil::unique_hdc_window m_store_dc{ nullptr };
@@ -72,9 +68,13 @@ namespace xaml
         window();
         virtual ~window() override;
 
+    public:
+        std::shared_ptr<control> get_root_window() override { return shared_from_this(); }
+
         void show();
 
         PROP_EVENT(resizable, bool)
+        EVENT(resizable_changed, window const&, bool)
 
     private:
         std::atomic<bool> m_resizing{ false };
@@ -126,6 +126,7 @@ namespace xaml
         string_view_t get_title() const noexcept { return m_title; }
         void set_title(string_view_t value) { m_title = (string_t)value; }
 
+    public:
 #define ADD_WINDOW_MEMBERS()  \
     ADD_CONTAINER_MEMBERS();  \
     ADD_PROP(title);          \
@@ -138,8 +139,7 @@ namespace xaml
 
         static void register_class() noexcept
         {
-            REGISTER_TYPE();
-            ADD_CTOR_DEF();
+            REGISTER_TYPE(xaml, window);
             ADD_WINDOW_MEMBERS();
         }
     };

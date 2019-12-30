@@ -8,10 +8,6 @@ namespace xaml
 {
     class label : public common_control, public meta_class_impl<label>
     {
-    private:
-        static constexpr std::string_view namespace_name = "xaml";
-        static constexpr std::string_view class_name = "label";
-
     public:
         label();
         ~label() override;
@@ -50,7 +46,7 @@ namespace xaml
 
         static void register_class() noexcept
         {
-            REGISTER_TYPE();
+            REGISTER_TYPE(xaml, label);
             ADD_CTOR_DEF();
             ADD_LABEL_MEMBERS();
         }

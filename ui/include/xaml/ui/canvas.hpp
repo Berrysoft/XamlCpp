@@ -171,10 +171,6 @@ namespace xaml
 
     class canvas : public common_control, public meta_class_impl<canvas>
     {
-    private:
-        static constexpr std::string_view namespace_name = "xaml";
-        static constexpr std::string_view class_name = "canvas";
-
     public:
         canvas();
         ~canvas() override;
@@ -216,7 +212,7 @@ namespace xaml
 
         static void register_class() noexcept
         {
-            REGISTER_TYPE();
+            REGISTER_TYPE(xaml, canvas);
             ADD_CTOR_DEF();
             ADD_CANVAS_MEMBERS();
         }

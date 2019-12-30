@@ -6,6 +6,29 @@
 using namespace std;
 using namespace xaml;
 
+class test_window : public window, public meta_class_impl<test_window>
+{
+public:
+    void init_components()
+    {
+        deserializer des("test.xaml");
+        des.deserialize(static_pointer_cast<test_window>(shared_from_this()));
+    }
+
+    void on_button_click(button_base const&)
+    {
+        msgbox(U("Hello world!"), U("Hello"));
+    }
+
+    static void register_class() noexcept
+    {
+        REGISTER_TYPE(, test_window);
+        ADD_CTOR_DEF();
+        ADD_WINDOW_MEMBERS();
+        ADD_METHOD(on_button_click);
+    }
+};
+
 #ifdef XAML_UI_WINDOWS
 INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 #else
@@ -13,20 +36,18 @@ int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
     init_meta();
+    register_class<test_window>();
     try
     {
-        deserializer des("test.xaml");
-        if (des)
-        {
 #ifdef XAML_UI_WINDOWS
-            auto app = application::init(lpCmdLine);
+        auto app = application::init(lpCmdLine);
 #else
-            auto app = application::init(argc, argv);
+        auto app = application::init(argc, argv);
 #endif // XAML_UI_WINDOWS
-            auto wnd = static_pointer_cast<window>(des.deserialize());
-            wnd->show();
-            return app->run();
-        }
+        auto wnd = make_shared<test_window>();
+        wnd->init_components();
+        wnd->show();
+        return app->run();
     }
     catch (exception& ex)
     {

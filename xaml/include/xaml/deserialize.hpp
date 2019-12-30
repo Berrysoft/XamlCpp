@@ -19,7 +19,6 @@ namespace xaml
     struct xaml_bad_type : std::logic_error
     {
         xaml_bad_type(std::string_view ns, std::string_view name);
-        xaml_bad_type(std::type_index lhs, std::type_index rhs);
         ~xaml_bad_type() override {}
     };
 
@@ -44,12 +43,11 @@ namespace xaml
         ~deserializer();
 
     private:
-        int deserialize_members(std::shared_ptr<meta_class> mc);
-        std::tuple<int, std::shared_ptr<meta_class>> deserialize_impl();
+        int deserialize_members(std::shared_ptr<meta_class> mc, std::shared_ptr<meta_class> root);
+        std::tuple<int, std::shared_ptr<meta_class>> deserialize_impl(std::shared_ptr<meta_class> root);
         void clean_up(int ret);
 
     public:
-        std::shared_ptr<meta_class> deserialize();
         void deserialize(std::shared_ptr<meta_class> mc);
     };
 } // namespace xaml

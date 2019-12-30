@@ -3,7 +3,9 @@
 
 #include <xaml/meta/meta.hpp>
 
-#define REGISTER_TYPE() ::xaml::register_type<self_type>(self_type::namespace_name, self_type::class_name)
+#define REGISTER_TYPE(ns, name) \
+    using self_type = name;     \
+    ::xaml::register_type<self_type>(#ns, #name)
 
 #define ADD_CTOR(...) ::xaml::add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ::xaml::add_constructor<self_type>()
@@ -54,28 +56,26 @@ public:                                                                         
     ::xaml::__add_event_deduce_helper<self_type, __GET_PROP_TYPE(name)>{}( \
         #name, [](self_type * self, auto f) -> typename event_info::token_type { return self->add_##name(::std::move(f)); }, [](self_type* self, typename event_info::token_type token) -> void { self->remove_##name(token); }, [](self_type* self) -> __GET_PROP_TYPE(name) { return self->get_##name(); })
 
-#define PROP_EVENT(name, type)                    \
-    PROP_RD(name, type)                           \
-    EVENT(name##_changed, self_type const&, type) \
-    void set_##name(type value)                   \
-    {                                             \
-        if (m_##name != value)                    \
-        {                                         \
-            m_##name = value;                     \
-            m_##name##_changed(*this, value);     \
-        }                                         \
+#define PROP_EVENT(name, type)                \
+    PROP_RD(name, type)                       \
+    void set_##name(type value)               \
+    {                                         \
+        if (m_##name != value)                \
+        {                                     \
+            m_##name = value;                 \
+            m_##name##_changed(*this, value); \
+        }                                     \
     }
 
-#define PROP_REF_EVENT(name, type)                \
-    PROP_RD(name, type)                           \
-    EVENT(name##_changed, self_type const&, type) \
-    void set_##name(type const& value)            \
-    {                                             \
-        if (m_##name != value)                    \
-        {                                         \
-            m_##name = value;                     \
-            m_##name##_changed(*this, value);     \
-        }                                         \
+#define PROP_REF_EVENT(name, type)            \
+    PROP_RD(name, type)                       \
+    void set_##name(type const& value)        \
+    {                                         \
+        if (m_##name != value)                \
+        {                                     \
+            m_##name = value;                 \
+            m_##name##_changed(*this, value); \
+        }                                     \
     }
 
 #define ADD_PROP_EVENT(name) \

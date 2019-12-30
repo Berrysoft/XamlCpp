@@ -25,7 +25,6 @@ namespace xaml
     template <typename TChild>
     struct meta_class_impl : meta_class
     {
-        using self_type = TChild;
         std::type_index this_type() const noexcept override final { return std::type_index(typeid(TChild)); }
         virtual ~meta_class_impl() override {}
     };
@@ -263,7 +262,7 @@ namespace xaml
         {
             this->func = std::function<Return(std::shared_ptr<meta_class>, Args...)>(
                 [f](std::shared_ptr<meta_class> self, Args... args) -> Return {
-                    return std::mem_fn(f)(std::static_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
+                    return std::mem_fn(f)(std::dynamic_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
                 });
         }
     };
@@ -284,6 +283,8 @@ namespace xaml
     using __remove_const_func_t = typename __remove_const_func<T>::type;
 
     std::shared_ptr<__type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+
+    std::shared_ptr<__type_erased_function> __get_first_method(std::type_index type, std::string_view name) noexcept;
 
     template <typename Return, typename... Args>
     std::function<Return(std::shared_ptr<meta_class>, Args...)> get_method(std::type_index type, std::string_view name) noexcept
@@ -502,7 +503,7 @@ namespace xaml
                 pname,
                 std::function<std::any(std::shared_ptr<meta_class>)>(
                     [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::static_pointer_cast<T>(self).get());
+                        return getter(std::dynamic_pointer_cast<T>(self).get());
                     }));
         }
     }
@@ -517,7 +518,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::static_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
+                        setter(std::dynamic_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -537,6 +538,7 @@ namespace xaml
     private:
         std::string_view _name;
         std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder;
+        std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder_erased_this;
         std::function<void(std::shared_ptr<meta_class>, token_type)> remover;
         std::shared_ptr<__type_erased_function> invoker;
 
@@ -560,6 +562,15 @@ namespace xaml
                 auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
                 h->func = handler;
                 return adder(self, h);
+            }
+            return 0;
+        }
+
+        token_type add_erased_this(std::shared_ptr<meta_class> const& self, std::shared_ptr<__type_erased_function> func)
+        {
+            if (adder_erased_this)
+            {
+                return adder_erased_this(self, func);
             }
             return 0;
         }
@@ -590,12 +601,18 @@ namespace xaml
         return "event@" + (std::string)name;
     }
 
+    inline std::string __event_name_erased_this(std::string_view name)
+    {
+        return "event@" + (std::string)name + "@erased_this";
+    }
+
     inline event_info __get_event(std::type_index type, std::string_view name, std::initializer_list<std::type_index> arg_types)
     {
         event_info info = {};
         info._name = name;
         std::string ename = __event_name(name);
         info.adder = get_method<typename event_info::token_type, std::shared_ptr<__type_erased_function>>(type, ename);
+        info.adder_erased_this = get_method<typename event_info::token_type, std::shared_ptr<__type_erased_function>>(type, __event_name_erased_this(name));
         info.remover = get_method<void, typename event_info::token_type>(type, ename);
         info.invoker = __get_method(type, ename, std::type_index(typeid(void)), arg_types);
         return info;
@@ -621,6 +638,26 @@ namespace xaml
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
                             return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), std::move(h->func));
+                        }
+                        return 0;
+                    }));
+        }
+    }
+
+    template <typename T, typename... Args, typename TAdd>
+    void add_event_add_erased_this(std::string_view name, TAdd T::*adder)
+    {
+        if (adder)
+        {
+            std::string ename = __event_name_erased_this(name);
+            add_method_ex<T, typename event_info::token_type, std::shared_ptr<__type_erased_function>>(
+                ename,
+                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
+                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
+                        if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
+                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), [self, h](Args... args) { std::move(h->func)(self, std::forward<Args>(args)...); });
                         }
                         return 0;
                     }));
@@ -661,6 +698,7 @@ namespace xaml
     void add_event(std::string_view name, TAdd T::*adder, TRemove T::*remover, TGet T::*getter)
     {
         add_event_add<T, Args...>(name, adder);
+        add_event_add_erased_this<T, Args...>(name, adder);
         add_event_remove<T, Args...>(name, remover);
         add_event_invoke<T, Args...>(name, getter);
     }
@@ -678,7 +716,27 @@ namespace xaml
                         if (handler->is_same_arg_type<Args...>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
+                            return adder(std::dynamic_pointer_cast<T>(self).get(), std::move(h->func));
+                        }
+                        return 0;
+                    }));
+        }
+    }
+
+    template <typename T, typename... Args>
+    void add_event_add_erased_this_ex(std::string_view name, std::function<typename event_info::token_type(T*, std::function<void(Args...)>)> adder)
+    {
+        if (adder)
+        {
+            std::string ename = __event_name_erased_this(name);
+            add_method_ex<T, typename event_info::token_type, std::shared_ptr<__type_erased_function>>(
+                ename,
+                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
+                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
+                        if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
+                            return adder(std::dynamic_pointer_cast<T>(self).get(), [self, h](Args... args) { std::move(h->func)(self, std::forward<Args>(args)...); });
                         }
                         return 0;
                     }));
@@ -695,7 +753,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
                     [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        remover(std::static_pointer_cast<T>(self).get(), token);
+                        remover(std::dynamic_pointer_cast<T>(self).get(), token);
                     }));
         }
     }
@@ -710,7 +768,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, Args...)>(
                     [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        getter(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                        getter(std::dynamic_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
                     }));
         }
     }
@@ -719,6 +777,7 @@ namespace xaml
     void add_event_ex(std::string_view name, std::function<typename event_info::token_type(T*, std::function<void(Args...)>)> adder, std::function<void(T*, typename event_info::token_type)> remover, std::function<event<Args...>&(T*)> getter)
     {
         add_event_add_ex<T, Args...>(name, adder);
+        add_event_add_erased_this_ex<T, Args...>(name, adder);
         add_event_remove_ex<T, Args...>(name, remover);
         add_event_invoke_ex<T, Args...>(name, getter);
     }

@@ -101,6 +101,16 @@ namespace xaml
         return nullptr;
     }
 
+    shared_ptr<__type_erased_function> __get_first_method(type_index type, string_view name) noexcept
+    {
+        auto its = method_map[type].equal_range((string)name);
+        for (auto it = its.first; it != its.second; ++it)
+        {
+            return it->second;
+        }
+        return nullptr;
+    }
+
     void __add_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
         method_map[type].emplace((string)name, func);

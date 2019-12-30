@@ -6,15 +6,11 @@
 
 namespace xaml
 {
-    class button : public common_control, public meta_class_impl<button>
+    class button_base : public common_control
     {
-    private:
-        static constexpr std::string_view namespace_name = "xaml";
-        static constexpr std::string_view class_name = "button";
-
     public:
-        button();
-        virtual ~button() override;
+        button_base();
+        virtual ~button_base() override;
 
 #ifdef XAML_UI_WINDOWS
     public:
@@ -54,14 +50,15 @@ namespace xaml
             }
         }
 
-        EVENT(text_changed, button const&, string_view_t)
+        EVENT(text_changed, button_base const&, string_view_t)
 
         PROP_EVENT(is_default, bool)
+        EVENT(is_default_changed, button_base const&, bool)
 
-        EVENT(click, button const&)
+        EVENT(click, button_base const&)
 
     public:
-#define ADD_BUTTON_MEMBERS()      \
+#define ADD_BUTTON_BASE_MEMBERS() \
     ADD_COMMON_CONTROL_MEMBERS(); \
     ADD_PROP_EVENT(text);         \
     ADD_PROP_EVENT(is_default);   \
@@ -69,7 +66,19 @@ namespace xaml
 
         static void register_class() noexcept
         {
-            REGISTER_TYPE();
+            REGISTER_TYPE(xaml, button_base);
+            ADD_BUTTON_BASE_MEMBERS();
+        }
+    };
+
+    class button : public button_base, public meta_class_impl<button>
+    {
+    public:
+#define ADD_BUTTON_MEMBERS() ADD_BUTTON_BASE_MEMBERS()
+
+        static void register_class() noexcept
+        {
+            REGISTER_TYPE(xaml, button);
             ADD_CTOR_DEF();
             ADD_BUTTON_MEMBERS();
         }

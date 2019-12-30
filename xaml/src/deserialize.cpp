@@ -32,17 +32,6 @@ namespace xaml
     {
     }
 
-    static string get_bad_type_error(type_index lhs, type_index rhs)
-    {
-        ostringstream oss;
-        oss << "\"" << lhs.name() << "\" and \"" << rhs.name() << "\" are not the same type.";
-        return oss.str();
-    }
-
-    xaml_bad_type::xaml_bad_type(type_index lhs, type_index rhs) : logic_error(get_bad_type_error(lhs, rhs))
-    {
-    }
-
     static inline string_view get_string_view(const xmlChar* str)
     {
         if (str)
@@ -70,7 +59,7 @@ namespace xaml
         reader = xmlNewTextReaderFilename(absolute(file).string().c_str());
     }
 
-    int deserializer::deserialize_members(shared_ptr<meta_class> mc)
+    int deserializer::deserialize_members(shared_ptr<meta_class> mc, std::shared_ptr<meta_class> root)
     {
         int ret = 1;
         while (ret == 1)
@@ -80,11 +69,13 @@ namespace xaml
             case XML_ELEMENT_NODE:
             {
                 int count = xmlTextReaderAttributeCount(reader);
-                string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+                string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                 for (int i = 0; i < count; i++)
                 {
                     xmlTextReaderMoveToAttributeNo(reader, i);
                     string_view attr_name = get_string_view(xmlTextReaderConstName(reader));
+                    string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+                    if (attr_ns.empty()) attr_ns = ns;
                     if (attr_ns != "xmlns" && attr_name != "xmlns")
                     {
                         size_t dm_index = attr_name.find_first_of('.');
@@ -115,6 +106,16 @@ namespace xaml
                                 string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                                 prop.set(mc, attr_value);
                             }
+                            else if (!prop.can_read())
+                            {
+                                auto ev = get_event(mc->this_type(), attr_name);
+                                if (ev.can_add())
+                                {
+                                    string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                                    auto method = __get_first_method(root->this_type(), attr_value);
+                                    ev.add_erased_this(mc, method);
+                                }
+                            }
                         }
                     }
                 }
@@ -144,31 +145,71 @@ namespace xaml
             ret = xmlTextReaderRead(reader);
             if (xmlTextReaderNodeType(reader) == XML_ELEMENT_NODE)
             {
-                auto [ret, child] = deserialize_impl();
-                if (!child)
+                string_view name = get_string_view(xmlTextReaderConstName(reader));
+                size_t dm_index = name.find_first_of('.');
+                if (dm_index != string_view::npos)
                 {
-                    clean_up(ret);
-                }
-                else
-                {
-                    bool is_container = invoke_method<bool>(mc, "is_container").value_or(false);
-                    if (is_container)
+                    string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
+                    string_view class_name = name.substr(0, dm_index);
+                    string_view prop_name = name.substr(dm_index + 1);
+                    auto t = get_type(ns, class_name);
+                    if (t)
                     {
-                        bool is_multicontainer = invoke_method<bool>(mc, "is_multicontainer").value_or(false);
-                        if (!is_multicontainer)
+                        auto [ret, child] = deserialize_impl(root);
+                        if (!child)
                         {
-                            auto prop = get_property(mc->this_type(), "child");
+                            clean_up(ret);
+                        }
+                        else if (mc->this_type() == *t)
+                        {
+                            auto prop = get_property(mc->this_type(), prop_name);
                             if (prop.can_write())
                             {
-                                prop.set(mc, dynamic_pointer_cast<control>(child));
+                                prop.set(mc, child);
                             }
                         }
                         else
                         {
-                            invoke_method<void>(mc, "add_child", dynamic_pointer_cast<control>(child));
+                            auto prop = get_attach_property(*t, prop_name);
+                            if (prop.can_write())
+                            {
+                                prop.set(mc, child);
+                            }
                         }
                     }
-                    ret = xmlTextReaderRead(reader);
+                    else
+                    {
+                        throw xaml_bad_type(ns, class_name);
+                    }
+                }
+                else
+                {
+                    auto [ret, child] = deserialize_impl(root);
+                    if (!child)
+                    {
+                        clean_up(ret);
+                    }
+                    else
+                    {
+                        bool is_container = invoke_method<bool>(mc, "is_container").value_or(false);
+                        if (is_container)
+                        {
+                            bool is_multicontainer = invoke_method<bool>(mc, "is_multicontainer").value_or(false);
+                            if (!is_multicontainer)
+                            {
+                                auto prop = get_property(mc->this_type(), "child");
+                                if (prop.can_write())
+                                {
+                                    prop.set(mc, dynamic_pointer_cast<control>(child));
+                                }
+                            }
+                            else
+                            {
+                                invoke_method<void>(mc, "add_child", dynamic_pointer_cast<control>(child));
+                            }
+                        }
+                        ret = xmlTextReaderRead(reader);
+                    }
                 }
             }
         }
@@ -185,7 +226,7 @@ namespace xaml
         }
     }
 
-    tuple<int, shared_ptr<meta_class>> deserializer::deserialize_impl()
+    tuple<int, shared_ptr<meta_class>> deserializer::deserialize_impl(std::shared_ptr<meta_class> root)
     {
         string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
         string_view name = get_string_view(xmlTextReaderConstName(reader));
@@ -196,7 +237,7 @@ namespace xaml
             int ret = 1;
             if (mc)
             {
-                ret = deserialize_members(mc);
+                ret = deserialize_members(mc, root);
             }
             else
             {
@@ -210,18 +251,6 @@ namespace xaml
         }
     }
 
-    shared_ptr<meta_class> deserializer::deserialize()
-    {
-        int ret = xmlTextReaderRead(reader);
-        shared_ptr<meta_class> result;
-        if (ret == 1)
-        {
-            std::tie(ret, result) = deserialize_impl();
-        }
-        clean_up(ret);
-        return result;
-    }
-
     void deserializer::deserialize(shared_ptr<meta_class> mc)
     {
         if (mc)
@@ -232,16 +261,13 @@ namespace xaml
                 string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                 string_view name = get_string_view(xmlTextReaderConstName(reader));
                 auto t = get_type(ns, name);
-                if (t && mc->this_type() == *t)
+                if (t)
                 {
-                    ret = deserialize_members(mc);
+                    ret = deserialize_members(mc, mc);
                 }
                 else
                 {
-                    if (t)
-                        throw xaml_bad_type(mc->this_type(), *t);
-                    else
-                        throw xaml_bad_type(ns, name);
+                    throw xaml_bad_type(ns, name);
                 }
             }
             clean_up(ret);

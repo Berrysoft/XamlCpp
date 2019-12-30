@@ -2,6 +2,6 @@
         title="Test Window" location="200, 100" size="800, 600">
   <grid margin="10" columns="1*, 0.8*, 1*" rows="1*, auto, 1*">
     <label grid.column="0" grid.row="1" text="This is a label."/>
-    <button grid.column="1" grid.row="1" text="Hello!"/>
+    <button grid.column="1" grid.row="1" text="Hello!" click="on_button_click"/>
   </grid>
 </window>
