@@ -8,10 +8,10 @@
 namespace xaml
 {
     template <typename TChar>
-    constexpr std::basic_string_view<TChar> __delimeter{ " ," };
+    inline constexpr std::basic_string_view<TChar> __delimeter{ " ,\t\r\n" };
 
     template <>
-    constexpr std::wstring_view __delimeter<wchar_t>{ L" ," };
+    inline constexpr std::wstring_view __delimeter<wchar_t>{ L" ,\t\r\n" };
 
     struct size
     {
