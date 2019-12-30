@@ -102,12 +102,16 @@ namespace xaml
                 for (int i = 0; i < count; i++)
                 {
                     xmlTextReaderMoveToAttributeNo(reader, i);
+                    string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                     string_view attr_name = get_string_view(xmlTextReaderConstName(reader));
-                    auto prop = get_property(mc->this_type(), attr_name);
-                    if (prop.can_write())
+                    if (attr_ns != "xmlns" && attr_name != "xmlns")
                     {
-                        string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                        prop.set(mc, (string_view_t)get_conv_string(attr_value));
+                        auto prop = get_property(mc->this_type(), attr_name);
+                        if (prop.can_write())
+                        {
+                            string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                            prop.set(mc, (string_view_t)get_conv_string(attr_value));
+                        }
                     }
                 }
                 xmlTextReaderMoveToElement(reader);

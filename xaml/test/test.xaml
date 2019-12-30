@@ -1,1 +1,3 @@
-<window xmlns="https://github.com/Berrysoft/XamlCpp/" title="Test Window"><button text="Hello!"/></window>
+<window xmlns="https://github.com/Berrysoft/XamlCpp/" title="Test Window" x="200" y="100" width="800" height="600">
+  <button text="Hello!"/>
+</window>

@@ -5,7 +5,11 @@
 using namespace std;
 using namespace xaml;
 
-int main()
+#ifdef UNICODE
+int wmain(int argc, wchar_t** argv)
+#else
+int main(int argc, char** argv)
+#endif // UNICODE
 {
     init_meta();
     try
@@ -14,10 +18,9 @@ int main()
         if (des)
         {
             auto wnd = static_pointer_cast<window>(des.deserialize());
-            auto app = application::init();
-            wnd->set_size({ 800, 600 });
+            auto app = application::init(argc, argv);
             wnd->show();
-            app->run();
+            return app->run();
         }
     }
     catch (exception& ex)
