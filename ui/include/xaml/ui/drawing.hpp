@@ -45,13 +45,13 @@ namespace xaml
     template <typename TChar>
     inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str)
     {
-        size_t index = str.find_first_of(__delimeter<TChar>);
+        std::size_t index = str.find_first_of(__delimeter<TChar>);
         if (index == std::basic_string_view<TChar>::npos)
         {
             double d = stof<double>(str);
             return std::make_tuple(d, d);
         }
-        size_t index2 = str.find_first_not_of(__delimeter<TChar>, index);
+        std::size_t index2 = str.find_first_not_of(__delimeter<TChar>, index);
         return std::make_tuple(stof<double>(str.substr(0, index)), stof<double>(str.substr(index2)));
     }
 
@@ -165,23 +165,23 @@ namespace xaml
     template <typename TChar>
     inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str)
     {
-        size_t len1 = str.find_first_of(__delimeter<TChar>);
+        std::size_t len1 = str.find_first_of(__delimeter<TChar>);
         if (len1 == std::basic_string_view<TChar>::npos)
         {
             double d = stof<double>(str);
             return std::make_tuple(d, d, d, d);
         }
-        size_t index2 = str.find_first_not_of(__delimeter<TChar>, len1);
-        size_t len2 = str.find_first_of(__delimeter<TChar>, index2);
+        std::size_t index2 = str.find_first_not_of(__delimeter<TChar>, len1);
+        std::size_t len2 = str.find_first_of(__delimeter<TChar>, index2);
         if (len2 == std::basic_string_view<TChar>::npos)
         {
             double d1 = stof<double>(str.substr(0, len1));
             double d2 = stof<double>(str.substr(index2));
             return std::make_tuple(d1, d2, d1, d2);
         }
-        size_t index3 = str.find_first_not_of(__delimeter<TChar>, len2);
-        size_t len3 = str.find_first_of(__delimeter<TChar>, index3);
-        size_t index4 = str.find_first_not_of(__delimeter<TChar>, len3);
+        std::size_t index3 = str.find_first_not_of(__delimeter<TChar>, len2);
+        std::size_t len3 = str.find_first_of(__delimeter<TChar>, index3);
+        std::size_t index4 = str.find_first_not_of(__delimeter<TChar>, len3);
         return std::make_tuple(stof<double>(str.substr(0, len1)), stof<double>(str.substr(index2, len2 - index2)), stof<double>(str.substr(index3, len3 - index3)), stof<double>(str.substr(index4)));
     }
 
