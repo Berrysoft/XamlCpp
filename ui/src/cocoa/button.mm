@@ -13,7 +13,7 @@
 
 - (void)onAction
 {
-    xaml::button* ptr = (xaml::button*)self.classPointer;
+    xaml::button_base* ptr = (xaml::button_base*)self.classPointer;
     ptr->__on_action();
 }
 @end
@@ -22,9 +22,9 @@ using namespace std;
 
 namespace xaml
 {
-    button::button() : common_control()
+    button_base::button_base() : common_control()
     {
-        add_text_changed([this](button const&, string_view_t) {
+        add_text_changed([this](button_base const&, string_view_t) {
             if (get_handle())
             {
                 draw_text();
@@ -38,14 +38,14 @@ namespace xaml
                 __parent_redraw();
             }
         });
-        add_is_default_changed([this](button const&, bool) { if (get_handle()) draw_default(); });
+        add_is_default_changed([this](button_base const&, bool) { if (get_handle()) draw_default(); });
     }
 
-    button::~button()
+    button_base::~button_base()
     {
     }
 
-    void button::__draw(const rectangle& region)
+    void button_base::__draw(const rectangle& region)
     {
         if (!get_handle())
         {
@@ -67,14 +67,14 @@ namespace xaml
         draw_default();
     }
 
-    void button::draw_text()
+    void button_base::draw_text()
     {
         NSButton* button = (NSButton*)get_handle();
         NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         button.title = ns_title;
     }
 
-    void button::draw_size()
+    void button_base::draw_size()
     {
         NSButton* button = (NSButton*)get_handle();
         NSRect frame = button.frame;
@@ -82,7 +82,7 @@ namespace xaml
         button.frame = frame;
     }
 
-    void button::draw_default()
+    void button_base::draw_default()
     {
         NSButton* button = (NSButton*)get_handle();
         if (m_is_default)
@@ -97,12 +97,12 @@ namespace xaml
         }
     }
 
-    void button::__on_action()
+    void button_base::__on_action()
     {
         m_click(*this);
     }
 
-    void button::__size_to_fit()
+    void button_base::__size_to_fit()
     {
         NSButton* button = (NSButton*)get_handle();
         [button sizeToFit];

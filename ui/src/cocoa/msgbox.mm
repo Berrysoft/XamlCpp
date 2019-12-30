@@ -10,11 +10,11 @@ namespace xaml
         {
         case msgbox_style::warning:
         case msgbox_style::error:
-            return NSAlertStyleWarning;
+            return NSAlertStyleCritical;
         case msgbox_style::info:
             return NSAlertStyleInformational;
         default:
-            return NSAlertStyleCritical;
+            return NSAlertStyleWarning;
         }
     }
 
