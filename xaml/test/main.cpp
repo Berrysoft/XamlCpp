@@ -1,6 +1,7 @@
 #include <iostream>
 #include <xaml/deserialize.hpp>
 #include <xaml/ui/meta.hpp>
+#include <xaml/ui/msgbox.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -17,18 +18,18 @@ int main(int argc, char** argv)
         deserializer des("test.xaml");
         if (des)
         {
-            auto wnd = static_pointer_cast<window>(des.deserialize());
 #ifdef XAML_UI_WINDOWS
             auto app = application::init(lpCmdLine);
 #else
             auto app = application::init(argc, argv);
 #endif // XAML_UI_WINDOWS
+            auto wnd = static_pointer_cast<window>(des.deserialize());
             wnd->show();
             return app->run();
         }
     }
     catch (exception& ex)
     {
-        cerr << ex.what() << endl;
+        msgbox(__value_converter_traits<string_view_t>::convert(ex.what()), U("XAML Parser Error"), msgbox_style::error);
     }
 }
