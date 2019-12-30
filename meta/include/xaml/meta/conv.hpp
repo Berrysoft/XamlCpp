@@ -30,7 +30,7 @@ namespace xaml
             }
             return {};
         }
-        static std::any convert_back(T value) { return value; }
+        static std::any convert_back(return_type value) { return value; }
     };
 
     template <typename T, typename Traits = __value_converter_traits<T>>
@@ -47,6 +47,46 @@ namespace xaml
                 return Traits::convert_back(std::any_cast<T>(value));
             }
             return T{};
+        }
+    };
+
+    template <typename T, T (*func)(std::string_view), T (*wfunc)(std::wstring_view)>
+    struct __value_converter_traits_helper
+    {
+        static T convert(std::any value)
+        {
+            if (value.type() == typeid(T))
+            {
+                return std::any_cast<T>(value);
+            }
+            else if (value.type() == typeid(std::string))
+            {
+                return func(std::any_cast<std::string>(value));
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                return func(std::any_cast<std::string_view>(value));
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                return func(std::any_cast<const char*>(value));
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return wfunc(std::any_cast<std::wstring>(value));
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return wfunc(std::any_cast<std::wstring_view>(value));
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return wfunc(std::any_cast<const wchar_t*>(value));
+            }
+            else
+            {
+                return {};
+            }
         }
     };
 
@@ -226,43 +266,8 @@ namespace xaml
     }
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>> : __value_converter_traits_helper<T, __stoi<T, char>, __stoi<T, wchar_t>>
     {
-        static T convert(std::any value)
-        {
-            if (value.type() == typeid(T))
-            {
-                return std::any_cast<T>(value);
-            }
-            else if (value.type() == typeid(std::string))
-            {
-                return stoi<T>(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return stoi<T>(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return stoi<T>(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return stoi<T>(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return stoi<T>(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return stoi<T>(std::any_cast<const wchar_t*>(value));
-            }
-            else
-            {
-                return {};
-            }
-        }
         static std::any convert_back(T value) { return std::to_string(value); }
     };
 
@@ -383,44 +388,39 @@ namespace xaml
     }
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
     {
-        static T convert(std::any value)
-        {
-            if (value.type() == typeid(T))
-            {
-                return std::any_cast<T>(value);
-            }
-            else if (value.type() == typeid(std::string))
-            {
-                return stof<T>(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return stof<T>(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return stof<T>(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return stof<T>(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return stof<T>(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return stof<T>(std::any_cast<const wchar_t*>(value));
-            }
-            else
-            {
-                return {};
-            }
-        }
         static std::any convert_back(T value) { return std::to_string(value); }
+    };
+
+    template <typename TEnum, typename TChar>
+    struct enum_meta
+    {
+        constexpr TEnum operator()(std::basic_string_view<TChar> str) const noexcept { return {}; }
+    };
+
+    template <typename TEnum, typename TChar, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    inline TEnum __stoenum(std::basic_string_view<TChar> str)
+    {
+        return enum_meta<TEnum, TChar>{}(str);
+    }
+
+    template <typename TEnum>
+    inline TEnum stoenum(std::string_view str)
+    {
+        return __stoenum<TEnum, char>(str);
+    }
+
+    template <typename TEnum>
+    inline TEnum stoenum(std::wstring_view str)
+    {
+        return __stoenum<TEnum, wchar_t>(str);
+    }
+
+    template <typename TEnum>
+    struct __value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>, __stoenum<TEnum, wchar_t>>
+    {
+        static std::any convert_back(TEnum value) { return value; }
     };
 } // namespace xaml
 

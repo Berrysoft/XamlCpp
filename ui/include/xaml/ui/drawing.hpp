@@ -3,10 +3,76 @@
 
 #include <cstdint>
 #include <tuple>
+#include <utility>
 #include <xaml/meta/conv.hpp>
 
 namespace xaml
 {
+    template <typename T, typename TTuple, std::size_t... Indicies>
+    T __intialize_from_tuple_impl(TTuple&& t, std::index_sequence<Indicies...>)
+    {
+        return T{ std::get<Indicies>(std::forward<TTuple>(t))... };
+    }
+
+    template <typename T, typename TTuple>
+    T __initialize_from_tuple(TTuple&& t)
+    {
+        return __intialize_from_tuple_impl<T>(std::forward<TTuple>(t), std::make_index_sequence<std::tuple_size_v<TTuple>>{});
+    }
+
+    template <typename T, typename TTuple, TTuple (*func)(std::string_view), TTuple (*wfunc)(std::wstring_view)>
+    struct __tuple_value_converter_traits_helper
+    {
+        static TTuple __convert(std::any value)
+        {
+            if (value.type() == typeid(TTuple))
+            {
+                return std::any_cast<TTuple>(value);
+            }
+            else if (value.type() == typeid(std::string))
+            {
+                return func(std::any_cast<std::string>(value));
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                return func(std::any_cast<std::string_view>(value));
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                return func(std::any_cast<const char*>(value));
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return wfunc(std::any_cast<std::wstring>(value));
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return wfunc(std::any_cast<std::wstring_view>(value));
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return wfunc(std::any_cast<const wchar_t*>(value));
+            }
+            else
+            {
+                return {};
+            }
+        }
+
+        static T convert(std::any value)
+        {
+            if (value.type() == typeid(T))
+            {
+                return std::any_cast<T>(value);
+            }
+            else
+            {
+                auto t = __convert(std::move(value));
+                return __initialize_from_tuple<T>(std::move(t));
+            }
+        }
+    };
+
     template <typename TChar>
     inline constexpr std::basic_string_view<TChar> __delimeter{ " ,\t\r\n" };
 
@@ -77,55 +143,8 @@ namespace xaml
     constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stot2d_v<T>>>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stot2d_v<T>>> : __tuple_value_converter_traits_helper<T, std::tuple<double, double>, __stot2d<char>, __stot2d<wchar_t>>
     {
-        static T convert(std::any value)
-        {
-            if (value.type() == typeid(T))
-            {
-                return std::any_cast<T>(value);
-            }
-            else if (value.type() == typeid(std::tuple<double, double>))
-            {
-                auto [d1, d2] = std::any_cast<std::tuple<double, double>>(value);
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(std::string))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<std::string>(value));
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<std::string_view>(value));
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<const char*>(value));
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<std::wstring>(value));
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<std::wstring_view>(value));
-                return { d1, d2 };
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                auto [d1, d2] = stot2d(std::any_cast<const wchar_t*>(value));
-                return { d1, d2 };
-            }
-            else
-            {
-                return {};
-            }
-        }
-
         static std::any convert_back(T value) { return value; }
     };
 
@@ -207,55 +226,8 @@ namespace xaml
     constexpr bool __can_stot4d_v = __can_stot4d<T>::value;
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stot4d_v<T>>>
+    struct __value_converter_traits<T, std::enable_if_t<__can_stot4d_v<T>>> : __tuple_value_converter_traits_helper<T, std::tuple<double, double, double, double>, __stot4d<char>, __stot4d<wchar_t>>
     {
-        static T convert(std::any value)
-        {
-            if (value.type() == typeid(T))
-            {
-                return std::any_cast<T>(value);
-            }
-            else if (value.type() == typeid(std::tuple<double, double, double, double>))
-            {
-                auto [d1, d2, d3, d4] = std::any_cast<std::tuple<double, double, double, double>>(value);
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(std::string))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::string>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::string_view>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<const char*>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::wstring>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<std::wstring_view>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                auto [d1, d2, d3, d4] = stot4d(std::any_cast<const wchar_t*>(value));
-                return { d1, d2, d3, d4 };
-            }
-            else
-            {
-                return {};
-            }
-        }
-
         static std::any convert_back(T value) { return value; }
     };
 
