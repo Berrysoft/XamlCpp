@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <typeindex>
+#include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
 
 namespace xaml
@@ -357,7 +358,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
+                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -394,7 +395,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::static_pointer_cast<T>(self).get(), std::any_cast<TValue>(value));
+                        setter(std::static_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
                     }));
         }
     }

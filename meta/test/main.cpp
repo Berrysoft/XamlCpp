@@ -38,6 +38,9 @@ int main()
     auto ev = get_event<calculator const&, int>(t, "value_changed");
     auto token = ev.add(mc, function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
     invoke_method<void>(mc, "plus", 1, 1);
+    auto prop = get_property(t, "value");
+    prop.set(mc, "100");
+    prop.set(mc, L"200"sv);
     ev.remove(mc, token);
     invoke_method<void>(mc, "minus", 1, 1);
 }
