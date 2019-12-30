@@ -18,11 +18,15 @@ namespace xaml
     template <typename T, typename = void>
     struct __value_converter_traits
     {
-        static T convert(std::any value)
+    private:
+        using return_type = std::decay_t<T>;
+
+    public:
+        static return_type convert(std::any value)
         {
-            if (value.type() == typeid(T))
+            if (value.type() == typeid(return_type))
             {
-                return std::any_cast<T>(value);
+                return std::any_cast<return_type>(value);
             }
             return {};
         }

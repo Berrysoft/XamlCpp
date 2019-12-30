@@ -57,6 +57,12 @@ namespace xaml
         void add_column(grid_length length) { m_columns.push_back(std::move(length)); }
         void add_row(grid_length length) { m_rows.push_back(std::move(length)); }
 
+        std::vector<grid_length> const& get_columns() const noexcept { return m_columns; }
+        void set_columns(std::vector<grid_length> const& value) { m_columns = value; }
+
+        std::vector<grid_length> const& get_rows() const noexcept { return m_rows; }
+        void set_rows(std::vector<grid_length> const& value) { m_rows = value; }
+
     private:
         static std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;
 
@@ -66,7 +72,10 @@ namespace xaml
         static void set_row(std::shared_ptr<control> const& c, std::size_t row) { m_indecies[c].row = row; }
         static std::size_t get_row(std::shared_ptr<control> const& c) { return m_indecies[c].row; }
 
-#define ADD_GRID_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
+#define ADD_GRID_MEMBERS()        \
+    ADD_MULTICONTAINER_MEMBERS(); \
+    ADD_PROP(columns);            \
+    ADD_PROP(rows)
 
         static void register_class() noexcept
         {

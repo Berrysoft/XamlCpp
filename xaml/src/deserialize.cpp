@@ -55,25 +55,6 @@ namespace xaml
         }
     }
 
-#ifdef UNICODE
-    static inline string_t get_conv_string(string_view str)
-    {
-        mbstate_t mb = mbstate_t();
-        string_t internal(str.size(), U('\0'));
-        auto& f = use_facet<codecvt<char_t, char, mbstate_t>>(locale());
-        const char* from_next;
-        char_t* to_next;
-        f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        internal.resize(to_next - &internal.front());
-        return internal;
-    }
-#else
-    static constexpr string_view_t get_conv_string(string_view str)
-    {
-        return str;
-    }
-#endif // UNICODE
-
     deserializer::deserializer()
     {
         LIBXML_TEST_VERSION;
@@ -110,7 +91,7 @@ namespace xaml
                         if (prop.can_write())
                         {
                             string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                            prop.set(mc, (string_view_t)get_conv_string(attr_value));
+                            prop.set(mc, attr_value);
                         }
                     }
                 }
