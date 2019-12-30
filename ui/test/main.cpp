@@ -42,8 +42,9 @@ int main(int argc, char** argv)
         msgbox(wnd, U("Hello world!"), U("Hello"), msgbox_style::info);
         if (++count >= 3) tmr->stop();
     });
-    btn->add_click([btn, tmr](button const&) {
+    btn->add_click([btn, tmr, &count](button const&) {
         btn->set_text(U("Hello world!"));
+        count = 0;
         tmr->start();
     });
     btn->set_valignment(valignment_t::center);
