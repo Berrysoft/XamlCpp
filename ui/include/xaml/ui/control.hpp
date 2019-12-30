@@ -1,6 +1,8 @@
 #ifndef XAML_UI_CONTROL_HPP
 #define XAML_UI_CONTROL_HPP
 
+#include <map>
+#include <string_view>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/drawing.hpp>
 #include <xaml/ui/objc.hpp>
@@ -52,12 +54,58 @@ namespace xaml
         right
     };
 
+    STRING_CONST(__halignment_stretch, "stretch")
+    STRING_CONST(__halignment_left, "left")
+    STRING_CONST(__halignment_center, "center")
+    STRING_CONST(__halignment_right, "right")
+
+    template <typename TChar>
+    struct enum_meta<halignment_t, TChar>
+    {
+    private:
+        inline static std::map<std::basic_string_view<TChar>, halignment_t> enum_map{
+            { __halignment_stretch<TChar>, halignment_t::stretch },
+            { __halignment_left<TChar>, halignment_t::left },
+            { __halignment_center<TChar>, halignment_t::center },
+            { __halignment_right<TChar>, halignment_t::right }
+        };
+
+    public:
+        inline halignment_t operator()(std::basic_string_view<TChar> str) const noexcept
+        {
+            return enum_map[str];
+        }
+    };
+
     enum class valignment_t
     {
         stretch,
         top,
         center,
         bottom
+    };
+
+    STRING_CONST(__valignment_stretch, "stretch")
+    STRING_CONST(__valignment_top, "top")
+    STRING_CONST(__valignment_center, "center")
+    STRING_CONST(__valignment_bottom, "bottom")
+
+    template <typename TChar>
+    struct enum_meta<valignment_t, TChar>
+    {
+    private:
+        inline static std::map<std::basic_string_view<TChar>, valignment_t> enum_map{
+            { __valignment_stretch<TChar>, valignment_t::stretch },
+            { __valignment_top<TChar>, valignment_t::top },
+            { __valignment_center<TChar>, valignment_t::center },
+            { __valignment_bottom<TChar>, valignment_t::bottom }
+        };
+
+    public:
+        inline valignment_t operator()(std::basic_string_view<TChar> str) const noexcept
+        {
+            return enum_map[str];
+        }
     };
 
     class control : public std::enable_shared_from_this<control>

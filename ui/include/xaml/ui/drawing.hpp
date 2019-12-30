@@ -5,6 +5,7 @@
 #include <tuple>
 #include <utility>
 #include <xaml/meta/conv.hpp>
+#include <xaml/ui/strings.hpp>
 
 namespace xaml
 {
@@ -73,11 +74,7 @@ namespace xaml
         }
     };
 
-    template <typename TChar>
-    inline constexpr std::basic_string_view<TChar> __delimeter{ " ,\t\r\n" };
-
-    template <>
-    inline constexpr std::wstring_view __delimeter<wchar_t>{ L" ,\t\r\n" };
+    STRING_CONST(__delimeter, " ,\t\r\n")
 
     struct size
     {

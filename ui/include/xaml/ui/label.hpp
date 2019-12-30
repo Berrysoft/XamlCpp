@@ -42,7 +42,8 @@ namespace xaml
     public:
 #define ADD_LABEL_MEMBERS()       \
     ADD_COMMON_CONTROL_MEMBERS(); \
-    ADD_PROP_EVENT(text)
+    ADD_PROP_EVENT(text);         \
+    ADD_PROP(text_halignment)
 
         static void register_class() noexcept
         {

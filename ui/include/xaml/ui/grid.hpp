@@ -29,17 +29,9 @@ namespace xaml
         std::size_t column, row;
     };
 
-    template <typename TChar>
-    inline constexpr TChar __star{ '*' };
+    CHAR_CONST(__star, '*')
 
-    template <>
-    inline constexpr wchar_t __star<wchar_t>{ L'*' };
-
-    template <typename TChar>
-    inline constexpr std::basic_string_view<TChar> __auto{ "auto" };
-
-    template <>
-    inline constexpr std::wstring_view __auto<wchar_t>{ L"auto" };
+    STRING_CONST(__auto, "auto")
 
     template <typename TChar>
     inline std::vector<grid_length> __stogls(std::basic_string_view<TChar> str)
