@@ -137,6 +137,10 @@ namespace xaml
                 break;
             }
             }
+            if (xmlTextReaderIsEmptyElement(reader))
+            {
+                return ret;
+            }
             ret = xmlTextReaderRead(reader);
             if (xmlTextReaderNodeType(reader) == XML_ELEMENT_NODE)
             {
@@ -164,6 +168,7 @@ namespace xaml
                             invoke_method<void>(mc, "add_child", dynamic_pointer_cast<control>(child));
                         }
                     }
+                    ret = xmlTextReaderRead(reader);
                 }
             }
         }
