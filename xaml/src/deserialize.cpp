@@ -113,7 +113,7 @@ namespace xaml
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                                     auto method = __get_first_method(root->this_type(), attr_value);
-                                    ev.add_erased_this(mc, method);
+                                    ev.add_erased_this(mc, root, method);
                                 }
                             }
                         }

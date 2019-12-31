@@ -249,6 +249,8 @@ namespace xaml
     ADD_PROP(width);          \
     ADD_PROP(height);         \
     ADD_PROP_EVENT(margin);   \
+    ADD_PROP(halignment);     \
+    ADD_PROP(valignment);     \
     ADD_METHOD(is_container); \
     ADD_METHOD(is_multicontainer)
 

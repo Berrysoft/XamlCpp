@@ -9,6 +9,10 @@ using namespace xaml;
 class test_window : public window, public meta_class_impl<test_window>
 {
 public:
+    test_window() : window() {}
+
+    ~test_window() override {}
+
     void init_components()
     {
         deserializer des("test.xaml");
@@ -17,7 +21,7 @@ public:
 
     void on_button_click(button_base const&)
     {
-        msgbox(U("Hello world!"), U("Hello"));
+        msgbox(static_pointer_cast<window>(control::shared_from_this()), U("Hello world!"), U("Hello"));
     }
 
     static void register_class() noexcept

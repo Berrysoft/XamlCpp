@@ -18,7 +18,7 @@ namespace xaml
     std::shared_ptr<window> __get_window(HWND hWnd);
 #endif // XAML_UI_WINDOWS
 
-    class window : public container /*, public meta_class_impl<window>*/
+    class window : public container
     {
 #ifdef XAML_UI_WINDOWS
     private:
