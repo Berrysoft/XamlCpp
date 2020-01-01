@@ -19,7 +19,7 @@ public:
         des.deserialize(static_pointer_cast<test_window>(shared_from_this()));
     }
 
-    void on_button_click(button_base const&)
+    void on_button_click()
     {
         msgbox(static_pointer_cast<window>(control::shared_from_this()), U("Hello world!"), U("Hello"));
     }

@@ -557,11 +557,20 @@ namespace xaml
         template <typename... Args>
         token_type add(std::shared_ptr<meta_class> const& self, std::function<void(Args...)> handler)
         {
-            if (adder && match_arg_type<Args...>())
+            if (adder)
             {
-                auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
-                h->func = handler;
-                return adder(self, h);
+                if (match_arg_type<Args...>())
+                {
+                    auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
+                    h->func = handler;
+                    return adder(self, h);
+                }
+                else if (sizeof...(Args) == 0)
+                {
+                    auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
+                    h->func = [handler](Args...) -> void { handler(); };
+                    return adder(self, h);
+                }
             }
             return 0;
         }
@@ -652,7 +661,12 @@ namespace xaml
                         if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { std::move(h->func)(target, std::forward<Args>(args)...); });
+                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
+                        }
+                        else if (handler->is_same_arg_type<std::shared_ptr<meta_class>>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void()>>(handler);
+                            return std::mem_fn(adder)(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
                         }
                         return 0;
                     }));
@@ -731,7 +745,12 @@ namespace xaml
                         if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                            return adder(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args... args) { std::move(h->func)(target, std::forward<Args>(args)...); });
+                            return adder(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
+                        }
+                        else if (handler->is_same_arg_type<std::shared_ptr<meta_class>>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void()>>(handler);
+                            return adder(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
                         }
                         return 0;
                     }));
