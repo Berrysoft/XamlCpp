@@ -66,7 +66,7 @@ namespace xaml
     using ostringstream_t = std::wostringstream;
 
     template <>
-    struct __value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, wchar_t>>>
+    struct value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, wchar_t>>>
     {
         static string_t convert(std::any value)
         {
@@ -99,7 +99,6 @@ namespace xaml
                 return {};
             }
         }
-        static std::any convert_back(string_view_t value) { return value; }
     };
 #else
     using char_t = char;
@@ -110,7 +109,7 @@ namespace xaml
     using ostringstream_t = std::ostringstream;
 
     template <>
-    struct __value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, char>>>
+    struct value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, char>>>
     {
         static string_t convert(std::any value)
         {
@@ -143,7 +142,6 @@ namespace xaml
                 return {};
             }
         }
-        static std::any convert_back(string_view_t value) { return value; }
     };
 #endif // UNICODE
 } // namespace xaml

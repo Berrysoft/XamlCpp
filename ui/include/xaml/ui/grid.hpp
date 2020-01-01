@@ -65,48 +65,8 @@ namespace xaml
     inline std::vector<grid_length> stogls(std::wstring_view str) { return __stogls<wchar_t>(str); }
 
     template <>
-    struct __value_converter_traits<std::vector<grid_length> const&, void>
+    struct value_converter_traits<std::vector<grid_length> const&, void> : __value_converter_traits_helper<std::vector<grid_length>, __stogls<char>, __stogls<wchar_t>>
     {
-        static std::vector<grid_length> convert(std::any value)
-        {
-            if (value.type() == typeid(std::vector<grid_length>))
-            {
-                return std::any_cast<std::vector<grid_length>>(value);
-            }
-            else if (value.type() == typeid(std::vector<grid_length> const&) || value.type() == typeid(std::vector<grid_length>&))
-            {
-                return std::any_cast<std::vector<grid_length> const&>(value);
-            }
-            else if (value.type() == typeid(std::string))
-            {
-                return stogls(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return stogls(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return stogls(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return stogls(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return stogls(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return stogls(std::any_cast<const wchar_t*>(value));
-            }
-            else
-            {
-                return {};
-            }
-        }
-        static std::any convert_back(std::vector<grid_length> const& value) { return value; }
     };
 
     class grid : public multicontainer, public meta_class_impl<grid>

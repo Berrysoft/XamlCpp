@@ -444,7 +444,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
+                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -481,7 +481,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), __value_converter_traits<TValue>::convert(value));
+                        setter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -518,7 +518,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::dynamic_pointer_cast<T>(self).get(), __value_converter_traits<TValue>::convert(value));
+                        setter(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }

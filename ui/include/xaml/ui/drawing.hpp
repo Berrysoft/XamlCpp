@@ -2,6 +2,7 @@
 #define XAML_UI_DRAWING_HPP
 
 #include <cstdint>
+#include <sstream>
 #include <tuple>
 #include <utility>
 #include <xaml/meta/conv.hpp>
@@ -22,7 +23,7 @@ namespace xaml
     }
 
     template <typename T, typename TTuple, TTuple (*func)(std::string_view), TTuple (*wfunc)(std::wstring_view)>
-    struct __tuple_value_converter_traits_helper
+    struct __tuple___value_converter_traits_helper
     {
         static TTuple __convert(std::any value)
         {
@@ -140,9 +141,8 @@ namespace xaml
     constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stot2d_v<T>>> : __tuple_value_converter_traits_helper<T, std::tuple<double, double>, __stot2d<char>, __stot2d<wchar_t>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stot2d_v<T>>> : __tuple___value_converter_traits_helper<T, std::tuple<double, double>, __stot2d<char>, __stot2d<wchar_t>>
     {
-        static std::any convert_back(T value) { return value; }
     };
 
     struct rectangle
@@ -223,9 +223,8 @@ namespace xaml
     constexpr bool __can_stot4d_v = __can_stot4d<T>::value;
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stot4d_v<T>>> : __tuple_value_converter_traits_helper<T, std::tuple<double, double, double, double>, __stot4d<char>, __stot4d<wchar_t>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stot4d_v<T>>> : __tuple___value_converter_traits_helper<T, std::tuple<double, double, double, double>, __stot4d<char>, __stot4d<wchar_t>>
     {
-        static std::any convert_back(T value) { return value; }
     };
 
     struct alignas(1) color

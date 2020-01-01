@@ -9,14 +9,8 @@
 
 namespace xaml
 {
-    struct value_converter
-    {
-        virtual std::any convert(std::any value, std::type_index const& target_type, std::any param, std::locale language) = 0;
-        virtual std::any convert_back(std::any value, std::type_index const& target_type, std::any param, std::locale language) = 0;
-    };
-
     template <typename T, typename = void>
-    struct __value_converter_traits
+    struct value_converter_traits
     {
     private:
         using return_type = std::decay_t<T>;
@@ -29,24 +23,6 @@ namespace xaml
                 return std::any_cast<return_type>(value);
             }
             return {};
-        }
-        static std::any convert_back(return_type value) { return value; }
-    };
-
-    template <typename T, typename Traits = __value_converter_traits<T>>
-    struct __value_converter_template : public value_converter
-    {
-        std::any convert(std::any value, std::type_index const& target_type, std::any param, std::locale language) override
-        {
-            return Traits::convert(value);
-        }
-        std::any convert_back(std::any value, std::type_index const& target_type, std::any param, std::locale language) override
-        {
-            if (value.type() == typeid(T))
-            {
-                return Traits::convert_back(std::any_cast<T>(value));
-            }
-            return T{};
         }
     };
 
@@ -266,9 +242,8 @@ namespace xaml
     }
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>> : __value_converter_traits_helper<T, __stoi<T, char>, __stoi<T, wchar_t>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>> : __value_converter_traits_helper<T, __stoi<T, char>, __stoi<T, wchar_t>>
     {
-        static std::any convert_back(T value) { return std::to_string(value); }
     };
 
     template <typename TFloat, typename TChar>
@@ -388,9 +363,8 @@ namespace xaml
     }
 
     template <typename T>
-    struct __value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
     {
-        static std::any convert_back(T value) { return std::to_string(value); }
     };
 
     template <typename TEnum, typename TChar>
@@ -418,9 +392,8 @@ namespace xaml
     }
 
     template <typename TEnum>
-    struct __value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>, __stoenum<TEnum, wchar_t>>
+    struct value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>, __stoenum<TEnum, wchar_t>>
     {
-        static std::any convert_back(TEnum value) { return value; }
     };
 } // namespace xaml
 

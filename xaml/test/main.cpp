@@ -55,6 +55,6 @@ int main(int argc, char** argv)
     }
     catch (exception& ex)
     {
-        msgbox(__value_converter_traits<string_view_t>::convert(ex.what()), U("XAML Parser Error"), msgbox_style::error);
+        msgbox(value_converter_traits<string_view_t>::convert(ex.what()), U("XAML Parser Error"), msgbox_style::error);
     }
 }
