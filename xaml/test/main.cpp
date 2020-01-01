@@ -19,9 +19,10 @@ public:
         des.deserialize(static_pointer_cast<test_window>(shared_from_this()));
     }
 
-    void on_button_click()
+    void on_button_click(button_base& btn)
     {
         msgbox(static_pointer_cast<window>(control::shared_from_this()), U("Hello world!"), U("Hello"));
+        btn.set_text(U("Hello world!"));
     }
 
     static void register_class() noexcept
@@ -41,20 +42,20 @@ int main(int argc, char** argv)
 {
     init_parser();
     register_class<test_window>();
-    try
-    {
+    //try
+    //{
 #ifdef XAML_UI_WINDOWS
-        auto app = application::init(lpCmdLine);
+    auto app = application::init(lpCmdLine);
 #else
-        auto app = application::init(argc, argv);
+    auto app = application::init(argc, argv);
 #endif // XAML_UI_WINDOWS
-        auto wnd = make_shared<test_window>();
-        wnd->init_components();
-        wnd->show();
-        return app->run();
-    }
-    catch (exception& ex)
-    {
-        msgbox(value_converter_traits<string_view_t>::convert(ex.what()), U("XAML Parser Error"), msgbox_style::error);
-    }
+    auto wnd = make_shared<test_window>();
+    wnd->init_components();
+    wnd->show();
+    return app->run();
+    //}
+    //catch (exception& ex)
+    //{
+    //    msgbox(value_converter_traits<string_view_t>::convert(ex.what()), U("XAML Parser Error"), msgbox_style::error);
+    //}
 }

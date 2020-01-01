@@ -109,6 +109,10 @@ namespace xaml
             deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
             prop.value->provide(context);
         }
+        for (auto& c : node.children)
+        {
+            deserialize_extensions(c);
+        }
     }
 
     void deserializer::deserialize(shared_ptr<meta_class> mc)

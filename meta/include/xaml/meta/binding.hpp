@@ -3,6 +3,7 @@
 
 #include <xaml/meta/event.hpp>
 #include <xaml/meta/meta.hpp>
+#include <xaml/meta/conv.hpp>
 
 namespace xaml
 {

@@ -157,7 +157,7 @@ namespace xaml
         virtual void __draw(rectangle const& region) = 0;
         virtual void __size_to_fit();
 
-        EVENT(parent_changed, control const&, std::shared_ptr<control>)
+        EVENT(parent_changed, control&, std::shared_ptr<control>)
 
     private:
         std::shared_ptr<control> m_parent{ nullptr };
@@ -186,7 +186,7 @@ namespace xaml
     private:
         size m_size{ 0, 0 };
 
-        EVENT(size_changed, control const&, size)
+        EVENT(size_changed, control&, size)
 
     public:
         constexpr double get_width() const noexcept { return m_size.width; }
@@ -222,7 +222,7 @@ namespace xaml
     protected:
         void __set_size_noevent(size value) { m_size = value; }
 
-        EVENT(margin_changed, control const&, margin)
+        EVENT(margin_changed, control&, margin)
 
     private:
         margin m_margin{ 0, 0, 0, 0 };

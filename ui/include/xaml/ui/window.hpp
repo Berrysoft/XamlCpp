@@ -74,14 +74,14 @@ namespace xaml
         void show();
 
         PROP_EVENT(resizable, bool)
-        EVENT(resizable_changed, window const&, bool)
+        EVENT(resizable_changed, window&, bool)
 
     private:
         std::atomic<bool> m_resizing{ false };
 
         point m_location{ 0, 0 };
 
-        EVENT(location_changed, window const&, point)
+        EVENT(location_changed, window&, point)
 
     public:
         constexpr point get_location() const noexcept { return m_location; }
@@ -115,12 +115,12 @@ namespace xaml
 
         rectangle get_client_region() const;
 
-        EVENT(closing, window const&, bool&)
+        EVENT(closing, window&, bool&)
 
     private:
         string_t m_title{};
 
-        EVENT(title_changed, window const&, string_view_t)
+        EVENT(title_changed, window&, string_view_t)
 
     public:
         string_view_t get_title() const noexcept { return m_title; }

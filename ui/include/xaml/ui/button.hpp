@@ -50,12 +50,12 @@ namespace xaml
             }
         }
 
-        EVENT(text_changed, button_base const&, string_view_t)
+        EVENT(text_changed, button_base&, string_view_t)
 
         PROP_EVENT(is_default, bool)
-        EVENT(is_default_changed, button_base const&, bool)
+        EVENT(is_default_changed, button_base&, bool)
 
-        EVENT(click, button_base const&)
+        EVENT(click, button_base&)
 
     public:
 #define ADD_BUTTON_BASE_MEMBERS() \

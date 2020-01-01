@@ -18,7 +18,7 @@ namespace xaml
         bool is_container() const override final { return true; }
         bool is_multicontainer() const override final { return false; }
 
-        EVENT(child_changed, container const&, std::shared_ptr<control>)
+        EVENT(child_changed, container&, std::shared_ptr<control>)
 
     public:
         std::shared_ptr<control> get_child() const noexcept { return m_child; }

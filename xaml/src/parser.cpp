@@ -107,7 +107,7 @@ namespace xaml
                     if (attr_ns.empty()) attr_ns = ns;
                     if (attr_ns == x_ns)
                     {
-                        if (attr_name == "name")
+                        if (attr_name == "x:name")
                         {
                             string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                             mc.name = attr_value;
@@ -141,7 +141,49 @@ namespace xaml
                             if (prop.can_write())
                             {
                                 string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                                mc.properties.push_back({ prop, (string)attr_value });
+                                if (attr_value.front() == '{' && attr_value.back() == '}')
+                                {
+                                    size_t index = attr_value.find_first_of(' ');
+                                    optional<type_index> ex_type = nullopt;
+                                    string_view ex_name = attr_value.substr(1, index - 1);
+                                    size_t cid = ex_name.find_first_of(':');
+                                    if (cid != string_view::npos)
+                                    {
+                                        string_view ex_ns = ex_name.substr(0, cid);
+                                        string s_ex_name = (string)ex_name.substr(cid + 1) + "_extension";
+                                        ex_type = get_type(ex_ns, s_ex_name);
+                                        if (!ex_type)
+                                        {
+                                            throw xaml_bad_type(ex_ns, s_ex_name);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string s_ex_name = (string)ex_name + "_extension";
+                                        ex_type = get_type(ns, s_ex_name);
+                                        if (!ex_type)
+                                        {
+                                            throw xaml_bad_type(ns, s_ex_name);
+                                        }
+                                    }
+                                    auto ex = construct(*ex_type);
+                                    index = attr_value.find_first_not_of(' ', index);
+                                    while (index != string_view::npos)
+                                    {
+                                        size_t offset = attr_value.find_first_of(",}", index);
+                                        string_view ex_prop = attr_value.substr(index, offset - index);
+                                        size_t id2 = ex_prop.find_first_of('=');
+                                        auto ep = get_property(*ex_type, ex_prop.substr(0, id2));
+                                        ep.set(ex, ex_prop.substr(id2 + 1));
+                                        if (offset >= attr_value.length() - 1) break;
+                                        index = attr_value.find_first_not_of(',', offset);
+                                    }
+                                    mc.extension_properties.push_back({ prop, dynamic_pointer_cast<markup_extension>(ex) });
+                                }
+                                else
+                                {
+                                    mc.properties.push_back({ prop, (string)attr_value });
+                                }
                             }
                             else if (!prop.can_read())
                             {

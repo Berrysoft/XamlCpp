@@ -37,7 +37,7 @@ namespace xaml
 
         PROP(text_halignment, halignment_t)
 
-        EVENT(text_changed, label const&, string_view_t)
+        EVENT(text_changed, label&, string_view_t)
 
     public:
 #define ADD_LABEL_MEMBERS()       \

@@ -357,12 +357,12 @@ namespace xaml
     struct property_info
     {
     private:
-        std::string_view _name;
+        std::string m_name;
         std::function<std::any(std::shared_ptr<meta_class>)> getter;
         std::function<void(std::shared_ptr<meta_class>, std::any)> setter;
 
     public:
-        constexpr std::string_view name() const noexcept { return _name; }
+        constexpr std::string_view name() const noexcept { return m_name; }
         bool can_read() const noexcept { return (bool)getter; }
         bool can_write() const noexcept { return (bool)setter; }
 
@@ -402,7 +402,7 @@ namespace xaml
     inline property_info get_property(std::type_index type, std::string_view name)
     {
         property_info info = {};
-        info._name = name;
+        info.m_name = name;
         std::string pname = __property_name(name);
         info.getter = get_method<std::any>(type, pname);
         info.setter = get_method<void, std::any>(type, pname);
@@ -412,7 +412,7 @@ namespace xaml
     inline property_info get_attach_property(std::type_index type, std::string_view name)
     {
         property_info info = {};
-        info._name = name;
+        info.m_name = name;
         std::string pname = __attach_property_name(name);
         info.getter = get_static_method<std::any, std::shared_ptr<meta_class>>(type, pname);
         info.setter = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, pname);
@@ -536,14 +536,14 @@ namespace xaml
         using token_type = typename event<>::token_type;
 
     private:
-        std::string_view _name;
+        std::string m_name;
         std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder;
         std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder_erased_this;
         std::function<void(std::shared_ptr<meta_class>, token_type)> remover;
         std::shared_ptr<__type_erased_function> invoker;
 
     public:
-        constexpr std::string_view name() const noexcept { return _name; }
+        constexpr std::string_view name() const noexcept { return m_name; }
         bool can_add() const noexcept { return (bool)adder; }
         bool can_remove() const noexcept { return (bool)remover; }
         bool can_invoke() const noexcept { return (bool)invoker; }
@@ -613,7 +613,7 @@ namespace xaml
     inline event_info __get_event(std::type_index type, std::string_view name, std::initializer_list<std::type_index> arg_types)
     {
         event_info info = {};
-        info._name = name;
+        info.m_name = name;
         std::string ename = __event_name(name);
         info.adder = get_method<typename event_info::token_type, std::shared_ptr<__type_erased_function>>(type, ename);
         info.adder_erased_this = get_method<typename event_info::token_type, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>>(type, ename);
@@ -642,6 +642,11 @@ namespace xaml
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
                             return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), std::move(h->func));
+                        }
+                        else if (handler->is_same_arg_type<>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_function_impl<void()>>(handler);
+                            return std::mem_fn(adder)(std::dynamic_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
                         }
                         return 0;
                     }));
@@ -726,6 +731,11 @@ namespace xaml
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
                             return adder(std::dynamic_pointer_cast<T>(self).get(), std::move(h->func));
+                        }
+                        else if (handler->is_same_arg_type<>())
+                        {
+                            auto h = std::static_pointer_cast<__type_erased_function_impl<void()>>(handler);
+                            return adder(std::dynamic_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
                         }
                         return 0;
                     }));

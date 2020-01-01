@@ -82,7 +82,7 @@ namespace xaml
         void start();
         void stop();
 
-        EVENT(tick, timer const&)
+        EVENT(tick, timer&)
     };
 } // namespace xaml
 
