@@ -9,22 +9,17 @@ if(${BUILD_COCOA})
 endif()
 
 include_directories(include)
-
 include_directories(../meta/include)
+include_directories(${XAML_PRIVATE_INCLUDE_DIRS})
 
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
+file(GLOB UI_COCOA_HEADERS "include/xaml/ui/cocoa/*.h")
 
 if(${BUILD_WINDOWS})
-    find_package(WIL REQUIRED)
-    include_directories(${WIL_INCLUDE_DIRS})
-
     file(GLOB UI_SOURCE "src/win/*.cpp")
 elseif(${BUILD_COCOA})
     file(GLOB UI_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
-    find_package(GTK3 REQUIRED)
-    include_directories(${GTK3_INCLUDE_DIRS})
-
     file(GLOB UI_SOURCE "src/gtk3/*.cpp")
 endif()
 
@@ -41,7 +36,14 @@ elseif(${BUILD_GTK3})
 endif()
 
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
-install(TARGETS xaml_ui EXPORT xaml_ui_targets LIBRARY DESTINATION lib)
+if(${BUILD_COCOA})
+    install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
+endif()
+install(TARGETS xaml_ui DESTINATION lib EXPORT xaml_ui-targets)
+install(EXPORT xaml_ui-targets DESTINATION lib/cmake/xaml_ui)
+
+configure_file(cmake/xaml_ui-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake DESTINATION lib/cmake/xaml_ui)
 
 file(GLOB TEST_SOURCE "test/*.cpp")
 if(${BUILD_WINDOWS})
