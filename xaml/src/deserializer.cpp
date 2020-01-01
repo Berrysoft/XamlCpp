@@ -1,15 +1,10 @@
-#include <xaml/deserialize.hpp>
+#include <xaml/deserializer.hpp>
 #include <xaml/ui/control.hpp>
 
 using namespace std;
 
 namespace xaml
 {
-    void deserializer::open(string_view file)
-    {
-        reader.open(file);
-    }
-
     void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
     {
         for (auto& prop : node.properties)

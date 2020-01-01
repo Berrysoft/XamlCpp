@@ -12,7 +12,7 @@ namespace xaml
 
     public:
         constexpr bool is_open() const noexcept { return reader.is_open(); }
-        void open(std::string_view file);
+        void open(std::string_view file) { reader.open(file); }
 
         deserializer() : reader() {}
         deserializer(std::string_view file) : deserializer() { open(file); }
