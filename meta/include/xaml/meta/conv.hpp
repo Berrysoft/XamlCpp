@@ -5,10 +5,10 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <locale>
+#include <map>
 #include <string>
 #include <string_view>
 #include <typeindex>
-#include <unordered_map>
 
 namespace xaml
 {
@@ -374,63 +374,14 @@ namespace xaml
     struct enum_meta
     {
         constexpr TEnum operator()(std::basic_string_view<TChar> str) const noexcept { return {}; }
-        constexpr std::basic_string_view<TChar> operator()(TEnum value) const noexcept { return {}; }
     };
 
-    template <typename T1, typename T2, typename Hash1 = std::hash<T1>, typename Hash2 = std::hash<T2>>
-    class __unordered_bimap
-    {
-    private:
-        std::unordered_map<std::size_t, T1> map1;
-        std::unordered_map<std::size_t, T2> map2;
-
-        Hash1 hasher1;
-        Hash2 hasher2;
-
-    public:
-        void insert(std::pair<T1, T2> const& pair)
-        {
-            std::size_t hash1 = hasher1(pair.first);
-            std::size_t hash2 = hasher2(pair.second);
-            map1.emplace(hash2, pair.first);
-            map2.emplace(hash1, pair.second);
-        }
-
-        __unordered_bimap() {}
-        __unordered_bimap(std::initializer_list<std::pair<T1, T2>> list) : __unordered_bimap()
-        {
-            for (auto& p : list)
-            {
-                insert(p);
-            }
-        }
-
-        ~__unordered_bimap() {}
-
-        T1& get_first(T2 const& key)
-        {
-            std::size_t hash = hasher2(key);
-            return map1[hash];
-        }
-
-        T2& get_second(T1 const& key)
-        {
-            std::size_t hash = hasher1(key);
-            return map2[hash];
-        }
-    };
-
-    template <typename TEnum, typename TChar, __unordered_bimap<std::basic_string_view<TChar>, TEnum>* pbimap>
+    template <typename TEnum, typename TChar, std::map<std::basic_string_view<TChar>, TEnum>* pmap>
     struct __enum_meta_helper
     {
         inline TEnum operator()(std::basic_string_view<TChar> str) const noexcept
         {
-            return pbimap->get_second(str);
-        }
-
-        inline std::basic_string_view<TChar> operator()(TEnum value) const noexcept
-        {
-            return pbimap->get_first(value);
+            return (*pmap)[str];
         }
     };
 

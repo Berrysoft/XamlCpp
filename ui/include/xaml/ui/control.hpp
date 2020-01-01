@@ -63,7 +63,7 @@ namespace xaml
     template <typename TChar>
     struct __halignment_enum_meta_helper
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, halignment_t> enum_map{
+        inline static std::map<std::basic_string_view<TChar>, halignment_t> enum_map{
             { __halignment_stretch<TChar>, halignment_t::stretch },
             { __halignment_left<TChar>, halignment_t::left },
             { __halignment_center<TChar>, halignment_t::center },
@@ -92,7 +92,8 @@ namespace xaml
     template <typename TChar>
     struct __valignment_enum_meta_helper
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, valignment_t> enum_map{
+    public:
+        inline static std::map<std::basic_string_view<TChar>, valignment_t> enum_map{
             { __valignment_stretch<TChar>, valignment_t::stretch },
             { __valignment_top<TChar>, valignment_t::top },
             { __valignment_center<TChar>, valignment_t::center },
