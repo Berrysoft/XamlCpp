@@ -7,16 +7,30 @@
 #include <tuple>
 #include <typeindex>
 #include <vector>
+#include <xaml/binding_extension.hpp>
 #include <xaml/meta/meta.hpp>
+#include <xaml/ui/meta.hpp>
 
 namespace xaml
 {
+    inline void init_parser() noexcept
+    {
+        init_meta();
+        register_class<binding_extension>();
+    }
+
     struct xaml_construct_property;
 
     struct xaml_property
     {
         property_info info;
         std::string value;
+    };
+
+    struct xaml_extension_property
+    {
+        property_info info;
+        std::shared_ptr<markup_extension> value;
     };
 
     struct xaml_event
@@ -28,9 +42,11 @@ namespace xaml
     struct xaml_node
     {
         std::type_index type;
+        std::string name;
         std::vector<xaml_property> properties;
-        std::vector<xaml_event> events;
+        std::vector<xaml_extension_property> extension_properties;
         std::vector<xaml_construct_property> construct_properties;
+        std::vector<xaml_event> events;
         std::vector<xaml_node> children;
     };
 

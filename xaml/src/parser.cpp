@@ -78,6 +78,16 @@ namespace xaml
         reader = xmlNewTextReaderFilename(absolute(file).string().c_str());
     }
 
+    static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
+
+    static string get_random_name(type_index type)
+    {
+        static size_t index = 0;
+        ostringstream oss;
+        oss << type.name() << "@@" << type.hash_code() << "@@" << index++;
+        return oss.str();
+    }
+
     int parser::parse_members(xaml_node& mc)
     {
         int ret = 1;
@@ -95,7 +105,15 @@ namespace xaml
                     string_view attr_name = get_string_view(xmlTextReaderConstName(reader));
                     string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                     if (attr_ns.empty()) attr_ns = ns;
-                    if (attr_ns != "xmlns" && attr_name != "xmlns")
+                    if (attr_ns == x_ns)
+                    {
+                        if (attr_name == "name")
+                        {
+                            string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
+                            mc.name = attr_value;
+                        }
+                    }
+                    else if (attr_ns != "xmlns" && attr_name != "xmlns")
                     {
                         size_t dm_index = attr_name.find_first_of('.');
                         if (dm_index != string_view::npos)
@@ -140,6 +158,10 @@ namespace xaml
                             }
                         }
                     }
+                }
+                if (mc.name.empty())
+                {
+                    mc.name = get_random_name(mc.type);
                 }
                 xmlTextReaderMoveToElement(reader);
                 break;

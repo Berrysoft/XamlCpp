@@ -39,7 +39,7 @@ INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
-    init_meta();
+    init_parser();
     register_class<test_window>();
     try
     {
