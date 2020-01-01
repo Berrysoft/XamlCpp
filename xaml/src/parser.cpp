@@ -32,7 +32,7 @@ namespace xaml
     static string get_xaml_no_member(type_index type, string_view name)
     {
         ostringstream oss;
-        oss << "There's no property or event named " << name << " in type \"" << type.name() << "\".";
+        oss << "There's no member named " << name << " in type \"" << type.name() << "\".";
         return oss.str();
     }
 
@@ -78,7 +78,7 @@ namespace xaml
         reader = xmlNewTextReaderFilename(absolute(file).string().c_str());
     }
 
-    int parser::parse_members(__xaml_node& mc)
+    int parser::parse_members(xaml_node& mc)
     {
         int ret = 1;
         while (ret == 1)
@@ -109,7 +109,7 @@ namespace xaml
                                 if (prop.can_write())
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                                    mc.properties.push_back(__xaml_property{ prop, (string)attr_value });
+                                    mc.properties.push_back({ prop, (string)attr_value });
                                 }
                             }
                             else
@@ -123,7 +123,7 @@ namespace xaml
                             if (prop.can_write())
                             {
                                 string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                                mc.properties.push_back(__xaml_property{ prop, (string)attr_value });
+                                mc.properties.push_back({ prop, (string)attr_value });
                             }
                             else if (!prop.can_read())
                             {
@@ -131,7 +131,7 @@ namespace xaml
                                 if (ev.can_add())
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                                    mc.events.push_back(__xaml_event{ ev, (string)attr_value });
+                                    mc.events.push_back({ ev, (string)attr_value });
                                 }
                             }
                             else
@@ -187,7 +187,7 @@ namespace xaml
                             auto prop = get_property(mc.type, prop_name);
                             if (prop.can_write())
                             {
-                                mc.construct_properties.push_back(__xaml_construct_property{ prop, move(child) });
+                                mc.construct_properties.push_back({ prop, move(child) });
                             }
                         }
                         else
@@ -195,7 +195,7 @@ namespace xaml
                             auto prop = get_attach_property(*t, prop_name);
                             if (prop.can_write())
                             {
-                                mc.construct_properties.push_back(__xaml_construct_property{ prop, move(child) });
+                                mc.construct_properties.push_back({ prop, move(child) });
                             }
                         }
                     }
@@ -232,14 +232,14 @@ namespace xaml
         }
     }
 
-    tuple<int, __xaml_node> parser::deserialize_impl()
+    tuple<int, xaml_node> parser::deserialize_impl()
     {
         string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
         string_view name = get_string_view(xmlTextReaderConstName(reader));
         auto t = get_type(ns, name);
         if (t)
         {
-            __xaml_node mc{ *t };
+            xaml_node mc{ *t };
             int ret = parse_members(mc);
             return make_tuple(ret, mc);
         }
@@ -249,7 +249,7 @@ namespace xaml
         }
     }
 
-    __xaml_node parser::parse()
+    xaml_node parser::parse()
     {
         int ret = xmlTextReaderRead(reader);
         if (ret == 1)
@@ -259,7 +259,7 @@ namespace xaml
             auto t = get_type(ns, name);
             if (t)
             {
-                __xaml_node mc{ *t };
+                xaml_node mc{ *t };
                 ret = parse_members(mc);
                 clean_up(ret);
                 return mc;

@@ -11,33 +11,33 @@
 
 namespace xaml
 {
-    struct __xaml_construct_property;
+    struct xaml_construct_property;
 
-    struct __xaml_property
+    struct xaml_property
     {
         property_info info;
         std::string value;
     };
 
-    struct __xaml_event
+    struct xaml_event
     {
         event_info info;
         std::string value;
     };
 
-    struct __xaml_node
+    struct xaml_node
     {
         std::type_index type;
-        std::vector<__xaml_property> properties;
-        std::vector<__xaml_event> events;
-        std::vector<__xaml_construct_property> construct_properties;
-        std::vector<__xaml_node> children;
+        std::vector<xaml_property> properties;
+        std::vector<xaml_event> events;
+        std::vector<xaml_construct_property> construct_properties;
+        std::vector<xaml_node> children;
     };
 
-    struct __xaml_construct_property
+    struct xaml_construct_property
     {
         property_info info;
-        __xaml_node value;
+        xaml_node value;
     };
 
     struct xaml_no_default_constructor : std::logic_error
@@ -84,12 +84,12 @@ namespace xaml
         ~parser();
 
     private:
-        int parse_members(__xaml_node& mc);
-        std::tuple<int, __xaml_node> deserialize_impl();
+        int parse_members(xaml_node& mc);
+        std::tuple<int, xaml_node> deserialize_impl();
         void clean_up(int ret);
 
     public:
-        __xaml_node parse();
+        xaml_node parse();
     };
 } // namespace xaml
 

@@ -18,6 +18,9 @@ namespace xaml
         deserializer(std::string_view file) : deserializer() { open(file); }
         ~deserializer() {}
 
+    private:
+        void deserialize_impl(std::shared_ptr<meta_class> mc, xaml_node& node, std::shared_ptr<meta_class> root);
+
     public:
         void deserialize(std::shared_ptr<meta_class> mc);
     };
