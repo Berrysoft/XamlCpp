@@ -41,8 +41,10 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
+    inputs:
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration)
 
   - task: CMake@1
     displayName: 'Build all projects'
     inputs:
-      cmakeArgs: --build build/ --target all --config $(configuration)
+      cmakeArgs: --build . --target all
