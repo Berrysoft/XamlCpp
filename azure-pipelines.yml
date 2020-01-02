@@ -45,10 +45,17 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
+    condition: eq(variables.rid, 'win')
     inputs:
       cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
+    displayName: 'Configure all projects'
+    condition: ne(variables.rid, 'win')
+    inputs:
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration)
+
+  - task: CMake@1
     displayName: 'Build all projects'
     inputs:
-      cmakeArgs: --build . --target all
+      cmakeArgs: --build . --target all --configuration $(configuration)
