@@ -35,6 +35,10 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui ${GTK3_LIBRARIES})
 endif()
 
+if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
+    target_precompile_headers(xaml_ui PRIVATE include/internal/shared/pch.hpp)
+endif()
+
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 if(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
@@ -53,3 +57,7 @@ else()
 endif()
 target_link_libraries(ui_test xaml_ui)
 target_link_libraries(ui_test xaml_meta)
+
+if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
+    target_precompile_headers(ui_test REUSE_FROM xaml_ui)
+endif()

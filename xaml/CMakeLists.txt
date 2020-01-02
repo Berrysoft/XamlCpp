@@ -15,6 +15,10 @@ add_library(xaml ${XAML_SOURCES})
 target_link_libraries(xaml ${LIBXML2_LIBRARIES})
 target_link_libraries(xaml xaml_ui)
 
+if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
+    target_precompile_headers(xaml REUSE_FROM xaml_ui)
+endif()
+
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(TARGETS xaml DESTINATION lib EXPORT xaml-targets)
 install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
@@ -29,5 +33,9 @@ else()
     add_executable(xaml_test ${TEST_SOURCE})
 endif()
 target_link_libraries(xaml_test xaml)
+
+if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
+    target_precompile_headers(xaml_test REUSE_FROM xaml_ui)
+endif()
 
 configure_file(test/test.xaml test.xaml COPYONLY)
