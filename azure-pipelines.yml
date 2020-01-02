@@ -58,4 +58,4 @@ jobs:
   - task: CMake@1
     displayName: 'Build all projects'
     inputs:
-      cmakeArgs: --build . --target all --configuration $(configuration)
+      cmakeArgs: --build . --target all --config $(configuration)
