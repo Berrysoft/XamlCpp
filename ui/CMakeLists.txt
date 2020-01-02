@@ -2,7 +2,7 @@ project(XamlUI CXX)
 
 if(${BUILD_COCOA})
     if(CMAKE_VERSION VERSION_LESS 3.16)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -x objective-c++")
+        add_compile_options(-x objective-c++)
     else()
         enable_language(OBJCXX)
     endif()
