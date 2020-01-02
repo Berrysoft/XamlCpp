@@ -53,7 +53,7 @@ namespace xaml
         m_object.SetWidth((float)value);
     }
 
-    drawing_font::drawing_font(string_view_t family, double size, bool italic, bool bold) : m_object(family.data(), size, get_font_style(italic, bold))
+    drawing_font::drawing_font(string_view_t family, double size, bool italic, bool bold) : m_object(family.data(), (REAL)size, get_font_style(italic, bold))
     {
     }
 
@@ -78,12 +78,12 @@ namespace xaml
 
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->DrawArc(pen.get_handle(), get_RectF(region), start_angle, end_angle);
+        m_handle->DrawArc(pen.get_handle(), get_RectF(region), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->FillPie(brush.get_handle(), get_RectF(region), start_angle, end_angle);
+        m_handle->FillPie(brush.get_handle(), get_RectF(region), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
@@ -113,7 +113,7 @@ namespace xaml
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
-        m_handle->DrawString(str.data(), str.length(), font.get_handle(), get_PointF(p), brush.get_handle());
+        m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), get_PointF(p), brush.get_handle());
     }
 
     canvas::canvas() : common_control() {}
@@ -129,7 +129,7 @@ namespace xaml
             case WM_PAINT:
             {
                 rectangle region = m_real_region;
-                THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), -1, -1, region.width + 1, region.height + 1));
+                THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), -1, -1, (int)region.width + 1, (int)region.height + 1));
                 Graphics g{ m_store_dc.get() };
                 g.SetPageUnit(UnitPixel);
                 drawing_context dc{ &g };
@@ -151,7 +151,7 @@ namespace xaml
         m_real_region = region - get_margin();
         auto wnd_dc = wil::GetDC(get_handle());
         m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), m_real_region.width, m_real_region.height) };
+        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)m_real_region.width, (int)m_real_region.height) };
         wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
     }
 } // namespace xaml

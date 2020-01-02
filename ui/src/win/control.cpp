@@ -26,7 +26,7 @@ namespace xaml
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
         SIZE s = {};
-        GetTextExtentPoint32(hDC.get(), str.data(), str.length(), &s);
+        THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
         return xaml::get_size(s);
     }
 

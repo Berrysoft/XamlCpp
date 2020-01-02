@@ -20,7 +20,7 @@ namespace xaml
     class timer
     {
     private:
-        std::atomic<bool> m_enabled;
+        std::atomic<bool> m_enabled{ false };
 
     public:
         bool is_enabled() const noexcept { return m_enabled; }

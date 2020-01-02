@@ -21,7 +21,7 @@ namespace xaml
     {
         if (!m_enabled.exchange(true))
         {
-            __set_id(SetTimer(NULL, 0, m_interval.count(), timer::on_tick));
+            __set_id(SetTimer(NULL, 0, (UINT)m_interval.count(), timer::on_tick));
             timer_map[__get_id()] = this;
         }
     }

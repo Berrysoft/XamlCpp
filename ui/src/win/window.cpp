@@ -61,7 +61,7 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (!guard.exchange(true))
             {
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, get_x(), get_y(), get_width(), get_height(), SWP_NOZORDER));
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)get_x(), (int)get_y(), (int)get_width(), (int)get_height(), SWP_NOZORDER));
             }
         }
         draw_resizable();
@@ -69,7 +69,7 @@ namespace xaml
         auto wnd_dc = wil::GetDC(get_handle());
         m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
         rectangle cr = get_client_region();
-        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), cr.width, cr.height) };
+        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)cr.width, (int)cr.height) };
         wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
         if (get_child())
         {
@@ -119,7 +119,7 @@ namespace xaml
 
     void window::__copy_hdc(rectangle const& region, HDC hDC)
     {
-        THROW_IF_WIN32_BOOL_FALSE(BitBlt(m_store_dc.get(), region.x, region.y, region.width, region.height, hDC, 0, 0, SRCCOPY));
+        THROW_IF_WIN32_BOOL_FALSE(BitBlt(m_store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, hDC, 0, 0, SRCCOPY));
     }
 
     optional<LRESULT> window::__wnd_proc(window_message const& msg)
@@ -158,9 +158,9 @@ namespace xaml
         {
             hDC = wil::BeginPaint(get_handle(), &ps);
             rectangle region = get_client_region();
-            THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), region.x - 1, region.y - 1, region.width + 1, region.height + 1));
+            THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
-            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), region.x, region.y, region.width, region.height, m_store_dc.get(), 0, 0, SRCCOPY));
+            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, m_store_dc.get(), 0, 0, SRCCOPY));
             return result;
         }
         case WM_CLOSE:

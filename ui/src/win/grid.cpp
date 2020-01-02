@@ -18,6 +18,7 @@ namespace xaml
     {
         bool new_draw = !get_handle();
         set_handle(get_parent()->get_handle());
+        SendMessage(get_handle(), WM_SETREDRAW, FALSE, 0);
         for (auto& c : m_children)
         {
             if (new_draw) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
@@ -35,5 +36,6 @@ namespace xaml
             subrect = get_real_region(c, subrect);
             c->__draw(subrect);
         }
+        SendMessage(get_handle(), WM_SETREDRAW, TRUE, 0);
     }
 } // namespace xaml

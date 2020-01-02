@@ -362,7 +362,7 @@ namespace xaml
         std::function<void(std::shared_ptr<meta_class>, std::any)> setter;
 
     public:
-        constexpr std::string_view name() const noexcept { return m_name; }
+        std::string_view name() const noexcept { return m_name; }
         bool can_read() const noexcept { return (bool)getter; }
         bool can_write() const noexcept { return (bool)setter; }
 
@@ -543,7 +543,7 @@ namespace xaml
         std::shared_ptr<__type_erased_function> invoker;
 
     public:
-        constexpr std::string_view name() const noexcept { return m_name; }
+        std::string_view name() const noexcept { return m_name; }
         bool can_add() const noexcept { return (bool)adder; }
         bool can_remove() const noexcept { return (bool)remover; }
         bool can_invoke() const noexcept { return (bool)invoker; }
