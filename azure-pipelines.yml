@@ -1,0 +1,45 @@
+trigger:
+- master
+
+variables:
+  configuration: 'Release'
+
+jobs:
+- job: 'Build'
+  strategy:
+    matrix:
+      windows:
+        imageName: 'windows-latest'
+        rid: 'win'
+      linux:
+        imageName: 'ubuntu-latest'
+        rid: 'linux'
+      mac:
+        imageName: 'macos-latest'
+        rid: 'mac'
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - task: CmdLine@2
+    displayName: 'Install linux dependencies'
+    condition: eq(variables.rid, 'linux')
+    inputs:
+      script: 'sudo apt-get update && sudo apt-get install libgtk-3-dev'
+
+  - task: CmdLine@2
+    displayName: 'Install vcpkg'
+    condition: eq(variables.rid, 'win')
+    inputs:
+      script: |
+        mkdir vcpkg
+        cd vcpkg
+        git clone https://github.com/microsoft/vcpkg.git
+        bootstrap-vcpkg.bat -Win64
+        vcpkg install libxml2 libxml2:x64-windows
+        vcpkg integrate install
+
+  - task: CMake@1
+    displayName: 'Build all projects'
+    inputs:
+      cmakeArgs: --build . --target all --config $(configuration)
