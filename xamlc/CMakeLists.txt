@@ -14,7 +14,3 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 
 add_executable(xamlc ${XAMLC_SOURCES})
 target_link_libraries(xamlc xaml)
-
-if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
-    target_precompile_headers(xamlc REUSE_FROM xaml_ui)
-endif()
