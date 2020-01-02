@@ -40,6 +40,9 @@ jobs:
         vcpkg integrate install
 
   - task: CMake@1
+    displayName: 'Configure all projects'
+
+  - task: CMake@1
     displayName: 'Build all projects'
     inputs:
-      cmakeArgs: --build . --target all --config $(configuration)
+      cmakeArgs: --build build/ --target all --config $(configuration)
