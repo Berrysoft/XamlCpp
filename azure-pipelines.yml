@@ -26,6 +26,7 @@ jobs:
     condition: eq(variables.rid, 'linux')
     inputs:
       script: |
+        apt-get install dh-autoreconf libgles2-mesa-dev
         sudo apt install software-properties-common
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get install gcc-9 g++-9
