@@ -14,3 +14,5 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 
 add_executable(xamlc ${XAMLC_SOURCES})
 target_link_libraries(xamlc xaml)
+
+install(TARGETS xamlc DESTINATION bin)
