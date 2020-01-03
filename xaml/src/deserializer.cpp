@@ -37,7 +37,7 @@ namespace xaml
         ~deserializer_markup_context() override {}
     };
 
-    void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
+    XAML_API void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
     {
         symbols.emplace(node.name, mc);
         for (auto& prop : node.properties)
@@ -101,7 +101,7 @@ namespace xaml
         }
     }
 
-    void deserializer::deserialize_extensions(xaml_node& node)
+    XAML_API void deserializer::deserialize_extensions(xaml_node& node)
     {
         auto mc = symbols[node.name];
         for (auto& prop : node.extension_properties)
@@ -115,7 +115,7 @@ namespace xaml
         }
     }
 
-    void deserializer::deserialize(shared_ptr<meta_class> mc)
+    XAML_API void deserializer::deserialize(shared_ptr<meta_class> mc)
     {
         if (mc)
         {

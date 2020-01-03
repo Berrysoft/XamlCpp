@@ -51,7 +51,7 @@ namespace xaml
         {
         }
 
-        void provide(markup_context& context) override;
+        XAML_API void provide(markup_context& context) override;
 
 #define ADD_BINDING_EXTENSION_MEMBERS() \
     ADD_MARKUP_EXTENSION_MEMBERS();     \

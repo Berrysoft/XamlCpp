@@ -30,4 +30,4 @@ else()
 endif()
 target_link_libraries(xaml_test xaml)
 
-configure_file(test/test.xaml test.xaml COPYONLY)
+configure_file(test/test.xaml ${CMAKE_BINARY_DIR}/bin/test.xaml COPYONLY)

@@ -58,13 +58,13 @@ namespace xaml
 
     struct xaml_no_default_constructor : std::logic_error
     {
-        xaml_no_default_constructor(std::type_index t);
+        XAML_API xaml_no_default_constructor(std::type_index t);
         ~xaml_no_default_constructor() override {}
     };
 
     struct xaml_bad_type : std::logic_error
     {
-        xaml_bad_type(std::string_view ns, std::string_view name);
+        XAML_API xaml_bad_type(std::string_view ns, std::string_view name);
         ~xaml_bad_type() override {}
     };
 
@@ -76,13 +76,13 @@ namespace xaml
 
     struct xaml_no_member : std::logic_error
     {
-        xaml_no_member(std::type_index type, std::string_view name);
+        XAML_API xaml_no_member(std::type_index type, std::string_view name);
         ~xaml_no_member() override {}
     };
 
     struct xaml_not_multicontainer : std::logic_error
     {
-        xaml_not_multicontainer(std::type_index type);
+        XAML_API xaml_not_multicontainer(std::type_index type);
         ~xaml_not_multicontainer() override {}
     };
 
@@ -93,19 +93,19 @@ namespace xaml
 
     public:
         constexpr bool is_open() const noexcept { return reader; }
-        void open(std::string_view file);
+        XAML_API void open(std::string_view file);
 
-        parser();
+        XAML_API parser();
         parser(std::string_view file) : parser() { open(file); }
-        ~parser();
+        XAML_API ~parser();
 
     private:
-        int parse_members(xaml_node& mc);
-        std::tuple<int, xaml_node> deserialize_impl();
-        void clean_up(int ret);
+        XAML_API int parse_members(xaml_node& mc);
+        XAML_API std::tuple<int, xaml_node> deserialize_impl();
+        XAML_API void clean_up(int ret);
 
     public:
-        xaml_node parse();
+        XAML_API xaml_node parse();
     };
 } // namespace xaml
 

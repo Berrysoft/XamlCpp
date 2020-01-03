@@ -12,7 +12,7 @@ namespace xaml
         return oss.str();
     }
 
-    xaml_no_default_constructor::xaml_no_default_constructor(type_index t) : logic_error(get_no_default_constructor_error(t))
+    XAML_API xaml_no_default_constructor::xaml_no_default_constructor(type_index t) : logic_error(get_no_default_constructor_error(t))
     {
     }
 
@@ -23,7 +23,7 @@ namespace xaml
         return oss.str();
     }
 
-    xaml_bad_type::xaml_bad_type(string_view ns, string_view name) : logic_error(get_bad_type_error(ns, name))
+    XAML_API xaml_bad_type::xaml_bad_type(string_view ns, string_view name) : logic_error(get_bad_type_error(ns, name))
     {
     }
 
@@ -34,7 +34,7 @@ namespace xaml
         return oss.str();
     }
 
-    xaml_no_member::xaml_no_member(type_index type, string_view name) : logic_error(get_xaml_no_member(type, name))
+    XAML_API xaml_no_member::xaml_no_member(type_index type, string_view name) : logic_error(get_xaml_no_member(type, name))
     {
     }
 
@@ -45,7 +45,7 @@ namespace xaml
         return oss.str();
     }
 
-    xaml_not_multicontainer::xaml_not_multicontainer(type_index type) : logic_error(get_xaml_not_multicontainer(type))
+    XAML_API xaml_not_multicontainer::xaml_not_multicontainer(type_index type) : logic_error(get_xaml_not_multicontainer(type))
     {
     }
 
@@ -61,17 +61,17 @@ namespace xaml
         }
     }
 
-    parser::parser()
+    XAML_API parser::parser()
     {
         LIBXML_TEST_VERSION;
     }
 
-    parser::~parser()
+    XAML_API parser::~parser()
     {
         xmlCleanupMemory();
     }
 
-    void parser::open(string_view file)
+    XAML_API void parser::open(string_view file)
     {
         reader = xmlNewTextReaderFilename(file.data());
     }
@@ -86,7 +86,7 @@ namespace xaml
         return oss.str();
     }
 
-    int parser::parse_members(xaml_node& mc)
+    XAML_API int parser::parse_members(xaml_node& mc)
     {
         int ret = 1;
         while (ret == 1)
@@ -284,7 +284,7 @@ namespace xaml
         return ret;
     }
 
-    void parser::clean_up(int ret)
+    XAML_API void parser::clean_up(int ret)
     {
         xmlFreeTextReader(reader);
         reader = nullptr;
@@ -294,7 +294,7 @@ namespace xaml
         }
     }
 
-    tuple<int, xaml_node> parser::deserialize_impl()
+    XAML_API tuple<int, xaml_node> parser::deserialize_impl()
     {
         string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
         string_view name = get_string_view(xmlTextReaderConstName(reader));
@@ -311,7 +311,7 @@ namespace xaml
         }
     }
 
-    xaml_node parser::parse()
+    XAML_API xaml_node parser::parse()
     {
         int ret = xmlTextReaderRead(reader);
         if (ret == 1)
