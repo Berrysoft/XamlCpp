@@ -32,17 +32,15 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
 
   - script: |
-      mkdir vcpkg
-      cd vcpkg
       git clone https://github.com/microsoft/vcpkg.git
+      cd vcpkg
       bootstrap-vcpkg.bat -Win64
     displayName: 'Install vcpkg'
     condition: eq(variables.rid, 'win')
 
   - script: |
-      mkdir vcpkg
-      cd vcpkg
       git clone https://github.com/microsoft/vcpkg.git
+      cd vcpkg
       ./bootstrap-vcpkg.sh
     displayName: 'Install vcpkg'
     condition: eq(variables.rid, 'linux')
