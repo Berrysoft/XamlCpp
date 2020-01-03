@@ -35,26 +35,26 @@ namespace xaml
             }
         }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        application(LPWSTR lpCmdLine);
+        XAML_API application(LPWSTR lpCmdLine);
 #endif // XAML_UI_WINDOWS
 
-        void init_components();
+        XAML_API void init_components();
 
     public:
-        virtual ~application();
+        XAML_API virtual ~application();
 
         const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
-        int run();
+        XAML_API int run();
 
-        static std::shared_ptr<application> init(int argc, char_t** argv);
+        XAML_API static std::shared_ptr<application> init(int argc, char_t** argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        static std::shared_ptr<application> init(LPWSTR lpCmdLine);
+        XAML_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
 #endif // XAML_UI_WINDOWS
-        static std::shared_ptr<application> current();
+        XAML_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS
-        HFONT __default_font() const;
+        XAML_API HFONT __default_font() const;
 #endif // XAML_UI_WINDOWS
 
         static void register_class() noexcept

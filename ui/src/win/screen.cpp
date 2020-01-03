@@ -1,13 +1,13 @@
 #include <Windows.h>
+#include <internal/win/drawing.hpp>
 #include <wil/result_macros.h>
 #include <xaml/ui/screen.hpp>
-#include <internal/win/drawing.hpp>
 
 using namespace std;
 
 namespace xaml
 {
-    unsigned int screen_dpi()
+    XAML_API unsigned int screen_dpi()
     {
         return GetDpiForWindow(GetDesktopWindow());
     }
@@ -22,7 +22,7 @@ namespace xaml
         return TRUE;
     }
 
-    vector<monitor> get_monitors()
+    XAML_API vector<monitor> get_monitors()
     {
         vector<monitor> ms;
         THROW_IF_WIN32_BOOL_FALSE(EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM)&ms));

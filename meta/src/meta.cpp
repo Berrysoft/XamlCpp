@@ -22,7 +22,7 @@ namespace xaml
         }
     }
 
-    optional<type_index> get_type(string_view ns, string_view name) noexcept
+    XAML_API optional<type_index> get_type(string_view ns, string_view name) noexcept
     {
         string sns{ get_real_namespace(ns) };
         auto it = type_map[sns].find((string)name);
@@ -36,19 +36,19 @@ namespace xaml
         }
     }
 
-    void __register_type(string_view ns, string_view name, type_index type) noexcept
+    XAML_API void __register_type(string_view ns, string_view name, type_index type) noexcept
     {
         type_map[get_real_namespace(ns)].emplace((string)name, type);
     }
 
-    void add_xml_namespace(string_view xmlns, string_view ns) noexcept
+    XAML_API void add_xml_namespace(string_view xmlns, string_view ns) noexcept
     {
         namespace_map.emplace((string)xmlns, (string)ns);
     }
 
     static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> static_method_map;
 
-    shared_ptr<__type_erased_function> __get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    XAML_API shared_ptr<__type_erased_function> __get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
     {
         auto its = static_method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -61,14 +61,14 @@ namespace xaml
         return nullptr;
     }
 
-    void __add_static_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
+    XAML_API void __add_static_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
         static_method_map[type].emplace((string)name, func);
     }
 
     static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;
 
-    shared_ptr<__type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
+    XAML_API shared_ptr<__type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
     {
         auto its = ctor_map.equal_range(type);
         for (auto it = its.first; it != its.second; ++it)
@@ -81,14 +81,14 @@ namespace xaml
         return nullptr;
     }
 
-    void __add_constructor(type_index type, shared_ptr<__type_erased_function> ctor) noexcept
+    XAML_API void __add_constructor(type_index type, shared_ptr<__type_erased_function> ctor) noexcept
     {
         ctor_map.emplace(type, ctor);
     }
 
     static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> method_map;
 
-    shared_ptr<__type_erased_function> __get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    XAML_API shared_ptr<__type_erased_function> __get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
     {
         auto its = method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -101,7 +101,7 @@ namespace xaml
         return nullptr;
     }
 
-    shared_ptr<__type_erased_function> __get_first_method(type_index type, string_view name) noexcept
+    XAML_API shared_ptr<__type_erased_function> __get_first_method(type_index type, string_view name) noexcept
     {
         auto its = method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -111,7 +111,7 @@ namespace xaml
         return nullptr;
     }
 
-    void __add_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
+    XAML_API void __add_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
         method_map[type].emplace((string)name, func);
     }

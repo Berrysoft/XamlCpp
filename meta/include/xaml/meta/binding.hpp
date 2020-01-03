@@ -1,9 +1,10 @@
 #ifndef XAML_META_BINDING_HPP
 #define XAML_META_BINDING_HPP
 
+#include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
 #include <xaml/meta/meta.hpp>
-#include <xaml/meta/conv.hpp>
+#include <xaml/utility.hpp>
 
 namespace xaml
 {
@@ -36,12 +37,12 @@ namespace xaml
         token_type source_token;
 
     public:
-        __binding_guard(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
-        ~__binding_guard();
+        XAML_API __binding_guard(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
+        XAML_API ~__binding_guard();
     };
 
-    std::size_t bind(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
-    void unbind(std::size_t token);
+    XAML_API std::size_t bind(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
+    XAML_API void unbind(std::size_t token);
 } // namespace xaml
 
 #endif // !XAML_META_BINDING_HPP

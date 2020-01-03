@@ -5,7 +5,7 @@ using namespace std;
 
 namespace xaml
 {
-    optional<LRESULT> grid::__wnd_proc(window_message const& msg)
+    XAML_API optional<LRESULT> grid::__wnd_proc(window_message const& msg)
     {
         for (auto c : m_children)
         {
@@ -14,7 +14,7 @@ namespace xaml
         return nullopt;
     }
 
-    void grid::__draw(rectangle const& region)
+    XAML_API void grid::__draw(rectangle const& region)
     {
         bool new_draw = !get_handle();
         set_handle(get_parent()->get_handle());

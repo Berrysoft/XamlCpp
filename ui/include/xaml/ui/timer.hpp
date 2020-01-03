@@ -36,7 +36,7 @@ namespace xaml
         void __set_id(UINT_PTR value) { m_id = value; }
 
     private:
-        static void CALLBACK on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed);
+        XAML_API static void CALLBACK on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -79,8 +79,8 @@ namespace xaml
         ~timer() { stop(); }
 
     public:
-        void start();
-        void stop();
+        XAML_API void start();
+        XAML_API void stop();
 
         EVENT(tick, timer&)
     };

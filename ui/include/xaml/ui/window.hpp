@@ -14,8 +14,8 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     class window;
 
-    LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-    std::shared_ptr<window> __get_window(HWND hWnd);
+    XAML_API LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+    XAML_API std::shared_ptr<window> __get_window(HWND hWnd);
 #endif // XAML_UI_WINDOWS
 
     class window : public container
@@ -25,8 +25,8 @@ namespace xaml
         wil::unique_hdc_window m_store_dc{ nullptr };
 
     public:
-        virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
-        void __copy_hdc(rectangle const& region, HDC hDC);
+        XAML_API virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_API void __copy_hdc(rectangle const& region, HDC hDC);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -54,24 +54,24 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        void __draw(rectangle const& region) override;
+        XAML_API void __draw(rectangle const& region) override;
 
     protected:
-        void __parent_redraw() override;
+        XAML_API void __parent_redraw() override;
 
     private:
-        void draw_title();
-        void draw_child();
-        void draw_resizable();
+        XAML_API void draw_title();
+        XAML_API void draw_child();
+        XAML_API void draw_resizable();
 
     public:
-        window();
-        virtual ~window() override;
+        XAML_API window();
+        XAML_API virtual ~window() override;
 
     public:
         std::shared_ptr<control> get_root_window() override { return shared_from_this(); }
 
-        void show();
+        XAML_API void show();
 
         PROP_EVENT(resizable, bool)
         EVENT(resizable_changed, window&, bool)
@@ -113,7 +113,7 @@ namespace xaml
             }
         }
 
-        rectangle get_client_region() const;
+        XAML_API rectangle get_client_region() const;
 
         EVENT(closing, window&, bool&)
 

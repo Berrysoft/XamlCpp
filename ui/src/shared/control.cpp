@@ -7,7 +7,7 @@ namespace xaml
 {
     control::control() {}
 
-    void control::set_parent(shared_ptr<control> const& value)
+    XAML_API void control::set_parent(shared_ptr<control> const& value)
     {
         if (m_parent != value && value->is_container())
         {
@@ -30,11 +30,11 @@ namespace xaml
         }
     }
 
-    void control::__parent_redraw()
+    XAML_API void control::__parent_redraw()
     {
         if (get_parent())
             get_parent()->__parent_redraw();
     }
 
-    void control::__size_to_fit() {}
+    XAML_API void control::__size_to_fit() {}
 } // namespace xaml

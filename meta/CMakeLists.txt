@@ -2,11 +2,13 @@ project(XamlMeta CXX)
 
 include_directories(include)
 
+file(GLOB UTILITY_HEADERS "include/xaml/*.hpp")
 file(GLOB META_HEADERS "include/xaml/meta/*.hpp")
 file(GLOB META_SOURCES "src/*.cpp")
 
 add_library(xaml_meta ${META_SOURCES})
 
+install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)
 install(FILES ${META_HEADERS} DESTINATION include/xaml/meta)
 install(TARGETS xaml_meta DESTINATION lib EXPORT xaml_meta-targets)
 install(EXPORT xaml_meta-targets DESTINATION lib/cmake/xaml_meta)

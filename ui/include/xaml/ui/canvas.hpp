@@ -49,10 +49,10 @@ namespace xaml
         native_object_type m_object;
 
     public:
-        drawing_brush(color c);
+        XAML_API drawing_brush(color c);
 
-        color get_color() const;
-        void set_color(color value);
+        XAML_API color get_color() const;
+        XAML_API void set_color(color value);
 
         constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
@@ -71,13 +71,13 @@ namespace xaml
         native_object_type m_object;
 
     public:
-        drawing_pen(color c, double width = 1.0);
+        XAML_API drawing_pen(color c, double width = 1.0);
 
-        color get_color() const;
-        void set_color(color value);
+        XAML_API color get_color() const;
+        XAML_API void set_color(color value);
 
-        double get_width() const;
-        void set_width(double value);
+        XAML_API double get_width() const;
+        XAML_API void set_width(double value);
 
         constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
@@ -96,16 +96,16 @@ namespace xaml
         native_object_type m_object;
 
     public:
-        drawing_font(string_view_t family, double size, bool italic, bool bold);
+        XAML_API drawing_font(string_view_t family, double size, bool italic, bool bold);
 
-        string_view_t get_font_family() const;
-        void set_font_family(string_view_t value);
+        XAML_API string_view_t get_font_family() const;
+        XAML_API void set_font_family(string_view_t value);
 
-        double get_size() const;
+        XAML_API double get_size() const;
 
-        bool get_italic() const;
+        XAML_API bool get_italic() const;
 
-        bool get_bold() const;
+        XAML_API bool get_bold() const;
 
         constexpr native_handle_type get_handle() const noexcept { return &m_object; }
     };
@@ -127,7 +127,7 @@ namespace xaml
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
 
-        drawing_context(native_handle_type handle);
+        XAML_API drawing_context(native_handle_type handle);
 
 #ifdef XAML_UI_COCOA
     private:
@@ -157,23 +157,23 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
-        void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle);
-        void draw_ellipse(drawing_pen const& pen, rectangle const& region);
-        void fill_ellipse(drawing_brush const& brush, rectangle const& region);
-        void draw_line(drawing_pen const& pen, point startp, point endp);
-        void draw_rect(drawing_pen const& pen, rectangle const& rect);
-        void fill_rect(drawing_brush const& brush, rectangle const& rect);
-        void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
-        void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
-        void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
+        XAML_API void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
+        XAML_API void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle);
+        XAML_API void draw_ellipse(drawing_pen const& pen, rectangle const& region);
+        XAML_API void fill_ellipse(drawing_brush const& brush, rectangle const& region);
+        XAML_API void draw_line(drawing_pen const& pen, point startp, point endp);
+        XAML_API void draw_rect(drawing_pen const& pen, rectangle const& rect);
+        XAML_API void fill_rect(drawing_brush const& brush, rectangle const& rect);
+        XAML_API void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
+        XAML_API void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
+        XAML_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
     class canvas : public common_control, public meta_class_impl<canvas>
     {
     public:
-        canvas();
-        ~canvas() override;
+        XAML_API canvas();
+        XAML_API ~canvas() override;
 
     private:
         rectangle m_real_region;
@@ -183,7 +183,7 @@ namespace xaml
         wil::unique_hdc_window m_store_dc;
 
     public:
-        virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_API virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -199,7 +199,7 @@ namespace xaml
     public:
         EVENT(redraw, canvas&, drawing_context&)
 
-        void __draw(rectangle const& region) override;
+        XAML_API void __draw(rectangle const& region) override;
 
         constexpr size get_size() const noexcept { return { m_real_region.width, m_real_region.height }; }
 
@@ -207,8 +207,7 @@ namespace xaml
 
         constexpr double get_height() const noexcept { return m_real_region.height; }
 
-#define ADD_CANVAS_MEMBERS() \
-    ADD_COMMON_CONTROL_MEMBERS()
+#define ADD_CANVAS_MEMBERS() ADD_COMMON_CONTROL_MEMBERS()
 
         static void register_class() noexcept
         {

@@ -9,12 +9,12 @@ namespace xaml
     class button_base : public common_control
     {
     public:
-        button_base();
-        virtual ~button_base() override;
+        XAML_API button_base();
+        XAML_API virtual ~button_base() override;
 
 #ifdef XAML_UI_WINDOWS
     public:
-        std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -28,13 +28,13 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        void __draw(rectangle const& region) override;
-        void __size_to_fit() override;
+        XAML_API void __draw(rectangle const& region) override;
+        XAML_API void __size_to_fit() override;
 
     private:
-        void draw_size();
-        void draw_text();
-        void draw_default();
+        XAML_API void draw_size();
+        XAML_API void draw_text();
+        XAML_API void draw_default();
 
     private:
         string_t m_text{};
@@ -74,6 +74,9 @@ namespace xaml
     class button : public button_base, public meta_class_impl<button>
     {
     public:
+        button() : button_base() {}
+        ~button() override {}
+
 #define ADD_BUTTON_MEMBERS() ADD_BUTTON_BASE_MEMBERS()
 
         static void register_class() noexcept

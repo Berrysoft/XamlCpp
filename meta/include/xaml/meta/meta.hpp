@@ -13,6 +13,7 @@
 #include <typeindex>
 #include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
+#include <xaml/utility.hpp>
 
 namespace xaml
 {
@@ -54,9 +55,9 @@ namespace xaml
         __register_class_helper<T...>{}();
     }
 
-    std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
+    XAML_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
 
-    void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
+    XAML_API void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
 
     template <typename TChild>
     void register_type(std::string_view ns, std::string_view name) noexcept
@@ -64,7 +65,7 @@ namespace xaml
         __register_type(ns, name, std::type_index(typeid(TChild)));
     }
 
-    void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
+    XAML_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 
     struct __type_erased_function
     {
@@ -127,7 +128,7 @@ namespace xaml
     template <typename T>
     using __optional_return_t = typename __optional_return<T>::type;
 
-    std::shared_ptr<__type_erased_function> __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_API std::shared_ptr<__type_erased_function> __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename Return, typename... Args>
     std::function<Return(Args...)> get_static_method(std::type_index type, std::string_view name) noexcept
@@ -172,7 +173,7 @@ namespace xaml
         }
     }
 
-    void __add_static_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+    XAML_API void __add_static_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
 
     template <typename T, typename Return, typename... Args>
     void add_static_method(std::string_view name, Return (*func)(Args...)) noexcept
@@ -196,7 +197,7 @@ namespace xaml
         }
     }
 
-    std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_API std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename... Args>
     std::function<std::shared_ptr<meta_class>(Args...)> get_constructor(std::type_index type) noexcept
@@ -227,7 +228,7 @@ namespace xaml
         }
     }
 
-    void __add_constructor(std::type_index type, std::shared_ptr<__type_erased_function> ctor) noexcept;
+    XAML_API void __add_constructor(std::type_index type, std::shared_ptr<__type_erased_function> ctor) noexcept;
 
     template <typename TChild, typename... Args>
     void add_constructor_ex(std::function<std::shared_ptr<meta_class>(Args...)>&& ctor) noexcept
@@ -282,9 +283,9 @@ namespace xaml
     template <typename T>
     using __remove_const_func_t = typename __remove_const_func<T>::type;
 
-    std::shared_ptr<__type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_API std::shared_ptr<__type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
 
-    std::shared_ptr<__type_erased_function> __get_first_method(std::type_index type, std::string_view name) noexcept;
+    XAML_API std::shared_ptr<__type_erased_function> __get_first_method(std::type_index type, std::string_view name) noexcept;
 
     template <typename Return, typename... Args>
     std::function<Return(std::shared_ptr<meta_class>, Args...)> get_method(std::type_index type, std::string_view name) noexcept
@@ -330,7 +331,7 @@ namespace xaml
         }
     }
 
-    void __add_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+    XAML_API void __add_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
 
     template <typename T, typename TBase, typename TMethod>
     void add_method(std::string_view name, TMethod TBase::*func) noexcept

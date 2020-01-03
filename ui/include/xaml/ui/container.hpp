@@ -12,8 +12,8 @@ namespace xaml
         std::shared_ptr<control> m_child{ nullptr };
 
     public:
-        container();
-        virtual ~container() override;
+        container() : control() {}
+        virtual ~container() override {}
 
         bool is_container() const override final { return true; }
         bool is_multicontainer() const override final { return false; }
@@ -51,14 +51,14 @@ namespace xaml
         std::vector<std::shared_ptr<control>> m_children{};
 
     public:
-        multicontainer();
-        virtual ~multicontainer() override;
+        multicontainer() : control() {}
+        virtual ~multicontainer() override {}
 
         bool is_container() const override final { return true; }
         bool is_multicontainer() const override final { return true; }
 
-        void add_child(std::shared_ptr<control> const& child);
-        void remove_child(std::shared_ptr<control> const& child);
+        XAML_API void add_child(std::shared_ptr<control> const& child);
+        XAML_API void remove_child(std::shared_ptr<control> const& child);
         std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
 
     public:

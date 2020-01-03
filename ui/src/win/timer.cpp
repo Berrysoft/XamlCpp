@@ -8,7 +8,7 @@ namespace xaml
 {
     static unordered_map<UINT_PTR, timer*> timer_map;
 
-    void timer::on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
+    XAML_API void timer::on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
     {
         auto self = timer_map[nIdEvent];
         if (self)
@@ -17,7 +17,7 @@ namespace xaml
         }
     }
 
-    void timer::start()
+    XAML_API void timer::start()
     {
         if (!m_enabled.exchange(true))
         {
@@ -26,7 +26,7 @@ namespace xaml
         }
     }
 
-    void timer::stop()
+    XAML_API void timer::stop()
     {
         if (m_enabled.exchange(false))
         {

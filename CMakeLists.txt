@@ -6,9 +6,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
-set(BUILD_WINDOWS OFF CACHE BOOL "Build for Windows with Windows API")
-set(BUILD_COCOA OFF CACHE BOOL "Build for Mac with Cocoa")
-set(BUILD_GTK3 OFF CACHE BOOL "Build with GTK3")
+option(BUILD_WINDOWS "Build for Windows with Windows API")
+option(BUILD_COCOA "Build for Mac with Cocoa")
+option(BUILD_GTK3 "Build with GTK3")
 
 if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
     if(WIN32)
@@ -38,6 +38,12 @@ endif()
 
 add_definitions(${XAML_BUILD_DEFINITIONS})
 add_compile_options(${XAML_COMPILE_OPTIONS})
+
+option(BUILD_SHARED_LIBS "Build shared libs" ON)
+
+if(NOT ${BUILD_SHARED_LIBS})
+    list(APPEND XAML_COMPILE_OPTIONS "-DXAML_STATIC_DEFINE")
+endif()
 
 add_subdirectory(meta)
 

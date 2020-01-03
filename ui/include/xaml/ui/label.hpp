@@ -9,17 +9,17 @@ namespace xaml
     class label : public common_control, public meta_class_impl<label>
     {
     public:
-        label();
-        ~label() override;
+        XAML_API label();
+        XAML_API ~label() override;
 
     public:
-        void __draw(rectangle const& region) override;
-        void __size_to_fit() override;
+        XAML_API void __draw(rectangle const& region) override;
+        XAML_API void __size_to_fit() override;
 
     private:
-        void draw_size();
-        void draw_text();
-        void draw_alignment();
+        XAML_API void draw_size();
+        XAML_API void draw_text();
+        XAML_API void draw_alignment();
 
     private:
         string_t m_text{};

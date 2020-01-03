@@ -102,11 +102,11 @@ namespace xaml
         return max_region;
     }
 
-    unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
+    XAML_API unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
 
-    grid::grid() : multicontainer()
+    XAML_API grid::grid() : multicontainer()
     {
     }
 
-    grid::~grid() {}
+    XAML_API grid::~grid() {}
 } // namespace xaml

@@ -10,7 +10,7 @@ namespace xaml
         return (string)name + "_changed";
     }
 
-    __binding_guard::__binding_guard(shared_ptr<meta_class> target, string_view target_prop, shared_ptr<meta_class> source, string_view source_prop, binding_mode mode)
+    XAML_API __binding_guard::__binding_guard(shared_ptr<meta_class> target, string_view target_prop, shared_ptr<meta_class> source, string_view source_prop, binding_mode mode)
         : target(target), source(source),
           target_prop(get_property(target->this_type(), target_prop)), target_event(get_event(target->this_type(), get_property_changed_event_name(target_prop))),
           source_prop(get_property(source->this_type(), source_prop)), source_event(get_event(source->this_type(), get_property_changed_event_name(source_prop)))
@@ -26,7 +26,7 @@ namespace xaml
         }
     }
 
-    __binding_guard::~__binding_guard()
+    XAML_API __binding_guard::~__binding_guard()
     {
         source_event.remove(source, source_token);
         target_event.remove(target, target_token);
@@ -35,14 +35,14 @@ namespace xaml
     static map<size_t, shared_ptr<__binding_guard>> bind_map;
     static size_t bind_index = 0;
 
-    size_t bind(shared_ptr<meta_class> target, string_view target_prop, shared_ptr<meta_class> source, string_view source_prop, binding_mode mode)
+    XAML_API size_t bind(shared_ptr<meta_class> target, string_view target_prop, shared_ptr<meta_class> source, string_view source_prop, binding_mode mode)
     {
         bind_index++;
         bind_map.emplace(bind_index, make_shared<__binding_guard>(target, target_prop, source, source_prop, mode));
         return bind_index;
     }
 
-    void unbind(size_t token)
+    XAML_API void unbind(size_t token)
     {
         bind_map.erase(token);
     }

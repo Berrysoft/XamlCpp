@@ -129,8 +129,8 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     protected:
-        void __create(window_create_params const& params);
-        size __measure_text_size(string_view_t str) const;
+        XAML_API void __create(window_create_params const& params);
+        XAML_API size __measure_text_size(string_view_t str) const;
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
@@ -151,11 +151,11 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        control();
-        virtual ~control();
+        XAML_API control();
+        XAML_API virtual ~control();
 
         virtual void __draw(rectangle const& region) = 0;
-        virtual void __size_to_fit();
+        XAML_API virtual void __size_to_fit();
 
         EVENT(parent_changed, control&, std::shared_ptr<control>)
 
@@ -164,7 +164,7 @@ namespace xaml
 
     public:
         std::shared_ptr<control> get_parent() const { return m_parent; }
-        void set_parent(std::shared_ptr<control> const& value);
+        XAML_API void set_parent(std::shared_ptr<control> const& value);
 
     private:
         std::shared_ptr<meta_class> m_data_context{ nullptr };
@@ -181,7 +181,7 @@ namespace xaml
         virtual bool is_multicontainer() const = 0;
 
     protected:
-        virtual void __parent_redraw();
+        XAML_API virtual void __parent_redraw();
 
     private:
         size m_size{ 0, 0 };
