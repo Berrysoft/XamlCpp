@@ -48,7 +48,7 @@ jobs:
     inputs:
       script: |
         cd vcpkg
-        vcpkg install libxml2 libxml2:x64-windows
+        vcpkg install libxml2 libxml2:x64-windows wil wil:x64-windows
         vcpkg integrate install
 
   - task: CMake@1

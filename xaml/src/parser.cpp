@@ -1,9 +1,7 @@
-#include <filesystem>
 #include <sstream>
 #include <xaml/parser.hpp>
 
 using namespace std;
-using namespace std::filesystem;
 
 namespace xaml
 {
@@ -75,7 +73,7 @@ namespace xaml
 
     void parser::open(string_view file)
     {
-        reader = xmlNewTextReaderFilename(absolute(file).string().c_str());
+        reader = xmlNewTextReaderFilename(file.data());
     }
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
