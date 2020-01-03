@@ -32,14 +32,6 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
 
   - script: |
-      git clone https://github.com/microsoft/vcpkg.git
-      cd vcpkg
-      bootstrap-vcpkg.bat -Win64
-    displayName: 'Install vcpkg'
-    condition: eq(variables.rid, 'win')
-
-  - script: |
-      cd vcpkg
       vcpkg install libxml2:x64-windows wil:x64-windows
     displayName: 'Install libxml2 & wil'
     condition: eq(variables.rid, 'win')
@@ -48,7 +40,7 @@ jobs:
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
     inputs:
-      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Configure all projects'
