@@ -6,6 +6,7 @@ include_directories(../ui/include)
 include_directories(${XAML_PRIVATE_INCLUDE_DIRS})
 
 file(GLOB XAML_HEADERS "include/xaml/*.hpp")
+file(GLOB XAML_MARKUP_HEADERS "include/xaml/markup/*.hpp")
 file(GLOB XAML_SOURCES "src/*.cpp")
 
 find_package(LibXml2 REQUIRED)
@@ -16,6 +17,7 @@ target_link_libraries(xaml ${LIBXML2_LIBRARIES})
 target_link_libraries(xaml xaml_ui)
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
+install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
 install(TARGETS xaml EXPORT xaml-targets LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
 

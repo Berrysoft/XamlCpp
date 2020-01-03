@@ -148,20 +148,18 @@ namespace xaml
                                     if (cid != string_view::npos)
                                     {
                                         string_view ex_ns = ex_name.substr(0, cid);
-                                        string s_ex_name = (string)ex_name.substr(cid + 1) + "_extension";
-                                        ex_type = get_type(ex_ns, s_ex_name);
+                                        ex_type = get_type(ex_ns, ex_name);
                                         if (!ex_type)
                                         {
-                                            throw xaml_bad_type(ex_ns, s_ex_name);
+                                            throw xaml_bad_type(ex_ns, ex_name);
                                         }
                                     }
                                     else
                                     {
-                                        string s_ex_name = (string)ex_name + "_extension";
-                                        ex_type = get_type(ns, s_ex_name);
+                                        ex_type = get_type(ns, ex_name);
                                         if (!ex_type)
                                         {
-                                            throw xaml_bad_type(ns, s_ex_name);
+                                            throw xaml_bad_type(ns, ex_name);
                                         }
                                     }
                                     auto ex = construct(*ex_type);

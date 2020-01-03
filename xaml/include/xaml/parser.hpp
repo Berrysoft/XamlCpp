@@ -7,7 +7,7 @@
 #include <tuple>
 #include <typeindex>
 #include <vector>
-#include <xaml/binding_extension.hpp>
+#include <xaml/markup/binding.hpp>
 #include <xaml/meta/meta.hpp>
 #include <xaml/ui/meta.hpp>
 
@@ -16,7 +16,7 @@ namespace xaml
     inline void init_parser() noexcept
     {
         init_meta();
-        register_class<binding_extension>();
+        register_class<binding>();
     }
 
     struct xaml_construct_property;
