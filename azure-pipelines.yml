@@ -59,7 +59,13 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: ne(variables.rid, 'mac')
+    condition: eq(variables.rid, 'win')
+    inputs:
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake
+
+  - task: CMake@1
+    displayName: 'Configure all projects'
+    condition: eq(variables.rid, 'linux')
     inputs:
       cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake
 
