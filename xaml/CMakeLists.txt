@@ -16,7 +16,7 @@ target_link_libraries(xaml ${LIBXML2_LIBRARIES})
 target_link_libraries(xaml xaml_ui)
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
-install(TARGETS xaml DESTINATION lib EXPORT xaml-targets)
+install(TARGETS xaml EXPORT xaml-targets LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
 
 configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
