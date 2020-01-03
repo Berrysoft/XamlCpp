@@ -101,7 +101,7 @@ namespace xaml
 
     private:
         XAML_API int parse_members(xaml_node& mc);
-        XAML_API std::tuple<int, xaml_node> deserialize_impl();
+        XAML_API std::tuple<int, xaml_node> parse_impl();
         XAML_API void clean_up(int ret);
 
     public:

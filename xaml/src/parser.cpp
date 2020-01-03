@@ -237,7 +237,7 @@ namespace xaml
                     auto t = get_type(ns, class_name);
                     if (t)
                     {
-                        auto [ret, child] = deserialize_impl();
+                        auto [ret, child] = parse_impl();
                         if (ret != 1)
                         {
                             clean_up(ret);
@@ -266,7 +266,7 @@ namespace xaml
                 }
                 else
                 {
-                    auto [ret, child] = deserialize_impl();
+                    auto [ret, child] = parse_impl();
                     if (ret != 1)
                     {
                         clean_up(ret);
@@ -292,7 +292,7 @@ namespace xaml
         }
     }
 
-    XAML_API tuple<int, xaml_node> parser::deserialize_impl()
+    XAML_API tuple<int, xaml_node> parser::parse_impl()
     {
         string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
         string_view name = get_string_view(xmlTextReaderConstName(reader));
