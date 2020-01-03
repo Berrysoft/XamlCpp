@@ -20,6 +20,7 @@ namespace xaml
     {
         vector<monitor> ms;
         GdkScreen* screen = gdk_screen_get_default();
+#ifdef GDK_VERSION_3_22
         GdkDisplay* display = gdk_screen_get_display(screen);
         int n = gdk_display_get_n_monitors(display);
         for (int i = 0; i < n; i++)
@@ -30,6 +31,16 @@ namespace xaml
             gdk_monitor_get_workarea(m, &work);
             ms.push_back({ get_rect(geo), get_rect(work) });
         }
+#else
+        int n = gdk_screen_get_n_monitors(screen);
+        for (int i = 0; i < n; i++)
+        {
+            GdkRectangle geo, work;
+            gdk_screen_get_monitor_geometry(screen, i, &geo);
+            gdk_screen_get_monitor_workarea(screen, i, &work);
+            ms.push_back({ get_rect(geo), get_rect(work) });
+        }
+#endif // GDK_VERSION_3_22
         return ms;
     }
 } // namespace xaml

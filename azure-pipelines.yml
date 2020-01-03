@@ -26,7 +26,6 @@ jobs:
     condition: eq(variables.rid, 'linux')
     inputs:
       script: |
-        apt-get install dh-autoreconf libgles2-mesa-dev
         sudo apt install software-properties-common
         sudo add-apt-repository ppa:ubuntu-toolchain-r/test
         sudo apt-get install gcc-9 g++-9
@@ -40,23 +39,10 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      git clone https://github.com/microsoft/vcpkg.git
-      cd vcpkg
-      ./bootstrap-vcpkg.sh
-    displayName: 'Install vcpkg'
-    condition: eq(variables.rid, 'linux')
-
-  - script: |
       cd vcpkg
       vcpkg install libxml2:x64-windows wil:x64-windows
     displayName: 'Install libxml2 & wil'
     condition: eq(variables.rid, 'win')
-
-  - script: |
-      cd vcpkg
-      ./vcpkg install gtk
-    displayName: 'Install gtk'
-    condition: eq(variables.rid, 'linux')
 
   - task: CMake@1
     displayName: 'Configure all projects'
@@ -66,13 +52,7 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: eq(variables.rid, 'linux')
-    inputs:
-      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/vcpkg/scripts/buildsystems/vcpkg.cmake
-
-  - task: CMake@1
-    displayName: 'Configure all projects'
-    condition: eq(variables.rid, 'mac')
+    condition: ne(variables.rid, 'win')
     inputs:
       cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
