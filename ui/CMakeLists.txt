@@ -9,10 +9,6 @@ if(${BUILD_COCOA})
     endif()
 endif()
 
-include_directories(include)
-include_directories(../meta/include)
-include_directories(${XAML_PRIVATE_INCLUDE_DIRS})
-
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
 file(GLOB UI_COCOA_HEADERS "include/xaml/ui/cocoa/*.h")
 
@@ -27,6 +23,20 @@ endif()
 file(GLOB UI_SHARED_SOURCE "src/shared/*.cpp")
 
 add_library(xaml_ui ${UI_SOURCE} ${UI_SHARED_SOURCE})
+
+target_compile_definitions(xaml_ui PUBLIC ${XAML_BUILD_DEFINITIONS})
+target_compile_options(xaml_ui PUBLIC ${XAML_COMPILE_OPTIONS})
+target_link_options(xaml_ui PUBLIC ${XAML_LINK_OPTIONS})
+
+target_include_directories(xaml_ui
+    PUBLIC 
+        $<INSTALL_INTERFACE:include>    
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        ${XAML_PRIVATE_INCLUDE_DIRS}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+)
+
 target_link_libraries(xaml_ui xaml_meta)
 if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui gdiplus)
@@ -49,11 +59,4 @@ install(EXPORT xaml_ui-targets DESTINATION lib/cmake/xaml_ui)
 configure_file(cmake/xaml_ui-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake DESTINATION lib/cmake/xaml_ui)
 
-file(GLOB TEST_SOURCE "test/*.cpp")
-if(${BUILD_WINDOWS})
-    add_executable(ui_test WIN32 ${TEST_SOURCE})
-else()
-    add_executable(ui_test ${TEST_SOURCE})
-endif()
-target_link_libraries(ui_test xaml_ui)
-target_link_libraries(ui_test xaml_meta)
+add_subdirectory(test)

@@ -40,10 +40,6 @@ elseif(${BUILD_GTK3})
     set(XAML_LINK_OPTIONS "")
 endif()
 
-add_definitions(${XAML_BUILD_DEFINITIONS})
-add_compile_options(${XAML_COMPILE_OPTIONS})
-add_link_options(${XAML_LINK_OPTIONS})
-
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 
 if(NOT ${BUILD_SHARED_LIBS})
