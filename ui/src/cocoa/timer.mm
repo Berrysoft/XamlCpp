@@ -1,4 +1,4 @@
-#import <internal/cocoa/XamlTimerDelegate.h>
+#import <cocoa/XamlTimerDelegate.h>
 #include <xaml/ui/timer.hpp>
 
 @implementation XamlTimerDelegate : XamlDelegate

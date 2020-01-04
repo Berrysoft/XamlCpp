@@ -1,5 +1,5 @@
+#import <cocoa/XamlCanvasView.h>
 #include <functional>
-#import <internal/cocoa/XamlCanvasView.h>
 #include <xaml/ui/canvas.hpp>
 
 @implementation XamlCanvasView : NSView

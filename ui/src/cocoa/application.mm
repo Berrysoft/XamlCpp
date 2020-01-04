@@ -1,4 +1,4 @@
-#import <internal/cocoa/XamlApplicationDelegate.h>
+#import <cocoa/XamlApplicationDelegate.h>
 #include <xaml/ui/application.hpp>
 
 @implementation XamlApplicationDelegate : XamlDelegate
