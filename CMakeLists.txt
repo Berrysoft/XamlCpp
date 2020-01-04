@@ -24,20 +24,25 @@ endif()
 
 set(XAML_BUILD_DEFINITIONS "")
 set(XAML_COMPILE_OPTIONS "")
+set(XAML_LINK_OPTIONS "")
 
 if(${BUILD_WINDOWS})
     set(XAML_BUILD_DEFINITIONS "-DUNICODE -D_UNICODE -DXAML_UI_WINDOWS -DVC_EXTRALEAN")
     set(XAML_COMPILE_OPTIONS "/bigobj")
+    set(XAML_LINK_OPTIONS "/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
 elseif(${BUILD_COCOA})
     set(XAML_BUILD_DEFINITIONS "-DXAML_UI_COCOA")
     set(XAML_COMPILE_OPTIONS "-fobjc-arc")
+    set(XAML_LINK_OPTIONS "")
 elseif(${BUILD_GTK3})
     set(XAML_BUILD_DEFINITIONS "-DXAML_UI_GTK3")
     set(XAML_COMPILE_OPTIONS "")
+    set(XAML_LINK_OPTIONS "")
 endif()
 
 add_definitions(${XAML_BUILD_DEFINITIONS})
 add_compile_options(${XAML_COMPILE_OPTIONS})
+add_link_options(${XAML_LINK_OPTIONS})
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 

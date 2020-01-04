@@ -1,7 +1,3 @@
-#ifdef XAML_UI_WINDOWS
-#pragma comment(linker, "\"/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif // XAML_UI_WINDOWS
-
 #include "test_window.hpp"
 #include <xaml/deserializer.hpp>
 #include <xaml/ui/meta.hpp>
