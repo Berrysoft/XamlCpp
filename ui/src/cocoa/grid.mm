@@ -1,4 +1,4 @@
-#include <internal/shared/grid.hpp>
+#include <shared/grid.hpp>
 #include <xaml/ui/grid.hpp>
 
 using namespace std;

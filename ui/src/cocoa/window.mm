@@ -1,6 +1,6 @@
+#include <cocoa/drawing.hpp>
 #import <internal/cocoa/XamlWindowDelegate.h>
-#include <internal/cocoa/drawing.hpp>
-#include <internal/shared/atomic_guard.hpp>
+#include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 

@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <cmath>
-#include <internal/win/drawing.hpp>
 #include <wil/result_macros.h>
+#include <win/drawing.hpp>
 #include <windowsx.h>
 #include <xaml/ui/canvas.hpp>
 #include <xaml/ui/window.hpp>

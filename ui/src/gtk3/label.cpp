@@ -1,4 +1,4 @@
-#include <internal/gtk3/drawing.hpp>
+#include <gtk3/drawing.hpp>
 #include <xaml/ui/label.hpp>
 
 using namespace std;

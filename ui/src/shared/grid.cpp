@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <internal/shared/grid.hpp>
+#include <shared/grid.hpp>
 
 using namespace std;
 

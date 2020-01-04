@@ -1,5 +1,5 @@
+#include <cocoa/drawing.hpp>
 #import <internal/cocoa/XamlButtonDelegate.h>
-#include <internal/cocoa/drawing.hpp>
 #include <xaml/ui/button.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate

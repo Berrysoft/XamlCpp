@@ -1,5 +1,5 @@
-#include <internal/gtk3/drawing.hpp>
-#include <internal/shared/atomic_guard.hpp>
+#include <gtk3/drawing.hpp>
+#include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 

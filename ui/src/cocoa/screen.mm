@@ -1,4 +1,4 @@
-#include <internal/cocoa/drawing.hpp>
+#include <cocoa/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;

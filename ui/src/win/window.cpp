@@ -1,7 +1,7 @@
-#include <internal/shared/atomic_guard.hpp>
-#include <internal/win/drawing.hpp>
+#include <shared/atomic_guard.hpp>
 #include <unordered_map>
 #include <wil/result_macros.h>
+#include <win/drawing.hpp>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>

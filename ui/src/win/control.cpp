@@ -1,8 +1,8 @@
 #include <Windows.h>
-#include <internal/win/drawing.hpp>
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <win/drawing.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/container.hpp>
 #include <xaml/ui/control.hpp>

@@ -1,5 +1,5 @@
-#include <internal/cocoa/drawing.hpp>
-#include <internal/shared/atomic_guard.hpp>
+#include <cocoa/drawing.hpp>
+#include <shared/atomic_guard.hpp>
 #include <xaml/ui/label.hpp>
 
 using namespace std;

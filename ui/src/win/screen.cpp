@@ -1,6 +1,6 @@
 #include <Windows.h>
-#include <internal/win/drawing.hpp>
 #include <wil/result_macros.h>
+#include <win/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;
