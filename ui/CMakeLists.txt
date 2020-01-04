@@ -26,7 +26,12 @@ add_library(xaml_ui ${UI_SOURCE} ${UI_SHARED_SOURCE})
 
 target_compile_definitions(xaml_ui PUBLIC ${XAML_BUILD_DEFINITIONS})
 target_compile_options(xaml_ui PUBLIC ${XAML_COMPILE_OPTIONS})
-target_link_options(xaml_ui PUBLIC ${XAML_LINK_OPTIONS})
+
+if(CMAKE_VERSION VERSION_LESS 3.14)
+    target_link_libraries(xaml_ui INTERFACE ${XAML_LINK_OPTIONS})
+else()
+    target_link_options(xaml_ui PUBLIC ${XAML_LINK_OPTIONS})
+endif()
 
 target_include_directories(xaml_ui
     PUBLIC 
