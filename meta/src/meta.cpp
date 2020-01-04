@@ -46,6 +46,21 @@ namespace xaml
         namespace_map.emplace((string)xmlns, (string)ns);
     }
 
+    static unordered_map<type_index, unordered_map<type_index, shared_ptr<meta_class>>> attribute_map;
+
+    XAML_API shared_ptr<meta_class> get_attribute(type_index type, type_index attr_type) noexcept
+    {
+        return attribute_map[type][attr_type];
+    }
+
+    XAML_API void set_attribute(type_index type, shared_ptr<meta_class> attr) noexcept
+    {
+        if (attr)
+        {
+            attribute_map[type][attr->this_type()] = attr;
+        }
+    }
+
     static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> static_method_map;
 
     XAML_API shared_ptr<__type_erased_function> __get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept

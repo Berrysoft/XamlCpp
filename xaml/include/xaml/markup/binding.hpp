@@ -3,6 +3,7 @@
 
 #include <xaml/markup/markup_extension.hpp>
 #include <xaml/meta/binding.hpp>
+#include <xaml/meta/default_property.hpp>
 #include <xaml/ui/strings.hpp>
 
 namespace xaml
@@ -57,7 +58,8 @@ namespace xaml
     ADD_MARKUP_EXTENSION_MEMBERS();     \
     ADD_PROP(element);                  \
     ADD_PROP(path);                     \
-    ADD_PROP(mode)
+    ADD_PROP(mode);                     \
+    ADD_DEF_PROP(path)
 
     public:
         static void register_class() noexcept

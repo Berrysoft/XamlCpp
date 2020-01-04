@@ -106,20 +106,35 @@ namespace xaml
             markup_node node{ *t };
             while (i < value.length())
             {
-                while (isspace(value[i])) i++;
+                while (i < value.length() && isspace(value[i])) i++;
                 size_t start_index = i;
                 for (; i < value.length(); i++)
                 {
-                    if (value[i] == '=') break;
+                    if (value[i] == ',')
+                    {
+                        i = start_index;
+                        break;
+                    }
+                    else if (value[i] == '=')
+                        break;
                 }
                 string_view prop_name = value.substr(start_index, i - start_index);
-                start_index = ++i;
+                while (i < value.length() && value[i] == '=') i++;
+                start_index = i;
                 for (; i < value.length(); i++)
                 {
                     if (value[i] == ',') break;
                 }
                 string_view prop_value = value.substr(start_index, i - start_index);
-                i++;
+                while (i < value.length() && value[i] == ',') i++;
+                if (prop_name.empty())
+                {
+                    auto def_attr = get_attribute(*t, type_index(typeid(default_property)));
+                    if (def_attr)
+                    {
+                        prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                    }
+                }
                 auto prop = get_property(*t, prop_name);
                 if (prop.can_write())
                 {
@@ -236,14 +251,29 @@ namespace xaml
             }
             case XML_TEXT_NODE:
             case XML_CDATA_SECTION_NODE:
-                // TODO: default property
+            {
+                auto def_attr = get_attribute(mc.type, type_index(typeid(default_property)));
+                if (def_attr)
+                {
+                    string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                    auto prop = get_property(mc.type, prop_name);
+                    if (prop.can_write())
+                    {
+                        mc.properties.push_back({ prop, (string)get_string_view(xmlTextReaderConstValue(reader)) });
+                    }
+                    else
+                    {
+                        throw xaml_no_member(mc.type, prop_name);
+                    }
+                }
                 break;
+            }
             case XML_ELEMENT_DECL:
             {
                 string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
                 string_view name = get_string_view(xmlTextReaderConstName(reader));
                 auto t = *get_type(ns, name);
-                if (mc.type != t)
+                if (mc.type == t)
                 {
                     return ret;
                 }

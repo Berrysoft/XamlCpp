@@ -67,6 +67,10 @@ namespace xaml
 
     XAML_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 
+    XAML_API std::shared_ptr<meta_class> get_attribute(std::type_index type, std::type_index attr_type) noexcept;
+
+    XAML_API void set_attribute(std::type_index type, std::shared_ptr<meta_class> attr) noexcept;
+
     struct __type_erased_function
     {
         virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;

@@ -1,6 +1,7 @@
 #ifndef XAML_UI_BUTTON_HPP
 #define XAML_UI_BUTTON_HPP
 
+#include <xaml/meta/default_property.hpp>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/control.hpp>
 
@@ -77,7 +78,9 @@ namespace xaml
         button() : button_base() {}
         ~button() override {}
 
-#define ADD_BUTTON_MEMBERS() ADD_BUTTON_BASE_MEMBERS()
+#define ADD_BUTTON_MEMBERS()   \
+    ADD_BUTTON_BASE_MEMBERS(); \
+    ADD_DEF_PROP(text)
 
         static void register_class() noexcept
         {

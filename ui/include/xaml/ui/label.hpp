@@ -2,6 +2,7 @@
 #define XAML_UI_LABEL_HPP
 
 #include <atomic>
+#include <xaml/meta/default_property.hpp>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
@@ -43,7 +44,8 @@ namespace xaml
 #define ADD_LABEL_MEMBERS()       \
     ADD_COMMON_CONTROL_MEMBERS(); \
     ADD_PROP_EVENT(text);         \
-    ADD_PROP(text_halignment)
+    ADD_PROP(text_halignment);    \
+    ADD_DEF_PROP(text)
 
         static void register_class() noexcept
         {
