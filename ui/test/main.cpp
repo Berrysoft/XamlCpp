@@ -1,8 +1,13 @@
 #include <algorithm>
 #include <iostream>
-#include <xaml/ui/meta.hpp>
+#include <xaml/ui/application.hpp>
+#include <xaml/ui/button.hpp>
+#include <xaml/ui/canvas.hpp>
+#include <xaml/ui/grid.hpp>
+#include <xaml/ui/label.hpp>
 #include <xaml/ui/msgbox.hpp>
 #include <xaml/ui/timer.hpp>
+#include <xaml/ui/window.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -14,9 +19,6 @@ INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
-    // Initialize meta for controls.
-    init_meta();
-
     // Initialize and get default application object.
 #ifdef XAML_UI_WINDOWS
     auto app = application::init(lpCmdLine);
@@ -41,8 +43,8 @@ int main(int argc, char** argv)
     g->add_row({ 1, grid_layout::star });
     // Set g as child of the window.
     wnd->set_child(g);
-    // Construct a button with reflection.
-    auto btn = static_pointer_cast<button>(construct(*get_type("xaml", "button")));
+    // Construct a button.
+    auto btn = make_shared<button>();
     // Set margin and text.
     btn->set_margin({ 10, 10, 10, 10 });
     btn->set_text(U("Hello"));
