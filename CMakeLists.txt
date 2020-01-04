@@ -27,7 +27,7 @@ set(XAML_COMPILE_OPTIONS "")
 set(XAML_LINK_OPTIONS "")
 
 if(${BUILD_WINDOWS})
-    set(XAML_BUILD_DEFINITIONS "-DUNICODE -D_UNICODE -DXAML_UI_WINDOWS -DVC_EXTRALEAN")
+    set(XAML_BUILD_DEFINITIONS "-DUNICODE" "-D_UNICODE" "-DXAML_UI_WINDOWS" "-DVC_EXTRALEAN")
     set(XAML_COMPILE_OPTIONS "/bigobj")
     set(XAML_LINK_OPTIONS "/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
 elseif(${BUILD_COCOA})
