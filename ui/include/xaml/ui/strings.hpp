@@ -64,42 +64,6 @@ namespace xaml
     using stringstream_t = std::wstringstream;
     using istringstream_t = std::wistringstream;
     using ostringstream_t = std::wostringstream;
-
-    template <>
-    struct value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, wchar_t>>>
-    {
-        static string_t convert(std::any value)
-        {
-            if (value.type() == typeid(std::string))
-            {
-                return __mbtow(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return __mbtow(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return __mbtow(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return std::any_cast<std::wstring>(value);
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return (string_t)std::any_cast<std::wstring_view>(value);
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return std::any_cast<const wchar_t*>(value);
-            }
-            else
-            {
-                return {};
-            }
-        }
-    };
 #else
     using char_t = char;
     using string_t = std::string;
@@ -107,11 +71,12 @@ namespace xaml
     using stringstream_t = std::stringstream;
     using istringstream_t = std::istringstream;
     using ostringstream_t = std::ostringstream;
+#endif // UNICODE
 
     template <>
-    struct value_converter_traits<string_view_t, std::enable_if_t<std::is_same_v<char_t, char>>>
+    struct value_converter_traits<std::string_view, void>
     {
-        static string_t convert(std::any value)
+        static std::string convert(std::any value)
         {
             if (value.type() == typeid(std::string))
             {
@@ -119,7 +84,7 @@ namespace xaml
             }
             else if (value.type() == typeid(std::string_view))
             {
-                return (string_t)std::any_cast<std::string_view>(value);
+                return (std::string)std::any_cast<std::string_view>(value);
             }
             else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
             {
@@ -143,7 +108,42 @@ namespace xaml
             }
         }
     };
-#endif // UNICODE
+
+    template <>
+    struct value_converter_traits<std::wstring_view, void>
+    {
+        static std::wstring convert(std::any value)
+        {
+            if (value.type() == typeid(std::string))
+            {
+                return __mbtow(std::any_cast<std::string>(value));
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                return __mbtow(std::any_cast<std::string_view>(value));
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                return __mbtow(std::any_cast<const char*>(value));
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return std::any_cast<std::wstring>(value);
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return (std::wstring)std::any_cast<std::wstring_view>(value);
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return std::any_cast<const wchar_t*>(value);
+            }
+            else
+            {
+                return {};
+            }
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_STRINGS_HPP

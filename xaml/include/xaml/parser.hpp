@@ -27,10 +27,16 @@ namespace xaml
         std::string value;
     };
 
+    struct markup_node
+    {
+        std::type_index type;
+        std::vector<xaml_property> properties;
+    };
+
     struct xaml_extension_property
     {
         property_info info;
-        std::shared_ptr<markup_extension> value;
+        markup_node value;
     };
 
     struct xaml_event
@@ -100,6 +106,7 @@ namespace xaml
         XAML_API ~parser();
 
     private:
+        XAML_API markup_node parse_markup(std::string_view value);
         XAML_API int parse_members(xaml_node& mc);
         XAML_API std::tuple<int, xaml_node> parse_impl();
         XAML_API void clean_up(int ret);

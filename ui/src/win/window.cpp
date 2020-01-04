@@ -75,7 +75,7 @@ namespace xaml
         {
             draw_child();
         }
-        InvalidateRect(get_handle(), nullptr, FALSE);
+        THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle(), nullptr, FALSE));
     }
 
     XAML_API void window::__parent_redraw()

@@ -68,12 +68,74 @@ namespace xaml
 
     XAML_API parser::~parser()
     {
+        if (!reader)
+        {
+            xmlFreeTextReader(reader);
+            reader = nullptr;
+        }
         xmlCleanupMemory();
     }
 
     XAML_API void parser::open(string_view file)
     {
         reader = xmlNewTextReaderFilename(file.data());
+    }
+
+    XAML_API markup_node parser::parse_markup(string_view value)
+    {
+        string_view ns, name;
+        size_t sep_index = 0;
+        size_t i = 0;
+        for (; i < value.length(); i++)
+        {
+            if (!ns.empty() && value[i] == ':')
+            {
+                ns = value.substr(0, i);
+                sep_index = i + 1;
+            }
+            else if (isspace(value[i]))
+            {
+                name = value.substr(sep_index, i - sep_index);
+                break;
+            }
+        }
+        if (ns.empty()) ns = "xaml";
+        auto t = get_type(ns, name);
+        if (t)
+        {
+            markup_node node{ *t };
+            while (i < value.length())
+            {
+                while (isspace(value[i])) i++;
+                size_t start_index = i;
+                for (; i < value.length(); i++)
+                {
+                    if (value[i] == '=') break;
+                }
+                string_view prop_name = value.substr(start_index, i - start_index);
+                start_index = ++i;
+                for (; i < value.length(); i++)
+                {
+                    if (value[i] == ',') break;
+                }
+                string_view prop_value = value.substr(start_index, i - start_index);
+                i++;
+                auto prop = get_property(*t, prop_name);
+                if (prop.can_write())
+                {
+                    node.properties.push_back({ prop, (string)prop_value });
+                }
+                else
+                {
+                    throw xaml_no_member(*t, prop_name);
+                }
+            }
+            return node;
+        }
+        else
+        {
+            throw xaml_bad_type(ns, name);
+        }
     }
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
@@ -141,40 +203,8 @@ namespace xaml
                                 string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                                 if (attr_value.front() == '{' && attr_value.back() == '}')
                                 {
-                                    size_t index = attr_value.find_first_of(' ');
-                                    optional<type_index> ex_type = nullopt;
-                                    string_view ex_name = attr_value.substr(1, index - 1);
-                                    size_t cid = ex_name.find_first_of(':');
-                                    if (cid != string_view::npos)
-                                    {
-                                        string_view ex_ns = ex_name.substr(0, cid);
-                                        ex_type = get_type(ex_ns, ex_name);
-                                        if (!ex_type)
-                                        {
-                                            throw xaml_bad_type(ex_ns, ex_name);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        ex_type = get_type(ns, ex_name);
-                                        if (!ex_type)
-                                        {
-                                            throw xaml_bad_type(ns, ex_name);
-                                        }
-                                    }
-                                    auto ex = construct(*ex_type);
-                                    index = attr_value.find_first_not_of(' ', index);
-                                    while (index != string_view::npos)
-                                    {
-                                        size_t offset = attr_value.find_first_of(",}", index);
-                                        string_view ex_prop = attr_value.substr(index, offset - index);
-                                        size_t id2 = ex_prop.find_first_of('=');
-                                        auto ep = get_property(*ex_type, ex_prop.substr(0, id2));
-                                        ep.set(ex, ex_prop.substr(id2 + 1));
-                                        if (offset >= attr_value.length() - 1) break;
-                                        index = attr_value.find_first_not_of(',', offset);
-                                    }
-                                    mc.extension_properties.push_back({ prop, dynamic_pointer_cast<markup_extension>(ex) });
+                                    auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
+                                    mc.extension_properties.push_back({ prop, ex });
                                 }
                                 else
                                 {

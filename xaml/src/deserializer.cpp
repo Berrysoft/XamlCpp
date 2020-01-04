@@ -107,7 +107,12 @@ namespace xaml
         for (auto& prop : node.extension_properties)
         {
             deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
-            prop.value->provide(context);
+            auto ex = construct(prop.value.type);
+            for (auto& p : prop.value.properties)
+            {
+                p.info.set(ex, p.value);
+            }
+            dynamic_pointer_cast<markup_extension>(ex)->provide(context);
         }
         for (auto& c : node.children)
         {

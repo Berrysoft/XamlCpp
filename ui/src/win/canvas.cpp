@@ -148,10 +148,14 @@ namespace xaml
     XAML_API void canvas::__draw(rectangle const& region)
     {
         set_handle(get_parent()->get_handle());
-        m_real_region = region - get_margin();
-        auto wnd_dc = wil::GetDC(get_handle());
-        m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)m_real_region.width, (int)m_real_region.height) };
-        wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
+        auto real = region - get_margin();
+        if (m_real_region != real)
+        {
+            m_real_region = real;
+            auto wnd_dc = wil::GetDC(get_handle());
+            m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
+            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)m_real_region.width, (int)m_real_region.height) };
+            wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
+        }
     }
 } // namespace xaml
