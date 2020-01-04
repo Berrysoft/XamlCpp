@@ -36,16 +36,11 @@ jobs:
     displayName: 'Install libxml2 & wil'
     condition: eq(variables.rid, 'win')
 
-  - script: |
-      choco install ninja
-    displayName: 'Install Ninja'
-    condition: eq(variables.rid, 'win')
-
   - task: CMake@1
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
     inputs:
-      cmakeArgs: .. -GNinja -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Configure all projects'
