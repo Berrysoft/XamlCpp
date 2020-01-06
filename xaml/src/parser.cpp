@@ -155,11 +155,27 @@ namespace xaml
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
 
+    static ostream& write_valid_name(ostream& stream, string_view name)
+    {
+        for (char c : name)
+        {
+            if (isalpha(c) || isdigit(c))
+            {
+                stream << c;
+            }
+            else
+            {
+                stream << '_';
+            }
+        }
+        return stream;
+    }
+
     static string get_random_name(type_index type)
     {
         static size_t index = 0;
         ostringstream oss;
-        oss << type.name() << "@@" << type.hash_code() << "@@" << index++;
+        write_valid_name(oss << "__", type.name()) << "__" << hex << type.hash_code() << "__" << dec << index++;
         return oss.str();
     }
 

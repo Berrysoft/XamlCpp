@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <typeindex>
 #include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
@@ -56,6 +57,8 @@ namespace xaml
     }
 
     XAML_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
+
+    XAML_API std::optional<std::tuple<std::string, std::string>> get_type_name(std::type_index type) noexcept;
 
     XAML_API void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
 

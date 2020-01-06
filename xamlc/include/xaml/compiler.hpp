@@ -19,6 +19,10 @@ namespace xaml
         compiler(std::string_view file) : compiler() { open(file); }
         ~compiler() {}
 
+    private:
+        std::ostream& write_type(std::ostream& stream, std::type_index type);
+        std::ostream& write_construct(std::ostream& stream, xaml_node& node);
+
     public:
         std::ostream& compile(std::ostream& stream);
     };

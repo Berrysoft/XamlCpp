@@ -7,6 +7,7 @@ namespace xaml
 {
     static unordered_map<string, string> namespace_map;
     static unordered_map<string, unordered_map<string, type_index>> type_map;
+    static unordered_map<type_index, tuple<string, string>> type_name_map;
 
     static string get_real_namespace(string_view ns)
     {
@@ -36,9 +37,23 @@ namespace xaml
         }
     }
 
+    XAML_API optional<tuple<string, string>> get_type_name(type_index type) noexcept
+    {
+        auto it = type_name_map.find(type);
+        if (it != type_name_map.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullopt;
+        }
+    }
+
     XAML_API void __register_type(string_view ns, string_view name, type_index type) noexcept
     {
         type_map[get_real_namespace(ns)].emplace((string)name, type);
+        type_name_map[type] = make_tuple<string, string>((string)ns, (string)name);
     }
 
     XAML_API void add_xml_namespace(string_view xmlns, string_view ns) noexcept
