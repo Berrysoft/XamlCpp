@@ -49,12 +49,14 @@ namespace xaml
 
     struct xaml_property
     {
+        std::type_index host_type{ typeid(std::nullptr_t) };
         property_info info;
         std::variant<std::string, markup_node, xaml_node> value;
     };
 
     struct xaml_collection_property
     {
+        std::type_index host_type{ typeid(std::nullptr_t) };
         collection_property_info info;
         std::vector<xaml_node> values;
     };

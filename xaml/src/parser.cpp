@@ -162,7 +162,7 @@ namespace xaml
                 auto prop = get_property(*t, prop_name);
                 if (prop.can_write())
                 {
-                    node.properties.push_back({ prop, (string)prop_value });
+                    node.properties.push_back({ *t, prop, (string)prop_value });
                 }
                 else
                 {
@@ -235,7 +235,7 @@ namespace xaml
                                 if (prop.can_write())
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
-                                    mc.properties.push_back({ prop, (string)attr_value });
+                                    mc.properties.push_back({ *t, prop, (string)attr_value });
                                 }
                             }
                             else
@@ -252,11 +252,11 @@ namespace xaml
                                 if (attr_value.front() == '{' && attr_value.back() == '}')
                                 {
                                     auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
-                                    mc.properties.push_back({ prop, ex });
+                                    mc.properties.push_back({ mc.type, prop, ex });
                                 }
                                 else
                                 {
-                                    mc.properties.push_back({ prop, (string)attr_value });
+                                    mc.properties.push_back({ mc.type, prop, (string)attr_value });
                                 }
                             }
                             else if (!prop.can_read())
@@ -292,7 +292,7 @@ namespace xaml
                     auto prop = get_property(mc.type, prop_name);
                     if (prop.can_write())
                     {
-                        mc.properties.push_back({ prop, (string)get_string_view(xmlTextReaderConstValue(reader)) });
+                        mc.properties.push_back({ mc.type, prop, (string)get_string_view(xmlTextReaderConstValue(reader)) });
                     }
                     else
                     {
@@ -340,7 +340,7 @@ namespace xaml
                             auto prop = get_property(mc.type, prop_name);
                             if (prop.can_write())
                             {
-                                mc.properties.push_back({ prop, move(child) });
+                                mc.properties.push_back({ mc.type, prop, move(child) });
                             }
                         }
                         else
@@ -348,7 +348,7 @@ namespace xaml
                             auto prop = get_attach_property(*t, prop_name);
                             if (prop.can_write())
                             {
-                                mc.properties.push_back({ prop, move(child) });
+                                mc.properties.push_back({ *t, prop, move(child) });
                             }
                         }
                     }
@@ -373,13 +373,14 @@ namespace xaml
                             if (is_multicontainer)
                             {
                                 auto& prop = mc.collection_properties["child"];
+                                prop.host_type = mc.type;
                                 prop.info = get_collection_property(mc.type, "child");
                                 prop.values.push_back(move(child));
                             }
                             else
                             {
                                 auto prop = get_property(mc.type, "child");
-                                mc.properties.push_back({ prop, move(child) });
+                                mc.properties.push_back({ mc.type, prop, move(child) });
                             }
                         }
                         ret = xmlTextReaderRead(reader);

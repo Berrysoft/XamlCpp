@@ -31,10 +31,17 @@ namespace xaml
         std::ostream& write_init_decl(std::ostream& stream, std::string_view name);
 
         std::ostream& write_type(std::ostream& stream, std::type_index type);
+        std::ostream& write_args(std::ostream& stream, std::initializer_list<std::string_view> args);
         std::ostream& write_construct(std::ostream& stream, std::string_view name, std::type_index type);
-        std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view method, std::string_view args);
+        std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view method, std::initializer_list<std::string_view> args);
+        std::ostream& write_static_call(std::ostream& stream, std::type_index type, std::string_view method, std::initializer_list<std::string_view> args);
+
         std::ostream& write_set_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_set_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_set_property(std::ostream& stream, std::type_index node_type, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_add_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_add_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_add_event(std::ostream& stream, std::string_view name, xaml_event& ev);
 
         std::ostream& compile_impl(std::ostream& stream, xaml_node& node, bool is_this);
