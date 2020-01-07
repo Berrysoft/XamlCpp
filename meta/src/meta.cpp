@@ -63,7 +63,7 @@ namespace xaml
 
     static unordered_map<type_index, unordered_map<type_index, shared_ptr<meta_class>>> attribute_map;
 
-    XAML_API shared_ptr<meta_class> get_attribute(type_index type, type_index attr_type) noexcept
+    XAML_API shared_ptr<meta_class> __get_attribute(type_index type, type_index attr_type) noexcept
     {
         return attribute_map[type][attr_type];
     }

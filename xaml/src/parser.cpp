@@ -153,7 +153,7 @@ namespace xaml
                 while (i < value.length() && value[i] == ',') i++;
                 if (prop_name.empty())
                 {
-                    auto def_attr = get_attribute(*t, type_index(typeid(default_property)));
+                    auto def_attr = get_attribute<default_property>(*t);
                     if (def_attr)
                     {
                         prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
@@ -268,7 +268,7 @@ namespace xaml
             case XML_TEXT_NODE:
             case XML_CDATA_SECTION_NODE:
             {
-                auto def_attr = get_attribute(mc.type, type_index(typeid(default_property)));
+                auto def_attr = get_attribute<default_property>(mc.type);
                 if (def_attr)
                 {
                     string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();

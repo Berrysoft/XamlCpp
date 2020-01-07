@@ -11,7 +11,7 @@ namespace xaml::test
     class test_window : public window, public meta_class_impl<test_window>
     {
     private:
-        std::shared_ptr<timer> tmr{ nullptr };
+        timer tmr;
         int count{ 0 };
 
     public:

@@ -7,9 +7,9 @@ using namespace xaml;
 
 namespace xaml::test
 {
-    test_window::test_window() : window(), tmr(make_shared<timer>(2s))
+    test_window::test_window() : window(), tmr(2s)
     {
-        tmr->add_tick([this](timer& t) -> void { on_timer_tick(t); });
+        tmr.add_tick([this](timer& t) -> void { on_timer_tick(t); });
     }
 
     void test_window::init_components()
@@ -21,14 +21,14 @@ namespace xaml::test
     void test_window::on_timer_tick(timer&)
     {
         msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info);
-        if (++count >= 3) tmr->stop();
+        if (++count) tmr.stop();
     }
 
     void test_window::on_button_click(button_base& btn)
     {
         btn.set_text(U("Hello world!"));
         count = 0;
-        tmr->start();
+        tmr.start();
     }
 
     void test_window::on_canvas_redraw(canvas& cv, drawing_context& dc)

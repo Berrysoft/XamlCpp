@@ -18,18 +18,24 @@
 
 namespace xaml
 {
+    // BASE TYPE
+
+    // Base class of all classes which isn't inheritable and registered for reflection.
     struct meta_class
     {
         virtual std::type_index this_type() const noexcept = 0;
         virtual ~meta_class() {}
     };
 
+    // Help the classes to implement meta_class
     template <typename TChild>
     struct meta_class_impl : meta_class
     {
         std::type_index this_type() const noexcept override final { return std::type_index(typeid(TChild)); }
         virtual ~meta_class_impl() override {}
     };
+
+    // REGISTER CLASS METHOD
 
     template <typename... T>
     struct __register_class_helper;
@@ -50,30 +56,50 @@ namespace xaml
         void operator()() noexcept {}
     };
 
+    // Register all classes from the type parameters.
     template <typename... T>
     void register_class() noexcept(noexcept(__register_class_helper<T...>{}()))
     {
         __register_class_helper<T...>{}();
     }
 
+    // TYPE METHODS
+
+    // Get type with namespace and name.
     XAML_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
 
+    // Get the namespace and name of the type.
     XAML_API std::optional<std::tuple<std::string, std::string>> get_type_name(std::type_index type) noexcept;
 
     XAML_API void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
 
+    // Register type with namespace and name.
     template <typename TChild>
     void register_type(std::string_view ns, std::string_view name) noexcept
     {
         __register_type(ns, name, std::type_index(typeid(TChild)));
     }
 
+    // Add a map between xmlns and C++ namespace.
     XAML_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 
-    XAML_API std::shared_ptr<meta_class> get_attribute(std::type_index type, std::type_index attr_type) noexcept;
+    // ATTRIBUTE METHODS
 
+    XAML_API std::shared_ptr<meta_class> __get_attribute(std::type_index type, std::type_index attr_type) noexcept;
+
+    // Get an attribute instance with specified type and attribute type.
+    template <typename TAttr>
+    std::shared_ptr<meta_class> get_attribute(std::type_index type) noexcept
+    {
+        return __get_attribute(type, std::type_index(typeid(TAttr)));
+    }
+
+    // Set an attribute to specified type.
     XAML_API void set_attribute(std::type_index type, std::shared_ptr<meta_class> attr) noexcept;
 
+    // FUNCTION METHODS
+
+    // A type-erased function, for storage convinence.
     struct __type_erased_function
     {
         virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;
@@ -119,6 +145,8 @@ namespace xaml
 
         std::function<Return(Args...)> func;
     };
+
+    // FUNCTION METHODS - STATIC METHOD
 
     template <typename T>
     struct __optional_return
@@ -183,7 +211,7 @@ namespace xaml
     XAML_API void __add_static_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
 
     template <typename T, typename Return, typename... Args>
-    void add_static_method(std::string_view name, Return (*func)(Args...)) noexcept
+    void add_static_method_ex(std::string_view name, std::function<Return(Args...)> func)
     {
         if (func)
         {
@@ -194,15 +222,15 @@ namespace xaml
     }
 
     template <typename T, typename Return, typename... Args>
-    void add_static_method_ex(std::string_view name, std::function<Return(Args...)> func)
+    void add_static_method(std::string_view name, Return (*func)(Args...)) noexcept
     {
         if (func)
         {
-            auto f = std::make_shared<__type_erased_function_impl<Return(Args...)>>();
-            f->func = func;
-            __add_static_method(std::type_index(typeid(T)), name, f);
+            add_static_method_ex<T, Return, Args...>(name, std::function<Return(Args...)>(func));
         }
     }
+
+    // FUNCTION METHODS - CONSTRUCTOR
 
     XAML_API std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
 
@@ -238,24 +266,17 @@ namespace xaml
     XAML_API void __add_constructor(std::type_index type, std::shared_ptr<__type_erased_function> ctor) noexcept;
 
     template <typename TChild, typename... Args>
-    void add_constructor_ex(std::function<std::shared_ptr<meta_class>(Args...)>&& ctor) noexcept
-    {
-        if (ctor)
-        {
-            auto c = std::make_shared<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>();
-            c->func = ctor;
-            __add_constructor(std::type_index(typeid(TChild)), c);
-        }
-    }
-    template <typename TChild, typename... Args>
     void add_constructor() noexcept
     {
-        add_constructor_ex<TChild, Args...>(
-            std::function<std::shared_ptr<meta_class>(Args...)>(
-                [](Args... args) -> std::shared_ptr<meta_class> {
-                    return std::make_shared<TChild>(std::forward<Args>(args)...);
-                }));
+        auto c = std::make_shared<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>();
+        c->func = std::function<std::shared_ptr<meta_class>(Args...)>(
+            [](Args... args) -> std::shared_ptr<meta_class> {
+                return std::make_shared<TChild>(std::forward<Args>(args)...);
+            });
+        __add_constructor(std::type_index(typeid(TChild)), c);
     }
+
+    // FUNCTION METHODS - MEMBER METHODS
 
     template <typename T>
     struct __type_erased_this_function_impl;
@@ -362,6 +383,8 @@ namespace xaml
         }
     }
 
+    // PROPERTY
+
     struct property_info
     {
     private:
@@ -425,43 +448,6 @@ namespace xaml
         info.getter = get_static_method<std::any, std::shared_ptr<meta_class>>(type, pname);
         info.setter = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, pname);
         return info;
-    }
-
-    template <typename T, typename TValue, typename TGet>
-    void add_property_read(std::string_view name, TGet T::*getter)
-    {
-        if (getter)
-        {
-            std::string pname = __property_name(name);
-            add_method_ex<T, std::any>(
-                pname,
-                std::function<std::any(std::shared_ptr<meta_class>)>(
-                    [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return std::mem_fn(getter)(std::static_pointer_cast<T>(self).get());
-                    }));
-        }
-    }
-
-    template <typename T, typename TValue, typename TSet>
-    void add_property_write(std::string_view name, TSet T::*setter)
-    {
-        if (setter)
-        {
-            std::string pname = __property_name(name);
-            add_method_ex<T, void, std::any>(
-                pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        std::mem_fn(setter)(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
-                    }));
-        }
-    }
-
-    template <typename T, typename TValue, typename TGet, typename TSet>
-    void add_property(std::string_view name, TGet T::*getter, TSet T::*setter)
-    {
-        add_property_read<T, TValue>(name, getter);
-        add_property_write<T, TValue>(name, setter);
     }
 
     template <typename T, typename TChild, typename TValue, typename TGet>
@@ -537,6 +523,154 @@ namespace xaml
         add_property_read_ex<T, TValue>(name, getter);
         add_property_write_ex<T, TValue>(name, setter);
     }
+
+    // COLLECTION PROPERTY
+    // Usually a vector.
+
+    struct collection_property_info
+    {
+    private:
+        std::string m_name;
+        std::function<void(std::shared_ptr<meta_class>, std::any)> adder;
+        std::function<void(std::shared_ptr<meta_class>, std::any)> remover;
+
+    public:
+        std::string_view name() const noexcept { return m_name; }
+        bool can_add() const noexcept { return (bool)adder; }
+        bool can_remove() const noexcept { return (bool)remover; }
+
+        void add(std::shared_ptr<meta_class> const& self, std::any value) const
+        {
+            if (adder)
+            {
+                return adder(self, value);
+            }
+        }
+        void remove(std::shared_ptr<meta_class> const& self, std::any value)
+        {
+            if (remover)
+            {
+                remover(self, value);
+            }
+        }
+
+        friend collection_property_info get_collection_property(std::type_index type, std::string_view name);
+        friend collection_property_info get_attach_collection_property(std::type_index type, std::string_view name);
+    };
+
+    inline std::string __add_collection_property_name(std::string_view name)
+    {
+        return "cprop@a@" + (std::string)name;
+    }
+
+    inline std::string __remove_collection_property_name(std::string_view name)
+    {
+        return "cprop@r@" + (std::string)name;
+    }
+
+    inline std::string __add_attach_collection_property_name(std::string_view name)
+    {
+        return "caprop@a@" + (std::string)name;
+    }
+
+    inline std::string __remove_attach_collection_property_name(std::string_view name)
+    {
+        return "caprop@r@" + (std::string)name;
+    }
+
+    inline collection_property_info get_collection_property(std::type_index type, std::string_view name)
+    {
+        collection_property_info info = {};
+        info.m_name = name;
+        info.adder = get_method<void, std::any>(type, __add_collection_property_name(name));
+        info.remover = get_method<void, std::any>(type, __remove_collection_property_name(name));
+        return info;
+    }
+
+    inline collection_property_info get_attach_collection_property(std::type_index type, std::string_view name)
+    {
+        collection_property_info info = {};
+        info.m_name = name;
+        info.adder = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __add_attach_collection_property_name(name));
+        info.remover = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __remove_attach_collection_property_name(name));
+        return info;
+    }
+
+    template <typename T, typename TValue>
+    void add_collection_property_add(std::string_view name, std::function<void(T*, TValue)> adder)
+    {
+        if (adder)
+        {
+            std::string pname = __add_collection_property_name(name);
+            add_method_ex<T, std::any>(
+                pname,
+                std::function<void(std::shared_ptr<meta_class>, std::any)>(
+                    [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
+                        return adder(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                    }));
+        }
+    }
+
+    template <typename T, typename TValue>
+    void add_collection_property_remove(std::string_view name, std::function<void(T*, TValue)> remover)
+    {
+        if (remover)
+        {
+            std::string pname = __remove_collection_property_name(name);
+            add_method_ex<T, void, std::any>(
+                pname,
+                std::function<void(std::shared_ptr<meta_class>, std::any)>(
+                    [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
+                        remover(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                    }));
+        }
+    }
+
+    template <typename T, typename TValue>
+    void add_collection_property(std::string_view name, std::function<void(T*, TValue)> adder, std::function<void(T*, TValue)> remover)
+    {
+        add_collection_property_add<T, TValue>(name, adder);
+        add_collection_property_remove<T, TValue>(name, remover);
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TAdd>
+    void add_attach_collection_property_add(std::string_view name, TAdd&& adder)
+    {
+        if (adder)
+        {
+            std::string pname = __add_attach_collection_property_name(name);
+            add_static_method_ex<T, void, std::shared_ptr<meta_class>>(
+                pname,
+                std::function<void(std::shared_ptr<meta_class>, std::any)>(
+                    [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
+                        return adder(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                    }));
+        }
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TRemove>
+    void add_attach_collection_property_remove(std::string_view name, TRemove&& remover)
+    {
+        if (remover)
+        {
+            std::string pname = __remove_attach_collection_property_name(name);
+            add_static_method_ex<T, void, std::shared_ptr<meta_class>, std::any>(
+                pname,
+                std::function<void(std::shared_ptr<meta_class>, std::any)>(
+                    [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
+                        remover(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                    }));
+        }
+    }
+
+    template <typename T, typename TChild, typename TValue, typename TAdd, typename TRemove>
+    void add_attach_collection_property(std::string_view name, TAdd&& adder, TRemove&& remover)
+    {
+        add_attach_property_add<T, TChild, TValue>(name, adder);
+        add_attach_property_remove<T, TChild, TValue>(name, remover);
+    }
+
+    // EVENT
 
     struct event_info
     {
@@ -634,95 +768,6 @@ namespace xaml
     event_info get_event(std::type_index type, std::string_view name)
     {
         return __get_event(type, name, { std::type_index(typeid(std::shared_ptr<meta_class>)), std::type_index(typeid(Args))... });
-    }
-
-    template <typename T, typename... Args, typename TAdd>
-    void add_event_add(std::string_view name, TAdd T::*adder)
-    {
-        if (adder)
-        {
-            std::string ename = __event_name(name);
-            add_method_ex<T, typename event_info::token_type, std::shared_ptr<__type_erased_function>>(
-                ename,
-                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        if (handler->is_same_arg_type<Args...>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), std::move(h->func));
-                        }
-                        else if (handler->is_same_arg_type<>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_function_impl<void()>>(handler);
-                            return std::mem_fn(adder)(std::dynamic_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
-                        }
-                        return 0;
-                    }));
-        }
-    }
-
-    template <typename T, typename... Args, typename TAdd>
-    void add_event_add_erased_this(std::string_view name, TAdd T::*adder)
-    {
-        if (adder)
-        {
-            std::string ename = __event_name(name);
-            add_method_ex<T, typename event_info::token_type, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>>(
-                ename,
-                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                            return std::mem_fn(adder)(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
-                        }
-                        else if (handler->is_same_arg_type<std::shared_ptr<meta_class>>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void()>>(handler);
-                            return std::mem_fn(adder)(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
-                        }
-                        return 0;
-                    }));
-        }
-    }
-
-    template <typename T, typename... Args, typename TRemove>
-    void add_event_remove(std::string_view name, TRemove T::*remover)
-    {
-        if (remover)
-        {
-            std::string ename = __event_name(name);
-            add_method_ex<T, void, typename event_info::token_type>(
-                ename,
-                std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
-                    [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        std::mem_fn(remover)(std::static_pointer_cast<T>(self).get(), token);
-                    }));
-        }
-    }
-
-    template <typename T, typename... Args, typename TGet>
-    void add_event_invoke(std::string_view name, TGet T::*getter)
-    {
-        if (getter)
-        {
-            std::string ename = __event_name(name);
-            add_method_ex<T, void, Args...>(
-                ename,
-                std::function<void(std::shared_ptr<meta_class>, Args...)>(
-                    [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        std::mem_fn(getter)(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
-                    }));
-        }
-    }
-
-    template <typename T, typename... Args, typename TAdd, typename TRemove, typename TGet>
-    void add_event(std::string_view name, TAdd T::*adder, TRemove T::*remover, TGet T::*getter)
-    {
-        add_event_add<T, Args...>(name, adder);
-        add_event_add_erased_this<T, Args...>(name, adder);
-        add_event_remove<T, Args...>(name, remover);
-        add_event_invoke<T, Args...>(name, getter);
     }
 
     template <typename T, typename... Args>
