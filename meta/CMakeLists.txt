@@ -16,7 +16,7 @@ target_include_directories(xaml_meta
 
 install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)
 install(FILES ${META_HEADERS} DESTINATION include/xaml/meta)
-install(TARGETS xaml_meta EXPORT xaml_meta-targets LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
+install(TARGETS xaml_meta EXPORT xaml_meta-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml_meta-targets DESTINATION lib/cmake/xaml_meta)
 
 configure_file(cmake/xaml_meta-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_meta-config.cmake @ONLY)

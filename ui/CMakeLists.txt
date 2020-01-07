@@ -58,7 +58,7 @@ install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 if(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
 endif()
-install(TARGETS xaml_ui EXPORT xaml_ui-targets LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
+install(TARGETS xaml_ui EXPORT xaml_ui-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml_ui-targets DESTINATION lib/cmake/xaml_ui)
 
 configure_file(cmake/xaml_ui-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake @ONLY)
