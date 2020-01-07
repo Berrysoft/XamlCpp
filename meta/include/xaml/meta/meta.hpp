@@ -666,8 +666,8 @@ namespace xaml
     template <typename T, typename TChild, typename TValue, typename TAdd, typename TRemove>
     void add_attach_collection_property(std::string_view name, TAdd&& adder, TRemove&& remover)
     {
-        add_attach_property_add<T, TChild, TValue>(name, adder);
-        add_attach_property_remove<T, TChild, TValue>(name, remover);
+        add_attach_collection_property_add<T, TChild, TValue>(name, adder);
+        add_attach_collection_property_remove<T, TChild, TValue>(name, remover);
     }
 
     // EVENT
