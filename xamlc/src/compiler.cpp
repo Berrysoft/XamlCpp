@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iterator>
 #include <ostream>
 #include <xaml/compiler.hpp>
 
