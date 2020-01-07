@@ -42,7 +42,44 @@ namespace xaml
         symbols.emplace(node.name, mc);
         for (auto& prop : node.properties)
         {
-            prop.info.set(mc, prop.value);
+            auto& value = prop.value;
+            switch (value.index())
+            {
+            case 0: // std::string
+                prop.info.set(mc, get<string>(value));
+                break;
+            case 2: // xaml_node
+            {
+                auto& node = get<xaml_node>(value);
+                auto c = construct(node.type);
+                if (c)
+                {
+                    deserialize_impl(c, node, root);
+                    prop.info.set(mc, c);
+                }
+                else
+                {
+                    throw xaml_no_default_constructor(node.type);
+                }
+                break;
+            }
+            }
+        }
+        for (auto& prop : node.collection_properties)
+        {
+            for (auto& n : prop.second.values)
+            {
+                auto c = construct(n.type);
+                if (c)
+                {
+                    deserialize_impl(c, n, root);
+                    prop.second.info.add(mc, c);
+                }
+                else
+                {
+                    throw xaml_no_default_constructor(n.type);
+                }
+            }
         }
         for (auto& ev : node.events)
         {
@@ -56,67 +93,45 @@ namespace xaml
                 throw xaml_no_member(root->this_type(), ev.value);
             }
         }
-        for (auto& prop : node.construct_properties)
-        {
-            auto c = construct(prop.value.type);
-            if (c)
-            {
-                deserialize_impl(c, prop.value, root);
-                prop.info.set(mc, c);
-            }
-            else
-            {
-                throw xaml_no_default_constructor(prop.value.type);
-            }
-        }
-        bool is_container = invoke_static_method<bool>(mc->this_type(), "is_container").value_or(false);
-        bool is_multicontainer = invoke_static_method<bool>(mc->this_type(), "is_multicontainer").value_or(false);
-        if (is_container)
-        {
-            if (node.children.size() > 1 && !is_multicontainer)
-            {
-                throw xaml_not_multicontainer(mc->this_type());
-            }
-            for (auto& cnode : node.children)
-            {
-                auto c = construct(cnode.type);
-                if (c)
-                {
-                    deserialize_impl(c, cnode, root);
-                    if (is_multicontainer)
-                    {
-                        invoke_method<void>(mc, "add_child", dynamic_pointer_cast<control>(c));
-                    }
-                    else
-                    {
-                        auto prop = get_property(node.type, "child");
-                        prop.set(mc, dynamic_pointer_cast<control>(c));
-                    }
-                }
-                else
-                {
-                    throw xaml_no_default_constructor(cnode.type);
-                }
-            }
-        }
     }
 
     XAML_API void deserializer::deserialize_extensions(xaml_node& node)
     {
         auto mc = symbols[node.name];
-        for (auto& prop : node.extension_properties)
+        for (auto& prop : node.properties)
         {
-            deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
-            auto ex = construct(prop.value.type);
-            for (auto& p : prop.value.properties)
+            auto& value = prop.value;
+            switch (value.index())
             {
-                p.info.set(ex, p.value);
+            case 1: // markup_node
+            {
+                auto& n = get<markup_node>(value);
+                deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
+                auto ex = construct(n.type);
+                for (auto& p : n.properties)
+                {
+                    auto& value = p.value;
+                    switch (value.index())
+                    {
+                    case 0: // std::string
+                        p.info.set(ex, get<string>(value));
+                        break;
+                    }
+                }
+                dynamic_pointer_cast<markup_extension>(ex)->provide(context);
+                break;
             }
-            dynamic_pointer_cast<markup_extension>(ex)->provide(context);
+            case 2: // xaml_node
+                deserialize_extensions(get<xaml_node>(value));
+                break;
+            }
         }
-        for (auto& c : node.children)
+        for (auto& prop : node.collection_properties)
         {
-            deserialize_extensions(c);
+            for (auto& n : prop.second.values)
+            {
+                deserialize_extensions(n);
+            }
         }
     }
 

@@ -64,11 +64,10 @@ namespace xaml
         std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
 
     public:
-#define ADD_MULTICONTAINER_MEMBERS() \
-    ADD_CONTROL_MEMBERS();           \
-    ADD_METHOD(add_child);           \
-    ADD_METHOD(remove_child);        \
-    ADD_STATIC_METHOD(is_container); \
+#define ADD_MULTICONTAINER_MEMBERS()                      \
+    ADD_CONTROL_MEMBERS();                                \
+    ADD_COLLECTION_PROP(child, std::shared_ptr<control>); \
+    ADD_STATIC_METHOD(is_container);                      \
     ADD_STATIC_METHOD(is_multicontainer)
 
         static void register_class() noexcept

@@ -235,7 +235,7 @@ namespace xaml
                                 if (attr_value.front() == '{' && attr_value.back() == '}')
                                 {
                                     auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
-                                    mc.extension_properties.push_back({ prop, ex });
+                                    mc.properties.push_back({ prop, ex });
                                 }
                                 else
                                 {
@@ -323,7 +323,7 @@ namespace xaml
                             auto prop = get_property(mc.type, prop_name);
                             if (prop.can_write())
                             {
-                                mc.construct_properties.push_back({ prop, move(child) });
+                                mc.properties.push_back({ prop, move(child) });
                             }
                         }
                         else
@@ -331,7 +331,7 @@ namespace xaml
                             auto prop = get_attach_property(*t, prop_name);
                             if (prop.can_write())
                             {
-                                mc.construct_properties.push_back({ prop, move(child) });
+                                mc.properties.push_back({ prop, move(child) });
                             }
                         }
                     }
@@ -349,7 +349,22 @@ namespace xaml
                     }
                     else
                     {
-                        mc.children.push_back(move(child));
+                        bool is_container = invoke_static_method<bool>(mc.type, "is_container").value_or(false);
+                        bool is_multicontainer = invoke_static_method<bool>(mc.type, "is_multicontainer").value_or(false);
+                        if (is_container)
+                        {
+                            if (is_multicontainer)
+                            {
+                                auto& prop = mc.collection_properties["child"];
+                                prop.info = get_collection_property(mc.type, "child");
+                                prop.values.push_back(move(child));
+                            }
+                            else
+                            {
+                                auto prop = get_property(mc.type, "child");
+                                mc.properties.push_back({ prop, move(child) });
+                            }
+                        }
                         ret = xmlTextReaderRead(reader);
                     }
                 }

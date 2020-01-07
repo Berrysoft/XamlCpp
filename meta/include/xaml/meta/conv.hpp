@@ -25,6 +25,13 @@ namespace xaml
             {
                 return std::any_cast<return_type>(value);
             }
+            if constexpr (std::is_copy_constructible_v<T>)
+            {
+                if (value.type() == typeid(return_type&) || value.type() == typeid(return_type const&))
+                {
+                    return std::any_cast<return_type const&>(value);
+                }
+            }
             return {};
         }
     };

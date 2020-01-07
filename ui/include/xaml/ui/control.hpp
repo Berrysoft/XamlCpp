@@ -273,6 +273,34 @@ namespace xaml
             ADD_COMMON_CONTROL_MEMBERS();
         }
     };
+
+    template <typename T>
+    struct value_converter_traits<std::shared_ptr<T>, std::enable_if_t<std::is_base_of_v<control, T>>>
+    {
+        static std::shared_ptr<T> convert(std::any value)
+        {
+            if (value.type() == typeid(std::shared_ptr<T>))
+            {
+                return std::any_cast<std::shared_ptr<T>>(value);
+            }
+            else if (value.type() == typeid(std::shared_ptr<T>&) || value.type() == typeid(std::shared_ptr<T> const&))
+            {
+                return std::any_cast<std::shared_ptr<T> const&>(value);
+            }
+            else if (value.type() == typeid(std::shared_ptr<meta_class>))
+            {
+                return std::dynamic_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class>>(value));
+            }
+            else if (value.type() == typeid(std::shared_ptr<meta_class>&) || value.type() == typeid(std::shared_ptr<meta_class> const&))
+            {
+                return std::dynamic_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class> const&>(value));
+            }
+            else
+            {
+                return {};
+            }
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_UI_CONTROL_HPP

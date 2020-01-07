@@ -602,7 +602,7 @@ namespace xaml
         if (adder)
         {
             std::string pname = __add_collection_property_name(name);
-            add_method_ex<T, std::any>(
+            add_method_ex<T, void, std::any>(
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [adder](std::shared_ptr<meta_class> self, std::any value) -> void {

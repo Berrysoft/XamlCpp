@@ -6,6 +6,7 @@
 #include <string_view>
 #include <tuple>
 #include <typeindex>
+#include <variant>
 #include <vector>
 #include <xaml/markup/binding.hpp>
 #include <xaml/meta/meta.hpp>
@@ -19,25 +20,14 @@ namespace xaml
         register_class<binding>();
     }
 
-    struct xaml_construct_property;
-
-    struct xaml_property
-    {
-        property_info info;
-        std::string value;
-    };
+    struct xaml_property;
+    struct xaml_collection_property;
 
     struct markup_node
     {
         std::type_index type;
         std::string name;
         std::vector<xaml_property> properties;
-    };
-
-    struct xaml_extension_property
-    {
-        property_info info;
-        markup_node value;
     };
 
     struct xaml_event
@@ -51,16 +41,20 @@ namespace xaml
         std::type_index type;
         std::string name;
         std::vector<xaml_property> properties;
-        std::vector<xaml_extension_property> extension_properties;
-        std::vector<xaml_construct_property> construct_properties;
+        std::map<std::string, xaml_collection_property> collection_properties;
         std::vector<xaml_event> events;
-        std::vector<xaml_node> children;
     };
 
-    struct xaml_construct_property
+    struct xaml_property
     {
         property_info info;
-        xaml_node value;
+        std::variant<std::string, markup_node, xaml_node> value;
+    };
+
+    struct xaml_collection_property
+    {
+        collection_property_info info;
+        std::vector<xaml_node> values;
     };
 
     struct xaml_no_default_constructor : std::logic_error
