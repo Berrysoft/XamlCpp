@@ -62,24 +62,24 @@ namespace xaml
         return write_type(write_indent(stream) << "auto " << name << " = ::xaml::construct<", type) << ">();" << endl;
     }
 
-    ostream& compiler::write_call(ostream& stream, string_view name, string_view method, initializer_list<string_view> args)
+    ostream& compiler::write_call(ostream& stream, string_view name, string_view prefix, string_view method, initializer_list<string_view> args)
     {
-        return write_args(write_indent(stream) << name << "->" << method << '(', args) << ");" << endl;
+        return write_args(write_indent(stream) << name << "->" << prefix << method << '(', args) << ");" << endl;
     }
 
-    ostream& compiler::write_static_call(ostream& stream, type_index type, string_view method, initializer_list<string_view> args)
+    ostream& compiler::write_static_call(ostream& stream, type_index type, string_view prefix, string_view method, initializer_list<string_view> args)
     {
-        return write_args(write_type(write_indent(stream), type) << "::" << method << '(', args) << ");" << endl;
+        return write_args(write_type(write_indent(stream), type) << "::" << prefix << method << '(', args) << ");" << endl;
     }
 
     ostream& compiler::write_set_property(ostream& stream, string_view name, string_view prop, string_view value)
     {
-        return write_call(stream, name, "set_" + (string)prop, { value });
+        return write_call(stream, name, "set_", prop, { value });
     }
 
     ostream& compiler::write_set_property(ostream& stream, type_index type, string_view name, string_view prop, string_view value)
     {
-        return write_static_call(stream, type, "set_" + (string)prop, { name, value });
+        return write_static_call(stream, type, "set_", prop, { name, value });
     }
 
     ostream& compiler::write_set_property(ostream& stream, type_index node_type, type_index type, string_view name, string_view prop, string_view value)
@@ -96,12 +96,12 @@ namespace xaml
 
     ostream& compiler::write_add_property(ostream& stream, string_view name, string_view prop, string_view value)
     {
-        return write_call(stream, name, "add_" + (string)prop, { value });
+        return write_call(stream, name, "add_", prop, { value });
     }
 
     ostream& compiler::write_add_property(ostream& stream, type_index type, string_view name, string_view prop, string_view value)
     {
-        return write_static_call(stream, type, "add_" + (string)prop, { name, value });
+        return write_static_call(stream, type, "add_", prop, { name, value });
     }
 
     ostream& compiler::write_add_property(ostream& stream, type_index node_type, type_index type, string_view name, string_view prop, string_view value)
@@ -118,7 +118,7 @@ namespace xaml
 
     ostream& compiler::write_add_event(ostream& stream, string_view name, xaml_event& ev)
     {
-        return write_call(stream, name, "add_" + (string)ev.info.name(), { ev.value });
+        return write_call(stream, name, "add_", ev.info.name(), { ev.value });
     }
 
     constexpr string_view this_name{ "this" };
@@ -185,7 +185,7 @@ namespace xaml
                         break;
                     }
                 }
-                write_call(stream, n.name, "provide", { "" });
+                write_call(stream, n.name, {}, "provide", {});
                 break;
             }
             case 2: // xaml_node

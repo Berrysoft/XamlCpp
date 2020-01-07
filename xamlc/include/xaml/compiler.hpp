@@ -33,8 +33,8 @@ namespace xaml
         std::ostream& write_type(std::ostream& stream, std::type_index type);
         std::ostream& write_args(std::ostream& stream, std::initializer_list<std::string_view> args);
         std::ostream& write_construct(std::ostream& stream, std::string_view name, std::type_index type);
-        std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view method, std::initializer_list<std::string_view> args);
-        std::ostream& write_static_call(std::ostream& stream, std::type_index type, std::string_view method, std::initializer_list<std::string_view> args);
+        std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);
+        std::ostream& write_static_call(std::ostream& stream, std::type_index type, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);
 
         std::ostream& write_set_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_set_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
