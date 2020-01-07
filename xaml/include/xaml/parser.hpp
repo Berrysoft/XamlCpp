@@ -30,6 +30,7 @@ namespace xaml
     struct markup_node
     {
         std::type_index type;
+        std::string name;
         std::vector<xaml_property> properties;
     };
 

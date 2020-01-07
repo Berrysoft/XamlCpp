@@ -5,16 +5,13 @@
 using namespace std;
 using namespace xaml;
 
-int main(int argc, char** argv)
+int main()
 {
-    if (argc > 1)
+    init_parser();
+    string_view file = "test.xaml";
+    compiler c{ file };
+    if (c.is_open())
     {
-        init_meta();
-        string_view file = argv[1];
-        compiler c{ file };
-        if (c.is_open())
-        {
-            c.compile(cout) << endl;
-        }
+        c.compile(cout) << endl;
     }
 }

@@ -15,8 +15,8 @@ namespace xaml
         container() : control() {}
         virtual ~container() override {}
 
-        bool is_container() const override final { return true; }
-        bool is_multicontainer() const override final { return false; }
+        static constexpr bool is_container() noexcept { return true; }
+        static constexpr bool is_multicontainer() noexcept { return false; }
 
         EVENT(child_changed, container&, std::shared_ptr<control>)
 
@@ -33,10 +33,12 @@ namespace xaml
         }
 
     public:
-#define ADD_CONTAINER_MEMBERS() \
-    ADD_CONTROL_MEMBERS();      \
-    ADD_PROP(child);            \
-    ADD_EVENT(child_changed)
+#define ADD_CONTAINER_MEMBERS()      \
+    ADD_CONTROL_MEMBERS();           \
+    ADD_PROP(child);                 \
+    ADD_EVENT(child_changed);        \
+    ADD_STATIC_METHOD(is_container); \
+    ADD_STATIC_METHOD(is_multicontainer)
 
         static void register_class() noexcept
         {
@@ -54,8 +56,8 @@ namespace xaml
         multicontainer() : control() {}
         virtual ~multicontainer() override {}
 
-        bool is_container() const override final { return true; }
-        bool is_multicontainer() const override final { return true; }
+        static constexpr bool is_container() noexcept { return true; }
+        static constexpr bool is_multicontainer() noexcept { return true; }
 
         XAML_API void add_child(std::shared_ptr<control> const& child);
         XAML_API void remove_child(std::shared_ptr<control> const& child);
@@ -65,7 +67,9 @@ namespace xaml
 #define ADD_MULTICONTAINER_MEMBERS() \
     ADD_CONTROL_MEMBERS();           \
     ADD_METHOD(add_child);           \
-    ADD_METHOD(remove_child)
+    ADD_METHOD(remove_child);        \
+    ADD_STATIC_METHOD(is_container); \
+    ADD_STATIC_METHOD(is_multicontainer)
 
         static void register_class() noexcept
         {

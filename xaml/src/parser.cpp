@@ -81,6 +81,30 @@ namespace xaml
         reader = xmlNewTextReaderFilename(file.data());
     }
 
+    static ostream& write_valid_name(ostream& stream, string_view name)
+    {
+        for (char c : name)
+        {
+            if (isalpha(c) || isdigit(c))
+            {
+                stream << c;
+            }
+            else
+            {
+                stream << '_';
+            }
+        }
+        return stream;
+    }
+
+    static string get_random_name(type_index type)
+    {
+        static size_t index = 0;
+        ostringstream oss;
+        write_valid_name(oss << "__", type.name()) << "__" << hex << type.hash_code() << "__" << dec << index++;
+        return oss.str();
+    }
+
     XAML_API markup_node parser::parse_markup(string_view value)
     {
         string_view ns, name;
@@ -103,7 +127,7 @@ namespace xaml
         auto t = get_type(ns, name);
         if (t)
         {
-            markup_node node{ *t };
+            markup_node node{ *t, get_random_name(*t) };
             while (i < value.length())
             {
                 while (i < value.length() && isspace(value[i])) i++;
@@ -154,30 +178,6 @@ namespace xaml
     }
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
-
-    static ostream& write_valid_name(ostream& stream, string_view name)
-    {
-        for (char c : name)
-        {
-            if (isalpha(c) || isdigit(c))
-            {
-                stream << c;
-            }
-            else
-            {
-                stream << '_';
-            }
-        }
-        return stream;
-    }
-
-    static string get_random_name(type_index type)
-    {
-        static size_t index = 0;
-        ostringstream oss;
-        write_valid_name(oss << "__", type.name()) << "__" << hex << type.hash_code() << "__" << dec << index++;
-        return oss.str();
-    }
 
     XAML_API int parser::parse_members(xaml_node& mc)
     {

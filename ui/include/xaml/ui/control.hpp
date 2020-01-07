@@ -176,10 +176,6 @@ namespace xaml
     public:
         virtual std::shared_ptr<control> get_root_window() { return m_parent; }
 
-    public:
-        virtual bool is_container() const = 0;
-        virtual bool is_multicontainer() const = 0;
-
     protected:
         XAML_API virtual void __parent_redraw();
 
@@ -248,9 +244,7 @@ namespace xaml
     ADD_PROP(height);         \
     ADD_PROP_EVENT(margin);   \
     ADD_PROP(halignment);     \
-    ADD_PROP(valignment);     \
-    ADD_METHOD(is_container); \
-    ADD_METHOD(is_multicontainer)
+    ADD_PROP(valignment)
 
         static void register_class() noexcept
         {
@@ -265,10 +259,13 @@ namespace xaml
         common_control() : control() {}
         virtual ~common_control() override {}
 
-        bool is_container() const override final { return false; }
-        bool is_multicontainer() const override final { return false; }
+        static constexpr bool is_container() noexcept { return false; }
+        static constexpr bool is_multicontainer() noexcept { return false; }
 
-#define ADD_COMMON_CONTROL_MEMBERS() ADD_CONTROL_MEMBERS()
+#define ADD_COMMON_CONTROL_MEMBERS() \
+    ADD_CONTROL_MEMBERS();           \
+    ADD_STATIC_METHOD(is_container); \
+    ADD_STATIC_METHOD(is_multicontainer)
 
         static void register_class() noexcept
         {

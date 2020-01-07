@@ -69,8 +69,8 @@ namespace xaml
                 throw xaml_no_default_constructor(prop.value.type);
             }
         }
-        bool is_container = invoke_method<bool>(mc, "is_container").value_or(false);
-        bool is_multicontainer = invoke_method<bool>(mc, "is_multicontainer").value_or(false);
+        bool is_container = invoke_static_method<bool>(mc->this_type(), "is_container").value_or(false);
+        bool is_multicontainer = invoke_static_method<bool>(mc->this_type(), "is_multicontainer").value_or(false);
         if (is_container)
         {
             if (node.children.size() > 1 && !is_multicontainer)
