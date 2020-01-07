@@ -26,6 +26,16 @@ namespace xaml
         return write_indent(stream) << '}' << endl;
     }
 
+    ostream& compiler::write_namespace(ostream& stream, string_view ns)
+    {
+        return write_indent(stream) << "namespace " << ns << endl;
+    }
+
+    ostream& compiler::write_init_decl(ostream& stream, string_view name)
+    {
+        return write_indent(stream) << name << "::initialize_component()" << endl;
+    }
+
     ostream& compiler::write_type(ostream& stream, type_index type)
     {
         auto t = *get_type_name(type);
@@ -144,15 +154,24 @@ namespace xaml
         if (stream)
         {
             xaml_node root_node = reader.parse();
-            auto [ns, name] = *get_type_name(root_node.type);
-            write_indent(stream) << "namespace " << ns << endl;
-            write_begin_block(stream);
-            write_indent(stream) << name << "::initialize_component()" << endl;
-            write_begin_block(stream);
-            compile_impl(stream, root_node, true);
-            compile_extensions(stream, root_node, true);
-            write_end_block(stream);
-            write_end_block(stream);
+            if (root_node.map_class)
+            {
+                auto [ns, name] = *root_node.map_class;
+                write_namespace(stream, ns);
+                write_begin_block(stream);
+                write_init_decl(stream, name);
+                write_begin_block(stream);
+                compile_impl(stream, root_node, true);
+                compile_extensions(stream, root_node, true);
+                write_end_block(stream);
+                write_end_block(stream);
+            }
+            else
+            {
+                write_construct(stream, root_node.name, root_node.type);
+                compile_impl(stream, root_node, false);
+                compile_extensions(stream, root_node, false);
+            }
         }
         return stream;
     }

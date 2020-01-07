@@ -198,10 +198,27 @@ namespace xaml
                     if (attr_ns.empty()) attr_ns = ns;
                     if (attr_ns == x_ns)
                     {
+                        string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                         if (attr_name == "x:name")
                         {
-                            string_view attr_value = get_string_view(xmlTextReaderConstValue(reader));
                             mc.name = attr_value;
+                        }
+                        else if (attr_name == "x:class")
+                        {
+                            auto index = attr_value.find_last_of(':');
+                            if (index != string_view::npos)
+                            {
+                                if (index > 0 && attr_value[index - 1] == ':' && index + 1 < attr_value.length())
+                                {
+                                    string_view map_ns = attr_value.substr(0, index - 1);
+                                    string_view map_name = attr_value.substr(index + 1);
+                                    mc.map_class = make_optional(make_tuple<string, string>((string)map_ns, (string)map_name));
+                                }
+                            }
+                            else
+                            {
+                                mc.map_class = make_optional(make_tuple<string, string>({}, (string)attr_value));
+                            }
                         }
                     }
                     else if (attr_ns != "xmlns" && attr_name != "xmlns")

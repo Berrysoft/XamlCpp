@@ -27,6 +27,9 @@ namespace xaml
         std::ostream& write_begin_block(std::ostream& stream);
         std::ostream& write_end_block(std::ostream& stream);
 
+        std::ostream& write_namespace(std::ostream& stream, std::string_view ns);
+        std::ostream& write_init_decl(std::ostream& stream, std::string_view name);
+
         std::ostream& write_type(std::ostream& stream, std::type_index type);
         std::ostream& write_construct(std::ostream& stream, std::string_view name, std::type_index type);
         std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view method, std::string_view args);

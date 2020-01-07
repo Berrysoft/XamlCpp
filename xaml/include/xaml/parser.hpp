@@ -2,6 +2,7 @@
 #define XAML_PARSER_HPP
 
 #include <libxml/xmlreader.h>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -40,6 +41,7 @@ namespace xaml
     {
         std::type_index type;
         std::string name;
+        std::optional<std::tuple<std::string, std::string>> map_class;
         std::vector<xaml_property> properties;
         std::map<std::string, xaml_collection_property> collection_properties;
         std::vector<xaml_event> events;
