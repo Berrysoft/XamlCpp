@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ostream>
 #include <xaml/compiler.hpp>
 
@@ -5,6 +6,25 @@ using namespace std;
 
 namespace xaml
 {
+    ostream& compiler::write_indent(ostream& stream)
+    {
+        fill_n(ostream_iterator<char>(stream), indent_count * 4, ' ');
+        return stream;
+    }
+
+    ostream& compiler::write_begin_block(ostream& stream)
+    {
+        write_indent(stream) << '{' << endl;
+        indent_count++;
+        return stream;
+    }
+
+    ostream& compiler::write_end_block(ostream& stream)
+    {
+        indent_count--;
+        return write_indent(stream) << '}' << endl;
+    }
+
     ostream& compiler::write_type(ostream& stream, type_index type)
     {
         auto t = *get_type_name(type);
@@ -13,27 +33,22 @@ namespace xaml
 
     ostream& compiler::write_construct(ostream& stream, string_view name, type_index type)
     {
-        return write_type(stream << "auto " << name << " = ::xaml::construct<", type) << ">();" << endl;
+        return write_type(write_indent(stream) << "auto " << name << " = ::xaml::construct<", type) << ">();" << endl;
     }
 
     ostream& compiler::write_call(ostream& stream, string_view name, string_view method, string_view args)
     {
-        return stream << name << "->" << method << '(' << args << ");" << endl;
+        return write_indent(stream) << name << "->" << method << '(' << args << ");" << endl;
     }
 
-    ostream& compiler::write_set_property(ostream& stream, string_view name, xaml_property& prop)
+    ostream& compiler::write_set_property(ostream& stream, string_view name, std::string_view prop, std::string_view value)
     {
-        return write_call(stream, name, "set_" + (string)prop.info.name(), prop.value);
+        return write_call(stream, name, "set_" + (string)prop, value);
     }
 
-    ostream& compiler::write_set_property(ostream& stream, string_view name, xaml_construct_property& prop)
+    ostream& compiler::write_add_property(ostream& stream, string_view name, std::string_view prop, std::string_view value)
     {
-        return write_call(stream, name, "set_" + (string)prop.info.name(), prop.value.name);
-    }
-
-    ostream& compiler::write_add_child(ostream& stream, string_view parent, string_view child)
-    {
-        return write_call(stream, parent, "add_child", child);
+        return write_call(stream, name, "add_" + (string)prop, value);
     }
 
     ostream& compiler::write_add_event(ostream& stream, string_view name, xaml_event& ev)
@@ -41,62 +56,84 @@ namespace xaml
         return write_call(stream, name, "add_" + (string)ev.info.name(), ev.value);
     }
 
-    ostream& compiler::compile_impl(ostream& stream, xaml_node& node, type_index root)
+    constexpr string_view this_name{ "this" };
+
+    static string_view get_node_name(xaml_node& node, bool is_this)
+    {
+        return is_this ? this_name : node.name;
+    }
+
+    ostream& compiler::compile_impl(ostream& stream, xaml_node& node, bool is_this)
     {
         for (auto& prop : node.properties)
         {
-            write_set_property(stream, node.name, prop);
+            auto& value = prop.value;
+            switch (value.index())
+            {
+            case 0: // std::string
+                write_set_property(stream, get_node_name(node, is_this), prop.info.name(), get<string>(value));
+                break;
+            case 2: // xaml_node
+            {
+                auto& n = get<xaml_node>(value);
+                write_construct(stream, n.name, n.type);
+                compile_impl(stream, n, false);
+                write_set_property(stream, get_node_name(node, is_this), prop.info.name(), n.name);
+                break;
+            }
+            }
+        }
+        for (auto& prop : node.collection_properties)
+        {
+            for (auto& n : prop.second.values)
+            {
+                write_construct(stream, n.name, n.type);
+                compile_impl(stream, n, false);
+                write_add_property(stream, get_node_name(node, is_this), prop.second.info.name(), n.name);
+            }
         }
         for (auto& ev : node.events)
         {
-            write_add_event(stream, node.name, ev);
-        }
-        for (auto& prop : node.construct_properties)
-        {
-            write_construct(stream, prop.value.name, prop.value.type);
-            compile_impl(stream, prop.value, root);
-            write_set_property(stream, node.name, prop);
-        }
-        bool is_container = invoke_static_method<bool>(node.type, "is_container").value_or(false);
-        bool is_multicontainer = invoke_static_method<bool>(node.type, "is_multicontainer").value_or(false);
-        if (is_container)
-        {
-            if (node.children.size() > 1 && !is_multicontainer)
-            {
-                throw xaml_not_multicontainer(node.type);
-            }
-            for (auto& cnode : node.children)
-            {
-                write_construct(stream, cnode.name, cnode.type);
-                compile_impl(stream, cnode, root);
-                if (is_multicontainer)
-                {
-                    write_add_child(stream, node.name, cnode.name);
-                }
-                else
-                {
-                    auto prop = get_property(node.type, "child");
-                    write_set_property(stream, node.name, xaml_property{ prop, cnode.name });
-                }
-            }
+            write_add_event(stream, get_node_name(node, is_this), ev);
         }
         return stream;
     }
 
-    ostream& compiler::compile_extensions(ostream& stream, xaml_node& node)
+    ostream& compiler::compile_extensions(ostream& stream, xaml_node& node, bool is_this)
     {
-        for (auto& prop : node.extension_properties)
+        for (auto& prop : node.properties)
         {
-            write_construct(stream, prop.value.name, prop.value.type);
-            for (auto& p : prop.value.properties)
+            auto& value = prop.value;
+            switch (value.index())
             {
-                write_set_property(stream, node.name, p);
+            case 1: // markup_node
+            {
+                auto& n = get<markup_node>(value);
+                write_construct(stream, n.name, n.type);
+                for (auto& p : n.properties)
+                {
+                    auto& value = p.value;
+                    switch (value.index())
+                    {
+                    case 0: // std::string
+                        write_set_property(stream, n.name, p.info.name(), get<string>(value));
+                        break;
+                    }
+                }
+                write_call(stream, n.name, "provide", "");
+                break;
             }
-            write_call(stream, prop.value.name, "provide", "");
+            case 2: // xaml_node
+                compile_extensions(stream, get<xaml_node>(value), false);
+                break;
+            }
         }
-        for (auto& c : node.children)
+        for (auto& prop : node.collection_properties)
         {
-            compile_extensions(stream, c);
+            for (auto& n : prop.second.values)
+            {
+                compile_extensions(stream, n, false);
+            }
         }
         return stream;
     }
@@ -106,8 +143,15 @@ namespace xaml
         if (stream)
         {
             xaml_node root_node = reader.parse();
-            compile_impl(stream, root_node, root_node.type);
-            compile_extensions(stream, root_node);
+            auto [ns, name] = *get_type_name(root_node.type);
+            write_indent(stream) << "namespace " << ns << endl;
+            write_begin_block(stream);
+            write_indent(stream) << name << "::initialize_component()" << endl;
+            write_begin_block(stream);
+            compile_impl(stream, root_node, true);
+            compile_extensions(stream, root_node, true);
+            write_end_block(stream);
+            write_end_block(stream);
         }
         return stream;
     }
