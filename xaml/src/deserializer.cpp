@@ -41,7 +41,14 @@ namespace xaml
 
     XAML_API shared_ptr<meta_class> deserializer::construct_impl(xaml_node& node, shared_ptr<meta_class> root)
     {
-        auto c = construct(node.type);
+        type_index t = node.type;
+        if (node.map_class)
+        {
+            auto [ns, name] = *node.map_class;
+            auto map_type = get_type(ns, name);
+            if (map_type) t = *map_type;
+        }
+        auto c = construct(t);
         if (c)
         {
             deserialize_impl(c, node, root ? root : c);

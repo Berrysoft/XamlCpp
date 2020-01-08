@@ -138,7 +138,7 @@ namespace xaml
 
     XAML_API ostream& compiler::write_init_decl(ostream& stream, string_view name)
     {
-        return write_indent(stream) << "void " << name << "::initialize_component()" << endl;
+        return write_indent(stream) << "void " << name << "::init_components()" << endl;
     }
 
     XAML_API ostream& compiler::write_type(ostream& stream, type_index type)
@@ -233,7 +233,7 @@ namespace xaml
         if (markup->this_type() == type_index(typeid(binding)))
         {
             auto b = static_pointer_cast<binding>(markup);
-            write_args(stream << "::xaml::bind(", { name, prop, b->get_element(), b->get_path(), "::xaml::binding_mode::one_way" }) << ");" << endl;
+            write_args(write_indent(stream) << "::xaml::bind(", { name, "\"" + (string)prop + "\"", b->get_element(), "\"" + (string)b->get_path() + "\"", "::xaml::binding_mode::one_way" }) << ");" << endl;
         }
         return stream;
     }

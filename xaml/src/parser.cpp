@@ -90,7 +90,7 @@ namespace xaml
     {
         static size_t index = 0;
         ostringstream oss;
-        write_valid_name(oss << "__", type.name()) << "__" << hex << type.hash_code() << "__" << dec << index++;
+        write_valid_name(oss << "__", type.name()) << "__" << index++;
         return oss.str();
     }
 
