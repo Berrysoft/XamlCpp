@@ -5,6 +5,8 @@
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
+#include <xaml/ui/drawing.hpp>
+#include <xaml/ui/grid.hpp>
 
 using namespace std;
 
