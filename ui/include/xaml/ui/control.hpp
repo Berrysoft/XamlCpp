@@ -118,7 +118,7 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
     private:
-        native_handle_type m_handle{ nullptr };
+        native_handle_type m_handle{ OBJC_NIL };
 
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
@@ -141,7 +141,7 @@ namespace xaml
         using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
 
     private:
-        __native_delegate_type m_delegate;
+        __native_delegate_type m_delegate{ OBJC_NIL };
 
     public:
         inline __native_delegate_type __get_delegate() const noexcept { return m_delegate; }

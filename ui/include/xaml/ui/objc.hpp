@@ -20,6 +20,14 @@
 #endif // __OBJC__
 #endif // !OBJC_OBJECT
 
+#ifndef OBJC_NIL
+#ifdef __OBJC__
+#define OBJC_NIL nil
+#else
+#define OBJC_NIL nullptr
+#endif // __OBJC__
+#endif // !OBJC_NIL
+
 #ifndef OBJC_BLOCK
 #if defined(__OBJC__) || !defined(XAML_UI_COCOA)
 #define OBJC_BLOCK(block) block
