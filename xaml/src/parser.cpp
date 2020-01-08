@@ -38,17 +38,6 @@ namespace xaml
     {
     }
 
-    static string get_xaml_not_multicontainer(type_index type)
-    {
-        ostringstream oss;
-        oss << "Type \"" << type.name() << "\" is not a multi-container.";
-        return oss.str();
-    }
-
-    XAML_API xaml_not_multicontainer::xaml_not_multicontainer(type_index type) : logic_error(get_xaml_not_multicontainer(type))
-    {
-    }
-
     static inline string_view get_string_view(const xmlChar* str)
     {
         if (str)

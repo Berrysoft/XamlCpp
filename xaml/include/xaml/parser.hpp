@@ -12,6 +12,7 @@
 #include <xaml/markup/binding.hpp>
 #include <xaml/meta/meta.hpp>
 #include <xaml/ui/meta.hpp>
+#include <xaml/xaml_node.hpp>
 
 namespace xaml
 {
@@ -20,46 +21,6 @@ namespace xaml
         init_meta();
         register_class<binding>();
     }
-
-    struct xaml_property;
-    struct xaml_collection_property;
-
-    struct markup_node
-    {
-        std::type_index type;
-        std::string name;
-        std::vector<xaml_property> properties;
-    };
-
-    struct xaml_event
-    {
-        event_info info;
-        std::string value;
-    };
-
-    struct xaml_node
-    {
-        std::type_index type;
-        std::string name;
-        std::optional<std::tuple<std::string, std::string>> map_class;
-        std::vector<xaml_property> properties;
-        std::map<std::string, xaml_collection_property> collection_properties;
-        std::vector<xaml_event> events;
-    };
-
-    struct xaml_property
-    {
-        std::type_index host_type{ typeid(std::nullptr_t) };
-        property_info info;
-        std::variant<std::string, markup_node, xaml_node> value;
-    };
-
-    struct xaml_collection_property
-    {
-        std::type_index host_type{ typeid(std::nullptr_t) };
-        collection_property_info info;
-        std::vector<xaml_node> values;
-    };
 
     struct xaml_no_default_constructor : std::logic_error
     {
@@ -83,12 +44,6 @@ namespace xaml
     {
         XAML_API xaml_no_member(std::type_index type, std::string_view name);
         ~xaml_no_member() override {}
-    };
-
-    struct xaml_not_multicontainer : std::logic_error
-    {
-        XAML_API xaml_not_multicontainer(std::type_index type);
-        ~xaml_not_multicontainer() override {}
     };
 
     class parser

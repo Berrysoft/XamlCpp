@@ -2,22 +2,17 @@
 #define XAML_DESERIALIZE_HPP
 
 #include <map>
-#include <xaml/parser.hpp>
+#include <xaml/xaml_node.hpp>
 
 namespace xaml
 {
     class deserializer
     {
     private:
-        parser reader;
         std::map<std::string, std::shared_ptr<meta_class>> symbols;
 
     public:
-        constexpr bool is_open() const noexcept { return reader.is_open(); }
-        void open(std::string_view file) { reader.open(file); }
-
-        deserializer() : reader() {}
-        deserializer(std::string_view file) : deserializer() { open(file); }
+        deserializer() {}
         ~deserializer() {}
 
     private:
@@ -25,7 +20,7 @@ namespace xaml
         XAML_API void deserialize_extensions(xaml_node& node);
 
     public:
-        XAML_API void deserialize(std::shared_ptr<meta_class> mc);
+        XAML_API void deserialize(xaml_node& node, std::shared_ptr<meta_class> mc);
     };
 } // namespace xaml
 

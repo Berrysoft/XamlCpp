@@ -1,4 +1,6 @@
 #include <xaml/deserializer.hpp>
+#include <xaml/markup/markup_extension.hpp>
+#include <xaml/parser.hpp>
 #include <xaml/ui/control.hpp>
 
 using namespace std;
@@ -135,13 +137,12 @@ namespace xaml
         }
     }
 
-    XAML_API void deserializer::deserialize(shared_ptr<meta_class> mc)
+    XAML_API void deserializer::deserialize(xaml_node& node, shared_ptr<meta_class> mc)
     {
         if (mc)
         {
-            xaml_node root_node = reader.parse();
-            deserialize_impl(mc, root_node, mc);
-            deserialize_extensions(root_node);
+            deserialize_impl(mc, node, mc);
+            deserialize_extensions(node);
         }
     }
 } // namespace xaml

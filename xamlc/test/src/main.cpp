@@ -9,9 +9,11 @@ int main()
 {
     init_parser();
     string_view file = "test.xaml";
-    compiler c{ file };
-    if (c.is_open())
+    parser p{ file };
+    if (p.is_open())
     {
-        c.compile(cout) << endl;
+        compiler c{};
+        xaml_node node = p.parse();
+        c.compile(node, cout) << endl;
     }
 }

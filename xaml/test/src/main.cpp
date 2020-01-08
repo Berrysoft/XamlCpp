@@ -1,5 +1,5 @@
 #include <test_window.hpp>
-#include <xaml/deserializer.hpp>
+#include <xaml/parser.hpp>
 #include <xaml/ui/meta.hpp>
 
 using namespace std;

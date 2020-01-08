@@ -1,5 +1,6 @@
 #include <test_window.hpp>
 #include <xaml/deserializer.hpp>
+#include <xaml/parser.hpp>
 #include <xaml/ui/msgbox.hpp>
 
 using namespace std;
@@ -14,8 +15,13 @@ namespace xaml::test
 
     void test_window::init_components()
     {
-        deserializer des("test.xaml");
-        des.deserialize(static_pointer_cast<test_window>(shared_from_this()));
+        parser p("test.xaml");
+        if (p.is_open())
+        {
+            deserializer des{};
+            xaml_node node = p.parse();
+            des.deserialize(node, static_pointer_cast<test_window>(shared_from_this()));
+        }
     }
 
     void test_window::on_timer_tick(timer&)
