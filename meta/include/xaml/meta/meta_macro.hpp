@@ -30,12 +30,10 @@ public:                     \
     void set_##name(type const& value) { m_##name = value; }
 
 #define ADD_PROP_TYPE(name, type) ::xaml::add_property_ex<self_type, type>(#name, ::std::function<type(self_type*)>([](self_type* self) -> type { return self->get_##name(); }), ::std::function<void(self_type*, type)>([](self_type* self, type value) -> void { self->set_##name(value); }))
-#define ADD_PROP_TYPE_RD(name, type) ::xaml::add_property_read_ex<self_type, type>(#name, ::std::function<type(self_type*)>([](self_type* self) -> type { return self->get_##name(); }))
 
 #define __GET_PROP_TYPE(name) decltype(::std::declval<self_type*>()->get_##name())
 
 #define ADD_PROP(name) ADD_PROP_TYPE(name, __GET_PROP_TYPE(name))
-#define ADD_PROP_RD(name) ADD_PROP_TYPE_RD(name, __GET_PROP_TYPE(name))
 
 #define ADD_COLLECTION_PROP(name, type) ::xaml::add_collection_property<self_type, type>(#name, ::std::function<void(self_type*, type)>([](self_type* self, type value) -> void { self->add_##name(value); }), ::std::function<void(self_type*, type)>([](self_type* self, type value) -> void { self->remove_##name(value); }))
 

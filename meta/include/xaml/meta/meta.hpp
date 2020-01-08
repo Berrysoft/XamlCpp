@@ -389,11 +389,13 @@ namespace xaml
     {
     private:
         std::string m_name;
+        std::type_index m_type{ typeid(std::nullptr_t) };
         std::function<std::any(std::shared_ptr<meta_class>)> getter;
         std::function<void(std::shared_ptr<meta_class>, std::any)> setter;
 
     public:
         std::string_view name() const noexcept { return m_name; }
+        std::type_index type() const noexcept { return m_type; }
         bool can_read() const noexcept { return (bool)getter; }
         bool can_write() const noexcept { return (bool)setter; }
 
@@ -430,10 +432,13 @@ namespace xaml
         return "aprop@" + (std::string)name;
     }
 
+    XAML_API std::type_index __get_property_type(std::type_index type, std::string_view name) noexcept;
+
     inline property_info get_property(std::type_index type, std::string_view name)
     {
         property_info info = {};
         info.m_name = name;
+        info.m_type = __get_property_type(type, name);
         std::string pname = __property_name(name);
         info.getter = get_method<std::any>(type, pname);
         info.setter = get_method<void, std::any>(type, pname);
@@ -444,11 +449,14 @@ namespace xaml
     {
         property_info info = {};
         info.m_name = name;
+        info.m_type = __get_property_type(type, name);
         std::string pname = __attach_property_name(name);
         info.getter = get_static_method<std::any, std::shared_ptr<meta_class>>(type, pname);
         info.setter = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, pname);
         return info;
     }
+
+    XAML_API void __set_property_type(std::type_index type, std::string_view name, std::type_index prop_type) noexcept;
 
     template <typename T, typename TChild, typename TValue, typename TGet>
     void add_attach_property_read(std::string_view name, TGet&& getter)
@@ -483,6 +491,7 @@ namespace xaml
     template <typename T, typename TChild, typename TValue, typename TGet, typename TSet>
     void add_attach_property(std::string_view name, TGet&& getter, TSet&& setter)
     {
+        __set_property_type(std::type_index(typeid(T)), name, std::type_index(typeid(TValue)));
         add_attach_property_read<T, TChild, TValue>(name, getter);
         add_attach_property_write<T, TChild, TValue>(name, setter);
     }
@@ -520,6 +529,7 @@ namespace xaml
     template <typename T, typename TValue>
     void add_property_ex(std::string_view name, std::function<TValue(T*)> getter, std::function<void(T*, TValue)> setter)
     {
+        __set_property_type(std::type_index(typeid(T)), name, std::type_index(typeid(TValue)));
         add_property_read_ex<T, TValue>(name, getter);
         add_property_write_ex<T, TValue>(name, setter);
     }
@@ -531,11 +541,13 @@ namespace xaml
     {
     private:
         std::string m_name;
+        std::type_index m_type{ typeid(std::nullptr_t) };
         std::function<void(std::shared_ptr<meta_class>, std::any)> adder;
         std::function<void(std::shared_ptr<meta_class>, std::any)> remover;
 
     public:
         std::string_view name() const noexcept { return m_name; }
+        std::type_index type() const noexcept { return m_type; }
         bool can_add() const noexcept { return (bool)adder; }
         bool can_remove() const noexcept { return (bool)remover; }
 
@@ -582,6 +594,7 @@ namespace xaml
     {
         collection_property_info info = {};
         info.m_name = name;
+        info.m_type = __get_property_type(type, name);
         info.adder = get_method<void, std::any>(type, __add_collection_property_name(name));
         info.remover = get_method<void, std::any>(type, __remove_collection_property_name(name));
         return info;
@@ -591,6 +604,7 @@ namespace xaml
     {
         collection_property_info info = {};
         info.m_name = name;
+        info.m_type = __get_property_type(type, name);
         info.adder = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __add_attach_collection_property_name(name));
         info.remover = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __remove_attach_collection_property_name(name));
         return info;
@@ -631,6 +645,7 @@ namespace xaml
     {
         add_collection_property_add<T, TValue>(name, adder);
         add_collection_property_remove<T, TValue>(name, remover);
+        __set_property_type(std::type_index(typeid(T)), name, std::type_index(typeid(TValue)));
     }
 
     template <typename T, typename TChild, typename TValue, typename TAdd>
@@ -668,6 +683,7 @@ namespace xaml
     {
         add_attach_collection_property_add<T, TChild, TValue>(name, adder);
         add_attach_collection_property_remove<T, TChild, TValue>(name, remover);
+        __set_property_type(std::type_index(typeid(T)), name, std::type_index(typeid(TValue)));
     }
 
     // EVENT

@@ -38,10 +38,10 @@ namespace xaml
 
         std::ostream& write_set_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_set_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
-        std::ostream& write_set_property(std::ostream& stream, std::type_index node_type, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_set_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_add_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_add_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
-        std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
+        std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         std::ostream& write_add_event(std::ostream& stream, std::string_view name, xaml_event& ev);
 
         std::ostream& compile_impl(std::ostream& stream, xaml_node& node, bool is_this);

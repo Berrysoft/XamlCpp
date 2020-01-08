@@ -145,4 +145,21 @@ namespace xaml
     {
         method_map[type].emplace((string)name, func);
     }
+
+    struct type_index_wrapper
+    {
+        type_index type{ typeid(nullptr_t) };
+    };
+
+    unordered_map<type_index, unordered_map<string, type_index_wrapper>> prop_type_map;
+
+    XAML_API type_index __get_property_type(type_index type, string_view name) noexcept
+    {
+        return prop_type_map[type][(string)name].type;
+    }
+
+    XAML_API void __set_property_type(type_index type, string_view name, type_index prop_type) noexcept
+    {
+        prop_type_map[type][(string)name].type = prop_type;
+    }
 } // namespace xaml
