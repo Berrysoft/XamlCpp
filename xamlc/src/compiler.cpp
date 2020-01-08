@@ -23,7 +23,7 @@ namespace xaml
     };
 
     template <size_t N>
-    constexpr bool is_of_type(type_index type, array<type_index, N> const& arr)
+    static bool is_of_type(type_index type, array<type_index, N> const& arr)
     {
         for (auto& t : arr)
         {
@@ -76,7 +76,7 @@ namespace xaml
 
     ostream& compiler::write_init_decl(ostream& stream, string_view name)
     {
-        return write_indent(stream) << name << "::initialize_component()" << endl;
+        return write_indent(stream) << "void " << name << "::initialize_component()" << endl;
     }
 
     ostream& compiler::write_type(ostream& stream, type_index type)

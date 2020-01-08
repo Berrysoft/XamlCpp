@@ -54,6 +54,13 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui ${GTK3_LIBRARIES})
 endif()
 
+if(${USE_PCH})
+    target_precompile_headers(xaml_ui
+        INTERFACE
+            <$<BUILD_INTERFACE:xaml/ui/meta.hpp>>
+    )
+endif()
+
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 if(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
