@@ -16,11 +16,15 @@ namespace xaml
         ~deserializer() {}
 
     private:
+        XAML_API std::shared_ptr<meta_class> construct_impl(xaml_node& node, std::shared_ptr<meta_class> root);
+
         XAML_API void deserialize_impl(std::shared_ptr<meta_class> mc, xaml_node& node, std::shared_ptr<meta_class> root);
         XAML_API void deserialize_extensions(xaml_node& node);
 
     public:
         XAML_API void deserialize(xaml_node& node, std::shared_ptr<meta_class> mc);
+        XAML_API std::shared_ptr<meta_class> deserialize(xaml_node& node);
+        XAML_API std::shared_ptr<meta_class> deserialize(markup_node& node);
     };
 } // namespace xaml
 

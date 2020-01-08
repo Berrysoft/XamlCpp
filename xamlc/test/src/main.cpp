@@ -1,5 +1,6 @@
 #include <iostream>
 #include <xaml/compiler.hpp>
+#include <xaml/parser.hpp>
 #include <xaml/ui/meta.hpp>
 
 using namespace std;

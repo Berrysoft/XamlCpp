@@ -2,7 +2,8 @@
 #define XAMLC_COMPILER_HPP
 
 #include <iosfwd>
-#include <xaml/parser.hpp>
+#include <xaml/meta/meta.hpp>
+#include <xaml/xaml_node.hpp>
 
 namespace xaml
 {
@@ -36,6 +37,8 @@ namespace xaml
         XAML_API std::ostream& write_add_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
         XAML_API std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAML_API std::ostream& write_add_event(std::ostream& stream, std::string_view name, xaml_event& ev);
+
+        XAML_API std::ostream& write_markup(std::ostream& stream, std::string_view name, std::string_view prop, std::shared_ptr<meta_class> markup);
 
         XAML_API std::ostream& compile_impl(std::ostream& stream, xaml_node& node, bool is_this);
         XAML_API std::ostream& compile_extensions(std::ostream& stream, xaml_node& node, bool is_this);

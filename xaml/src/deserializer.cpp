@@ -39,6 +39,21 @@ namespace xaml
         ~deserializer_markup_context() override {}
     };
 
+    XAML_API shared_ptr<meta_class> deserializer::construct_impl(xaml_node& node, shared_ptr<meta_class> root)
+    {
+        auto c = construct(node.type);
+        if (c)
+        {
+            deserialize_impl(c, node, root ? root : c);
+            return c;
+        }
+        else
+        {
+            throw xaml_no_default_constructor(node.type);
+        }
+        return nullptr;
+    }
+
     XAML_API void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
     {
         symbols.emplace(node.name, mc);
@@ -53,16 +68,7 @@ namespace xaml
             case 2: // xaml_node
             {
                 auto& node = get<xaml_node>(value);
-                auto c = construct(node.type);
-                if (c)
-                {
-                    deserialize_impl(c, node, root);
-                    prop.info.set(mc, c);
-                }
-                else
-                {
-                    throw xaml_no_default_constructor(node.type);
-                }
+                prop.info.set(mc, construct_impl(node, root));
                 break;
             }
             }
@@ -71,16 +77,7 @@ namespace xaml
         {
             for (auto& n : prop.second.values)
             {
-                auto c = construct(n.type);
-                if (c)
-                {
-                    deserialize_impl(c, n, root);
-                    prop.second.info.add(mc, c);
-                }
-                else
-                {
-                    throw xaml_no_default_constructor(n.type);
-                }
+                prop.second.info.add(mc, construct_impl(n, root));
             }
         }
         for (auto& ev : node.events)
@@ -109,17 +106,7 @@ namespace xaml
             {
                 auto& n = get<markup_node>(value);
                 deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
-                auto ex = construct(n.type);
-                for (auto& p : n.properties)
-                {
-                    auto& value = p.value;
-                    switch (value.index())
-                    {
-                    case 0: // std::string
-                        p.info.set(ex, get<string>(value));
-                        break;
-                    }
-                }
+                auto ex = deserialize(n);
                 dynamic_pointer_cast<markup_extension>(ex)->provide(context);
                 break;
             }
@@ -144,5 +131,28 @@ namespace xaml
             deserialize_impl(mc, node, mc);
             deserialize_extensions(node);
         }
+    }
+
+    XAML_API shared_ptr<meta_class> deserializer::deserialize(xaml_node& node)
+    {
+        auto c = construct_impl(node, nullptr);
+        deserialize(node, c);
+        return c;
+    }
+
+    XAML_API shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
+    {
+        auto ex = construct(node.type);
+        for (auto& p : node.properties)
+        {
+            auto& value = p.value;
+            switch (value.index())
+            {
+            case 0: // std::string
+                p.info.set(ex, get<string>(value));
+                break;
+            }
+        }
+        return ex;
     }
 } // namespace xaml

@@ -3,6 +3,8 @@
 #include <iterator>
 #include <ostream>
 #include <xaml/compiler.hpp>
+#include <xaml/deserializer.hpp>
+#include <xaml/markup/binding.hpp>
 
 using namespace std;
 
@@ -48,13 +50,13 @@ namespace xaml
         switch (length.layout)
         {
         case grid_layout::abs:
-            stream << "grid_layout::abs";
+            stream << "::xaml::grid_layout::abs";
             break;
         case grid_layout::star:
-            stream << "grid_layout::star";
+            stream << "::xaml::grid_layout::star";
             break;
         case grid_layout::compact:
-            stream << "grid_layout::compact";
+            stream << "::xaml::grid_layout::compact";
             break;
         }
         return stream << " }";
@@ -226,6 +228,16 @@ namespace xaml
         return write_call(stream, name, "add_", ev.info.name(), { s.str() });
     }
 
+    XAML_API ostream& compiler::write_markup(ostream& stream, string_view name, string_view prop, shared_ptr<meta_class> markup)
+    {
+        if (markup->this_type() == type_index(typeid(binding)))
+        {
+            auto b = static_pointer_cast<binding>(markup);
+            write_args(stream << "::xaml::bind(", { name, prop, b->get_element(), b->get_path(), "::xaml::binding_mode::one_way" }) << ");" << endl;
+        }
+        return stream;
+    }
+
     constexpr string_view this_name{ "this" };
 
     static string_view get_node_name(xaml_node& node, bool is_this)
@@ -279,18 +291,9 @@ namespace xaml
             case 1: // markup_node
             {
                 auto& n = get<markup_node>(value);
-                write_construct(stream, n.name, n.type);
-                for (auto& p : n.properties)
-                {
-                    auto& value = p.value;
-                    switch (value.index())
-                    {
-                    case 0: // std::string
-                        write_set_property(stream, n.type, p.host_type, p.info.type(), n.name, p.info.name(), get<string>(value));
-                        break;
-                    }
-                }
-                write_call(stream, n.name, {}, "provide", {});
+                deserializer des{};
+                auto ex = des.deserialize(n);
+                write_markup(stream, node.name, prop.info.name(), ex);
                 break;
             }
             case 2: // xaml_node
