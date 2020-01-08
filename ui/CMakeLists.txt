@@ -56,7 +56,7 @@ endif()
 
 if(${USE_PCH})
     target_precompile_headers(xaml_ui
-        INTERFACE
+        PUBLIC
             <$<BUILD_INTERFACE:xaml/ui/meta.hpp>>
     )
 endif()
