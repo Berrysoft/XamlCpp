@@ -1,7 +1,9 @@
 #ifndef XAML_UI_DRAWING_HPP
 #define XAML_UI_DRAWING_HPP
 
+#include <array>
 #include <cstdint>
+#include <map>
 #include <sstream>
 #include <tuple>
 #include <utility>
@@ -137,6 +139,21 @@ namespace xaml
     {
     };
 
+    template <>
+    struct __can_stot2d<std::tuple<double, double>> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot2d<std::pair<double, double>> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot2d<std::array<double, 2>> : std::true_type
+    {
+    };
+
     template <typename T>
     constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
 
@@ -216,6 +233,16 @@ namespace xaml
 
     template <>
     struct __can_stot4d<margin> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot4d<std::tuple<double, double, double, double>> : std::true_type
+    {
+    };
+
+    template <>
+    struct __can_stot4d<std::array<double, 4>> : std::true_type
     {
     };
 

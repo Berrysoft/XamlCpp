@@ -38,6 +38,12 @@ namespace xaml
             }
         }
     };
+
+    template <typename T, typename Class, typename... Args>
+    constexpr decltype(auto) mem_fn_bind(Class (T::*f)(Args...), T* t)
+    {
+        return [=](Args... args) { return (t->*f)(args...); };
+    }
 } // namespace xaml
 
 #endif // !XAML_EVENT_HPP

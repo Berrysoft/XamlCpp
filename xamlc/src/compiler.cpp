@@ -22,6 +22,16 @@ namespace xaml
         type_index(typeid(wstring)), type_index(typeid(wstring_view))
     };
 
+    static array t2d_types{
+        type_index(typeid(tuple<double, double>)), type_index(typeid(pair<double, double>)), type_index(typeid(array<double, 2>)),
+        type_index(typeid(point)), type_index(typeid(size))
+    };
+
+    static array t4d_types{
+        type_index(typeid(tuple<double, double, double, double>)), type_index(typeid(array<double, 4>)),
+        type_index(typeid(rectangle)), type_index(typeid(margin))
+    };
+
     template <size_t N>
     static bool is_of_type(type_index type, array<type_index, N> const& arr)
     {
@@ -30,6 +40,24 @@ namespace xaml
             if (t == type) return true;
         }
         return false;
+    }
+
+    static ostream& compile_grid_length(ostream& stream, grid_length length)
+    {
+        stream << "{ " << length.value << ", ";
+        switch (length.layout)
+        {
+        case grid_layout::abs:
+            stream << "grid_layout::abs";
+            break;
+        case grid_layout::star:
+            stream << "grid_layout::star";
+            break;
+        case grid_layout::compact:
+            stream << "grid_layout::compact";
+            break;
+        }
+        return stream << " }";
     }
 
     static string xaml_cpp_compile(type_index type, string_view code)
@@ -42,6 +70,38 @@ namespace xaml
         {
             ostringstream stream;
             stream << "U(\"" << code << "\")";
+            return stream.str();
+        }
+        else if (is_of_type(type, t2d_types))
+        {
+            ostringstream stream;
+            auto t = value_converter_traits<tuple<double, double>>::convert(code);
+            stream << "{ " << get<0>(t) << ", " << get<1>(t) << " }";
+            return stream.str();
+        }
+        else if (is_of_type(type, t4d_types))
+        {
+            ostringstream stream;
+            auto t = value_converter_traits<tuple<double, double, double, double>>::convert(code);
+            stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
+            return stream.str();
+        }
+        else if (type == type_index(typeid(std::vector<grid_length> const&)))
+        {
+            auto lengths = value_converter_traits<std::vector<grid_length> const&>::convert(code);
+            ostringstream stream;
+            stream << "{ ";
+            auto bit = lengths.begin();
+            auto eit = lengths.end();
+            if (bit != eit)
+            {
+                compile_grid_length(stream, *bit);
+                for (++bit; bit != eit; ++bit)
+                {
+                    compile_grid_length(stream << ", ", *bit);
+                }
+            }
+            stream << " }";
             return stream.str();
         }
         else
@@ -102,7 +162,7 @@ namespace xaml
 
     XAML_API ostream& compiler::write_construct(ostream& stream, string_view name, type_index type)
     {
-        return write_type(write_indent(stream) << "auto " << name << " = ::xaml::construct<", type) << ">();" << endl;
+        return write_type(write_indent(stream) << "auto " << name << " = ::std::make_shared<", type) << ">();" << endl;
     }
 
     XAML_API ostream& compiler::write_call(ostream& stream, string_view name, string_view prefix, string_view method, initializer_list<string_view> args)
@@ -161,7 +221,9 @@ namespace xaml
 
     XAML_API ostream& compiler::write_add_event(ostream& stream, string_view name, xaml_event& ev)
     {
-        return write_call(stream, name, "add_", ev.info.name(), { ev.value });
+        ostringstream s;
+        s << "::xaml::mem_fn_bind(" << ev.value << ", this)";
+        return write_call(stream, name, "add_", ev.info.name(), { s.str() });
     }
 
     constexpr string_view this_name{ "this" };
