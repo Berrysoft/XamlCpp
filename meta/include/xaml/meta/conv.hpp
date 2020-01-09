@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <locale>
-#include <map>
 #include <string>
 #include <string_view>
 #include <typeindex>
@@ -374,44 +373,6 @@ namespace xaml
 
     template <typename T>
     struct value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
-    {
-    };
-
-    template <typename TEnum, typename TChar>
-    struct enum_meta
-    {
-        constexpr TEnum operator()(std::basic_string_view<TChar> str) const noexcept { return {}; }
-    };
-
-    template <typename TEnum, typename TChar, std::map<std::basic_string_view<TChar>, TEnum>* pmap>
-    struct __enum_meta_helper
-    {
-        inline TEnum operator()(std::basic_string_view<TChar> str) const noexcept
-        {
-            return (*pmap)[str];
-        }
-    };
-
-    template <typename TEnum, typename TChar, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
-    inline TEnum __stoenum(std::basic_string_view<TChar> str)
-    {
-        return enum_meta<TEnum, TChar>{}(str);
-    }
-
-    template <typename TEnum>
-    inline TEnum stoenum(std::string_view str)
-    {
-        return __stoenum<TEnum, char>(str);
-    }
-
-    template <typename TEnum>
-    inline TEnum stoenum(std::wstring_view str)
-    {
-        return __stoenum<TEnum, wchar_t>(str);
-    }
-
-    template <typename TEnum>
-    struct value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>, __stoenum<TEnum, wchar_t>>
     {
     };
 } // namespace xaml

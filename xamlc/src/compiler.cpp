@@ -108,6 +108,13 @@ namespace xaml
             stream << " }";
             return stream.str();
         }
+        else if (is_registered_enum(type))
+        {
+            auto [ns, name] = *get_type_name(type);
+            std::ostringstream stream;
+            stream << "::" << ns << "::" << name << "::" << code;
+            return stream.str();
+        }
         else
         {
             return (string)code;
@@ -235,7 +242,7 @@ namespace xaml
         if (markup->this_type() == type_index(typeid(binding)))
         {
             auto b = static_pointer_cast<binding>(markup);
-            write_args(write_indent(stream) << "::xaml::bind(", { name, "\"" + (string)prop + "\"", b->get_element(), "\"" + (string)b->get_path() + "\"", "::xaml::binding_mode::one_way" }) << ");" << endl;
+            write_args(write_indent(stream) << "::xaml::bind(", { name, "\"" + (string)prop + "\"", b->get_element(), "\"" + (string)b->get_path() + "\"", enum_meta<binding_mode, char>{}(b->get_mode()) }) << ");" << endl;
         }
         return stream;
     }

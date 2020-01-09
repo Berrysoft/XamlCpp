@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <unordered_set>
 #include <xaml/meta/meta.hpp>
 
 using namespace std;
@@ -54,6 +55,18 @@ namespace xaml
     {
         type_map[get_real_namespace(ns)].emplace((string)name, type);
         type_name_map[type] = make_tuple<string, string>((string)ns, (string)name);
+    }
+
+    static unordered_set<type_index> enum_type_set;
+
+    XAML_API void __register_enum(type_index type) noexcept
+    {
+        enum_type_set.emplace(move(type));
+    }
+
+    XAML_API bool is_registered_enum(type_index type) noexcept
+    {
+        return enum_type_set.find(type) != enum_type_set.end();
     }
 
     XAML_API void add_xml_namespace(string_view xmlns, string_view ns) noexcept

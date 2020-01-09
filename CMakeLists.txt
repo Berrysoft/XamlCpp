@@ -48,7 +48,7 @@ endif()
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 
 if(NOT ${BUILD_SHARED_LIBS})
-    list(APPEND XAML_COMPILE_OPTIONS "-DXAML_STATIC_DEFINE")
+    list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_STATIC_DEFINE")
     if(MSVC)
         # set static library prefix to lib
         set(CMAKE_STATIC_LIBRARY_PREFIX_CXX lib)

@@ -4,7 +4,7 @@
 #include <xaml/markup/markup_extension.hpp>
 #include <xaml/meta/binding.hpp>
 #include <xaml/meta/default_property.hpp>
-#include <xaml/ui/strings.hpp>
+#include <xaml/strings.hpp>
 
 namespace xaml
 {
@@ -16,7 +16,7 @@ namespace xaml
     template <typename TChar>
     struct __binding_mode_enum_meta_helper
     {
-        inline static std::map<std::basic_string_view<TChar>, binding_mode> enum_map{
+        inline static __unordered_bimap<std::basic_string_view<TChar>, binding_mode> enum_map{
             { __binding_mode_one_time<TChar>, binding_mode::one_time },
             { __binding_mode_one_way<TChar>, binding_mode::one_way },
             { __binding_mode_one_way_to_source<TChar>, binding_mode::one_way_to_source },

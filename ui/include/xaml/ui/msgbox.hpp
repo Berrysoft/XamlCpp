@@ -1,7 +1,7 @@
 #ifndef XAML_UI_MSGBOX_HPP
 #define XAML_UI_MSGBOX_HPP
 
-#include <xaml/ui/strings.hpp>
+#include <xaml/strings.hpp>
 #include <xaml/ui/window.hpp>
 
 namespace xaml

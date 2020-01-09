@@ -31,7 +31,25 @@ namespace xaml
 
     CHAR_CONST(__star, '*')
 
-    STRING_CONST(__auto, "auto")
+    STRING_CONST(__grid_length_abs, "abs")
+    STRING_CONST(__grid_length_star, "star")
+    STRING_CONST(__grid_length_auto, "auto")
+    STRING_CONST(__grid_length_compact, "compact")
+
+    template <typename TChar>
+    struct __grid_length_enum_meta_helper
+    {
+        inline static __unordered_bimap<std::basic_string_view<TChar>, grid_length> enum_map{
+            { __grid_length_abs<TChar>, grid_length::abs },
+            { __grid_length_star<TChar>, grid_length::star },
+            { __grid_length_compact<TChar>, grid_length::compact }
+        };
+    };
+
+    template <typename TChar>
+    struct enum_meta<grid_length, TChar> : __enum_meta_helper<grid_length, TChar, &__grid_length_enum_meta_helper<TChar>::enum_map>
+    {
+    };
 
     template <typename TChar>
     inline std::vector<grid_length> __stogls(std::basic_string_view<TChar> str)
@@ -42,7 +60,7 @@ namespace xaml
         {
             std::size_t index = str.find_first_of(__delimeter<TChar>, offset);
             std::basic_string_view<TChar> lenstr = str.substr(offset, index - offset);
-            if (lenstr == __auto<TChar>)
+            if (lenstr == __grid_length_auto<TChar> || lenstr == __grid_length_compact<TChar>)
             {
                 result.push_back({ 0, grid_layout::compact });
             }

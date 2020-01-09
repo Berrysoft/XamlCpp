@@ -20,6 +20,9 @@ namespace xaml
             button,
             canvas,
             label>();
+        REGISTER_ENUM(xaml, halignment_t);
+        REGISTER_ENUM(xaml, valignment_t);
+        REGISTER_ENUM(xaml, grid_layout);
     }
 } // namespace xaml
 

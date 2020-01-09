@@ -8,7 +8,7 @@
 #include <tuple>
 #include <utility>
 #include <xaml/meta/conv.hpp>
-#include <xaml/ui/strings.hpp>
+#include <xaml/strings.hpp>
 
 namespace xaml
 {

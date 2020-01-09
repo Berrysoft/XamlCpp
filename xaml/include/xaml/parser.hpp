@@ -20,6 +20,7 @@ namespace xaml
     {
         init_meta();
         register_class<binding>();
+        REGISTER_ENUM(xaml, binding_mode);
     }
 
     struct xaml_no_default_constructor : std::logic_error

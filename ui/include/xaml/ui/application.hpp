@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
-#include <xaml/ui/strings.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>

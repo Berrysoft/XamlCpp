@@ -79,6 +79,18 @@ namespace xaml
         __register_type(ns, name, std::type_index(typeid(TChild)));
     }
 
+    XAML_API void __register_enum(std::type_index type) noexcept;
+
+    template <typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
+    void register_enum(std::string_view ns, std::string_view name) noexcept
+    {
+        auto t = std::type_index(typeid(TEnum));
+        __register_type(ns, name, t);
+        __register_enum(t);
+    }
+
+    XAML_API bool is_registered_enum(std::type_index type) noexcept;
+
     // Add a map between xmlns and C++ namespace.
     XAML_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 

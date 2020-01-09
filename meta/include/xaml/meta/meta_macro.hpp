@@ -3,6 +3,8 @@
 
 #include <xaml/meta/meta.hpp>
 
+#define REGISTER_ENUM(ns, name) ::xaml::register_enum<name>(#ns, #name)
+
 #define REGISTER_TYPE(ns, name) \
     using self_type = name;     \
     ::xaml::register_type<self_type>(#ns, #name)
