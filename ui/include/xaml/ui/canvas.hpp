@@ -169,7 +169,7 @@ namespace xaml
         XAML_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
-    class canvas : public common_control, public meta_class_impl<canvas>
+    class canvas : public common_control
     {
     public:
         XAML_API canvas();

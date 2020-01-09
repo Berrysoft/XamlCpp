@@ -106,7 +106,7 @@ namespace xaml
     {
     };
 
-    class control : public std::enable_shared_from_this<control>
+    class control : public meta_class_impl<control>
     {
     public:
 #ifdef XAML_UI_WINDOWS

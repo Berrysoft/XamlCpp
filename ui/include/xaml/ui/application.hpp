@@ -14,7 +14,7 @@
 
 namespace xaml
 {
-    class application : public meta_class_impl<application>, public std::enable_shared_from_this<application>
+    class application : public meta_class_impl<application>
     {
     private:
         friend class window;

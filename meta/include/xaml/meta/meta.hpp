@@ -23,15 +23,14 @@ namespace xaml
     // Base class of all classes which isn't inheritable and registered for reflection.
     struct meta_class
     {
-        virtual std::type_index this_type() const noexcept = 0;
+        std::type_index this_type() const noexcept { return std::type_index(typeid(*this)); }
         virtual ~meta_class() {}
     };
 
     // Help the classes to implement meta_class
     template <typename TChild>
-    struct meta_class_impl : meta_class
+    struct meta_class_impl : meta_class, std::enable_shared_from_this<TChild>
     {
-        std::type_index this_type() const noexcept override final { return std::type_index(typeid(TChild)); }
         virtual ~meta_class_impl() override {}
     };
 

@@ -69,7 +69,7 @@ namespace xaml
     {
     };
 
-    class grid : public multicontainer, public meta_class_impl<grid>
+    class grid : public multicontainer
     {
     public:
         XAML_API grid();

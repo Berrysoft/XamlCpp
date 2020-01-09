@@ -8,7 +8,7 @@
 
 namespace xaml::test
 {
-    class test_window : public window, public meta_class_impl<test_window>
+    class test_window : public window
     {
     private:
         timer tmr;

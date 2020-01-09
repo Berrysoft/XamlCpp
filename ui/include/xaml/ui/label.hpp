@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    class label : public common_control, public meta_class_impl<label>
+    class label : public common_control
     {
     public:
         XAML_API label();

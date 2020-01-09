@@ -72,7 +72,7 @@ namespace xaml
         }
     };
 
-    class button : public button_base, public meta_class_impl<button>
+    class button : public button_base
     {
     public:
         button() : button_base() {}
