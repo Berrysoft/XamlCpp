@@ -13,7 +13,7 @@ namespace xaml
         virtual ~markup_context() {}
     };
 
-    class markup_extension
+    class markup_extension : public meta_class_impl<markup_extension>
     {
     public:
         virtual ~markup_extension() {}

@@ -290,7 +290,7 @@ namespace xaml
         {
             this->func = std::function<Return(std::shared_ptr<meta_class>, Args...)>(
                 [f](std::shared_ptr<meta_class> self, Args... args) -> Return {
-                    return std::mem_fn(f)(std::dynamic_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
+                    return std::mem_fn(f)(std::static_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
                 });
         }
     };
@@ -467,7 +467,7 @@ namespace xaml
                 pname,
                 std::function<std::any(std::shared_ptr<meta_class>)>(
                     [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self));
+                        return getter(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self));
                     }));
         }
     }
@@ -482,7 +482,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                        setter(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -505,7 +505,7 @@ namespace xaml
                 pname,
                 std::function<std::any(std::shared_ptr<meta_class>)>(
                     [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::dynamic_pointer_cast<T>(self).get());
+                        return getter(std::static_pointer_cast<T>(self).get());
                     }));
         }
     }
@@ -520,7 +520,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                        setter(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -619,7 +619,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        return adder(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                        return adder(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -634,7 +634,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        remover(std::dynamic_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                        remover(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -657,7 +657,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        return adder(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                        return adder(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -672,7 +672,7 @@ namespace xaml
                 pname,
                 std::function<void(std::shared_ptr<meta_class>, std::any)>(
                     [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        remover(std::dynamic_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                        remover(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -798,12 +798,12 @@ namespace xaml
                         if (handler->is_same_arg_type<Args...>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return adder(std::dynamic_pointer_cast<T>(self).get(), std::move(h->func));
+                            return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
                         }
                         else if (handler->is_same_arg_type<>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_function_impl<void()>>(handler);
-                            return adder(std::dynamic_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
+                            return adder(std::static_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
                         }
                         return 0;
                     }));
@@ -823,12 +823,12 @@ namespace xaml
                         if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                            return adder(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
+                            return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
                         }
                         else if (handler->is_same_arg_type<std::shared_ptr<meta_class>>())
                         {
                             auto h = std::static_pointer_cast<__type_erased_this_function_impl<void()>>(handler);
-                            return adder(std::dynamic_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
+                            return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
                         }
                         return 0;
                     }));
@@ -845,7 +845,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
                     [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        remover(std::dynamic_pointer_cast<T>(self).get(), token);
+                        remover(std::static_pointer_cast<T>(self).get(), token);
                     }));
         }
     }
@@ -860,7 +860,7 @@ namespace xaml
                 ename,
                 std::function<void(std::shared_ptr<meta_class>, Args...)>(
                     [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        getter(std::dynamic_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                        getter(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
                     }));
         }
     }

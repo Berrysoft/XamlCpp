@@ -29,7 +29,7 @@ namespace xaml
     {
     };
 
-    class binding : public markup_extension, public meta_class_impl<binding>
+    class binding : public markup_extension
     {
     private:
         std::string m_element;

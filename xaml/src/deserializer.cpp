@@ -112,9 +112,9 @@ namespace xaml
             case 1: // markup_node
             {
                 auto& n = get<markup_node>(value);
-                deserializer_markup_context context{ mc, prop.info.name(), symbols, dynamic_pointer_cast<control>(mc)->get_data_context() };
+                deserializer_markup_context context{ mc, prop.info.name(), symbols, static_pointer_cast<control>(mc)->get_data_context() };
                 auto ex = deserialize(n);
-                dynamic_pointer_cast<markup_extension>(ex)->provide(context);
+                static_pointer_cast<markup_extension>(ex)->provide(context);
                 break;
             }
             case 2: // xaml_node

@@ -289,11 +289,11 @@ namespace xaml
             }
             else if (value.type() == typeid(std::shared_ptr<meta_class>))
             {
-                return std::dynamic_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class>>(value));
+                return std::static_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class>>(value));
             }
             else if (value.type() == typeid(std::shared_ptr<meta_class>&) || value.type() == typeid(std::shared_ptr<meta_class> const&))
             {
-                return std::dynamic_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class> const&>(value));
+                return std::static_pointer_cast<T>(std::any_cast<std::shared_ptr<meta_class> const&>(value));
             }
             else
             {
