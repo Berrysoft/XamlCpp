@@ -83,7 +83,7 @@ namespace xaml
     }
 
     template <typename TEnum>
-    struct value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>>
+    struct value_converter_traits<TEnum, std::enable_if_t<std::is_enum_v<TEnum>>> : __value_converter_traits_helper<TEnum, __stoenum<TEnum, char>, __stoenum<TEnum, wchar_t>>
     {
     };
 } // namespace xaml

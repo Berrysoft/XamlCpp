@@ -83,7 +83,7 @@ namespace xaml
     inline std::vector<grid_length> stogls(std::wstring_view str) { return __stogls<wchar_t>(str); }
 
     template <>
-    struct value_converter_traits<std::vector<grid_length> const&, void> : __value_converter_traits_helper<std::vector<grid_length>, __stogls<char>>
+    struct value_converter_traits<std::vector<grid_length> const&, void> : __value_converter_traits_helper<std::vector<grid_length>, __stogls<char>, __stogls<wchar_t>>
     {
     };
 

@@ -35,7 +35,7 @@ namespace xaml
         }
     };
 
-    template <typename T, T (*func)(std::string_view)>
+    template <typename T, T (*func)(std::string_view), T (*wfunc)(std::wstring_view)>
     struct __value_converter_traits_helper
     {
         static T convert(std::any value)
@@ -44,14 +44,7 @@ namespace xaml
             {
                 return std::any_cast<T>(value);
             }
-            if constexpr (std::is_copy_constructible_v<T>)
-            {
-                if (value.type() == typeid(T&) || value.type() == typeid(T const&))
-                {
-                    return std::any_cast<T const&>(value);
-                }
-            }
-            if (value.type() == typeid(std::string))
+            else if (value.type() == typeid(std::string))
             {
                 return func(std::any_cast<std::string>(value));
             }
@@ -62,6 +55,18 @@ namespace xaml
             else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
             {
                 return func(std::any_cast<const char*>(value));
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return wfunc(std::any_cast<std::wstring>(value));
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return wfunc(std::any_cast<std::wstring_view>(value));
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return wfunc(std::any_cast<const wchar_t*>(value));
             }
             else
             {
@@ -246,7 +251,7 @@ namespace xaml
     }
 
     template <typename T>
-    struct value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>> : __value_converter_traits_helper<T, __stoi<T, char>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stoi_v<T>>> : __value_converter_traits_helper<T, __stoi<T, char>, __stoi<T, wchar_t>>
     {
     };
 
@@ -367,7 +372,7 @@ namespace xaml
     }
 
     template <typename T>
-    struct value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>>
+    struct value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
     {
     };
 } // namespace xaml
