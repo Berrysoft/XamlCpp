@@ -73,7 +73,6 @@ int main()
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
     prop.set(mc, "100");
-    prop.set(mc, L"200"sv);
     // Remove the handler.
     ev.remove(mc, token);
     // Although `value` has changed, the handler won't be called,
