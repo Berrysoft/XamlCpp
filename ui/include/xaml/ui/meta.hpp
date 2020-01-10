@@ -4,8 +4,10 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/button.hpp>
 #include <xaml/ui/canvas.hpp>
+#include <xaml/ui/entry.hpp>
 #include <xaml/ui/grid.hpp>
 #include <xaml/ui/label.hpp>
+#include <xaml/ui/password_entry.hpp>
 #include <xaml/ui/window.hpp>
 
 namespace xaml
@@ -19,7 +21,9 @@ namespace xaml
             grid,
             button,
             canvas,
-            label>();
+            label,
+            entry,
+            password_entry>();
         REGISTER_ENUM(xaml, halignment_t);
         REGISTER_ENUM(xaml, valignment_t);
         REGISTER_ENUM(xaml, grid_layout);

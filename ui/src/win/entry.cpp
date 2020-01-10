@@ -1,16 +1,17 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
-#include <xaml/ui/label.hpp>
+#include <xaml/ui/entry.hpp>
 
 namespace xaml
 {
-    XAML_API void label::__draw(rectangle const& region)
+    XAML_API void entry::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
             window_create_params params = {};
-            params.class_name = U("STATIC");
-            params.style = SS_LEFT;
+            params.class_name = U("EDIT");
+            params.style = ES_LEFT;
+            params.ex_style = WS_EX_CLIENTEDGE;
             params.x = 0;
             params.y = 0;
             params.width = 100;
@@ -27,37 +28,38 @@ namespace xaml
         ShowWindow(get_handle(), SW_SHOW);
     }
 
-    XAML_API void label::draw_size()
+    XAML_API void entry::draw_size()
     {
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)get_width(), (int)get_height(), SWP_NOZORDER | SWP_NOMOVE));
     }
 
-    XAML_API void label::draw_text()
+    XAML_API void entry::draw_text()
     {
-        THROW_IF_WIN32_BOOL_FALSE(Static_SetText(get_handle(), m_text.c_str()));
+        THROW_IF_WIN32_BOOL_FALSE(Edit_SetText(get_handle(), m_text.c_str()));
     }
 
-    XAML_API void label::draw_alignment()
+    XAML_API void entry::draw_alignment()
     {
         LONG_PTR style;
         switch (m_text_halignment)
         {
         case halignment_t::center:
-            style = SS_CENTER;
+            style = ES_CENTER;
             break;
         case halignment_t::right:
-            style = SS_RIGHT;
+            style = ES_RIGHT;
             break;
         default:
-            style = SS_LEFT;
+            style = ES_LEFT;
             break;
         }
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);
     }
 
-    XAML_API void label::__size_to_fit()
+    XAML_API void entry::__size_to_fit()
     {
-        __set_size_noevent(__measure_text_size(m_text));
+        size msize = __measure_text_size(m_text);
+        __set_size_noevent({ msize.width + 15, msize.height + 15 });
         draw_size();
     }
 } // namespace xaml
