@@ -4,7 +4,7 @@
         title="Test Window" location="200, 100" size="800, 600">
   <grid margin="10" columns="1*, 0.8*, 1*" rows="1*, auto, 1*">
     <label x:name="mylabel" grid.column="0" grid.row="1" margin="5, 0" text_halignment="right" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
-    <button x:name="mybutton" grid.column="1" grid.row="1" click="on_button_click">Hello</button>
+    <button x:name="mybutton" grid.column="1" grid.row="1" is_default="true" click="on_button_click">Hello</button>
     <canvas grid.column="0" grid.row="2" margin="10" redraw="on_canvas_redraw"/>
   </grid>
 </window>

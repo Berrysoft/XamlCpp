@@ -2,12 +2,14 @@
 #define XAML_CONV_HPP
 
 #include <any>
+#include <cctype>
 #include <cstdlib>
 #include <initializer_list>
 #include <locale>
 #include <string>
 #include <string_view>
 #include <typeindex>
+#include <xaml/strings.hpp>
 
 namespace xaml
 {
@@ -374,6 +376,124 @@ namespace xaml
     template <typename T>
     struct value_converter_traits<T, std::enable_if_t<__can_stof_v<T>>> : __value_converter_traits_helper<T, __stof<T, char>, __stof<T, wchar_t>>
     {
+    };
+
+    STRING_CONST(__true_str, "true")
+    STRING_CONST(__false_str, "false")
+
+    template <typename TChar>
+    inline bool __stob(std::basic_string_view<TChar> str)
+    {
+        if (str.length() != 4) return false;
+        for (std::size_t i = 0; i < 4; i++)
+        {
+            if (std::tolower(str[i]) != __true_str<TChar>[i]) return false;
+        }
+        return true;
+    }
+
+    inline bool stob(std::string_view str) { return __stob<char>(str); }
+    inline bool stob(std::wstring_view str) { return __stob<wchar_t>(str); }
+
+    template <>
+    struct value_converter_traits<bool, void> : __value_converter_traits_helper<bool, __stob<char>, __stob<wchar_t>>
+    {
+    };
+
+    static inline std::string __wtomb(std::wstring_view str)
+    {
+        std::mbstate_t mb{};
+        std::string internal(str.size() * 2, '\0');
+        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
+        const wchar_t* from_next;
+        char* to_next;
+        f.out(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
+        internal.resize(to_next - &internal.front());
+        return internal;
+    }
+
+    static inline std::wstring __mbtow(std::string_view str)
+    {
+        std::mbstate_t mb{};
+        std::wstring internal(str.size(), L'\0');
+        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
+        const char* from_next;
+        wchar_t* to_next;
+        f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
+        internal.resize(to_next - &internal.front());
+        return internal;
+    }
+
+    template <>
+    struct value_converter_traits<std::string_view, void>
+    {
+        static std::string convert(std::any value)
+        {
+            if (value.type() == typeid(std::string))
+            {
+                return std::any_cast<std::string>(value);
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                return (std::string)std::any_cast<std::string_view>(value);
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                return std::any_cast<const char*>(value);
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return __wtomb(std::any_cast<std::wstring>(value));
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return __wtomb(std::any_cast<std::wstring_view>(value));
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return __wtomb(std::any_cast<const wchar_t*>(value));
+            }
+            else
+            {
+                return {};
+            }
+        }
+    };
+
+    template <>
+    struct value_converter_traits<std::wstring_view, void>
+    {
+        static std::wstring convert(std::any value)
+        {
+            if (value.type() == typeid(std::string))
+            {
+                return __mbtow(std::any_cast<std::string>(value));
+            }
+            else if (value.type() == typeid(std::string_view))
+            {
+                return __mbtow(std::any_cast<std::string_view>(value));
+            }
+            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
+            {
+                return __mbtow(std::any_cast<const char*>(value));
+            }
+            else if (value.type() == typeid(std::wstring))
+            {
+                return std::any_cast<std::wstring>(value);
+            }
+            else if (value.type() == typeid(std::wstring_view))
+            {
+                return (std::wstring)std::any_cast<std::wstring_view>(value);
+            }
+            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
+            {
+                return std::any_cast<const wchar_t*>(value);
+            }
+            else
+            {
+                return {};
+            }
+        }
     };
 } // namespace xaml
 

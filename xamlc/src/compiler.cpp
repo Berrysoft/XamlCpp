@@ -66,7 +66,12 @@ namespace xaml
 
     static string xaml_cpp_compile(type_index type, string_view code)
     {
-        if (is_of_type(type, int_types) || is_of_type(type, float_types))
+        if (type == type_index(typeid(bool)))
+        {
+            bool b = value_converter_traits<bool>::convert(code);
+            return b ? "true" : "false";
+        }
+        else if (is_of_type(type, int_types) || is_of_type(type, float_types))
         {
             return (string)code;
         }
