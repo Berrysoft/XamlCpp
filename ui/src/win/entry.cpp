@@ -10,7 +10,7 @@ namespace xaml
         {
             window_create_params params = {};
             params.class_name = U("EDIT");
-            params.style = ES_LEFT;
+            params.style = WS_CHILD | WS_VISIBLE | ES_LEFT;
             params.ex_style = WS_EX_CLIENTEDGE;
             params.x = 0;
             params.y = 0;
