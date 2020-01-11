@@ -1,9 +1,9 @@
 #ifndef XAML_UI_CONTROL_HPP
 #define XAML_UI_CONTROL_HPP
 
-#include "xaml/meta/conv.hpp"
 #include <map>
 #include <string_view>
+#include <xaml/meta/conv.hpp>
 #include <xaml/meta/enum_meta.hpp>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/strings.hpp>
@@ -13,6 +13,8 @@
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
 #include <optional>
+#elif defined(XAML_UI_WINRT)
+#include "winrt/Windows.UI.Xaml.h"
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
@@ -112,6 +114,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = HWND;
+#elif defined(XAML_UI_WINRT)
+        using native_handle_type = winrt::Windows::UI::Xaml::UIElement;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = GtkWidget*;
 #elif defined(XAML_UI_COCOA)
@@ -123,7 +127,7 @@ namespace xaml
 
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
-        operator bool() const noexcept { return m_handle; }
+        operator bool() const noexcept { return m_handle != OBJC_NIL; }
 
     protected:
         void set_handle(native_handle_type h) noexcept OBJC_BLOCK({ m_handle = h; });

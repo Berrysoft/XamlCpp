@@ -1,7 +1,5 @@
 #include <Windows.h>
 #include <gdiplus.h>
-#include <shellapi.h>
-#include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
@@ -12,31 +10,6 @@ using namespace Gdiplus;
 
 namespace xaml
 {
-#ifdef UNICODE
-    XAML_API application::application(LPWSTR lpCmdLine)
-    {
-        int argc;
-        LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
-        if (argv)
-        {
-            wil::unique_array_ptr<LPWSTR, wil::hlocal_deleter> args(argv, argc);
-            for (int i = 0; i < argc; i++)
-            {
-                m_cmd_lines.push_back(args[i]);
-            }
-        }
-    }
-#endif // UNICODE
-
-    extern shared_ptr<application> s_current;
-
-    XAML_API shared_ptr<application> application::init(LPWSTR lpCmdLine)
-    {
-        s_current = shared_ptr<application>(new application(lpCmdLine));
-        s_current->init_components();
-        return s_current;
-    }
-
     static BOOL take_over_message(MSG& msg)
     {
         BOOL bRet = GetMessage(&msg, nullptr, 0, 0);

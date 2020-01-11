@@ -8,7 +8,7 @@
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 
-#ifdef XAML_UI_WINDOWS
+#if defined(XAML_UI_WINDOWS)
 #include <Windows.h>
 #endif // XAML_UI_WINDOWS
 
@@ -29,14 +29,11 @@ namespace xaml
     private:
         application(int argc, char_t** argv)
         {
-            for (int i = 0; i < argc; i++)
-            {
-                m_cmd_lines.push_back(argv[i]);
-            }
+            m_cmd_lines.assign(argv, argv + argc);
         }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
         XAML_API application(LPWSTR lpCmdLine);
-#endif // XAML_UI_WINDOWS
+#endif
 
         XAML_API void init_components();
 
