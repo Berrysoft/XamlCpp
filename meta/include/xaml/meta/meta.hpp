@@ -734,7 +734,7 @@ namespace xaml
                     h->func = handler;
                     return adder(self, h);
                 }
-                else if (sizeof...(Args) == 0)
+                if constexpr (sizeof...(Args) == 0)
                 {
                     auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
                     h->func = [handler](Args... args) -> void { handler(args...); };
