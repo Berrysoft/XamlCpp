@@ -115,7 +115,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = HWND;
 #elif defined(XAML_UI_WINRT)
-        using native_handle_type = winrt::Windows::UI::Xaml::UIElement;
+        using native_handle_type = winrt::Windows::UI::Xaml::FrameworkElement;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = GtkWidget*;
 #elif defined(XAML_UI_COCOA)

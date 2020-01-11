@@ -15,18 +15,20 @@ using namespace std;
 using namespace xaml;
 
 // Use different main signature for different platforms.
-#ifdef XAML_UI_WINDOWS
+#if defined(XAML_UI_WINDOWS) || defined(XAML_UI_WINRT)
 INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 #else
 int main(int argc, char** argv)
-#endif // XAML_UI_WINDOWS
+#endif // XAML_UI_WINDOWS || XAML_UI_WINRT
 {
     // Initialize and get default application object.
 #ifdef XAML_UI_WINDOWS
     auto app = application::init(lpCmdLine);
+#elif defined(XAML_UI_WINRT)
+    auto app = application::init();
 #else
     auto app = application::init(argc, argv);
-#endif // XAML_UI_WINDOWS
+#endif
     // Construct a window.
     auto wnd = make_shared<window>();
     // Set title, location, and size.

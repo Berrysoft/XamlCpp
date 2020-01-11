@@ -2,7 +2,7 @@
 
 using namespace std;
 
-#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#ifdef USE_CUSTOM_DRAWING_TYPES
 namespace xaml
 {
     drawing_brush::drawing_brush(color c) : m_object({ c }) {}
@@ -33,4 +33,4 @@ namespace xaml
 
     bool drawing_font::get_bold() const { return m_object.bold; }
 } // namespace xaml
-#endif
+#endif // USE_CUSTOM_DRAWING_TYPES

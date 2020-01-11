@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29521.150
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "meta", "meta\meta.vcxproj", "{71FB8282-72E8-4CDF-BD77-48A261C10DE0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xaml_meta", "meta\xaml_meta.vcxproj", "{71FB8282-72E8-4CDF-BD77-48A261C10DE0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "meta_test", "meta\test\meta_test.vcxproj", "{5F25AD78-5544-41EE-8FF4-53D099D2ACD6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui", "ui\ui.vcxproj", "{7B1D6688-911A-4EF0-8F48-BB3E5A736510}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xaml_ui", "ui\xaml_ui.vcxproj", "{7B1D6688-911A-4EF0-8F48-BB3E5A736510}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui_test", "ui\test\ui_test.vcxproj", "{54D4F82D-73B0-4D18-B126-9A4BD2761B43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{7B1D6688-911A-4EF0-8F48-BB3E5A736510}.Release|x64.Build.0 = Release|x64
 		{7B1D6688-911A-4EF0-8F48-BB3E5A736510}.Release|x86.ActiveCfg = Release|Win32
 		{7B1D6688-911A-4EF0-8F48-BB3E5A736510}.Release|x86.Build.0 = Release|Win32
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Debug|x64.ActiveCfg = Debug|x64
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Debug|x64.Build.0 = Debug|x64
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Debug|x86.ActiveCfg = Debug|Win32
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Debug|x86.Build.0 = Debug|Win32
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Release|x64.ActiveCfg = Release|x64
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Release|x64.Build.0 = Release|x64
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Release|x86.ActiveCfg = Release|Win32
+		{54D4F82D-73B0-4D18-B126-9A4BD2761B43}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

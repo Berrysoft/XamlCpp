@@ -1,11 +1,12 @@
 #ifndef XAML_UI_PASSWORD_ENTRY_HPP
 #define XAML_UI_PASSWORD_ENTRY_HPP
 
-#include <xaml/ui/entry.hpp>
+#include <xaml/meta/default_property.hpp>
+#include <xaml/ui/control.hpp>
 
 namespace xaml
 {
-    class password_entry : public entry
+    class password_entry : public common_control
     {
     public:
         XAML_API password_entry();
@@ -13,9 +14,28 @@ namespace xaml
 
     public:
         XAML_API void __draw(rectangle const& region) override;
+        XAML_API void __size_to_fit() override;
 
     private:
+        XAML_API void draw_size();
+        XAML_API void draw_text();
         XAML_API void draw_password_char();
+
+    private:
+        string_t m_text{};
+
+    public:
+        string_view_t get_text() const { return m_text; }
+        void set_text(string_view_t value)
+        {
+            if (m_text != value)
+            {
+                m_text = (string_t)value;
+                m_text_changed(*this, m_text);
+            }
+        }
+
+        EVENT(text_changed, password_entry&, string_view_t)
 
     private:
         char_t m_password_char{};
@@ -35,7 +55,9 @@ namespace xaml
 
     public:
 #define ADD_PASSWORD_ENTRY_MEMBERS() \
-    ADD_ENTRY_MEMBERS();             \
+    ADD_COMMON_CONTROL_MEMBERS();    \
+    ADD_PROP_EVENT(text);            \
+    ADD_DEF_PROP(text);              \
     ADD_PROP_EVENT(password_char)
 
         static void register_class() noexcept

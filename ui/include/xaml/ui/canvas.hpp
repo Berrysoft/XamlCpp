@@ -8,13 +8,19 @@
 #include <gdiplus.h>
 #include <memory>
 #include <wil/resource.h>
+#elif defined(XAML_UI_WINRT)
+#include "winrt/Microsoft.Graphics.Canvas.h"
 #elif defined(XAML_UI_COCOA)
 #include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
+#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA) || defined(XAML_UI_WINRT)
+#define USE_CUSTOM_DRAWING_TYPES
+#endif
+
 namespace xaml
 {
-#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#ifdef USE_CUSTOM_DRAWING_TYPES
     struct __drawing_fill_t
     {
         color fill;
@@ -33,14 +39,14 @@ namespace xaml
         bool italic;
         bool bold;
     };
-#endif
+#endif // USE_CUSTOM_DRAWING_TYPES
 
     class drawing_brush
     {
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::SolidBrush;
-#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#elif defined(USE_CUSTOM_DRAWING_TYPES)
         using native_object_type = __drawing_fill_t;
 #endif
         using native_handle_type = native_object_type const*;
@@ -62,7 +68,7 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Pen;
-#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#elif defined(USE_CUSTOM_DRAWING_TYPES)
         using native_object_type = __drawing_stroke_t;
 #endif
         using native_handle_type = native_object_type const*;
@@ -87,7 +93,7 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_object_type = Gdiplus::Font;
-#elif defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#elif defined(USE_CUSTOM_DRAWING_TYPES)
         using native_object_type = __drawing_font_t;
 #endif
         using native_handle_type = native_object_type const*;
@@ -115,6 +121,8 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = Gdiplus::Graphics*;
+#elif defined(XAML_UI_WINRT)
+        using native_handle_type = winrt::Microsoft::Graphics::Canvas::CanvasDrawingSession;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = cairo_t*;
 #elif defined(XAML_UI_COCOA)
@@ -122,21 +130,12 @@ namespace xaml
 #endif
 
     private:
-        native_handle_type m_handle;
+        native_handle_type m_handle{ OBJC_NIL };
 
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
 
         XAML_API drawing_context(native_handle_type handle);
-
-#ifdef XAML_UI_COCOA
-    private:
-        size m_size;
-
-    public:
-        constexpr size __get_size() const noexcept { return m_size; }
-        void __set_size(size value) { m_size = value; }
-#endif // XAML_UI_COCOA
 
 #ifdef XAML_UI_GTK3
     private:
@@ -148,6 +147,13 @@ namespace xaml
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA
+    private:
+        size m_size;
+
+    public:
+        constexpr size __get_size() const noexcept { return m_size; }
+        void __set_size(size value) { m_size = value; }
+
     private:
         using path_type = OBJC_OBJECT(NSBezierPath);
 

@@ -8,7 +8,7 @@
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 
-#if defined(XAML_UI_WINDOWS)
+#if defined(XAML_UI_WINDOWS) || defined(XAML_UI_WINRT)
 #include <Windows.h>
 #endif // XAML_UI_WINDOWS
 

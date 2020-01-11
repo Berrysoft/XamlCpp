@@ -142,7 +142,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\meta.vcxproj">
+    <ProjectReference Include="..\xaml_meta.vcxproj">
       <Project>{71fb8282-72e8-4cdf-bd77-48a261c10de0}</Project>
     </ProjectReference>
   </ItemGroup>
