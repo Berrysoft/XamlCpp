@@ -1,6 +1,7 @@
 #ifndef XAML_UI_ENTRY_HPP
 #define XAML_UI_ENTRY_HPP
 
+#include <xaml/meta/default_property.hpp>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
