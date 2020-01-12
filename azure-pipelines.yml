@@ -9,22 +9,27 @@ jobs:
         imageName: 'windows-latest'
         plat: 'win'
         rid: 'win'
+        def: '-DBUILD_WINDOWS'
       windows_gtk:
         imageName: 'windows-latest'
         plat: 'win'
         rid: 'win-gtk'
+        def: '-DBUILD_GTK3'
       linux:
         imageName: 'ubuntu-latest'
         plat: 'linux'
         rid: 'linux'
+        def: '-DBUILD_GTK3'
       mac:
         imageName: 'macos-latest'
         plat: 'mac'
         rid: 'mac'
+        def: '-DBUILD_COCOA'
       mac_gtk:
         imageName: 'macos-latest'
         plat: 'mac'
         rid: 'mac-gtk'
+        def: '-DBUILD_GTK3'
   pool:
     vmImage: $(imageName)
 
@@ -61,13 +66,13 @@ jobs:
     displayName: 'Configure all projects'
     condition: eq(variables.plat, 'win')
     inputs:
-      cmakeArgs: .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+      cmakeArgs: .. $(def) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Configure all projects'
     condition: ne(variables.plat, 'win')
     inputs:
-      cmakeArgs: .. -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
   - task: CMake@1
     displayName: 'Install all projects'
@@ -79,7 +84,7 @@ jobs:
     condition: eq(variables.plat, 'win')
     inputs:
       workingDirectory: $(Build.ArtifactStagingDirectory)\build\debug
-      cmakeArgs: .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+      cmakeArgs: .. $(def) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Install all projects for Debug'
