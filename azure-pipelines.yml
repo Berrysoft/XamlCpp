@@ -40,8 +40,8 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      vcpkg install gtk:x64-windows
-    displayName: 'Install gtk'
+      vcpkg install libxml2:x64-windows gtk:x64-windows
+    displayName: 'Install libxml2 & gtk'
     condition: eq(variables.rid, 'win-gtk')
 
   - script: |
@@ -83,14 +83,14 @@ jobs:
     displayName: 'Configure all projects for Debug'
     condition: eq(variables.plat, 'win')
     inputs:
-      workingDirectory: $(Build.ArtifactStagingDirectory)\build\debug
+      workingDirectory: $(Build.SourcesDirectory)\build\debug
       cmakeArgs: ..\.. $(def) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Install all projects for Debug'
     condition: eq(variables.plat, 'win')
     inputs:
-      workingDirectory: $(Build.ArtifactStagingDirectory)\build\debug
+      workingDirectory: $(Build.SourcesDirectory)\build\debug
       cmakeArgs: --build . --target install --config Debug
 
   - task: PublishBuildArtifacts@1
