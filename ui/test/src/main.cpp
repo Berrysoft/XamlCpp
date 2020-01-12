@@ -11,20 +11,24 @@
 #include <xaml/ui/timer.hpp>
 #include <xaml/ui/window.hpp>
 
+#ifdef WIN32
+#include <Windows.h>
+#endif // WIN32
+
 using namespace std;
 using namespace xaml;
 
 // Use different main signature for different platforms.
-#if defined(XAML_UI_WINDOWS) || defined(XAML_UI_WINRT)
+#ifdef WIN32
 INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
 #else
 int main(int argc, char** argv)
-#endif // XAML_UI_WINDOWS || XAML_UI_WINRT
+#endif // WIN32
 {
     // Initialize and get default application object.
 #ifdef XAML_UI_WINDOWS
     auto app = application::init(lpCmdLine);
-#elif defined(XAML_UI_WINRT)
+#elif defined(XAML_UI_WINRT) || defined(WIN32)
     auto app = application::init();
 #else
     auto app = application::init(argc, argv);

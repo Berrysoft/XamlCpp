@@ -1,7 +1,7 @@
 project(XamlUITest CXX)
 
 file(GLOB TEST_SOURCE "src/*.cpp")
-if(${BUILD_WINDOWS})
+if(WIN32)
     add_executable(ui_test WIN32 ${TEST_SOURCE})
 else()
     add_executable(ui_test ${TEST_SOURCE})

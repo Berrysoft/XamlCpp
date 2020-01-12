@@ -1,7 +1,7 @@
 project(XamlTest CXX)
 
 file(GLOB TEST_SOURCE "src/*.cpp")
-if(${BUILD_WINDOWS})
+if(WIN32)
     add_executable(xaml_test WIN32 ${TEST_SOURCE})
 else()
     add_executable(xaml_test ${TEST_SOURCE})
