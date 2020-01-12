@@ -1,10 +1,15 @@
 if(UNIX)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
-
     link_directories(${GTK3_LIBRARY_DIRS})
-
     add_definitions(${GTK3_CFLAGS_OTHER})
+
+    pkg_check_modules(CAIRO REQUIRED cairo)
+    link_directories(${CAIRO_LIBRARY_DIRS})
+    add_definitions(${CAIRO_CFLAGS_OTHER})
+
+    list(APPEND GTK3_INCLUDE_DIRS ${CAIRO_INCLUDE_DIRS})
+    list(APPEND GTK3_LIBRARIES ${CAIRO_LIBRARIES})
 else()
     find_path(GTK_gtk_INCLUDE_PATH gtk/gtk.h)
     find_path(GTK_glibconfig_INCLUDE_PATH glibconfig.h)
