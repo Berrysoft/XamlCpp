@@ -1,22 +1,30 @@
 trigger:
 - master
 
-variables:
-  configuration: 'Release'
-
 jobs:
 - job: 'Build'
   strategy:
     matrix:
       windows:
         imageName: 'windows-latest'
+        plat: 'win'
         rid: 'win'
+      windows_gtk:
+        imageName: 'windows-latest'
+        plat: 'win'
+        rid: 'win-gtk'
       linux:
         imageName: 'ubuntu-latest'
+        plat: 'linux'
         rid: 'linux'
       mac:
         imageName: 'macos-latest'
+        plat: 'mac'
         rid: 'mac'
+      mac_gtk:
+        imageName: 'macos-latest'
+        plat: 'mac'
+        rid: 'mac-gtk'
   pool:
     vmImage: $(imageName)
 
@@ -25,6 +33,11 @@ jobs:
       vcpkg install libxml2:x64-windows wil:x64-windows
     displayName: 'Install libxml2 & wil'
     condition: eq(variables.rid, 'win')
+
+  - script: |
+      vcpkg install gtk:x64-windows
+    displayName: 'Install gtk'
+    condition: eq(variables.rid, 'win-gtk')
 
   - script: |
       sudo apt install software-properties-common
@@ -37,24 +50,43 @@ jobs:
   - script: |
       brew install ninja
     displayName: 'Install ninja'
-    condition: eq(variables.rid, 'mac')
+    condition: eq(variables.plat, 'mac')
+
+  - script: |
+      brew install gtk+3 pkgconfig
+    displayName: 'Install gtk'
+    condition: eq(variables.rid, 'mac-gtk')
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: eq(variables.rid, 'win')
+    condition: eq(variables.plat, 'win')
     inputs:
-      cmakeArgs: .. -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: ne(variables.rid, 'win')
+    condition: ne(variables.plat, 'win')
     inputs:
-      cmakeArgs: .. -GNinja -DCMAKE_BUILD_TYPE=$(configuration) -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmakeArgs: .. -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
   - task: CMake@1
-    displayName: 'Build all projects'
+    displayName: 'Install all projects'
     inputs:
-      cmakeArgs: --build . --target install --config $(configuration)
+      cmakeArgs: --build . --target install --config Release
+
+  - task: CMake@1
+    displayName: 'Configure all projects for Debug'
+    condition: eq(variables.plat, 'win')
+    inputs:
+      workingDirectory: $(Build.ArtifactStagingDirectory)\build\debug
+      cmakeArgs: .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+
+  - task: CMake@1
+    displayName: 'Install all projects for Debug'
+    condition: eq(variables.plat, 'win')
+    inputs:
+      workingDirectory: $(Build.ArtifactStagingDirectory)\build\debug
+      cmakeArgs: --build . --target install --config Debug
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish'
