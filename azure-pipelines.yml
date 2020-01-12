@@ -9,27 +9,27 @@ jobs:
         imageName: 'windows-latest'
         plat: 'win'
         rid: 'win'
-        def: '-DBUILD_WINDOWS'
+        def: '-DBUILD_WINDOWS=on'
       windows_gtk:
         imageName: 'windows-latest'
         plat: 'win'
         rid: 'win-gtk'
-        def: '-DBUILD_GTK3'
+        def: '-DBUILD_GTK3=on'
       linux:
         imageName: 'ubuntu-latest'
         plat: 'linux'
         rid: 'linux'
-        def: '-DBUILD_GTK3'
+        def: '-DBUILD_GTK3=on'
       mac:
         imageName: 'macos-latest'
         plat: 'mac'
         rid: 'mac'
-        def: '-DBUILD_COCOA'
+        def: '-DBUILD_COCOA=on'
       mac_gtk:
         imageName: 'macos-latest'
         plat: 'mac'
         rid: 'mac-gtk'
-        def: '-DBUILD_GTK3'
+        def: '-DBUILD_GTK3=on'
   pool:
     vmImage: $(imageName)
 
