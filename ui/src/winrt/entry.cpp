@@ -9,7 +9,7 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    void entry::__draw(rectangle const& region)
+    XAML_API void entry::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -24,20 +24,20 @@ namespace xaml
         draw_alignment();
     }
 
-    void entry::draw_size()
+    XAML_API void entry::draw_size()
     {
         TextBox t = get_handle().as<TextBox>();
         t.Width(get_width());
         t.Height(get_height());
     }
 
-    void entry::draw_text()
+    XAML_API void entry::draw_text()
     {
         TextBox t = get_handle().as<TextBox>();
         t.Text(m_text);
     }
 
-    void entry::draw_alignment()
+    XAML_API void entry::draw_alignment()
     {
         TextBox t = get_handle().as<TextBox>();
         switch (m_text_halignment)
@@ -57,7 +57,7 @@ namespace xaml
         }
     }
 
-    void entry::__size_to_fit()
+    XAML_API void entry::__size_to_fit()
     {
         TextBox t = get_handle().as<TextBox>();
         t.Measure({ INFINITY, INFINITY });

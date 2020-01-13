@@ -12,7 +12,7 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    button_base::button_base() : common_control()
+    XAML_API button_base::button_base() : common_control()
     {
         add_text_changed([this](button_base const&, string_view_t) {
             if (get_handle())
@@ -28,11 +28,11 @@ namespace xaml
         });
     }
 
-    button_base::~button_base()
+    XAML_API button_base::~button_base()
     {
     }
 
-    void button_base::__draw(rectangle const& region)
+    XAML_API void button_base::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -48,22 +48,22 @@ namespace xaml
         draw_text();
     }
 
-    void button_base::draw_text()
+    XAML_API void button_base::draw_text()
     {
         Button b = get_handle().as<Button>();
         b.Content(box_value(m_text));
     }
 
-    void button_base::draw_size()
+    XAML_API void button_base::draw_size()
     {
         Button b = get_handle().as<Button>();
         b.Width(get_width());
         b.Height(get_height());
     }
 
-    void button_base::draw_default() {}
+    XAML_API void button_base::draw_default() {}
 
-    void button_base::__size_to_fit()
+    XAML_API void button_base::__size_to_fit()
     {
         Button b = get_handle().as<Button>();
         b.Measure({ INFINITY, INFINITY });
