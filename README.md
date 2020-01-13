@@ -2,6 +2,8 @@
 An implementation of XAML cross-platform framework for C++.
 
 This project is not complete, and still needs a lot of work. Welcome issues and pull requests!
+
+[![Azure DevOps builds](https://strawberry-vs.visualstudio.com/XamlCpp/_apis/build/status/Berrysoft.XamlCpp?branch=master)](https://strawberry-vs.visualstudio.com/XamlCpp/_build?definitionId=12)
 ## Reflection
 XamlCpp supports optional-reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
 
@@ -21,8 +23,6 @@ An example is [here](./ui/test/main.cpp)
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
 |Cocoa|NeXTStep|MacOS|MacOS|
 |WinRT*|Windows Runtime|Windows|Windows|
-
-\* On plan
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.
