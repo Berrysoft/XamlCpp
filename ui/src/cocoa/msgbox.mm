@@ -39,7 +39,7 @@ namespace xaml
             [alert addButtonWithTitle:@"Yes"];
             [alert addButtonWithTitle:@"No"];
             res[0] = msgbox_result::yes;
-            res[0] = msgbox_result::no;
+            res[1] = msgbox_result::no;
             break;
         default:
             [alert addButtonWithTitle:@"OK"];

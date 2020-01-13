@@ -204,7 +204,9 @@
     <ClCompile Include="src\winrt\entry.cpp" />
     <ClCompile Include="src\winrt\grid.cpp" />
     <ClCompile Include="src\winrt\label.cpp" />
+    <ClCompile Include="src\winrt\msgbox.cpp" />
     <ClCompile Include="src\winrt\password_entry.cpp" />
+    <ClCompile Include="src\winrt\timer.cpp" />
     <ClCompile Include="src\winrt\window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
