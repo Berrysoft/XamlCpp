@@ -1,9 +1,26 @@
+#include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/label.hpp>
 
+using namespace std;
+
 namespace xaml
 {
+    static wil::unique_hbrush white_brush{ CreateSolidBrush(RGB(255, 255, 255)) };
+
+    XAML_API optional<LRESULT> label::__wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_CTLCOLORSTATIC:
+        {
+            return (LRESULT)white_brush.get();
+        }
+        }
+        return nullopt;
+    }
+
     XAML_API void label::__draw(rectangle const& region)
     {
         if (!get_handle())

@@ -7,11 +7,13 @@ namespace xaml
 {
     XAML_API optional<LRESULT> grid::__wnd_proc(window_message const& msg)
     {
+        optional<LRESULT> result = nullopt;
         for (auto c : m_children)
         {
-            c->__wnd_proc(msg);
+            auto r = c->__wnd_proc(msg);
+            if (r) result = r;
         }
-        return nullopt;
+        return result;
     }
 
     XAML_API void grid::__draw(rectangle const& region)

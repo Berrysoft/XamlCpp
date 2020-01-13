@@ -13,6 +13,11 @@ namespace xaml
         XAML_API label();
         XAML_API ~label() override;
 
+#ifdef XAML_UI_WINDOWS
+    public:
+        XAML_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+#endif // XAML_UI_WINDOWS
+
     public:
         XAML_API void __draw(rectangle const& region) override;
         XAML_API void __size_to_fit() override;
