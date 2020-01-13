@@ -10,7 +10,7 @@ namespace xaml
         {
             window_create_params params = {};
             params.class_name = U("STATIC");
-            params.style = SS_LEFT;
+            params.style = WS_CHILD | WS_VISIBLE | SS_LEFT;
             params.x = 0;
             params.y = 0;
             params.width = 100;
@@ -39,17 +39,17 @@ namespace xaml
 
     XAML_API void label::draw_alignment()
     {
-        LONG_PTR style;
+        LONG_PTR style = WS_CHILD | WS_VISIBLE;
         switch (m_text_halignment)
         {
         case halignment_t::center:
-            style = SS_CENTER;
+            style |= SS_CENTER;
             break;
         case halignment_t::right:
-            style = SS_RIGHT;
+            style |= SS_RIGHT;
             break;
         default:
-            style = SS_LEFT;
+            style |= SS_LEFT;
             break;
         }
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);

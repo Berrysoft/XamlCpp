@@ -93,6 +93,7 @@ int main(int argc, char** argv)
     auto et = make_shared<entry>();
     et->set_margin({ 0, 5, 0, 5 });
     et->set_text(U("John"));
+    et->set_halignment(halignment_t::left);
     et->set_valignment(valignment_t::center);
     g->add_child(et);
     grid::set_column(et, 1);

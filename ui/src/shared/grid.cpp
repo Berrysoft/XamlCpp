@@ -67,6 +67,7 @@ namespace xaml
     rectangle get_real_region(shared_ptr<control> c, rectangle max_region)
     {
         double cwidth = c->get_width() + c->get_margin().left + c->get_margin().right;
+        cwidth = (min)(cwidth, max_region.width);
         switch (c->get_halignment())
         {
         case halignment_t::left:
@@ -84,6 +85,7 @@ namespace xaml
             break;
         }
         double cheight = c->get_height() + c->get_margin().top + c->get_margin().bottom;
+        cheight = (min)(cheight, max_region.height);
         switch (c->get_valignment())
         {
         case valignment_t::top:

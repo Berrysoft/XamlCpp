@@ -19,10 +19,6 @@ target_include_directories(xaml
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-if(${USE_PCH})
-    target_precompile_headers(xaml REUSE_FROM xaml_ui)
-endif()
-
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
 install(TARGETS xaml EXPORT xaml-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)

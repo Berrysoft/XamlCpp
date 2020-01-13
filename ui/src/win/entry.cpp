@@ -2,15 +2,47 @@
 #include <windowsx.h>
 #include <xaml/ui/entry.hpp>
 
+using namespace std;
+
 namespace xaml
 {
+    XAML_API optional<LRESULT> entry::__wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_COMMAND:
+        {
+            HWND h = (HWND)msg.lParam;
+            if (get_handle() == h)
+            {
+                switch (HIWORD(msg.wParam))
+                {
+                case EN_UPDATE:
+                {
+                    int len = Edit_GetTextLength(get_handle());
+                    string_t t(len, U('\0'));
+                    Edit_GetText(get_handle(), t.data(), len + 1);
+                    DWORD start, end;
+                    SendMessage(get_handle(), EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+                    set_text(t);
+                    SetFocus(get_handle());
+                    Edit_SetSel(get_handle(), start, end);
+                    break;
+                }
+                }
+            }
+        }
+        }
+        return nullopt;
+    }
+
     XAML_API void entry::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
             window_create_params params = {};
             params.class_name = U("EDIT");
-            params.style = WS_CHILD | WS_VISIBLE | ES_LEFT;
+            params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
             params.ex_style = WS_EX_CLIENTEDGE;
             params.x = 0;
             params.y = 0;
@@ -40,17 +72,17 @@ namespace xaml
 
     XAML_API void entry::draw_alignment()
     {
-        LONG_PTR style;
+        LONG_PTR style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
         switch (m_text_halignment)
         {
         case halignment_t::center:
-            style = ES_CENTER;
+            style |= ES_CENTER;
             break;
         case halignment_t::right:
-            style = ES_RIGHT;
+            style |= ES_RIGHT;
             break;
         default:
-            style = ES_LEFT;
+            style |= ES_LEFT;
             break;
         }
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);
@@ -59,7 +91,7 @@ namespace xaml
     XAML_API void entry::__size_to_fit()
     {
         size msize = __measure_text_size(m_text);
-        __set_size_noevent({ msize.width + 15, msize.height + 15 });
+        __set_size_noevent({ msize.width + 5, msize.height + 10 });
         draw_size();
     }
 } // namespace xaml

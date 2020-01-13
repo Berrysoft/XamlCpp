@@ -14,10 +14,6 @@ target_include_directories(xamlc
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-if(${USE_PCH})
-    target_precompile_headers(xamlc REUSE_FROM xaml_ui)
-endif()
-
 install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml)
 install(TARGETS xamlc EXPORT xamlc-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xamlc-targets DESTINATION lib/cmake/xamlc)

@@ -2,8 +2,40 @@
 #include <windowsx.h>
 #include <xaml/ui/password_entry.hpp>
 
+using namespace std;
+
 namespace xaml
 {
+    XAML_API optional<LRESULT> password_entry::__wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_COMMAND:
+        {
+            HWND h = (HWND)msg.lParam;
+            if (get_handle() == h)
+            {
+                switch (HIWORD(msg.wParam))
+                {
+                case EN_UPDATE:
+                {
+                    int len = Edit_GetTextLength(get_handle());
+                    string_t t(len, U('\0'));
+                    Edit_GetText(get_handle(), t.data(), len + 1);
+                    DWORD start, end;
+                    SendMessage(get_handle(), EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+                    set_text(t);
+                    SetFocus(get_handle());
+                    Edit_SetSel(get_handle(), start, end);
+                    break;
+                }
+                }
+            }
+        }
+        }
+        return nullopt;
+    }
+
     static char_t default_char{ U('*') };
 
     XAML_API void password_entry::__draw(rectangle const& region)
@@ -12,7 +44,7 @@ namespace xaml
         {
             window_create_params params = {};
             params.class_name = U("EDIT");
-            params.style = WS_CHILD | WS_VISIBLE | ES_LEFT | ES_PASSWORD;
+            params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_PASSWORD;
             params.ex_style = WS_EX_CLIENTEDGE;
             params.x = 0;
             params.y = 0;
@@ -49,7 +81,7 @@ namespace xaml
     XAML_API void password_entry::__size_to_fit()
     {
         size msize = __measure_text_size(m_text);
-        __set_size_noevent({ msize.width + 15, msize.height + 15 });
+        __set_size_noevent({ msize.width + 5, msize.height + 10 });
         draw_size();
     }
 } // namespace xaml
