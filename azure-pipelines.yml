@@ -63,7 +63,7 @@ jobs:
     condition: eq(variables.rid, 'mac-gtk')
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\VC\Auxiliary\Build\vcvarsall.bat"
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
       mkdir build & cd build
       cmake .. -GNinja $(def) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects'
@@ -80,12 +80,12 @@ jobs:
     inputs:
       cmakeArgs: --build . --target install --config Release
 
-  - task: CMake@1
-    displayName: 'Configure all projects for Debug'
+  - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat"
+      mkdir build\debug & cd build\debug
+      cmake ..\.. -GNinja $(def) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
+    displayName: 'Configure all projects'
     condition: eq(variables.plat, 'win')
-    inputs:
-      workingDirectory: $(Build.SourcesDirectory)\build\debug
-      cmakeArgs: ..\.. $(def) -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
 
   - task: CMake@1
     displayName: 'Install all projects for Debug'
