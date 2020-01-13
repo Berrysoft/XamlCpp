@@ -133,5 +133,8 @@
     <ClCompile Include="src\winrt\password_entry.cpp">
       <Filter>src\winrt</Filter>
     </ClCompile>
+    <ClCompile Include="src\winrt\window.cpp">
+      <Filter>src\winrt</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

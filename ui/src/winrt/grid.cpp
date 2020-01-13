@@ -55,6 +55,7 @@ namespace xaml
         for (auto& c : m_children)
         {
             c->__draw({});
+            g.Children().Append(c->get_handle());
             Grid::SetColumn(c->get_handle(), (int32_t)grid::get_column(c));
             Grid::SetRow(c->get_handle(), (int32_t)grid::get_row(c));
         }
