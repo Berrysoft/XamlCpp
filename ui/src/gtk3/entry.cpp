@@ -8,9 +8,11 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_entry_new());
+            g_signal_connect(G_OBJECT(get_handle()), "changed", G_CALLBACK(entry::on_changed), this);
         }
         rectangle real = region - get_margin();
-        set_size({ real.width, real.height });
+        __set_size_noevent({ real.width, real.height });
+        draw_size();
         draw_text();
         draw_alignment();
     }
@@ -43,8 +45,15 @@ namespace xaml
         gtk_entry_set_alignment(GTK_ENTRY(get_handle()), align);
     }
 
+    void entry::on_changed(GtkEditable*, gpointer data)
+    {
+        entry* self = (entry*)data;
+        self->set_text(gtk_entry_get_text(GTK_ENTRY(self->get_handle())));
+    }
+
     void entry::__size_to_fit()
     {
+        gtk_entry_set_width_chars(GTK_ENTRY(get_handle()), (gint)m_text.length());
         int width = gtk_widget_get_allocated_width(get_handle());
         int height = gtk_widget_get_allocated_height(get_handle());
         __set_size_noevent({ (double)width, (double)height });

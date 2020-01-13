@@ -3,67 +3,60 @@
 
 #include <xaml/meta/default_property.hpp>
 #include <xaml/ui/control.hpp>
+#include <xaml/ui/entry.hpp>
+
+#if defined(XAML_UI_WINDOWS) || defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
+#define PASSWORD_ENTRY_INHERITS_ENTRY
+#endif
 
 namespace xaml
 {
+#ifdef PASSWORD_ENTRY_INHERITS_ENTRY
+    class password_entry : public entry
+#else
     class password_entry : public common_control
+#endif // PASSWORD_ENTRY_INHERITS_ENTRY
     {
     public:
         XAML_API password_entry();
         XAML_API ~password_entry() override;
 
-#ifdef XAML_UI_WINDOWS
-    public:
-        XAML_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
-#endif // XAML_UI_WINDOWS
-
     public:
         XAML_API void __draw(rectangle const& region) override;
+
+#ifndef PASSWORD_ENTRY_INHERITS_ENTRY
+    public:
         XAML_API void __size_to_fit() override;
 
     private:
         XAML_API void draw_size();
         XAML_API void draw_text();
+#endif // !PASSWORD_ENTRY_INHERITS_ENTRY
+
+    private:
         XAML_API void draw_password_char();
 
-    private:
-        string_t m_text{};
-
     public:
-        string_view_t get_text() const { return m_text; }
-        void set_text(string_view_t value)
-        {
-            if (m_text != value)
-            {
-                m_text = (string_t)value;
-                m_text_changed(*this, m_text);
-            }
-        }
-
+#ifndef PASSWORD_ENTRY_INHERITS_ENTRY
         EVENT(text_changed, password_entry&, string_view_t)
-
-    private:
-        char_t m_password_char{};
-
-    public:
-        constexpr char_t get_password_char() const noexcept { return m_password_char; }
-        void set_password_char(char_t value) noexcept
-        {
-            if (m_password_char != value)
-            {
-                m_password_char = value;
-                m_password_char_changed(*this, m_password_char);
-            }
-        }
+        PROP_STRING_EVENT(text)
+#endif // ! PASSWORD_ENTRY_INHERITS_ENTRY
 
         EVENT(password_char_changed, password_entry&, char_t)
+        PROP_CONSTEXPR_EVENT(password_char, char_t)
 
     public:
+#ifdef PASSWORD_ENTRY_INHERITS_ENTRY
+#define ADD_PASSWORD_ENTRY_MEMBERS() \
+    ADD_ENTRY_MEMBERS();             \
+    ADD_PROP_EVENT(password_char)
+#else
 #define ADD_PASSWORD_ENTRY_MEMBERS() \
     ADD_COMMON_CONTROL_MEMBERS();    \
     ADD_PROP_EVENT(text);            \
     ADD_DEF_PROP(text);              \
     ADD_PROP_EVENT(password_char)
+#endif //  PASSWORD_ENTRY_INHERITS_ENTRY
 
         static void register_class() noexcept
         {

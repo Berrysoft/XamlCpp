@@ -185,9 +185,8 @@ namespace xaml
         XAML_API virtual void __parent_redraw();
 
     private:
-        size m_size{ 0, 0 };
-
         EVENT(size_changed, control&, size)
+        PROP_CONSTEXPR_EVENT(size, size)
 
     public:
         constexpr double get_width() const noexcept { return m_size.width; }
@@ -210,46 +209,26 @@ namespace xaml
             }
         }
 
-        constexpr size get_size() const { return m_size; }
-        void set_size(size value)
-        {
-            if (m_size != value)
-            {
-                m_size = value;
-                m_size_changed(*this, get_size());
-            }
-        }
-
     protected:
         void __set_size_noevent(size value) { m_size = value; }
 
         EVENT(margin_changed, control&, margin)
+        PROP_CONSTEXPR_EVENT(margin, margin)
 
-    private:
-        margin m_margin{ 0, 0, 0, 0 };
+        EVENT(halignment_changed, control&, halignment_t)
+        PROP_CONSTEXPR_EVENT(halignment, halignment_t)
 
-    public:
-        constexpr margin get_margin() const noexcept { return m_margin; }
-        void set_margin(margin const& value)
-        {
-            if (m_margin != value)
-            {
-                m_margin = value;
-                m_margin_changed(*this, value);
-            }
-        }
+        EVENT(valignment_changed, control&, valignment_t)
+        PROP_CONSTEXPR_EVENT(valignment, valignment_t)
 
-        PROP(halignment, halignment_t)
-        PROP(valignment, valignment_t)
-
-#define ADD_CONTROL_MEMBERS() \
-    ADD_PROP(data_context);   \
-    ADD_PROP_EVENT(size);     \
-    ADD_PROP(width);          \
-    ADD_PROP(height);         \
-    ADD_PROP_EVENT(margin);   \
-    ADD_PROP(halignment);     \
-    ADD_PROP(valignment)
+#define ADD_CONTROL_MEMBERS()   \
+    ADD_PROP(data_context);     \
+    ADD_PROP_EVENT(size);       \
+    ADD_PROP(width);            \
+    ADD_PROP(height);           \
+    ADD_PROP_EVENT(margin);     \
+    ADD_PROP_EVENT(halignment); \
+    ADD_PROP_EVENT(valignment)
 
         static void register_class() noexcept
         {

@@ -132,7 +132,7 @@ namespace xaml
             g_signal_connect(G_OBJECT(get_handle()), "draw", G_CALLBACK(canvas::on_draw), this);
         }
         m_real_region = region - get_margin();
-        gtk_widget_set_size_request(get_handle(), get_width(), get_height());
+        gtk_widget_set_size_request(get_handle(), (gint)get_width(), (gint)get_height());
     }
 
     gboolean canvas::on_draw(GtkWidget* widget, cairo_t* cr, gpointer data)

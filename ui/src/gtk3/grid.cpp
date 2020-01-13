@@ -14,13 +14,10 @@ namespace xaml
             if (get_parent())
                 gtk_container_add(GTK_CONTAINER(get_parent()->get_handle()), get_handle());
         }
-        if (new_draw)
+        for (auto& c : m_children)
         {
-            for (auto& c : m_children)
-            {
-                c->__draw(rectangle{ 0, 0, 1, 1 } + c->get_margin());
-                c->__size_to_fit();
-            }
+            if (new_draw) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
+            c->__size_to_fit();
         }
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
@@ -36,10 +33,10 @@ namespace xaml
             rectangle subreal = subrect - c->get_margin();
             if (!m_put_map[c])
             {
-                gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);
+                gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), (gint)subreal.x, (gint)subreal.y);
                 m_put_map[c] = true;
             }
-            gtk_fixed_move(GTK_FIXED(get_handle()), c->get_handle(), subreal.x, subreal.y);
+            gtk_fixed_move(GTK_FIXED(get_handle()), c->get_handle(), (gint)subreal.x, (gint)subreal.y);
         }
     }
 } // namespace xaml

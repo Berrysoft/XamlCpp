@@ -12,7 +12,8 @@ namespace xaml
             set_handle(gtk_label_new(m_text.c_str()));
         }
         rectangle real = region - get_margin();
-        set_size({ real.width, real.height });
+        __set_size_noevent({ real.width, real.height });
+        draw_size();
         draw_text();
         draw_alignment();
     }

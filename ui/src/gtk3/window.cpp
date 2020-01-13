@@ -41,7 +41,7 @@ namespace xaml
             {
                 gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
                 gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
-                gtk_window_move(GTK_WINDOW(get_handle()), get_x(), get_y());
+                gtk_window_move(GTK_WINDOW(get_handle()), (gint)get_x(), (gint)get_y());
             }
         }
         draw_title();
@@ -96,8 +96,12 @@ namespace xaml
         window* self = (window*)data;
         if (event->type == GDK_CONFIGURE && self->get_handle() && !self->m_resizing.exchange(true))
         {
-            self->set_location({ (double)event->configure.x, (double)event->configure.y });
-            self->set_size({ (double)event->configure.width, (double)event->configure.height });
+            gint x, y;
+            gtk_window_get_position(GTK_WINDOW(self->get_handle()), &x, &y);
+            self->set_location({ (double)x, (double)y });
+            gint width, height;
+            gtk_window_get_size(GTK_WINDOW(self->get_handle()), &width, &height);
+            self->set_size({ (double)width, (double)height });
             self->__draw({});
             self->m_resizing = false;
         }

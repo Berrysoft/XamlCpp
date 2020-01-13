@@ -37,21 +37,8 @@ namespace xaml
         XAML_API void draw_text();
         XAML_API void draw_default();
 
-    private:
-        string_t m_text{};
-
-    public:
-        string_view_t get_text() const { return m_text; }
-        void set_text(string_view_t value)
-        {
-            if (m_text != value)
-            {
-                m_text = (string_t)value;
-                m_text_changed(*this, m_text);
-            }
-        }
-
         EVENT(text_changed, button_base&, string_view_t)
+        PROP_STRING_EVENT(text)
 
         PROP_EVENT(is_default, bool)
         EVENT(is_default_changed, button_base&, bool)

@@ -31,6 +31,28 @@ public:                     \
     PROP_RD(name, type)      \
     void set_##name(type const& value) { m_##name = value; }
 
+#define PROP_CONSTEXPR_RD(name, type) \
+private:                              \
+    type m_##name{};                  \
+                                      \
+public:                               \
+    constexpr type get_##name() const noexcept { return m_##name; }
+
+#define PROP_CONSTEXPR(name, type) \
+    PROP_CONSTEXPR_RD(name, type)  \
+    void set_##name(type value) noexcept { m_##name = value; }
+
+#define PROP_STRING_RD(name)     \
+private:                         \
+    ::xaml::string_t m_##name{}; \
+                                 \
+public:                          \
+    ::xaml::string_view_t get_##name() const noexcept { return m_##name; }
+
+#define PROP_STRING(name) \
+    PROP_STRING_RD(name)  \
+    void set_##name(::xaml::string_view_t value) noexcept { m_##name = (::xaml::string_t)value; }
+
 #define ADD_PROP_TYPE(name, type) ::xaml::add_property_ex<self_type, type>(#name, ::std::function<type(self_type*)>([](self_type* self) -> type { return self->get_##name(); }), ::std::function<void(self_type*, type)>([](self_type* self, type value) -> void { self->set_##name(value); }))
 
 #define __GET_PROP_TYPE(name) decltype(::std::declval<self_type*>()->get_##name())
@@ -80,6 +102,28 @@ public:                                                                         
             m_##name = value;                 \
             m_##name##_changed(*this, value); \
         }                                     \
+    }
+
+#define PROP_CONSTEXPR_EVENT(name, type)      \
+    PROP_CONSTEXPR_RD(name, type)             \
+    void set_##name(type value)               \
+    {                                         \
+        if (m_##name != value)                \
+        {                                     \
+            m_##name = value;                 \
+            m_##name##_changed(*this, value); \
+        }                                     \
+    }
+
+#define PROP_STRING_EVENT(name)                  \
+    PROP_STRING_RD(name)                         \
+    void set_##name(::xaml::string_view_t value) \
+    {                                            \
+        if (m_##name != value)                   \
+        {                                        \
+            m_##name = (::xaml::string_t)value;  \
+            m_##name##_changed(*this, m_##name); \
+        }                                        \
     }
 
 #define ADD_PROP_EVENT(name) \

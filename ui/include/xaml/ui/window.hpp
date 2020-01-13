@@ -79,21 +79,11 @@ namespace xaml
     private:
         std::atomic<bool> m_resizing{ false };
 
-        point m_location{ 0, 0 };
-
         EVENT(location_changed, window&, point)
 
-    public:
-        constexpr point get_location() const noexcept { return m_location; }
-        void set_location(point value)
-        {
-            if (m_location != value)
-            {
-                m_location = value;
-                m_location_changed(*this, get_location());
-            }
-        }
+        PROP_CONSTEXPR_EVENT(location, point)
 
+    public:
         double get_x() const { return get_location().x; }
         double get_y() const { return get_location().y; }
         void set_x(double value)
@@ -117,14 +107,8 @@ namespace xaml
 
         EVENT(closing, window&, bool&)
 
-    private:
-        string_t m_title{};
-
         EVENT(title_changed, window&, string_view_t)
-
-    public:
-        string_view_t get_title() const noexcept { return m_title; }
-        void set_title(string_view_t value) { m_title = (string_t)value; }
+        PROP_STRING_EVENT(title)
 
     public:
 #define ADD_WINDOW_MEMBERS()  \

@@ -15,7 +15,7 @@ namespace xaml
     {
         if (!m_enabled.exchange(true))
         {
-            g_timeout_add(m_interval.count(), timer::on_timeout, this);
+            g_timeout_add((guint)m_interval.count(), timer::on_timeout, this);
         }
     }
 

@@ -35,7 +35,8 @@ namespace xaml
             g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
         }
         rectangle real = region - get_margin();
-        set_size({ real.width, real.height });
+        __set_size_noevent({ real.width, real.height });
+        draw_size();
         draw_text();
     }
 

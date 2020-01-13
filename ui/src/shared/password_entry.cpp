@@ -2,6 +2,18 @@
 
 namespace xaml
 {
+#ifdef PASSWORD_ENTRY_INHERITS_ENTRY
+    XAML_API password_entry::password_entry() : entry()
+    {
+        add_password_char_changed([this](password_entry&, char_t) {
+            if (get_handle())
+            {
+                draw_password_char();
+                __parent_redraw();
+            }
+        });
+    }
+#else
     XAML_API password_entry::password_entry() : common_control()
     {
         add_text_changed([this](password_entry const&, string_view_t) {
@@ -26,6 +38,9 @@ namespace xaml
             }
         });
     }
+#endif // PASSWORD_ENTRY_INHERITS_ENTRY
 
-    XAML_API password_entry::~password_entry() {}
+    XAML_API password_entry::~password_entry()
+    {
+    }
 } // namespace xaml
