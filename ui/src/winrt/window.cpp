@@ -34,6 +34,7 @@ namespace xaml
             draw_child();
             Page p = get_handle().as<Page>();
             p.Content(get_child()->get_handle());
+            p.UpdateLayout();
         }
         draw_resizable();
     }

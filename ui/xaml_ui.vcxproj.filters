@@ -143,4 +143,7 @@
       <Filter>src\winrt</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="src\winrt\App.xaml" />
+  </ItemGroup>
 </Project>

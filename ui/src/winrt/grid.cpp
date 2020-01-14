@@ -27,6 +27,7 @@ namespace xaml
 
     XAML_API void grid::__draw(rectangle const& region)
     {
+        bool new_run = !get_handle();
         if (!get_handle())
         {
             Grid g{};
@@ -55,9 +56,10 @@ namespace xaml
         for (auto& c : m_children)
         {
             c->__draw({});
-            g.Children().Append(c->get_handle());
+            if (new_run) g.Children().Append(c->get_handle());
             Grid::SetColumn(c->get_handle(), (int32_t)grid::get_column(c));
             Grid::SetRow(c->get_handle(), (int32_t)grid::get_row(c));
         }
+        g.UpdateLayout();
     }
 } // namespace xaml
