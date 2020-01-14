@@ -142,8 +142,8 @@
     <ClCompile Include="src\winrt\timer.cpp">
       <Filter>src\winrt</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="src\winrt\App.xaml" />
+    <ClCompile Include="src\shared\msgbox.cpp">
+      <Filter>src\shared</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

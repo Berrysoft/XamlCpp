@@ -1,19 +1,17 @@
 #include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.UI.Core.h"
 #include "winrt/Windows.UI.Xaml.Controls.h"
 #include <Windows.h>
-#include <pplawait.h>
-#include <ppltasks.h>
 #include <xaml/ui/msgbox.hpp>
 
 using namespace std;
 using namespace winrt;
 using namespace Windows::Foundation;
 using namespace Windows::UI::Xaml::Controls;
-using namespace concurrency;
 
 namespace xaml
 {
-    static task<msgbox_result> msgbox_async(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    static fire_and_forget __msgbox_async(function<void(msgbox_result)> callback, shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
         ContentDialog dialog{};
         dialog.Title(box_value(title));
@@ -41,20 +39,28 @@ namespace xaml
             res[0] = msgbox_result::ok;
             break;
         }
+        co_await resume_foreground(parent->get_handle().Dispatcher());
         auto result = co_await dialog.ShowAsync();
-        switch (result)
+        if (callback)
         {
-        case ContentDialogResult::Primary:
-            co_return res[1];
-        default:
-            co_return res[0];
+            switch (result)
+            {
+            case ContentDialogResult::Primary:
+                callback(res[1]);
+            default:
+                callback(res[0]);
+            }
         }
     }
 
     XAML_API msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
-        auto t = msgbox_async(parent, message, title, style, buttons);
-        t.wait();
-        return t.get();
+        __msgbox_async({}, parent, message, title, style, buttons);
+        return msgbox_result::error_result;
+    }
+
+    XAML_API void msgbox_async(function<void(msgbox_result)> callback, shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    {
+        __msgbox_async(callback, parent, message, title, style, buttons);
     }
 } // namespace xaml

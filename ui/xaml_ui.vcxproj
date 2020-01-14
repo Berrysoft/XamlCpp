@@ -196,6 +196,7 @@
     <ClCompile Include="src\shared\entry.cpp" />
     <ClCompile Include="src\shared\grid.cpp" />
     <ClCompile Include="src\shared\label.cpp" />
+    <ClCompile Include="src\shared\msgbox.cpp" />
     <ClCompile Include="src\shared\password_entry.cpp" />
     <ClCompile Include="src\winrt\application.cpp" />
     <ClCompile Include="src\winrt\button.cpp" />
