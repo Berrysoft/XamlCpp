@@ -22,6 +22,11 @@ namespace xaml
         static void on_changed(GtkEditable* editable, gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_changed();
+#endif
+
     public:
         XAML_API void __draw(rectangle const& region) override;
         XAML_API void __size_to_fit() override;

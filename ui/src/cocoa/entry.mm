@@ -1,5 +1,14 @@
+#import <cocoa/XamlEntryDelegate.h>
 #include <cocoa/drawing.hpp>
 #include <xaml/ui/entry.hpp>
+
+@implementation XamlEntryDelegate
+- (void)controlTextDidChange:(NSNotification*)obj
+{
+    xaml::entry* ptr = (xaml::entry*)self.classPointer;
+    ptr->__on_changed();
+}
+@end
 
 namespace xaml
 {
@@ -12,7 +21,10 @@ namespace xaml
             textField.drawsBackground = YES;
             textField.editable = YES;
             textField.selectable = YES;
+            XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
+            textField.delegate = delegate;
             set_handle(textField);
+            __set_delegate(delegate);
         }
         rectangle real = region - get_margin();
         NSTextField* textField = (NSTextField*)get_handle();
@@ -62,6 +74,12 @@ namespace xaml
             break;
         }
         textField.alignment = align;
+    }
+
+    void entry::__on_changed()
+    {
+        NSTextField* textField = (NSTextField*)get_handle();
+        set_text([textField.stringValue UTF8String]);
     }
 
     void entry::__size_to_fit()
