@@ -79,7 +79,7 @@ namespace xaml
     void entry::__on_changed()
     {
         NSTextField* textField = (NSTextField*)get_handle();
-        m_text_changed(*this, [textField.stringValue UTF8String]);
+        set_text([textField.stringValue UTF8String]);
     }
 
     void entry::__size_to_fit()
