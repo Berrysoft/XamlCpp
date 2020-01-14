@@ -5,6 +5,8 @@
 #include <xaml/ui/window.hpp>
 
 using namespace winrt;
+using namespace Windows::Foundation;
+using namespace Windows::UI::Xaml;
 using namespace Windows::UI::Xaml::Controls;
 using namespace Windows::UI::ViewManagement;
 
@@ -26,7 +28,6 @@ namespace xaml
         {
             Page p{};
             set_handle(p);
-            application::current()->wnd_num++;
         }
         draw_title();
         if (get_child())
@@ -52,7 +53,7 @@ namespace xaml
 
     XAML_API void window::draw_child()
     {
-        get_child()->__draw(get_client_region());
+        get_child()->__draw({});
     }
 
     XAML_API void window::draw_resizable() {}
@@ -60,6 +61,12 @@ namespace xaml
     XAML_API void window::show()
     {
         __draw({});
+    }
+
+    XAML_API void window::show(Page const& p)
+    {
+        set_handle(p);
+        show();
     }
 
     XAML_API rectangle window::get_client_region() const

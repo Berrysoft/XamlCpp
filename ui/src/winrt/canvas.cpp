@@ -27,7 +27,10 @@ namespace xaml
         if (!get_handle())
         {
             CanvasControl cv{};
-            cv.Draw([this](CanvasControl const&, CanvasDrawEventArgs const& args) -> void {
+            cv.Draw([this](CanvasControl const& cv, CanvasDrawEventArgs const& args) -> void {
+                auto real_size = xaml::get_size(cv.ActualSize());
+                auto real_pos = cv.ActualOffset();
+                m_real_region = { real_pos.x, real_pos.y, real_size.width, real_size.height };
                 drawing_context dc{ args.DrawingSession() };
                 m_redraw(*this, dc);
             });

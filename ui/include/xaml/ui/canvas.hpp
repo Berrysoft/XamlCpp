@@ -182,7 +182,7 @@ namespace xaml
         XAML_API ~canvas() override;
 
     private:
-        rectangle m_real_region;
+        rectangle m_real_region{};
 
 #ifdef XAML_UI_WINDOWS
     private:

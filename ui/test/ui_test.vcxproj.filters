@@ -7,12 +7,18 @@
     <Filter Include="src">
       <UniqueIdentifier>{941e455f-fc38-4968-a673-c673deb790f4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{dc872134-ba09-464c-adf1-1017badbccfb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Generated Files\module.g.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="winrt\pch.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test_window.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -52,5 +58,11 @@
     <ClInclude Include="winrt\pch.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="include\test_window.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainPage.xaml" />
   </ItemGroup>
 </Project>

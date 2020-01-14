@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "App.xaml.g.h"
+#include <memory>
+#include <test_window.hpp>
 
 namespace winrt::ui_test::implementation
 {
