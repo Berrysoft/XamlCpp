@@ -60,7 +60,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
-    option(USE_PCH "Use precompiled headers." ON)
+    if(MSVC)
+        option(USE_PCH "Use precompiled headers." ON)
+    else()
+        option(USE_PCH "Use precompiled headers." OFF)
+    endif()
 endif()
 
 add_subdirectory(meta)
