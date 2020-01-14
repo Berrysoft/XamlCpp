@@ -1,6 +1,10 @@
 #include <algorithm>
 #include <test_window.hpp>
+#include <xaml/ui/entry.hpp>
+#include <xaml/ui/grid.hpp>
+#include <xaml/ui/label.hpp>
 #include <xaml/ui/msgbox.hpp>
+#include <xaml/ui/password_entry.hpp>
 
 using namespace std;
 using namespace xaml;
