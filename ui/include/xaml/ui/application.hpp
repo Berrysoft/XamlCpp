@@ -50,7 +50,7 @@ namespace xaml
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
         XAML_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
-#endif // XAML_UI_WINDOWS
+#endif
         XAML_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS
