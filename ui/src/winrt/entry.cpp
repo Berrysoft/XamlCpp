@@ -26,9 +26,12 @@ namespace xaml
 
     XAML_API void entry::draw_size()
     {
-        TextBox t = get_handle().as<TextBox>();
-        t.Width(get_width());
-        t.Height(get_height());
+        if (get_size() != size{})
+        {
+            TextBox t = get_handle().as<TextBox>();
+            t.Width(get_width());
+            t.Height(get_height());
+        }
     }
 
     XAML_API void entry::draw_text()

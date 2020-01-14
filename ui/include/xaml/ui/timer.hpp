@@ -86,6 +86,11 @@ namespace xaml
         timer(std::chrono::milliseconds interval = std::chrono::milliseconds{ 1 }) : m_interval(interval) {}
         ~timer() { stop(); }
 
+#ifdef XAML_UI_WINRT
+    private:
+        XAML_API void init();
+#endif // XAML_UI_WINRT
+
     public:
         XAML_API void start();
         XAML_API void stop();

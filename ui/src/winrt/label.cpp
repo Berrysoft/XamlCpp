@@ -25,9 +25,12 @@ namespace xaml
 
     XAML_API void label::draw_size()
     {
-        TextBlock t = get_handle().as<TextBlock>();
-        t.Width(get_width());
-        t.Height(get_height());
+        if (get_size() != size{})
+        {
+            TextBlock t = get_handle().as<TextBlock>();
+            t.Width(get_width());
+            t.Height(get_height());
+        }
     }
 
     XAML_API void label::draw_text()

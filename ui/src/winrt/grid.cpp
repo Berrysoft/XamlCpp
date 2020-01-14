@@ -42,7 +42,7 @@ namespace xaml
             }
             {
                 auto defs = g.RowDefinitions();
-                for (auto& len : m_columns)
+                for (auto& len : m_rows)
                 {
                     RowDefinition def{};
                     def.Height(get_GridLength(len));
@@ -57,9 +57,39 @@ namespace xaml
         {
             c->__draw({});
             if (new_run) g.Children().Append(c->get_handle());
+            auto cc = c->get_handle();
+            switch (c->get_halignment())
+            {
+            case halignment_t::stretch:
+                cc.HorizontalAlignment(HorizontalAlignment::Stretch);
+                break;
+            case halignment_t::center:
+                cc.HorizontalAlignment(HorizontalAlignment::Center);
+                break;
+            case halignment_t::right:
+                cc.HorizontalAlignment(HorizontalAlignment::Right);
+                break;
+            default:
+                cc.HorizontalAlignment(HorizontalAlignment::Left);
+                break;
+            }
+            switch (c->get_valignment())
+            {
+            case valignment_t::stretch:
+                cc.VerticalAlignment(VerticalAlignment::Stretch);
+                break;
+            case valignment_t::center:
+                cc.VerticalAlignment(VerticalAlignment::Center);
+                break;
+            case valignment_t::bottom:
+                cc.VerticalAlignment(VerticalAlignment::Bottom);
+                break;
+            default:
+                cc.VerticalAlignment(VerticalAlignment::Top);
+                break;
+            }
             Grid::SetColumn(c->get_handle(), (int32_t)grid::get_column(c));
             Grid::SetRow(c->get_handle(), (int32_t)grid::get_row(c));
         }
-        g.UpdateLayout();
     }
 } // namespace xaml

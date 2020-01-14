@@ -56,38 +56,11 @@ namespace xaml
 
     XAML_API void button_base::draw_size()
     {
-        Button b = get_handle().as<Button>();
-        b.Width(get_width());
-        b.Height(get_height());
-        switch (get_halignment())
+        if (get_size() != size{})
         {
-        case halignment_t::stretch:
-            b.HorizontalAlignment(HorizontalAlignment::Stretch);
-            break;
-        case halignment_t::center:
-            b.HorizontalAlignment(HorizontalAlignment::Center);
-            break;
-        case halignment_t::right:
-            b.HorizontalAlignment(HorizontalAlignment::Right);
-            break;
-        default:
-            b.HorizontalAlignment(HorizontalAlignment::Left);
-            break;
-        }
-        switch (get_valignment())
-        {
-        case valignment_t::stretch:
-            b.VerticalAlignment(VerticalAlignment::Stretch);
-            break;
-        case valignment_t::center:
-            b.VerticalAlignment(VerticalAlignment::Center);
-            break;
-        case valignment_t::bottom:
-            b.VerticalAlignment(VerticalAlignment::Bottom);
-            break;
-        default:
-            b.VerticalAlignment(VerticalAlignment::Top);
-            break;
+            Button b = get_handle().as<Button>();
+            b.Width(get_width());
+            b.Height(get_height());
         }
     }
 

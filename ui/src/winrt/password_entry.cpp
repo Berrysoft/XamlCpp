@@ -24,9 +24,12 @@ namespace xaml
 
     XAML_API void password_entry::draw_size()
     {
-        PasswordBox t = get_handle().as<PasswordBox>();
-        t.Width(get_width());
-        t.Height(get_height());
+        if (get_size() != size{})
+        {
+            PasswordBox t = get_handle().as<PasswordBox>();
+            t.Width(get_width());
+            t.Height(get_height());
+        }
     }
 
     XAML_API void password_entry::draw_text()
