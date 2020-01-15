@@ -1,6 +1,19 @@
 #include <sstream>
 #include <xaml/parser.hpp>
 
+#ifdef XAML_UI_WINRT
+#include "winrt/Windows.Foundation.Collections.h"
+#include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.Storage.Streams.h"
+#include <fstream>
+
+using namespace winrt;
+using namespace Windows::Foundation;
+using namespace Windows::Foundation::Collections;
+using namespace Windows::Data::Xml::Dom;
+using namespace Windows::Storage::Streams;
+#endif // XAML_UI_WINRT
+
 using namespace std;
 
 namespace xaml
@@ -38,6 +51,31 @@ namespace xaml
     {
     }
 
+    static ostream& write_valid_name(ostream& stream, string_view name)
+    {
+        for (char c : name)
+        {
+            if (isalpha(c) || isdigit(c))
+            {
+                stream << c;
+            }
+            else
+            {
+                stream << '_';
+            }
+        }
+        return stream;
+    }
+
+    static string get_random_name(type_index type)
+    {
+        static size_t index = 0;
+        ostringstream oss;
+        write_valid_name(oss << "__", type.name()) << "__" << index++;
+        return oss.str();
+    }
+
+#ifndef XAML_UI_WINRT
     static inline string_view get_string_view(const xmlChar* str)
     {
         if (str)
@@ -68,30 +106,6 @@ namespace xaml
     XAML_API void parser::open(string_view file)
     {
         reader = xmlNewTextReaderFilename(file.data());
-    }
-
-    static ostream& write_valid_name(ostream& stream, string_view name)
-    {
-        for (char c : name)
-        {
-            if (isalpha(c) || isdigit(c))
-            {
-                stream << c;
-            }
-            else
-            {
-                stream << '_';
-            }
-        }
-        return stream;
-    }
-
-    static string get_random_name(type_index type)
-    {
-        static size_t index = 0;
-        ostringstream oss;
-        write_valid_name(oss << "__", type.name()) << "__" << index++;
-        return oss.str();
     }
 
     XAML_API markup_node parser::parse_markup(string_view value)
@@ -430,4 +444,223 @@ namespace xaml
         clean_up(ret);
         return { type_index(typeid(nullptr_t)) };
     }
+#else
+    XAML_API parser::parser()
+    {
+    }
+
+    XAML_API parser::~parser() {}
+
+    XAML_API void parser::open(string_view file)
+    {
+        DataWriter outs;
+        {
+            ifstream ins{ (string)file };
+            char buffer[2048];
+            while (ins)
+            {
+                auto len = ins.readsome(buffer, sizeof(buffer));
+                outs.WriteBytes(array_view((const uint8_t*)buffer, (const uint8_t*)buffer + len));
+            }
+        }
+        auto buffer = outs.DetachBuffer();
+        if (buffer.Length())
+        {
+            doc.LoadXmlFromBuffer(buffer);
+            opened = true;
+        }
+    }
+
+    XAML_API markup_node parser::parse_markup(wstring_view value)
+    {
+        wstring_view ns, name;
+        size_t sep_index = 0;
+        size_t i = 0;
+        for (; i < value.length(); i++)
+        {
+            if (!ns.empty() && value[i] == ':')
+            {
+                ns = value.substr(0, i);
+                sep_index = i + 1;
+            }
+            else if (isspace(value[i]))
+            {
+                name = value.substr(sep_index, i - sep_index);
+                break;
+            }
+        }
+        if (ns.empty()) ns = L"xaml";
+        auto t = get_type(to_string(ns), to_string(name));
+        if (t)
+        {
+            markup_node node{ *t, get_random_name(*t) };
+            while (i < value.length())
+            {
+                while (i < value.length() && isspace(value[i])) i++;
+                size_t start_index = i;
+                for (; i < value.length(); i++)
+                {
+                    if (value[i] == ',')
+                    {
+                        i = start_index;
+                        break;
+                    }
+                    else if (value[i] == '=')
+                        break;
+                }
+                wstring_view prop_name = value.substr(start_index, i - start_index);
+                while (i < value.length() && value[i] == '=') i++;
+                start_index = i;
+                for (; i < value.length(); i++)
+                {
+                    if (value[i] == ',') break;
+                }
+                wstring_view prop_value = value.substr(start_index, i - start_index);
+                while (i < value.length() && value[i] == ',') i++;
+                if (prop_name.empty())
+                {
+                    auto def_attr = get_attribute<default_property>(*t);
+                    if (def_attr)
+                    {
+                        prop_name = __mbtow(static_pointer_cast<default_property>(def_attr)->get_property_name());
+                    }
+                }
+                auto prop = get_property(*t, to_string(prop_name));
+                if (prop.can_write())
+                {
+                    node.properties.push_back({ *t, prop, to_string(prop_name) });
+                }
+                else
+                {
+                    throw xaml_no_member(*t, to_string(prop_name));
+                }
+            }
+            return node;
+        }
+        else
+        {
+            throw xaml_bad_type(to_string(ns), to_string(name));
+        }
+    }
+
+    static constexpr wstring_view x_ns{ L"https://github.com/Berrysoft/XamlCpp/xaml/" };
+
+    XAML_API void parser::parse_members(xaml_node& mc, XmlElement const& e)
+    {
+        hstring ns = unbox_value_or<hstring>(e.NamespaceUri(), {});
+        for (auto attr : e.Attributes())
+        {
+            hstring hattr_name = attr.NodeName();
+            wstring_view attr_name = hattr_name;
+            hstring hattr_ns = unbox_value_or<hstring>(attr.NamespaceUri(), {});
+            wstring_view attr_ns = hattr_ns;
+            if (attr_ns.empty()) attr_ns = ns;
+            if (attr_ns == x_ns)
+            {
+                hstring hattr_value = unbox_value_or<hstring>(attr.NodeValue(), {});
+                wstring_view attr_value = hattr_value;
+                if (attr_name == L"x:name")
+                {
+                    mc.name = to_string(attr_value);
+                }
+                else if (attr_name == L"x:class")
+                {
+                    auto index = attr_value.find_last_not_of(L':');
+                    if (index != wstring_view::npos)
+                    {
+                        if (index > 0 && attr_value[index - 1] == L':' && index + 1 < attr_value.length())
+                        {
+                            wstring_view map_ns = attr_value.substr(0, index - 1);
+                            wstring_view map_name = attr_value.substr(index + 1);
+                            mc.map_class = make_optional(make_tuple<string, string>(to_string(map_ns), to_string(map_name)));
+                        }
+                    }
+                    else
+                    {
+                        mc.map_class = make_optional(make_tuple<string, string>({}, to_string(attr_value)));
+                    }
+                }
+            }
+            else if (attr_ns != L"xmlns" && attr_name != L"xmlns")
+            {
+                size_t dm_index = attr_name.find_first_of(L'.');
+                if (dm_index != string_view::npos)
+                {
+                    wstring_view class_name = attr_name.substr(0, dm_index);
+                    wstring_view attach_prop_name = attr_name.substr(dm_index + 1);
+                    auto t = get_type(to_string(attr_ns), to_string(class_name));
+                    if (t)
+                    {
+                        auto prop = get_attach_property(*t, to_string(attach_prop_name));
+                        if (prop.can_write())
+                        {
+                            hstring hattr_value = unbox_value_or<hstring>(attr.NodeValue(), {});
+                            wstring_view attr_value = hattr_value;
+                            mc.properties.push_back({ *t, prop, to_string(attr_value) });
+                        }
+                    }
+                    else
+                    {
+                        throw xaml_bad_type(to_string(attr_ns), to_string(class_name));
+                    }
+                }
+                else
+                {
+                    auto prop = get_property(mc.type, to_string(attr_name));
+                    if (prop.can_write())
+                    {
+                        hstring hattr_value = unbox_value_or<hstring>(attr.NodeValue(), {});
+                        wstring_view attr_value = hattr_value;
+                        if (attr_value.front() == L'{' && attr_value.back() == L'}')
+                        {
+                            auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
+                            mc.properties.push_back({ mc.type, prop, ex });
+                        }
+                        else
+                        {
+                            mc.properties.push_back({ mc.type, prop, to_string(attr_value) });
+                        }
+                    }
+                    else if (!prop.can_read())
+                    {
+                        auto ev = get_event(mc.type, to_string(attr_name));
+                        if (ev.can_add())
+                        {
+                            hstring hattr_value = unbox_value_or<hstring>(attr.NodeValue(), {});
+                            wstring_view attr_value = hattr_value;
+                            mc.events.push_back({ ev, to_string(attr_value) });
+                        }
+                    }
+                    else
+                    {
+                        throw xaml_no_member(mc.type, to_string(attr_name));
+                    }
+                }
+            }
+        }
+    }
+
+    XAML_API xaml_node parser::parse_impl(XmlElement const& e)
+    {
+        string ns = to_string(unbox_value_or<hstring>(e.NamespaceUri(), {}));
+        string name = to_string(e.TagName());
+        auto t = get_type(ns, name);
+        if (t)
+        {
+            xaml_node mc{ *t };
+            parse_members(mc, e);
+            return mc;
+        }
+        else
+        {
+            throw xaml_bad_type(ns, name);
+        }
+    }
+
+    XAML_API xaml_node parser::parse()
+    {
+        XmlElement e = doc.DocumentElement();
+        return parse_impl(e);
+    }
+#endif // !XAML_UI_WINRT
 } // namespace xaml
