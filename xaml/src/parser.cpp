@@ -116,7 +116,7 @@ namespace xaml
 
     XAML_API void parser::load(string_view xml)
     {
-        buffer = xmlParserInputBufferCreateMem(xml.data(), xml.length(), XML_CHAR_ENCODING_UTF8);
+        buffer = xmlParserInputBufferCreateMem(xml.data(), (int)xml.length(), XML_CHAR_ENCODING_UTF8);
         reader = xmlNewTextReader(buffer, nullptr);
     }
 
