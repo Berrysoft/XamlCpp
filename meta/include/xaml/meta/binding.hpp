@@ -16,9 +16,8 @@ namespace xaml
         two_way = one_way | one_way_to_source
     };
 
-    constexpr bool operator!(binding_mode e) { return !(int)e; }
-    constexpr binding_mode operator&(binding_mode lhs, binding_mode rhs) { return binding_mode{ (int)lhs & (int)rhs }; }
-    constexpr binding_mode operator|(binding_mode lhs, binding_mode rhs) { return binding_mode{ (int)lhs | (int)rhs }; }
+    constexpr int operator&(binding_mode lhs, binding_mode rhs) { return (int)lhs & (int)rhs; }
+    constexpr int operator|(binding_mode lhs, binding_mode rhs) { return (int)lhs | (int)rhs; }
 
     class __binding_guard
     {

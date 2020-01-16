@@ -235,10 +235,11 @@ namespace xaml
         }
     }
 
-    XAML_API ostream& compiler::write_add_event(ostream& stream, string_view name, xaml_event& ev)
+    XAML_API ostream& compiler::write_add_event(ostream& stream, xaml_node& this_node, string_view name, xaml_event& ev)
     {
         ostringstream s;
-        s << "::xaml::mem_fn_bind(" << ev.value << ", this)";
+        auto [ns, n] = *this_node.map_class;
+        s << "::xaml::mem_fn_bind(&::" << ns << "::" << n << "::" << ev.value << ", this)";
         return write_call(stream, name, "add_", ev.info.name(), { s.str() });
     }
 
@@ -247,7 +248,19 @@ namespace xaml
         if (markup->this_type() == type_index(typeid(binding)))
         {
             auto b = static_pointer_cast<binding>(markup);
-            write_args(write_indent(stream) << "::xaml::bind(", { name, "\"" + (string)prop + "\"", b->get_element(), "\"" + (string)b->get_path() + "\"", enum_meta<binding_mode, char>{}(b->get_mode()) }) << ");" << endl;
+            auto mode = b->get_mode();
+            if (mode & binding_mode::one_way)
+            {
+                ostringstream s;
+                s << "[&" << name << "](auto&, auto value) { " << name << ".set_" << prop << "(value); }";
+                write_call(stream, b->get_element(), "add_", (string)b->get_path() + "_changed", { s.str() });
+            }
+            if (mode & binding_mode::one_way_to_source)
+            {
+                ostringstream s;
+                s << "[&" << b->get_element() << "](auto&, auto value) { " << b->get_element() << ".set_" << b->get_path() << "(value); }";
+                write_call(stream, name, "add_", (string)prop + "_changed", { s.str() });
+            }
         }
         return stream;
     }
@@ -259,7 +272,7 @@ namespace xaml
         return is_this ? this_name : node.name;
     }
 
-    XAML_API ostream& compiler::compile_impl(ostream& stream, xaml_node& node, bool is_this)
+    XAML_API ostream& compiler::compile_impl(ostream& stream, xaml_node& node, xaml_node& this_node, bool is_this)
     {
         for (auto& prop : node.properties)
         {
@@ -273,7 +286,7 @@ namespace xaml
             {
                 auto& n = get<xaml_node>(value);
                 write_construct(stream, n.name, n.type);
-                compile_impl(stream, n, false);
+                compile_impl(stream, n, this_node, false);
                 write_set_property(stream, node.type, prop.host_type, prop.info.type(), get_node_name(node, is_this), prop.info.name(), n.name);
                 break;
             }
@@ -284,13 +297,13 @@ namespace xaml
             for (auto& n : prop.second.values)
             {
                 write_construct(stream, n.name, n.type);
-                compile_impl(stream, n, false);
+                compile_impl(stream, n, this_node, false);
                 write_add_property(stream, node.type, prop.second.host_type, prop.second.info.type(), get_node_name(node, is_this), prop.second.info.name(), n.name);
             }
         }
         for (auto& ev : node.events)
         {
-            write_add_event(stream, get_node_name(node, is_this), ev);
+            write_add_event(stream, this_node, get_node_name(node, is_this), ev);
         }
         return stream;
     }
@@ -336,7 +349,7 @@ namespace xaml
                 write_begin_block(stream);
                 write_init_decl(stream, name);
                 write_begin_block(stream);
-                compile_impl(stream, node, true);
+                compile_impl(stream, node, node, true);
                 compile_extensions(stream, node, true);
                 write_end_block(stream);
                 write_end_block(stream);
@@ -344,7 +357,7 @@ namespace xaml
             else
             {
                 write_construct(stream, node.name, node.type);
-                compile_impl(stream, node, false);
+                compile_impl(stream, node, node, false);
                 compile_extensions(stream, node, false);
             }
         }

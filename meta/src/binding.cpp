@@ -16,11 +16,11 @@ namespace xaml
           source_prop(get_property(source->this_type(), source_prop)), source_event(get_event(source->this_type(), get_property_changed_event_name(source_prop)))
     {
         this->target_prop.set(target, this->source_prop.get(source));
-        if (!!(mode & binding_mode::one_way))
+        if (mode & binding_mode::one_way)
         {
             source_token = source_event.add(source, function<void()>([this]() -> void { this->target_prop.set(this->target, this->source_prop.get(this->source)); }));
         }
-        if (!!(mode & binding_mode::one_way_to_source))
+        if (mode & binding_mode::one_way_to_source)
         {
             target_token = target_event.add(target, function<void()>([this]() -> void { this->source_prop.set(this->source, this->target_prop.get(this->target)); }));
         }
