@@ -17,26 +17,7 @@ namespace xaml::test
 
     void test_window::init_components()
     {
-#ifdef XAML_UI_WINRT
-        constexpr string_view x = R"(<window x:class="xaml::test::test_window"
-        xmlns="https://github.com/Berrysoft/XamlCpp/"
-        xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
-        title="Test Window" location="200, 100" size="800, 600">
-  <grid margin="10" columns="1*, 0.8*, 1*" rows="auto, auto, 0.5*, 1*">
-    <label margin="10" text_halignment="right" valignment="center">Username:</label>
-    <entry grid.column="1" margin="0, 5" valignment="center">John</entry>
-    <label grid.row="1" margin="10" text_halignment="right" valignment="center">Password:</label>
-    <password_entry grid.column="1" grid.row="1" margin="0, 5" valignment="center">123456</password_entry>
-    <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
-    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click">Hello</button>
-    <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
-  </grid>
-</window>
-)";
-        parser p(x, parser::load_memory);
-#else
         parser p(absolute("test.xaml").string());
-#endif // XAML_UI_WINRT
         if (p.is_open())
         {
             deserializer des{};

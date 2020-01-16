@@ -1,7 +1,6 @@
 #ifdef XAML_UI_WINRT
 #include "winrt/Windows.Foundation.Collections.h"
 #include "winrt/Windows.Foundation.h"
-#include "winrt/Windows.Storage.Streams.h"
 #include <fstream>
 #endif // XAML_UI_WINRT
 
@@ -15,7 +14,6 @@ using namespace winrt;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Data::Xml::Dom;
-using namespace Windows::Storage::Streams;
 #endif // XAML_UI_WINRT
 
 namespace xaml
@@ -455,29 +453,29 @@ namespace xaml
 
     XAML_API void parser::open(string_view file)
     {
-        DataWriter outs;
+        wostringstream outs;
         {
-            ifstream ins{ (string)file, ios::binary };
-            char buffer[2048];
+            wifstream ins{ (string)file, ios::binary };
+            wchar_t buffer[2048];
             while (ins)
             {
                 auto len = ins.readsome(buffer, sizeof(buffer));
-                outs.WriteBytes(array_view((const uint8_t*)buffer, (const uint8_t*)buffer + len));
+                outs.write(buffer, len);
                 if (len < sizeof(buffer)) break;
             }
         }
-        auto buffer = outs.DetachBuffer();
-        if (buffer.Length())
+        auto buffer = outs.str();
+        if (!buffer.empty())
         {
-            doc.LoadXmlFromBuffer(buffer);
-            opened = true;
+            doc.LoadXml(buffer);
+            opened = !!doc.DocumentElement();
         }
     }
 
     XAML_API void parser::load(string_view xml)
     {
         doc.LoadXml(to_hstring(xml));
-        opened = true;
+        opened = !!doc.DocumentElement();
     }
 
     XAML_API markup_node parser::parse_markup(wstring_view value)
