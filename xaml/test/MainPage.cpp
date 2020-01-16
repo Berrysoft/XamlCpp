@@ -5,6 +5,8 @@
 #include "MainPage.g.cpp"
 #endif
 
+#include <xaml/parser.hpp>
+
 using namespace std;
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -17,6 +19,8 @@ namespace winrt::xaml_test::implementation
     MainPage::MainPage()
     {
         InitializeComponent();
+        init_parser();
+        register_class<test_window>();
         Loaded([this](IInspectable const&, RoutedEventArgs const&) -> void {
             wnd = make_shared<test_window>();
             wnd->init_components();

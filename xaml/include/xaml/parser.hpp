@@ -76,9 +76,17 @@ namespace xaml
 #endif // !XAML_UI_WINRT
 
         XAML_API void open(std::string_view file);
+        XAML_API void load(std::string_view xml);
+
+        struct load_memory_t
+        {
+        };
+
+        static constexpr load_memory_t load_memory{};
 
         XAML_API parser();
         parser(std::string_view file) : parser() { open(file); }
+        parser(std::string_view xml, load_memory_t) : parser() { load(xml); }
         XAML_API ~parser();
 
     private:
@@ -89,8 +97,8 @@ namespace xaml
         XAML_API void clean_up(int ret);
 #else
         XAML_API markup_node parse_markup(std::wstring_view value);
-        XAML_API void parse_members(xaml_node& mc, winrt::Windows::Data::Xml::Dom::XmlElement const& e);
-        XAML_API xaml_node parse_impl(winrt::Windows::Data::Xml::Dom::XmlElement const& e);
+        XAML_API void parse_members(xaml_node& mc, winrt::Windows::Data::Xml::Dom::IXmlNode const& e);
+        XAML_API xaml_node parse_impl(winrt::Windows::Data::Xml::Dom::IXmlNode const& e);
 #endif // !XAML_UI_WINRT
 
     public:

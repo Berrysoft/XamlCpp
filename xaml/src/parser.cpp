@@ -457,7 +457,7 @@ namespace xaml
     {
         DataWriter outs;
         {
-            ifstream ins{ (string)file };
+            ifstream ins{ (string)file, ios::binary };
             char buffer[2048];
             while (ins)
             {
@@ -472,6 +472,12 @@ namespace xaml
             doc.LoadXmlFromBuffer(buffer);
             opened = true;
         }
+    }
+
+    XAML_API void parser::load(string_view xml)
+    {
+        doc.LoadXml(to_hstring(xml));
+        opened = true;
     }
 
     XAML_API markup_node parser::parse_markup(wstring_view value)
@@ -511,7 +517,7 @@ namespace xaml
                     else if (value[i] == '=')
                         break;
                 }
-                wstring_view prop_name = value.substr(start_index, i - start_index);
+                string prop_name = to_string(value.substr(start_index, i - start_index));
                 while (i < value.length() && value[i] == '=') i++;
                 start_index = i;
                 for (; i < value.length(); i++)
@@ -525,17 +531,17 @@ namespace xaml
                     auto def_attr = get_attribute<default_property>(*t);
                     if (def_attr)
                     {
-                        prop_name = __mbtow(static_pointer_cast<default_property>(def_attr)->get_property_name());
+                        prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
                     }
                 }
-                auto prop = get_property(*t, to_string(prop_name));
+                auto prop = get_property(*t, prop_name);
                 if (prop.can_write())
                 {
-                    node.properties.push_back({ *t, prop, to_string(prop_name) });
+                    node.properties.push_back({ *t, prop, to_string(prop_value) });
                 }
                 else
                 {
-                    throw xaml_no_member(*t, to_string(prop_name));
+                    throw xaml_no_member(*t, prop_name);
                 }
             }
             return node;
@@ -548,7 +554,7 @@ namespace xaml
 
     static constexpr wstring_view x_ns{ L"https://github.com/Berrysoft/XamlCpp/xaml/" };
 
-    XAML_API void parser::parse_members(xaml_node& mc, XmlElement const& e)
+    XAML_API void parser::parse_members(xaml_node& mc, IXmlNode const& e)
     {
         hstring ns = unbox_value_or<hstring>(e.NamespaceUri(), {});
         for (auto attr : e.Attributes())
@@ -641,12 +647,96 @@ namespace xaml
                 }
             }
         }
+        for (auto cn : e.ChildNodes())
+        {
+            switch (cn.NodeType())
+            {
+            case NodeType::TextNode:
+            {
+                auto def_attr = get_attribute<default_property>(mc.type);
+                if (def_attr)
+                {
+                    string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                    auto prop = get_property(mc.type, prop_name);
+                    if (prop.can_write())
+                    {
+                        mc.properties.push_back({ mc.type, prop, to_string(unbox_value_or<hstring>(cn.NodeValue(), {})) });
+                    }
+                    else
+                    {
+                        throw xaml_no_member(mc.type, prop_name);
+                    }
+                }
+                break;
+            }
+            case NodeType::ElementNode:
+            {
+                hstring hname = cn.NodeName();
+                wstring_view name = hname;
+                size_t dm_index = name.find_first_of(L'.');
+                if (dm_index != wstring_view::npos)
+                {
+                    hstring hns = unbox_value_or<hstring>(cn.NamespaceUri(), {});
+                    wstring_view ns = hns;
+                    wstring_view class_name = name.substr(0, dm_index);
+                    wstring_view prop_name = name.substr(dm_index + 1);
+                    auto t = get_type(to_string(ns), to_string(class_name));
+                    if (t)
+                    {
+                        auto child = parse_impl(cn);
+                        if (mc.type == *t)
+                        {
+                            auto prop = get_property(mc.type, to_string(prop_name));
+                            if (prop.can_write())
+                            {
+                                mc.properties.push_back({ mc.type, prop, move(child) });
+                            }
+                        }
+                        else
+                        {
+                            auto prop = get_attach_property(*t, to_string(prop_name));
+                            if (prop.can_write())
+                            {
+                                mc.properties.push_back({ *t, prop, move(child) });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw xaml_bad_type(to_string(ns), to_string(class_name));
+                    }
+                }
+                else
+                {
+                    auto child = parse_impl(cn);
+                    bool is_container = invoke_static_method<bool>(mc.type, "is_container").value_or(false);
+                    bool is_multicontainer = invoke_static_method<bool>(mc.type, "is_multicontainer").value_or(false);
+                    if (is_container)
+                    {
+                        if (is_multicontainer)
+                        {
+                            auto& prop = mc.collection_properties["child"];
+                            prop.host_type = mc.type;
+                            prop.info = get_collection_property(mc.type, "child");
+                            prop.values.push_back(move(child));
+                        }
+                        else
+                        {
+                            auto prop = get_property(mc.type, "child");
+                            mc.properties.push_back({ mc.type, prop, move(child) });
+                        }
+                    }
+                }
+                break;
+            }
+            }
+        }
     }
 
-    XAML_API xaml_node parser::parse_impl(XmlElement const& e)
+    XAML_API xaml_node parser::parse_impl(IXmlNode const& e)
     {
         string ns = to_string(unbox_value_or<hstring>(e.NamespaceUri(), {}));
-        string name = to_string(e.TagName());
+        string name = to_string(e.NodeName());
         auto t = get_type(ns, name);
         if (t)
         {
