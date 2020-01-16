@@ -57,6 +57,7 @@ namespace xaml
     private:
 #ifndef XAML_UI_WINRT
         xmlTextReaderPtr reader{ nullptr };
+        xmlParserInputBufferPtr buffer{ nullptr };
 #else
         winrt::Windows::Data::Xml::Dom::XmlDocument doc{};
         bool opened{ false };

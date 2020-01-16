@@ -100,12 +100,24 @@ namespace xaml
             xmlFreeTextReader(reader);
             reader = nullptr;
         }
+        if (!buffer)
+        {
+            xmlFreeParserInputBuffer(buffer);
+            buffer = nullptr;
+        }
         xmlCleanupMemory();
     }
 
     XAML_API void parser::open(string_view file)
     {
+        buffer = nullptr;
         reader = xmlNewTextReaderFilename(file.data());
+    }
+
+    XAML_API void parser::load(string_view xml)
+    {
+        buffer = xmlParserInputBufferCreateMem(xml.data(), xml.length(), XML_CHAR_ENCODING_UTF8);
+        reader = xmlNewTextReader(buffer, nullptr);
     }
 
     XAML_API markup_node parser::parse_markup(string_view value)
