@@ -1,20 +1,22 @@
-#include <sstream>
-#include <xaml/parser.hpp>
-
 #ifdef XAML_UI_WINRT
 #include "winrt/Windows.Foundation.Collections.h"
 #include "winrt/Windows.Foundation.h"
 #include "winrt/Windows.Storage.Streams.h"
 #include <fstream>
+#endif // XAML_UI_WINRT
 
+#include <sstream>
+#include <xaml/parser.hpp>
+
+using namespace std;
+
+#ifdef XAML_UI_WINRT
 using namespace winrt;
 using namespace Windows::Foundation;
 using namespace Windows::Foundation::Collections;
 using namespace Windows::Data::Xml::Dom;
 using namespace Windows::Storage::Streams;
 #endif // XAML_UI_WINRT
-
-using namespace std;
 
 namespace xaml
 {
@@ -461,6 +463,7 @@ namespace xaml
             {
                 auto len = ins.readsome(buffer, sizeof(buffer));
                 outs.WriteBytes(array_view((const uint8_t*)buffer, (const uint8_t*)buffer + len));
+                if (len < sizeof(buffer)) break;
             }
         }
         auto buffer = outs.DetachBuffer();
