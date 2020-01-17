@@ -43,15 +43,18 @@ namespace xaml
         void set_handle(native_handle_type value) noexcept OBJC_BLOCK({ m_handle = value; });
 
     public:
-        XAML_API void set_title(string_view_t value);
+        PROP_STRING(title)
+        PROP_STRING(filename)
+    private:
+        std::vector<filebox_filter> m_filters;
 
-        XAML_API void set_filename(string_view_t value);
-
-        XAML_API void set_filters(std::vector<filebox_filter> const& value);
+    public:
+        std::vector<filebox_filter> const& get_filters() const noexcept { return m_filters; }
+        void set_filters(std::vector<filebox_filter> const& value) { m_filters = value; }
 
         XAML_API string_t get_result() const;
 
-        XAML_API bool show(std::shared_ptr<window> owner = nullptr);
+        XAML_API virtual bool show(std::shared_ptr<window> owner = nullptr);
     };
 
     class open_filebox : public filebox
@@ -61,6 +64,8 @@ namespace xaml
         XAML_API ~open_filebox() override;
 
         XAML_API std::vector<string_t> get_results() const;
+
+        XAML_API bool show(std::shared_ptr<window> owner = nullptr) override;
     };
 
     class save_filebox : public filebox
@@ -68,6 +73,8 @@ namespace xaml
     public:
         XAML_API save_filebox();
         XAML_API ~save_filebox() override;
+
+        XAML_API bool show(std::shared_ptr<window> owner = nullptr) override;
     };
 } // namespace xaml
 
