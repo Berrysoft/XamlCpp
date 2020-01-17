@@ -97,20 +97,24 @@ namespace xaml::test
         grid::set_row(cv, 3);
     }
 
+    static open_filebox openbox{};
+
     void test_window::on_timer_tick(timer&)
     {
-        msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info);
-        if (++count >= 3)
-        {
-            tmr.stop();
-            open_filebox box{};
-            box.set_title(U("Open file"));
-            box.set_filters({ { U("All files"), U("*.*") } });
-            if (box.show(static_pointer_cast<window>(shared_from_this())))
+        msgbox_async(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok, [this](msgbox_result) {
+            if (++count >= 3)
             {
-                msgbox(static_pointer_cast<window>(shared_from_this()), box.get_result(), U("Open file"));
+                tmr.stop();
+                openbox.set_title(U("Open file"));
+                openbox.set_filters({ { U("All files"), U(".xaml") } });
+                openbox.show_async(static_pointer_cast<window>(shared_from_this()), [this](bool res) {
+                    if (res)
+                    {
+                        msgbox(static_pointer_cast<window>(shared_from_this()), openbox.get_result(), U("Open file"));
+                    }
+                });
             }
-        }
+        });
     }
 
     void test_window::on_button_click(button_base& btn)

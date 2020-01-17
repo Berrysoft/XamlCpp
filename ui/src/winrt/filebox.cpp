@@ -96,21 +96,18 @@ namespace xaml
 
     string_t filebox::get_result() const { return m_results[0]; }
 
-    fire_and_forget filebox::show_async_impl(function<void(bool)> callback, shared_ptr<window> owner)
+    fire_and_forget filebox::show_async_impl(std::shared_ptr<window> owner, std::function<void(bool)> callback)
     {
         m_handle->set_filename(m_filename);
         m_handle->set_filters(m_filters);
+        bool succeed = false;
         if (m_multiple)
         {
             auto res = co_await m_handle->show_multiple_async();
             if (res)
             {
                 m_results = *res;
-                callback(true);
-            }
-            else
-            {
-                callback(false);
+                succeed = true;
             }
         }
         else
@@ -119,23 +116,34 @@ namespace xaml
             if (res)
             {
                 m_results = { *res };
-                callback(true);
-            }
-            else
-            {
-                callback(false);
+                succeed = true;
             }
         }
+        if (callback) callback(succeed);
     }
 
     bool filebox::show(shared_ptr<window> owner)
     {
-        show_async({}, owner);
+        show_async(owner, {});
         return false;
     }
 
-    void filebox::show_async(function<void(bool)> callback, shared_ptr<window> owner)
+    void filebox::show_async(shared_ptr<window> owner, std::function<void(bool)> callback)
     {
-        show_async_impl(callback, owner);
+        show_async_impl(owner, callback);
+    }
+
+    bool open_filebox::show(shared_ptr<window> owner) { return filebox::show(owner); }
+    void open_filebox::show_async(shared_ptr<window> owner, std::function<void(bool)> callback)
+    {
+        set_handle(make_shared<__file_open_picker_wrapper>());
+        return filebox::show_async(owner, callback);
+    }
+
+    bool save_filebox::show(shared_ptr<window> owner) { return filebox::show(owner); }
+    void save_filebox::show_async(shared_ptr<window> owner, std::function<void(bool)> callback)
+    {
+        set_handle(make_shared<__file_save_picker_wrapper>());
+        return filebox::show_async(owner, callback);
     }
 } // namespace xaml

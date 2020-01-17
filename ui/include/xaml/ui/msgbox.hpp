@@ -6,6 +6,7 @@
 #endif // XAML_UI_WINRT
 
 #include <functional>
+#include <future>
 #include <xaml/strings.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -39,8 +40,8 @@ namespace xaml
     XAML_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok);
     inline msgbox_result msgbox(string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok) { return msgbox(nullptr, message, title, style, buttons); }
 
-    XAML_API void msgbox_async(std::function<void(msgbox_result)> callback, std::shared_ptr<window> parent, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok);
-    inline void msgbox_async(std::function<void(msgbox_result)> callback, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok) { msgbox_async(callback, message, title, style, buttons); }
+    XAML_API void msgbox_async(std::shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, std::function<void(msgbox_result)> callback);
+    inline void msgbox_async(string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, std::function<void(msgbox_result)> callback) { msgbox_async(message, title, style, buttons, callback); }
 } // namespace xaml
 
 #endif // !XAML_UI_MSGBOX_HPP

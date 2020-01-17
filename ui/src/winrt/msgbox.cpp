@@ -59,7 +59,7 @@ namespace xaml
         return msgbox_result::error_result;
     }
 
-    void msgbox_async(function<void(msgbox_result)> callback, shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    void msgbox_async(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, function<void(msgbox_result)> callback)
     {
         __msgbox_async(callback, parent, message, title, style, buttons);
     }
