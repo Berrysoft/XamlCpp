@@ -52,10 +52,8 @@ namespace xaml
         using native_handle_type = GtkWidget*;
 #endif // XAML_UI_WINDOWS
 
-#ifdef XAML_UI_WINRT
     private:
         std::vector<string_t> m_results{};
-#endif // XAML_UI_WINRT
 
     protected:
         native_handle_type m_handle{ OBJC_NIL };
@@ -81,12 +79,12 @@ namespace xaml
         std::vector<filebox_filter> const& get_filters() const noexcept { return m_filters; }
         void set_filters(std::vector<filebox_filter> const& value) { m_filters = value; }
 
-        XAML_API string_t get_result() const;
+        string_view_t get_result() const { return m_results[0]; }
 
         PROP_CONSTEXPR(multiple, bool)
 
     public:
-        XAML_API std::vector<string_t> get_results() const;
+        std::vector<string_t> const& get_results() const { return m_results; }
 
 #ifdef XAML_UI_WINRT
     private:

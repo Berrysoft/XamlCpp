@@ -27,7 +27,9 @@ namespace xaml
             filter.Clear();
             for (auto& f : value)
             {
-                filter.Append(f.pattern);
+                string_t p = f.pattern;
+                if (!p.empty() && p.front() == L'*') p = p.substr(1);
+                filter.Append(p);
             }
         }
 
@@ -78,7 +80,9 @@ namespace xaml
             filter.Clear();
             for (auto& f : value)
             {
-                filter.Insert(f.name, single_threaded_vector(vector<hstring>{ (hstring)f.pattern }));
+                string_t p = f.pattern;
+                if (!p.empty() && p.front() == L'*') p = p.substr(1);
+                filter.Insert(f.name, single_threaded_vector(vector<hstring>{ (hstring)p }));
             }
         }
 
@@ -93,8 +97,6 @@ namespace xaml
 
         task<std::optional<vector<string_t>>> show_multiple_async() override { co_return nullopt; }
     };
-
-    string_t filebox::get_result() const { return m_results[0]; }
 
     fire_and_forget filebox::show_async_impl(std::shared_ptr<window> owner, std::function<void(bool)> callback)
     {

@@ -5,26 +5,6 @@ using namespace std;
 
 namespace xaml
 {
-    string_t filebox::get_result() const
-    {
-        g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(m_handle)) };
-        string_t res = name.get();
-        return res;
-    }
-
-    vector<string_t> open_filebox::get_results() const
-    {
-        vector<string_t> res;
-        g_slist_free_unique_ptr<GSList> list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(m_handle)) };
-        while (list)
-        {
-            g_free_unique_ptr<gchar> name{ (gchar*)list->data };
-            res.push_back(name.get());
-            list.reset(list->next);
-        }
-        return res;
-    }
-
     bool filebox::show(shared_ptr<window> owner)
     {
         if (m_handle)
@@ -36,17 +16,40 @@ namespace xaml
                 gtk_file_filter_add_pattern(filter, f.pattern.c_str());
             }
             gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(m_handle), filter);
+            gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(m_handle), m_multiple);
             auto res = gtk_dialog_run(GTK_DIALOG(m_handle));
-            return res == GTK_RESPONSE_ACCEPT;
+            bool ret = res == GTK_RESPONSE_ACCEPT;
+            if (ret)
+            {
+                if (m_multiple)
+                {
+                    m_results.clear();
+                    g_slist_free_unique_ptr<GSList> list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(m_handle)) };
+                    while (list)
+                    {
+                        g_free_unique_ptr<gchar> name{ (gchar*)list->data };
+                        m_results.push_back(name.get());
+                        list.reset(list->next);
+                    }
+                }
+                else
+                {
+                    g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(m_handle)) };
+                    m_results = { name.get() };
+                }
+            }
+            gtk_widget_destroy(m_handle);
+            m_handle = nullptr;
+            return ret;
         }
         return false;
     }
 
-    open_filebox::open_filebox() : filebox()
+    void filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
     {
+        auto res = show(owner);
+        if (callback) callback(res);
     }
-
-    open_filebox::~open_filebox() { gtk_widget_destroy(m_handle); }
 
     bool open_filebox::show(shared_ptr<window> owner)
     {
@@ -54,15 +57,19 @@ namespace xaml
         return filebox::show(owner);
     }
 
-    save_filebox::save_filebox() : filebox()
+    void open_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
     {
+        filebox::show_async(owner, callback);
     }
-
-    save_filebox::~save_filebox() { gtk_widget_destroy(m_handle); }
 
     bool save_filebox::show(shared_ptr<window> owner)
     {
         set_handle(gtk_file_chooser_dialog_new(get_title().data(), owner ? GTK_WINDOW(owner->get_handle()) : NULL, GTK_FILE_CHOOSER_ACTION_SAVE, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Save"), GTK_RESPONSE_ACCEPT, NULL));
         return filebox::show(owner);
+    }
+
+    void save_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
+    {
+        filebox::show_async(owner, callback);
     }
 } // namespace xaml

@@ -106,7 +106,7 @@ namespace xaml::test
             {
                 tmr.stop();
                 openbox.set_title(U("Open file"));
-                openbox.set_filters({ { U("All files"), U(".xaml") } });
+                openbox.set_filters({ { U("XAML file"), U("*.xaml") } });
                 openbox.show_async(static_pointer_cast<window>(shared_from_this()), [this](bool res) {
                     if (res)
                     {
