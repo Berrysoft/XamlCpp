@@ -53,13 +53,13 @@ namespace xaml
         }
     }
 
-    XAML_API msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
         __msgbox_async({}, parent, message, title, style, buttons);
         return msgbox_result::error_result;
     }
 
-    XAML_API void msgbox_async(function<void(msgbox_result)> callback, shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    void msgbox_async(function<void(msgbox_result)> callback, shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
         __msgbox_async(callback, parent, message, title, style, buttons);
     }

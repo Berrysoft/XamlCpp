@@ -11,17 +11,17 @@ namespace xaml
 {
     static shared_ptr<application> s_current;
 
-    XAML_API shared_ptr<application> application::init(int argc, char_t** argv)
+    shared_ptr<application> application::init(int argc, char_t** argv)
     {
         s_current = shared_ptr<application>(new application(argc, argv));
         s_current->init_components();
         return s_current;
     }
 
-    XAML_API shared_ptr<application> application::current() { return s_current; }
+    shared_ptr<application> application::current() { return s_current; }
 
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-    XAML_API application::application(LPWSTR lpCmdLine)
+    application::application(LPWSTR lpCmdLine)
     {
         int argc;
         LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
@@ -35,7 +35,7 @@ namespace xaml
         }
     }
 
-    XAML_API shared_ptr<application> application::init(LPWSTR lpCmdLine)
+    shared_ptr<application> application::init(LPWSTR lpCmdLine)
     {
         s_current = shared_ptr<application>(new application(lpCmdLine));
         s_current->init_components();

@@ -9,7 +9,7 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    XAML_API void label::__draw(rectangle const& region)
+    void label::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -23,7 +23,7 @@ namespace xaml
         draw_alignment();
     }
 
-    XAML_API void label::draw_size()
+    void label::draw_size()
     {
         if (get_size() != size{})
         {
@@ -33,13 +33,13 @@ namespace xaml
         }
     }
 
-    XAML_API void label::draw_text()
+    void label::draw_text()
     {
         TextBlock t = get_handle().as<TextBlock>();
         t.Text(m_text);
     }
 
-    XAML_API void label::draw_alignment()
+    void label::draw_alignment()
     {
         TextBlock t = get_handle().as<TextBlock>();
         switch (m_text_halignment)
@@ -59,7 +59,7 @@ namespace xaml
         }
     }
 
-    XAML_API void label::__size_to_fit()
+    void label::__size_to_fit()
     {
         TextBlock t = get_handle().as<TextBlock>();
         t.Measure({ INFINITY, INFINITY });

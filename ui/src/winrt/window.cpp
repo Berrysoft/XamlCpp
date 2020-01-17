@@ -12,7 +12,7 @@ using namespace Windows::UI::ViewManagement;
 
 namespace xaml
 {
-    XAML_API window::window() : container(), m_resizable(true)
+    window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
         add_location_changed([this](window const&, point) { if (get_handle() && !m_resizing) __draw({}); });
@@ -20,9 +20,9 @@ namespace xaml
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
-    XAML_API window::~window() {}
+    window::~window() {}
 
-    XAML_API void window::__draw(rectangle const& region)
+    void window::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -39,36 +39,36 @@ namespace xaml
         draw_resizable();
     }
 
-    XAML_API void window::__parent_redraw()
+    void window::__parent_redraw()
     {
         if (get_handle())
             __draw({});
     }
 
-    XAML_API void window::draw_title()
+    void window::draw_title()
     {
         ApplicationView::GetForCurrentView().Title(m_title);
     }
 
-    XAML_API void window::draw_child()
+    void window::draw_child()
     {
         get_child()->__draw({});
     }
 
-    XAML_API void window::draw_resizable() {}
+    void window::draw_resizable() {}
 
-    XAML_API void window::show()
+    void window::show()
     {
         __draw({});
     }
 
-    XAML_API void window::show(Page const& p)
+    void window::show(Page const& p)
     {
         set_handle(p);
         show();
     }
 
-    XAML_API rectangle window::get_client_region() const
+    rectangle window::get_client_region() const
     {
         Page p = get_handle().as<Page>();
         auto size = p.ActualSize();

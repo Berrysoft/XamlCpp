@@ -51,7 +51,7 @@ namespace xaml
         }
     }
 
-    XAML_API msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
         return get_result(MessageBox(parent ? parent->get_handle() : NULL, message.data(), title.data(), get_style(style) | get_buttons(buttons)));
     }

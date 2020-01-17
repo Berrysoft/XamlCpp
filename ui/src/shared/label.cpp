@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    XAML_API label::label() : common_control()
+    label::label() : common_control()
     {
         add_text_changed([this](label const&, string_view_t) {
             if (get_handle())
@@ -20,5 +20,5 @@ namespace xaml
         });
     }
 
-    XAML_API label::~label() {}
+    label::~label() {}
 } // namespace xaml

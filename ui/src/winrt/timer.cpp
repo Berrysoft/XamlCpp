@@ -9,7 +9,7 @@ using namespace Windows::UI::Xaml;
 
 namespace xaml
 {
-    XAML_API void timer::init()
+    void timer::init()
     {
         if (!m_handle)
         {
@@ -19,14 +19,14 @@ namespace xaml
         m_handle.Interval(m_interval);
     }
 
-    XAML_API void timer::start()
+    void timer::start()
     {
         init();
         m_enabled.exchange(true);
         m_handle.Start();
     }
 
-    XAML_API void timer::stop()
+    void timer::stop()
     {
         init();
         m_handle.Stop();

@@ -38,7 +38,7 @@ namespace xaml
 
     static HFONT s_default_font;
 
-    XAML_API void application::init_components()
+    void application::init_components()
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
@@ -50,17 +50,17 @@ namespace xaml
         GdiplusStartup(&m_gdiplus_oken, &gdiplusStartupInput, NULL);
     }
 
-    XAML_API application::~application()
+    application::~application()
     {
         GdiplusShutdown(m_gdiplus_oken);
     }
 
-    XAML_API HFONT application::__default_font() const
+    HFONT application::__default_font() const
     {
         return s_default_font;
     }
 
-    XAML_API int application::run()
+    int application::run()
     {
         MSG msg;
         while (take_over_message(msg))

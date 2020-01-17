@@ -25,7 +25,7 @@ namespace xaml
         }
     }
 
-    XAML_API void grid::__draw(rectangle const& region)
+    void grid::__draw(rectangle const& region)
     {
         bool new_run = !get_handle();
         if (!get_handle())

@@ -6,7 +6,7 @@ using namespace std;
 
 namespace xaml
 {
-    XAML_API button_base::button_base() : common_control()
+    button_base::button_base() : common_control()
     {
         add_text_changed([this](button_base const&, string_view_t) {
             if (get_handle())
@@ -25,9 +25,9 @@ namespace xaml
         add_is_default_changed([this](button_base const&, bool) { if (get_handle()) draw_default(); });
     }
 
-    XAML_API button_base::~button_base() {}
+    button_base::~button_base() {}
 
-    XAML_API optional<LRESULT> button_base::__wnd_proc(window_message const& msg)
+    optional<LRESULT> button_base::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
@@ -48,7 +48,7 @@ namespace xaml
         return nullopt;
     }
 
-    XAML_API void button_base::__draw(rectangle const& region)
+    void button_base::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -71,17 +71,17 @@ namespace xaml
         ShowWindow(get_handle(), SW_SHOW);
     }
 
-    XAML_API void button_base::draw_size()
+    void button_base::draw_size()
     {
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)get_width(), (int)get_height(), SWP_NOZORDER | SWP_NOMOVE));
     }
 
-    XAML_API void button_base::draw_text()
+    void button_base::draw_text()
     {
         THROW_IF_WIN32_BOOL_FALSE(Button_SetText(get_handle(), m_text.c_str()));
     }
 
-    XAML_API void button_base::draw_default()
+    void button_base::draw_default()
     {
         auto style = GetWindowLongPtr(get_handle(), GWL_STYLE);
         if (m_is_default)
@@ -91,7 +91,7 @@ namespace xaml
         Button_SetStyle(get_handle(), style, FALSE);
     }
 
-    XAML_API void button_base::__size_to_fit()
+    void button_base::__size_to_fit()
     {
         size msize = __measure_text_size(m_text);
         __set_size_noevent({ msize.width + 15, msize.height + 15 });

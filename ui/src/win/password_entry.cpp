@@ -8,7 +8,7 @@ namespace xaml
 {
     static char_t default_char{ U('*') };
 
-    XAML_API void password_entry::__draw(rectangle const& region)
+    void password_entry::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -28,7 +28,7 @@ namespace xaml
         draw_password_char();
     }
 
-    XAML_API void password_entry::draw_password_char()
+    void password_entry::draw_password_char()
     {
         Edit_SetPasswordChar(get_handle(), m_password_char ? m_password_char : default_char);
     }

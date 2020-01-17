@@ -7,7 +7,7 @@ using namespace std;
 
 namespace xaml
 {
-    XAML_API unsigned int screen_dpi()
+    unsigned int screen_dpi()
     {
         return GetDpiForWindow(GetDesktopWindow());
     }
@@ -22,7 +22,7 @@ namespace xaml
         return TRUE;
     }
 
-    XAML_API vector<monitor> get_monitors()
+    vector<monitor> get_monitors()
     {
         vector<monitor> ms;
         THROW_IF_WIN32_BOOL_FALSE(EnumDisplayMonitors(NULL, NULL, MonitorEnum, (LPARAM)&ms));

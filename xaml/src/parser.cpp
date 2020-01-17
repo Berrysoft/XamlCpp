@@ -25,7 +25,7 @@ namespace xaml
         return oss.str();
     }
 
-    XAML_API xaml_no_default_constructor::xaml_no_default_constructor(type_index t) : logic_error(get_no_default_constructor_error(t))
+    xaml_no_default_constructor::xaml_no_default_constructor(type_index t) : logic_error(get_no_default_constructor_error(t))
     {
     }
 
@@ -36,7 +36,7 @@ namespace xaml
         return oss.str();
     }
 
-    XAML_API xaml_bad_type::xaml_bad_type(string_view ns, string_view name) : logic_error(get_bad_type_error(ns, name))
+    xaml_bad_type::xaml_bad_type(string_view ns, string_view name) : logic_error(get_bad_type_error(ns, name))
     {
     }
 
@@ -47,7 +47,7 @@ namespace xaml
         return oss.str();
     }
 
-    XAML_API xaml_no_member::xaml_no_member(type_index type, string_view name) : logic_error(get_xaml_no_member(type, name))
+    xaml_no_member::xaml_no_member(type_index type, string_view name) : logic_error(get_xaml_no_member(type, name))
     {
     }
 
@@ -88,12 +88,12 @@ namespace xaml
         }
     }
 
-    XAML_API parser::parser()
+    parser::parser()
     {
         LIBXML_TEST_VERSION;
     }
 
-    XAML_API parser::~parser()
+    parser::~parser()
     {
         if (!reader)
         {
@@ -108,19 +108,19 @@ namespace xaml
         xmlCleanupMemory();
     }
 
-    XAML_API void parser::open(string_view file)
+    void parser::open(string_view file)
     {
         buffer = nullptr;
         reader = xmlNewTextReaderFilename(file.data());
     }
 
-    XAML_API void parser::load(string_view xml)
+    void parser::load(string_view xml)
     {
         buffer = xmlParserInputBufferCreateMem(xml.data(), (int)xml.length(), XML_CHAR_ENCODING_UTF8);
         reader = xmlNewTextReader(buffer, nullptr);
     }
 
-    XAML_API markup_node parser::parse_markup(string_view value)
+    markup_node parser::parse_markup(string_view value)
     {
         string_view ns, name;
         size_t sep_index = 0;
@@ -194,7 +194,7 @@ namespace xaml
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
 
-    XAML_API int parser::parse_members(xaml_node& mc)
+    int parser::parse_members(xaml_node& mc)
     {
         int ret = 1;
         while (ret == 1)
@@ -406,7 +406,7 @@ namespace xaml
         return ret;
     }
 
-    XAML_API void parser::clean_up(int ret)
+    void parser::clean_up(int ret)
     {
         xmlFreeTextReader(reader);
         reader = nullptr;
@@ -416,7 +416,7 @@ namespace xaml
         }
     }
 
-    XAML_API tuple<int, xaml_node> parser::parse_impl()
+    tuple<int, xaml_node> parser::parse_impl()
     {
         string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(reader));
         string_view name = get_string_view(xmlTextReaderConstName(reader));
@@ -433,7 +433,7 @@ namespace xaml
         }
     }
 
-    XAML_API xaml_node parser::parse()
+    xaml_node parser::parse()
     {
         int ret = xmlTextReaderRead(reader);
         if (ret == 1)
@@ -457,13 +457,13 @@ namespace xaml
         return { type_index(typeid(nullptr_t)) };
     }
 #else
-    XAML_API parser::parser()
+    parser::parser()
     {
     }
 
-    XAML_API parser::~parser() {}
+    parser::~parser() {}
 
-    XAML_API void parser::open(string_view file)
+    void parser::open(string_view file)
     {
         wostringstream outs;
         {
@@ -484,13 +484,13 @@ namespace xaml
         }
     }
 
-    XAML_API void parser::load(string_view xml)
+    void parser::load(string_view xml)
     {
         doc.LoadXml(to_hstring(xml));
         opened = !!doc.DocumentElement();
     }
 
-    XAML_API markup_node parser::parse_markup(wstring_view value)
+    markup_node parser::parse_markup(wstring_view value)
     {
         wstring_view ns, name;
         size_t sep_index = 0;
@@ -564,7 +564,7 @@ namespace xaml
 
     static constexpr wstring_view x_ns{ L"https://github.com/Berrysoft/XamlCpp/xaml/" };
 
-    XAML_API void parser::parse_members(xaml_node& mc, IXmlNode const& e)
+    void parser::parse_members(xaml_node& mc, IXmlNode const& e)
     {
         hstring ns = unbox_value_or<hstring>(e.NamespaceUri(), {});
         for (auto attr : e.Attributes())
@@ -743,7 +743,7 @@ namespace xaml
         }
     }
 
-    XAML_API xaml_node parser::parse_impl(IXmlNode const& e)
+    xaml_node parser::parse_impl(IXmlNode const& e)
     {
         string ns = to_string(unbox_value_or<hstring>(e.NamespaceUri(), {}));
         string name = to_string(e.NodeName());
@@ -760,7 +760,7 @@ namespace xaml
         }
     }
 
-    XAML_API xaml_node parser::parse()
+    xaml_node parser::parse()
     {
         XmlElement e = doc.DocumentElement();
         return parse_impl(e);

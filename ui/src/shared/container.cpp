@@ -4,7 +4,7 @@ using namespace std;
 
 namespace xaml
 {
-    XAML_API void multicontainer::add_child(shared_ptr<control> const& child)
+    void multicontainer::add_child(shared_ptr<control> const& child)
     {
         if (child)
         {
@@ -17,7 +17,7 @@ namespace xaml
         }
     }
 
-    XAML_API void multicontainer::remove_child(shared_ptr<control> const& child)
+    void multicontainer::remove_child(shared_ptr<control> const& child)
     {
         child->set_parent(nullptr);
         auto it = find(m_children.begin(), m_children.end(), child);

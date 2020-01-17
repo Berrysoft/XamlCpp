@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    XAML_API entry::entry() : common_control()
+    entry::entry() : common_control()
     {
         add_text_changed([this](entry const&, string_view_t) {
             if (get_handle())
@@ -20,5 +20,5 @@ namespace xaml
         });
     }
 
-    XAML_API entry::~entry() {}
+    entry::~entry() {}
 } // namespace xaml

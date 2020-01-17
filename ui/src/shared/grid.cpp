@@ -107,11 +107,11 @@ namespace xaml
 
 #endif // !XAML_UI_WINRT
 
-    XAML_API unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
+    unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
 
-    XAML_API grid::grid() : multicontainer()
+    grid::grid() : multicontainer()
     {
     }
 
-    XAML_API grid::~grid() {}
+    grid::~grid() {}
 } // namespace xaml

@@ -8,21 +8,21 @@ using namespace Microsoft::Graphics::Canvas::UI::Xaml;
 
 namespace xaml
 {
-    XAML_API drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
+    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
     {
     }
 
     static Color get_Color(color c) { return ColorHelper::FromArgb(c.a, c.r, c.g, c.b); }
 
-    XAML_API void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
+    void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
         m_handle.DrawEllipse((float)(region.x + region.width / 2), (float)(region.y + region.height / 2), (float)region.width / 2.0f, (float)region.height / 2.0f, get_Color(pen.get_color()), (float)pen.get_width());
     }
 
-    XAML_API canvas::canvas() : common_control() {}
-    XAML_API canvas::~canvas() {}
+    canvas::canvas() : common_control() {}
+    canvas::~canvas() {}
 
-    XAML_API void canvas::__draw(rectangle const& region)
+    void canvas::__draw(rectangle const& region)
     {
         if (!get_handle())
         {

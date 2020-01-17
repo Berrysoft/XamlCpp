@@ -39,7 +39,7 @@ namespace xaml
         ~deserializer_markup_context() override {}
     };
 
-    XAML_API shared_ptr<meta_class> deserializer::construct_impl(xaml_node& node, shared_ptr<meta_class> root)
+    shared_ptr<meta_class> deserializer::construct_impl(xaml_node& node, shared_ptr<meta_class> root)
     {
         type_index t = node.type;
         if (node.map_class)
@@ -61,7 +61,7 @@ namespace xaml
         return nullptr;
     }
 
-    XAML_API void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
+    void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
     {
         symbols.emplace(node.name, mc);
         for (auto& prop : node.properties)
@@ -101,7 +101,7 @@ namespace xaml
         }
     }
 
-    XAML_API void deserializer::deserialize_extensions(xaml_node& node)
+    void deserializer::deserialize_extensions(xaml_node& node)
     {
         auto mc = symbols[node.name];
         for (auto& prop : node.properties)
@@ -131,7 +131,7 @@ namespace xaml
         }
     }
 
-    XAML_API void deserializer::deserialize(xaml_node& node, shared_ptr<meta_class> mc)
+    void deserializer::deserialize(xaml_node& node, shared_ptr<meta_class> mc)
     {
         if (mc)
         {
@@ -140,14 +140,14 @@ namespace xaml
         }
     }
 
-    XAML_API shared_ptr<meta_class> deserializer::deserialize(xaml_node& node)
+    shared_ptr<meta_class> deserializer::deserialize(xaml_node& node)
     {
         auto c = construct_impl(node, nullptr);
         deserialize(node, c);
         return c;
     }
 
-    XAML_API shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
+    shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
     {
         auto ex = construct(node.type);
         for (auto& p : node.properties)

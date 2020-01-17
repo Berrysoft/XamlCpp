@@ -9,7 +9,7 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    XAML_API void password_entry::__draw(rectangle const& region)
+    void password_entry::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -22,7 +22,7 @@ namespace xaml
         draw_text();
     }
 
-    XAML_API void password_entry::draw_size()
+    void password_entry::draw_size()
     {
         if (get_size() != size{})
         {
@@ -32,13 +32,13 @@ namespace xaml
         }
     }
 
-    XAML_API void password_entry::draw_text()
+    void password_entry::draw_text()
     {
         PasswordBox t = get_handle().as<PasswordBox>();
         t.Password(m_text);
     }
 
-    XAML_API void password_entry::draw_password_char()
+    void password_entry::draw_password_char()
     {
         PasswordBox t = get_handle().as<PasswordBox>();
         if (m_password_char)
@@ -51,7 +51,7 @@ namespace xaml
         }
     }
 
-    XAML_API void password_entry::__size_to_fit()
+    void password_entry::__size_to_fit()
     {
         PasswordBox t = get_handle().as<PasswordBox>();
         t.Measure({ INFINITY, INFINITY });

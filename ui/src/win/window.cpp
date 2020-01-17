@@ -12,7 +12,7 @@ namespace xaml
 {
     static unordered_map<HWND, weak_ptr<control>> window_map;
 
-    XAML_API LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+    LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd].lock();
@@ -20,7 +20,7 @@ namespace xaml
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 
-    XAML_API shared_ptr<window> __get_window(HWND hWnd)
+    shared_ptr<window> __get_window(HWND hWnd)
     {
         if (auto wnd = window_map[hWnd].lock())
         {
@@ -29,7 +29,7 @@ namespace xaml
         return nullptr;
     }
 
-    XAML_API window::window() : container(), m_resizable(true)
+    window::window() : container(), m_resizable(true)
     {
         add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
         add_location_changed([this](window const&, point) { if (get_handle() && !m_resizing) __draw({}); });
@@ -37,12 +37,12 @@ namespace xaml
         add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
     }
 
-    XAML_API window::~window()
+    window::~window()
     {
         window_map.erase(get_handle());
     }
 
-    XAML_API void window::__draw(rectangle const& region)
+    void window::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -78,22 +78,22 @@ namespace xaml
         THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle(), nullptr, FALSE));
     }
 
-    XAML_API void window::__parent_redraw()
+    void window::__parent_redraw()
     {
         __draw({});
     }
 
-    XAML_API void window::draw_title()
+    void window::draw_title()
     {
         THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
     }
 
-    XAML_API void window::draw_child()
+    void window::draw_child()
     {
         get_child()->__draw(get_client_region());
     }
 
-    XAML_API void window::draw_resizable()
+    void window::draw_resizable()
     {
         LONG_PTR style = GetWindowLongPtr(get_handle(), GWL_STYLE);
         if (m_resizable)
@@ -103,26 +103,26 @@ namespace xaml
         SetWindowLongPtr(get_handle(), GWL_STYLE, style);
     }
 
-    XAML_API void window::show()
+    void window::show()
     {
         __draw({});
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
 
-    XAML_API rectangle window::get_client_region() const
+    rectangle window::get_client_region() const
     {
         RECT r = {};
         THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
         return get_rect(r);
     }
 
-    XAML_API void window::__copy_hdc(rectangle const& region, HDC hDC)
+    void window::__copy_hdc(rectangle const& region, HDC hDC)
     {
         THROW_IF_WIN32_BOOL_FALSE(BitBlt(m_store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, hDC, 0, 0, SRCCOPY));
     }
 
-    XAML_API optional<LRESULT> window::__wnd_proc(window_message const& msg)
+    optional<LRESULT> window::__wnd_proc(window_message const& msg)
     {
         PAINTSTRUCT ps;
         wil::unique_hdc_paint hDC;

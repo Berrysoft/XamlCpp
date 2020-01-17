@@ -2,5 +2,5 @@
 
 namespace xaml
 {
-    XAML_API control::~control() {}
-}
+    control::~control() {}
+} // namespace xaml

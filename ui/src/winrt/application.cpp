@@ -7,9 +7,9 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    XAML_API application::~application() {}
+    application::~application() {}
 
-    XAML_API void application::init_components() {}
+    void application::init_components() {}
 
-    XAML_API int application::run() { return 0; }
+    int application::run() { return 0; }
 } // namespace xaml
