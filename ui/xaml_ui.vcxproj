@@ -46,6 +46,7 @@
     <ClInclude Include="include\xaml\ui\control.hpp" />
     <ClInclude Include="include\xaml\ui\drawing.hpp" />
     <ClInclude Include="include\xaml\ui\entry.hpp" />
+    <ClInclude Include="include\xaml\ui\filebox.hpp" />
     <ClInclude Include="include\xaml\ui\grid.hpp" />
     <ClInclude Include="include\xaml\ui\label.hpp" />
     <ClInclude Include="include\xaml\ui\meta.hpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="src\winrt\canvas.cpp" />
     <ClCompile Include="src\winrt\control.cpp" />
     <ClCompile Include="src\winrt\entry.cpp" />
+    <ClCompile Include="src\winrt\filebox.cpp" />
     <ClCompile Include="src\winrt\grid.cpp" />
     <ClCompile Include="src\winrt\label.cpp" />
     <ClCompile Include="src\winrt\msgbox.cpp" />

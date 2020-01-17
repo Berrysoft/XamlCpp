@@ -83,6 +83,9 @@
     <ClInclude Include="src\winrt\drawing.hpp">
       <Filter>src\winrt</Filter>
     </ClInclude>
+    <ClInclude Include="include\xaml\ui\filebox.hpp">
+      <Filter>include\xaml\ui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\shared\application.cpp">
@@ -144,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="src\shared\msgbox.cpp">
       <Filter>src\shared</Filter>
+    </ClCompile>
+    <ClCompile Include="src\winrt\filebox.cpp">
+      <Filter>src\winrt</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
