@@ -1,11 +1,9 @@
-#include <filesystem>
 #include <test_window.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/parser.hpp>
 #include <xaml/ui/msgbox.hpp>
 
 using namespace std;
-using namespace std::filesystem;
 using namespace xaml;
 
 namespace xaml::test
@@ -17,7 +15,7 @@ namespace xaml::test
 
     void test_window::init_components()
     {
-        parser p(absolute("test.xaml").string());
+        parser p("test.xaml");
         if (p.is_open())
         {
             deserializer des{};
