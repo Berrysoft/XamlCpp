@@ -8,6 +8,8 @@
 #ifdef XAML_UI_WINDOWS
 #include <ShObjIdl.h>
 #include <wil/com.h>
+#elif defined(XAML_UI_GTK3)
+#include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
@@ -23,6 +25,8 @@ namespace xaml
     private:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = wil::com_ptr<IFileDialog>;
+#elif defined(XAML_UI_GTK3)
+        using native_handle_type = GtkFileChooserDialog*;
 #endif // XAML_UI_WINDOWS
 
     protected:
