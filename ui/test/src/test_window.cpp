@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <test_window.hpp>
 #include <xaml/ui/entry.hpp>
+#include <xaml/ui/filebox.hpp>
 #include <xaml/ui/grid.hpp>
 #include <xaml/ui/label.hpp>
 #include <xaml/ui/msgbox.hpp>
@@ -99,7 +100,17 @@ namespace xaml::test
     void test_window::on_timer_tick(timer&)
     {
         msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info);
-        if (++count >= 3) tmr.stop();
+        if (++count >= 3)
+        {
+            tmr.stop();
+            open_filebox box{};
+            box.set_title(U("Open file"));
+            box.set_filters({ { U("All files"), U("*.*") } });
+            if (box.show(static_pointer_cast<window>(shared_from_this())))
+            {
+                msgbox(static_pointer_cast<window>(shared_from_this()), box.get_result(), U("Open file"));
+            }
+        }
     }
 
     void test_window::on_button_click(button_base& btn)
