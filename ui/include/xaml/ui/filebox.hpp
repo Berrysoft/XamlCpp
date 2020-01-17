@@ -26,7 +26,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = wil::com_ptr<IFileDialog>;
 #elif defined(XAML_UI_GTK3)
-        using native_handle_type = GtkFileChooserDialog*;
+        using native_handle_type = GtkWidget*;
 #endif // XAML_UI_WINDOWS
 
     protected:
