@@ -8,6 +8,12 @@ namespace xaml
     {
         if (m_handle)
         {
+            m_handle.canCreateDirectories = YES;
+            m_handle.showsHiddenFiles = YES;
+            m_handle.extensionHidden = NO;
+            m_handle.canSelectHiddenExtension = NO;
+            m_handle.treatsFilePackagesAsDirectories = YES;
+            if (owner) m_handle.parentWindow = owner->__get_window();
             m_handle.title = [NSString stringWithUTF8String:m_title.c_str()];
             m_handle.nameFieldStringValue = [NSString stringWithUTF8String:m_filename.c_str()];
             NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
@@ -46,7 +52,11 @@ namespace xaml
 
     bool open_filebox::show(shared_ptr<window> owner)
     {
-        set_handle([NSOpenPanel openPanel]);
+        NSOpenPanel* panel = [NSOpenPanel openPanel];
+        panel.canChooseFiles = YES;
+        panel.canChooseDirectories = NO;
+        panel.resolvesAliases = NO;
+        set_handle(panel);
         return filebox::show(owner);
     }
 
