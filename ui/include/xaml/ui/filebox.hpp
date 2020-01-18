@@ -1,6 +1,7 @@
 #ifndef XAML_UI_FILEBOX_HPP
 #define XAML_UI_FILEBOX_HPP
 
+#include "xaml/ui/objc.hpp"
 #include <functional>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
@@ -50,6 +51,8 @@ namespace xaml
         using native_handle_type = std::shared_ptr<__file_picker_wrapper>;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = GtkWidget*;
+#elif defined(XAML_UI_COCOA)
+        using native_handle_type = OBJC_OBJECT(NSSavePanel);
 #endif // XAML_UI_WINDOWS
 
     private:
