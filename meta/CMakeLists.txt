@@ -6,6 +6,9 @@ file(GLOB META_SOURCES "src/*.cpp")
 
 add_library(xaml_meta ${META_SOURCES})
 
+target_compile_definitions(xaml_meta PUBLIC ${XAML_BUILD_DEFINITIONS})
+target_compile_options(xaml_meta PUBLIC ${XAML_COMPILE_OPTIONS})
+
 target_include_directories(xaml_meta
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
