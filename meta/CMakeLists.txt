@@ -9,6 +9,12 @@ add_library(xaml_meta ${META_SOURCES})
 target_compile_definitions(xaml_meta PUBLIC ${XAML_BUILD_DEFINITIONS})
 target_compile_options(xaml_meta PUBLIC ${XAML_COMPILE_OPTIONS})
 
+if(CMAKE_VERSION VERSION_LESS 3.14)
+    target_link_libraries(xaml_meta INTERFACE ${XAML_LINK_OPTIONS})
+else()
+    target_link_options(xaml_meta PUBLIC ${XAML_LINK_OPTIONS})
+endif()
+
 target_include_directories(xaml_meta
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
