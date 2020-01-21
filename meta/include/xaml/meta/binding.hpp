@@ -1,8 +1,6 @@
 #ifndef XAML_META_BINDING_HPP
 #define XAML_META_BINDING_HPP
 
-#include <xaml/meta/conv.hpp>
-#include <xaml/meta/event.hpp>
 #include <xaml/meta/meta.hpp>
 #include <xaml/utility.hpp>
 
@@ -18,27 +16,6 @@ namespace xaml
 
     constexpr int operator&(binding_mode lhs, binding_mode rhs) { return (int)lhs & (int)rhs; }
     constexpr int operator|(binding_mode lhs, binding_mode rhs) { return (int)lhs | (int)rhs; }
-
-    class __binding_guard
-    {
-    private:
-        using token_type = typename event<>::token_type;
-
-        std::shared_ptr<meta_class> target;
-        std::shared_ptr<meta_class> source;
-
-        property_info target_prop;
-        event_info target_event;
-        property_info source_prop;
-        event_info source_event;
-
-        token_type target_token;
-        token_type source_token;
-
-    public:
-        XAML_API __binding_guard(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
-        XAML_API ~__binding_guard();
-    };
 
     XAML_API std::size_t bind(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
     XAML_API void unbind(std::size_t token);

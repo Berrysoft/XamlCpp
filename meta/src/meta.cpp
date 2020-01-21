@@ -6,15 +6,44 @@ using namespace std;
 
 namespace xaml
 {
-    static unordered_map<string, string> namespace_map;
-    static unordered_map<string, unordered_map<string, type_index>> type_map;
-    static unordered_map<type_index, tuple<string, string>> type_name_map;
+    struct type_index_wrapper
+    {
+        type_index type{ typeid(nullptr_t) };
+    };
+
+    struct meta_context
+    {
+        unordered_map<string, string> namespace_map;
+        unordered_map<string, unordered_map<string, type_index>> type_map;
+        unordered_map<type_index, tuple<string, string>> type_name_map;
+        unordered_set<type_index> enum_type_set;
+        unordered_map<type_index, unordered_map<type_index, shared_ptr<meta_class>>> attribute_map;
+        unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> static_method_map;
+        unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;
+        unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> method_map;
+        unordered_map<type_index, unordered_map<string, type_index_wrapper>> prop_type_map;
+    };
+
+    static shared_ptr<meta_context> m_current{ nullptr };
+
+    void init_context(shared_ptr<meta_context> const& ctx)
+    {
+        if (ctx)
+            m_current = ctx;
+        else
+            m_current = make_shared<meta_context>();
+    }
+
+    shared_ptr<meta_context> __get_context() noexcept
+    {
+        return m_current;
+    }
 
     static string get_real_namespace(string_view ns)
     {
         string sns{ ns };
-        auto it = namespace_map.find(sns);
-        if (it != namespace_map.end())
+        auto it = m_current->namespace_map.find(sns);
+        if (it != m_current->namespace_map.end())
         {
             return it->second;
         }
@@ -27,8 +56,8 @@ namespace xaml
     optional<type_index> get_type(string_view ns, string_view name) noexcept
     {
         string sns{ get_real_namespace(ns) };
-        auto it = type_map[sns].find((string)name);
-        if (it != type_map[sns].end())
+        auto it = m_current->type_map[sns].find((string)name);
+        if (it != m_current->type_map[sns].end())
         {
             return make_optional(it->second);
         }
@@ -40,8 +69,8 @@ namespace xaml
 
     optional<tuple<string, string>> get_type_name(type_index type) noexcept
     {
-        auto it = type_name_map.find(type);
-        if (it != type_name_map.end())
+        auto it = m_current->type_name_map.find(type);
+        if (it != m_current->type_name_map.end())
         {
             return it->second;
         }
@@ -53,47 +82,41 @@ namespace xaml
 
     void __register_type(string_view ns, string_view name, type_index type) noexcept
     {
-        type_map[get_real_namespace(ns)].emplace((string)name, type);
-        type_name_map[type] = make_tuple<string, string>((string)ns, (string)name);
+        m_current->type_map[get_real_namespace(ns)].emplace((string)name, type);
+        m_current->type_name_map[type] = make_tuple<string, string>((string)ns, (string)name);
     }
-
-    static unordered_set<type_index> enum_type_set;
 
     void __register_enum(type_index type) noexcept
     {
-        enum_type_set.emplace(move(type));
+        m_current->enum_type_set.emplace(move(type));
     }
 
     bool is_registered_enum(type_index type) noexcept
     {
-        return enum_type_set.find(type) != enum_type_set.end();
+        return m_current->enum_type_set.find(type) != m_current->enum_type_set.end();
     }
 
     void add_xml_namespace(string_view xmlns, string_view ns) noexcept
     {
-        namespace_map.emplace((string)xmlns, (string)ns);
+        m_current->namespace_map.emplace((string)xmlns, (string)ns);
     }
-
-    static unordered_map<type_index, unordered_map<type_index, shared_ptr<meta_class>>> attribute_map;
 
     shared_ptr<meta_class> __get_attribute(type_index type, type_index attr_type) noexcept
     {
-        return attribute_map[type][attr_type];
+        return m_current->attribute_map[type][attr_type];
     }
 
     void set_attribute(type_index type, shared_ptr<meta_class> attr) noexcept
     {
         if (attr)
         {
-            attribute_map[type][attr->this_type()] = attr;
+            m_current->attribute_map[type][attr->this_type()] = attr;
         }
     }
 
-    static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> static_method_map;
-
     shared_ptr<__type_erased_function> __get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
     {
-        auto its = static_method_map[type].equal_range((string)name);
+        auto its = m_current->static_method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
         {
             if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
@@ -106,14 +129,12 @@ namespace xaml
 
     void __add_static_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
-        static_method_map[type].emplace((string)name, func);
+        m_current->static_method_map[type].emplace((string)name, func);
     }
-
-    static unordered_multimap<type_index, shared_ptr<__type_erased_function>> ctor_map;
 
     shared_ptr<__type_erased_function> __get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
     {
-        auto its = ctor_map.equal_range(type);
+        auto its = m_current->ctor_map.equal_range(type);
         for (auto it = its.first; it != its.second; ++it)
         {
             if (it->second->is_same_arg_type(arg_types))
@@ -126,14 +147,12 @@ namespace xaml
 
     void __add_constructor(type_index type, shared_ptr<__type_erased_function> ctor) noexcept
     {
-        ctor_map.emplace(type, ctor);
+        m_current->ctor_map.emplace(type, ctor);
     }
-
-    static unordered_map<type_index, unordered_multimap<string, shared_ptr<__type_erased_function>>> method_map;
 
     shared_ptr<__type_erased_function> __get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
     {
-        auto its = method_map[type].equal_range((string)name);
+        auto its = m_current->method_map[type].equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
         {
             if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
@@ -146,7 +165,7 @@ namespace xaml
 
     shared_ptr<__type_erased_function> __get_first_method(type_index type, string_view name) noexcept
     {
-        auto its = method_map[type].equal_range((string)name);
+        auto its = m_current->method_map[type].equal_range((string)name);
         if (its.first != its.second)
         {
             return its.first->second;
@@ -156,23 +175,16 @@ namespace xaml
 
     void __add_method(type_index type, string_view name, shared_ptr<__type_erased_function> func) noexcept
     {
-        method_map[type].emplace((string)name, func);
+        m_current->method_map[type].emplace((string)name, func);
     }
-
-    struct type_index_wrapper
-    {
-        type_index type{ typeid(nullptr_t) };
-    };
-
-    unordered_map<type_index, unordered_map<string, type_index_wrapper>> prop_type_map;
 
     type_index __get_property_type(type_index type, string_view name) noexcept
     {
-        return prop_type_map[type][(string)name].type;
+        return m_current->prop_type_map[type][(string)name].type;
     }
 
     void __set_property_type(type_index type, string_view name, type_index prop_type) noexcept
     {
-        prop_type_map[type][(string)name].type = prop_type;
+        m_current->prop_type_map[type][(string)name].type = prop_type;
     }
 } // namespace xaml

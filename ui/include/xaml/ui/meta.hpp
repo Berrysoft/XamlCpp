@@ -12,8 +12,9 @@
 
 namespace xaml
 {
-    inline void init_meta() noexcept
+    inline void init_meta(std::shared_ptr<meta_context> const& ctx = nullptr) noexcept
     {
+        init_context(ctx);
         add_xml_namespace("https://github.com/Berrysoft/XamlCpp/", "xaml");
         register_class<
             application,

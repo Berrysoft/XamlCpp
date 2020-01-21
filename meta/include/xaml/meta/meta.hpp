@@ -62,6 +62,12 @@ namespace xaml
         }
     };
 
+    struct meta_context;
+
+    XAML_API void init_context(std::shared_ptr<meta_context> const& ctx = nullptr);
+
+    XAML_API std::shared_ptr<meta_context> __get_context() noexcept;
+
     // REGISTER CLASS METHOD
 
     template <typename... T>

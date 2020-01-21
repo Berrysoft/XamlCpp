@@ -51,6 +51,8 @@ public:
 
 int main()
 {
+    // Initialize metadata context.
+    init_context();
     // A helper method to register many classes.
     register_class<calculator>();
 
