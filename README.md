@@ -22,7 +22,7 @@ An example is [here](./ui/test/main.cpp)
 |Win32|Windows API, GDI+|Windows|Windows|
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
 |Cocoa|NeXTStep|MacOS|MacOS|
-|WinRT*|Windows Runtime|Windows|Windows|
+|WinRT|Windows Runtime|Windows|Windows|
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.
@@ -42,7 +42,7 @@ Here's an XAML example:
 ```
 The `xmlns` should be `https://github.com/Berrysoft/XamlCpp/` to use default controls. The xml attributes decribes the properties, events and attach properties of a control.
 
-The XAML parser uses libxml2. For Windows developers, you can install it with `vcpkg`.
+The XAML parser uses libxml2 on non-WinRT platforms. For Windows developers, you can install it with `vcpkg`.
 
 ## XAML Compiler
 The reflection component is a little heavy and slow, compared to static-compiled code. XAML Compiler solves the problem by compiling XAML to native C++ code. The XAML code above may be compiled to:
