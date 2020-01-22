@@ -81,8 +81,6 @@ if(NOT (CMAKE_VERSION VERSION_LESS 3.16))
     endif()
 endif()
 
-add_subdirectory(meta)
-
 set(XAML_PRIVATE_INCLUDE_DIRS )
 
 if(${BUILD_WINDOWS})
@@ -93,6 +91,7 @@ elseif(${BUILD_GTK3})
     set(XAML_PRIVATE_INCLUDE_DIRS ${GTK3_INCLUDE_DIRS})
 endif()
 
+add_subdirectory(meta)
 add_subdirectory(ui)
 add_subdirectory(xaml)
 add_subdirectory(xamlc)
