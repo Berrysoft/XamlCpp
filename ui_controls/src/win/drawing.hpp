@@ -2,6 +2,7 @@
 #define XAML_UI_INTERNAL_WINDOWS_DRAWING_HPP
 
 #include <Windows.h>
+#include <gdiplus.h>
 #include <xaml/ui/drawing.hpp>
 
 namespace xaml
@@ -10,6 +11,14 @@ namespace xaml
     constexpr RECT get_RECT(rectangle const& r) { return { (LONG)r.x, (LONG)r.y, (LONG)(r.x + r.width), (LONG)(r.y + r.height) }; }
 
     constexpr size get_size(SIZE s) { return { (double)s.cx, (double)s.cy }; }
+
+    inline Gdiplus::PointF get_PointF(point p) { return { (float)p.x, (float)p.y }; }
+    inline Gdiplus::RectF get_RectF(rectangle const& r) { return { (float)r.x, (float)r.y, (float)r.width, (float)r.height }; }
+
+    constexpr INT get_font_style(bool italic, bool bold)
+    {
+        return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
+    }
 } // namespace xaml
 
 #endif // !XAML_UI_INTERNAL_WINDOWS_DRAWING_HPP

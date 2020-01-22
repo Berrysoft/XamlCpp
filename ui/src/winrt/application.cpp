@@ -7,7 +7,10 @@ using namespace Windows::UI::Xaml::Controls;
 
 namespace xaml
 {
-    application::~application() {}
+    application::~application()
+    {
+        cleanup_modules();
+    }
 
     void application::init_components() {}
 

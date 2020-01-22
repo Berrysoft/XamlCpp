@@ -26,10 +26,6 @@ namespace xaml
     void* module::get_method(string_view name)
     {
         FARPROC p = GetProcAddress(get_handle(), name.data());
-        if (!p)
-        {
-            throw system_error(GetLastError(), system_category());
-        }
         return (void*)p;
     }
 
@@ -55,10 +51,6 @@ namespace xaml
     void* module::get_method(string_view name)
     {
         void* p = dlsym(get_handle(), name.data());
-        if (!p)
-        {
-            throw system_error(error_code{}, dlerror());
-        }
         return p;
     }
 
@@ -78,8 +70,20 @@ namespace xaml
 
     void module::register_meta() noexcept
     {
-        void (*pinit)(void*) = (void (*)(void*))get_method("init_meta");
+        void (*pinit)(void*) noexcept = (void (*)(void*) noexcept)get_method("init_meta");
         auto context = __get_context();
         pinit(&context);
+    }
+
+    void module::init_components() noexcept
+    {
+        void* (*pinit)() noexcept = (void* (*)() noexcept)get_method("init_components");
+        if (pinit) m_token = pinit();
+    }
+
+    void module::cleanup_components() noexcept
+    {
+        void (*pcleanup)(void*) noexcept = (void (*)(void*) noexcept)get_method("init_components");
+        if (pcleanup) pcleanup(m_token);
     }
 } // namespace xaml

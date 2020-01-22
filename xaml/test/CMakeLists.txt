@@ -8,5 +8,6 @@ else()
 endif()
 target_include_directories(xaml_test PUBLIC include)
 target_link_libraries(xaml_test xaml)
+target_link_libraries(xaml_test xaml_ui_controls)
 
 configure_file(view/test.xaml ${CMAKE_BINARY_DIR}/bin/test.xaml COPYONLY)

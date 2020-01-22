@@ -1,7 +1,7 @@
 #ifndef XAML_UTILITY_HPP
 #define XAML_UTILITY_HPP
 
-#if defined(xaml_meta_EXPORTS) || defined(xaml_ui_EXPORTS) || defined(xaml_EXPORTS) || defined(xamlc_EXPORTS)
+#if defined(xaml_meta_EXPORTS) || defined(xaml_ui_EXPORTS) || defined(xaml_ui_controls_EXPORTS) || defined(xaml_EXPORTS) || defined(xamlc_EXPORTS)
 #define XAML_EXPORTS
 #endif // xaml_meta_EXPORTS || xaml_ui_EXPORTS || xaml_EXPORTS || xamlc_EXPORTS
 

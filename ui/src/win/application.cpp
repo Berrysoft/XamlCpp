@@ -1,12 +1,10 @@
 #include <Windows.h>
-#include <gdiplus.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
-using namespace Gdiplus;
 
 namespace xaml
 {
@@ -46,13 +44,11 @@ namespace xaml
         ncm.cbSize = sizeof(ncm);
         THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0));
         s_default_font = CreateFontIndirect(&ncm.lfMessageFont);
-        GdiplusStartupInput gdiplusStartupInput;
-        GdiplusStartup(&m_gdiplus_oken, &gdiplusStartupInput, NULL);
     }
 
     application::~application()
     {
-        GdiplusShutdown(m_gdiplus_oken);
+        cleanup_modules();
     }
 
     HFONT application::__default_font() const

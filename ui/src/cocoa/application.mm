@@ -34,5 +34,6 @@ namespace xaml
     application::~application()
     {
         [NSApp terminate:nil];
+        cleanup_modules();
     }
 }

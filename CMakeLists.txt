@@ -93,5 +93,6 @@ endif()
 
 add_subdirectory(meta)
 add_subdirectory(ui)
+add_subdirectory(ui_controls)
 add_subdirectory(xaml)
 add_subdirectory(xamlc)

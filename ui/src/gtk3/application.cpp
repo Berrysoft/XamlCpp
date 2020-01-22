@@ -18,5 +18,6 @@ namespace xaml
 
     application::~application()
     {
+        cleanup_modules();
     }
 } // namespace xaml

@@ -34,9 +34,7 @@ target_include_directories(xaml_ui
 )
 
 target_link_libraries(xaml_ui xaml_meta)
-if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui gdiplus)
-elseif(${BUILD_COCOA})
+if(${BUILD_COCOA})
     target_link_libraries(xaml_ui "-framework Cocoa")
     if(${SET_OBJCXX_MANULLY})
         target_compile_options(xaml_ui PRIVATE "-xobjective-c++")
@@ -48,7 +46,8 @@ endif()
 if(${USE_PCH})
     target_precompile_headers(xaml_ui
         PUBLIC
-            <$<BUILD_INTERFACE:xaml/ui/meta.hpp>>
+            <$<BUILD_INTERFACE:xaml/ui/application.hpp>>
+            <$<BUILD_INTERFACE:xaml/ui/window.hpp>>
     )
 endif()
 
@@ -61,5 +60,3 @@ install(EXPORT xaml_ui-targets DESTINATION lib/cmake/xaml_ui)
 
 configure_file(cmake/xaml_ui-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake DESTINATION lib/cmake/xaml_ui)
-
-add_subdirectory(test)

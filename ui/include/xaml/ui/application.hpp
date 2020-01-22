@@ -3,8 +3,12 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
+#include <typeindex>
+#include <unordered_map>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 
@@ -24,10 +28,6 @@ namespace xaml
 
         int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
-
-#ifdef XAML_UI_WINDOWS
-        ULONG_PTR m_gdiplus_oken;
-#endif // XAML_UI_WINDOWS
 
     private:
         application(int argc, char_t** argv)
@@ -52,6 +52,32 @@ namespace xaml
         XAML_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
 #endif
         XAML_API static std::shared_ptr<application> current();
+
+    private:
+        std::unordered_map<std::type_index, std::tuple<void*, std::function<void(void*)>>> m_token_map;
+        std::unordered_map<string_view_t, module> m_module_map;
+
+    public:
+        template <typename T>
+        void add_module() noexcept
+        {
+            auto t = std::type_index(typeid(T));
+            auto it = m_token_map.find(t);
+            if (it == m_token_map.end())
+            {
+                m_token_map.emplace(t, std::make_tuple<void*, std::function<void(void*)>>(T::init_components(), &T::cleanup_components));
+            }
+        }
+
+        XAML_API void add_module(string_view_t path);
+
+        void cleanup_modules()
+        {
+            for (auto& p : m_token_map)
+            {
+                std::get<1>(p.second)(std::get<0>(p.second));
+            }
+        }
 
 #ifdef XAML_UI_WINDOWS
         XAML_API HFONT __default_font() const;

@@ -68,6 +68,12 @@ namespace xaml
 
     XAML_API std::shared_ptr<meta_context> __get_context() noexcept;
 
+    template <typename T>
+    inline void add_module()
+    {
+        T::init_meta(__get_context());
+    }
+
     // REGISTER CLASS METHOD
 
     template <typename... T>

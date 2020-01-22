@@ -20,6 +20,13 @@ namespace xaml
 
     shared_ptr<application> application::current() { return s_current; }
 
+    void application::add_module(string_view_t path)
+    {
+        module m{ path };
+        m.init_components();
+        m_module_map.emplace(path, move(m));
+    }
+
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
     application::application(LPWSTR lpCmdLine)
     {

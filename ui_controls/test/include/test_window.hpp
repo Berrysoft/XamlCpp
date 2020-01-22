@@ -1,5 +1,5 @@
-#ifndef XAML_TEST_TEST_WINDOW_HPP
-#define XAML_TEST_TEST_WINDOW_HPP
+#ifndef XAML_UI_TEST_TEST_WINDOW_HPP
+#define XAML_UI_TEST_TEST_WINDOW_HPP
 
 #include <xaml/ui/controls/button.hpp>
 #include <xaml/ui/controls/canvas.hpp>
@@ -26,16 +26,7 @@ namespace xaml::test
         void on_button_click(button_base& btn);
 
         void on_canvas_redraw(canvas& cv, drawing_context& dc);
-
-        static void register_class() noexcept
-        {
-            REGISTER_TYPE(xaml::test, test_window);
-            ADD_CTOR_DEF();
-            ADD_WINDOW_MEMBERS();
-            ADD_METHOD(on_button_click);
-            ADD_METHOD(on_canvas_redraw);
-        }
     };
 } // namespace xaml::test
 
-#endif // !XAML_TEST_TEST_WINDOW_HPP
+#endif // !XAML_UI_TEST_TEST_WINDOW_HPP

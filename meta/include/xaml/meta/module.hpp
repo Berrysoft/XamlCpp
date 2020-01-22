@@ -40,6 +40,13 @@ namespace xaml
         XAML_API void close();
 
         XAML_API void register_meta() noexcept;
+
+    private:
+        void* m_token{ nullptr };
+
+    public:
+        XAML_API void init_components() noexcept;
+        XAML_API void cleanup_components() noexcept;
     };
 } // namespace xaml
 

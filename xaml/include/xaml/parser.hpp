@@ -23,7 +23,7 @@ namespace xaml
 {
     inline void init_parser() noexcept
     {
-        init_meta();
+        ui_init_traits::init_meta();
         register_class<binding>();
         REGISTER_ENUM(xaml, binding_mode);
     }

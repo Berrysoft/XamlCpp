@@ -28,9 +28,9 @@ namespace xaml
 
     void init_context(shared_ptr<meta_context> const& ctx)
     {
-        if (ctx)
+        if (ctx && ctx != m_current)
             m_current = ctx;
-        else
+        else if (!m_current)
             m_current = make_shared<meta_context>();
     }
 
