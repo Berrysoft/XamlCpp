@@ -15,6 +15,10 @@ else()
     target_link_options(xaml_meta PUBLIC ${XAML_LINK_OPTIONS})
 endif()
 
+if(UNIX)
+    target_link_libraries(xaml_meta PUBLIC dl)
+endif()
+
 target_include_directories(xaml_meta
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
