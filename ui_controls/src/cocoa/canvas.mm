@@ -1,6 +1,6 @@
 #import <cocoa/XamlCanvasView.h>
 #include <functional>
-#include <xaml/ui/canvas.hpp>
+#include <xaml/ui/controls/canvas.hpp>
 
 @implementation XamlCanvasView : NSView
 @synthesize classPointer;

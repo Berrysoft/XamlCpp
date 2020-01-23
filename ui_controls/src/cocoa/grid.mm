@@ -1,5 +1,5 @@
 #include <shared/grid.hpp>
-#include <xaml/ui/grid.hpp>
+#include <xaml/ui/controls/grid.hpp>
 
 using namespace std;
 

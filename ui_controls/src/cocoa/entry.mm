@@ -1,6 +1,6 @@
 #import <cocoa/XamlEntryDelegate.h>
 #include <cocoa/drawing.hpp>
-#include <xaml/ui/entry.hpp>
+#include <xaml/ui/controls/entry.hpp>
 
 @implementation XamlEntryDelegate
 - (void)controlTextDidChange:(NSNotification*)obj

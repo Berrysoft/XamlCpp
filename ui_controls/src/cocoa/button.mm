@@ -1,6 +1,6 @@
 #import <cocoa/XamlButtonDelegate.h>
 #include <cocoa/drawing.hpp>
-#include <xaml/ui/button.hpp>
+#include <xaml/ui/controls/button.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
 - (NSButton*)newButton
