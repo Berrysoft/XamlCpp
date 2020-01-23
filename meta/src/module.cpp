@@ -31,7 +31,14 @@ namespace xaml
         return p;
     }
 
-    static path get_full_path(string_view name)
+    static path get_in_lib_path(string_view name)
+    {
+        path p{ name };
+        if (p.is_relative()) p = path{ U("..") } / path(U("lib")) / p;
+        return p;
+    }
+
+    static path get_full_path(string_view name, bool in_lib = false)
     {
         path p = get_right_path(name);
         if (exists(p))
@@ -46,11 +53,17 @@ namespace xaml
             }
             else
             {
-                string nname = "lib" + (string)name;
+                p.replace_filename(path{ U("lib") } += p.filename());
+                string nname = p.string();
                 p = get_right_path(nname);
             }
             if (exists(p))
                 return p;
+            else if (!in_lib)
+            {
+                p = get_in_lib_path(name);
+                return get_full_path(p.string(), true);
+            }
             else
                 return name;
         }
@@ -87,7 +100,7 @@ namespace xaml
     {
         close();
         auto p = get_full_path(name);
-        set_handle(dlopen(p.data(), RTLD_LAZY));
+        set_handle(dlopen(p.c_str(), RTLD_LAZY));
         if (!get_handle())
         {
             throw system_error(error_code{}, dlerror());

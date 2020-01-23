@@ -22,9 +22,8 @@ namespace xaml
 
     void application::add_module(string_view path)
     {
-        module m{ path };
-        m.init_components();
-        m_module_map.emplace(path, move(m));
+        m_module_map.emplace(path, module{ path });
+        m_module_map[path].init_components();
     }
 
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
