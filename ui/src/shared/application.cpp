@@ -20,7 +20,7 @@ namespace xaml
 
     shared_ptr<application> application::current() { return s_current; }
 
-    void application::add_module(string_view_t path)
+    void application::add_module(string_view path)
     {
         module m{ path };
         m.init_components();

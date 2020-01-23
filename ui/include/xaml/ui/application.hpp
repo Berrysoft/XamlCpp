@@ -55,7 +55,7 @@ namespace xaml
 
     private:
         std::unordered_map<std::type_index, std::tuple<void*, std::function<void(void*)>>> m_token_map;
-        std::unordered_map<string_view_t, module> m_module_map;
+        std::unordered_map<std::string_view, module> m_module_map;
 
     public:
         template <typename T>
@@ -69,13 +69,17 @@ namespace xaml
             }
         }
 
-        XAML_API void add_module(string_view_t path);
+        XAML_API void add_module(std::string_view path);
 
         void cleanup_modules()
         {
             for (auto& p : m_token_map)
             {
                 std::get<1>(p.second)(std::get<0>(p.second));
+            }
+            for (auto& p : m_module_map)
+            {
+                p.second.cleanup_components();
             }
         }
 

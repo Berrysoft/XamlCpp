@@ -1,7 +1,6 @@
 #ifndef XAML_MODULE_MODULE_HPP
 #define XAML_MODULE_MODULE_HPP
 
-#include <xaml/strings.hpp>
 #include <xaml/utility.hpp>
 
 #ifdef WIN32
@@ -31,11 +30,11 @@ namespace xaml
 
     public:
         module() {}
-        module(string_view_t path) : module() { open(path); }
+        module(std::string_view name) : module() { open(name); }
 
         ~module() { close(); }
 
-        XAML_API void open(string_view_t path);
+        XAML_API void open(std::string_view name);
         XAML_API void* get_method(std::string_view name);
         XAML_API void close();
 

@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 #endif // XAML_UI_WINDOWS
 {
     init_parser();
-    module m(U("xaml_ui_controls.dll"));
+    module m("xaml_ui_controls");
     m.register_meta();
     register_class<test_window>();
 #ifdef XAML_UI_WINDOWS
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 #else
     auto app = application::init(argc, argv);
 #endif
-    app->add_module(U("xaml_ui_controls.dll"));
+    app->add_module("xaml_ui_controls");
     auto wnd = make_shared<test_window>();
     wnd->init_components();
     wnd->show();

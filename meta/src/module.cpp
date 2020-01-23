@@ -1,22 +1,67 @@
+#include <filesystem>
 #include <xaml/meta/meta.hpp>
 #include <xaml/meta/module.hpp>
+#include <xaml/strings.hpp>
 
 #ifdef WIN32
 #include <system_error>
 #include <wil/result_macros.h>
+
+constexpr xaml::string_view_t module_extension{ U(".dll") };
 #else
 #include <dlfcn.h>
+#ifdef __APPLE__
+constexpr xaml::string_view_t module_extension{ U(".dylib") };
+#else
+constexpr xaml::string_view_t module_extension{ U(".so") };
+#endif // __APPLE__
 #endif // WIN32
 
+constexpr std::string_view module_prefix{ "lib" };
+
 using namespace std;
+using namespace std::filesystem;
 
 namespace xaml
 {
+    static path get_right_path(string_view name)
+    {
+        path p{ name };
+        if (!p.has_extension()) p.replace_extension(module_extension);
+        return p;
+    }
+
+    static path get_full_path(string_view name)
+    {
+        path p = get_right_path(name);
+        if (exists(p))
+        {
+            return p;
+        }
+        else
+        {
+            if (name.length() >= module_prefix.length() && module_prefix == name.substr(0, 3))
+            {
+                p = get_right_path(name.substr(4));
+            }
+            else
+            {
+                string nname = "lib" + (string)name;
+                p = get_right_path(nname);
+            }
+            if (exists(p))
+                return p;
+            else
+                return name;
+        }
+    }
+
 #ifdef WIN32
-    void module::open(string_view_t path)
+    void module::open(string_view name)
     {
         close();
-        set_handle(LoadLibrary(path.data()));
+        auto p = get_full_path(name);
+        set_handle(LoadLibrary(p.c_str()));
         if (!get_handle())
         {
             throw system_error(GetLastError(), system_category());
@@ -38,10 +83,11 @@ namespace xaml
         }
     }
 #else
-    void module::open(string_view_t path)
+    void module::open(string_view name)
     {
         close();
-        set_handle(dlopen(path.data(), RTLD_LAZY));
+        auto p = get_full_path(name);
+        set_handle(dlopen(p.data(), RTLD_LAZY));
         if (!get_handle())
         {
             throw system_error(error_code{}, dlerror());
