@@ -14,7 +14,7 @@ extern "C"
     XAML_UI_CONTROLS_META_API void init_meta(void* ctx) noexcept
     {
         shared_ptr<meta_context>* pctx = (shared_ptr<meta_context>*)ctx;
-        ui_controls_init_traits::init_meta(*pctx);
+        ui_controls_init_traits::init_meta(pctx ? *pctx : nullptr);
     }
 }
 

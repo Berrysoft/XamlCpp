@@ -32,5 +32,7 @@ int main(int argc, char** argv)
     auto wnd = make_shared<test_window>();
     wnd->init_components();
     wnd->show();
-    return app->run();
+    app->run();
+    unbind_all();
+    cleanup_context();
 }

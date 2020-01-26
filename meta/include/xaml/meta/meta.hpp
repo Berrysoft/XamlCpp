@@ -68,6 +68,8 @@ namespace xaml
 
     XAML_META_API std::shared_ptr<meta_context> __get_context() noexcept;
 
+    XAML_META_API void cleanup_context();
+
     template <typename T>
     inline void add_module()
     {

@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
+#include <xaml/meta/binding.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
 

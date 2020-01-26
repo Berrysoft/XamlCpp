@@ -39,6 +39,11 @@ namespace xaml
         return m_current;
     }
 
+    void cleanup_context()
+    {
+        m_current = nullptr;
+    }
+
     static string get_real_namespace(string_view ns)
     {
         string sns{ ns };

@@ -65,4 +65,9 @@ namespace xaml
     {
         bind_map.erase(token);
     }
+
+    void unbind_all()
+    {
+        bind_map.clear();
+    }
 } // namespace xaml

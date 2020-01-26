@@ -19,6 +19,7 @@ namespace xaml
 
     XAML_META_API std::size_t bind(std::shared_ptr<meta_class> target, std::string_view target_prop, std::shared_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
     XAML_META_API void unbind(std::size_t token);
+    XAML_META_API void unbind_all();
 } // namespace xaml
 
 #endif // !XAML_META_BINDING_HPP
