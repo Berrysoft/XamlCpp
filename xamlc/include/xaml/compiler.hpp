@@ -7,6 +7,19 @@
 
 namespace xaml
 {
+    class compiler_module : public module
+    {
+    public:
+        compiler_module() : module() {}
+        compiler_module(std::string_view path) : module(path) {}
+        ~compiler_module() override {}
+
+        XAMLC_API bool can_compile(std::type_index type);
+        XAMLC_API std::string compile(std::type_index type, std::string_view code);
+    };
+
+    XAMLC_API void add_compiler_module(std::string_view path);
+
     class compiler
     {
     public:

@@ -1,17 +1,40 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <map>
 #include <ostream>
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
 #include <xaml/ui/drawing.hpp>
-#include <xaml/ui/controls/grid.hpp>
 
 using namespace std;
 
 namespace xaml
 {
+    bool compiler_module::can_compile(type_index type)
+    {
+        int (*pcc)(void*) noexcept = (int (*)(void*) noexcept)get_method("can_compile");
+        return pcc(&type);
+    }
+
+    string compiler_module::compile(type_index type, string_view code)
+    {
+        void (*pc)(void*, const char*, void*) noexcept = (void (*)(void*, const char*, void*) noexcept)get_method("compile");
+        string result;
+        pc(&type, code.data(), &result);
+        return result;
+    }
+
+    map<string_view, shared_ptr<compiler_module>> m_cmodules;
+
+    void add_compiler_module(string_view path)
+    {
+        auto m = make_shared<compiler_module>(path);
+        m->register_meta();
+        m_cmodules.emplace(path, m);
+    }
+
     static array int_types{
         type_index(typeid(int8_t)), type_index(typeid(int16_t)), type_index(typeid(int32_t)), type_index(typeid(int64_t)),
         type_index(typeid(uint8_t)), type_index(typeid(uint16_t)), type_index(typeid(uint32_t)), type_index(typeid(uint64_t))
@@ -46,24 +69,6 @@ namespace xaml
         return false;
     }
 
-    static ostream& compile_grid_length(ostream& stream, grid_length length)
-    {
-        stream << "{ " << length.value << ", ";
-        switch (length.layout)
-        {
-        case grid_layout::abs:
-            stream << "::xaml::grid_layout::abs";
-            break;
-        case grid_layout::star:
-            stream << "::xaml::grid_layout::star";
-            break;
-        case grid_layout::compact:
-            stream << "::xaml::grid_layout::compact";
-            break;
-        }
-        return stream << " }";
-    }
-
     static string xaml_cpp_compile(type_index type, string_view code)
     {
         if (type == type_index(typeid(bool)))
@@ -95,24 +100,6 @@ namespace xaml
             stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
             return stream.str();
         }
-        else if (type == type_index(typeid(std::vector<grid_length> const&)))
-        {
-            auto lengths = value_converter_traits<std::vector<grid_length> const&>::convert(code);
-            ostringstream stream;
-            stream << "{ ";
-            auto bit = lengths.begin();
-            auto eit = lengths.end();
-            if (bit != eit)
-            {
-                compile_grid_length(stream, *bit);
-                for (++bit; bit != eit; ++bit)
-                {
-                    compile_grid_length(stream << ", ", *bit);
-                }
-            }
-            stream << " }";
-            return stream.str();
-        }
         else if (is_registered_enum(type))
         {
             auto [ns, name] = *get_type_name(type);
@@ -122,6 +109,13 @@ namespace xaml
         }
         else
         {
+            for (auto& p : m_cmodules)
+            {
+                if (p.second->can_compile(type))
+                {
+                    return p.second->compile(type, code);
+                }
+            }
             return (string)code;
         }
     }

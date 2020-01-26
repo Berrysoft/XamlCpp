@@ -47,7 +47,7 @@ namespace xaml
             return *this;
         }
 
-        ~module() { close(); }
+        virtual ~module() { close(); }
 
         XAML_META_API void open(std::string_view name);
         XAML_META_API void close();
