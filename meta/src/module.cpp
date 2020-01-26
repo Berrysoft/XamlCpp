@@ -34,7 +34,10 @@ namespace xaml
     static path get_in_lib_path(string_view name)
     {
         path p{ name };
-        if (p.is_relative()) p = path{ U("..") } / path(U("lib")) / p;
+        if (p.has_parent_path() && p.has_filename())
+        {
+            return p.parent_path() / path{ U("..") } / path{ U("lib") } / p.filename();
+        }
         return p;
     }
 
