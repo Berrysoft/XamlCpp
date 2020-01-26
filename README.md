@@ -14,7 +14,7 @@ Reflection is heavily used by XAML parser, but it is optional if you don't want 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
 
-An example is [here](./ui/test/main.cpp)
+An example is [here](./ui_controls/test/main.cpp)
 
 ### Supported platforms
 |Name|API set|Supported OS|Recommanded OS|
@@ -22,7 +22,6 @@ An example is [here](./ui/test/main.cpp)
 |Win32|Windows API, GDI+|Windows|Windows|
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
 |Cocoa|NeXTStep|MacOS|MacOS|
-|WinRT|Windows Runtime|Windows|Windows|
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.

@@ -106,22 +106,3 @@ jobs:
     displayName: 'Publish'
     inputs:
       artifactName: 'publish'
-
-- job: 'Build_winrt'
-  pool:
-    vmImage: 'windows-latest'
-
-  variables:
-    solution: 'XamlCpp.WinRT.sln'
-
-  steps:
-  - task: NuGetCommand@2
-    displayName: 'Restore solution'
-    inputs:
-      restoreSolution: '$(solution)'
-
-  - task: MSBuild@1
-    displayName: 'Build solution'
-    inputs:
-      solution: '$(solution)'
-      configuration: 'Release'
