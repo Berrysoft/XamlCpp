@@ -14,7 +14,6 @@ target_include_directories(xaml_ui_controls_meta
 )
 
 target_link_libraries(xaml_ui_controls_meta xaml_ui_controls)
-target_link_libraries(xaml_ui_controls_meta xamlc)
 
 install(FILES ${UI_CONTROLS_META_HEADERS} DESTINATION include/xaml/ui/controls)
 install(TARGETS xaml_ui_controls_meta EXPORT xaml_ui_controls_meta-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)

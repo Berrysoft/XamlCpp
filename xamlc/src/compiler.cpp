@@ -15,18 +15,22 @@ namespace xaml
     bool compiler_module::can_compile(type_index type)
     {
         int (*pcc)(void*) noexcept = (int (*)(void*) noexcept)get_method("can_compile");
-        return pcc(&type);
+        return pcc ? pcc(&type) : false;
     }
 
     string compiler_module::compile(type_index type, string_view code)
     {
         void (*pc)(void*, const char*, void*) noexcept = (void (*)(void*, const char*, void*) noexcept)get_method("compile");
-        string result;
-        pc(&type, code.data(), &result);
-        return result;
+        if (pc)
+        {
+            string result;
+            pc(&type, code.data(), &result);
+            return result;
+        }
+        return {};
     }
 
-    map<string_view, shared_ptr<compiler_module>> m_cmodules;
+    static map<string_view, shared_ptr<compiler_module>> m_cmodules;
 
     void add_compiler_module(string_view path)
     {
