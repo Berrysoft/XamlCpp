@@ -37,11 +37,11 @@ jobs:
   - script: |
       vcpkg install libxml2:x64-windows wil:x64-windows
     displayName: 'Install libxml2 & wil'
-    condition: eq(variables.rid, 'win')
+    condition: eq(variables.plat, 'win')
 
   - script: |
-      vcpkg install libxml2:x64-windows gtk:x64-windows
-    displayName: 'Install libxml2 & gtk'
+      vcpkg install gtk:x64-windows
+    displayName: 'Install gtk'
     condition: eq(variables.rid, 'win-gtk')
 
   - script: |
