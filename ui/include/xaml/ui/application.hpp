@@ -14,9 +14,6 @@
 
 #if defined(XAML_UI_WINDOWS)
 #include <Windows.h>
-#elif defined(XAML_UI_WINRT)
-#include "winrt/Windows.UI.Xaml.Controls.h"
-#include <Windows.h>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml

@@ -5,7 +5,6 @@ using namespace std;
 
 namespace xaml
 {
-#ifndef XAML_UI_WINRT
     static double get_max_compact(size_t index, vector<shared_ptr<control>> const& children, bool vertical)
     {
         double result = 0;
@@ -104,8 +103,6 @@ namespace xaml
         }
         return max_region;
     }
-
-#endif // !XAML_UI_WINRT
 
     unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
 

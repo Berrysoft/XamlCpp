@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     register_class<test_window>();
 #ifdef XAML_UI_WINDOWS
     auto app = application::init(lpCmdLine);
-#elif defined(XAML_UI_WINRT) || defined(WIN32)
+#elif defined(WIN32)
     auto app = application::init();
 #else
     auto app = application::init(argc, argv);

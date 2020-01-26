@@ -3,6 +3,7 @@
 
 #include <iosfwd>
 #include <xaml/meta/meta.hpp>
+#include <xaml/meta/module.hpp>
 #include <xaml/xaml_node.hpp>
 
 namespace xaml

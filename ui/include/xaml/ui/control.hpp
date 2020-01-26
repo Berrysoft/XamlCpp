@@ -13,8 +13,6 @@
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
 #include <optional>
-#elif defined(XAML_UI_WINRT)
-#include "winrt/Windows.UI.Xaml.h"
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
@@ -114,8 +112,6 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = HWND;
-#elif defined(XAML_UI_WINRT)
-        using native_handle_type = winrt::Windows::UI::Xaml::FrameworkElement;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = GtkWidget*;
 #elif defined(XAML_UI_COCOA)

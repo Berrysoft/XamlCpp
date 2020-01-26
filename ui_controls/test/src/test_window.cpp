@@ -101,20 +101,18 @@ namespace xaml::test
 
     void test_window::on_timer_tick(timer&)
     {
-        msgbox_async(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok, [this](msgbox_result) {
-            if (++count >= 3)
+        msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok);
+        if (++count >= 3)
+        {
+            tmr.stop();
+            openbox.set_title(U("Open file"));
+            openbox.set_filters({ { U("XAML file"), U("*.xaml") } });
+            bool res = openbox.show(static_pointer_cast<window>(shared_from_this()));
+            if (res)
             {
-                tmr.stop();
-                openbox.set_title(U("Open file"));
-                openbox.set_filters({ { U("XAML file"), U("*.xaml") } });
-                openbox.show_async(static_pointer_cast<window>(shared_from_this()), [this](bool res) {
-                    if (res)
-                    {
-                        msgbox(static_pointer_cast<window>(shared_from_this()), openbox.get_result(), U("Open file"));
-                    }
-                });
+                msgbox(static_pointer_cast<window>(shared_from_this()), openbox.get_result(), U("Open file"));
             }
-        });
+        }
     }
 
     void test_window::on_button_click(button_base& btn)

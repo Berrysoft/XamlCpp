@@ -9,8 +9,6 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
-#elif defined(XAML_UI_WINRT)
-#include "winrt/Windows.UI.Xaml.h"
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
@@ -46,13 +44,9 @@ namespace xaml
         static gboolean on_timeout(gpointer data);
 #endif // XAML_UI_GTK3
 
-#if defined(XAML_UI_COCOA) || defined(XAML_UI_WINRT)
+#ifdef XAML_UI_COCOA
     public:
-#ifdef XAML_UI_WINRT
-        using __native_handle_type = winrt::Windows::UI::Xaml::DispatcherTimer;
-#elif defined(XAML_UI_COCOA)
         using __native_handle_type = OBJC_OBJECT(NSTimer);
-#endif // XAML_UI_WINRT
 
     private:
         __native_handle_type m_handle{ OBJC_NIL };
@@ -63,11 +57,9 @@ namespace xaml
     protected:
         void __set_handle(__native_handle_type value) OBJC_BLOCK({ m_handle = value; });
 
-#ifdef XAML_UI_COCOA
     public:
         void __on_tick();
 #endif // XAML_UI_COCOA
-#endif // XAML_UI_COCOA || XAML_UI_WINRT
 
     private:
         std::chrono::milliseconds m_interval;
@@ -85,11 +77,6 @@ namespace xaml
     public:
         timer(std::chrono::milliseconds interval = std::chrono::milliseconds{ 1 }) : m_interval(interval) {}
         ~timer() { stop(); }
-
-#ifdef XAML_UI_WINRT
-    private:
-        XAML_UI_API void init();
-#endif // XAML_UI_WINRT
 
     public:
         XAML_UI_API void start();

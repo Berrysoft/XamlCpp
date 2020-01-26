@@ -7,8 +7,6 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <wil/resource.h>
-#elif defined(XAML_UI_WINRT)
-#include "winrt/Windows.UI.Xaml.Controls.h"
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
@@ -74,10 +72,6 @@ namespace xaml
         std::shared_ptr<control> get_root_window() override { return shared_from_this(); }
 
         XAML_UI_API void show();
-
-#ifdef XAML_UI_WINRT
-        XAML_UI_API void show(winrt::Windows::UI::Xaml::Controls::Page const& p);
-#endif // XAML_UI_WINRT
 
         PROP_EVENT(resizable, bool)
         EVENT(resizable_changed, window&, bool)

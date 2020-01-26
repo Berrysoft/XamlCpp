@@ -8,13 +8,11 @@
 #include <gdiplus.h>
 #include <memory>
 #include <wil/resource.h>
-#elif defined(XAML_UI_WINRT)
-#include "winrt/Microsoft.Graphics.Canvas.h"
 #elif defined(XAML_UI_COCOA)
 #include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
-#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA) || defined(XAML_UI_WINRT)
+#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
 #define USE_CUSTOM_DRAWING_TYPES
 #endif
 
@@ -121,8 +119,6 @@ namespace xaml
     public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = Gdiplus::Graphics*;
-#elif defined(XAML_UI_WINRT)
-        using native_handle_type = winrt::Microsoft::Graphics::Canvas::CanvasDrawingSession;
 #elif defined(XAML_UI_GTK3)
         using native_handle_type = cairo_t*;
 #elif defined(XAML_UI_COCOA)

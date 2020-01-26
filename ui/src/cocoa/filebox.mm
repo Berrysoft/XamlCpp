@@ -44,12 +44,6 @@ namespace xaml
         return false;
     }
 
-    void filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        auto res = show(owner);
-        if (callback) callback(res);
-    }
-
     bool open_filebox::show(shared_ptr<window> owner)
     {
         NSOpenPanel* panel = [NSOpenPanel openPanel];
@@ -60,19 +54,9 @@ namespace xaml
         return filebox::show(owner);
     }
 
-    void open_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        filebox::show_async(owner, callback);
-    }
-
     bool save_filebox::show(shared_ptr<window> owner)
     {
         set_handle([NSSavePanel savePanel]);
         return filebox::show(owner);
-    }
-
-    void save_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        filebox::show_async(owner, callback);
     }
 }

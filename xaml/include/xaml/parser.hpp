@@ -1,6 +1,7 @@
 #ifndef XAML_PARSER_HPP
 #define XAML_PARSER_HPP
 
+#include <libxml/xmlreader.h>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -12,12 +13,6 @@
 #include <xaml/meta/meta.hpp>
 #include <xaml/ui/meta.hpp>
 #include <xaml/xaml_node.hpp>
-
-#ifndef XAML_UI_WINRT
-#include <libxml/xmlreader.h>
-#else
-#include "winrt/Windows.Data.Xml.Dom.h"
-#endif // !XAML_UI_WINRT
 
 namespace xaml
 {
@@ -56,26 +51,14 @@ namespace xaml
     class parser
     {
     private:
-#ifndef XAML_UI_WINRT
         xmlTextReaderPtr reader{ nullptr };
         xmlParserInputBufferPtr buffer{ nullptr };
-#else
-        winrt::Windows::Data::Xml::Dom::XmlDocument doc{};
-        bool opened{ false };
-#endif // !XAML_UI_WINRT
 
     public:
-#ifndef XAML_UI_WINRT
         constexpr bool is_open() const noexcept
         {
             return reader;
         }
-#else
-        constexpr bool is_open() const noexcept
-        {
-            return opened;
-        }
-#endif // !XAML_UI_WINRT
 
         XAML_API void open(std::string_view file);
         XAML_API void load(std::string_view xml);
@@ -92,16 +75,10 @@ namespace xaml
         XAML_API ~parser();
 
     private:
-#ifndef XAML_UI_WINRT
         XAML_API markup_node parse_markup(std::string_view value);
         XAML_API int parse_members(xaml_node& mc);
         XAML_API std::tuple<int, xaml_node> parse_impl();
         XAML_API void clean_up(int ret);
-#else
-        XAML_API markup_node parse_markup(std::wstring_view value);
-        XAML_API void parse_members(xaml_node& mc, winrt::Windows::Data::Xml::Dom::IXmlNode const& e);
-        XAML_API xaml_node parse_impl(winrt::Windows::Data::Xml::Dom::IXmlNode const& e);
-#endif // !XAML_UI_WINRT
 
     public:
         XAML_API xaml_node parse();

@@ -74,7 +74,7 @@ namespace xaml
     {
         close();
         auto p = get_full_path(name);
-        set_handle(LoadLibrary(p.c_str()));
+        set_handle(LoadLibraryW(p.c_str()));
         if (!get_handle())
         {
             throw system_error(GetLastError(), system_category());

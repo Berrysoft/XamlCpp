@@ -7,16 +7,6 @@ using namespace wil;
 
 namespace xaml
 {
-    //filebox::~filebox() {}
-
-    //string_t filebox::get_result() const
-    //{
-    //}
-
-    //vector<string_t> filebox::get_results() const
-    //{
-    //}
-
     bool filebox::show(shared_ptr<window> owner)
     {
         if (m_handle)
@@ -70,31 +60,15 @@ namespace xaml
         return false;
     }
 
-    void filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        auto res = show(owner);
-        if (callback) callback(res);
-    }
-
     bool open_filebox::show(shared_ptr<window> owner)
     {
         set_handle(CoCreateInstance<FileOpenDialog, IFileDialog>(CLSCTX_INPROC_SERVER));
         return filebox::show(owner);
     }
 
-    void open_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        filebox::show_async(owner, callback);
-    }
-
     bool save_filebox::show(shared_ptr<window> owner)
     {
         set_handle(CoCreateInstance<FileSaveDialog, IFileDialog>(CLSCTX_INPROC_SERVER));
         return filebox::show(owner);
-    }
-
-    void save_filebox::show_async(shared_ptr<window> owner, function<void(bool)> callback)
-    {
-        filebox::show_async(owner, callback);
     }
 } // namespace xaml
