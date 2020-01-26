@@ -1,4 +1,4 @@
-project(XamlMeta VERSION 1.0.0 LANGUAGES CXX)
+project(XamlMeta CXX)
 
 file(GLOB UTILITY_HEADERS "include/xaml/*.hpp")
 file(GLOB META_HEADERS "include/xaml/meta/*.hpp")
@@ -26,6 +26,11 @@ target_include_directories(xaml_meta
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
         ${XAML_PRIVATE_INCLUDE_DIRS}
+)
+
+set_target_properties(xaml_meta PROPERTIES
+    VERSION ${CMAKE_PROJECT_VERSION}
+    SOVERSION ${CMAKE_PROJECT_VERSION}
 )
 
 install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)

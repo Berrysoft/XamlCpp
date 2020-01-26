@@ -19,6 +19,11 @@ target_include_directories(xaml
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+set_target_properties(xaml PROPERTIES
+    VERSION ${CMAKE_PROJECT_VERSION}
+    SOVERSION ${CMAKE_PROJECT_VERSION}
+)
+
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
 install(TARGETS xaml EXPORT xaml-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)

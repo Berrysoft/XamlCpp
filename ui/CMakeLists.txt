@@ -51,6 +51,11 @@ if(${USE_PCH})
     )
 endif()
 
+set_target_properties(xaml_ui PROPERTIES
+    VERSION ${CMAKE_PROJECT_VERSION}
+    SOVERSION ${CMAKE_PROJECT_VERSION}
+)
+
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 if(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)

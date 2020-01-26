@@ -49,6 +49,11 @@ if(${USE_PCH})
     )
 endif()
 
+set_target_properties(xaml_ui_controls PROPERTIES
+    VERSION ${CMAKE_PROJECT_VERSION}
+    SOVERSION ${CMAKE_PROJECT_VERSION}
+)
+
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)
 install(TARGETS xaml_ui_controls EXPORT xaml_ui_controls-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml_ui_controls-targets DESTINATION lib/cmake/xaml_ui_controls)

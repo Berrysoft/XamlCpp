@@ -14,6 +14,11 @@ target_include_directories(xamlc
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+set_target_properties(xamlc PROPERTIES
+    VERSION ${CMAKE_PROJECT_VERSION}
+    SOVERSION ${CMAKE_PROJECT_VERSION}
+)
+
 install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml)
 install(TARGETS xamlc EXPORT xamlc-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xamlc-targets DESTINATION lib/cmake/xamlc)
