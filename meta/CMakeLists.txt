@@ -1,4 +1,4 @@
-project(XamlMeta CXX)
+project(XamlMeta VERSION 1.0.0 LANGUAGES CXX)
 
 file(GLOB UTILITY_HEADERS "include/xaml/*.hpp")
 file(GLOB META_HEADERS "include/xaml/meta/*.hpp")

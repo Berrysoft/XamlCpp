@@ -10,6 +10,7 @@
 constexpr xaml::string_view_t module_extension{ U(".dll") };
 #else
 #include <dlfcn.h>
+
 #ifdef __APPLE__
 constexpr xaml::string_view_t module_extension{ U(".dylib") };
 #else
@@ -34,11 +35,21 @@ namespace xaml
     static path get_in_lib_path(string_view name)
     {
         path p{ name };
-        if (p.has_parent_path() && p.has_filename())
+        if (p.has_parent_path())
         {
-            return p.parent_path() / path{ U("..") } / path{ U("lib") } / p.filename();
+            if (p.has_filename())
+            {
+                return p.parent_path() / path{ U("..") } / path{ U("lib") } / p.filename();
+            }
+            else
+            {
+                return p;
+            }
         }
-        return p;
+        else
+        {
+            return path{ U("..") } / path{ U("lib") } / p;
+        }
     }
 
     static path get_full_path(string_view name, bool in_lib = false)
