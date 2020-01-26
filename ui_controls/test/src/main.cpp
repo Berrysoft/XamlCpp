@@ -1,6 +1,5 @@
 #include <test_window.hpp>
 #include <xaml/ui/application.hpp>
-#include <xaml/ui/controls/meta.hpp>
 
 #ifdef WIN32
 #include <Windows.h>
@@ -25,7 +24,6 @@ int main(int argc, char** argv)
 #else
     auto app = application::init(argc, argv);
 #endif
-    app->add_module<ui_controls_init_traits>();
     // Construct a window.
     auto wnd = make_shared<test_window>();
     // Initialize the window.

@@ -60,3 +60,5 @@ install(EXPORT xaml_ui-targets DESTINATION lib/cmake/xaml_ui)
 
 configure_file(cmake/xaml_ui-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/xaml_ui-config.cmake DESTINATION lib/cmake/xaml_ui)
+
+add_subdirectory(meta)

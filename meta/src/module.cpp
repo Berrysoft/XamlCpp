@@ -133,16 +133,4 @@ namespace xaml
         auto context = __get_context();
         pinit(&context);
     }
-
-    void module::init_components() noexcept
-    {
-        void* (*pinit)() noexcept = (void* (*)() noexcept)get_method("init_components");
-        if (pinit) m_token = pinit();
-    }
-
-    void module::cleanup_components() noexcept
-    {
-        void (*pcleanup)(void*) noexcept = (void (*)(void*) noexcept)get_method("init_components");
-        if (pcleanup) pcleanup(m_token);
-    }
 } // namespace xaml

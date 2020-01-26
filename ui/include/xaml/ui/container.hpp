@@ -59,8 +59,8 @@ namespace xaml
         static constexpr bool is_container() noexcept { return true; }
         static constexpr bool is_multicontainer() noexcept { return true; }
 
-        XAML_API void add_child(std::shared_ptr<control> const& child);
-        XAML_API void remove_child(std::shared_ptr<control> const& child);
+        XAML_UI_API void add_child(std::shared_ptr<control> const& child);
+        XAML_UI_API void remove_child(std::shared_ptr<control> const& child);
         std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
 
     public:

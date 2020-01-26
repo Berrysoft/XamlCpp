@@ -35,56 +35,26 @@ namespace xaml
             m_cmd_lines.assign(argv, argv + argc);
         }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        XAML_API application(LPWSTR lpCmdLine);
+        XAML_UI_API application(LPWSTR lpCmdLine);
 #endif
 
-        XAML_API void init_components();
+        XAML_UI_API void init_components();
 
     public:
-        XAML_API virtual ~application();
+        XAML_UI_API virtual ~application();
 
         const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
-        XAML_API int run();
+        XAML_UI_API int run();
 
-        XAML_API static std::shared_ptr<application> init(int argc, char_t** argv);
+        XAML_UI_API static std::shared_ptr<application> init(int argc, char_t** argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        XAML_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
+        XAML_UI_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
 #endif
-        XAML_API static std::shared_ptr<application> current();
-
-    private:
-        std::unordered_map<std::type_index, std::tuple<void*, std::function<void(void*)>>> m_token_map;
-        std::unordered_map<std::string_view, module> m_module_map;
-
-    public:
-        template <typename T>
-        void add_module() noexcept
-        {
-            auto t = std::type_index(typeid(T));
-            auto it = m_token_map.find(t);
-            if (it == m_token_map.end())
-            {
-                m_token_map.emplace(t, std::make_tuple<void*, std::function<void(void*)>>(T::init_components(), &T::cleanup_components));
-            }
-        }
-
-        XAML_API void add_module(std::string_view path);
-
-        void cleanup_modules()
-        {
-            for (auto& p : m_token_map)
-            {
-                std::get<1>(p.second)(std::get<0>(p.second));
-            }
-            for (auto& p : m_module_map)
-            {
-                p.second.cleanup_components();
-            }
-        }
+        XAML_UI_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS
-        XAML_API HFONT __default_font() const;
+        XAML_UI_API HFONT __default_font() const;
 #endif // XAML_UI_WINDOWS
 
         static void register_class() noexcept

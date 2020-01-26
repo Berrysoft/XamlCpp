@@ -91,12 +91,12 @@ namespace xaml
 
 #ifdef XAML_UI_WINRT
     private:
-        XAML_API winrt::fire_and_forget show_async_impl(std::shared_ptr<window> owner, std::function<void(bool)> callback);
+        XAML_UI_API winrt::fire_and_forget show_async_impl(std::shared_ptr<window> owner, std::function<void(bool)> callback);
 #endif // XAML_UI_WINRT
 
     public:
-        XAML_API virtual bool show(std::shared_ptr<window> owner = nullptr);
-        XAML_API virtual void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback);
+        XAML_UI_API virtual bool show(std::shared_ptr<window> owner = nullptr);
+        XAML_UI_API virtual void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback);
         void show_async(std::function<void(bool)> callback) { show_async(nullptr, callback); }
     };
 
@@ -106,8 +106,8 @@ namespace xaml
         open_filebox() : filebox() {}
         ~open_filebox() override {}
 
-        XAML_API bool show(std::shared_ptr<window> owner = nullptr) override;
-        XAML_API void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback) override;
+        XAML_UI_API bool show(std::shared_ptr<window> owner = nullptr) override;
+        XAML_UI_API void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback) override;
     };
 
     class save_filebox : public filebox
@@ -116,8 +116,8 @@ namespace xaml
         save_filebox() : filebox() {}
         ~save_filebox() override {}
 
-        XAML_API bool show(std::shared_ptr<window> owner = nullptr) override;
-        XAML_API void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback) override;
+        XAML_UI_API bool show(std::shared_ptr<window> owner = nullptr) override;
+        XAML_UI_API void show_async(std::shared_ptr<window> owner, std::function<void(bool)> callback) override;
     };
 } // namespace xaml
 

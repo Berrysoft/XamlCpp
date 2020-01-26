@@ -18,23 +18,23 @@ namespace xaml
 #endif // PASSWORD_ENTRY_INHERITS_ENTRY
     {
     public:
-        XAML_API password_entry();
-        XAML_API ~password_entry() override;
+        XAML_UI_CONTROLS_API password_entry();
+        XAML_UI_CONTROLS_API ~password_entry() override;
 
     public:
-        XAML_API void __draw(rectangle const& region) override;
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
 #ifndef PASSWORD_ENTRY_INHERITS_ENTRY
     public:
-        XAML_API void __size_to_fit() override;
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
 
     private:
-        XAML_API void draw_size();
-        XAML_API void draw_text();
+        XAML_UI_CONTROLS_API void draw_size();
+        XAML_UI_CONTROLS_API void draw_text();
 #endif // !PASSWORD_ENTRY_INHERITS_ENTRY
 
     private:
-        XAML_API void draw_password_char();
+        XAML_UI_CONTROLS_API void draw_password_char();
 
     public:
 #ifndef PASSWORD_ENTRY_INHERITS_ENTRY

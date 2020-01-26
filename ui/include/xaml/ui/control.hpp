@@ -134,8 +134,8 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     protected:
-        XAML_API void __create(window_create_params const& params);
-        XAML_API size __measure_text_size(string_view_t str) const;
+        XAML_UI_API void __create(window_create_params const& params);
+        XAML_UI_API size __measure_text_size(string_view_t str) const;
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
@@ -156,11 +156,11 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        XAML_API control();
-        XAML_API virtual ~control();
+        XAML_UI_API control();
+        XAML_UI_API virtual ~control();
 
         virtual void __draw(rectangle const& region) = 0;
-        XAML_API virtual void __size_to_fit();
+        XAML_UI_API virtual void __size_to_fit();
 
         EVENT(parent_changed, control&, std::shared_ptr<control>)
 
@@ -169,7 +169,7 @@ namespace xaml
 
     public:
         std::shared_ptr<control> get_parent() const { return m_parent; }
-        XAML_API void set_parent(std::shared_ptr<control> const& value);
+        XAML_UI_API void set_parent(std::shared_ptr<control> const& value);
 
     private:
         std::shared_ptr<meta_class> m_data_context{ nullptr };
@@ -182,7 +182,7 @@ namespace xaml
         virtual std::shared_ptr<control> get_root_window() { return m_parent; }
 
     protected:
-        XAML_API virtual void __parent_redraw();
+        XAML_UI_API virtual void __parent_redraw();
 
     private:
         EVENT(size_changed, control&, size)

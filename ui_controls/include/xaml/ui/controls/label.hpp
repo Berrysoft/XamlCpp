@@ -10,22 +10,22 @@ namespace xaml
     class label : public common_control
     {
     public:
-        XAML_API label();
-        XAML_API ~label() override;
+        XAML_UI_CONTROLS_API label();
+        XAML_UI_CONTROLS_API ~label() override;
 
 #ifdef XAML_UI_WINDOWS
     public:
-        XAML_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
     public:
-        XAML_API void __draw(rectangle const& region) override;
-        XAML_API void __size_to_fit() override;
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
 
     private:
-        XAML_API void draw_size();
-        XAML_API void draw_text();
-        XAML_API void draw_alignment();
+        XAML_UI_CONTROLS_API void draw_size();
+        XAML_UI_CONTROLS_API void draw_text();
+        XAML_UI_CONTROLS_API void draw_alignment();
 
         PROP(text_halignment, halignment_t)
 

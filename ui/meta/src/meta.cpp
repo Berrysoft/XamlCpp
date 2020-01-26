@@ -6,7 +6,7 @@
 using namespace std;
 using namespace xaml;
 
-extern "C" XAML_API void init_meta(void* ctx) noexcept
+extern "C" XAML_UI_META_API void init_meta(void* ctx) noexcept
 {
     shared_ptr<meta_context>* pctx = (shared_ptr<meta_context>*)ctx;
     ui_init_traits::init_meta(*pctx);
@@ -27,8 +27,4 @@ namespace xaml
         REGISTER_ENUM(xaml, halignment_t);
         REGISTER_ENUM(xaml, valignment_t);
     }
-
-    void* ui_init_traits::init_components() noexcept { return nullptr; }
-
-    void ui_init_traits::cleanup_components(void* token) noexcept {}
 } // namespace xaml

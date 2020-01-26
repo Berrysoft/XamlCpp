@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    XAML_API unsigned int screen_dpi();
+    XAML_UI_API unsigned int screen_dpi();
 
     struct monitor
     {
@@ -15,7 +15,7 @@ namespace xaml
         rectangle client;
     };
 
-    XAML_API std::vector<monitor> get_monitors();
+    XAML_UI_API std::vector<monitor> get_monitors();
 } // namespace xaml
 
 #endif // !XAML_UI_SCREEN_HPP

@@ -48,7 +48,6 @@ namespace xaml
 
     application::~application()
     {
-        cleanup_modules();
     }
 
     HFONT application::__default_font() const

@@ -8,7 +8,7 @@ find_package(LibXml2 REQUIRED)
 
 add_library(xaml ${XAML_SOURCES})
 target_link_libraries(xaml ${LIBXML2_LIBRARIES})
-target_link_libraries(xaml xaml_ui)
+target_link_libraries(xaml xaml_ui_meta)
 
 target_include_directories(xaml
     PUBLIC 

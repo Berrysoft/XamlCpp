@@ -90,12 +90,12 @@ namespace xaml
     class grid : public multicontainer
     {
     public:
-        XAML_API grid();
-        XAML_API ~grid() override;
+        XAML_UI_CONTROLS_API grid();
+        XAML_UI_CONTROLS_API ~grid() override;
 
 #ifdef XAML_UI_WINDOWS
     public:
-        XAML_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
@@ -104,7 +104,7 @@ namespace xaml
 #endif // XAML_UI_GTK3
 
     public:
-        XAML_API void __draw(rectangle const& region) override;
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
     private:
         std::vector<grid_length> m_columns;
@@ -121,7 +121,7 @@ namespace xaml
         void set_rows(std::vector<grid_length> const& value) { m_rows = value; }
 
     private:
-        XAML_API static std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;
+        XAML_UI_CONTROLS_API static std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;
 
     public:
         static void set_column(std::shared_ptr<control> const& c, std::size_t col) { m_indecies[c].column = col; }

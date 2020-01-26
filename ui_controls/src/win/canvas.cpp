@@ -158,4 +158,17 @@ namespace xaml
             wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
         }
     }
+
+    struct gdiplus_init_guard
+    {
+        ULONG_PTR token;
+        gdiplus_init_guard()
+        {
+            GdiplusStartupInput gdiplusStartupInput{};
+            GdiplusStartup(&token, &gdiplusStartupInput, NULL);
+        }
+        ~gdiplus_init_guard() { GdiplusShutdown(token); }
+    };
+
+    static gdiplus_init_guard init_guard{};
 } // namespace xaml

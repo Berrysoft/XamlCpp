@@ -37,10 +37,10 @@ namespace xaml
         no
     };
 
-    XAML_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok);
+    XAML_UI_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok);
     inline msgbox_result msgbox(string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok) { return msgbox(nullptr, message, title, style, buttons); }
 
-    XAML_API void msgbox_async(std::shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, std::function<void(msgbox_result)> callback);
+    XAML_UI_API void msgbox_async(std::shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, std::function<void(msgbox_result)> callback);
     inline void msgbox_async(string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons, std::function<void(msgbox_result)> callback) { msgbox_async(message, title, style, buttons, callback); }
 } // namespace xaml
 

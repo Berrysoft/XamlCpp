@@ -56,4 +56,6 @@ install(EXPORT xaml_ui_controls-targets DESTINATION lib/cmake/xaml_ui_controls)
 configure_file(cmake/xaml_ui_controls-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui_controls-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/xaml_ui_controls-config.cmake DESTINATION lib/cmake/xaml_ui_controls)
 
+add_subdirectory(meta)
+
 add_subdirectory(test)

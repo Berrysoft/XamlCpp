@@ -20,7 +20,6 @@ namespace xaml
 #endif // WIN32
     private:
         native_handle_type m_handle{ nullptr };
-        void* m_token{ nullptr };
 
     public:
         constexpr native_handle_type get_handle() const noexcept { return m_handle; }
@@ -37,29 +36,27 @@ namespace xaml
         module(module const&) = delete;
         module& operator=(module const&) = delete;
 
-        module(module&& m) : m_handle(m.m_handle), m_token(m.m_token)
+        module(module&& m) : m_handle(m.m_handle)
         {
             m.m_handle = nullptr;
-            m.m_token = nullptr;
         }
 
         module& operator=(module&& m)
         {
             std::swap(m_handle, m.m_handle);
-            std::swap(m_token, m.m_token);
             return *this;
         }
 
         ~module() { close(); }
 
-        XAML_API void open(std::string_view name);
-        XAML_API void* get_method(std::string_view name);
-        XAML_API void close();
+        XAML_META_API void open(std::string_view name);
+        XAML_META_API void close();
 
-        XAML_API void register_meta() noexcept;
+    protected:
+        XAML_META_API void* get_method(std::string_view name);
 
-        XAML_API void init_components() noexcept;
-        XAML_API void cleanup_components() noexcept;
+    public:
+        XAML_META_API void register_meta() noexcept;
     };
 } // namespace xaml
 
