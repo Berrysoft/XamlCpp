@@ -263,6 +263,14 @@ namespace xaml
         return stream;
     }
 
+    ostream& compiler::write_deserialize(ostream& stream, string_view path)
+    {
+        write_indent(stream) << "::xaml::parser __p(\"" << path << "\");" << endl;
+        write_indent(stream) << "::xaml::deserializer __des{};" << endl;
+        write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
+        return stream;
+    }
+
     constexpr string_view this_name{ "this" };
 
     static string_view get_node_name(xaml_node& node, bool is_this)
@@ -373,9 +381,7 @@ namespace xaml
                 write_begin_block(stream);
                 write_init_decl(stream, name);
                 write_begin_block(stream);
-                write_indent(stream) << "::xaml::parser __p(\"" << path << "\");" << endl;
-                write_indent(stream) << "::xaml::deserializer __des{};" << endl;
-                write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
+                write_deserialize(stream, path);
                 write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<" << name << ">(shared_from_this()));" << endl;
                 write_end_block(stream);
                 write_end_block(stream);
@@ -383,9 +389,7 @@ namespace xaml
             else
             {
                 write_construct(stream, node.name, node.type);
-                write_indent(stream) << "::xaml::parser __p(\"" << path << "\");" << endl;
-                write_indent(stream) << "::xaml::deserializer __des{};" << endl;
-                write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
+                write_deserialize(stream, path);
                 write_indent(stream) << "auto wnd = __des.deserialize(__node);" << endl;
             }
         }

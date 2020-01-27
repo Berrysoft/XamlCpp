@@ -30,6 +30,7 @@ namespace xaml
     private:
         size_t indent_count{ 0 };
 
+    protected:
         XAMLC_API std::ostream& write_indent(std::ostream& stream);
 
         XAMLC_API std::ostream& write_begin_block(std::ostream& stream);
@@ -53,6 +54,8 @@ namespace xaml
         XAMLC_API std::ostream& write_add_event(std::ostream& stream, xaml_node& this_node, std::string_view name, xaml_event& ev);
 
         XAMLC_API std::ostream& write_markup(std::ostream& stream, std::string_view name, std::string_view prop, std::shared_ptr<meta_class> markup);
+
+        XAMLC_API std::ostream& write_deserialize(std::ostream& stream, std::string_view path);
 
         XAMLC_API std::ostream& compile_impl(std::ostream& stream, xaml_node& node, xaml_node& this_node, bool is_this);
         XAMLC_API std::ostream& compile_extensions(std::ostream& stream, xaml_node& node, bool is_this);
