@@ -17,7 +17,7 @@
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA)
-#import <Cocoa/Cocoa.h>
+#include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
@@ -134,7 +134,7 @@ namespace xaml
     {
         return std::make_tuple((std::max)(0, (int)s.width), (std::max)(1, (int)s.height));
     }
-#elif defined(XAML_UI_COCOA)
+#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
     constexpr size from_native(NSSize s)
     {
         return { s.width, s.height };
@@ -191,7 +191,7 @@ namespace xaml
     {
         return { (int)p.x, (int)p.y };
     }
-#elif defined(XAML_UI_COCOA)
+#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
     constexpr point from_native(NSPoint p)
     {
         return { p.x, p.y };
@@ -301,7 +301,7 @@ namespace xaml
     {
         return { (int)r.x, (int)r.y, (int)r.width, (int)r.height };
     }
-#elif defined(XAML_UI_COCOA)
+#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
     constexpr rectangle from_native(NSRect const& r)
     {
         return { r.origin.x, r.origin.y, r.size.width, r.size.height };

@@ -1,5 +1,4 @@
 #import <cocoa/XamlWindowDelegate.h>
-#include <cocoa/drawing.hpp>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -113,7 +112,7 @@ namespace xaml
     {
         NSWindow* window = __get_window();
         NSRect frame = [[window contentView] frame];
-        return get_rect(frame);
+        return from_native(frame);
     }
 
     void window::__on_did_resize()
@@ -124,7 +123,7 @@ namespace xaml
             atomic_guard guard{ m_resizing };
             if (!guard.exchange(true))
             {
-                set_size(xaml::get_size(frame.size));
+                set_size(from_native(frame.size));
                 __draw({});
             }
         }

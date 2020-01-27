@@ -1,4 +1,3 @@
-#include <cocoa/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;
@@ -17,7 +16,7 @@ namespace xaml
         {
             NSRect frame = screen.frame;
             NSRect vframe = screen.visibleFrame;
-            ms.push_back({ get_rect(frame), get_rect(vframe) });
+            ms.push_back({ from_native(frame), from_native(vframe) });
         }
         return ms;
     }

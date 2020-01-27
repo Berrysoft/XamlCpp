@@ -1,5 +1,4 @@
 #import <cocoa/XamlButtonDelegate.h>
-#include <cocoa/drawing.hpp>
 #include <xaml/ui/controls/button.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
@@ -78,7 +77,7 @@ namespace xaml
     {
         NSButton* button = (NSButton*)get_handle();
         NSRect frame = button.frame;
-        frame.size = get_NSSize(get_size());
+        frame.size = to_native<NSSize>(get_size());
         button.frame = frame;
     }
 
@@ -107,6 +106,6 @@ namespace xaml
         NSButton* button = (NSButton*)get_handle();
         [button sizeToFit];
         NSRect frame = button.frame;
-        __set_size_noevent(xaml::get_size(frame.size));
+        __set_size_noevent(from_native(frame.size));
     }
 }

@@ -1,4 +1,3 @@
-#include <cocoa/drawing.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 
 namespace xaml

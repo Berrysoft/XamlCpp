@@ -1,5 +1,4 @@
 #import <cocoa/XamlEntryDelegate.h>
-#include <cocoa/drawing.hpp>
 #include <xaml/ui/controls/entry.hpp>
 
 @implementation XamlEntryDelegate
@@ -43,7 +42,7 @@ namespace xaml
     {
         NSTextField* textField = (NSTextField*)get_handle();
         NSRect frame = textField.frame;
-        frame.size = get_NSSize(get_size());
+        frame.size = to_native<NSSize>(get_size());
         textField.frame = frame;
     }
 
@@ -87,6 +86,6 @@ namespace xaml
         NSTextField* textField = (NSTextField*)get_handle();
         [textField sizeToFit];
         NSRect frame = textField.frame;
-        __set_size_noevent(xaml::get_size(frame.size));
+        __set_size_noevent(from_native(frame.size));
     }
 }
