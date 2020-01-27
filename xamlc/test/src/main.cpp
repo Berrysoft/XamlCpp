@@ -16,6 +16,6 @@ int main()
     {
         compiler c{};
         xaml_node node = p.parse();
-        c.compile(node, cout) << endl;
+        c.compile(cout, node) << endl;
     }
 }
