@@ -20,6 +20,7 @@ if(UNIX)
     if(APPLE)
         find_package(Boost REQUIRED COMPONENTS filesystem)
         target_link_libraries(xaml_meta PUBLIC Boost::filesystem)
+        target_include_directories(xaml_meta PRIVATE ${Boost_INCLUDE_DIRS})
     endif()
 endif()
 

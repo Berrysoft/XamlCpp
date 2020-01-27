@@ -10,6 +10,14 @@
 
 namespace xaml
 {
+#ifdef WIN32
+    inline constexpr string_view_t module_extension{ U(".dll") };
+#elif defined(__APPLE__)
+    inline constexpr string_view_t module_extension{ U(".dylib") };
+#else
+    inline constexpr string_view_t module_extension{ U(".so") };
+#endif // WIN32
+
     class module
     {
     public:

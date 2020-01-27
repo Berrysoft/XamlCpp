@@ -9,20 +9,11 @@
 #include <typeindex>
 #include <variant>
 #include <vector>
-#include <xaml/markup/binding.hpp>
-#include <xaml/meta/meta.hpp>
-#include <xaml/ui/meta.hpp>
 #include <xaml/xaml_node.hpp>
 
 namespace xaml
 {
-    inline void init_parser() noexcept
-    {
-        init_context();
-        add_module<ui_init_traits>();
-        register_class<binding>();
-        REGISTER_ENUM(xaml, binding_mode);
-    }
+    XAML_API void init_parser() noexcept;
 
     struct xaml_no_default_constructor : std::logic_error
     {

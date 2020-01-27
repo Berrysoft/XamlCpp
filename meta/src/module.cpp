@@ -6,19 +6,13 @@
 #include <filesystem>
 #include <system_error>
 #include <wil/result_macros.h>
-
-constexpr xaml::string_view_t module_extension{ U(".dll") };
 #else
 #include <dlfcn.h>
 
 #ifdef __APPLE__
 #include <boost/filesystem.hpp>
-
-constexpr xaml::string_view_t module_extension{ U(".dylib") };
 #else
 #include <filesystem>
-
-constexpr xaml::string_view_t module_extension{ U(".so") };
 #endif // __APPLE__
 #endif // WIN32
 
@@ -166,7 +160,10 @@ namespace xaml
     void module::register_meta() noexcept
     {
         void (*pinit)(void*) noexcept = (void (*)(void*) noexcept)get_method("init_meta");
-        auto context = __get_context();
-        pinit(&context);
+        if (pinit)
+        {
+            auto context = __get_context();
+            pinit(&context);
+        }
     }
 } // namespace xaml

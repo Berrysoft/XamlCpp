@@ -1,10 +1,21 @@
 #include <sstream>
+#include <xaml/markup/binding.hpp>
+#include <xaml/meta/meta.hpp>
 #include <xaml/parser.hpp>
+#include <xaml/ui/meta.hpp>
 
 using namespace std;
 
 namespace xaml
 {
+    void init_parser() noexcept
+    {
+        init_context();
+        add_module<ui_init_traits>();
+        register_class<binding>();
+        REGISTER_ENUM(xaml, binding_mode);
+    }
+
     static string get_no_default_constructor_error(type_index t)
     {
         ostringstream oss;

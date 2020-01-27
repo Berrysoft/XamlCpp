@@ -1,4 +1,5 @@
 #include <test_window.hpp>
+#include <xaml/meta/binding.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/parser.hpp>
 #include <xaml/ui/application.hpp>
