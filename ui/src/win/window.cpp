@@ -1,7 +1,6 @@
 #include <shared/atomic_guard.hpp>
 #include <unordered_map>
 #include <wil/result_macros.h>
-#include <win/drawing.hpp>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -114,7 +113,7 @@ namespace xaml
     {
         RECT r = {};
         THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
-        return get_rect(r);
+        return from_native(r);
     }
 
     void window::__copy_hdc(rectangle const& region, HDC hDC)
@@ -135,7 +134,7 @@ namespace xaml
             {
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
-                rectangle r = get_rect(rect);
+                rectangle r = from_native(rect);
                 set_location({ r.x, r.y });
                 set_size({ r.width, r.height });
                 __draw({});
@@ -149,7 +148,7 @@ namespace xaml
             {
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
-                rectangle r = get_rect(rect);
+                rectangle r = from_native(rect);
                 set_location({ r.x, r.y });
             }
             break;

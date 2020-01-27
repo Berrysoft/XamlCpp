@@ -1,5 +1,4 @@
 #include <gtk/gtk.h>
-#include <gtk3/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;
@@ -29,7 +28,7 @@ namespace xaml
             GdkRectangle geo, work;
             gdk_monitor_get_geometry(m, &geo);
             gdk_monitor_get_workarea(m, &work);
-            ms.push_back({ get_rect(geo), get_rect(work) });
+            ms.push_back({ from_native(geo), from_native(work) });
         }
 #else
         int n = gdk_screen_get_n_monitors(screen);
@@ -38,7 +37,7 @@ namespace xaml
             GdkRectangle geo, work;
             gdk_screen_get_monitor_geometry(screen, i, &geo);
             gdk_screen_get_monitor_workarea(screen, i, &work);
-            ms.push_back({ get_rect(geo), get_rect(work) });
+            ms.push_back({ from_native(geo), from_native(work) });
         }
 #endif // GDK_VERSION_3_22
         return ms;

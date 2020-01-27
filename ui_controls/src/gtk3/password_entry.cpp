@@ -1,4 +1,3 @@
-#include <gtk3/drawing.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 
 namespace xaml

@@ -1,6 +1,5 @@
 #include <Windows.h>
 #include <wil/result_macros.h>
-#include <win/drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;
@@ -18,7 +17,7 @@ namespace xaml
         MONITORINFO info = {};
         info.cbSize = sizeof(MONITORINFO);
         THROW_IF_WIN32_BOOL_FALSE(GetMonitorInfo(m, &info));
-        callback.push_back({ get_rect(info.rcMonitor), get_rect(info.rcWork) });
+        callback.push_back({ from_native(info.rcMonitor), from_native(info.rcWork) });
         return TRUE;
     }
 

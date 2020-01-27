@@ -1,4 +1,3 @@
-#include <gtk3/drawing.hpp>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -39,8 +38,9 @@ namespace xaml
             atomic_guard guard{ m_resizing };
             if (!guard.exchange(true))
             {
-                gtk_window_resize(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
-                gtk_window_set_default_size(GTK_WINDOW(get_handle()), get_rwidth(get_width()), get_rheight(get_height()));
+                auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
+                gtk_window_resize(GTK_WINDOW(get_handle()), rw, rh);
+                gtk_window_set_default_size(GTK_WINDOW(get_handle()), rw, rh);
                 gtk_window_move(GTK_WINDOW(get_handle()), (gint)get_x(), (gint)get_y());
             }
         }

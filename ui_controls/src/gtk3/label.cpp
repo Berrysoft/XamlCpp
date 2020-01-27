@@ -1,4 +1,3 @@
-#include <gtk3/drawing.hpp>
 #include <xaml/ui/controls/label.hpp>
 
 using namespace std;
@@ -20,7 +19,8 @@ namespace xaml
 
     void label::draw_size()
     {
-        gtk_widget_set_size_request(get_handle(), get_rwidth(get_width()), get_rheight(get_height()));
+        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
+        gtk_widget_set_size_request(get_handle(), rw, rh);
     }
 
     void label::draw_text()

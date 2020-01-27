@@ -1,6 +1,5 @@
 #include <cairo.h>
 #include <cmath>
-#include <gtk3/drawing.hpp>
 #include <xaml/ui/controls/canvas.hpp>
 
 namespace xaml

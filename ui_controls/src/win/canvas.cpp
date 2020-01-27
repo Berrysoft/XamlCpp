@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <cmath>
 #include <wil/result_macros.h>
-#include <win/drawing.hpp>
 #include <windowsx.h>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/window.hpp>
@@ -53,6 +52,11 @@ namespace xaml
         m_object.SetWidth((float)value);
     }
 
+    constexpr INT get_font_style(bool italic, bool bold)
+    {
+        return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
+    }
+
     drawing_font::drawing_font(string_view_t family, double size, bool italic, bool bold) : m_object(family.data(), (REAL)size, get_font_style(italic, bold))
     {
     }
@@ -78,42 +82,42 @@ namespace xaml
 
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->DrawArc(pen.get_handle(), get_RectF(region), (REAL)start_angle, (REAL)end_angle);
+        m_handle->DrawArc(pen.get_handle(), to_native<RectF>(region), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->FillPie(brush.get_handle(), get_RectF(region), (REAL)start_angle, (REAL)end_angle);
+        m_handle->FillPie(brush.get_handle(), to_native<RectF>(region), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        m_handle->DrawEllipse(pen.get_handle(), get_RectF(region));
+        m_handle->DrawEllipse(pen.get_handle(), to_native<RectF>(region));
     }
 
     void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
-        m_handle->FillEllipse(brush.get_handle(), get_RectF(region));
+        m_handle->FillEllipse(brush.get_handle(), to_native<RectF>(region));
     }
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
-        m_handle->DrawLine(pen.get_handle(), get_PointF(startp), get_PointF(endp));
+        m_handle->DrawLine(pen.get_handle(), to_native<PointF>(startp), to_native<PointF>(endp));
     }
 
     void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
-        m_handle->DrawRectangle(pen.get_handle(), get_RectF(rect));
+        m_handle->DrawRectangle(pen.get_handle(), to_native<RectF>(rect));
     }
 
     void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
-        m_handle->FillRectangle(brush.get_handle(), get_RectF(rect));
+        m_handle->FillRectangle(brush.get_handle(), to_native<RectF>(rect));
     }
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
-        m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), get_PointF(p), brush.get_handle());
+        m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), to_native<PointF>(p), brush.get_handle());
     }
 
     canvas::canvas() : common_control() {}
