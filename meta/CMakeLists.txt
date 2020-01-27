@@ -17,6 +17,10 @@ endif()
 
 if(UNIX)
     target_link_libraries(xaml_meta PUBLIC dl)
+    if(APPLE)
+        find_package(Boost REQUIRED COMPONENTS filesystem)
+        target_link_libraries(xaml_meta PUBLIC Boost::filesystem)
+    endif()
 endif()
 
 target_include_directories(xaml_meta

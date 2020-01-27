@@ -1,9 +1,9 @@
-#include <filesystem>
 #include <xaml/meta/meta.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
 #ifdef WIN32
+#include <filesystem>
 #include <system_error>
 #include <wil/result_macros.h>
 
@@ -12,8 +12,12 @@ constexpr xaml::string_view_t module_extension{ U(".dll") };
 #include <dlfcn.h>
 
 #ifdef __APPLE__
+#include <boost/filesystem.hpp>
+
 constexpr xaml::string_view_t module_extension{ U(".dylib") };
 #else
+#include <filesystem>
+
 constexpr xaml::string_view_t module_extension{ U(".so") };
 #endif // __APPLE__
 #endif // WIN32
@@ -21,20 +25,35 @@ constexpr xaml::string_view_t module_extension{ U(".so") };
 constexpr std::string_view module_prefix{ "lib" };
 
 using namespace std;
+
+#ifndef __APPLE__
 using namespace std::filesystem;
+#else
+using namespace boost::filesystem;
+#endif // !__APPLE__
 
 namespace xaml
 {
+    static inline path get_path(string_view p)
+    {
+        return path{ p.begin(), p.end() };
+    }
+
+    static inline path get_path(wstring_view p)
+    {
+        return path{ p.begin(), p.end() };
+    }
+
     static path get_right_path(string_view name)
     {
-        path p{ name };
-        if (!p.has_extension()) p.replace_extension(module_extension);
+        path p = get_path(name);
+        if (!p.has_extension()) p.replace_extension(get_path(module_extension));
         return p;
     }
 
     static path get_in_lib_path(string_view name)
     {
-        path p{ name };
+        path p{ name.begin(), name.end() };
         if (p.has_parent_path())
         {
             if (p.has_filename())
@@ -67,7 +86,10 @@ namespace xaml
             }
             else
             {
-                p.replace_filename(path{ U("lib") } += p.filename());
+                auto filename = path{ U("lib") };
+                filename += p.filename();
+                p.remove_filename();
+                p += filename;
                 string nname = p.string();
                 p = get_right_path(nname);
             }
@@ -79,7 +101,7 @@ namespace xaml
                 return get_full_path(p.string(), true);
             }
             else
-                return name;
+                return get_path(name);
         }
     }
 
