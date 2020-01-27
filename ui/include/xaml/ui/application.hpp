@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
-#include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 

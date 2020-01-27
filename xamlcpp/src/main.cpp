@@ -21,7 +21,8 @@ using namespace boost::program_options;
 #ifndef __APPLE__
 using namespace std::filesystem;
 #else
-using namespace boost::filesystem;
+using boost::filesystem::path;
+using boost::filesystem::directory_iterator;
 #endif // !__APPLE__
 
 int main(int argc, char** argv)
@@ -65,7 +66,7 @@ int main(int argc, char** argv)
             for (auto& en : directory_iterator{ dir })
             {
                 auto p = en.path();
-                if (p.has_extension() && p.extension() == module_extension)
+                if (p.has_extension() && p.extension().native() == module_extension)
                 {
                     add_compiler_module(p.string());
                 }

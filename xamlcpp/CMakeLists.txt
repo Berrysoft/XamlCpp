@@ -10,7 +10,7 @@ target_link_libraries(xamlcpp Boost::program_options)
 
 if(APPLE)
     find_package(Boost REQUIRED COMPONENTS filesystem)
-    target_link_libraries(xamlcpp PUBLIC Boost::filesystem)
+    target_link_libraries(xamlcpp Boost::filesystem)
     target_include_directories(xamlcpp PRIVATE ${Boost_INCLUDE_DIRS})
 endif()
 
