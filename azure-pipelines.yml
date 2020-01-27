@@ -35,8 +35,8 @@ jobs:
 
   steps:
   - script: |
-      vcpkg install libxml2:x64-windows wil:x64-windows
-    displayName: 'Install libxml2 & wil'
+      vcpkg install libxml2:x64-windows wil:x64-windows boost-program-options:x64-windows
+    displayName: 'Install libxml2 & wil & boost-program-options'
     condition: eq(variables.plat, 'win')
 
   - script: |
