@@ -11,11 +11,11 @@
 namespace xaml
 {
 #ifdef WIN32
-    inline constexpr string_view_t module_extension{ U(".dll") };
+    inline constexpr std::wstring_view module_extension{ L".dll" };
 #elif defined(__APPLE__)
-    inline constexpr string_view_t module_extension{ U(".dylib") };
+    inline constexpr std::string_view module_extension{ ".dylib" };
 #else
-    inline constexpr string_view_t module_extension{ U(".so") };
+    inline constexpr std::string_view module_extension{ ".so" };
 #endif // WIN32
 
     class module

@@ -66,7 +66,7 @@ int main(int argc, char** argv)
             for (auto& en : directory_iterator{ dir })
             {
                 auto p = en.path();
-                if (p.has_extension() && p.extension().string<char_t>() == module_extension)
+                if (p.has_extension() && p.extension().native() == module_extension)
                 {
                     add_compiler_module(p.string());
                 }
