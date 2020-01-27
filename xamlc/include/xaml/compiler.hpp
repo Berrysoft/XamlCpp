@@ -36,10 +36,10 @@ namespace xaml
         XAMLC_API std::ostream& write_begin_block(std::ostream& stream);
         XAMLC_API std::ostream& write_end_block(std::ostream& stream);
 
-        XAMLC_API std::ostream& write_namespace(std::ostream& stream, std::string_view ns);
-        XAMLC_API std::ostream& write_init_decl(std::ostream& stream, std::string_view name);
+        XAMLC_API std::ostream& write_init_decl(std::ostream& stream, std::string_view ns, std::string_view name);
 
         XAMLC_API std::ostream& write_type(std::ostream& stream, std::type_index type);
+        XAMLC_API std::ostream& write_type(std::ostream& stream, std::string_view ns, std::string_view name);
         XAMLC_API std::ostream& write_args(std::ostream& stream, std::initializer_list<std::string_view> args);
         XAMLC_API std::ostream& write_construct(std::ostream& stream, std::string_view name, std::type_index type);
         XAMLC_API std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);

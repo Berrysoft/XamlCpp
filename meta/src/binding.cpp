@@ -6,11 +6,6 @@ using namespace std;
 
 namespace xaml
 {
-    static string get_property_changed_event_name(string_view name)
-    {
-        return (string)name + "_changed";
-    }
-
     class __binding_guard
     {
     private:
@@ -30,8 +25,8 @@ namespace xaml
     public:
         __binding_guard(shared_ptr<meta_class> target, string_view target_prop, shared_ptr<meta_class> source, string_view source_prop, binding_mode mode = binding_mode::one_time)
             : target(target), source(source),
-              target_prop(get_property(target->this_type(), target_prop)), target_event(get_event(target->this_type(), get_property_changed_event_name(target_prop))),
-              source_prop(get_property(source->this_type(), source_prop)), source_event(get_event(source->this_type(), get_property_changed_event_name(source_prop)))
+              target_prop(get_property(target->this_type(), target_prop)), target_event(get_event(target->this_type(), __get_property_changed_event_name(target_prop))),
+              source_prop(get_property(source->this_type(), source_prop)), source_event(get_event(source->this_type(), __get_property_changed_event_name(source_prop)))
         {
             this->target_prop.set(target, this->source_prop.get(source));
             if (mode & binding_mode::one_way)

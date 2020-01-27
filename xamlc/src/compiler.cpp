@@ -143,20 +143,20 @@ namespace xaml
         return write_indent(stream) << '}' << endl;
     }
 
-    ostream& compiler::write_namespace(ostream& stream, string_view ns)
+    ostream& compiler::write_init_decl(ostream& stream, string_view ns, string_view name)
     {
-        return write_indent(stream) << "namespace " << ns << endl;
-    }
-
-    ostream& compiler::write_init_decl(ostream& stream, string_view name)
-    {
-        return write_indent(stream) << "void " << name << "::init_components()" << endl;
+        return write_type(write_indent(stream) << "void ", ns, name) << "::init_components()" << endl;
     }
 
     ostream& compiler::write_type(ostream& stream, type_index type)
     {
         auto t = *get_type_name(type);
-        return stream << "::" << get<0>(t) << "::" << get<1>(t);
+        return write_type(stream, get<0>(t), get<1>(t));
+    }
+
+    ostream& compiler::write_type(ostream& stream, string_view ns, string_view name)
+    {
+        return stream << "::" << ns << "::" << name;
     }
 
     ostream& compiler::write_args(ostream& stream, initializer_list<string_view> args)
@@ -250,14 +250,14 @@ namespace xaml
             if (mode & binding_mode::one_way)
             {
                 ostringstream s;
-                s << "[&" << name << "](auto&, auto value) { " << name << ".set_" << prop << "(value); }";
-                write_call(stream, b->get_element(), "add_", (string)b->get_path() + "_changed", { s.str() });
+                s << "[" << name << "](auto&, auto value) { " << name << "->set_" << prop << "(value); }";
+                write_call(stream, b->get_element(), "add_", __get_property_changed_event_name(b->get_path()), { s.str() });
             }
             if (mode & binding_mode::one_way_to_source)
             {
                 ostringstream s;
-                s << "[&" << b->get_element() << "](auto&, auto value) { " << b->get_element() << ".set_" << b->get_path() << "(value); }";
-                write_call(stream, name, "add_", (string)prop + "_changed", { s.str() });
+                s << "[" << b->get_element() << "](auto&, auto value) { " << b->get_element() << "->set_" << b->get_path() << "(value); }";
+                write_call(stream, name, "add_", __get_property_changed_event_name(prop), { s.str() });
             }
         }
         return stream;
@@ -351,13 +351,10 @@ namespace xaml
             if (node.map_class)
             {
                 auto [ns, name] = *node.map_class;
-                write_namespace(stream, ns);
-                write_begin_block(stream);
-                write_init_decl(stream, name);
+                write_init_decl(stream, ns, name);
                 write_begin_block(stream);
                 compile_impl(stream, node, node, true);
                 compile_extensions(stream, node, true);
-                write_end_block(stream);
                 write_end_block(stream);
             }
             else
@@ -377,13 +374,10 @@ namespace xaml
             if (node.map_class)
             {
                 auto [ns, name] = *node.map_class;
-                write_namespace(stream, ns);
-                write_begin_block(stream);
-                write_init_decl(stream, name);
+                write_init_decl(stream, ns, name);
                 write_begin_block(stream);
                 write_deserialize(stream, path);
-                write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<" << name << ">(shared_from_this()));" << endl;
-                write_end_block(stream);
+                write_type(write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<", ns, name) << ">(shared_from_this()));" << endl;
                 write_end_block(stream);
             }
             else
