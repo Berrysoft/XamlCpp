@@ -21,7 +21,7 @@ An example is [here](./ui_controls/test/main.cpp)
 |-|-|-|-|
 |Win32|Windows API, GDI+|Windows|Windows|
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
-|Cocoa|NeXTStep|MacOS|MacOS|
+|Cocoa|Cocoa|MacOS|MacOS|
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.
