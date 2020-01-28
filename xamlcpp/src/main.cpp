@@ -78,7 +78,7 @@ int main(int argc, char** argv)
         {
             auto node = p.parse();
             compiler c{};
-            ofstream stream{ ouf_path.native() };
+            ofstream stream{ ouf_path.string() };
             if (vm.count("fake"))
             {
                 c.compile_fake(stream, node, inf);

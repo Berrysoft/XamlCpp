@@ -4,28 +4,28 @@
 #include <string_view>
 #include <xaml/utility.hpp>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
-#endif // WIN32
+#endif // WIN32 || __MINGW32__
 
 namespace xaml
 {
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
     inline constexpr std::wstring_view module_extension{ L".dll" };
 #elif defined(__APPLE__)
     inline constexpr std::string_view module_extension{ ".dylib" };
 #else
     inline constexpr std::string_view module_extension{ ".so" };
-#endif // WIN32
+#endif
 
     class module
     {
     public:
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
         using native_handle_type = HMODULE;
 #else
         using native_handle_type = void*;
-#endif // WIN32
+#endif
     private:
         native_handle_type m_handle{ nullptr };
 

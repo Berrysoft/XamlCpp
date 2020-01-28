@@ -30,7 +30,6 @@ target_include_directories(xaml_meta
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
-        ${XAML_PRIVATE_INCLUDE_DIRS}
 )
 
 set_target_properties(xaml_meta PROPERTIES

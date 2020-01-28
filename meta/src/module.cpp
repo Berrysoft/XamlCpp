@@ -2,10 +2,9 @@
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 #include <filesystem>
 #include <system_error>
-#include <wil/result_macros.h>
 #else
 #include <dlfcn.h>
 
@@ -14,7 +13,7 @@
 #else
 #include <filesystem>
 #endif // __APPLE__
-#endif // WIN32
+#endif // WIN32 || __MINGW32__
 
 constexpr std::string_view module_prefix{ "lib" };
 
@@ -99,7 +98,7 @@ namespace xaml
         }
     }
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
     void module::open(string_view name)
     {
         close();
@@ -121,7 +120,7 @@ namespace xaml
     {
         if (get_handle())
         {
-            THROW_IF_WIN32_BOOL_FALSE(FreeLibrary(get_handle()));
+            FreeLibrary(get_handle());
             set_handle(nullptr);
         }
     }
@@ -147,15 +146,11 @@ namespace xaml
     {
         if (get_handle())
         {
-            auto ret = dlclose(get_handle());
-            if (ret)
-            {
-                throw system_error(error_code{}, dlerror());
-            }
+            dlclose(get_handle());
             set_handle(nullptr);
         }
     }
-#endif // WIN32
+#endif // WIN32 || __MINGW32__
 
     void module::register_meta() noexcept
     {
