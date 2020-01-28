@@ -1,9 +1,9 @@
+#include <xaml/meta/binding.hpp>
 #include <xaml/ui/application.hpp>
 
-#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
+#if defined(WIN32) || defined(__MINGW32__)
 #include <shellapi.h>
-#include <wil/resource.h>
-#endif
+#endif // WIN32 || __MINGW32__
 
 using namespace std;
 
@@ -20,26 +20,48 @@ namespace xaml
 
     shared_ptr<application> application::current() { return s_current; }
 
-#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-    application::application(LPWSTR lpCmdLine)
+    void application::add_module(string_view path)
+    {
+        auto m = make_shared<module>(path);
+        m->register_meta();
+        m_modules.emplace(path, m);
+    }
+
+    application::~application()
+    {
+        unbind_all();
+        cleanup_context();
+    }
+
+#if defined(WIN32) || defined(__MINGW32__)
+    application::application(LPTSTR lpCmdLine)
     {
         int argc;
+#ifdef UNICODE
         LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+#else
+        wstring cl = __mbtow(lpCmdLine);
+        LPWSTR* argv = CommandLineToArgvW(cl.c_str(), &argc);
+#endif // UNICODE
         if (argv)
         {
-            wil::unique_array_ptr<LPWSTR, wil::hlocal_deleter> args(argv, argc);
             for (int i = 0; i < argc; i++)
             {
-                m_cmd_lines.push_back(args[i]);
+#ifdef UNICODE
+                m_cmd_lines.push_back(argv[i]);
+#else
+                m_cmd_lines.push_back(__wtomb(argv[i]));
+#endif // UNICODE
             }
+            LocalFree(argv);
         }
     }
 
-    shared_ptr<application> application::init(LPWSTR lpCmdLine)
+    shared_ptr<application> application::init(LPTSTR lpCmdLine)
     {
         s_current = shared_ptr<application>(new application(lpCmdLine));
         s_current->init_components();
         return s_current;
     }
-#endif
+#endif // WIN32 || __MINGW32__
 } // namespace xaml

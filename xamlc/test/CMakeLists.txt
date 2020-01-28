@@ -1,10 +1,6 @@
 project(XamlCompilerTest CXX)
 
 file(GLOB TEST_SOURCE "src/*.cpp")
-if(${BUILD_WINDOWS})
-    add_executable(xamlc_test ${TEST_SOURCE})
-else()
-    add_executable(xamlc_test ${TEST_SOURCE})
-endif()
+add_executable(xamlc_test ${TEST_SOURCE})
 target_include_directories(xamlc_test PUBLIC include)
 target_link_libraries(xamlc_test xamlc)

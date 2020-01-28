@@ -8,12 +8,13 @@
 #include <unordered_map>
 #include <vector>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 
-#if defined(XAML_UI_WINDOWS)
+#if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
-#endif // XAML_UI_WINDOWS
+#endif // WIN32 || __MINGW32__
 
 namespace xaml
 {
@@ -24,15 +25,16 @@ namespace xaml
 
         int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
+        std::unordered_map<std::string_view, std::shared_ptr<module>> m_modules{};
 
     private:
         application(int argc, char_t** argv)
         {
             m_cmd_lines.assign(argv, argv + argc);
         }
-#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        XAML_UI_API application(LPWSTR lpCmdLine);
-#endif
+#if defined(WIN32) || defined(__MINGW32__)
+        XAML_UI_API application(LPTSTR lpCmdLine);
+#endif // WIN32 || __MINGW32__
 
         XAML_UI_API void init_components();
 
@@ -40,13 +42,16 @@ namespace xaml
         XAML_UI_API virtual ~application();
 
         const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
+
+        XAML_UI_API void add_module(std::string_view path);
+
         XAML_UI_API int run();
 
         XAML_UI_API static std::shared_ptr<application> init(int argc, char_t** argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
-#if defined(XAML_UI_WINDOWS) && defined(UNICODE)
-        XAML_UI_API static std::shared_ptr<application> init(LPWSTR lpCmdLine);
-#endif
+#if defined(WIN32) || defined(__MINGW32__)
+        XAML_UI_API static std::shared_ptr<application> init(LPTSTR lpCmdLine);
+#endif // WIN32 || __MINGW32__
         XAML_UI_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS

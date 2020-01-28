@@ -1,39 +1,33 @@
 #include <test_window.hpp>
-#include <xaml/meta/binding.hpp>
-#include <xaml/meta/module.hpp>
 #include <xaml/parser.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/meta.hpp>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
-#endif // WIN32
+#include <tchar.h>
+#endif // WIN32 || __MINGW32__
 
 using namespace std;
 using namespace xaml;
 using namespace xaml::test;
 
-#ifdef WIN32
-INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
+#if defined(WIN32) || defined(__MINGW32__)
+INT APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, INT)
 #else
 int main(int argc, char** argv)
-#endif // XAML_UI_WINDOWS
+#endif // WIN32 || __MINGW32__
 {
     init_parser();
-    module m("xaml_ui_controls_meta");
-    m.register_meta();
     register_class<test_window>();
-#ifdef XAML_UI_WINDOWS
+#if defined(WIN32) || defined(__MINGW32__)
     auto app = application::init(lpCmdLine);
-#elif defined(WIN32)
-    auto app = application::init();
 #else
     auto app = application::init(argc, argv);
-#endif
+#endif // WIN32 || __MINGW32__
+    app->add_module("xaml_ui_controls_meta");
     auto wnd = make_shared<test_window>();
     wnd->init_components();
     wnd->show();
-    app->run();
-    unbind_all();
-    cleanup_context();
+    return app->run();
 }

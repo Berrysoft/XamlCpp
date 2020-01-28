@@ -1,4 +1,4 @@
-if(UNIX OR MSYS OR MINGW)
+if(UNIX OR MINGW)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
     link_directories(${GTK3_LIBRARY_DIRS})

@@ -47,10 +47,6 @@ namespace xaml
         s_default_font = CreateFontIndirect(&ncm.lfMessageFont);
     }
 
-    application::~application()
-    {
-    }
-
     HFONT application::__default_font() const
     {
         return s_default_font;

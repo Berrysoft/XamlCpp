@@ -30,9 +30,4 @@ namespace xaml
         [NSApp run];
         return 0;
     }
-
-    application::~application()
-    {
-        [NSApp terminate:nil];
-    }
 }

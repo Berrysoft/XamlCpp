@@ -1,29 +1,28 @@
 #include <test_window.hpp>
 #include <xaml/ui/application.hpp>
 
-#ifdef WIN32
+#if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
-#endif // WIN32
+#include <tchar.h>
+#endif // WIN32 || __MINGW32__
 
 using namespace std;
 using namespace xaml;
 using namespace xaml::test;
 
 // Use different main signature for different platforms.
-#ifdef WIN32
-INT wWinMain(HINSTANCE, HINSTANCE, LPWSTR lpCmdLine, INT)
+#if defined(WIN32) || defined(__MINGW32__)
+INT APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, INT)
 #else
 int main(int argc, char** argv)
-#endif // WIN32
+#endif // WIN32 || __MINGW32__
 {
     // Initialize and get default application object.
-#ifdef XAML_UI_WINDOWS
+#if defined(WIN32) || defined(__MINGW32__)
     auto app = application::init(lpCmdLine);
-#elif defined(WIN32)
-    auto app = application::init();
 #else
     auto app = application::init(argc, argv);
-#endif
+#endif // WIN32 || __MINGW32__
     // Construct a window.
     auto wnd = make_shared<test_window>();
     // Initialize the window.

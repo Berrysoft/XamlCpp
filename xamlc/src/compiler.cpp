@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
-#include <map>
 #include <ostream>
+#include <unordered_map>
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
@@ -30,7 +30,7 @@ namespace xaml
         return {};
     }
 
-    static map<string_view, shared_ptr<compiler_module>> m_cmodules;
+    static unordered_map<string_view, shared_ptr<compiler_module>> m_cmodules;
 
     void add_compiler_module(string_view path)
     {

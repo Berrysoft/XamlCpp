@@ -408,7 +408,7 @@ namespace xaml
         const wchar_t* from_next;
         char* to_next;
         f.out(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        internal.resize(to_next - &internal.front());
+        internal.resize(to_next - internal.data());
         return internal;
     }
 
@@ -420,7 +420,7 @@ namespace xaml
         const char* from_next;
         wchar_t* to_next;
         f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        internal.resize(to_next - &internal.front());
+        internal.resize(to_next - internal.data());
         return internal;
     }
 
