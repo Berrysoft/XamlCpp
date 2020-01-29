@@ -41,7 +41,7 @@ jobs:
 
   - script: |
       cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
-      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
     env:
