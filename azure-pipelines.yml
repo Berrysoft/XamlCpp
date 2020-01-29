@@ -41,10 +41,11 @@ jobs:
 
   - script: |
       cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
-      set MSYSTEM=MINGW64
       C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-ninja mingw-w64-x86_64-cmake mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
+    env:
+      MSYSTEM: MINGW64
 
   - script: |
       sudo apt install software-properties-common
@@ -72,11 +73,13 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      set MSYSTEM=MINGW64
       mkdir build & cd build
-      C:\msys64\usr\bin\bash -c "cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=g++ -DCMAKE_MAKE_PROGRAM=ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
+      C:\msys64\usr\bin\bash -c "cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
+    env:
+      MSYSTEM: MINGW64
+      PATH: C:\msys64\mingw64\bin
   
   - task: CMake@1
     displayName: 'Configure all projects'
