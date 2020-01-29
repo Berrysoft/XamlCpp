@@ -10,10 +10,10 @@ jobs:
         plat: 'win'
         rid: 'win'
         def: '-DBUILD_WINDOWS=on'
-      windows_gtk:
+      mingw:
         imageName: 'windows-latest'
         plat: 'win'
-        rid: 'win-gtk'
+        rid: 'mingw'
         def: '-DBUILD_GTK3=on'
       linux:
         imageName: 'ubuntu-latest'
@@ -37,12 +37,13 @@ jobs:
   - script: |
       vcpkg install libxml2:x64-windows wil:x64-windows boost-program-options:x64-windows
     displayName: 'Install libxml2 & wil & boost-program-options'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
 
   - script: |
-      vcpkg install gtk:x64-windows
-    displayName: 'Install gtk'
-    condition: eq(variables.rid, 'win-gtk')
+      cinst msys2 --params "/InstallDir=C:/msys64"
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-ninja mingw-w64-x86_64-cmake mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
+    displayName: 'Install msys2'
+    condition: eq(variables.rid, 'mingw')
 
   - script: |
       sudo apt install software-properties-common
@@ -67,8 +68,15 @@ jobs:
       mkdir build & cd build
       cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
 
+  - script: |
+      set MSYSTEM="MINGW64"
+      mkdir build & cd build
+      C:\msys64\usr\bin\bash --login -c "cmake .. -GNinja $(def) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
+    displayName: 'Configure all projects'
+    condition: eq(variables.rid, 'mingw')
+  
   - task: CMake@1
     displayName: 'Configure all projects'
     condition: ne(variables.plat, 'win')
@@ -80,7 +88,14 @@ jobs:
       cd build
       ninja install
     displayName: 'Install all projects'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
+
+  - script: |
+      set MSYSTEM="MINGW64"
+      cd build
+      C:\msys64\usr\bin\bash --login -c "ninja install"
+    displayName: 'Install all projects'
+    condition: eq(variables.rid, 'mingw')
 
   - task: CMake@1
     displayName: 'Install all projects'
@@ -93,14 +108,14 @@ jobs:
       mkdir build\debug & cd build\debug
       cmake ..\.. -GNinja $(def) -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)/debug -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects for Debug'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       cd build\debug
       ninja install
     displayName: 'Install all projects for Debug'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish'
