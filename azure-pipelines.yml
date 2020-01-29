@@ -40,7 +40,7 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      cinst msys2 --params "/InstallDir=C:/msys64"
+      cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
       C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-ninja mingw-w64-x86_64-cmake mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
@@ -71,7 +71,7 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      set MSYSTEM="MINGW64"
+      set MSYSTEM=MINGW64
       mkdir build & cd build
       C:\msys64\usr\bin\bash --login -c "cmake .. -GNinja $(def) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
     displayName: 'Configure all projects'
@@ -91,7 +91,7 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      set MSYSTEM="MINGW64"
+      set MSYSTEM=MINGW64
       cd build
       C:\msys64\usr\bin\bash --login -c "ninja install"
     displayName: 'Install all projects'
