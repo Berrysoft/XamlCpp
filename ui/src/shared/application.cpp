@@ -33,15 +33,20 @@ namespace xaml
         cleanup_context();
     }
 
+    struct local_free_deleter
+    {
+        void operator()(void* pointer) const noexcept { LocalFree((HLOCAL)pointer); }
+    };
+
 #if defined(WIN32) || defined(__MINGW32__)
     application::application(LPTSTR lpCmdLine)
     {
         int argc;
 #ifdef UNICODE
-        LPWSTR* argv = CommandLineToArgvW(lpCmdLine, &argc);
+        unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(lpCmdLine, &argc) };
 #else
         wstring cl = __mbtow(lpCmdLine);
-        LPWSTR* argv = CommandLineToArgvW(cl.c_str(), &argc);
+        unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(cl.c_str(), &argc) };
 #endif // UNICODE
         if (argv)
         {
@@ -53,7 +58,6 @@ namespace xaml
                 m_cmd_lines.push_back(__wtomb(argv[i]));
 #endif // UNICODE
             }
-            LocalFree(argv);
         }
     }
 
