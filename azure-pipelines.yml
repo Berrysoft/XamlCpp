@@ -75,8 +75,9 @@ jobs:
       BOOST_ROOT: 
 
   - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
       mkdir build & cd build
-      C:\msys64\usr\bin\bash -c "cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
+      cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=C:/msys64/mingw64/bin/g++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
     env:

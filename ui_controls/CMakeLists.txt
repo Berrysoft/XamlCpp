@@ -37,18 +37,6 @@ if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui_controls gdiplus)
 endif()
 
-if(${USE_PCH})
-    target_precompile_headers(xaml_ui_controls
-        PUBLIC
-            <$<BUILD_INTERFACE:xaml/ui/controls/button.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/controls/canvas.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/controls/entry.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/controls/grid.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/controls/label.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/controls/password_entry.hpp>>
-    )
-endif()
-
 set_target_properties(xaml_ui_controls PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
     SOVERSION ${CMAKE_PROJECT_VERSION}

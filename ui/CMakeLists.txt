@@ -43,14 +43,6 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui ${GTK3_LIBRARIES})
 endif()
 
-if(${USE_PCH})
-    target_precompile_headers(xaml_ui
-        PUBLIC
-            <$<BUILD_INTERFACE:xaml/ui/application.hpp>>
-            <$<BUILD_INTERFACE:xaml/ui/window.hpp>>
-    )
-endif()
-
 set_target_properties(xaml_ui PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
     SOVERSION ${CMAKE_PROJECT_VERSION}
