@@ -73,7 +73,7 @@ jobs:
   - script: |
       set MSYSTEM=MINGW64
       mkdir build & cd build
-      C:\msys64\usr\bin\bash -c "cmake .. -GNinja $(def) -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
+      C:\msys64\usr\bin\bash -c "cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)"
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
   
