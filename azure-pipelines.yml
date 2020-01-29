@@ -71,6 +71,8 @@ jobs:
       cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
+    env:
+      BOOST_ROOT: 
 
   - script: |
       mkdir build & cd build
@@ -80,7 +82,8 @@ jobs:
     env:
       MSYSTEM: MINGW64
       PATH: C:\msys64\mingw64\bin
-  
+      BOOST_ROOT: 
+
   - task: CMake@1
     displayName: 'Configure all projects'
     condition: ne(variables.plat, 'win')
@@ -95,11 +98,13 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      set MSYSTEM=MINGW64
       cd build
       C:\msys64\usr\bin\bash -c "ninja install"
     displayName: 'Install all projects'
     condition: eq(variables.rid, 'mingw')
+    env:
+      MSYSTEM: MINGW64
+      PATH: C:\msys64\mingw64\bin
 
   - task: CMake@1
     displayName: 'Install all projects'
