@@ -33,12 +33,12 @@ namespace xaml
         cleanup_context();
     }
 
+#if defined(WIN32) || defined(__MINGW32__)
     struct local_free_deleter
     {
         void operator()(void* pointer) const noexcept { LocalFree((HLOCAL)pointer); }
     };
 
-#if defined(WIN32) || defined(__MINGW32__)
     application::application(LPTSTR lpCmdLine)
     {
         int argc;
