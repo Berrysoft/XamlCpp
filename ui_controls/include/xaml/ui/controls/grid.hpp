@@ -83,7 +83,7 @@ namespace xaml
     inline std::vector<grid_length> stogls(std::wstring_view str) { return __stogls<wchar_t>(str); }
 
     template <>
-    struct value_converter_traits<std::vector<grid_length> const&, void> : __value_converter_traits_helper<std::vector<grid_length>, __stogls<char>, __stogls<wchar_t>>
+    struct value_converter_traits<array_view<grid_length>, void> : __value_converter_traits_helper<std::vector<grid_length>, __stogls<char>, __stogls<wchar_t>>
     {
     };
 
@@ -114,11 +114,11 @@ namespace xaml
         void add_column(grid_length length) { m_columns.push_back(std::move(length)); }
         void add_row(grid_length length) { m_rows.push_back(std::move(length)); }
 
-        std::vector<grid_length> const& get_columns() const noexcept { return m_columns; }
-        void set_columns(std::vector<grid_length> const& value) { m_columns = value; }
+        array_view<grid_length> get_columns() const noexcept { return m_columns; }
+        void set_columns(array_view<grid_length> value) { m_columns = value; }
 
-        std::vector<grid_length> const& get_rows() const noexcept { return m_rows; }
-        void set_rows(std::vector<grid_length> const& value) { m_rows = value; }
+        array_view<grid_length> get_rows() const noexcept { return m_rows; }
+        void set_rows(array_view<grid_length> value) { m_rows = value; }
 
     private:
         XAML_UI_CONTROLS_API static std::unordered_map<std::shared_ptr<control>, grid_index> m_indecies;

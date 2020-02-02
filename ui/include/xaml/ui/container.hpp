@@ -2,6 +2,7 @@
 #define XAML_UI_CONTAINER_HPP
 
 #include <vector>
+#include <xaml/array_view.hpp>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
@@ -61,7 +62,7 @@ namespace xaml
 
         XAML_UI_API void add_child(std::shared_ptr<control> const& child);
         XAML_UI_API void remove_child(std::shared_ptr<control> const& child);
-        std::vector<std::shared_ptr<control>> const& get_children() const noexcept { return m_children; }
+        array_view<std::shared_ptr<control>> get_children() const noexcept { return m_children; }
 
     public:
 #define ADD_MULTICONTAINER_MEMBERS()                      \

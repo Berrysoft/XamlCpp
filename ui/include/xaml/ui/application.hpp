@@ -7,6 +7,7 @@
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
+#include <xaml/array_view.hpp>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
@@ -41,7 +42,7 @@ namespace xaml
     public:
         XAML_UI_API virtual ~application();
 
-        const std::vector<string_t>& get_cmd_lines() const noexcept { return m_cmd_lines; }
+        array_view<string_t> get_cmd_lines() const noexcept { return m_cmd_lines; }
 
         XAML_UI_API void add_module(std::string_view path);
 

@@ -21,11 +21,11 @@
 #endif // !OBJC_OBJECT
 
 #ifndef OBJC_NIL
-#ifdef __OBJC__
+#ifdef XAML_UI_COCOA
 #define OBJC_NIL nil
 #else
 #define OBJC_NIL nullptr
-#endif // __OBJC__
+#endif // XAML_UI_COCOA
 #endif // !OBJC_NIL
 
 #ifndef OBJC_BLOCK

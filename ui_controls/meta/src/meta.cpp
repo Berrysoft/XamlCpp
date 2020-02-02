@@ -27,12 +27,12 @@ extern "C"
     XAML_UI_CONTROLS_META_API int can_compile(void* t) noexcept
     {
         type_index& type = *(type_index*)t;
-        return (type == type_index(typeid(std::vector<grid_length> const&))) ? 1 : 0;
+        return (type == type_index(typeid(array_view<grid_length>))) ? 1 : 0;
     }
 
     XAML_UI_CONTROLS_META_API void compile(void* t, const char* code, void* res) noexcept
     {
-        auto lengths = value_converter_traits<std::vector<grid_length> const&>::convert(code);
+        auto lengths = value_converter_traits<array_view<grid_length>>::convert(code);
         ostringstream stream;
         stream << "{ ";
         auto bit = lengths.begin();

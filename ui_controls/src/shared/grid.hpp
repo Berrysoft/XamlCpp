@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    std::vector<std::tuple<double, double>> get_real_length(std::vector<grid_length> const& lengths, std::vector<std::shared_ptr<control>> const& children, double total, bool vertical);
+    std::vector<std::tuple<double, double>> get_real_length(array_view<grid_length> lengths, array_view<std::shared_ptr<control>> children, double total, bool vertical);
     rectangle get_real_region(std::shared_ptr<control> c, rectangle max_region);
 } // namespace xaml
 

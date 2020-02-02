@@ -6,6 +6,7 @@
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/objc.hpp>
 #include <xaml/ui/window.hpp>
+#include <xaml/array_view.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <ShObjIdl.h>
@@ -57,8 +58,8 @@ namespace xaml
         std::vector<filebox_filter> m_filters{};
 
     public:
-        std::vector<filebox_filter> const& get_filters() const noexcept { return m_filters; }
-        void set_filters(std::vector<filebox_filter> const& value) { m_filters = value; }
+        array_view<filebox_filter> get_filters() const noexcept { return m_filters; }
+        void set_filters(array_view<filebox_filter> value) { m_filters = value; }
 
         string_view_t get_result() const { return m_results[0]; }
 

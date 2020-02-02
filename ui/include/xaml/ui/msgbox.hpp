@@ -1,8 +1,6 @@
 #ifndef XAML_UI_MSGBOX_HPP
 #define XAML_UI_MSGBOX_HPP
 
-#include <functional>
-#include <future>
 #include <xaml/strings.hpp>
 #include <xaml/ui/window.hpp>
 

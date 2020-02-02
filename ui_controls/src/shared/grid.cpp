@@ -5,7 +5,7 @@ using namespace std;
 
 namespace xaml
 {
-    static double get_max_compact(size_t index, vector<shared_ptr<control>> const& children, bool vertical)
+    static double get_max_compact(size_t index, array_view<std::shared_ptr<control>> children, bool vertical)
     {
         double result = 0;
         for (auto& c : children)
@@ -20,7 +20,7 @@ namespace xaml
         return result;
     }
 
-    vector<tuple<double, double>> get_real_length(vector<grid_length> const& lengths, vector<shared_ptr<control>> const& children, double total, bool vertical)
+    vector<tuple<double, double>> get_real_length(array_view<grid_length> lengths, array_view<std::shared_ptr<control>> children, double total, bool vertical)
     {
         vector<tuple<double, double>> result(lengths.size());
         if (result.empty())
