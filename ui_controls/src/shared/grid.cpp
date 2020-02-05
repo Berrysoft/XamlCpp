@@ -1,5 +1,6 @@
 #include <algorithm>
-#include <shared/grid.hpp>
+#include <numeric>
+#include <xaml/ui/controls/grid.hpp>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ namespace xaml
         double result = 0;
         for (auto& c : children)
         {
-            if ((vertical ? grid::get_row(c) : grid::get_column(c)) == index)
+            if (((vertical ? grid::get_row(c) : grid::get_column(c)) == index) && ((vertical ? grid::get_row_span(c) : grid::get_column_span(c)) <= 1))
             {
                 auto csize = c->get_size();
                 auto len = vertical ? (csize.height + c->get_margin().top + c->get_margin().bottom) : (csize.width + c->get_margin().left + c->get_margin().right);
@@ -20,7 +21,7 @@ namespace xaml
         return result;
     }
 
-    vector<tuple<double, double>> get_real_length(array_view<grid_length> lengths, array_view<std::shared_ptr<control>> children, double total, bool vertical)
+    static vector<tuple<double, double>> get_real_length(array_view<grid_length> lengths, array_view<std::shared_ptr<control>> children, double total, bool vertical)
     {
         vector<tuple<double, double>> result(lengths.size());
         if (result.empty())
@@ -63,7 +64,7 @@ namespace xaml
         return result;
     }
 
-    rectangle get_real_region(shared_ptr<control> c, rectangle max_region)
+    static rectangle get_real_region(shared_ptr<control> c, rectangle max_region)
     {
         double cwidth = c->get_width() + c->get_margin().left + c->get_margin().right;
         cwidth = (min)(cwidth, max_region.width);
@@ -111,4 +112,29 @@ namespace xaml
     }
 
     grid::~grid() {}
+
+    void grid::draw_impl(bool new_draw, rectangle const& region, function<void(std::shared_ptr<control>, rectangle const&)> func)
+    {
+        for (auto& c : m_children)
+        {
+            if (new_draw) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
+            c->__size_to_fit();
+        }
+        rectangle real = region - get_margin();
+        vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
+        vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
+        auto real_length_plus = [](double lhs, tuple<double, double> const& rhs) { return lhs + get<0>(rhs); };
+        for (auto& c : m_children)
+        {
+            auto index = m_indecies[c];
+            double subx = get<1>(columns[(min)(index.column, columns.size() - 1)]) + real.x;
+            double suby = get<1>(rows[(min)(index.row, rows.size() - 1)]) + real.y;
+            double subw = accumulate(columns.begin() + (min)(index.column, columns.size() - 1), columns.begin() + (min)(index.column + (max<size_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);
+            double subh = accumulate(rows.begin() + (min)(index.row, rows.size() - 1), rows.begin() + (min)(index.row + (max<size_t>)(index.row_span, 1), rows.size()), 0.0, real_length_plus);
+            rectangle subrect = { subx, suby, subw, subh };
+            subrect = get_real_region(c, subrect);
+            c->__draw(subrect);
+            if (func) func(c, subrect);
+        }
+    }
 } // namespace xaml

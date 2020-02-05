@@ -27,6 +27,7 @@ namespace xaml
     struct grid_index
     {
         std::size_t column, row;
+        std::size_t column_span, row_span;
     };
 
     CHAR_CONST(__star, '*')
@@ -103,6 +104,9 @@ namespace xaml
         std::unordered_map<std::shared_ptr<control>, bool> m_put_map{};
 #endif // XAML_UI_GTK3
 
+    private:
+        XAML_UI_CONTROLS_API void draw_impl(bool new_draw, rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {});
+
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
@@ -128,14 +132,20 @@ namespace xaml
         static std::size_t get_column(std::shared_ptr<control> const& c) { return m_indecies[c].column; }
         static void set_row(std::shared_ptr<control> const& c, std::size_t row) { m_indecies[c].row = row; }
         static std::size_t get_row(std::shared_ptr<control> const& c) { return m_indecies[c].row; }
+        static void set_column_span(std::shared_ptr<control> const& c, std::size_t cs) { m_indecies[c].column_span = cs; }
+        static std::size_t get_column_span(std::shared_ptr<control> const& c) { return m_indecies[c].column_span; }
+        static void set_row_span(std::shared_ptr<control> const& c, std::size_t rs) { m_indecies[c].row_span = rs; }
+        static std::size_t get_row_span(std::shared_ptr<control> const& c) { return m_indecies[c].row_span; }
 
     public:
-#define ADD_GRID_MEMBERS()                             \
-    ADD_MULTICONTAINER_MEMBERS();                      \
-    ADD_PROP(columns);                                 \
-    ADD_PROP(rows);                                    \
-    ADD_ATTACH_PROP(column, std::shared_ptr<control>); \
-    ADD_ATTACH_PROP(row, std::shared_ptr<control>)
+#define ADD_GRID_MEMBERS()                                  \
+    ADD_MULTICONTAINER_MEMBERS();                           \
+    ADD_PROP(columns);                                      \
+    ADD_PROP(rows);                                         \
+    ADD_ATTACH_PROP(column, std::shared_ptr<control>);      \
+    ADD_ATTACH_PROP(row, std::shared_ptr<control>);         \
+    ADD_ATTACH_PROP(column_span, std::shared_ptr<control>); \
+    ADD_ATTACH_PROP(row_span, std::shared_ptr<control>)
 
         static void register_class() noexcept
         {
