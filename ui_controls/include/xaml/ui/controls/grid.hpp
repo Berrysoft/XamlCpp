@@ -7,6 +7,7 @@
 #include <vector>
 #include <xaml/meta/conv.hpp>
 #include <xaml/ui/container.hpp>
+#include <xaml/ui/controls/layout_base.hpp>
 #include <xaml/ui/drawing.hpp>
 
 namespace xaml
@@ -88,27 +89,14 @@ namespace xaml
     {
     };
 
-    class grid : public multicontainer
+    class grid : public layout_base
     {
     public:
         XAML_UI_CONTROLS_API grid();
         XAML_UI_CONTROLS_API ~grid() override;
 
-#ifdef XAML_UI_WINDOWS
-    public:
-        XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
-#endif // XAML_UI_WINDOWS
-
-#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
     private:
-        std::unordered_map<std::shared_ptr<control>, bool> m_put_map{};
-#endif // XAML_UI_GTK3
-
-    private:
-        XAML_UI_CONTROLS_API void draw_impl(bool new_draw, rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {});
-
-    public:
-        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+        XAML_UI_CONTROLS_API void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {}) override;
 
     private:
         std::vector<grid_length> m_columns;
@@ -139,7 +127,7 @@ namespace xaml
 
     public:
 #define ADD_GRID_MEMBERS()                                  \
-    ADD_MULTICONTAINER_MEMBERS();                           \
+    ADD_LAYOUT_BASE_MEMBERS();                              \
     ADD_PROP(columns);                                      \
     ADD_PROP(rows);                                         \
     ADD_ATTACH_PROP(column, std::shared_ptr<control>);      \

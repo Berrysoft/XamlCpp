@@ -82,3 +82,19 @@ namespace xaml::test
     }
 }
 ```
+
+## Build
+A C++17-compliant compiler is required.
+### Build on Windows
+#### MSVC
+`libxml2`, `wil` and `boost-program-options` are required. `vcpkg` is recommanded.
+#### MinGW
+`libxml2`, `gtk`, `boost` and `pkgconfig` are required. MSYS2 is recommanded for installing.
+### Build on Linux
+`libxml2`, `gtk` and `pkgconfig` are required.
+### Build on Mac
+Mac OS 10.14+ is required for some C++17 features.
+#### Cocoa
+`libxml2` is pre-installed in the system. `boost` is required.
+#### Gtk
+`gtk` and `pkgconfig` are also required.

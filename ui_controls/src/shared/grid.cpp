@@ -107,23 +107,22 @@ namespace xaml
 
     unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
 
-    grid::grid() : multicontainer()
-    {
-    }
+    grid::grid() : layout_base() {}
 
     grid::~grid() {}
 
-    void grid::draw_impl(bool new_draw, rectangle const& region, function<void(std::shared_ptr<control>, rectangle const&)> func)
+    static inline double real_length_plus(double lhs, tuple<double, double> const& rhs) { return lhs + get<0>(rhs); }
+
+    void grid::__draw_impl(rectangle const& region, function<void(std::shared_ptr<control>, rectangle const&)> func)
     {
         for (auto& c : m_children)
         {
-            if (new_draw) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
+            if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
             c->__size_to_fit();
         }
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
-        auto real_length_plus = [](double lhs, tuple<double, double> const& rhs) { return lhs + get<0>(rhs); };
         for (auto& c : m_children)
         {
             auto index = m_indecies[c];

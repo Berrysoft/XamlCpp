@@ -24,7 +24,7 @@ namespace xaml
                 if (m_multiple)
                 {
                     m_results.clear();
-                    g_slist_free_unique_ptr<GSList> list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(m_handle)) };
+                    g_slist_free_unique_ptr list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(m_handle)) };
                     while (list)
                     {
                         g_free_unique_ptr<gchar> name{ (gchar*)list->data };

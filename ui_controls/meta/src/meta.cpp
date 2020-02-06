@@ -5,6 +5,7 @@
 #include <xaml/ui/controls/label.hpp>
 #include <xaml/ui/controls/meta.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/controls/stack_panel.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -56,7 +57,9 @@ namespace xaml
     {
         init_context(ctx);
         register_class<
+            layout_base,
             grid,
+            stack_panel,
             canvas,
             button_base,
             button,

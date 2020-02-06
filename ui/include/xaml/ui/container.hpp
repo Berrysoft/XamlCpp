@@ -64,6 +64,11 @@ namespace xaml
         XAML_UI_API void remove_child(std::shared_ptr<control> const& child);
         array_view<std::shared_ptr<control>> get_children() const noexcept { return m_children; }
 
+#ifdef XAML_UI_WINDOWS
+    public:
+        XAML_UI_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+#endif // XAML_UI_WINDOWS
+
     public:
 #define ADD_MULTICONTAINER_MEMBERS()                      \
     ADD_CONTROL_MEMBERS();                                \

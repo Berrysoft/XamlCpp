@@ -1,3 +1,4 @@
+#include <gtk3/resources.hpp>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/window.hpp>
@@ -21,6 +22,7 @@ namespace xaml
 
     void window::__draw(rectangle const& region)
     {
+        bool new_run = !get_handle();
         if (!get_handle())
         {
             set_handle(gtk_window_new(GTK_WINDOW_TOPLEVEL));
@@ -67,6 +69,15 @@ namespace xaml
     void window::draw_child()
     {
         get_child()->__draw(get_client_region());
+        if (get_handle() != get_child()->get_handle())
+        {
+            g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_handle())) };
+            if (!list || list->data != get_child()->get_handle())
+            {
+                if (list) gtk_container_remove(GTK_CONTAINER(get_handle()), GTK_WIDGET(list->data));
+                gtk_container_add(GTK_CONTAINER(get_handle()), get_child()->get_handle());
+            }
+        }
     }
 
     void window::draw_resizable()
