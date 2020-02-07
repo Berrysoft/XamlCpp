@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <iomanip>
 #include <iterator>
 #include <ostream>
 #include <unordered_map>
@@ -87,7 +88,7 @@ namespace xaml
         else if (is_of_type(type, string_types))
         {
             ostringstream stream;
-            stream << "U(\"" << code << "\")";
+            stream << "U(" << quoted(code) << ')';
             return stream.str();
         }
         else if (is_of_type(type, t2d_types))
