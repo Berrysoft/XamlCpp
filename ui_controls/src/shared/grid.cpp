@@ -115,11 +115,7 @@ namespace xaml
 
     void grid::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
     {
-        for (auto& c : m_children)
-        {
-            if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
-            c->__size_to_fit();
-        }
+        layout_base::__draw_impl(region, func);
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);

@@ -10,13 +10,13 @@ namespace xaml
 
     void drawing_context::set_pen(drawing_pen const& pen)
     {
-        cairo_set_source_rgba(m_handle, pen.get_color().r, pen.get_color().g, pen.get_color().b, pen.get_color().a);
+        cairo_set_source_rgba(m_handle, pen.get_color().r / 255.0, pen.get_color().g / 255.0, pen.get_color().b / 255.0, pen.get_color().a / 255.0);
         cairo_set_line_width(m_handle, pen.get_width());
     }
 
     void drawing_context::set_brush(drawing_brush const& brush)
     {
-        cairo_set_source_rgba(m_handle, brush.get_color().r, brush.get_color().g, brush.get_color().b, brush.get_color().a);
+        cairo_set_source_rgba(m_handle, brush.get_color().r / 255.0, brush.get_color().g / 255.0, brush.get_color().b / 255.0, brush.get_color().a / 255.0);
     }
 
     void drawing_context::path_arc(rectangle const& region, double start_angle, double end_angle)

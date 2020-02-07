@@ -1,3 +1,4 @@
+#include <cmath>
 #include <test_window.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/parser.hpp>
@@ -43,5 +44,12 @@ namespace xaml::test
         auto cy = cv.get_height() / 2;
         auto r = (min)(cx, cy) - 2;
         dc.draw_ellipse({ colors::black }, { cx - r, cy - r, r * 2, r * 2 });
+        point pc{ cx, cy };
+        point p1 = point{ 0, -r } + pc;
+        point p2 = point{ r * sqrt(3) / 2, r / 2 } + pc;
+        point p3 = point{ -r * sqrt(3) / 2, r / 2 } + pc;
+        dc.draw_line({ colors::sky_blue }, p1, p2);
+        dc.draw_line({ colors::sky_blue }, p2, p3);
+        dc.draw_line({ colors::sky_blue }, p3, p1);
     }
 } // namespace xaml::test

@@ -11,14 +11,9 @@ namespace xaml
 
     void uniform_grid::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
     {
-        for (auto& c : m_children)
-        {
-            if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
-            c->__size_to_fit();
-        }
         if (!m_children.empty())
         {
-
+            layout_base::__draw_impl(region, func);
             rectangle real = region - get_margin();
             size_t cs = get_columns();
             size_t rs = get_rows();

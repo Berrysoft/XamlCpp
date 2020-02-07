@@ -12,11 +12,7 @@ namespace xaml
 
     void stack_panel::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
     {
-        for (auto& c : m_children)
-        {
-            if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
-            c->__size_to_fit();
-        }
+        layout_base::__draw_impl(region, func);
         rectangle real = region - get_margin();
         if (get_orientation() == orientation::vertical)
         {

@@ -40,7 +40,7 @@ namespace xaml
 #endif // XAML_UI_GTK3
 
     protected:
-        virtual void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {}) = 0;
+        virtual void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {});
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
