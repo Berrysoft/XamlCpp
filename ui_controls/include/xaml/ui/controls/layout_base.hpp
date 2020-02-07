@@ -5,6 +5,29 @@
 
 namespace xaml
 {
+    enum class orientation
+    {
+        horizontal,
+        vertical
+    };
+
+    STRING_CONST(__orientation_horizontal, "horizontal")
+    STRING_CONST(__orientation_vertical, "vertical")
+
+    template <typename TChar>
+    struct __orientation_enum_meta_helper
+    {
+        inline static __unordered_bimap<std::basic_string_view<TChar>, orientation> enum_map{
+            { __orientation_horizontal<TChar>, orientation::horizontal },
+            { __orientation_vertical<TChar>, orientation::vertical }
+        };
+    };
+
+    template <typename TChar>
+    struct enum_meta<orientation, TChar> : __enum_meta_helper<orientation, TChar, &__orientation_enum_meta_helper<TChar>::enum_map>
+    {
+    };
+
     class layout_base : public multicontainer
     {
     public:

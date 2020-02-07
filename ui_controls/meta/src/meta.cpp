@@ -6,6 +6,7 @@
 #include <xaml/ui/controls/meta.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
+#include <xaml/ui/controls/uniform_grid.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -57,15 +58,12 @@ namespace xaml
     {
         init_context(ctx);
         register_class<
-            layout_base,
-            grid,
-            stack_panel,
+            layout_base, grid, uniform_grid, stack_panel,
             canvas,
-            button_base,
-            button,
+            button_base, button,
             label,
-            entry,
-            password_entry>();
+            entry, password_entry>();
         REGISTER_ENUM(xaml, grid_layout);
+        REGISTER_ENUM(xaml, orientation);
     }
 } // namespace xaml

@@ -10,7 +10,7 @@ namespace xaml
 
     stack_panel::~stack_panel() {}
 
-    void stack_panel::__draw_impl(rectangle const& region, function<void(std::shared_ptr<control>, rectangle const&)> func)
+    void stack_panel::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
     {
         for (auto& c : m_children)
         {

@@ -10,6 +10,13 @@
     <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
     <button x:name="mybutton" grid.column="1" grid.column_span="2" grid.row="2" is_default="true" valignment="center" click="on_button_click">Hello</button>
     <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
+    <uniform_grid grid.column="1" grid.row="3">
+      <button margin="5">Button</button>
+      <button margin="5">Button</button>
+      <button margin="5">Button</button>
+      <button margin="5">Button</button>
+      <button margin="5">Button</button>
+    </uniform_grid>
     <stack_panel grid.column="2" grid.row="3" orientation="vertical">
       <button margin="5">Button</button>
       <button margin="5">Button</button>
