@@ -16,6 +16,11 @@ namespace xaml
         XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
+#ifdef XAML_UI_GTK3
+    protected:
+        static void on_toggled(GtkToggleButton* button, gpointer data);
+#endif // XAML_UI_GTK3
+
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 

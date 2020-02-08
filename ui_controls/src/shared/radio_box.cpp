@@ -11,21 +11,47 @@ namespace xaml
             if (get_handle())
             {
                 draw_checked();
-                if (checked && get_parent())
+                if (get_parent())
                 {
-                    if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
+                    if (checked)
                     {
-                        for (auto& c : multic->get_children())
+                        if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
                         {
-                            if (auto rc = dynamic_pointer_cast<radio_box>(c))
+                            for (auto& c : multic->get_children())
                             {
-                                if (c != shared_from_this() && rc->get_group() == get_group())
+                                if (auto rc = dynamic_pointer_cast<radio_box>(c))
                                 {
-                                    rc->set_is_checked(false);
+                                    if (c != shared_from_this() && rc->get_group() == get_group())
+                                    {
+                                        rc->set_is_checked(false);
+                                    }
                                 }
                             }
                         }
                     }
+#ifdef XAML_UI_GTK3
+                    else
+                    {
+                        if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
+                        {
+                            bool etcckd = false;
+                            for (auto& c : multic->get_children())
+                            {
+                                if (auto rc = dynamic_pointer_cast<radio_box>(c))
+                                {
+                                    if (c != shared_from_this() && rc->get_group() == get_group())
+                                    {
+                                        etcckd |= rc->get_is_checked();
+                                    }
+                                }
+                            }
+                            if (!etcckd)
+                            {
+                                set_is_checked(true);
+                            }
+                        }
+                    }
+#endif // XAML_UI_GTK3
                 }
             }
         });

@@ -22,9 +22,7 @@ namespace xaml
         });
     }
 
-    button::~button()
-    {
-    }
+    button::~button() {}
 
     void button::__draw(rectangle const& region)
     {

@@ -19,7 +19,7 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
-    private:
+    protected:
         static void on_clicked(GtkButton* button, gpointer data);
 #endif // XAML_UI_GTK3
 
