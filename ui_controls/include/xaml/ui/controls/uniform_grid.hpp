@@ -15,6 +15,9 @@ namespace xaml
         XAML_UI_CONTROLS_API void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {}) override;
 
     public:
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
+
+    public:
         PROP_CONSTEXPR(columns, std::size_t)
         PROP_CONSTEXPR(rows, std::size_t)
         PROP_CONSTEXPR(orientation, orientation)

@@ -4,9 +4,9 @@ using namespace std;
 
 namespace xaml
 {
-    button_base::button_base() : common_control()
+    button::button() : common_control()
     {
-        add_text_changed([this](button_base const&, string_view_t) {
+        add_text_changed([this](button const&, string_view_t) {
             if (get_handle())
             {
                 draw_text();
@@ -22,11 +22,11 @@ namespace xaml
         });
     }
 
-    button_base::~button_base()
+    button::~button()
     {
     }
 
-    void button_base::__draw(rectangle const& region)
+    void button::__draw(rectangle const& region)
     {
         if (!get_handle())
         {
@@ -39,26 +39,26 @@ namespace xaml
         draw_text();
     }
 
-    void button_base::draw_text()
+    void button::draw_text()
     {
         gtk_button_set_label(GTK_BUTTON(get_handle()), m_text.c_str());
     }
 
-    void button_base::draw_size()
+    void button::draw_size()
     {
         auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
         gtk_widget_set_size_request(get_handle(), rw, rh);
     }
 
-    void button_base::draw_default() {}
+    void button::draw_default() {}
 
-    void button_base::on_clicked(GtkButton*, gpointer data)
+    void button::on_clicked(GtkButton*, gpointer data)
     {
-        button_base* s = (button_base*)data;
+        button* s = (button*)data;
         s->m_click(*s);
     }
 
-    void button_base::__size_to_fit()
+    void button::__size_to_fit()
     {
         int width = gtk_widget_get_allocated_width(get_handle());
         int height = gtk_widget_get_allocated_height(get_handle());

@@ -23,7 +23,7 @@ namespace xaml::test
 
         void on_timer_tick(timer&);
 
-        void on_button_click(button_base& btn);
+        void on_button_click(button& btn);
 
         void on_canvas_redraw(canvas& cv, drawing_context& dc);
     };

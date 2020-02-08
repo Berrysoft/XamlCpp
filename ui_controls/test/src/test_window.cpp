@@ -153,7 +153,7 @@ namespace xaml::test
         }
     }
 
-    void test_window::on_button_click(button_base& btn)
+    void test_window::on_button_click(button& btn)
     {
         btn.set_text(U("Hello world!"));
         count = 0;

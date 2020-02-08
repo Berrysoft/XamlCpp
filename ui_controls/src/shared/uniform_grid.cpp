@@ -88,4 +88,30 @@ namespace xaml
             }
         }
     }
+
+    void uniform_grid::__size_to_fit()
+    {
+        size_t cs, rs;
+        size_t n = m_children.size();
+        if (get_orientation() == orientation::vertical)
+        {
+            cs = (size_t)sqrt(n);
+            rs = (n + cs - 1) / cs;
+        }
+        else
+        {
+            rs = (size_t)sqrt(n);
+            cs = (n + rs - 1) / rs;
+        }
+        double mw = 0, mh = 0;
+        for (auto& c : m_children)
+        {
+            if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
+            c->__size_to_fit();
+            auto csize = c->get_size();
+            if (csize.width > mw) mw = csize.width;
+            if (csize.height > mh) mh = csize.height;
+        }
+        __set_size_noevent({ mw * cs, mh * rs });
+    }
 } // namespace xaml
