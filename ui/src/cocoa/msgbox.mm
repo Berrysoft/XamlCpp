@@ -4,7 +4,7 @@ using namespace std;
 
 namespace xaml
 {
-    NSAlertStyle get_style(msgbox_style style)
+    static NSAlertStyle get_style(msgbox_style style)
     {
         switch (style)
         {

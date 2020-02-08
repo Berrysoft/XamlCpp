@@ -330,6 +330,9 @@ ASALocalRun/
 # clangd
 .clangd
 
+# ccls
+.ccls*
+
 # CMake
 CMakeCache.txt
 CMakeFiles
