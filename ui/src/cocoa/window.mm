@@ -21,17 +21,9 @@ using namespace std;
 
 namespace xaml
 {
-    window::window() : container(), m_resizable(true)
-    {
-        add_title_changed([this](window const&, string_view_t) { if (__get_window()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (__get_window() && !m_resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (__get_window() && !m_resizing) __draw({}); });
-        add_resizable_changed([this](control const&, bool) { if(__get_window()) draw_resizable(); });
-    }
-
     window::~window()
     {
-        [__get_window() close];
+        close();
     }
 
     void window::__draw(rectangle const& region)
@@ -107,6 +99,11 @@ namespace xaml
         NSWindow* window = __get_window();
         [window makeKeyAndOrderFront:nil];
     }
+
+    void window::close()
+    {
+        [__get_window() close];
+	}
 
     rectangle window::get_client_region() const
     {

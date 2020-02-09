@@ -28,16 +28,9 @@ namespace xaml
         return nullptr;
     }
 
-    window::window() : container(), m_resizable(true)
-    {
-        add_title_changed([this](window const&, string_view_t) { if (get_handle()) draw_title(); });
-        add_location_changed([this](window const&, point) { if (get_handle() && !m_resizing) __draw({}); });
-        add_size_changed([this](control const&, size) { if (get_handle() && !m_resizing) __draw({}); });
-        add_resizable_changed([this](control const&, bool) { if(get_handle()) draw_resizable(); });
-    }
-
     window::~window()
     {
+        close();
         window_map.erase(get_handle());
     }
 
@@ -107,6 +100,11 @@ namespace xaml
         __draw({});
         ShowWindow(get_handle(), SW_SHOW);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
+    }
+
+    void window::close()
+    {
+        SendMessage(get_handle(), WM_CLOSE, 0, 0);
     }
 
     rectangle window::get_client_region() const

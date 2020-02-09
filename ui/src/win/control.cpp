@@ -31,6 +31,5 @@ namespace xaml
 
     control::~control()
     {
-        SendMessage(get_handle(), WM_CLOSE, 0, 0);
     }
 } // namespace xaml

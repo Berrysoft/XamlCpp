@@ -72,6 +72,7 @@ namespace xaml
         std::shared_ptr<control> get_root_window() override { return shared_from_this(); }
 
         XAML_UI_API void show();
+        XAML_UI_API void close();
 
         PROP_EVENT(resizable, bool)
         EVENT(resizable_changed, window&, bool)
