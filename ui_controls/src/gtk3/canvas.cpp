@@ -119,10 +119,6 @@ namespace xaml
         cairo_show_text(m_handle, str.data());
     }
 
-    canvas::canvas() : common_control() {}
-
-    canvas::~canvas() {}
-
     void canvas::__draw(const rectangle& region)
     {
         if (!get_handle())

@@ -120,10 +120,6 @@ namespace xaml
         m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), to_native<PointF>(p), brush.get_handle());
     }
 
-    canvas::canvas() : common_control() {}
-
-    canvas::~canvas() {}
-
     optional<LRESULT> canvas::__wnd_proc(window_message const& msg)
     {
         if (get_handle() && msg.hWnd == get_handle())

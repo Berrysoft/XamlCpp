@@ -21,6 +21,11 @@ namespace xaml
         static void on_toggled(GtkToggleButton* button, gpointer data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_state_changed();
+#endif // XAML_UI_COCOA
+
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 

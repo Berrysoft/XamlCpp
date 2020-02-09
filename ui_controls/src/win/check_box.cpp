@@ -5,13 +5,6 @@ using namespace std;
 
 namespace xaml
 {
-    check_box::check_box() : button()
-    {
-        add_is_checked_changed([this](check_box const&, bool) { if(get_handle()) draw_checked(); });
-    }
-
-    check_box::~check_box() {}
-
     optional<LRESULT> check_box::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)

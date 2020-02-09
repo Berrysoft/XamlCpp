@@ -113,12 +113,6 @@ namespace xaml
         [path fill];
     }
 
-    canvas::canvas() : common_control()
-    {
-    }
-
-    canvas::~canvas() {}
-
     void canvas::__draw(const rectangle& region)
     {
         if (!get_handle())

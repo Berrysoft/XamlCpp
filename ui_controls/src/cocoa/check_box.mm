@@ -4,13 +4,6 @@ using namespace std;
 
 namespace xaml
 {
-    check_box::check_box() : button()
-    {
-        add_is_checked_changed([this](check_box const&, bool) { if(get_handle()) draw_checked(); });
-    }
-
-    check_box::~check_box() {}
-
     void check_box::__draw(rectangle const& region)
     {
         button::__draw(region);
@@ -24,4 +17,10 @@ namespace xaml
         NSButton* button = (NSButton*)get_handle();
         button.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
     }
+
+    void check_box::__on_state_changed()
+    {
+        NSButton* button = (NSButton*)get_handle();
+        set_is_checked(button.state == NSControlStateValueOn);
+	}
 }

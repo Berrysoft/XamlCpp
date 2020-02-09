@@ -17,4 +17,10 @@ namespace xaml
         NSButton* button = (NSButton*)get_handle();
         button.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
     }
+
+    void radio_box::__on_state_changed()
+    {
+        NSButton* button = (NSButton*)get_handle();
+        set_is_checked(button.state == NSControlStateValueOn);
+	}
 }

@@ -2,13 +2,6 @@
 
 namespace xaml
 {
-    check_box::check_box() : button()
-    {
-        add_is_checked_changed([this](check_box const&, bool) { if(get_handle()) draw_checked(); });
-    }
-
-    check_box::~check_box() {}
-
     void check_box::__draw(rectangle const& region)
     {
         if (!get_handle())

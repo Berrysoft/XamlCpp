@@ -2,10 +2,12 @@
 
 using namespace std;
 
-#ifdef USE_CUSTOM_DRAWING_TYPES
 namespace xaml
 {
-    drawing_brush::drawing_brush(color c) : m_object({ c }) {}
+#ifdef USE_CUSTOM_DRAWING_TYPES
+    drawing_brush::drawing_brush(color c) : m_object({ c })
+    {
+    }
 
     color drawing_brush::get_color() const { return m_object.fill; }
 
@@ -32,5 +34,11 @@ namespace xaml
     bool drawing_font::get_italic() const { return m_object.italic; }
 
     bool drawing_font::get_bold() const { return m_object.bold; }
-} // namespace xaml
 #endif // USE_CUSTOM_DRAWING_TYPES
+
+    canvas::canvas() : common_control()
+    {
+    }
+
+    canvas::~canvas() {}
+} // namespace xaml
