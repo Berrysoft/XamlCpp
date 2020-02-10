@@ -138,6 +138,9 @@ namespace xaml
 #endif
 
 #ifdef XAML_UI_COCOA
+    protected:
+        XAML_UI_API void __set_rect(rectangle const& real);
+
     public:
         using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
 

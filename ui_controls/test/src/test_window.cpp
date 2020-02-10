@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <test_window.hpp>
+#include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
@@ -109,8 +110,19 @@ namespace xaml::test
             grid::set_row(cv, 3);
         }
         {
+            auto box = make_shared<combo_box>();
+            box->set_halignment(halignment_t::left);
+            box->set_margin({ 10, 10, 10, 10 });
+            box->set_items({ U("A"), U("BBB"), U("C") });
+            box->set_sel_id(1);
+            g->add_child(box);
+            grid::set_column(box, 1);
+            grid::set_row(box, 3);
+        }
+        {
             auto panel = make_shared<stack_panel>();
             panel->set_orientation(orientation::vertical);
+            panel->set_margin({ 5, 5, 5, 5 });
             {
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });

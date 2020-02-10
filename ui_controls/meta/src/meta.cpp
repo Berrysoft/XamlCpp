@@ -1,6 +1,7 @@
 #include <xaml/ui/controls/button.hpp>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/check_box.hpp>
+#include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
@@ -64,7 +65,8 @@ namespace xaml
             canvas,
             button, check_box, radio_box,
             label,
-            entry, password_entry>();
+            entry, password_entry,
+            combo_box>();
         REGISTER_ENUM(xaml, grid_layout);
         REGISTER_ENUM(xaml, orientation);
     }

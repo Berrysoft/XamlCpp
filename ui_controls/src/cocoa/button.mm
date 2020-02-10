@@ -32,13 +32,7 @@ namespace xaml
         rectangle real = region - get_margin();
         NSButton* button = (NSButton*)get_handle();
         [button setBezelStyle:NSBezelStyleRounded];
-        NSView* view = get_parent()->get_handle();
-        NSRect parent_frame = [view frame];
-        NSRect frame = button.frame;
-        frame.origin = { real.x, parent_frame.size.height - real.height - real.y };
-        frame.size = { real.width, real.height };
-        button.frame = frame;
-        __set_size_noevent({ real.width, real.height });
+        __set_rect(real);
         draw_text();
         draw_default();
     }

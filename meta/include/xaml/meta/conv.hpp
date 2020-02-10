@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <initializer_list>
 #include <locale>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <typeindex>
@@ -492,6 +493,26 @@ namespace xaml
             else
             {
                 return {};
+            }
+        }
+    };
+
+    template <typename T>
+    struct value_converter_traits<std::optional<T>, void>
+    {
+        static std::optional<T> convert(std::any value)
+        {
+            if (value.type() == typeid(std::nullopt_t))
+            {
+                return std::nullopt;
+            }
+            else if (value.type() == typeid(std::optional<T>))
+            {
+                return std::any_cast<std::optional<T>>(value);
+            }
+            else
+            {
+                return std::make_optional<T>(value_converter_traits<T>::convert(value));
             }
         }
     };

@@ -16,14 +16,7 @@ namespace xaml
             set_handle(textField);
         }
         rectangle real = region - get_margin();
-        NSTextField* textField = (NSTextField*)get_handle();
-        NSView* view = get_parent()->get_handle();
-        NSRect parent_frame = [view frame];
-        NSRect frame = textField.frame;
-        frame.origin = { real.x, parent_frame.size.height - real.height - real.y };
-        frame.size = { real.width, real.height };
-        textField.frame = frame;
-        __set_size_noevent({ real.width, real.height });
+        __set_rect(real);
         draw_text();
         draw_alignment();
     }
