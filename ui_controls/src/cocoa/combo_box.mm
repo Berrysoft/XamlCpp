@@ -30,8 +30,23 @@ namespace xaml
     void combo_box::draw_text()
     {
         NSComboBox* combo = (NSComboBox*)get_handle();
-        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
-        combo.stringValue = ns_title;
+        if (m_text)
+        {
+            NSString* ns_title = [NSString stringWithUTF8String:m_text->c_str()];
+            combo.stringValue = ns_title;
+        }
+        else
+        {
+            if (m_sel_id < 0 || m_sel_id >= m_items.size())
+            {
+                combo.stringValue = @"";
+            }
+            else
+            {
+                NSString* ns_title = [NSString stringWithUTF8String:m_items[m_sel_id].c_str()];
+                combo.stringValue = ns_title;
+            }
+        }
     }
 
     void combo_box::draw_items()
