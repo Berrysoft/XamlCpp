@@ -45,8 +45,8 @@ int main(int argc, char** argv)
     path exe{ argv[0] };
     if (!vm.count("no-logo"))
     {
-        cout << exe.filename().string() << " 1.0.0" << endl
-             << "Copyright (c) 2019-2020 Berrysoft" << endl
+        cout << exe.filename().string() << " " XAML_VERSION << '\n'
+             << "Copyright (c) 2019-2020 Berrysoft" << '\n'
              << endl;
     }
 
