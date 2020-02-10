@@ -2,6 +2,8 @@
 #include <windowsx.h>
 #include <xaml/ui/controls/password_entry.hpp>
 
+#include <CommCtrl.h>
+
 using namespace std;
 
 namespace xaml
@@ -13,7 +15,7 @@ namespace xaml
         if (!get_handle())
         {
             window_create_params params = {};
-            params.class_name = U("EDIT");
+            params.class_name = WC_EDIT;
             params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_PASSWORD;
             params.ex_style = WS_EX_CLIENTEDGE;
             params.x = 0;

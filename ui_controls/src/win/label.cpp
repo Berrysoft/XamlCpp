@@ -3,6 +3,8 @@
 #include <windowsx.h>
 #include <xaml/ui/controls/label.hpp>
 
+#include <CommCtrl.h>
+
 using namespace std;
 
 namespace xaml
@@ -26,7 +28,7 @@ namespace xaml
         if (!get_handle())
         {
             window_create_params params = {};
-            params.class_name = U("STATIC");
+            params.class_name = WC_STATIC;
             params.style = WS_CHILD | WS_VISIBLE | SS_LEFT;
             params.x = 0;
             params.y = 0;

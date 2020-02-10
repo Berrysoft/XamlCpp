@@ -2,6 +2,8 @@
 #include <windowsx.h>
 #include <xaml/ui/controls/button.hpp>
 
+#include <CommCtrl.h>
+
 using namespace std;
 
 namespace xaml
@@ -32,7 +34,7 @@ namespace xaml
         if (!get_handle())
         {
             window_create_params params = {};
-            params.class_name = U("BUTTON");
+            params.class_name = WC_BUTTON;
             params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
             params.x = 0;
             params.y = 0;
