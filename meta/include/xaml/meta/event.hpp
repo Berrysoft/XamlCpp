@@ -37,6 +37,12 @@ namespace xaml
                 h.second(args...);
             }
         }
+
+        void swap(event& e) noexcept
+        {
+            m_handlers.swap(e.m_handlers);
+            std::swap(m_index, e.m_index);
+        }
     };
 
     template <typename T, typename Class, typename... Args>

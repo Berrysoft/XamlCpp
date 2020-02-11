@@ -1,6 +1,7 @@
 #include <iostream>
 #include <xaml/meta/meta.hpp>
 #include <xaml/meta/meta_macro.hpp>
+#include <xaml/observable_vector.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -83,4 +84,45 @@ int main()
     invoke_method<void>(mc, "minus", 1, 1);
     // Invoke the static method.
     cout << "3 * 7 = " << *invoke_static_method<int>(t, "multiply", 3, 7) << endl;
+    cout << endl;
+    observable_vector obs{ 1, 2, 3 };
+    obs.add_vector_changed([](observable_vector&, vector_changed_args& args) {
+        switch (args.action)
+        {
+        case vector_changed_action::add:
+            cout << "Add items at " << args.new_index << ": ";
+            for (auto& item : args.new_items)
+            {
+                cout << any_cast<int>(item) << ' ';
+            }
+            cout << endl;
+            break;
+        case vector_changed_action::erase:
+            cout << "Erase items at " << args.old_index << ": ";
+            for (auto& item : args.old_items)
+            {
+                cout << any_cast<int>(item) << ' ';
+            }
+            cout << endl;
+            break;
+        case vector_changed_action::move:
+            cout << "Move item " << any_cast<int>(args.old_items[0]) << " at " << args.old_index << " to " << args.new_index << '.' << endl;
+            break;
+        case vector_changed_action::replace:
+            cout << "Replace item at " << args.old_index << " from " << any_cast<int>(args.old_items[0]) << " to " << any_cast<int>(args.new_items[0]) << '.' << endl;
+            break;
+        case vector_changed_action::reset:
+            cout << "Reset. Old count: " << args.old_items.size() << "; new count: " << args.new_items.size() << '.' << endl;
+            break;
+        }
+    });
+    obs.push_back(4);
+    obs.pop_back();
+    obs.insert(obs.begin() + 2, 5);
+    for (auto item : obs)
+    {
+        item = any_cast<int>(item) + 1;
+    }
+    obs = { 4, 5, 6, 7, 8 };
+    obs.clear();
 }
