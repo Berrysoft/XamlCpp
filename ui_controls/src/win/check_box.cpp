@@ -43,7 +43,7 @@ namespace xaml
     void check_box::__size_to_fit()
     {
         size msize = __measure_text_size(get_text());
-        __set_size_noevent({ msize.width + 20, msize.height + 10 });
+        __set_size_noevent({ msize.width + 15, msize.height + 10 });
         draw_size();
     }
 } // namespace xaml

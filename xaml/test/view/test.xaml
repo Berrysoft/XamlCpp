@@ -1,7 +1,7 @@
 <window x:class="xaml::test::test_window"
         xmlns="https://github.com/Berrysoft/XamlCpp/"
         xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
-        title="Test Window" location="200, 100" size="800, 600">
+        title="Test Window" location="200, 100" size="900, 675">
   <grid margin="10" columns="1*, 1*, 0.8*" rows="auto, auto, 0.5*, 0.8*">
     <label margin="10" text_halignment="right" valignment="center">Username:</label>
     <entry grid.column="1" margin="0, 5" valignment="center">John</entry>

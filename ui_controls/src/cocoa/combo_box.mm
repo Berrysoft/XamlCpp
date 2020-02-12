@@ -8,7 +8,7 @@ namespace xaml
     {
         if (!get_handle())
         {
-            NSComboBox* combo = [[NSComboBox alloc] init];
+            NSComboBox* combo = [NSComboBox new];
             combo.bezeled = YES;
             set_handle(combo);
             draw_items();
