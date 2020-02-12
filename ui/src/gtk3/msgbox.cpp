@@ -21,41 +21,44 @@ namespace xaml
         }
     }
 
-    static GtkButtonsType get_buttons(msgbox_buttons buttons)
-    {
-        switch (buttons)
-        {
-        case msgbox_buttons::yes_no:
-            return GTK_BUTTONS_YES_NO;
-        case msgbox_buttons::ok_cancel:
-            return GTK_BUTTONS_OK_CANCEL;
-        default:
-            return GTK_BUTTONS_OK;
-        }
-    }
-
-    static msgbox_result get_result(int result)
-    {
-        switch (result)
-        {
-        case GTK_RESPONSE_OK:
-            return msgbox_result::ok;
-        case GTK_RESPONSE_CANCEL:
-            return msgbox_result::cancel;
-        case GTK_RESPONSE_YES:
-            return msgbox_result::yes;
-        case GTK_RESPONSE_NO:
-            return msgbox_result::no;
-        default:
-            return msgbox_result::error_result;
-        }
-    }
-
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
     {
-        GtkWidget* dialog = gtk_message_dialog_new(parent ? GTK_WINDOW(parent->get_handle()) : NULL, GTK_DIALOG_DESTROY_WITH_PARENT, get_style(style), get_buttons(buttons), "%s", title.data());
-        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", message.data());
-        msgbox_result result = get_result(gtk_dialog_run(GTK_DIALOG(dialog)));
+        GtkWidget* dialog = gtk_message_dialog_new(parent ? GTK_WINDOW(parent->get_handle()) : NULL, GTK_DIALOG_DESTROY_WITH_PARENT, get_style(style), GTK_BUTTONS_NONE, "%s", message.data());
+        gtk_window_set_title(GTK_WINDOW(dialog), title.data());
+        switch (buttons)
+        {
+        case msgbox_buttons::ok_cancel:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_OK"), (gint)msgbox_result::ok);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Cancel"), (gint)msgbox_result::cancel);
+            break;
+        case msgbox_buttons::abort_retry_ignore:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Abort"), (gint)msgbox_result::abort);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Retry"), (gint)msgbox_result::retry);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Ignore"), (gint)msgbox_result::ignore);
+            break;
+        case msgbox_buttons::yes_no_cancel:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Yes"), (gint)msgbox_result::yes);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_No"), (gint)msgbox_result::no);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Cancel"), (gint)msgbox_result::cancel);
+            break;
+        case msgbox_buttons::yes_no:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Yes"), (gint)msgbox_result::yes);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_No"), (gint)msgbox_result::no);
+            break;
+        case msgbox_buttons::retry_cancel:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Retry"), (gint)msgbox_result::retry);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Cancel"), (gint)msgbox_result::cancel);
+            break;
+        case msgbox_buttons::cancel_try_resume:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Cancel"), (gint)msgbox_result::cancel);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Try Again"), (gint)msgbox_result::try_again);
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("C_ontinue"), (gint)msgbox_result::resume);
+            break;
+        default:
+            gtk_dialog_add_button(GTK_DIALOG(dialog), U("_OK"), (gint)msgbox_result::ok);
+            break;
+        }
+        msgbox_result result = (msgbox_result)gtk_dialog_run(GTK_DIALOG(dialog));
         gtk_widget_destroy(dialog);
         return result;
     }
