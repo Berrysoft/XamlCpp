@@ -121,9 +121,9 @@ namespace xaml
         {
         public:
             using difference_type = typename __vector_type::difference_type;
-            using value_type = value_type;
-            using pointer = const_pointer;
-            using reference = const_reference;
+            using value_type = typename observable_vector::value_type;
+            using pointer = typename observable_vector::const_pointer;
+            using reference = typename observable_vector::const_reference;
             using iterator_category = std::random_access_iterator_tag;
 
         private:
@@ -214,9 +214,9 @@ namespace xaml
         {
         public:
             using difference_type = typename __vector_type::difference_type;
-            using value_type = value_type;
-            using pointer = pointer;
-            using reference = reference;
+            using value_type = typename observable_vector::value_type;
+            using pointer = typename observable_vector::pointer;
+            using reference = typename observable_vector::reference;
             using iterator_category = std::random_access_iterator_tag;
 
         private:
