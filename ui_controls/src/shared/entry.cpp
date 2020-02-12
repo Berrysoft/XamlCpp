@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    entry::entry() : common_control()
+    entry::entry() : control()
     {
         add_text_changed([this](entry const&, string_view_t) {
             if (get_handle())

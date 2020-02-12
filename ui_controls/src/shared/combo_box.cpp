@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    combo_box::combo_box() : common_control() {}
+    combo_box::combo_box() : control() {}
 
     combo_box::~combo_box() {}
 } // namespace xaml

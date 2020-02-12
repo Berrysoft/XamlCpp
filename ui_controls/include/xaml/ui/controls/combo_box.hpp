@@ -8,11 +8,11 @@
 
 namespace xaml
 {
-    class combo_box : public common_control
+    class combo_box : public control
     {
     public:
         XAML_UI_CONTROLS_API combo_box();
-        XAML_UI_CONTROLS_API ~combo_box();
+        XAML_UI_CONTROLS_API ~combo_box() override;
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
@@ -47,12 +47,12 @@ namespace xaml
         PROP_CONSTEXPR_EVENT(is_editable, bool)
 
     public:
-#define ADD_COMBO_BOX_MEMBERS()   \
-    ADD_COMMON_CONTROL_MEMBERS(); \
-    ADD_PROP(items);              \
-    ADD_PROP_EVENT(sel_id);       \
-    ADD_PROP_EVENT(is_editable);  \
-    ADD_PROP_EVENT(text);         \
+#define ADD_COMBO_BOX_MEMBERS()  \
+    ADD_CONTROL_MEMBERS();       \
+    ADD_PROP(items);             \
+    ADD_PROP_EVENT(sel_id);      \
+    ADD_PROP_EVENT(is_editable); \
+    ADD_PROP_EVENT(text);        \
     ADD_DEF_PROP(text)
 
         static void register_class() noexcept

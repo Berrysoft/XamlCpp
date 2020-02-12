@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <xaml/array_view.hpp>
+#include <xaml/meta/default_property.hpp>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
@@ -15,9 +16,6 @@ namespace xaml
     public:
         container() : control() {}
         virtual ~container() override {}
-
-        static constexpr bool is_container() noexcept { return true; }
-        static constexpr bool is_multicontainer() noexcept { return false; }
 
         EVENT(child_changed, container&, std::shared_ptr<control>)
 
@@ -34,12 +32,11 @@ namespace xaml
         }
 
     public:
-#define ADD_CONTAINER_MEMBERS()      \
-    ADD_CONTROL_MEMBERS();           \
-    ADD_PROP(child);                 \
-    ADD_EVENT(child_changed);        \
-    ADD_STATIC_METHOD(is_container); \
-    ADD_STATIC_METHOD(is_multicontainer)
+#define ADD_CONTAINER_MEMBERS() \
+    ADD_CONTROL_MEMBERS();      \
+    ADD_PROP(child);            \
+    ADD_EVENT(child_changed);   \
+    ADD_DEF_PROP(child)
 
         static void register_class() noexcept
         {
@@ -57,9 +54,6 @@ namespace xaml
         multicontainer() : control() {}
         virtual ~multicontainer() override {}
 
-        static constexpr bool is_container() noexcept { return true; }
-        static constexpr bool is_multicontainer() noexcept { return true; }
-
         XAML_UI_API void add_child(std::shared_ptr<control> const& child);
         XAML_UI_API void remove_child(std::shared_ptr<control> const& child);
         array_view<std::shared_ptr<control>> get_children() const noexcept { return m_children; }
@@ -73,8 +67,7 @@ namespace xaml
 #define ADD_MULTICONTAINER_MEMBERS()                      \
     ADD_CONTROL_MEMBERS();                                \
     ADD_COLLECTION_PROP(child, std::shared_ptr<control>); \
-    ADD_STATIC_METHOD(is_container);                      \
-    ADD_STATIC_METHOD(is_multicontainer)
+    ADD_DEF_PROP(child)
 
         static void register_class() noexcept
         {

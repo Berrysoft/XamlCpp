@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    label::label() : common_control()
+    label::label() : control()
     {
         add_text_changed([this](label const&, string_view_t) {
             if (get_handle())

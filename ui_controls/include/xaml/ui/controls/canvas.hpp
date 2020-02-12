@@ -171,7 +171,7 @@ namespace xaml
         XAML_UI_CONTROLS_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
-    class canvas : public common_control
+    class canvas : public control
     {
     public:
         XAML_UI_CONTROLS_API canvas();
@@ -209,8 +209,8 @@ namespace xaml
 
         constexpr double get_height() const noexcept { return m_real_region.height; }
 
-#define ADD_CANVAS_MEMBERS()      \
-    ADD_COMMON_CONTROL_MEMBERS(); \
+#define ADD_CANVAS_MEMBERS() \
+    ADD_CONTROL_MEMBERS();   \
     ADD_EVENT(redraw)
 
         static void register_class() noexcept

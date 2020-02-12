@@ -376,21 +376,25 @@ namespace xaml
                     }
                     else
                     {
-                        bool is_container = invoke_static_method<bool>(mc.type, "is_container").value_or(false);
-                        bool is_multicontainer = invoke_static_method<bool>(mc.type, "is_multicontainer").value_or(false);
-                        if (is_container)
+                        auto def_attr = get_attribute<default_property>(mc.type);
+                        if (def_attr)
                         {
-                            if (is_multicontainer)
+                            string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                            auto prop = get_property(mc.type, prop_name);
+                            if (prop.can_write())
                             {
-                                auto& prop = mc.collection_properties["child"];
-                                prop.host_type = mc.type;
-                                prop.info = get_collection_property(mc.type, "child");
-                                prop.values.push_back(move(child));
+                                mc.properties.push_back({ mc.type, prop, move(child) });
                             }
                             else
                             {
-                                auto prop = get_property(mc.type, "child");
-                                mc.properties.push_back({ mc.type, prop, move(child) });
+                                auto info = get_collection_property(mc.type, prop_name);
+                                if (info.can_add())
+                                {
+                                    auto& prop = mc.collection_properties[(string)info.name()];
+                                    prop.host_type = mc.type;
+                                    prop.info = info;
+                                    prop.values.push_back(move(child));
+                                }
                             }
                         }
                         ret = xmlTextReaderRead(reader);

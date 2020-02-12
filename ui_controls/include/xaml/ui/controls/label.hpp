@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    class label : public common_control
+    class label : public control
     {
     public:
         XAML_UI_CONTROLS_API label();
@@ -33,10 +33,10 @@ namespace xaml
         PROP_STRING_EVENT(text)
 
     public:
-#define ADD_LABEL_MEMBERS()       \
-    ADD_COMMON_CONTROL_MEMBERS(); \
-    ADD_PROP_EVENT(text);         \
-    ADD_PROP(text_halignment);    \
+#define ADD_LABEL_MEMBERS()    \
+    ADD_CONTROL_MEMBERS();     \
+    ADD_PROP_EVENT(text);      \
+    ADD_PROP(text_halignment); \
     ADD_DEF_PROP(text)
 
         static void register_class() noexcept

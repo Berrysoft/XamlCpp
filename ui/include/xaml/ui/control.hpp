@@ -235,27 +235,6 @@ namespace xaml
             ADD_CONTROL_MEMBERS();
         }
     };
-
-    class common_control : public control
-    {
-    public:
-        common_control() : control() {}
-        virtual ~common_control() override {}
-
-        static constexpr bool is_container() noexcept { return false; }
-        static constexpr bool is_multicontainer() noexcept { return false; }
-
-#define ADD_COMMON_CONTROL_MEMBERS() \
-    ADD_CONTROL_MEMBERS();           \
-    ADD_STATIC_METHOD(is_container); \
-    ADD_STATIC_METHOD(is_multicontainer)
-
-        static void register_class() noexcept
-        {
-            REGISTER_TYPE(xaml, common_control);
-            ADD_COMMON_CONTROL_MEMBERS();
-        }
-    };
 } // namespace xaml
 
 #endif // !XAML_UI_CONTROL_HPP

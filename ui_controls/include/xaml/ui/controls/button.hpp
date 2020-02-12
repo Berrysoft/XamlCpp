@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    class button : public common_control
+    class button : public control
     {
     public:
         XAML_UI_CONTROLS_API button();
@@ -47,11 +47,11 @@ namespace xaml
         EVENT(click, button&)
 
     public:
-#define ADD_BUTTON_MEMBERS()      \
-    ADD_COMMON_CONTROL_MEMBERS(); \
-    ADD_PROP_EVENT(text);         \
-    ADD_PROP_EVENT(is_default);   \
-    ADD_EVENT(click);             \
+#define ADD_BUTTON_MEMBERS()    \
+    ADD_CONTROL_MEMBERS();      \
+    ADD_PROP_EVENT(text);       \
+    ADD_PROP_EVENT(is_default); \
+    ADD_EVENT(click);           \
     ADD_DEF_PROP(text)
 
         static void register_class() noexcept

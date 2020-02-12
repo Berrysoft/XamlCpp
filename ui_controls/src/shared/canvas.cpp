@@ -36,7 +36,7 @@ namespace xaml
     bool drawing_font::get_bold() const { return m_object.bold; }
 #endif // USE_CUSTOM_DRAWING_TYPES
 
-    canvas::canvas() : common_control()
+    canvas::canvas() : control()
     {
     }
 

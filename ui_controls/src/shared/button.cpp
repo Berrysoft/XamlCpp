@@ -2,7 +2,7 @@
 
 namespace xaml
 {
-    button::button() : common_control()
+    button::button() : control()
     {
         add_text_changed([this](button const&, string_view_t) {
             if (get_handle())
