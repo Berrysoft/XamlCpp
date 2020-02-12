@@ -42,9 +42,8 @@ namespace xaml
     };
 
     XAML_UI_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok);
-    inline msgbox_result msgbox(string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none, msgbox_buttons buttons = msgbox_buttons::ok) { return msgbox(nullptr, message, title, style, buttons); }
 
-    XAML_UI_API msgbox_result msgbox_ex(std::shared_ptr<window> parent, string_view_t instruction, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons);
+    XAML_UI_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, msgbox_buttons buttons);
 
     enum class msgbox_common_button
     {
@@ -64,9 +63,9 @@ namespace xaml
 
     using msgbox_button = std::variant<msgbox_common_button, msgbox_custom_button>;
 
-    XAML_UI_API msgbox_result msgbox_ex(std::shared_ptr<window> parent, string_view_t instruction, string_view_t message, string_view_t title, msgbox_style style, array_view<msgbox_button> buttons);
+    XAML_UI_API msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons);
 
-    inline msgbox_result msgbox_ex(std::shared_ptr<window> parent, string_view_t instruction, string_view_t message, string_view_t title = {}, msgbox_style style = msgbox_style::none) { return msgbox_ex(nullptr, instruction, message, title, style, msgbox_buttons::ok); }
+    inline msgbox_result msgbox(std::shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style = msgbox_style::none) { return msgbox(parent, message, title, instruction, style, msgbox_buttons::ok); }
 } // namespace xaml
 
 #endif // !XAML_UI_MSGBOX_HPP

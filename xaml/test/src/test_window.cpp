@@ -27,7 +27,7 @@ namespace xaml::test
 
     void test_window::on_timer_tick(timer&)
     {
-        msgbox_ex(static_pointer_cast<window>(shared_from_this()), U("I'm going to say hello..."), U("Hello world!"), U("Hello"), msgbox_style::info);
+        msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), U("I'm going to say hello..."), msgbox_style::info, msgbox_buttons::abort_retry_ignore);
         if (++count) tmr.stop();
     }
 
