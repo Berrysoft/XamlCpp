@@ -34,7 +34,9 @@ target_include_directories(xaml_ui
 )
 
 target_link_libraries(xaml_ui xaml_meta)
-if(${BUILD_COCOA})
+if(${BUILD_WINDOWS})
+    target_link_libraries(xaml_ui Comctl32)
+elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui "-framework Cocoa")
     if(${SET_OBJCXX_MANULLY})
         target_compile_options(xaml_ui PRIVATE "-xobjective-c++")

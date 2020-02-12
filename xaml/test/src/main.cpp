@@ -1,7 +1,6 @@
 #include <test_window.hpp>
 #include <xaml/parser.hpp>
 #include <xaml/ui/application.hpp>
-#include <xaml/ui/meta.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
@@ -25,6 +24,7 @@ int main(int argc, char** argv)
 #else
     auto app = application::init(argc, argv);
 #endif // WIN32 || __MINGW32__
+    app->add_module("xaml_ui_meta");
     app->add_module("xaml_ui_controls_meta");
     auto wnd = make_shared<test_window>();
     wnd->init_components();
