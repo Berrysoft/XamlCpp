@@ -18,7 +18,10 @@ namespace xaml
         using const_reference = reference;
         using iterator = pointer;
         using const_iterator = const_pointer;
+        using reverse_iterator = std::reverse_iterator<pointer>;
+        using const_reverse_iterator = std::reverse_iterator<const_pointer>;
         using size_type = std::size_t;
+        using difference_type = std::ptrdiff_t;
 
     private:
         pointer m_start{ nullptr };
@@ -79,6 +82,11 @@ namespace xaml
         constexpr const_iterator cend() const noexcept { return m_start + m_count; }
         constexpr iterator begin() const noexcept { return cbegin(); }
         constexpr iterator end() const noexcept { return cend(); }
+
+        constexpr const_reverse_iterator crbegin() const noexcept { return std::reverse_iterator(cend()); }
+        constexpr const_reverse_iterator crend() const noexcept { return std::reverse_iterator(cbegin()); }
+        constexpr reverse_iterator rbegin() const noexcept { return crbegin(); }
+        constexpr reverse_iterator rend() const noexcept { return crend(); }
 
         constexpr const_reference front() const { return *m_start; }
         constexpr const_reference back() const { return m_start[m_count - 1]; }

@@ -1,6 +1,7 @@
 #ifndef XAML_UI_TEST_TEST_WINDOW_HPP
 #define XAML_UI_TEST_TEST_WINDOW_HPP
 
+#include <xaml/observable_vector.hpp>
 #include <xaml/ui/controls/button.hpp>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/timer.hpp>
@@ -13,6 +14,7 @@ namespace xaml::test
     private:
         timer tmr;
         int count{ 0 };
+        observable_vector<string_t> combo_source;
 
     public:
         test_window();

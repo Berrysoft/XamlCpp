@@ -14,7 +14,7 @@ using namespace xaml;
 
 namespace xaml::test
 {
-    test_window::test_window() : window(), tmr(2s)
+    test_window::test_window() : window(), tmr(2s), combo_source({ U("A"), U("BBB"), U("C") })
     {
         tmr.add_tick(mem_fn_bind(&test_window::on_timer_tick, this));
     }
@@ -113,32 +113,34 @@ namespace xaml::test
             auto box = make_shared<combo_box>();
             box->set_halignment(halignment_t::left);
             box->set_margin({ 10, 10, 10, 10 });
-            box->set_items({ U("A"), U("BBB"), U("C") });
+            box->set_items(combo_source);
             box->set_sel_id(1);
             g->add_child(box);
             grid::set_column(box, 1);
             grid::set_row(box, 3);
-        }
-        {
+
             auto panel = make_shared<stack_panel>();
             panel->set_orientation(orientation::vertical);
             panel->set_margin({ 5, 5, 5, 5 });
             {
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
-                btn->set_text(U("Button"));
+                btn->set_text(U("Push"));
+                btn->add_click([this](button&) { combo_source.push_back(U("DDDD")); });
                 panel->add_child(btn);
             }
             {
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
-                btn->set_text(U("Button"));
+                btn->set_text(U("Pop"));
+                btn->add_click([this](button&) { combo_source.pop_back(); });
                 panel->add_child(btn);
             }
             {
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
-                btn->set_text(U("Button"));
+                btn->set_text(U("Show"));
+                btn->add_click([this, box](button&) { msgbox(static_pointer_cast<window>(shared_from_this()), *combo_source[box->get_sel_id()], U("Show selected item")); });
                 panel->add_child(btn);
             }
             g->add_child(panel);
@@ -147,14 +149,13 @@ namespace xaml::test
         }
     }
 
-    static open_filebox openbox{};
-
     void test_window::on_timer_tick(timer&)
     {
         msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok);
         if (++count >= 3)
         {
             tmr.stop();
+            open_filebox openbox{};
             openbox.set_title(U("Open file"));
             openbox.set_filters({ { U("XAML file"), U("*.xaml") } });
             bool res = openbox.show(static_pointer_cast<window>(shared_from_this()));

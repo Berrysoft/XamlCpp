@@ -1,7 +1,6 @@
 #ifndef XAML_OBSERVABLE_VECTOR_HPP
 #define XAML_OBSERVABLE_VECTOR_HPP
 
-#include <any>
 #include <cassert>
 #include <vector>
 #include <xaml/array_view.hpp>
@@ -19,21 +18,23 @@ namespace xaml
         reset
     };
 
+    template <typename T>
     struct vector_changed_args
     {
         vector_changed_action action;
-        array_view<std::any> new_items;
+        array_view<T> new_items;
         std::size_t new_index;
-        array_view<std::any> old_items;
+        array_view<T> old_items;
         std::size_t old_index;
     };
 
+    template <typename T>
     class observable_vector
     {
     private:
-        std::vector<std::any> m_vec;
+        using __vector_type = std::vector<T>;
 
-        using __vector_type = std::vector<std::any>;
+        __vector_type m_vec;
 
     public:
         using value_type = typename __vector_type::value_type;
@@ -53,7 +54,7 @@ namespace xaml
                 auto old_item = std::move(*m_ptr);
                 *m_ptr = ref;
                 auto id = m_ptr - m_vec->data().operator->();
-                vector_changed_args args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
+                vector_changed_args<T> args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
                 m_vec->m_vector_changed(*m_vec, args);
                 return *this;
             }
@@ -62,13 +63,18 @@ namespace xaml
                 auto old_item = std::move(*m_ptr);
                 *m_ptr = std::move(ref);
                 auto id = m_ptr - m_vec->data().operator->();
-                vector_changed_args args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
+                vector_changed_args<T> args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
                 m_vec->m_vector_changed(*m_vec, args);
                 return *this;
             }
 
             constexpr value_type* operator&() noexcept { return m_ptr; }
             constexpr value_type const* operator&() const noexcept { return m_ptr; }
+
+            constexpr value_type* operator->() noexcept { return m_ptr; }
+            constexpr value_type const* operator->() const noexcept { return m_ptr; }
+            constexpr value_type& operator*() noexcept { return *m_ptr; }
+            constexpr value_type const& operator*() const noexcept { return *m_ptr; }
 
             constexpr operator value_type&() noexcept { return *m_ptr; }
             constexpr operator value_type const&() const noexcept { return *m_ptr; }
@@ -312,11 +318,11 @@ namespace xaml
         using difference_type = typename __vector_type::difference_type;
 
     public:
-        EVENT(vector_changed, observable_vector&, vector_changed_args&)
+        EVENT(vector_changed, observable_vector&, vector_changed_args<T>&)
 
     public:
         observable_vector() noexcept : m_vec() {}
-        observable_vector(size_type count, std::any const& value) : m_vec(count, value) {}
+        observable_vector(size_type count, value_type const& value) : m_vec(count, value) {}
         explicit observable_vector(size_type count) : m_vec(count) {}
 
         template <typename InputIt>
@@ -327,11 +333,7 @@ namespace xaml
         observable_vector(observable_vector const& vec) : m_vec(vec.m_vec), m_vector_changed(vec.m_vector_changed) {}
         observable_vector(observable_vector&& vec) noexcept : m_vec(std::move(vec.m_vec)), m_vector_changed(std::move(vec.m_vector_changed)) {}
 
-        observable_vector(std::initializer_list<std::any> init) : observable_vector(init.begin(), init.end())
-        {
-        }
-
-        virtual ~observable_vector() {}
+        observable_vector(std::initializer_list<value_type> init) : m_vec(init) {}
 
         observable_vector& operator=(observable_vector const& vec)
         {
@@ -346,17 +348,17 @@ namespace xaml
             return *this;
         }
 
-        observable_vector& operator=(std::initializer_list<std::any> ilist)
+        observable_vector& operator=(std::initializer_list<value_type> ilist)
         {
-            assign(ilist.begin(), ilist.end());
+            assign(ilist);
             return *this;
         }
 
-        void assign(size_type count, std::any const& value)
+        void assign(size_type count, value_type const& value)
         {
             auto old_vec = std::move(m_vec);
             m_vec.assign(count, value);
-            vector_changed_args args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
+            vector_changed_args<T> args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
             m_vector_changed(*this, args);
         }
 
@@ -365,15 +367,15 @@ namespace xaml
         {
             auto old_vec = std::move(m_vec);
             m_vec.assign(first, last);
-            vector_changed_args args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
+            vector_changed_args<T> args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
             m_vector_changed(*this, args);
         }
 
-        void assign(std::initializer_list<std::any> ilist)
+        void assign(std::initializer_list<value_type> ilist)
         {
             auto old_vec = std::move(m_vec);
-            m_vec.assign(ilist.begin(), ilist.end());
-            vector_changed_args args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
+            m_vec.assign(ilist);
+            vector_changed_args<T> args{ vector_changed_action::reset, m_vec, 0, old_vec, 0 };
             m_vector_changed(*this, args);
         }
 
@@ -419,32 +421,32 @@ namespace xaml
         {
             auto old_vec = std::move(m_vec);
             m_vec.clear();
-            vector_changed_args args{ vector_changed_action::erase, {}, 0, old_vec, 0 };
+            vector_changed_args<T> args{ vector_changed_action::erase, {}, 0, old_vec, 0 };
             m_vector_changed(*this, args);
         }
 
-        iterator insert(const_iterator pos, std::any const& value)
+        iterator insert(const_iterator pos, value_type const& value)
         {
             auto old_id = pos - begin();
             auto it = m_vec.insert(pos, value);
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*it), 1), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*it), 1), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
-        iterator insert(const_iterator pos, std::any&& value)
+        iterator insert(const_iterator pos, value_type&& value)
         {
             auto old_id = pos - begin();
             auto it = m_vec.insert(pos, std::move(value));
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*it), 1), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*it), 1), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
 
-        iterator insert(const_iterator pos, size_type count, std::any const& value)
+        iterator insert(const_iterator pos, size_type count, value_type const& value)
         {
             auto old_id = pos - begin();
             auto it = m_vec.insert(pos, count, value);
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*it), count), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*it), count), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
@@ -454,12 +456,12 @@ namespace xaml
         {
             auto old_id = pos - begin();
             auto it = m_vec.insert(pos, first, last);
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*it), last - first), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*it), last - first), (std::size_t)(it - m_vec.begin()), {}, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
 
-        iterator insert(const_iterator pos, std::initializer_list<std::any> ilist)
+        iterator insert(const_iterator pos, std::initializer_list<value_type> ilist)
         {
             return insert(pos, ilist.begin(), ilist.end());
         }
@@ -469,7 +471,7 @@ namespace xaml
             auto old_id = pos - begin();
             auto old_item = std::move(*pos);
             auto it = m_vec.erase(pos);
-            vector_changed_args args{ vector_changed_action::erase, {}, (std::size_t)(it - m_vec.begin()), { old_item }, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::erase, {}, (std::size_t)(it - m_vec.begin()), { old_item }, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
@@ -477,26 +479,26 @@ namespace xaml
         iterator erase(const_iterator first, const_iterator last)
         {
             auto old_id = first - begin();
-            std::vector<std::any> old_items(first, last);
+            std::vector<value_type> old_items(first, last);
             auto it = m_vec.erase(first, last);
-            vector_changed_args args{ vector_changed_action::erase, {}, (std::size_t)(it - m_vec.begin()), old_items, (std::size_t)old_id };
+            vector_changed_args<T> args{ vector_changed_action::erase, {}, (std::size_t)(it - m_vec.begin()), old_items, (std::size_t)old_id };
             m_vector_changed(*this, args);
             return { it, *this };
         }
 
-        void push_back(std::any const& value)
+        void push_back(value_type const& value)
         {
             auto old_id = m_vec.size();
             m_vec.push_back(value);
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*(m_vec.end() - 1)), 1), old_id, {}, old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*(m_vec.end() - 1)), 1), old_id, {}, old_id };
             m_vector_changed(*this, args);
         }
 
-        void push_back(std::any&& value)
+        void push_back(value_type&& value)
         {
             auto old_id = m_vec.size();
             m_vec.push_back(std::move(value));
-            vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*(m_vec.end() - 1)), 1), old_id, {}, old_id };
+            vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*(m_vec.end() - 1)), 1), old_id, {}, old_id };
             m_vector_changed(*this, args);
         }
 
@@ -505,25 +507,25 @@ namespace xaml
             auto old_id = m_vec.size() - 1;
             auto old_item = std::move(m_vec.back());
             m_vec.pop_back();
-            vector_changed_args args{ vector_changed_action::erase, {}, old_id, { old_item }, old_id };
+            vector_changed_args<T> args{ vector_changed_action::erase, {}, old_id, { old_item }, old_id };
             m_vector_changed(*this, args);
         }
 
-        void resize(size_type count, std::any const& value)
+        void resize(size_type count, value_type const& value)
         {
             if (count > m_vec.size())
             {
                 auto old_id = m_vec.size();
                 m_vec.resize(count, value);
-                vector_changed_args args{ vector_changed_action::add, array_view<std::any>(std::addressof(*(m_vec.begin() + old_id)), m_vec.size() - old_id), old_id, {}, old_id };
+                vector_changed_args<T> args{ vector_changed_action::add, array_view<value_type>(std::addressof(*(m_vec.begin() + old_id)), m_vec.size() - old_id), old_id, {}, old_id };
                 m_vector_changed(*this, args);
             }
             else if (count < m_vec.size())
             {
                 auto old_id = m_vec.size();
-                std::vector<std::any> old_items(m_vec.begin() + count, m_vec.end());
+                std::vector<value_type> old_items(m_vec.begin() + count, m_vec.end());
                 m_vec.resize(count, value);
-                vector_changed_args args{ vector_changed_action::erase, {}, old_id, old_items, old_id };
+                vector_changed_args<T> args{ vector_changed_action::erase, {}, old_id, old_items, old_id };
                 m_vector_changed(*this, args);
             }
         }
@@ -537,6 +539,61 @@ namespace xaml
             m_vec.swap(other.m_vec);
             m_vector_changed.swap(other.m_vector_changed);
         }
+    };
+
+    template <typename T>
+    class observable_vector_view
+    {
+    private:
+        using __vector = observable_vector<T>;
+
+    public:
+        using value_type = typename __vector::value_type;
+        using pointer = typename __vector::const_pointer;
+        using const_pointer = typename __vector::const_pointer;
+        using reference = typename __vector::const_reference;
+        using const_reference = typename __vector::const_reference;
+        using iterator = typename __vector::const_iterator;
+        using const_iterator = typename __vector::const_iterator;
+        using reverse_iterator = typename __vector::const_reverse_iterator;
+        using const_reverse_iterator = typename __vector::const_reverse_iterator;
+        using size_type = typename __vector::size_type;
+        using difference_type = typename __vector::difference_type;
+
+    private:
+        __vector* m_vec{ nullptr };
+
+    public:
+        constexpr observable_vector_view() noexcept {}
+        constexpr observable_vector_view(observable_vector<T>& obsv) noexcept : m_vec(&obsv) {}
+
+        constexpr operator bool() const noexcept { return m_vec; }
+
+        std::size_t add_vector_changed(std::function<void(observable_vector<T>&, vector_changed_args<T>&)>&& f) { return m_vec->add_vector_changed(std::move(f)); }
+        void remove_vector_changed(std::size_t t) { m_vec->remove_vector_changed(t); }
+
+        const_reference operator[](size_type pos) const { return m_vec->operator[](pos); }
+
+        const_reference front() const { return m_vec->front(); }
+        const_reference back() const { return m_vec->back(); }
+
+        const_pointer data() const { return m_vec->data(); }
+
+        const_iterator cbegin() const noexcept { return m_vec->cbegin(); }
+        const_iterator cend() const noexcept { return m_vec->cend(); }
+        iterator begin() const noexcept { return cbegin(); }
+        iterator end() const noexcept { return cend(); }
+
+        const_reverse_iterator crbegin() const noexcept { return m_vec->crbegin(); }
+        const_reverse_iterator crend() const noexcept { return m_vec->crend(); }
+        reverse_iterator rbegin() const noexcept { return crbegin(); }
+        reverse_iterator rend() const noexcept { return crend(); }
+
+        bool empty() const noexcept { return m_vec->empty(); }
+        size_type size() const noexcept { return m_vec->size(); }
+
+        friend constexpr bool operator==(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return lhs.m_vec == rhs.m_vec; }
+        friend constexpr bool operator!=(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return !(lhs == rhs); }
     };
 } // namespace xaml
 

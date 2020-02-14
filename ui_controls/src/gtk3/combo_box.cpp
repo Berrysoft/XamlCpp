@@ -8,25 +8,13 @@ namespace xaml
     {
         if (!get_handle())
         {
-            draw_create();
+            draw_editable();
+            draw_items();
         }
         rectangle real = region - get_margin();
         __set_size_noevent({ real.width, real.height });
         draw_sel();
-        draw_editable();
-    }
-
-    void combo_box::draw_create()
-    {
-        if (m_is_editable)
-        {
-            set_handle(gtk_combo_box_text_new_with_entry());
-        }
-        else
-        {
-            set_handle(gtk_combo_box_text_new());
-        }
-        draw_items();
+        draw_text();
     }
 
     void combo_box::draw_size()
@@ -73,6 +61,14 @@ namespace xaml
 
     void combo_box::draw_editable()
     {
+        if (m_is_editable)
+        {
+            set_handle(gtk_combo_box_text_new_with_entry());
+        }
+        else
+        {
+            set_handle(gtk_combo_box_text_new());
+        }
     }
 
     void combo_box::__size_to_fit()
