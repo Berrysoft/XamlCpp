@@ -1,4 +1,13 @@
+#import <cocoa/XamlComboBoxDelegate.h>
 #include <xaml/ui/controls/combo_box.hpp>
+
+@implementation XamlComboBoxDelegate
+- (void)comboBoxSelectionDidChange:(NSNotification*)obj
+{
+    xaml::combo_box* ptr = (xaml::combo_box*)self.classPointer;
+    ptr->__on_changed();
+}
+@end
 
 using namespace std;
 
@@ -10,7 +19,10 @@ namespace xaml
         {
             NSComboBox* combo = [NSComboBox new];
             combo.bezeled = YES;
+            XamlComboBoxDelegate* delegate = [[XamlComboBoxDelegate alloc] initWithClassPointer:this];
+            combo.delegate = delegate;
             set_handle(combo);
+            __set_delegate(delegate);
             draw_items();
         }
         rectangle real = region - get_margin();
@@ -32,19 +44,17 @@ namespace xaml
         NSComboBox* combo = (NSComboBox*)get_handle();
         if (m_text)
         {
-            NSString* ns_title = [NSString stringWithUTF8String:m_text->c_str()];
-            combo.stringValue = ns_title;
+            combo.stringValue = [NSString stringWithUTF8String:m_text->c_str()];
         }
         else
         {
-            if (m_sel_id < 0 || m_sel_id >= m_items.size())
+            if (get_sel_id() < 0 || get_sel_id() >= get_items().size())
             {
                 combo.stringValue = @"";
             }
             else
             {
-                NSString* ns_title = [NSString stringWithUTF8String:m_items[m_sel_id].c_str()];
-                combo.stringValue = ns_title;
+                combo.stringValue = [NSString stringWithUTF8String:get_items()[get_sel_id()]->c_str()];
             }
         }
     }
@@ -52,34 +62,24 @@ namespace xaml
     void combo_box::draw_items()
     {
         NSComboBox* combo = (NSComboBox*)get_handle();
-        for (string_t const& item : m_items)
+        for (auto item : get_items())
         {
-            NSString* ns_item = [NSString stringWithUTF8String:item.c_str()];
-            [combo addItemWithObjectValue:ns_item];
+            [combo addItemWithObjectValue:[NSString stringWithUTF8String:item->c_str()]];
         }
     }
 
     void combo_box::draw_sel()
     {
         NSComboBox* combo = (NSComboBox*)get_handle();
-        [combo selectItemAtIndex:(NSInteger)m_sel_id];
+        [combo selectItemAtIndex:(NSInteger)get_sel_id()];
     }
 
     void combo_box::draw_editable()
     {
         NSComboBox* combo = (NSComboBox*)get_handle();
-        if (m_is_editable)
-        {
-            combo.drawsBackground = YES;
-            combo.editable = YES;
-            combo.selectable = YES;
-		}
-        else
-        {
-            combo.drawsBackground = NO;
-            combo.editable = NO;
-            combo.selectable = NO;
-		}
+        combo.drawsBackground = m_is_editable;
+        combo.editable = m_is_editable;
+        combo.selectable = m_is_editable;
     }
 
     void combo_box::__size_to_fit()
@@ -88,5 +88,37 @@ namespace xaml
         [combo sizeToFit];
         NSRect frame = combo.frame;
         __set_size_noevent(from_native(frame.size));
+    }
+
+    void combo_box::__on_changed()
+    {
+        NSComboBox* combo = (NSComboBox*)get_handle();
+        set_sel_id(combo.indexOfSelectedItem);
+        set_text(combo.stringValue.UTF8String);
+    }
+
+    void combo_box::insert_item(size_t index, string_t const& value)
+    {
+        NSComboBox* combo = (NSComboBox*)get_handle();
+        [combo insertItemWithObjectValue:[NSString stringWithUTF8String:value.c_str()]
+                                 atIndex:(NSInteger)index];
+    }
+
+    void combo_box::remove_item(size_t index)
+    {
+        NSComboBox* combo = (NSComboBox*)get_handle();
+        [combo removeItemAtIndex:(NSInteger)index];
+    }
+
+    void combo_box::clear_items()
+    {
+        NSComboBox* combo = (NSComboBox*)get_handle();
+        [combo removeAllItems];
+    }
+
+    void combo_box::replace_item(size_t index, string_t const& value)
+    {
+        remove_item(index);
+        insert_item(index, value);
     }
 }

@@ -7,8 +7,8 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_check_button_new());
-            g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
-            g_signal_connect(get_handle(), "toggled", G_CALLBACK(check_box::on_toggled), this);
+            g_signal_connect(G_OBJECT(get_handle()), "clicked", G_CALLBACK(button::on_clicked), this);
+            g_signal_connect(G_OBJECT(get_handle()), "toggled", G_CALLBACK(check_box::on_toggled), this);
         }
         button::__draw(region);
         draw_checked();

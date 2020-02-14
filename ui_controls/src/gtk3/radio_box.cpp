@@ -10,8 +10,8 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_radio_button_new(nullptr));
-            g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
-            g_signal_connect(get_handle(), "toggled", G_CALLBACK(radio_box::on_toggled), this);
+            g_signal_connect(G_OBJECT(get_handle()), "clicked", G_CALLBACK(button::on_clicked), this);
+            g_signal_connect(G_OBJECT(get_handle()), "toggled", G_CALLBACK(radio_box::on_toggled), this);
         }
         button::__draw(region);
         draw_checked();

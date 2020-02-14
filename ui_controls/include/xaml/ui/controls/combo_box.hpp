@@ -17,6 +17,16 @@ namespace xaml
         XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
+#ifdef XAML_UI_GTK3
+    private:
+        static void on_changed(GtkComboBox* widget, gpointer data);
+#endif // XAML_UI_GTK3
+
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_changed();
+#endif // XAML_UI_COCOA
+
     protected:
         void insert_item(std::size_t index, string_t const& value) override;
         void remove_item(std::size_t index) override;

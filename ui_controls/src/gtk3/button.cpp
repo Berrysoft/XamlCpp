@@ -9,7 +9,7 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_button_new());
-            g_signal_connect(get_handle(), "clicked", G_CALLBACK(button::on_clicked), this);
+            g_signal_connect(G_OBJECT(get_handle()), "clicked", G_CALLBACK(button::on_clicked), this);
         }
         rectangle real = region - get_margin();
         __set_size_noevent({ real.width, real.height });
