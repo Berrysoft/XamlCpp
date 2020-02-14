@@ -7,7 +7,19 @@ namespace xaml
 {
     void application::init_components()
     {
-        gtk_init(0, nullptr);
+        vector<char const*> args;
+        for (auto& a : m_cmd_lines)
+        {
+            args.push_back(a.c_str());
+        }
+        int argc = (int)args.size();
+        char** argv = const_cast<char**>(args.data());
+        gtk_init(&argc, &argv);
+        m_cmd_lines.clear();
+        for (int i = 0; i < argc; i++)
+        {
+            m_cmd_lines.push_back(argv[i]);
+        }
     }
 
     int application::run()

@@ -45,8 +45,7 @@ namespace xaml
 #ifdef UNICODE
         unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(lpCmdLine, &argc) };
 #else
-        wstring cl = __mbtow(lpCmdLine);
-        unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(cl.c_str(), &argc) };
+        unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(__mbtow(lpCmdLine).c_str(), &argc) };
 #endif // UNICODE
         if (argv)
         {
