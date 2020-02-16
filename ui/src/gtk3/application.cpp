@@ -5,21 +5,10 @@ using namespace std;
 
 namespace xaml
 {
-    void application::init_components()
+    application::application(int argc, char_t** argv)
     {
-        vector<char const*> args;
-        for (auto& a : m_cmd_lines)
-        {
-            args.push_back(a.c_str());
-        }
-        int argc = (int)args.size();
-        char** argv = const_cast<char**>(args.data());
         gtk_init(&argc, &argv);
-        m_cmd_lines.clear();
-        for (int i = 0; i < argc; i++)
-        {
-            m_cmd_lines.push_back(argv[i]);
-        }
+        m_cmd_lines.assign(argv, argv + argc);
     }
 
     int application::run()

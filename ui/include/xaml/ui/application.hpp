@@ -29,15 +29,7 @@ namespace xaml
         std::unordered_map<std::string_view, std::shared_ptr<module>> m_modules{};
 
     private:
-        application(int argc, char_t** argv)
-        {
-            m_cmd_lines.assign(argv, argv + argc);
-        }
-#if defined(WIN32) || defined(__MINGW32__)
-        XAML_UI_API application(LPTSTR lpCmdLine);
-#endif // WIN32 || __MINGW32__
-
-        XAML_UI_API void init_components();
+        XAML_UI_API application(int argc, char_t** argv);
 
     public:
         XAML_UI_API virtual ~application();

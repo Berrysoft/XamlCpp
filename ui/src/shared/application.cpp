@@ -14,7 +14,6 @@ namespace xaml
     shared_ptr<application> application::init(int argc, char_t** argv)
     {
         s_current = shared_ptr<application>(new application(argc, argv));
-        s_current->init_components();
         return s_current;
     }
 
@@ -39,31 +38,23 @@ namespace xaml
         void operator()(void* pointer) const noexcept { LocalFree((HLOCAL)pointer); }
     };
 
-    application::application(LPTSTR lpCmdLine)
+    shared_ptr<application> application::init(LPTSTR lpCmdLine)
     {
         int argc;
 #ifdef UNICODE
         unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(lpCmdLine, &argc) };
+        s_current = shared_ptr<application>(new application(argc, const_cast<char_t**>(argv.get())));
 #else
-        unique_ptr<LPWSTR[], local_free_deleter> argv{ CommandLineToArgvW(__mbtow(lpCmdLine).c_str(), &argc) };
-#endif // UNICODE
-        if (argv)
+        unique_ptr<LPWSTR[], local_free_deleter> args{ CommandLineToArgvW(__mbtow(lpCmdLine).c_str(), &argc) };
+        vector<string_t> argv_storage;
+        vector<char_t const*> argv;
+        for (int i = 0; i < argc; i++)
         {
-            for (int i = 0; i < argc; i++)
-            {
-#ifdef UNICODE
-                m_cmd_lines.push_back(argv[i]);
-#else
-                m_cmd_lines.push_back(__wtomb(argv[i]));
-#endif // UNICODE
-            }
+            argv_storage.push_back(__wtomb(args[i]));
+            argv.push_back(argv_storage.back().c_str());
         }
-    }
-
-    shared_ptr<application> application::init(LPTSTR lpCmdLine)
-    {
-        s_current = shared_ptr<application>(new application(lpCmdLine));
-        s_current->init_components();
+        s_current = shared_ptr<application>(new application(argc, const_cast<char_t**>(argv.data())));
+#endif // UNICODE
         return s_current;
     }
 #endif // WIN32 || __MINGW32__

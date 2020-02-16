@@ -17,7 +17,7 @@ using namespace std;
 
 namespace xaml
 {
-    void application::init_components()
+    application::application(int argc, char_t** argv) : m_cmd_lines(argv, argv + argc)
     {
         [NSApplication sharedApplication];
         [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
