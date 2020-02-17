@@ -57,6 +57,12 @@
 #define XAML_UI_CONTROLS_META_API __XAML_IMPORT
 #endif // xaml_ui_controls_meta_EXPORTS
 
+#ifdef xaml_ui_webview_EXPORTS
+#define XAML_UI_WEBVIEW_API __XAML_EXPORT
+#else
+#define XAML_UI_WEBVIEW_API __XAML_IMPORT
+#endif // xaml_ui_controls_EXPORTS
+
 #ifdef xaml_EXPORTS
 #define XAML_API __XAML_EXPORT
 #else
