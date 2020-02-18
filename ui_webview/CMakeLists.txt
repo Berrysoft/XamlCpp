@@ -61,6 +61,14 @@ if(${BUILD_WINDOWS})
     file(GLOB WEBVIEW2_LIBS "${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/*.lib")
     target_link_libraries(xaml_ui_webview ${WEBVIEW2_LIBS})
     configure_file(${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/WebView2Loader.dll ${CMAKE_BINARY_DIR}/bin/WebView2Loader.dll COPYONLY)
+elseif(${BUILD_GTK3})
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(WEBKIT4 REQUIRED webkit2gtk-4.0)
+    link_directories(${WEBKIT4_LIBRARY_DIRS})
+    add_definitions(${WEBKIT4_CFLAGS_OTHER})
+
+    target_include_directories(xaml_ui_webview PRIVATE ${WEBKIT4_INCLUDE_DIRS})
+    target_link_libraries(xaml_ui_webview ${WEBKIT4_LIBRARIES})
 endif()
 
 set_target_properties(xaml_ui_webview PROPERTIES

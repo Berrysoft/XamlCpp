@@ -48,7 +48,6 @@ namespace xaml
         }
         __set_size_noevent({ real.width, real.height });
         if (__get_webview() && *__get_webview()) m_webview->set_rect(real);
-        draw_uri();
     }
 
     void webview::draw_size()
