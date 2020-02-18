@@ -36,8 +36,13 @@ namespace xaml
             m_count = m_layer.size();
         }
         template <typename Container, typename = decltype(std::declval<Container>().begin()), typename = decltype(std::declval<Container>().size())>
-        constexpr array_view(Container&& list) noexcept : m_start(std::addressof(*list.begin())), m_count(list.size())
+        constexpr array_view(Container&& list) noexcept : array_view()
         {
+            if (list.size())
+            {
+                m_start = std::addressof(*list.begin());
+                m_count = list.size();
+            }
         }
         template <size_type N>
         constexpr array_view(value_type const (&arr)[N]) noexcept : m_start(arr), m_count(N)

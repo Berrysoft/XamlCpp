@@ -33,6 +33,35 @@ target_include_directories(xaml_ui_webview
 )
 
 target_link_libraries(xaml_ui_webview xaml_ui)
+if(${BUILD_WINDOWS})
+    target_link_libraries(xaml_ui_webview WindowsApp)
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
+        file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.8.355 ${CMAKE_BINARY_DIR}/webview2.nupkg)
+    endif()
+
+    add_custom_target(unzip_webview2 ALL)
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/webview2)
+    add_custom_command(TARGET unzip_webview2 PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/webview2.nupkg
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/webview2
+        DEPENDS ${CMAKE_BINARY_DIR}/webview2.nupkg
+        COMMENT "Unpacking webview2.nupkg"
+        VERBATIM
+    )
+
+    add_dependencies(xaml_ui_webview unzip_webview2)
+
+    if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+        set(XAML_NATIVE_PLATFORM "x86")
+    else()
+        set(XAML_NATIVE_PLATFORM "x64")
+    endif()
+    target_include_directories(xaml_ui_webview PRIVATE ${CMAKE_BINARY_DIR}/webview2/build/native/include)
+    file(GLOB WEBVIEW2_LIBS "${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/*.lib")
+    target_link_libraries(xaml_ui_webview ${WEBVIEW2_LIBS})
+    configure_file(${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/WebView2Loader.dll ${CMAKE_BINARY_DIR}/bin/WebView2Loader.dll COPYONLY)
+endif()
 
 set_target_properties(xaml_ui_webview PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
@@ -42,3 +71,5 @@ set_target_properties(xaml_ui_webview PROPERTIES
 install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/webview)
 install(TARGETS xaml_ui_webview EXPORT xaml_ui_webview-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml_ui_webview-targets DESTINATION lib/cmake/xaml_ui_webview)
+
+add_subdirectory(test)

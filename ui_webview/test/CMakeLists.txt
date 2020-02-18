@@ -1,0 +1,11 @@
+project(XamlWebViewTest CXX)
+
+file(GLOB TEST_SOURCE "src/*.cpp")
+if(WIN32)
+    add_executable(webview_test WIN32 ${TEST_SOURCE})
+else()
+    add_executable(webview_test ${TEST_SOURCE})
+endif()
+target_include_directories(webview_test PUBLIC include)
+target_link_libraries(webview_test xaml_ui_webview)
+target_link_libraries(webview_test xaml_ui_controls)

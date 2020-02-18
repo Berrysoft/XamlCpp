@@ -27,6 +27,7 @@ namespace xaml
             {
             case vector_changed_action::reset:
                 clear_items();
+                [[fallthrough]];
             case vector_changed_action::add:
                 for (std::size_t i = 0; i < args.new_items.size(); i++)
                 {

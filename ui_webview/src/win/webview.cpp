@@ -1,22 +1,69 @@
 #include <xaml/ui/webview/webview.hpp>
 
-#include <winrt/Windows.Web.UI.Interop.h>
+#include <win/webview_edge.hpp>
+#include <win/webview_edge2.hpp>
+#include <win/webview_ie.hpp>
 
 using namespace std;
-using namespace winrt;
-using namespace Windows::Foundation;
-using namespace Windows::Web::UI::Interop;
 
 namespace xaml
 {
     void webview::__draw(rectangle const& region)
     {
         set_handle(get_parent()->get_handle());
-        WebViewControlProcess process;
-        process.CreateWebViewControlAsync((int64_t)get_handle(), { region.x, region.y, region.width, region.height })
-            .Completed([this](IAsyncOperation<WebViewControl> operation, AsyncStatus) {
-                WebViewControl view = operation.GetResults();
-                view.NavigateToString(get_uri());
+        rectangle real = region - get_margin();
+        if (!__get_webview())
+        {
+            m_webview = make_shared<webview_edge2>();
+            m_webview->create_async(get_handle(), real, [this, real]() {
+                if (!*m_webview)
+                {
+                    m_webview = make_shared<webview_edge>();
+                    m_webview->create_async(get_handle(), real, [this, real]() {
+                        if (!*m_webview)
+                        {
+                            m_webview = make_shared<webview_ie>();
+                            m_webview->create_async(get_handle(), real, [this]() {
+                                if (!*m_webview)
+                                {
+                                    m_webview = nullptr;
+                                }
+                                else
+                                {
+                                    draw_uri();
+                                }
+                            });
+                        }
+                        else
+                        {
+                            draw_uri();
+                        }
+                    });
+                }
+                else
+                {
+                    draw_uri();
+                }
             });
+        }
+        __set_size_noevent({ real.width, real.height });
+        if (__get_webview() && *__get_webview()) m_webview->set_rect(real);
+        draw_uri();
+    }
+
+    void webview::draw_size()
+    {
+        if (__get_webview() && *__get_webview())
+        {
+            m_webview->set_size(get_size());
+        }
+    }
+
+    void webview::draw_uri()
+    {
+        if (__get_webview() && *__get_webview())
+        {
+            m_webview->navigate(get_uri());
+        }
     }
 } // namespace xaml
