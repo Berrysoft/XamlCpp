@@ -1,9 +1,82 @@
+#include <atomic>
 #include <wil/result_macros.h>
 #include <win/webview_ie.hpp>
+
+#include <ExDispID.h>
 
 using namespace std;
 
 CComModule _Module;
+
+class WebBrowserSink : public DWebBrowserEvents2
+{
+protected:
+    atomic<ULONG> m_ref;
+    xaml::webview_ie* m_webview;
+
+public:
+    WebBrowserSink(xaml::webview_ie* view) : m_ref(1), m_webview(view) {}
+    ~WebBrowserSink() {}
+
+    STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override
+    {
+        if (IsBadWritePtr(ppvObject, sizeof(void*))) return E_POINTER;
+        HRESULT res = S_OK;
+        *ppvObject = nullptr;
+        if (riid == __uuidof(IUnknown) || riid == __uuidof(IDispatch) || riid == __uuidof(DWebBrowserEvents2))
+            *ppvObject = this;
+        else
+            res = E_NOINTERFACE;
+        return res;
+    }
+
+    ULONG STDMETHODCALLTYPE AddRef() override
+    {
+        return ++m_ref;
+    }
+
+    ULONG STDMETHODCALLTYPE Release() override
+    {
+        if (!(--m_ref))
+        {
+            delete this;
+        }
+        return m_ref;
+    }
+
+    STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
+    {
+        *pctinfo = 0;
+        return S_OK;
+    }
+
+    STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) override
+    {
+        *ppTInfo = NULL;
+        return E_NOTIMPL;
+    }
+
+    STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId)
+    {
+        return E_NOTIMPL;
+    }
+
+    STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) override
+    {
+        if (riid != IID_NULL)
+            return DISP_E_UNKNOWNINTERFACE;
+        switch (dispIdMember)
+        {
+        case DISPID_NAVIGATECOMPLETE2:
+            m_webview->invoke_navigated((LPOLESTR)pDispParams->rgvarg[1].pbstrVal);
+            break;
+        default:
+            break;
+        }
+
+        return S_OK;
+    }
+};
 
 namespace xaml
 {

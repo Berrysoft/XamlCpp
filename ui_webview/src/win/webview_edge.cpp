@@ -3,6 +3,7 @@
 using namespace std;
 using namespace winrt;
 using namespace Windows::Foundation;
+using namespace Windows::Web::UI;
 using namespace Windows::Web::UI::Interop;
 
 namespace xaml
@@ -17,6 +18,9 @@ namespace xaml
                 if (status == AsyncStatus::Completed)
                 {
                     m_view = operation.GetResults();
+                    m_view.NavigationCompleted([this](IWebViewControl const&, WebViewControlNavigationCompletedEventArgs const& args) {
+                        invoke_navigated(args.Uri().AbsoluteUri());
+                    });
                 }
                 callback();
             });

@@ -9,6 +9,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     struct native_webview
     {
+    public:
         virtual ~native_webview() {}
         virtual void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
         virtual operator bool() const = 0;
@@ -16,6 +17,16 @@ namespace xaml
         virtual void set_location(point p) = 0;
         virtual void set_size(size s) = 0;
         virtual void set_rect(rectangle const& rect) = 0;
+
+    private:
+        std::function<void(string_view_t)> m_navigated{};
+
+    public:
+        void set_navigated(std::function<void(string_view_t)>&& callback) { m_navigated = std::move(callback); }
+        void invoke_navigated(string_view_t uri)
+        {
+            if (m_navigated) m_navigated(uri);
+        }
     };
 #endif // XAML_UI_WINDOWS
 

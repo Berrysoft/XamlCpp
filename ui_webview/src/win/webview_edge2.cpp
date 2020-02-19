@@ -27,6 +27,21 @@ namespace xaml
                                             THROW_IF_FAILED(result);
                                             m_view = webview;
                                             THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
+                                            EventRegistrationToken token;
+                                            THROW_IF_FAILED(m_view->add_NavigationCompleted(
+                                                Callback<IWebView2NavigationCompletedEventHandler>(
+                                                    [this](IWebView2WebView*, IWebView2NavigationCompletedEventArgs*) -> HRESULT {
+                                                        try
+                                                        {
+                                                            wil::unique_cotaskmem_string uri;
+                                                            THROW_IF_FAILED(m_view->get_Source(&uri));
+                                                            invoke_navigated(uri.get());
+                                                            return S_OK;
+                                                        }
+                                                        CATCH_RETURN();
+                                                    })
+                                                    .Get(),
+                                                &token));
                                             callback();
                                             return S_OK;
                                         }
