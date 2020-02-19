@@ -9,15 +9,23 @@ namespace xaml
 {
     void webview_edge::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
-        WebViewControlProcess process;
-        auto task = process.CreateWebViewControlAsync((int64_t)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
-        task.Completed([this, callback](IAsyncOperation<WebViewControl> operation, AsyncStatus status) {
-            if (status == AsyncStatus::Completed)
-            {
-                m_view = operation.GetResults();
-            }
-            if (callback) callback();
-        });
+        try
+        {
+            WebViewControlProcess process;
+            auto task = process.CreateWebViewControlAsync((int64_t)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
+            task.Completed([this, callback](IAsyncOperation<WebViewControl> operation, AsyncStatus status) {
+                if (status == AsyncStatus::Completed)
+                {
+                    m_view = operation.GetResults();
+                }
+                callback();
+            });
+        }
+        catch (hresult_error const&)
+        {
+            m_view = nullptr;
+            callback();
+        }
     }
 
     void webview_edge::navigate(string_view_t uri)

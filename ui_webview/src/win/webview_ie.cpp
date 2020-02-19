@@ -9,11 +9,18 @@ namespace xaml
 {
     void webview_ie::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
-        RECT r = to_native<RECT>(rect);
-        m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
-        m_container.CreateControl(L"shell.Explorer.2");
-        m_container.QueryControl(&m_browser);
-        if (callback) callback();
+        try
+        {
+            RECT r = to_native<RECT>(rect);
+            m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
+            THROW_IF_FAILED(m_container.CreateControl(L"shell.Explorer.2"));
+            THROW_IF_FAILED(m_container.QueryControl(&m_browser));
+        }
+        catch (wil::ResultException const&)
+        {
+            m_browser = nullptr;
+        }
+        callback();
     }
 
     void webview_ie::navigate(string_view_t uri)

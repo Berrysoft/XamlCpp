@@ -9,33 +9,41 @@ namespace xaml
 {
     void webview_edge2::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
-        THROW_IF_FAILED(CreateWebView2Environment(
-            Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>(
-                [=](HRESULT result, IWebView2Environment* env) -> HRESULT {
-                    try
-                    {
-                        THROW_IF_FAILED(result);
-                        m_env = env;
-                        THROW_IF_FAILED(env->CreateWebView(
-                            parent,
-                            Callback<IWebView2CreateWebViewCompletedHandler>(
-                                [=](HRESULT result, IWebView2WebView* webview) -> HRESULT {
-                                    try
-                                    {
-                                        THROW_IF_FAILED(result);
-                                        m_view = webview;
-                                        THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
-                                        if (callback) callback();
-                                        return S_OK;
-                                    }
-                                    CATCH_RETURN();
-                                })
-                                .Get()));
-                        return S_OK;
-                    }
-                    CATCH_RETURN();
-                })
-                .Get()));
+        try
+        {
+            THROW_IF_FAILED(CreateWebView2Environment(
+                Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>(
+                    [=](HRESULT result, IWebView2Environment* env) -> HRESULT {
+                        try
+                        {
+                            THROW_IF_FAILED(result);
+                            m_env = env;
+                            THROW_IF_FAILED(env->CreateWebView(
+                                parent,
+                                Callback<IWebView2CreateWebViewCompletedHandler>(
+                                    [=](HRESULT result, IWebView2WebView* webview) -> HRESULT {
+                                        try
+                                        {
+                                            THROW_IF_FAILED(result);
+                                            m_view = webview;
+                                            THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
+                                            callback();
+                                            return S_OK;
+                                        }
+                                        CATCH_RETURN();
+                                    })
+                                    .Get()));
+                            return S_OK;
+                        }
+                        CATCH_RETURN();
+                    })
+                    .Get()));
+        }
+        catch (wil::ResultException const&)
+        {
+            m_view = nullptr;
+            callback();
+        }
     }
 
     void webview_edge2::navigate(string_view_t uri)
