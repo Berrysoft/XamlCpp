@@ -40,17 +40,10 @@ if(${BUILD_WINDOWS})
         file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.8.355 ${CMAKE_BINARY_DIR}/webview2.nupkg)
     endif()
 
-    add_custom_target(unzip_webview2 ALL)
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/webview2)
-    add_custom_command(TARGET unzip_webview2 PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/webview2.nupkg
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/webview2.nupkg
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/webview2
-        DEPENDS ${CMAKE_BINARY_DIR}/webview2.nupkg
-        COMMENT "Unpacking webview2.nupkg"
-        VERBATIM
     )
-
-    add_dependencies(xaml_ui_webview unzip_webview2)
 
     if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
         set(XAML_NATIVE_PLATFORM "x86")
