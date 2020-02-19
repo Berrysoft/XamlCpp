@@ -5,6 +5,10 @@
 #include <functional>
 #include <xaml/ui/control.hpp>
 
+#ifdef XAML_UI_GTK3
+#include <webkit2/webkit2.h>
+#endif
+
 namespace xaml
 {
 #ifdef XAML_UI_WINDOWS
@@ -53,6 +57,11 @@ namespace xaml
     protected:
         void __set_webview(__native_webview_type value) OBJC_BLOCK({ m_webview = value; });
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_GTK3
+    private:
+        XAML_UI_WEBVIEW_API static void on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, gpointer data);
+#endif // XAML_UI_GTK3
 
     public:
         XAML_UI_WEBVIEW_API void __draw(rectangle const& region) override;

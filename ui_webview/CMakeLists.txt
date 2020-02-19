@@ -60,7 +60,7 @@ elseif(${BUILD_GTK3})
     link_directories(${WEBKIT4_LIBRARY_DIRS})
     add_definitions(${WEBKIT4_CFLAGS_OTHER})
 
-    target_include_directories(xaml_ui_webview PRIVATE ${WEBKIT4_INCLUDE_DIRS})
+    target_include_directories(xaml_ui_webview PUBLIC ${WEBKIT4_INCLUDE_DIRS})
     target_link_libraries(xaml_ui_webview ${WEBKIT4_LIBRARIES})
 endif()
 
