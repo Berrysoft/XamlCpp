@@ -1,5 +1,14 @@
+#import <cocoa/XamlWebViewDelegate.h>
+#include <shared/atomic_guard.hpp>
 #include <xaml/ui/webview/webview.hpp>
-#import <WebKit/WebKit.h>
+
+@implementation XamlWebViewDelegate
+- (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation;
+{
+    xaml::webview* ptr = (xaml::webview*)self.classPointer;
+    ptr->__on_navigated();
+}
+@end
 
 namespace xaml
 {
@@ -11,8 +20,11 @@ namespace xaml
             WKWebViewConfiguration* config = [WKWebViewConfiguration new];
             WKWebView* webview = [[WKWebView alloc] initWithFrame:to_native<NSRect>(real)
                                                     configuration:config];
-            [webView setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+            [webview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
+            XamlWebViewDelegate* delegate = [[XamlWebViewDelegate alloc] initWithClassPointer:this];
+            webview.navigationDelegate = delegate;
             set_handle(webview);
+            __set_delegate(delegate);
             draw_uri();
         }
         __set_size_noevent({ real.width, real.height });
@@ -23,8 +35,8 @@ namespace xaml
     {
         WKWebView* webview = (WKWebView*)get_handle();
         NSString* nsurlstring = [NSString stringWithUTF8String:m_uri.c_str()];
-        NSURL* nsurl= [NSURL URLWithString:nsurlstring];
-        NSURLRequest* nsrequest= [NSURLRequest requestWithURL:nsurl];
+        NSURL* nsurl = [NSURL URLWithString:nsurlstring];
+        NSURLRequest* nsrequest = [NSURLRequest requestWithURL:nsurl];
         [webview loadRequest:nsrequest];
     }
 
@@ -35,4 +47,14 @@ namespace xaml
         frame.size = to_native<NSSize>(get_size());
         webview.frame = frame;
     }
+
+    void webview::__on_navigated()
+    {
+        WKWebView* webview = (WKWebView*)get_handle();
+        atomic_guard guard(m_navigating);
+        if (!guard.exchange(true))
+        {
+            set_uri(webview.URL.absoluteString.UTF8String);
+        }
+	}
 }

@@ -60,8 +60,13 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        XAML_UI_WEBVIEW_API static void on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, gpointer data);
+        static void on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, gpointer data);
 #endif // XAML_UI_GTK3
+
+#ifdef XAML_UI_COCOA
+    public:
+        void __on_navigated();
+#endif // XAML_UI_COCOA
 
     public:
         XAML_UI_WEBVIEW_API void __draw(rectangle const& region) override;
