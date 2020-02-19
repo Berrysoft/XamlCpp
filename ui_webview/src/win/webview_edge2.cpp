@@ -9,8 +9,7 @@ namespace xaml
 {
     void webview_edge2::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
-        THROW_IF_FAILED(CreateWebView2EnvironmentWithDetails(
-            nullptr, nullptr, nullptr,
+        THROW_IF_FAILED(CreateWebView2Environment(
             Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>(
                 [=](HRESULT result, IWebView2Environment* env) -> HRESULT {
                     try

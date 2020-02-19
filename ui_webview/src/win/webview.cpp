@@ -31,18 +31,21 @@ namespace xaml
                                 else
                                 {
                                     draw_uri();
+                                    __parent_redraw();
                                 }
                             });
                         }
                         else
                         {
                             draw_uri();
+                            __parent_redraw();
                         }
                     });
                 }
                 else
                 {
                     draw_uri();
+                    __parent_redraw();
                 }
             });
         }
