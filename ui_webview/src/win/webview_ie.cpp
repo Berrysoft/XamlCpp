@@ -12,7 +12,7 @@ namespace xaml
         RECT r = to_native<RECT>(rect);
         m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
         m_container.CreateControl(L"shell.Explorer.2");
-        m_container.QueryControl(__uuidof(IWebBrowser2), (void**)&m_browser);
+        m_container.QueryControl(&m_browser);
         if (callback) callback();
     }
 
