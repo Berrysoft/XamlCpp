@@ -1,4 +1,3 @@
-#include <atomic>
 #include <wil/result_macros.h>
 #include <win/webview_ie.hpp>
 
@@ -8,78 +7,38 @@ using namespace std;
 
 CComModule _Module;
 
-class WebBrowserSink : public DWebBrowserEvents2
+namespace xaml
 {
-protected:
-    atomic<ULONG> m_ref;
-    xaml::webview_ie* m_webview;
-
-public:
-    WebBrowserSink(xaml::webview_ie* view) : m_ref(1), m_webview(view) {}
-    ~WebBrowserSink() {}
-
-    STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override
+    STDMETHODIMP WebBrowserSink::QueryInterface(REFIID riid, void** ppvObject)
     {
-        if (IsBadWritePtr(ppvObject, sizeof(void*))) return E_POINTER;
-        HRESULT res = S_OK;
+        if (IsBadWritePtr(ppvObject, sizeof(void*)))
+            return E_POINTER;
         *ppvObject = nullptr;
         if (riid == __uuidof(IUnknown) || riid == __uuidof(IDispatch) || riid == __uuidof(DWebBrowserEvents2))
-            *ppvObject = this;
-        else
-            res = E_NOINTERFACE;
-        return res;
-    }
-
-    ULONG STDMETHODCALLTYPE AddRef() override
-    {
-        return ++m_ref;
-    }
-
-    ULONG STDMETHODCALLTYPE Release() override
-    {
-        if (!(--m_ref))
         {
-            delete this;
+            AddRef();
+            *ppvObject = this;
+            return S_OK;
         }
-        return m_ref;
+        else
+            return E_NOINTERFACE;
     }
 
-    STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
-    {
-        *pctinfo = 0;
-        return S_OK;
-    }
-
-    STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) override
-    {
-        *ppTInfo = NULL;
-        return E_NOTIMPL;
-    }
-
-    STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId)
-    {
-        return E_NOTIMPL;
-    }
-
-    STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) override
+    STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
     {
         if (riid != IID_NULL)
             return DISP_E_UNKNOWNINTERFACE;
         switch (dispIdMember)
         {
         case DISPID_NAVIGATECOMPLETE2:
-            m_webview->invoke_navigated((LPOLESTR)pDispParams->rgvarg[1].pbstrVal);
+            m_webview->invoke_navigated(pDispParams->rgvarg->pvarVal->bstrVal);
             break;
         default:
             break;
         }
-
         return S_OK;
     }
-};
 
-namespace xaml
-{
     void webview_ie::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
         try
@@ -88,6 +47,13 @@ namespace xaml
             m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
             THROW_IF_FAILED(m_container.CreateControl(L"shell.Explorer.2"));
             THROW_IF_FAILED(m_container.QueryControl(&m_browser));
+            wil::com_ptr<IConnectionPointContainer> spConnectionPointContainer;
+            THROW_IF_FAILED(m_browser->QueryInterface(&spConnectionPointContainer));
+            wil::com_ptr<IConnectionPoint> spConnectionPoint;
+            THROW_IF_FAILED(spConnectionPointContainer->FindConnectionPoint(__uuidof(DWebBrowserEvents2), &spConnectionPoint));
+            DWORD cookie;
+            m_sink = make_unique<WebBrowserSink>(this);
+            THROW_IF_FAILED(spConnectionPoint->Advise(m_sink.get(), &cookie));
         }
         catch (wil::ResultException const&)
         {

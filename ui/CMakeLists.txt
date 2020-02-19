@@ -29,8 +29,7 @@ target_include_directories(xaml_ui
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         ${XAML_PRIVATE_INCLUDE_DIRS}
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
 target_link_libraries(xaml_ui xaml_meta)

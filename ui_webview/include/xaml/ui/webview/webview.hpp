@@ -1,6 +1,7 @@
 #ifndef XAML_UI_WEBVIEW_WEBVIEW_HPP
 #define XAML_UI_WEBVIEW_WEBVIEW_HPP
 
+#include <atomic>
 #include <functional>
 #include <xaml/ui/control.hpp>
 
@@ -36,6 +37,9 @@ namespace xaml
         XAML_UI_WEBVIEW_API webview();
         XAML_UI_WEBVIEW_API ~webview() override;
 
+    private:
+        std::atomic<bool> m_navigating{ false };
+
 #ifdef XAML_UI_WINDOWS
     public:
         using __native_webview_type = std::shared_ptr<native_webview>;
@@ -52,6 +56,11 @@ namespace xaml
 
     public:
         XAML_UI_WEBVIEW_API void __draw(rectangle const& region) override;
+
+#ifdef XAML_UI_WINDOWS
+    private:
+        void draw_create();
+#endif // XAML_UI_WINDOWS
 
     private:
         void draw_size();

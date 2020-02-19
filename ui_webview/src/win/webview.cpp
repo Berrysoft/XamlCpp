@@ -1,8 +1,8 @@
-#include <xaml/ui/webview/webview.hpp>
-
+#include <shared/atomic_guard.hpp>
 #include <win/webview_edge.hpp>
 #include <win/webview_edge2.hpp>
 #include <win/webview_ie.hpp>
+#include <xaml/ui/webview/webview.hpp>
 
 using namespace std;
 
@@ -30,27 +30,37 @@ namespace xaml
                                 }
                                 else
                                 {
-                                    draw_uri();
-                                    __parent_redraw();
+                                    draw_create();
                                 }
                             });
                         }
                         else
                         {
-                            draw_uri();
-                            __parent_redraw();
+                            draw_create();
                         }
                     });
                 }
                 else
                 {
-                    draw_uri();
-                    __parent_redraw();
+                    draw_create();
                 }
             });
         }
         __set_size_noevent({ real.width, real.height });
         if (__get_webview() && *__get_webview()) m_webview->set_rect(real);
+    }
+
+    void webview::draw_create()
+    {
+        m_webview->set_navigated([this](string_view_t uri) {
+            atomic_guard guard(m_navigating);
+            if (!guard.exchange(true))
+            {
+                set_uri(uri);
+            }
+        });
+        draw_uri();
+        __parent_redraw();
     }
 
     void webview::draw_size()

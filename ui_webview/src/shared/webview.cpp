@@ -11,7 +11,7 @@ namespace xaml
                 __parent_redraw();
             }
         });
-        add_uri_changed([this](webview&, string_view_t) { if (get_handle()) draw_uri(); });
+        add_uri_changed([this](webview&, string_view_t) { if (get_handle() && !m_navigating) draw_uri(); });
     }
 
     webview::~webview() {}
