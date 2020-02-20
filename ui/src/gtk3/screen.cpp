@@ -5,14 +5,14 @@ using namespace std;
 
 namespace xaml
 {
-    unsigned int screen_dpi()
+    double screen_dpi()
     {
         GdkScreen* screen = gdk_screen_get_default();
         gdouble dpi = gdk_screen_get_resolution(screen);
         if (dpi < 0)
             return 96;
         else
-            return (unsigned int)dpi;
+            return dpi;
     }
 
     vector<monitor> get_monitors()

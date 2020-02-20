@@ -7,7 +7,7 @@
 
 namespace xaml
 {
-    XAML_UI_API unsigned int screen_dpi();
+    XAML_UI_API double screen_dpi();
 
     struct monitor
     {

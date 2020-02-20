@@ -4,7 +4,7 @@ using namespace std;
 
 namespace xaml
 {
-    unsigned int screen_dpi()
+    double screen_dpi()
     {
         return 72;
     }
