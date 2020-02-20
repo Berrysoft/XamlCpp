@@ -53,7 +53,8 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (!guard.exchange(true))
             {
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)get_x(), (int)get_y(), (int)get_width(), (int)get_height(), SWP_NOZORDER));
+                UINT udpi = GetDpiForWindow(get_handle());
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
             }
         }
         draw_resizable();
@@ -130,11 +131,12 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
+                UINT udpi = GetDpiForWindow(get_handle());
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
-                set_location({ r.x, r.y });
-                set_size({ r.width, r.height });
+                set_location(point{ r.x, r.y } * 96.0 / udpi);
+                set_size(size{ r.width, r.height } * 96.0 / udpi);
                 __draw({});
             }
             break;
@@ -144,10 +146,22 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
+                UINT udpi = GetDpiForWindow(get_handle());
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
-                set_location({ r.x, r.y });
+                set_location(point{ r.x, r.y } * 96.0 / udpi);
+            }
+            break;
+        }
+        case WM_DPICHANGED:
+        {
+            atomic_guard guard(m_resizing);
+            if (get_handle() && !guard.exchange(true))
+            {
+                UINT udpi = GetDpiForWindow(get_handle());
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
+                __draw({});
             }
             break;
         }

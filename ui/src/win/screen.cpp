@@ -8,7 +8,7 @@ namespace xaml
 {
     double screen_dpi()
     {
-        return (double)GetDpiForWindow(GetDesktopWindow());
+        return (double)GetDpiForSystem();
     }
 
     static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
