@@ -22,5 +22,5 @@ namespace xaml
     {
         NSButton* button = (NSButton*)get_handle();
         set_is_checked(button.state == NSControlStateValueOn);
-	}
+    }
 }

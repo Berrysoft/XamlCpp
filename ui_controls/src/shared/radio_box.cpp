@@ -15,7 +15,7 @@ namespace xaml
             }
         });
 #ifdef XAML_UI_COCOA
-        add_click([this](button const&) { if(get_handle()) __on_state_changed(); });
+        add_click([this](button const&) { if (get_handle()) __on_state_changed(); });
 #endif // XAML_UI_COCOA
     }
 
@@ -39,27 +39,6 @@ namespace xaml
                                 rc->set_is_checked(false);
                             }
                         }
-                    }
-                }
-            }
-            else
-            {
-                if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
-                {
-                    bool etcckd = false;
-                    for (auto& c : multic->get_children())
-                    {
-                        if (auto rc = dynamic_pointer_cast<radio_box>(c))
-                        {
-                            if (c != shared_from_this() && rc->get_group() == get_group())
-                            {
-                                etcckd |= rc->get_is_checked();
-                            }
-                        }
-                    }
-                    if (!etcckd)
-                    {
-                        set_is_checked(true);
                     }
                 }
             }

@@ -109,6 +109,9 @@ namespace xaml
             if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
             c->__size_to_fit();
             auto csize = c->get_size();
+            auto cmargin = c->get_margin();
+            csize.width += cmargin.left + cmargin.right;
+            csize.height += cmargin.top + cmargin.bottom;
             if (csize.width > mw) mw = csize.width;
             if (csize.height > mh) mh = csize.height;
         }

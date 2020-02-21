@@ -1,3 +1,4 @@
+#include <iostream>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/markup_extension.hpp>
 #include <xaml/parser.hpp>

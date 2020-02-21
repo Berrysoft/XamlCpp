@@ -67,8 +67,8 @@ namespace xaml
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
         NSBezierPath* line = [NSBezierPath bezierPath];
-        [line moveToPoint:NSMakePoint(startp.x, startp.y)];
-        [line lineToPoint:NSMakePoint(endp.x, endp.y)];
+        [line moveToPoint:NSMakePoint(startp.x, m_size.height - startp.y)];
+        [line lineToPoint:NSMakePoint(endp.x, m_size.height - endp.y)];
         set_pen(line, pen);
         [line stroke];
     }
