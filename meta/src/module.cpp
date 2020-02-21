@@ -82,7 +82,7 @@ namespace xaml
                 auto filename = path{ U("lib") };
                 filename += p.filename();
                 p.remove_filename();
-                p += filename;
+                p /= filename;
                 string nname = p.string();
                 p = get_right_path(nname);
             }
