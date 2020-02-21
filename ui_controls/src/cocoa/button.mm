@@ -7,11 +7,12 @@
     NSButtonCell* button = [NSButtonCell new];
     button.target = self;
     button.action = @selector(onAction);
-    NSMatrix* matrix = [[NSMatrix alloc] initWithRect:NSMakeRect(0, 0, 1, 1)
-                                                 mode:NSRadioModeMatrix
-                                            prototype:(NSCell*)button
-                                         numberOfRows:1
-                                      numberOfColumns:1];
+    NSMatrix* matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)
+                                                  mode:NSTrackModeMatrix
+                                             prototype:(NSCell*)button
+                                          numberOfRows:1
+                                       numberOfColumns:1];
+    matrix.autorecalculatesCellSize = YES;
     return matrix;
 }
 
@@ -39,6 +40,7 @@ namespace xaml
         NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         [button setBezelStyle:NSBezelStyleRounded];
         __set_rect(real);
+        matrix.cellSize = matrix.frame.size;
         draw_text();
         draw_default();
     }
@@ -54,9 +56,11 @@ namespace xaml
     void button::draw_size()
     {
         NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         NSRect frame = matrix.frame;
         frame.size = to_native<NSSize>(get_size());
         matrix.frame = frame;
+        matrix.cellSize = frame.size;
     }
 
     void button::draw_default()
@@ -66,12 +70,12 @@ namespace xaml
         if (m_is_default)
         {
             button.keyEquivalent = @"\r";
-            [button highlight:YES];
+            button.highlighted = YES;
         }
         else
         {
             button.keyEquivalent = @"";
-            [button highlight:NO];
+            button.highlighted = NO;
         }
     }
 
