@@ -2,6 +2,6 @@
 #import <xaml/ui/cocoa/XamlDelegate.h>
 
 @interface XamlButtonDelegate : XamlDelegate
-- (NSButton*)newButton;
+- (NSMatrix*)newButton;
 - (void)onAction;
 @end

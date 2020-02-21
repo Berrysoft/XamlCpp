@@ -2,12 +2,17 @@
 #include <xaml/ui/controls/button.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
-- (NSButton*)newButton
+- (NSMatrix*)newButton
 {
-    NSButton* button = [NSButton new];
+    NSButtonCell* button = [NSButtonCell new];
     button.target = self;
     button.action = @selector(onAction);
-    return button;
+    NSMatrix* matrix = [[NSMatrix alloc] initWithRect:NSMakeRect(0, 0, 1, 1)
+                                                 mode:NSRadioModeMatrix
+                                            prototype:(NSCell*)button
+                                         numberOfRows:1
+                                      numberOfColumns:1];
+    return matrix;
 }
 
 - (void)onAction
@@ -30,7 +35,8 @@ namespace xaml
             set_handle([delegate newButton]);
         }
         rectangle real = region - get_margin();
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         [button setBezelStyle:NSBezelStyleRounded];
         __set_rect(real);
         draw_text();
@@ -39,22 +45,24 @@ namespace xaml
 
     void button::draw_text()
     {
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         button.title = ns_title;
     }
 
     void button::draw_size()
     {
-        NSButton* button = (NSButton*)get_handle();
-        NSRect frame = button.frame;
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSRect frame = matrix.frame;
         frame.size = to_native<NSSize>(get_size());
-        button.frame = frame;
+        matrix.frame = frame;
     }
 
     void button::draw_default()
     {
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         if (m_is_default)
         {
             button.keyEquivalent = @"\r";
@@ -74,9 +82,9 @@ namespace xaml
 
     void button::__size_to_fit()
     {
-        NSButton* button = (NSButton*)get_handle();
-        [button sizeToFit];
-        NSRect frame = button.frame;
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        [matrix sizeToFit];
+        NSRect frame = matrix.frame;
         __set_size_noevent(from_native(frame.size));
     }
 }

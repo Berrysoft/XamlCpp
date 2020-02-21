@@ -7,20 +7,23 @@ namespace xaml
     void check_box::__draw(rectangle const& region)
     {
         button::__draw(region);
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         [button setButtonType:NSButtonTypeSwitch];
         draw_checked();
     }
 
     void check_box::draw_checked()
     {
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         button.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
     }
 
     void check_box::__on_state_changed()
     {
-        NSButton* button = (NSButton*)get_handle();
+        NSMatrix* matrix = (NSMatrix*)get_handle();
+        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         set_is_checked(button.state == NSControlStateValueOn);
-	}
+    }
 }
