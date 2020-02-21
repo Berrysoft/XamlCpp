@@ -49,6 +49,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
         XAML_UI_API HFONT __default_font() const;
+        XAML_UI_API HFONT __default_font(HWND hWnd) const;
 #endif // XAML_UI_WINDOWS
 
         static void register_class() noexcept

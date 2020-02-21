@@ -99,7 +99,7 @@ namespace xaml
     void window::show()
     {
         __draw({});
-        ShowWindow(get_handle(), SW_SHOW);
+        ShowWindow(get_handle(), SW_SHOWNORMAL);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
     }
 
@@ -161,6 +161,7 @@ namespace xaml
             {
                 UINT udpi = GetDpiForWindow(get_handle());
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
+                SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
                 __draw({});
             }
             break;
