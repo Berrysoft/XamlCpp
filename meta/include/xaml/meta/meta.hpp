@@ -849,17 +849,8 @@ namespace xaml
                 ename,
                 std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
                     [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        if (handler->is_same_arg_type<Args...>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                            return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
-                        }
-                        else if (handler->is_same_arg_type<>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_function_impl<void()>>(handler);
-                            return adder(std::static_pointer_cast<T>(self).get(), [h](Args...) { std::move(h->func)(); });
-                        }
-                        return 0;
+                        auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
+                        return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
                     }));
         }
     }
@@ -874,17 +865,8 @@ namespace xaml
                 ename,
                 std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
                     [adder](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        if (handler->is_same_arg_type<std::shared_ptr<meta_class>, Args...>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                            return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
-                        }
-                        else if (handler->is_same_arg_type<std::shared_ptr<meta_class>>())
-                        {
-                            auto h = std::static_pointer_cast<__type_erased_this_function_impl<void()>>(handler);
-                            return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args...) { h->func(target); });
-                        }
-                        return 0;
+                        auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
+                        return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
                     }));
         }
     }
