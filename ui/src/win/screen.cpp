@@ -6,11 +6,6 @@ using namespace std;
 
 namespace xaml
 {
-    double screen_dpi()
-    {
-        return (double)GetDpiForSystem();
-    }
-
     static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
     {
         auto& callback = *(vector<monitor>*)arg;

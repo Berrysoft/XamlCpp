@@ -4,11 +4,6 @@ using namespace std;
 
 namespace xaml
 {
-    double screen_dpi()
-    {
-        return 72;
-    }
-
     vector<monitor> get_monitors()
     {
         vector<monitor> ms;

@@ -53,7 +53,7 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (!guard.exchange(true))
             {
-                UINT udpi = GetDpiForWindow(get_handle());
+                double udpi = get_dpi();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
             }
         }
@@ -131,7 +131,7 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
-                UINT udpi = GetDpiForWindow(get_handle());
+                double udpi = get_dpi();
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
@@ -146,7 +146,7 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
-                UINT udpi = GetDpiForWindow(get_handle());
+                double udpi = get_dpi();
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
@@ -159,7 +159,7 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
-                UINT udpi = GetDpiForWindow(get_handle());
+                double udpi = get_dpi();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
                 SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
                 __draw({});
@@ -190,5 +190,10 @@ namespace xaml
             break;
         }
         return get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+    }
+
+    double window::get_dpi() const
+    {
+        return (double)GetDpiForWindow(get_handle());
     }
 } // namespace xaml

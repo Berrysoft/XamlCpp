@@ -112,6 +112,9 @@ namespace xaml
         PROP_STRING_EVENT(title)
 
     public:
+        double get_dpi() const;
+
+    public:
 #define ADD_WINDOW_MEMBERS()  \
     ADD_CONTAINER_MEMBERS();  \
     ADD_PROP(title);          \

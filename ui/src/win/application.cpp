@@ -50,22 +50,22 @@ namespace xaml
         s_default_font.lfWidth = (LONG)(s_default_font.lfWidth * 96.0 / ddpi);
     }
 
-    HFONT application::__default_font() const
+    static HFONT get_default_font(double ddpi)
     {
         LOGFONT f = s_default_font;
-        double ddpi = (double)GetDpiForSystem();
         f.lfHeight = (LONG)(f.lfHeight * ddpi / 96.0);
         f.lfWidth = (LONG)(f.lfWidth * ddpi / 96.0);
         return CreateFontIndirect(&f);
     }
 
+    HFONT application::__default_font() const
+    {
+        return get_default_font((double)GetDpiForSystem());
+    }
+
     HFONT application::__default_font(HWND hWnd) const
     {
-        LOGFONT f = s_default_font;
-        double ddpi = (double)GetDpiForWindow(hWnd);
-        f.lfHeight = (LONG)(f.lfHeight * ddpi / 96.0);
-        f.lfWidth = (LONG)(f.lfWidth * ddpi / 96.0);
-        return CreateFontIndirect(&f);
+        return get_default_font((double)GetDpiForWindow(hWnd));
     }
 
     int application::run()

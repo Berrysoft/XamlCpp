@@ -115,4 +115,14 @@ namespace xaml
         }
         return FALSE;
     }
+
+    double window::get_dpi() const
+    {
+        GdkScreen* screen = gtk_window_get_screen(GTK_WINDOW(get_handle()));
+        gdouble res = gdk_screen_get_resolution(screen);
+        if (res < 0)
+            return 96.0;
+        else
+            return res;
+    }
 } // namespace xaml

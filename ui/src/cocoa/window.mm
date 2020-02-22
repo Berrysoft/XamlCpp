@@ -132,4 +132,9 @@ namespace xaml
         m_closing(*this, handled);
         return !handled;
     }
+
+    double window::get_dpi() const
+    {
+        return 72.0;
+    }
 }
