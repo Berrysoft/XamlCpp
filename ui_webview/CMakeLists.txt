@@ -34,7 +34,7 @@ target_include_directories(xaml_ui_webview
 
 target_link_libraries(xaml_ui_webview xaml_ui)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui_webview WindowsApp)
+    #target_link_libraries(xaml_ui_webview WindowsApp)
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
         file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.8.355 ${CMAKE_BINARY_DIR}/webview2.nupkg)
@@ -54,6 +54,20 @@ if(${BUILD_WINDOWS})
     file(GLOB WEBVIEW2_LIBS "${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/*.lib")
     target_link_libraries(xaml_ui_webview ${WEBVIEW2_LIBS})
     configure_file(${CMAKE_BINARY_DIR}/webview2/build/native/${XAML_NATIVE_PLATFORM}/WebView2Loader.dll ${CMAKE_BINARY_DIR}/bin/WebView2Loader.dll COPYONLY)
+
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
+        file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200203.5 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
+    endif()
+
+    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cppwinrt)
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/cppwinrt.nupkg
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppwinrt
+    )
+
+    execute_process(COMMAND ${CMAKE_BINARY_DIR}/cppwinrt/bin/cppwinrt.exe -in local -out ${CMAKE_BINARY_DIR}/cppwinrt/gen/)
+
+    target_include_directories(xaml_ui_webview PRIVATE ${CMAKE_BINARY_DIR}/cppwinrt/gen)
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui_webview "-framework WebKit")
 elseif(${BUILD_GTK3})

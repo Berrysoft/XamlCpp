@@ -1,3 +1,5 @@
+#include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.Web.UI.h"
 #include <win/webview_edge.hpp>
 
 using namespace std;
