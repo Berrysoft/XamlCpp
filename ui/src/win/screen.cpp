@@ -1,3 +1,4 @@
+#include <ShellScalingApi.h>
 #include <Windows.h>
 #include <wil/result_macros.h>
 #include <xaml/ui/screen.hpp>
@@ -12,7 +13,9 @@ namespace xaml
         MONITORINFO info = {};
         info.cbSize = sizeof(MONITORINFO);
         THROW_IF_WIN32_BOOL_FALSE(GetMonitorInfo(m, &info));
-        callback.push_back({ from_native(info.rcMonitor), from_native(info.rcWork) });
+        UINT dpix, dpiy;
+        THROW_IF_FAILED(GetDpiForMonitor(m, MDT_EFFECTIVE_DPI, &dpix, &dpiy));
+        callback.push_back({ from_native(info.rcMonitor), from_native(info.rcWork), (double)dpix });
         return TRUE;
     }
 
