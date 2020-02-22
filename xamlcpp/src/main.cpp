@@ -27,76 +27,84 @@ using boost::filesystem::path;
 
 int main(int argc, char** argv)
 {
-    options_description desc{ "Allowed options" };
-    desc.add_options()(
-        "help,h", "Print help message")(
-        "input-file,i", value<string>(), "Input XAML file")(
-        "output-file,o", value<string>(), "Output C++ file")(
-        "library-path,L", value<vector<string>>(), "Search library path")(
-        "fake,f", "Generate deserialize code")(
-        "no-logo", "Cancellation to show copyright infomation");
-    positional_options_description p;
-    p.add("input-file", -1);
-
-    variables_map vm;
-    store(command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-    notify(vm);
-
-    path exe{ argv[0] };
-    if (!vm.count("no-logo"))
+    try
     {
-        cout << exe.filename().string() << " " XAML_VERSION << '\n'
-             << "Copyright (c) 2019-2020 Berrysoft" << '\n'
-             << endl;
-    }
+        options_description desc{ "Allowed options" };
+        desc.add_options()(
+            "help,h", "Print help message")(
+            "input-file,i", value<string>(), "Input XAML file")(
+            "output-file,o", value<string>(), "Output C++ file")(
+            "library-path,L", value<vector<string>>(), "Search library path")(
+            "fake,f", "Generate deserialize code")(
+            "no-logo", "Cancellation to show copyright infomation");
+        positional_options_description p;
+        p.add("input-file", -1);
 
-    if (vm.empty() || vm.count("help"))
-    {
-        cout << desc << endl;
-        return 1;
-    }
+        variables_map vm;
+        store(command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+        notify(vm);
 
-    if (vm.count("input-file"))
-    {
-        string inf = vm["input-file"].as<string>();
-        path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
-        auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
-        for (auto& dir : lib_dirs)
+        path exe{ argv[0] };
+        if (!vm.count("no-logo"))
         {
-            for (auto& en : directory_iterator{ dir })
+            cout << exe.filename().string() << " " XAML_VERSION << '\n'
+                 << "Copyright (c) 2019-2020 Berrysoft" << '\n'
+                 << endl;
+        }
+
+        if (vm.empty() || vm.count("help"))
+        {
+            cout << desc << endl;
+            return 1;
+        }
+
+        if (vm.count("input-file"))
+        {
+            string inf = vm["input-file"].as<string>();
+            path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
+            auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
+            for (auto& dir : lib_dirs)
             {
-                auto p = en.path();
-                if (p.has_extension() && p.extension().native() == module_extension)
+                for (auto& en : directory_iterator{ dir })
                 {
-                    add_compiler_module(p.string());
+                    auto p = en.path();
+                    if (p.has_extension() && p.extension().native() == module_extension)
+                    {
+                        add_compiler_module(p.string());
+                    }
                 }
             }
-        }
-        init_parser();
-        parser p{ inf };
-        if (p.is_open())
-        {
-            auto node = p.parse();
-            compiler c{};
-            ofstream stream{ ouf_path.string() };
-            if (vm.count("fake"))
+            init_parser();
+            parser p{ inf };
+            if (p.is_open())
             {
-                c.compile_fake(stream, node, inf);
+                auto node = p.parse();
+                compiler c{};
+                ofstream stream{ ouf_path.string() };
+                if (vm.count("fake"))
+                {
+                    c.compile_fake(stream, node, inf);
+                }
+                else
+                {
+                    c.compile(stream, node);
+                }
             }
             else
             {
-                c.compile(stream, node);
+                cerr << "Cannot open " << inf << endl;
+                return 1;
             }
         }
         else
         {
-            cerr << "Cannot open " << inf << endl;
+            cerr << "Input file must be specified" << endl;
             return 1;
         }
     }
-    else
+    catch (exception const& e)
     {
-        cerr << "Input file must be specified" << endl;
+        cerr << e.what() << endl;
         return 1;
     }
 }

@@ -74,7 +74,7 @@ namespace xaml
     void button::__size_to_fit()
     {
         size msize = __measure_text_size(m_text);
-        __set_size_noevent({ msize.width + 15, msize.height + 15 });
+        __set_size_noevent({ msize.width + 10, msize.height + 10 });
         draw_size();
     }
 } // namespace xaml

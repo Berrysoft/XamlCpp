@@ -31,6 +31,7 @@ namespace xaml
             if (!(--m_ref))
             {
                 delete this;
+                return 0;
             }
             return m_ref;
         }

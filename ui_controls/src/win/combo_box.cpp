@@ -111,7 +111,7 @@ namespace xaml
             fw = (max)(fw, msize.width);
             fh = (max)(fh, msize.height);
         }
-        __set_size_noevent({ fw + 20, fh + 15 });
+        __set_size_noevent({ fw + 10, fh + 10 });
         draw_size();
     }
 

@@ -46,11 +46,11 @@ namespace xaml
     {
         if (get_orientation() == orientation::vertical)
         {
-            __set_size_noevent({ get_width(), accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_height(); }) });
+            __set_size_noevent({ get_width(), accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_height() + rhs->get_margin().top + rhs->get_margin().bottom; }) });
         }
         else
         {
-            __set_size_noevent({ accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_width(); }), get_height() });
+            __set_size_noevent({ accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_width() + rhs->get_margin().left + rhs->get_margin().right; }), get_height() });
         }
     }
 } // namespace xaml
