@@ -9,9 +9,9 @@ namespace xaml
     std::string __wtomb(std::wstring_view str)
     {
 #ifdef WIN32
-        int count = WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, str.data(), (int)str.length(), nullptr, 0, NULL, NULL);
+        int count = WideCharToMultiByte(CP_ACP, 0, str.data(), (int)str.length(), nullptr, 0, nullptr, nullptr);
         std::string internal(count, '\0');
-        WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK, str.data(), (int)str.length(), internal.data(), (int)internal.length(), NULL, NULL);
+        WideCharToMultiByte(CP_ACP, 0, str.data(), (int)str.length(), internal.data(), (int)internal.length(), nullptr, nullptr);
         return internal;
 #else
         std::size_t count = std::wcstombs(nullptr, str.data(), str.length());
