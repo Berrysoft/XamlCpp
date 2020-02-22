@@ -1,6 +1,7 @@
 #include <boost/program_options.hpp>
 #include <fstream>
 #include <iostream>
+#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -62,6 +63,7 @@ int main(int argc, char** argv)
         {
             string inf = vm["input-file"].as<string>();
             path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
+            set<string> modules;
             auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
             for (auto& dir : lib_dirs)
             {
@@ -70,9 +72,17 @@ int main(int argc, char** argv)
                     auto p = en.path();
                     if (p.has_extension() && p.extension().native() == module_extension)
                     {
-                        add_compiler_module(p.string());
+                        while (is_symlink(p))
+                        {
+                            p = read_symlink(p);
+                        }
+                        modules.emplace(p.string());
                     }
                 }
+            }
+            for (auto& m : modules)
+            {
+                add_compiler_module(m);
             }
             init_parser();
             parser p{ inf };
