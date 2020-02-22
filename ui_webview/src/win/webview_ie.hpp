@@ -28,12 +28,15 @@ namespace xaml
 
         ULONG STDMETHODCALLTYPE Release() override
         {
-            if (!(--m_ref))
+            if (--m_ref)
+            {
+                return m_ref;
+            }
+            else
             {
                 delete this;
                 return 0;
             }
-            return m_ref;
         }
 
         STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override

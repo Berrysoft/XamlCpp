@@ -275,7 +275,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     constexpr rectangle from_native(RECT r)
     {
-        return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) };
+        return { (double)r.left, (double)r.top, (double)r.right - r.left, (double)r.bottom - r.top };
     }
     inline rectangle from_native(Gdiplus::RectF r)
     {

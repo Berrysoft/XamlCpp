@@ -44,12 +44,12 @@ namespace xaml
         module(module const&) = delete;
         module& operator=(module const&) = delete;
 
-        module(module&& m) : m_handle(m.m_handle)
+        module(module&& m) noexcept : m_handle(m.m_handle)
         {
             m.m_handle = nullptr;
         }
 
-        module& operator=(module&& m)
+        module& operator=(module&& m) noexcept
         {
             std::swap(m_handle, m.m_handle);
             return *this;

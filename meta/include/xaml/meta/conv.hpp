@@ -2,15 +2,14 @@
 #define XAML_CONV_HPP
 
 #include <any>
-#include <cctype>
 #include <cstdlib>
 #include <initializer_list>
-#include <locale>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <typeindex>
 #include <xaml/strings.hpp>
+#include <xaml/utility.hpp>
 
 namespace xaml
 {
@@ -26,13 +25,6 @@ namespace xaml
             if (value.type() == typeid(return_type))
             {
                 return std::any_cast<return_type>(value);
-            }
-            if constexpr (std::is_copy_constructible_v<T>)
-            {
-                if (value.type() == typeid(return_type&) || value.type() == typeid(return_type const&))
-                {
-                    return std::any_cast<return_type const&>(value);
-                }
             }
             return {};
         }
@@ -401,29 +393,9 @@ namespace xaml
     {
     };
 
-    static inline std::string __wtomb(std::wstring_view str)
-    {
-        std::mbstate_t mb{};
-        std::string internal(str.size() * 2, '\0');
-        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
-        const wchar_t* from_next;
-        char* to_next;
-        f.out(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        internal.resize(to_next - internal.data());
-        return internal;
-    }
+    XAML_META_API std::string __wtomb(std::wstring_view str);
 
-    static inline std::wstring __mbtow(std::string_view str)
-    {
-        std::mbstate_t mb{};
-        std::wstring internal(str.size(), L'\0');
-        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
-        const char* from_next;
-        wchar_t* to_next;
-        f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        internal.resize(to_next - internal.data());
-        return internal;
-    }
+    XAML_META_API std::wstring __mbtow(std::string_view str);
 
     template <>
     struct value_converter_traits<std::string_view, void>
