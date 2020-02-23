@@ -7,21 +7,54 @@ This project is not complete, and still needs a lot of work. Welcome issues and 
 ## Reflection
 XamlCpp supports optional-reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
 
-A simple example is [here](./meta/test/main.cpp).
+A simple example is [here](./meta/test/src/main.cpp).
 
 Reflection is heavily used by XAML parser, but it is optional if you don't want dynamic feature.
 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
 
-An example is [here](./ui_controls/test/main.cpp)
+An example is [here](./ui_controls/test/src/main.cpp)
 
-### Supported platforms
+GUI is divided into several parts. The basic framework is divided into two parts, one for desktop environment and another for mobile environment(on plan).
+Others projects, containing controls, are framework-independent and should work on all platforms.
+This design is based on a truth that we can't simply port the GUI for desktop to mobile environment, but should rewrite the front-end to make better use of different features.
+
+### UI(Desktop)
+It supports desktop environment with concepts of "window" and "screen", and many dialogs like "message box" and "file box".
+It also supports high DPI settings even on Windows.
+#### Supported platforms
 |Name|API set|Supported OS|Recommanded OS|
 |-|-|-|-|
 |Win32|Windows API, GDI+|Windows|Windows|
-|GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux|
+|GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
 |Cocoa|Cocoa|MacOS|MacOS|
+
+### MUI(Mobile, on plan)
+It supports mobile environment with concepts of "page". It doesn't provide "application", instead, you should "inject" the pages to native projects.
+That means, it works much like Xamarin.Forms.
+#### Supported platforms(on plan and may change)
+|Name|API set|Supported OS|Recommanded OS|
+|-|-|-|-|
+|WinRT|Windows Runtime|Windows 10+|Windows 10+|
+|Android|JetPack|Android|Android|
+|iOS|Cocoa|iOS|iOS|
+
+### Controls
+Basic controls, works on all platforms including desktop and mobile(on plan).
+
+### WebView
+A webview control. It is a single project because it needs much more dependencies and thus it is optional.
+#### Supported platforms
+|Name|API set|
+|-|-|
+|Win32|Edge(Chromium)->Edge->IE*|
+|GTK+3|Webkit**|
+|Cocoa|WebKit|
+
+\* Indicates the search order. IE is supported to ensure it could be used.
+
+\*\* Linux only because of the limitation of webkit2gtk.
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.
@@ -88,7 +121,7 @@ A C++17-compliant compiler is required.
 #### MinGW
 `libxml2`, `gtk`, `boost` and `pkgconfig` are required. MSYS2 is recommanded for installing.
 ### Build on Linux
-`libxml2`, `gtk` and `pkgconfig` are required.
+`libxml2`, `gtk`, `boost` and `pkgconfig` are required.
 ### Build on Mac
 Mac OS 10.14+ is required for some C++17 features.
 #### Cocoa
