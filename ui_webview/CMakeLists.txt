@@ -89,4 +89,6 @@ install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/webview)
 install(TARGETS xaml_ui_webview EXPORT xaml_ui_webview-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
 install(EXPORT xaml_ui_webview-targets DESTINATION lib/cmake/xaml_ui_webview)
 
+add_subdirectory(meta)
+
 add_subdirectory(test)

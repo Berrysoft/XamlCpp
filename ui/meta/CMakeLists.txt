@@ -3,7 +3,7 @@ project(XamlUIMeta CXX)
 file(GLOB UI_META_HEADERS "include/xaml/ui/*.hpp")
 file(GLOB UI_META_SOURCE "src/*.cpp")
 
-add_library(xaml_ui_meta ${UI_META_SOURCE})
+add_library(xaml_ui_meta SHARED ${UI_META_SOURCE})
 
 target_include_directories(xaml_ui_meta
     PUBLIC 

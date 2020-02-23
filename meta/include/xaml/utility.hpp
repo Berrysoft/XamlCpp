@@ -9,22 +9,35 @@
 #define __XAML_IMPORT
 #endif // !__XAML_IMPORT
 #else
-#ifndef __XAML_EXPORT
-#if defined(_MSC_VER)
-#define __XAML_EXPORT __declspec(dllexport)
-#elif defined(__GNUC__)
-#define __XAML_EXPORT __attribute__((visibility("default")))
-#else
-#define __XAML_EXPORT
-#endif
-#endif // !__XAML_EXPORT
-#ifndef __XAML_IMPORT
+#ifndef __EXPORT_IMPL
 #ifdef _MSC_VER
-#define __XAML_IMPORT __declspec(dllimport)
+#define __EXPORT_IMPL __declspec(dllexport)
+#elif defined(__GNUC__)
+#define __EXPORT_IMPL __attribute__((visibility("default")))
 #else
-#define __XAML_IMPORT
+#define __EXPORT_IMPL
 #endif
+#endif // !__EXPORT_IMPL
+#ifndef __XAML_EXPORT
+#define __XAML_EXPORT __EXPORT_IMPL
+#endif // !__XAML_EXPORT
+#ifndef __XAML_META_EXPORT
+#define __XAML_META_EXPORT __EXPORT_IMPL
+#endif // !__XAML_META_EXPORT
+
+#ifndef __IMPORT_IMPL
+#ifdef _MSC_VER
+#define __IMPORT_IMPL __declspec(dllimport)
+#else
+#define __IMPORT_IMPL
+#endif
+#endif // !__IMPORT_IMPL
+#ifndef __XAML_IMPORT
+#define __XAML_IMPORT __IMPORT_IMPL
 #endif // !__XAML_IMPORT
+#ifndef __XAML_META_IMPORT
+#define __XAML_META_IMPORT __IMPORT_IMPL
+#endif // !__XAML_META_IMPORT
 #endif // XAML_STATIC_DEFINE
 
 #ifdef xaml_meta_EXPORTS
@@ -40,9 +53,9 @@
 #endif // xaml_ui_EXPORTS
 
 #ifdef xaml_ui_meta_EXPORTS
-#define XAML_UI_META_API __XAML_EXPORT
+#define XAML_UI_META_API __XAML_META_EXPORT
 #else
-#define XAML_UI_META_API __XAML_IMPORT
+#define XAML_UI_META_API __XAML_META_IMPORT
 #endif // xaml_ui_meta_EXPORTS
 
 #ifdef xaml_ui_controls_EXPORTS
@@ -52,9 +65,9 @@
 #endif // xaml_ui_controls_EXPORTS
 
 #ifdef xaml_ui_controls_meta_EXPORTS
-#define XAML_UI_CONTROLS_META_API __XAML_EXPORT
+#define XAML_UI_CONTROLS_META_API __XAML_META_EXPORT
 #else
-#define XAML_UI_CONTROLS_META_API __XAML_IMPORT
+#define XAML_UI_CONTROLS_META_API __XAML_META_IMPORT
 #endif // xaml_ui_controls_meta_EXPORTS
 
 #ifdef xaml_ui_webview_EXPORTS
@@ -62,6 +75,12 @@
 #else
 #define XAML_UI_WEBVIEW_API __XAML_IMPORT
 #endif // xaml_ui_controls_EXPORTS
+
+#ifdef xaml_ui_webview_meta_EXPORTS
+#define XAML_UI_WEBVIEW_META_API __XAML_META_EXPORT
+#else
+#define XAML_UI_WEBVIEW_META_API __XAML_META_IMPORT
+#endif // xaml_ui_webview_meta_EXPORTS
 
 #ifdef xaml_EXPORTS
 #define XAML_API __XAML_EXPORT

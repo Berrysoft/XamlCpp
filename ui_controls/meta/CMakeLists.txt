@@ -3,7 +3,7 @@ project(XamlUIControlsMeta CXX)
 file(GLOB UI_CONTROLS_META_HEADERS "include/xaml/ui/controls/*.hpp")
 file(GLOB UI_CONTROLS_META_SOURCE "src/*.cpp")
 
-add_library(xaml_ui_controls_meta ${UI_CONTROLS_META_SOURCE})
+add_library(xaml_ui_controls_meta SHARED ${UI_CONTROLS_META_SOURCE})
 
 target_include_directories(xaml_ui_controls_meta
     PUBLIC 
