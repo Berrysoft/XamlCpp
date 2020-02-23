@@ -131,7 +131,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     protected:
         XAML_UI_API void __create(window_create_params const& params);
-        XAML_UI_API size __measure_text_size(string_view_t str) const;
+        XAML_UI_API size __measure_text_size(string_view_t str, size offset) const;
 
     public:
         virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }

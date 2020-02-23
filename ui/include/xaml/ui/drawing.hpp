@@ -98,6 +98,9 @@ namespace xaml
     constexpr bool operator==(size lhs, size rhs) { return lhs.width == rhs.width && lhs.height == rhs.height; }
     constexpr bool operator!=(size lhs, size rhs) { return !(lhs == rhs); }
 
+    constexpr size operator+(size lhs, size rhs) { return { lhs.width + rhs.width, lhs.height + rhs.height }; }
+    constexpr size operator-(size lhs, size rhs) { return { lhs.width - rhs.width, lhs.height - rhs.height }; }
+
     constexpr size operator*(size lhs, double rhs) { return { lhs.width * rhs, lhs.height * rhs }; }
     constexpr size operator*(double lhs, size rhs) { return rhs * lhs; }
     constexpr size operator/(size lhs, double rhs) { return lhs * (1 / rhs); }

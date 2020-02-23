@@ -21,13 +21,13 @@ namespace xaml
         SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
     }
 
-    size control::__measure_text_size(string_view_t str) const
+    size control::__measure_text_size(string_view_t str, size offset) const
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(get_handle());
         SIZE s = {};
         THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
         UINT udpi = GetDpiForWindow(get_handle());
-        return from_native(s) * udpi / 96.0;
+        return (from_native(s) + offset) * udpi / 96.0;
     }
 
     control::~control()

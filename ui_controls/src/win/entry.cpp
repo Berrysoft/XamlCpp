@@ -92,8 +92,7 @@ namespace xaml
 
     void entry::__size_to_fit()
     {
-        size msize = __measure_text_size(m_text);
-        __set_size_noevent({ msize.width + 2, msize.height + 5 });
+        __set_size_noevent(__measure_text_size(m_text, { 2, 5 }));
         draw_size();
     }
 } // namespace xaml
