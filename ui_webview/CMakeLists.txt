@@ -34,10 +34,9 @@ target_include_directories(xaml_ui_webview
 
 target_link_libraries(xaml_ui_webview xaml_ui)
 if(${BUILD_WINDOWS})
-    #target_link_libraries(xaml_ui_webview WindowsApp)
-
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
         file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.8.355 ${CMAKE_BINARY_DIR}/webview2.nupkg)
+        message(STATUS "WebView2 downloaded")
     endif()
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/webview2)
@@ -58,6 +57,7 @@ if(${BUILD_WINDOWS})
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
         file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200203.5 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
+        message(STATUS "CppWinRT downloaded")
     endif()
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cppwinrt)

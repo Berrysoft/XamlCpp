@@ -21,4 +21,5 @@ set_target_properties(xaml_ui_webview_meta PROPERTIES
 )
 
 install(FILES ${WEBVIEW_META_HEADERS} DESTINATION include/xaml/ui/webview)
-
+install(TARGETS xaml_ui_webview_meta EXPORT xaml_ui_webview_meta-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
+install(EXPORT xaml_ui_webview_meta-targets DESTINATION lib/cmake/xaml_ui_webview_meta)

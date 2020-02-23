@@ -21,7 +21,7 @@ else()
     find_library(GTK_gdk_pixbuf_LIBRARY gdk_pixbuf-2.0)
     find_library(GTK_gio_LIBRARY gio-2.0)
 
-    message("-- Found GTK3")
+    message(STATUS "Found GTK3")
 
     set(GTK3_FOUND TRUE)
     set(GTK3_INCLUDE_DIRS ${GTK_gtk_INCLUDE_PATH} ${GTK_glibconfig_INCLUDE_PATH} ${GTK_glib_INCLUDE_PATH} ${GTK_cairo_INLUDE_PATH})
