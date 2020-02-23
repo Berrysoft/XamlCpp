@@ -107,3 +107,15 @@ endif()
 add_subdirectory(xaml)
 add_subdirectory(xamlc)
 add_subdirectory(xamlcpp)
+
+install(
+    TARGETS
+        xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_webview xaml_ui_webview_meta xaml xamlc
+    EXPORT xaml-targets
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
+configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
+install(FILES ${PROJECT_BINARY_DIR}/xaml-config.cmake DESTINATION lib/cmake/xaml)

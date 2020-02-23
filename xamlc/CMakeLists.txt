@@ -20,10 +20,5 @@ set_target_properties(xamlc PROPERTIES
 )
 
 install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml)
-install(TARGETS xamlc EXPORT xamlc-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
-install(EXPORT xamlc-targets DESTINATION lib/cmake/xamlc)
-
-configure_file(cmake/xamlc-config.cmake.in ${PROJECT_BINARY_DIR}/xamlc-config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/xamlc-config.cmake DESTINATION lib/cmake/xamlc)
 
 add_subdirectory(test)

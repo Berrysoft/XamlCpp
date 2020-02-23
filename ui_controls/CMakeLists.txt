@@ -43,11 +43,6 @@ set_target_properties(xaml_ui_controls PROPERTIES
 )
 
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)
-install(TARGETS xaml_ui_controls EXPORT xaml_ui_controls-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
-install(EXPORT xaml_ui_controls-targets DESTINATION lib/cmake/xaml_ui_controls)
-
-configure_file(cmake/xaml_ui_controls-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui_controls-config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/xaml_ui_controls-config.cmake DESTINATION lib/cmake/xaml_ui_controls)
 
 add_subdirectory(meta)
 

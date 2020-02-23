@@ -26,10 +26,5 @@ set_target_properties(xaml PROPERTIES
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
-install(TARGETS xaml EXPORT xaml-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
-install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
-
-configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/xaml-config.cmake DESTINATION lib/cmake/xaml)
 
 add_subdirectory(test)

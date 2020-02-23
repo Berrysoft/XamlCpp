@@ -21,8 +21,3 @@ set_target_properties(xaml_ui_meta PROPERTIES
 )
 
 install(FILES ${UI_META_HEADERS} DESTINATION include/xaml/ui)
-install(TARGETS xaml_ui_meta EXPORT xaml_ui_meta-targets ARCHIVE DESTINATION lib LIBRARY DESTINATION lib RUNTIME DESTINATION bin)
-install(EXPORT xaml_ui_meta-targets DESTINATION lib/cmake/xaml_ui_meta)
-
-configure_file(cmake/xaml_ui_meta-config.cmake.in ${PROJECT_BINARY_DIR}/xaml_ui_meta-config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/xaml_ui_meta-config.cmake DESTINATION lib/cmake/xaml_ui_meta)
