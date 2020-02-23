@@ -25,19 +25,45 @@ namespace xaml
     }
 
     STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
+    try
     {
         if (riid != IID_NULL)
             return DISP_E_UNKNOWNINTERFACE;
         switch (dispIdMember)
         {
         case DISPID_NAVIGATECOMPLETE2:
-            m_webview->invoke_navigated(pDispParams->rgvarg->pvarVal->bstrVal);
+            m_webview->invoke_navigated(pDispParams->rgvarg[0].pvarVal->bstrVal);
             break;
+        case DISPID_BEFORENAVIGATE2:
+        {
+            resource_requested_args args{};
+            args.request.uri = pDispParams->rgvarg[5].pvarVal->bstrVal;
+            args.request.method = U("GET");
+            m_webview->invoke_resource_requested(args);
+            if (args.response)
+            {
+                auto& res = *args.response;
+                pDispParams->rgvarg[0].pvarVal->boolVal = VARIANT_TRUE;
+                IDispatch* pDisp = pDispParams->rgvarg[6].pdispVal;
+                wil::com_ptr<IWebBrowser2> browser;
+                THROW_IF_FAILED(pDisp->QueryInterface(&browser));
+                THROW_IF_FAILED(browser->Stop());
+                m_webview->navigate(U("about:blank"));
+                wil::com_ptr<IDispatch> doc;
+                THROW_IF_FAILED(browser->get_Document(&doc));
+                wil::com_ptr<IPersistStreamInit> psi;
+                THROW_IF_FAILED(doc->QueryInterface(&psi));
+                wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
+                THROW_IF_FAILED(psi->Load(res_data.get()));
+            }
+            break;
+        }
         default:
             break;
         }
         return S_OK;
     }
+    CATCH_RETURN();
 
     void webview_ie::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {

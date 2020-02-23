@@ -3,6 +3,8 @@
 
 #include <atomic>
 #include <functional>
+#include <optional>
+#include <xaml/array_view.hpp>
 #include <xaml/ui/control.hpp>
 
 #ifdef XAML_UI_GTK3
@@ -11,6 +13,25 @@
 
 namespace xaml
 {
+    struct web_request
+    {
+        string_view_t method;
+        string_view_t uri;
+        array_view<std::byte> data;
+    };
+
+    struct web_response
+    {
+        string_view_t content_type;
+        array_view<std::byte> data;
+    };
+
+    struct resource_requested_args
+    {
+        web_request request;
+        std::optional<web_response> response;
+    };
+
 #ifdef XAML_UI_WINDOWS
     struct native_webview
     {
@@ -23,15 +44,21 @@ namespace xaml
         virtual void set_size(size s) = 0;
         virtual void set_rect(rectangle const& rect) = 0;
 
-    private:
-        std::function<void(string_view_t)> m_navigated{};
+#define __NATIVE_WEBVIEW_EVENT(name, arg)                                                    \
+private:                                                                                     \
+    std::function<void(arg)> m_##name{};                                                     \
+                                                                                             \
+public:                                                                                      \
+    void set_##name(std::function<void(arg)>&& callback) { m_##name = std::move(callback); } \
+    void invoke_##name(arg a)                                                                \
+    {                                                                                        \
+        if (m_##name) m_##name(a);                                                           \
+    }
 
-    public:
-        void set_navigated(std::function<void(string_view_t)>&& callback) { m_navigated = std::move(callback); }
-        void invoke_navigated(string_view_t uri)
-        {
-            if (m_navigated) m_navigated(uri);
-        }
+        __NATIVE_WEBVIEW_EVENT(navigated, string_view_t)
+        __NATIVE_WEBVIEW_EVENT(resource_requested, resource_requested_args&)
+
+#undef __NATIVE_WEBVIEW_EVENT
     };
 #endif // XAML_UI_WINDOWS
 
@@ -83,6 +110,8 @@ namespace xaml
     public:
         EVENT(uri_changed, webview&, string_view_t)
         PROP_STRING_EVENT(uri)
+
+        EVENT(resource_requested, webview&, resource_requested_args&)
 
     public:
 #define ADD_WEBVIEW_MEMBERS() \

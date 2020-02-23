@@ -1,15 +1,39 @@
 #include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.Storage.Streams.h"
+#include "winrt/Windows.Web.Http.h"
 #include "winrt/Windows.Web.UI.h"
+#include <robuffer.h>
 #include <win/webview_edge.hpp>
 
 using namespace std;
 using namespace winrt;
-using namespace Windows::Foundation;
-using namespace Windows::Web::UI;
-using namespace Windows::Web::UI::Interop;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::Web::Http;
+using namespace winrt::Windows::Web::UI;
+using namespace winrt::Windows::Web::UI::Interop;
 
 namespace xaml
 {
+    struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage::Streams::IBufferByteAccess>
+    {
+        array_view<std::byte> m_buffer;
+
+        ArrayViewBuffer(array_view<std::byte> buffer) : m_buffer(buffer) {}
+
+        uint32_t Capacity() const { return (uint32_t)m_buffer.size(); }
+
+        uint32_t Length() const { return (uint32_t)m_buffer.size(); }
+
+        void Length(uint32_t value) { throw hresult_invalid_argument(); }
+
+        HRESULT __stdcall Buffer(uint8_t** value)
+        {
+            *value = (uint8_t*)m_buffer.data();
+            return S_OK;
+        }
+    };
+
     void webview_edge::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
         try
@@ -22,6 +46,25 @@ namespace xaml
                     m_view = operation.GetResults();
                     m_view.NavigationCompleted([this](IWebViewControl const&, WebViewControlNavigationCompletedEventArgs const& args) {
                         invoke_navigated(args.Uri().AbsoluteUri());
+                    });
+                    m_view.WebResourceRequested([this](IWebViewControl const&, WebViewControlWebResourceRequestedEventArgs const e) {
+                        auto deferral = e.GetDeferral();
+                        auto req = e.Request();
+                        auto method = req.Method().ToString();
+                        auto uri = req.RequestUri().AbsoluteUri();
+                        resource_requested_args args{};
+                        args.request.method = method;
+                        args.request.uri = uri;
+                        invoke_resource_requested(args);
+                        if (args.response)
+                        {
+                            auto& res = *args.response;
+                            HttpResponseMessage message;
+                            auto buffer = make<ArrayViewBuffer>(res.data);
+                            message.Content(HttpBufferContent{ buffer });
+                            e.Response(message);
+                        }
+                        deferral.Complete();
                     });
                 }
                 callback();

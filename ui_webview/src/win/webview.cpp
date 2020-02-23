@@ -14,7 +14,7 @@ namespace xaml
         rectangle real = region - get_margin();
         if (!__get_webview())
         {
-            m_webview = make_shared<webview_edge2>();
+            m_webview = make_shared<webview_edge>();
             m_webview->create_async(get_handle(), real, [this, real]() {
                 if (!*m_webview)
                 {
@@ -59,6 +59,7 @@ namespace xaml
                 set_uri(uri);
             }
         });
+        m_webview->set_resource_requested([this](resource_requested_args& args) { m_resource_requested(*this, args); });
         draw_uri();
         __parent_redraw();
     }
