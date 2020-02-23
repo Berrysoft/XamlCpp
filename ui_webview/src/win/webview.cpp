@@ -14,7 +14,7 @@ namespace xaml
         rectangle real = region - get_margin();
         if (!__get_webview())
         {
-            m_webview = make_shared<webview_edge>();
+            m_webview = make_shared<webview_edge2>();
             m_webview->create_async(get_handle(), real, [this, real]() {
                 if (!*m_webview)
                 {
