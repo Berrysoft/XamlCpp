@@ -94,12 +94,15 @@ endif()
 
 option(BUILD_WEBVIEW "Build webview." ON)
 
+set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml xamlc)
+
 add_subdirectory(meta)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
 if(${BUILD_WEBVIEW})
     if(NOT ${BUILD_GTK3} OR (UNIX AND NOT APPLE))
         add_subdirectory(ui_webview)
+        list(APPEND _XAML_TARGETS xaml_ui_webview xaml_ui_webview_meta)
     else()
         message(WARNING "webview won't be built because of unsupported platform.")
     endif()
@@ -109,8 +112,7 @@ add_subdirectory(xamlc)
 add_subdirectory(xamlcpp)
 
 install(
-    TARGETS
-        xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_webview xaml_ui_webview_meta xaml xamlc
+    TARGETS ${_XAML_TARGETS}
     EXPORT xaml-targets
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib

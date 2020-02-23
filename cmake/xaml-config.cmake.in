@@ -6,7 +6,7 @@ set(XAML_FLAGS "@XAML_COMPILE_OPTIONS@")
 
 set(XAML_LINK_FLAGS "@XAML_LINK_OPTIONS@")
 
-set(_XAML_LIBRARIES "xaml_meta" "xaml_ui" "xaml_ui_meta" "xaml_ui_controls" "xaml_ui_controls_meta" "xaml_ui_webview" "xaml_ui_webview_meta" "xaml" "xamlc")
+set(_XAML_LIBRARIES @_XAML_TARGETS@)
 
 set(XAML_LIBRARIES )
 
