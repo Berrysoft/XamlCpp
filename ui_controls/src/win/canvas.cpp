@@ -80,44 +80,54 @@ namespace xaml
     {
     }
 
+    static inline RectF get_RectF(rectangle const& rect, double dpi)
+    {
+        return to_native<RectF>(rect * dpi / 96.0);
+    }
+
+    static inline PointF get_PointF(point p, double dpi)
+    {
+        return to_native<PointF>(p * dpi / 96.0);
+    }
+
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->DrawArc(pen.get_handle(), to_native<RectF>(region), (REAL)start_angle, (REAL)end_angle);
+        m_handle->DrawArc(pen.get_handle(), get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
-        m_handle->FillPie(brush.get_handle(), to_native<RectF>(region), (REAL)start_angle, (REAL)end_angle);
+        m_handle->FillPie(brush.get_handle(), get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle);
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        m_handle->DrawEllipse(pen.get_handle(), to_native<RectF>(region));
+        m_handle->DrawEllipse(pen.get_handle(), get_RectF(region, __get_dpi()));
     }
 
     void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
-        m_handle->FillEllipse(brush.get_handle(), to_native<RectF>(region));
+        m_handle->FillEllipse(brush.get_handle(), get_RectF(region, __get_dpi()));
     }
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
-        m_handle->DrawLine(pen.get_handle(), to_native<PointF>(startp), to_native<PointF>(endp));
+        m_handle->DrawLine(pen.get_handle(), get_PointF(startp, __get_dpi()), get_PointF(endp, __get_dpi()));
     }
 
     void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
-        m_handle->DrawRectangle(pen.get_handle(), to_native<RectF>(rect));
+        m_handle->DrawRectangle(pen.get_handle(), get_RectF(rect, __get_dpi()));
     }
 
     void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
-        m_handle->FillRectangle(brush.get_handle(), to_native<RectF>(rect));
+        m_handle->FillRectangle(brush.get_handle(), get_RectF(rect, __get_dpi()));
     }
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
-        m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), to_native<PointF>(p), brush.get_handle());
+        m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), get_PointF(p, __get_dpi()), brush.get_handle());
     }
 
     optional<LRESULT> canvas::__wnd_proc(window_message const& msg)
@@ -128,15 +138,17 @@ namespace xaml
             {
             case WM_PAINT:
             {
-                rectangle region = m_real_region;
+                UINT udpi = GetDpiForWindow(get_handle());
+                rectangle region = m_real_region * udpi / 96.0;
                 THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), -1, -1, (int)region.width + 1, (int)region.height + 1));
                 Graphics g{ m_store_dc.get() };
                 g.SetPageUnit(UnitPixel);
                 drawing_context dc{ &g };
+                dc.__set_dpi((double)udpi);
                 m_redraw(*this, dc);
                 if (auto wnd = __get_window(get_handle()))
                 {
-                    wnd->__copy_hdc(m_real_region, m_store_dc.get());
+                    wnd->__copy_hdc(region, m_store_dc.get());
                 }
                 break;
             }
@@ -152,9 +164,11 @@ namespace xaml
         if (m_real_region != real)
         {
             m_real_region = real;
+            UINT udpi = GetDpiForWindow(get_handle());
+            rectangle real_real = m_real_region * udpi / 96.0;
             auto wnd_dc = wil::GetDC(get_handle());
             m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)m_real_region.width, (int)m_real_region.height) };
+            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
             wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
         }
     }

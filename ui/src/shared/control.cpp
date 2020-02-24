@@ -43,4 +43,26 @@ namespace xaml
     }
 
     void control::__size_to_fit() {}
+
+#ifndef XAML_UI_WINDOWS
+    size control::__get_real_size() const
+    {
+        return get_size();
+    }
+
+    void control::__set_real_size(size value)
+    {
+        set_size(value);
+    }
+
+    margin control::__get_real_margin() const
+    {
+        return get_margin();
+    }
+
+    void control::__set_real_margin(margin const& value)
+    {
+        set_margin(value);
+    }
+#endif // !XAML_UI_WINDOWS
 } // namespace xaml

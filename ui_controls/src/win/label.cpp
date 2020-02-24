@@ -38,7 +38,9 @@ namespace xaml
             this->__create(params);
         }
         rectangle real = region - get_margin();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real.x, (int)real.y, (int)real.width, (int)real.height, SWP_NOZORDER));
+        UINT udpi = GetDpiForWindow(get_handle());
+        rectangle real_real = real * udpi / 96.0;
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
         __set_size_noevent({ real.width, real.height });
         draw_text();
         draw_alignment();
@@ -48,7 +50,8 @@ namespace xaml
 
     void label::draw_size()
     {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)get_width(), (int)get_height(), SWP_NOZORDER | SWP_NOMOVE));
+        auto real_size = __get_real_size();
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 
     void label::draw_text()

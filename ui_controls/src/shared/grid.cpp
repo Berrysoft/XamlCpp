@@ -14,7 +14,8 @@ namespace xaml
             if (((vertical ? grid::get_row(c) : grid::get_column(c)) == index) && ((vertical ? grid::get_row_span(c) : grid::get_column_span(c)) <= 1))
             {
                 auto csize = c->get_size();
-                auto len = vertical ? (csize.height + c->get_margin().top + c->get_margin().bottom) : (csize.width + c->get_margin().left + c->get_margin().right);
+                auto cmargin = c->get_margin();
+                auto len = vertical ? (csize.height + cmargin.top + cmargin.bottom) : (csize.width + cmargin.left + cmargin.right);
                 result = (max)(result, len);
             }
         }
@@ -66,7 +67,9 @@ namespace xaml
 
     static rectangle get_real_region(shared_ptr<control> c, rectangle max_region)
     {
-        double cwidth = c->get_width() + c->get_margin().left + c->get_margin().right;
+        auto csize = c->get_size();
+        auto cmargin = c->get_margin();
+        double cwidth = csize.width + cmargin.left + cmargin.right;
         cwidth = (min)(cwidth, max_region.width);
         switch (c->get_halignment())
         {
@@ -84,7 +87,7 @@ namespace xaml
         default:
             break;
         }
-        double cheight = c->get_height() + c->get_margin().top + c->get_margin().bottom;
+        double cheight = csize.height + cmargin.top + cmargin.bottom;
         cheight = (min)(cheight, max_region.height);
         switch (c->get_valignment())
         {

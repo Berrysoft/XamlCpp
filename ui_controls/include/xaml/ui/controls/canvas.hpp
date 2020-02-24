@@ -133,6 +133,15 @@ namespace xaml
 
         XAML_UI_CONTROLS_API drawing_context(native_handle_type handle);
 
+#ifdef XAML_UI_WINDOWS
+    private:
+        double m_dpi{ 96.0 };
+
+    public:
+        constexpr double __get_dpi() const noexcept { return m_dpi; }
+        void __set_dpi(double value) noexcept { m_dpi = value; }
+#endif // XAML_UI_WINDOWS
+
 #ifdef XAML_UI_GTK3
     private:
         void set_pen(drawing_pen const& pen);
@@ -148,7 +157,7 @@ namespace xaml
 
     public:
         constexpr size __get_size() const noexcept { return m_size; }
-        void __set_size(size value) { m_size = value; }
+        void __set_size(size value) noexcept { m_size = value; }
 
     private:
         using path_type = OBJC_OBJECT(NSBezierPath);

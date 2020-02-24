@@ -27,10 +27,34 @@ namespace xaml
         SIZE s = {};
         THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
         UINT udpi = GetDpiForWindow(get_handle());
-        return (from_native(s) + offset) * udpi / 96.0;
+        return from_native(s) + offset;
     }
 
     control::~control()
     {
+    }
+
+    size control::__get_real_size() const
+    {
+        UINT udpi = GetDpiForWindow(get_handle());
+        return get_size() * udpi / 96.0;
+    }
+
+    void control::__set_real_size(size value)
+    {
+        UINT udpi = GetDpiForWindow(get_handle());
+        set_size(value * 96.0 / udpi);
+    }
+
+    margin control::__get_real_margin() const
+    {
+        UINT udpi = GetDpiForWindow(get_handle());
+        return get_margin() * udpi / 96.0;
+    }
+
+    void control::__set_real_margin(margin const& value)
+    {
+        UINT udpi = GetDpiForWindow(get_handle());
+        set_margin(value * 96.0 / udpi);
     }
 } // namespace xaml

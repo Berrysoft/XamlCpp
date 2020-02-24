@@ -53,15 +53,16 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (!guard.exchange(true))
             {
-                double udpi = get_dpi();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
+                point real_location = __get_real_location();
+                size real_size = __get_real_size();
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_location.x, (int)real_location.y, (int)real_size.width, (int)real_size.height, SWP_NOZORDER));
             }
         }
         draw_resizable();
         draw_title();
         auto wnd_dc = wil::GetDC(get_handle());
         m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-        rectangle cr = get_client_region();
+        rectangle cr = __get_real_client_region();
         wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)cr.width, (int)cr.height) };
         wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
         if (get_child())
@@ -110,6 +111,11 @@ namespace xaml
 
     rectangle window::get_client_region() const
     {
+        return __get_real_client_region() * 96.0 / get_dpi();
+    }
+
+    rectangle window::__get_real_client_region() const
+    {
         RECT r = {};
         THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
         return from_native(r);
@@ -135,8 +141,8 @@ namespace xaml
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
-                set_location(point{ r.x, r.y } * 96.0 / udpi);
-                set_size(size{ r.width, r.height } * 96.0 / udpi);
+                __set_real_location({ r.x, r.y });
+                __set_real_size({ r.width, r.height });
                 __draw({});
             }
             break;
@@ -150,7 +156,7 @@ namespace xaml
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
                 rectangle r = from_native(rect);
-                set_location(point{ r.x, r.y } * 96.0 / udpi);
+                __set_real_location({ r.x, r.y });
             }
             break;
         }
@@ -159,9 +165,13 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.exchange(true))
             {
-                double udpi = get_dpi();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)(get_x() * udpi / 96.0), (int)(get_y() * udpi / 96.0), (int)(get_width() * udpi / 96.0), (int)(get_height() * udpi / 96.0), SWP_NOZORDER));
+                size real_size = __get_real_size();
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
                 SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
+                RECT rect = {};
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                rectangle r = from_native(rect);
+                __set_real_location({ r.x, r.y });
                 __draw({});
             }
             break;
@@ -169,7 +179,7 @@ namespace xaml
         case WM_PAINT:
         {
             hDC = wil::BeginPaint(get_handle(), &ps);
-            rectangle region = get_client_region();
+            rectangle region = __get_real_client_region();
             THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
             THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, m_store_dc.get(), 0, 0, SRCCOPY));
@@ -190,6 +200,16 @@ namespace xaml
             break;
         }
         return get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+    }
+
+    point window::__get_real_location() const
+    {
+        return get_location() * get_dpi() / 96.0;
+    }
+
+    void window::__set_real_location(point value)
+    {
+        set_location(value * 96.0 / get_dpi());
     }
 
     double window::get_dpi() const
