@@ -1,14 +1,6 @@
 #ifndef XAML_UTILITY_HPP
 #define XAML_UTILITY_HPP
 
-#ifdef XAML_STATIC_DEFINE
-#ifndef __XAML_EXPORT
-#define __XAML_EXPORT
-#endif // !__XAML_EXPORT
-#ifndef __XAML_IMPORT
-#define __XAML_IMPORT
-#endif // !__XAML_IMPORT
-#else
 #ifndef __EXPORT_IMPL
 #ifdef _MSC_VER
 #define __EXPORT_IMPL __declspec(dllexport)
@@ -16,14 +8,7 @@
 #define __EXPORT_IMPL __attribute__((visibility("default")))
 #else
 #define __EXPORT_IMPL
-#endif
 #endif // !__EXPORT_IMPL
-#ifndef __XAML_EXPORT
-#define __XAML_EXPORT __EXPORT_IMPL
-#endif // !__XAML_EXPORT
-#ifndef __XAML_META_EXPORT
-#define __XAML_META_EXPORT __EXPORT_IMPL
-#endif // !__XAML_META_EXPORT
 
 #ifndef __IMPORT_IMPL
 #ifdef _MSC_VER
@@ -32,13 +17,30 @@
 #define __IMPORT_IMPL
 #endif
 #endif // !__IMPORT_IMPL
+
+#ifdef XAML_STATIC_DEFINE
+#ifndef __XAML_EXPORT
+#define __XAML_EXPORT
+#endif // !__XAML_EXPORT
+#ifndef __XAML_IMPORT
+#define __XAML_IMPORT
+#endif // !__XAML_IMPORT
+#else
+#endif // !__EXPORT_IMPL
+#ifndef __XAML_EXPORT
+#define __XAML_EXPORT __EXPORT_IMPL
+#endif // !__XAML_EXPORT
 #ifndef __XAML_IMPORT
 #define __XAML_IMPORT __IMPORT_IMPL
 #endif // !__XAML_IMPORT
+#endif // XAML_STATIC_DEFINE
+
+#ifndef __XAML_META_EXPORT
+#define __XAML_META_EXPORT __EXPORT_IMPL
+#endif // !__XAML_META_EXPORT
 #ifndef __XAML_META_IMPORT
 #define __XAML_META_IMPORT __IMPORT_IMPL
 #endif // !__XAML_META_IMPORT
-#endif // XAML_STATIC_DEFINE
 
 #ifdef xaml_meta_EXPORTS
 #define XAML_META_API __XAML_EXPORT
