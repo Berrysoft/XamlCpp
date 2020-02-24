@@ -13,7 +13,12 @@
 - (BOOL)windowShouldClose:(NSWindow*)sender
 {
     xaml::window* window = (xaml::window*)self->classPointer;
-    return window->__on_should_close() ? YES : NO;
+    BOOL close = window->__on_should_close() ? YES : NO;
+    if (close)
+    {
+        xaml::application::current()->window_removed(std::static_pointer_cast<xaml::window>(window->shared_from_this()));
+	}
+    return close;
 }
 @end
 
@@ -23,7 +28,7 @@ namespace xaml
 {
     window::~window()
     {
-        close();
+        [__get_window() close];
     }
 
     void window::__draw(rectangle const& region)
@@ -40,7 +45,7 @@ namespace xaml
             window.delegate = delegate;
             __set_window(window);
             set_handle(window.contentView);
-            application::current()->wnd_num++;
+            application::current()->window_added(static_pointer_cast<xaml::window>(shared_from_this()));
         }
         NSWindow* window = __get_window();
         {
@@ -102,7 +107,7 @@ namespace xaml
 
     void window::close()
     {
-        [__get_window() close];
+        [__get_window() performClose:nil];
 	}
 
     rectangle window::get_client_region() const

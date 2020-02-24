@@ -46,7 +46,7 @@ namespace xaml
             params.width = CW_USEDEFAULT;
             params.height = CW_USEDEFAULT;
             this->__create(params);
-            application::current()->wnd_num++;
+            application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
             window_map[get_handle()] = weak_from_this();
         }
         {
@@ -196,7 +196,7 @@ namespace xaml
             break;
         }
         case WM_DESTROY:
-            application::current()->wnd_num--;
+            application::current()->window_removed(static_pointer_cast<window>(shared_from_this()));
             break;
         }
         return get_child() ? get_child()->__wnd_proc(msg) : nullopt;

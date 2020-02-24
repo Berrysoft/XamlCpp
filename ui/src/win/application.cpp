@@ -73,8 +73,14 @@ namespace xaml
         MSG msg;
         while (take_over_message(msg))
         {
-            if (!wnd_num) PostQuitMessage(0);
+            if (!m_main_wnd) PostQuitMessage(m_quit_value);
         }
         return (int)msg.wParam;
+    }
+
+    void application::quit(int value)
+    {
+        m_quit_value = value;
+        if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle());
     }
 } // namespace xaml

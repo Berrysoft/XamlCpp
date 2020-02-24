@@ -14,6 +14,12 @@ namespace xaml
     int application::run()
     {
         gtk_main();
-        return 0;
+        return m_quit_value;
+    }
+
+    void application::quit(int value)
+    {
+        m_quit_value = value;
+        gtk_main_quit();
     }
 } // namespace xaml

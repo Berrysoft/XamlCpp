@@ -19,14 +19,18 @@
 
 namespace xaml
 {
+    class window;
+
     class application : public meta_class_impl<application>
     {
     private:
         friend class window;
 
-        int wnd_num{ 0 };
         std::vector<string_t> m_cmd_lines{};
         std::unordered_map<std::string_view, std::shared_ptr<module>> m_modules{};
+
+        std::shared_ptr<xaml::window> m_main_wnd{ nullptr };
+        int m_quit_value{ 0 };
 
     private:
         XAML_UI_API application(int argc, char_t** argv);
@@ -36,9 +40,30 @@ namespace xaml
 
         array_view<string_t> get_cmd_lines() const noexcept { return m_cmd_lines; }
 
+        std::shared_ptr<window> get_main_window() const { return m_main_wnd; }
+
+    protected:
+        void set_main_window(std::shared_ptr<window> value) { m_main_wnd = value; }
+
+    public:
+        void window_added(std::shared_ptr<window> value)
+        {
+            if (!m_main_wnd) set_main_window(value);
+        }
+        void window_removed(std::shared_ptr<window> value)
+        {
+            if (m_main_wnd == value)
+            {
+                m_main_wnd = nullptr;
+                quit();
+            }
+        }
+
+    public:
         XAML_UI_API void add_module(std::string_view path);
 
         XAML_UI_API int run();
+        XAML_UI_API void quit(int value = 0);
 
         XAML_UI_API static std::shared_ptr<application> init(int argc, char_t** argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }

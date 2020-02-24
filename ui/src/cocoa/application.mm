@@ -28,6 +28,12 @@ namespace xaml
     int application::run()
     {
         [NSApp run];
-        return 0;
+        return m_quit_value;
+    }
+
+    void application::quit(int value)
+    {
+        m_quit_value = value;
+        [NSApp terminate:nil];
     }
 }

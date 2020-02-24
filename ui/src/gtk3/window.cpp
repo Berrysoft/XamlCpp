@@ -18,7 +18,7 @@ namespace xaml
         if (!get_handle())
         {
             set_handle(gtk_window_new(GTK_WINDOW_TOPLEVEL));
-            application::current()->wnd_num++;
+            application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
             g_signal_connect(
                 G_OBJECT(get_handle()), "destroy",
                 G_CALLBACK(window::on_destroy),
@@ -96,7 +96,8 @@ namespace xaml
 
     void window::on_destroy(GtkWidget* w, gpointer arg)
     {
-        if (!(--application::current()->wnd_num)) gtk_main_quit();
+        window* self = (window*)arg;
+        application::current()->window_removed(static_pointer_cast<window>(self->shared_from_this()));
     }
 
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
