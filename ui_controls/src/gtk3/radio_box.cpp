@@ -25,9 +25,9 @@ namespace xaml
 
     void radio_box::draw_group()
     {
-        if (get_parent())
+        if (auto sparent = get_parent().lock())
         {
-            if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
+            if (auto multic = dynamic_pointer_cast<multicontainer>(sparent))
             {
                 for (auto& c : multic->get_children())
                 {

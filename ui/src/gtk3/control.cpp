@@ -7,6 +7,10 @@ namespace xaml
 {
     control::~control()
     {
-        if (get_handle()) gtk_widget_destroy(get_handle());
+        if (get_handle())
+        {
+            gtk_widget_destroy(get_handle());
+            set_handle(nullptr);
+        }
     }
 } // namespace xaml
