@@ -96,7 +96,17 @@ jobs:
       cd build
       ninja install
     displayName: 'Install all projects'
-    condition: eq(variables.plat, 'win')
+    condition: eq(variables.rid, 'win')
+
+  - script: |
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      cd build
+      ninja install
+    displayName: 'Install all projects'
+    condition: eq(variables.rid, 'mingw')
+    env:
+      MSYSTEM: MINGW64
+      PATH: C:\msys64\mingw64\bin
 
   - task: CMake@1
     displayName: 'Install all projects'
