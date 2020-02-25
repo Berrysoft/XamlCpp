@@ -17,7 +17,7 @@
     if (close)
     {
         xaml::application::current()->window_removed(std::static_pointer_cast<xaml::window>(window->shared_from_this()));
-	}
+    }
     return close;
 }
 @end
@@ -36,11 +36,10 @@ namespace xaml
         if (!get_handle())
         {
             NSRect frame = NSMakeRect(0, 0, get_width(), get_height());
-            NSWindow* window = [[NSWindow alloc]
-                initWithContentRect:frame
-                          styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable
-                            backing:NSBackingStoreBuffered
-                              defer:NO];
+            NSWindow* window = [[NSWindow alloc] initWithContentRect:frame
+                                                           styleMask:NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskResizable | NSWindowStyleMaskMiniaturizable
+                                                             backing:NSBackingStoreBuffered
+                                                               defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
             window.delegate = delegate;
             __set_window(window);
@@ -108,7 +107,7 @@ namespace xaml
     void window::close()
     {
         [__get_window() performClose:nil];
-	}
+    }
 
     rectangle window::get_client_region() const
     {
