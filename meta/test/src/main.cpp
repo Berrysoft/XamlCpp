@@ -8,7 +8,7 @@ using namespace xaml;
 
 // The class should inherit `xaml::meta_class`.
 // `xaml_class_impl` is a helper class to implement some key features of `meta_class`.
-class calculator : public meta_class_impl<calculator>
+class calculator : public meta_class
 {
 public:
     // Adds a property named "value" with type "int",
@@ -62,26 +62,27 @@ int main()
     // Get a type named "calculator" in namespace "test".
     auto t = *get_type("test", "calculator");
     // Construct the class with default constructor.
-    auto mc = construct(t);
+    // It is as same as calling operator new, so you should manully wrap it.
+    unique_ptr<meta_class> mc{ construct(t) };
     // Get the event named "value_changed".
     auto ev = get_event<calculator const&, int>(t, "value_changed");
     // Add a handler to the event of the object.
-    auto token = ev.add(mc, function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
+    auto token = ev.add(mc.get(), function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.
-    invoke_method<void>(mc, "plus", 1, 1);
+    invoke_method<void>(mc.get(), "plus", 1, 1);
     // Get the property named "value".
     auto prop = get_property(t, "value");
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
-    prop.set(mc, "100");
-    prop.set(mc, L"200"sv);
+    prop.set(mc.get(), "100");
+    prop.set(mc.get(), L"200"sv);
     // Remove the handler.
-    ev.remove(mc, token);
+    ev.remove(mc.get(), token);
     // Although `value` has changed, the handler won't be called,
     // because the handler has been removed.
-    invoke_method<void>(mc, "minus", 1, 1);
+    invoke_method<void>(mc.get(), "minus", 1, 1);
     // Invoke the static method.
     cout << "3 * 7 = " << *invoke_static_method<int>(t, "multiply", 3, 7) << endl;
     cout << endl;

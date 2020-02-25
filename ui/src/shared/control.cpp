@@ -5,41 +5,43 @@ using namespace std;
 
 namespace xaml
 {
-    control::control() {}
+    control::control() : meta_class() {}
 
-    void control::set_parent(shared_ptr<control> const& value)
+    void control::set_parent(weak_ptr<control> value)
     {
-        if (m_parent != value)
+        auto sparent = m_parent.lock();
+        auto svalue = value.lock();
+        if (sparent != svalue)
         {
-            if (auto multic = dynamic_pointer_cast<multicontainer>(m_parent))
+            if (auto multic = dynamic_pointer_cast<multicontainer>(sparent))
             {
-                multic->remove_child(shared_from_this());
+                multic->remove_child(static_pointer_cast<control>(shared_from_this()));
             }
-            else if (auto c = dynamic_pointer_cast<container>(m_parent))
+            else if (auto c = dynamic_pointer_cast<container>(sparent))
             {
                 c->set_child(nullptr);
             }
-            if (auto multic = dynamic_pointer_cast<multicontainer>(value))
+            if (auto multic = dynamic_pointer_cast<multicontainer>(svalue))
             {
-                multic->add_child(shared_from_this());
+                multic->add_child(static_pointer_cast<control>(shared_from_this()));
             }
-            else if (auto c = dynamic_pointer_cast<container>(value))
+            else if (auto c = dynamic_pointer_cast<container>(svalue))
             {
-                c->set_child(shared_from_this());
+                c->set_child(static_pointer_cast<control>(shared_from_this()));
             }
             else
             {
                 return;
             }
-            m_parent = value;
-            m_parent_changed(*this, value);
+            m_parent = svalue;
+            m_parent_changed(*this, *svalue);
         }
     }
 
     void control::__parent_redraw()
     {
-        if (get_parent())
-            get_parent()->__parent_redraw();
+        if (auto sparent = get_parent().lock())
+            sparent->__parent_redraw();
     }
 
     void control::__size_to_fit() {}

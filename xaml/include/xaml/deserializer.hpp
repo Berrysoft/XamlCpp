@@ -9,7 +9,7 @@ namespace xaml
     class deserializer
     {
     private:
-        std::map<std::string, std::shared_ptr<meta_class>> symbols;
+        std::map<std::string, std::weak_ptr<meta_class>> symbols;
 
     public:
         deserializer() {}

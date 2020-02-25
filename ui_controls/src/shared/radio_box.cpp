@@ -24,11 +24,11 @@ namespace xaml
 #ifndef XAML_UI_GTK3
     void radio_box::draw_group()
     {
-        if (get_parent())
+        if (auto sparent = get_parent().lock())
         {
             if (get_is_checked())
             {
-                if (auto multic = dynamic_pointer_cast<multicontainer>(get_parent()))
+                if (auto multic = dynamic_pointer_cast<multicontainer>(sparent))
                 {
                     for (auto& c : multic->get_children())
                     {

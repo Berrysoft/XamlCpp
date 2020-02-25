@@ -159,17 +159,20 @@ namespace xaml
 
     void canvas::__draw(rectangle const& region)
     {
-        set_handle(get_parent()->get_handle());
-        auto real = region - get_margin();
-        if (m_real_region != real)
+        if (auto sparent = get_parent().lock())
         {
-            m_real_region = real;
-            UINT udpi = GetDpiForWindow(get_handle());
-            rectangle real_real = m_real_region * udpi / 96.0;
-            auto wnd_dc = wil::GetDC(get_handle());
-            m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
-            wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
+            set_handle(sparent->get_handle());
+            auto real = region - get_margin();
+            if (m_real_region != real)
+            {
+                m_real_region = real;
+                UINT udpi = GetDpiForWindow(get_handle());
+                rectangle real_real = m_real_region * udpi / 96.0;
+                auto wnd_dc = wil::GetDC(get_handle());
+                m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
+                wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
+                wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
+            }
         }
     }
 

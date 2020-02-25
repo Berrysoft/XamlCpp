@@ -130,6 +130,6 @@ public:                                                                         
     ADD_PROP(name);          \
     ADD_EVENT(name##_changed)
 
-#define ADD_DEF_PROP(name) ::xaml::set_attribute(::std::type_index(typeid(self_type)), ::std::make_shared<::xaml::default_property>(#name))
+#define ADD_DEF_PROP(name) ::xaml::set_attribute(::std::type_index(typeid(self_type)), ::std::make_unique<::xaml::default_property>(#name))
 
 #endif // !XAML_META_MACRO_HPP

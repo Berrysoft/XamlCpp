@@ -69,7 +69,7 @@ namespace xaml
         XAML_UI_API virtual ~window() override;
 
     public:
-        std::shared_ptr<control> get_root_window() override { return shared_from_this(); }
+        std::shared_ptr<control> get_root_window() override { return std::static_pointer_cast<control>(shared_from_this()); }
 
         XAML_UI_API void show();
         XAML_UI_API void close();

@@ -40,28 +40,31 @@ namespace xaml
 
     void entry::__draw(rectangle const& region)
     {
-        if (!get_handle())
+        if (auto sparent = get_parent().lock())
         {
-            window_create_params params = {};
-            params.class_name = WC_EDIT;
-            params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
-            params.ex_style = WS_EX_CLIENTEDGE;
-            params.x = 0;
-            params.y = 0;
-            params.width = 100;
-            params.height = 50;
-            params.parent = get_parent().get();
-            this->__create(params);
+            if (!get_handle())
+            {
+                window_create_params params = {};
+                params.class_name = WC_EDIT;
+                params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL;
+                params.ex_style = WS_EX_CLIENTEDGE;
+                params.x = 0;
+                params.y = 0;
+                params.width = 100;
+                params.height = 50;
+                params.parent = sparent.get();
+                this->__create(params);
+            }
+            rectangle real = region - get_margin();
+            UINT udpi = GetDpiForWindow(get_handle());
+            rectangle real_real = real * udpi / 96.0;
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+            __set_size_noevent({ real.width, real.height });
+            draw_text();
+            draw_alignment();
+            SetParent(get_handle(), sparent->get_handle());
+            ShowWindow(get_handle(), SW_SHOW);
         }
-        rectangle real = region - get_margin();
-        UINT udpi = GetDpiForWindow(get_handle());
-        rectangle real_real = real * udpi / 96.0;
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
-        __set_size_noevent({ real.width, real.height });
-        draw_text();
-        draw_alignment();
-        SetParent(get_handle(), get_parent()->get_handle());
-        ShowWindow(get_handle(), SW_SHOW);
     }
 
     void entry::draw_size()

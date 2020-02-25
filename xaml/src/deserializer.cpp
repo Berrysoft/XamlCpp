@@ -9,15 +9,15 @@ namespace xaml
 {
     struct deserializer_markup_context : markup_context
     {
-        shared_ptr<meta_class> current;
-        shared_ptr<meta_class> current_element() const override { return current; }
+        weak_ptr<meta_class> current;
+        weak_ptr<meta_class> current_element() const override { return current; }
 
         string_view prop;
         string_view current_property() const override { return prop; }
 
-        map<string, shared_ptr<meta_class>>& symbols;
-        shared_ptr<meta_class> data_context;
-        shared_ptr<meta_class> find_element(string_view name) const override
+        map<string, weak_ptr<meta_class>>& symbols;
+        weak_ptr<meta_class> data_context;
+        weak_ptr<meta_class> find_element(string_view name) const override
         {
             if (name.empty())
                 return data_context;
@@ -27,11 +27,11 @@ namespace xaml
                 if (it != symbols.end())
                     return it->second;
                 else
-                    return nullptr;
+                    return {};
             }
         }
 
-        deserializer_markup_context(shared_ptr<meta_class> current, string_view prop, map<string, shared_ptr<meta_class>>& symbols, shared_ptr<meta_class> data_context)
+        deserializer_markup_context(weak_ptr<meta_class> current, string_view prop, map<string, weak_ptr<meta_class>>& symbols, weak_ptr<meta_class> data_context)
             : current(current), prop(prop), symbols(symbols), data_context(data_context)
         {
         }
@@ -48,7 +48,7 @@ namespace xaml
             auto map_type = get_type(ns, name);
             if (map_type) t = *map_type;
         }
-        auto c = construct(t);
+        shared_ptr<meta_class> c{ construct(t) };
         if (c)
         {
             deserialize_impl(c, node, root ? root : c);
@@ -69,13 +69,13 @@ namespace xaml
             auto& value = prop.value;
             switch (value.index())
             {
-            case 0: // std::string
-                prop.info.set(mc, get<string>(value));
+            case 0: // string
+                prop.info.set(mc.get(), get<string>(value));
                 break;
             case 2: // xaml_node
             {
                 auto& node = get<xaml_node>(value);
-                prop.info.set(mc, construct_impl(node, root));
+                prop.info.set(mc.get(), construct_impl(node, root));
                 break;
             }
             }
@@ -84,7 +84,7 @@ namespace xaml
         {
             for (auto& n : prop.second.values)
             {
-                prop.second.info.add(mc, construct_impl(n, root));
+                prop.second.info.add(mc.get(), construct_impl(n, root));
             }
         }
         for (auto& ev : node.events)
@@ -92,7 +92,7 @@ namespace xaml
             auto method = __get_first_method(root->this_type(), ev.value);
             if (method)
             {
-                ev.info.add_erased_this(mc, root, method);
+                ev.info.add_erased_this(mc.get(), root.get(), method);
             }
             else
             {
@@ -112,7 +112,7 @@ namespace xaml
             case 1: // markup_node
             {
                 auto& n = get<markup_node>(value);
-                deserializer_markup_context context{ mc, prop.info.name(), symbols, static_pointer_cast<control>(mc)->get_data_context() };
+                deserializer_markup_context context{ mc, prop.info.name(), symbols, static_pointer_cast<control>(mc.lock())->get_data_context() };
                 auto ex = deserialize(n);
                 static_pointer_cast<markup_extension>(ex)->provide(context);
                 break;
@@ -149,14 +149,14 @@ namespace xaml
 
     shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
     {
-        auto ex = construct(node.type);
+        shared_ptr<meta_class> ex{ construct(node.type) };
         for (auto& p : node.properties)
         {
             auto& value = p.value;
             switch (value.index())
             {
-            case 0: // std::string
-                p.info.set(ex, get<string>(value));
+            case 0: // string
+                p.info.set(ex.get(), get<string>(value));
                 break;
             }
         }

@@ -11,7 +11,7 @@ namespace xaml
         double result = 0;
         for (auto& c : children)
         {
-            if (((vertical ? grid::get_row(c) : grid::get_column(c)) == index) && ((vertical ? grid::get_row_span(c) : grid::get_column_span(c)) <= 1))
+            if (((vertical ? grid::get_row(*c) : grid::get_column(*c)) == index) && ((vertical ? grid::get_row_span(*c) : grid::get_column_span(*c)) <= 1))
             {
                 auto csize = c->get_size();
                 auto cmargin = c->get_margin();
@@ -108,7 +108,7 @@ namespace xaml
         return max_region;
     }
 
-    unordered_map<shared_ptr<control>, grid_index> grid::m_indecies{};
+    unordered_map<control*, grid_index> grid::m_indecies{};
 
     grid::grid() : layout_base() {}
 
@@ -124,7 +124,7 @@ namespace xaml
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
         for (auto& c : m_children)
         {
-            auto index = m_indecies[c];
+            auto index = m_indecies[c.operator->()];
             double subx = get<1>(columns[(min)(index.column, columns.size() - 1)]) + real.x;
             double suby = get<1>(rows[(min)(index.row, rows.size() - 1)]) + real.y;
             double subw = accumulate(columns.begin() + (min)(index.column, columns.size() - 1), columns.begin() + (min)(index.column + (max<size_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);

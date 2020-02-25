@@ -197,7 +197,8 @@ namespace xaml
 
     ostream& compiler::write_set_property(ostream& stream, type_index type, string_view name, string_view prop, string_view value)
     {
-        return write_static_call(stream, type, "set_", prop, { name, value });
+        string deref_name = "*" + (string)name;
+        return write_static_call(stream, type, "set_", prop, { deref_name, value });
     }
 
     ostream& compiler::write_set_property(ostream& stream, type_index node_type, type_index host_type, type_index prop_type, string_view name, string_view prop, string_view value)

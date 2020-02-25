@@ -46,8 +46,9 @@ namespace xaml
             params.width = CW_USEDEFAULT;
             params.height = CW_USEDEFAULT;
             this->__create(params);
-            application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
-            window_map[get_handle()] = weak_from_this();
+            auto shared_this = static_pointer_cast<window>(shared_from_this());
+            application::current()->window_added(shared_this);
+            window_map[get_handle()] = weak_ptr{ shared_this };
         }
         {
             atomic_guard guard(m_resizing);

@@ -107,7 +107,7 @@ namespace xaml
     {
     };
 
-    class control : public meta_class_impl<control>
+    class control : public meta_class
     {
     public:
 #ifdef XAML_UI_WINDOWS
@@ -161,24 +161,24 @@ namespace xaml
         virtual void __draw(rectangle const& region) = 0;
         XAML_UI_API virtual void __size_to_fit();
 
-        EVENT(parent_changed, control&, std::shared_ptr<control>)
+        EVENT(parent_changed, control&, control&)
 
     private:
-        std::shared_ptr<control> m_parent{ nullptr };
+        std::weak_ptr<control> m_parent{};
 
     public:
-        std::shared_ptr<control> get_parent() const { return m_parent; }
-        XAML_UI_API void set_parent(std::shared_ptr<control> const& value);
+        std::weak_ptr<control> get_parent() const { return m_parent; }
+        XAML_UI_API void set_parent(std::weak_ptr<control> value);
 
     private:
         std::shared_ptr<meta_class> m_data_context{ nullptr };
 
     public:
-        std::shared_ptr<meta_class> get_data_context() const { return m_data_context ? m_data_context : (m_parent ? m_parent->get_data_context() : nullptr); }
+        std::shared_ptr<meta_class> get_data_context() const { return m_data_context ? m_data_context : (m_parent.expired() ? nullptr : m_parent.lock()->get_data_context()); }
         void set_data_context(std::shared_ptr<meta_class> const& value) { m_data_context = value; }
 
     public:
-        virtual std::shared_ptr<control> get_root_window() { return m_parent; }
+        virtual std::shared_ptr<control> get_root_window() { return m_parent.expired() ? nullptr : m_parent.lock()->get_root_window(); }
 
     protected:
         XAML_UI_API virtual void __parent_redraw();

@@ -38,19 +38,22 @@ namespace xaml
 
     void combo_box::__draw(rectangle const& region)
     {
-        if (!get_handle())
+        if (auto sparent = get_parent().lock())
         {
-            draw_editable();
-            draw_items();
+            if (!get_handle())
+            {
+                draw_editable();
+                draw_items();
+            }
+            rectangle real = region - get_margin();
+            UINT udpi = GetDpiForWindow(get_handle());
+            rectangle real_real = real * udpi / 96.0;
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+            __set_size_noevent({ real.width, real.height });
+            draw_sel();
+            draw_text();
+            SetParent(get_handle(), sparent->get_handle());
         }
-        rectangle real = region - get_margin();
-        UINT udpi = GetDpiForWindow(get_handle());
-        rectangle real_real = real * udpi / 96.0;
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
-        __set_size_noevent({ real.width, real.height });
-        draw_sel();
-        draw_text();
-        SetParent(get_handle(), get_parent()->get_handle());
     }
 
     void combo_box::draw_size()
@@ -86,23 +89,26 @@ namespace xaml
 
     void combo_box::draw_editable()
     {
-        window_create_params params = {};
-        params.class_name = WC_COMBOBOX;
-        params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | CBS_AUTOHSCROLL | CBS_HASSTRINGS;
-        params.x = 0;
-        params.y = 0;
-        params.width = 100;
-        params.height = 50;
-        params.parent = get_parent().get();
-        if (m_is_editable)
+        if (auto sparent = get_parent().lock())
         {
-            params.style |= CBS_DROPDOWN;
+            window_create_params params = {};
+            params.class_name = WC_COMBOBOX;
+            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | CBS_AUTOHSCROLL | CBS_HASSTRINGS;
+            params.x = 0;
+            params.y = 0;
+            params.width = 100;
+            params.height = 50;
+            params.parent = sparent.get();
+            if (m_is_editable)
+            {
+                params.style |= CBS_DROPDOWN;
+            }
+            else
+            {
+                params.style |= CBS_DROPDOWNLIST;
+            }
+            this->__create(params);
         }
-        else
-        {
-            params.style |= CBS_DROPDOWNLIST;
-        }
-        this->__create(params);
     }
 
     void combo_box::__size_to_fit()

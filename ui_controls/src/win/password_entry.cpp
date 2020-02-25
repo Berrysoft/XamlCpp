@@ -12,22 +12,25 @@ namespace xaml
 
     void password_entry::__draw(rectangle const& region)
     {
-        if (!get_handle())
+        if (auto sparent = get_parent().lock())
         {
-            window_create_params params = {};
-            params.class_name = WC_EDIT;
-            params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_PASSWORD;
-            params.ex_style = WS_EX_CLIENTEDGE;
-            params.x = 0;
-            params.y = 0;
-            params.width = 100;
-            params.height = 50;
-            params.parent = get_parent().get();
-            this->__create(params);
-            default_char = Edit_GetPasswordChar(get_handle());
+            if (!get_handle())
+            {
+                window_create_params params = {};
+                params.class_name = WC_EDIT;
+                params.style = WS_CHILD | WS_VISIBLE | WS_TABSTOP | ES_LEFT | ES_AUTOHSCROLL | ES_PASSWORD;
+                params.ex_style = WS_EX_CLIENTEDGE;
+                params.x = 0;
+                params.y = 0;
+                params.width = 100;
+                params.height = 50;
+                params.parent = sparent.get();
+                this->__create(params);
+                default_char = Edit_GetPasswordChar(get_handle());
+            }
+            entry::__draw(region);
+            draw_password_char();
         }
-        entry::__draw(region);
-        draw_password_char();
     }
 
     void password_entry::draw_password_char()

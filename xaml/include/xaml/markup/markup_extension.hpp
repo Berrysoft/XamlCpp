@@ -7,13 +7,13 @@ namespace xaml
 {
     struct markup_context
     {
-        virtual std::shared_ptr<meta_class> current_element() const = 0;
+        virtual std::weak_ptr<meta_class> current_element() const = 0;
         virtual std::string_view current_property() const = 0;
-        virtual std::shared_ptr<meta_class> find_element(std::string_view name) const = 0;
+        virtual std::weak_ptr<meta_class> find_element(std::string_view name) const = 0;
         virtual ~markup_context() {}
     };
 
-    class markup_extension : public meta_class_impl<markup_extension>
+    class markup_extension : public meta_class
     {
     public:
         virtual ~markup_extension() {}

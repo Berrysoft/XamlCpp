@@ -5,7 +5,7 @@
 
 namespace xaml
 {
-    class default_property : public meta_class_impl<default_property>
+    class default_property : public meta_class
     {
     private:
         std::string m_property_name;

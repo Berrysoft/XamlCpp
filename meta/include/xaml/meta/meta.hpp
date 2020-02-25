@@ -21,17 +21,50 @@ namespace xaml
     // BASE TYPE
 
     // Base class of all classes which isn't inheritable and registered for reflection.
-    struct meta_class
+    struct meta_class : std::enable_shared_from_this<meta_class>
     {
         std::type_index this_type() const noexcept { return std::type_index(typeid(*this)); }
         virtual ~meta_class() {}
     };
 
-    // Help the classes to implement meta_class
-    template <typename TChild>
-    struct meta_class_impl : meta_class, std::enable_shared_from_this<TChild>
+    template <typename T>
+    struct value_converter_traits<T*, std::enable_if_t<std::is_base_of_v<meta_class, T>>>
     {
-        virtual ~meta_class_impl() override {}
+        static T* convert(std::any value)
+        {
+            if (value.type() == typeid(T*))
+            {
+                return std::any_cast<T*>(value);
+            }
+            else if (value.type() == typeid(meta_class*))
+            {
+                return static_cast<T*>(std::any_cast<meta_class*>(value));
+            }
+            else
+            {
+                return {};
+            }
+        }
+    };
+
+    template <typename T>
+    struct value_converter_traits<std::unique_ptr<T>, std::enable_if_t<std::is_base_of_v<meta_class, T>>>
+    {
+        static std::unique_ptr<T> convert(std::any value)
+        {
+            if (value.type() == typeid(std::unique_ptr<T>))
+            {
+                return std::move(std::any_cast<std::unique_ptr<T>>(value));
+            }
+            else if (value.type() == typeid(std::unique_ptr<meta_class>))
+            {
+                return std::unique_ptr<T>(std::any_cast<std::unique_ptr<meta_class>>(value).release());
+            }
+            else
+            {
+                return {};
+            }
+        }
     };
 
     template <typename T>
@@ -59,8 +92,6 @@ namespace xaml
     XAML_META_API void init_context(std::shared_ptr<meta_context> const& ctx = nullptr);
 
     XAML_META_API std::shared_ptr<meta_context> __get_context() noexcept;
-
-    XAML_META_API void cleanup_context();
 
     template <typename T>
     inline void add_module()
@@ -130,17 +161,17 @@ namespace xaml
 
     // ATTRIBUTE METHODS
 
-    XAML_META_API std::shared_ptr<meta_class> __get_attribute(std::type_index type, std::type_index attr_type) noexcept;
+    XAML_META_API meta_class* __get_attribute(std::type_index type, std::type_index attr_type) noexcept;
 
     // Get an attribute instance with specified type and attribute type.
     template <typename TAttr>
-    std::shared_ptr<meta_class> get_attribute(std::type_index type) noexcept
+    TAttr* get_attribute(std::type_index type) noexcept
     {
-        return __get_attribute(type, std::type_index(typeid(TAttr)));
+        return static_cast<TAttr*>(__get_attribute(type, std::type_index(typeid(TAttr))));
     }
 
     // Set an attribute to specified type.
-    XAML_META_API void set_attribute(std::type_index type, std::shared_ptr<meta_class> attr) noexcept;
+    XAML_META_API void set_attribute(std::type_index type, std::unique_ptr<meta_class>&& attr) noexcept;
 
     // FUNCTION METHODS
 
@@ -208,7 +239,7 @@ namespace xaml
     template <typename T>
     using __optional_return_t = typename __optional_return<T>::type;
 
-    XAML_META_API std::shared_ptr<__type_erased_function> __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_META_API __type_erased_function* __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename Return, typename... Args>
     std::function<Return(Args...)> get_static_method(std::type_index type, std::string_view name) noexcept
@@ -216,7 +247,7 @@ namespace xaml
         auto method = __get_static_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
         if (method)
         {
-            return std::function<Return(Args...)>(std::static_pointer_cast<__type_erased_function_impl<Return(Args...)>>(method)->func);
+            return std::function<Return(Args...)>(static_cast<__type_erased_function_impl<Return(Args...)>*>(method)->func);
         }
         else
         {
@@ -253,16 +284,16 @@ namespace xaml
         }
     }
 
-    XAML_META_API void __add_static_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+    XAML_META_API void __add_static_method(std::type_index type, std::string_view name, std::unique_ptr<__type_erased_function>&& func) noexcept;
 
     template <typename T, typename Return, typename... Args>
     void add_static_method_ex(std::string_view name, std::function<Return(Args...)> func)
     {
         if (func)
         {
-            auto f = std::make_shared<__type_erased_function_impl<Return(Args...)>>();
+            auto f = std::make_unique<__type_erased_function_impl<Return(Args...)>>();
             f->func = func;
-            __add_static_method(std::type_index(typeid(T)), name, f);
+            __add_static_method(std::type_index(typeid(T)), name, std::move(f));
         }
     }
 
@@ -277,16 +308,16 @@ namespace xaml
 
     // FUNCTION METHODS - CONSTRUCTOR
 
-    XAML_META_API std::shared_ptr<__type_erased_function> __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_META_API __type_erased_function* __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
 
     template <typename... Args>
-    std::function<std::shared_ptr<meta_class>(Args...)> get_constructor(std::type_index type) noexcept
+    std::function<meta_class*(Args...)> get_constructor(std::type_index type) noexcept
     {
         auto ctor = __get_constructor(type, { std::type_index(typeid(Args))... });
         if (ctor)
         {
-            return std::function<std::shared_ptr<meta_class>(Args...)>(
-                std::static_pointer_cast<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>(ctor)->func);
+            return std::function<meta_class*(Args...)>(
+                static_cast<__type_erased_function_impl<meta_class*(Args...)>*>(ctor)->func);
         }
         else
         {
@@ -295,7 +326,7 @@ namespace xaml
     }
 
     template <typename... Args>
-    std::shared_ptr<meta_class> construct(std::type_index type, Args... args) noexcept
+    meta_class* construct(std::type_index type, Args... args) noexcept
     {
         auto ctor = get_constructor<Args...>(type);
         if (ctor)
@@ -308,17 +339,17 @@ namespace xaml
         }
     }
 
-    XAML_META_API void __add_constructor(std::type_index type, std::shared_ptr<__type_erased_function> ctor) noexcept;
+    XAML_META_API void __add_constructor(std::type_index type, std::unique_ptr<__type_erased_function>&& ctor) noexcept;
 
     template <typename TChild, typename... Args>
     void add_constructor() noexcept
     {
-        auto c = std::make_shared<__type_erased_function_impl<std::shared_ptr<meta_class>(Args...)>>();
-        c->func = std::function<std::shared_ptr<meta_class>(Args...)>(
-            [](Args... args) -> std::shared_ptr<meta_class> {
-                return std::make_shared<TChild>(std::forward<Args>(args)...);
+        auto c = std::make_unique<__type_erased_function_impl<meta_class*(Args...)>>();
+        c->func = std::function<meta_class*(Args...)>(
+            [](Args... args) -> meta_class* {
+                return new TChild(std::forward<Args>(args)...);
             });
-        __add_constructor(std::type_index(typeid(TChild)), c);
+        __add_constructor(std::type_index(typeid(TChild)), std::move(c));
     }
 
     // FUNCTION METHODS - MEMBER METHODS
@@ -327,16 +358,16 @@ namespace xaml
     struct __type_erased_this_function_impl;
 
     template <typename Return, typename... Args>
-    struct __type_erased_this_function_impl<Return(Args...)> : __type_erased_function_impl<Return(std::shared_ptr<meta_class>, Args...)>
+    struct __type_erased_this_function_impl<Return(Args...)> : __type_erased_function_impl<Return(meta_class*, Args...)>
     {
         ~__type_erased_this_function_impl() override {}
 
         template <typename T, typename F>
         void set_func(F&& f)
         {
-            this->func = std::function<Return(std::shared_ptr<meta_class>, Args...)>(
-                [f](std::shared_ptr<meta_class> self, Args... args) -> Return {
-                    return std::mem_fn(f)(std::static_pointer_cast<T>(self).get(), std::forward<Args>(args)...);
+            this->func = std::function<Return(meta_class*, Args...)>(
+                [f](meta_class* self, Args... args) -> Return {
+                    return std::mem_fn(f)(static_cast<T*>(self), std::forward<Args>(args)...);
                 });
         }
     };
@@ -356,18 +387,18 @@ namespace xaml
     template <typename T>
     using __remove_const_func_t = typename __remove_const_func<T>::type;
 
-    XAML_META_API std::shared_ptr<__type_erased_function> __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+    XAML_META_API __type_erased_function* __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
 
-    XAML_META_API std::shared_ptr<__type_erased_function> __get_first_method(std::type_index type, std::string_view name) noexcept;
+    XAML_META_API __type_erased_function* __get_first_method(std::type_index type, std::string_view name) noexcept;
 
     template <typename Return, typename... Args>
-    std::function<Return(std::shared_ptr<meta_class>, Args...)> get_method(std::type_index type, std::string_view name) noexcept
+    std::function<Return(meta_class*, Args...)> get_method(std::type_index type, std::string_view name) noexcept
     {
-        auto m = __get_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(std::shared_ptr<meta_class>)), std::type_index(typeid(Args))... });
+        auto m = __get_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(meta_class*)), std::type_index(typeid(Args))... });
         if (m)
         {
-            return std::function<Return(std::shared_ptr<meta_class>, Args...)>(
-                std::static_pointer_cast<__type_erased_this_function_impl<Return(Args...)>>(m)->func);
+            return std::function<Return(meta_class*, Args...)>(
+                static_cast<__type_erased_this_function_impl<Return(Args...)>*>(m)->func);
         }
         else
         {
@@ -376,7 +407,7 @@ namespace xaml
     }
 
     template <typename Return, typename... Args>
-    __optional_return_t<Return> invoke_method(std::shared_ptr<meta_class> obj, std::string_view name, Args... args) noexcept
+    __optional_return_t<Return> invoke_method(meta_class* obj, std::string_view name, Args... args) noexcept
     {
         auto m = get_method<Return, Args...>(obj->this_type(), name);
         if (m)
@@ -404,27 +435,27 @@ namespace xaml
         }
     }
 
-    XAML_META_API void __add_method(std::type_index type, std::string_view name, std::shared_ptr<__type_erased_function> func) noexcept;
+    XAML_META_API void __add_method(std::type_index type, std::string_view name, std::unique_ptr<__type_erased_function>&& func) noexcept;
 
     template <typename T, typename TBase, typename TMethod>
     void add_method(std::string_view name, TMethod TBase::*func) noexcept
     {
         if (func)
         {
-            auto f = std::make_shared<__type_erased_this_function_impl<__remove_const_func_t<TMethod>>>();
+            auto f = std::make_unique<__type_erased_this_function_impl<__remove_const_func_t<TMethod>>>();
             f->template set_func<T>(func);
-            __add_method(std::type_index(typeid(T)), name, f);
+            __add_method(std::type_index(typeid(T)), name, std::move(f));
         }
     }
 
     template <typename T, typename Return, typename... Args>
-    void add_method_ex(std::string_view name, std::function<Return(std::shared_ptr<meta_class>, Args...)> func)
+    void add_method_ex(std::string_view name, std::function<Return(meta_class*, Args...)> func)
     {
         if (func)
         {
-            auto f = std::make_shared<__type_erased_this_function_impl<__remove_const_func_t<Return(Args...)>>>();
+            auto f = std::make_unique<__type_erased_this_function_impl<__remove_const_func_t<Return(Args...)>>>();
             f->func = func;
-            __add_method(std::type_index(typeid(T)), name, f);
+            __add_method(std::type_index(typeid(T)), name, std::move(f));
         }
     }
 
@@ -435,8 +466,8 @@ namespace xaml
     private:
         std::string m_name;
         std::type_index m_type{ typeid(std::nullptr_t) };
-        std::function<std::any(std::shared_ptr<meta_class>)> getter;
-        std::function<void(std::shared_ptr<meta_class>, std::any)> setter;
+        std::function<std::any(meta_class*)> getter;
+        std::function<void(meta_class*, std::any)> setter;
 
     public:
         std::string_view name() const noexcept { return m_name; }
@@ -444,7 +475,7 @@ namespace xaml
         bool can_read() const noexcept { return (bool)getter; }
         bool can_write() const noexcept { return (bool)setter; }
 
-        std::any get(std::shared_ptr<meta_class> const& self) const
+        std::any get(meta_class* self) const
         {
             if (getter)
             {
@@ -455,7 +486,7 @@ namespace xaml
                 return std::any();
             }
         }
-        void set(std::shared_ptr<meta_class> const& self, std::any value)
+        void set(meta_class* self, std::any value)
         {
             if (setter)
             {
@@ -496,8 +527,8 @@ namespace xaml
         info.m_name = name;
         info.m_type = __get_property_type(type, name);
         std::string pname = __attach_property_name(name);
-        info.getter = get_static_method<std::any, std::shared_ptr<meta_class>>(type, pname);
-        info.setter = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, pname);
+        info.getter = get_static_method<std::any, meta_class*>(type, pname);
+        info.setter = get_static_method<void, meta_class*, std::any>(type, pname);
         return info;
     }
 
@@ -509,11 +540,11 @@ namespace xaml
         if (getter)
         {
             std::string pname = __attach_property_name(name);
-            add_static_method_ex<T, std::any, std::shared_ptr<meta_class>>(
+            add_static_method_ex<T, std::any, meta_class*>(
                 pname,
-                std::function<std::any(std::shared_ptr<meta_class>)>(
-                    [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self));
+                std::function<std::any(meta_class*)>(
+                    [getter](meta_class* self) -> std::any {
+                        return getter(static_cast<TChild>(*self));
                     }));
         }
     }
@@ -524,11 +555,11 @@ namespace xaml
         if (setter)
         {
             std::string pname = __attach_property_name(name);
-            add_static_method_ex<T, void, std::shared_ptr<meta_class>, std::any>(
+            add_static_method_ex<T, void, meta_class*, std::any>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [setter](meta_class* self, std::any value) -> void {
+                        setter(static_cast<TChild>(*self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -549,9 +580,9 @@ namespace xaml
             std::string pname = __property_name(name);
             add_method_ex<T, std::any>(
                 pname,
-                std::function<std::any(std::shared_ptr<meta_class>)>(
-                    [getter](std::shared_ptr<meta_class> self) -> std::any {
-                        return getter(std::static_pointer_cast<T>(self).get());
+                std::function<std::any(meta_class*)>(
+                    [getter](meta_class* self) -> std::any {
+                        return getter(static_cast<T*>(self));
                     }));
         }
     }
@@ -564,9 +595,9 @@ namespace xaml
             std::string pname = __property_name(name);
             add_method_ex<T, void, std::any>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [setter](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        setter(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [setter](meta_class* self, std::any value) -> void {
+                        setter(static_cast<T*>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -587,8 +618,8 @@ namespace xaml
     private:
         std::string m_name;
         std::type_index m_type{ typeid(std::nullptr_t) };
-        std::function<void(std::shared_ptr<meta_class>, std::any)> adder;
-        std::function<void(std::shared_ptr<meta_class>, std::any)> remover;
+        std::function<void(meta_class*, std::any)> adder;
+        std::function<void(meta_class*, std::any)> remover;
 
     public:
         std::string_view name() const noexcept { return m_name; }
@@ -596,14 +627,14 @@ namespace xaml
         bool can_add() const noexcept { return (bool)adder; }
         bool can_remove() const noexcept { return (bool)remover; }
 
-        void add(std::shared_ptr<meta_class> const& self, std::any value) const
+        void add(meta_class* self, std::any value) const
         {
             if (adder)
             {
                 return adder(self, value);
             }
         }
-        void remove(std::shared_ptr<meta_class> const& self, std::any value)
+        void remove(meta_class* self, std::any value)
         {
             if (remover)
             {
@@ -650,8 +681,8 @@ namespace xaml
         collection_property_info info = {};
         info.m_name = name;
         info.m_type = __get_property_type(type, name);
-        info.adder = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __add_attach_collection_property_name(name));
-        info.remover = get_static_method<void, std::shared_ptr<meta_class>, std::any>(type, __remove_attach_collection_property_name(name));
+        info.adder = get_static_method<void, meta_class*, std::any>(type, __add_attach_collection_property_name(name));
+        info.remover = get_static_method<void, meta_class*, std::any>(type, __remove_attach_collection_property_name(name));
         return info;
     }
 
@@ -663,9 +694,9 @@ namespace xaml
             std::string pname = __add_collection_property_name(name);
             add_method_ex<T, void, std::any>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        return adder(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [adder](meta_class* self, std::any value) -> void {
+                        return adder(static_cast<T*>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -678,9 +709,9 @@ namespace xaml
             std::string pname = __remove_collection_property_name(name);
             add_method_ex<T, void, std::any>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        remover(std::static_pointer_cast<T>(self).get(), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [remover](meta_class* self, std::any value) -> void {
+                        remover(static_cast<T*>(self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -699,11 +730,11 @@ namespace xaml
         if (adder)
         {
             std::string pname = __add_attach_collection_property_name(name);
-            add_static_method_ex<T, void, std::shared_ptr<meta_class>>(
+            add_static_method_ex<T, void, meta_class*>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [adder](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        return adder(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [adder](meta_class* self, std::any value) -> void {
+                        return adder(static_cast<TChild>(*self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -714,11 +745,11 @@ namespace xaml
         if (remover)
         {
             std::string pname = __remove_attach_collection_property_name(name);
-            add_static_method_ex<T, void, std::shared_ptr<meta_class>, std::any>(
+            add_static_method_ex<T, void, meta_class*, std::any>(
                 pname,
-                std::function<void(std::shared_ptr<meta_class>, std::any)>(
-                    [remover](std::shared_ptr<meta_class> self, std::any value) -> void {
-                        remover(std::static_pointer_cast<typename std::pointer_traits<TChild>::element_type>(self), value_converter_traits<TValue>::convert(value));
+                std::function<void(meta_class*, std::any)>(
+                    [remover](meta_class* self, std::any value) -> void {
+                        remover(static_cast<TChild>(*self), value_converter_traits<TValue>::convert(value));
                     }));
         }
     }
@@ -740,10 +771,10 @@ namespace xaml
 
     private:
         std::string m_name;
-        std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder;
-        std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)> adder_erased_this;
-        std::function<void(std::shared_ptr<meta_class>, token_type)> remover;
-        std::shared_ptr<__type_erased_function> invoker;
+        std::function<token_type(meta_class*, __type_erased_function*)> adder;
+        std::function<token_type(meta_class*, meta_class*, __type_erased_function*)> adder_erased_this;
+        std::function<void(meta_class*, token_type)> remover;
+        __type_erased_function* invoker;
 
     public:
         std::string_view name() const noexcept { return m_name; }
@@ -754,31 +785,31 @@ namespace xaml
         template <typename... Args>
         bool match_arg_type()
         {
-            return invoker && invoker->is_same_arg_type<std::shared_ptr<meta_class>, Args...>();
+            return invoker && invoker->is_same_arg_type<meta_class*, Args...>();
         }
 
         template <typename... Args>
-        token_type add(std::shared_ptr<meta_class> const& self, std::function<void(Args...)> handler)
+        token_type add(meta_class* self, std::function<void(Args...)> handler)
         {
             if (adder)
             {
                 if (match_arg_type<Args...>())
                 {
-                    auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
-                    h->func = handler;
-                    return adder(self, h);
+                    auto h = __type_erased_function_impl<void(Args...)>{};
+                    h.func = handler;
+                    return adder(self, &h);
                 }
                 if constexpr (sizeof...(Args) == 0)
                 {
-                    auto h = std::make_shared<__type_erased_function_impl<void(Args...)>>();
-                    h->func = [handler](Args... args) -> void { handler(args...); };
-                    return adder(self, h);
+                    auto h = __type_erased_function_impl<void(Args...)>{};
+                    h.func = [handler](Args... args) -> void { handler(args...); };
+                    return adder(self, &h);
                 }
             }
             return 0;
         }
 
-        token_type add_erased_this(std::shared_ptr<meta_class> const& self, std::shared_ptr<meta_class> const& target, std::shared_ptr<__type_erased_function> func)
+        token_type add_erased_this(meta_class* self, meta_class* target, __type_erased_function* func)
         {
             if (adder_erased_this)
             {
@@ -787,7 +818,7 @@ namespace xaml
             return 0;
         }
 
-        void remove(std::shared_ptr<meta_class> const& self, token_type token)
+        void remove(meta_class* self, token_type token)
         {
             if (remover)
             {
@@ -796,11 +827,11 @@ namespace xaml
         }
 
         template <typename... Args>
-        void invoke(std::shared_ptr<meta_class> const& self, Args... args)
+        void invoke(meta_class* self, Args... args)
         {
             if (match_arg_type<Args...>())
             {
-                auto i = std::static_pointer_cast<__type_erased_function_impl<void(std::shared_ptr<meta_class>, Args...)>>(invoker);
+                auto i = static_cast<__type_erased_function_impl<void(meta_class*, Args...)>*>(invoker);
                 i->func(self, std::forward<Args>(args)...);
             }
         }
@@ -818,8 +849,8 @@ namespace xaml
         event_info info = {};
         info.m_name = name;
         std::string ename = __event_name(name);
-        info.adder = get_method<typename event_info::token_type, std::shared_ptr<__type_erased_function>>(type, ename);
-        info.adder_erased_this = get_method<typename event_info::token_type, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>>(type, ename);
+        info.adder = get_method<typename event_info::token_type, __type_erased_function*>(type, ename);
+        info.adder_erased_this = get_method<typename event_info::token_type, meta_class*, __type_erased_function*>(type, ename);
         info.remover = get_method<void, typename event_info::token_type>(type, ename);
         info.invoker = __get_method(type, ename, std::type_index(typeid(void)), arg_types);
         return info;
@@ -828,7 +859,7 @@ namespace xaml
     template <typename... Args>
     event_info get_event(std::type_index type, std::string_view name)
     {
-        return __get_event(type, name, { std::type_index(typeid(std::shared_ptr<meta_class>)), std::type_index(typeid(Args))... });
+        return __get_event(type, name, { std::type_index(typeid(meta_class*)), std::type_index(typeid(Args))... });
     }
 
     template <typename T, typename... Args>
@@ -837,12 +868,12 @@ namespace xaml
         if (adder)
         {
             std::string ename = __event_name(name);
-            add_method_ex<T, typename event_info::token_type, std::shared_ptr<__type_erased_function>>(
+            add_method_ex<T, typename event_info::token_type, __type_erased_function*>(
                 ename,
-                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        auto h = std::static_pointer_cast<__type_erased_function_impl<void(Args...)>>(handler);
-                        return adder(std::static_pointer_cast<T>(self).get(), std::move(h->func));
+                std::function<typename event_info::token_type(meta_class*, __type_erased_function*)>(
+                    [adder](meta_class * self, __type_erased_function * handler) -> typename event_info::token_type {
+                        auto h = static_cast<__type_erased_function_impl<void(Args...)>*>(handler);
+                        return adder(static_cast<T*>(self), std::move(h->func));
                     }));
         }
     }
@@ -853,12 +884,13 @@ namespace xaml
         if (adder)
         {
             std::string ename = __event_name(name);
-            add_method_ex<T, typename event_info::token_type, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>>(
+            add_method_ex<T, typename event_info::token_type, meta_class*, __type_erased_function*>(
                 ename,
-                std::function<typename event_info::token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, std::shared_ptr<__type_erased_function>)>(
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, std::shared_ptr<__type_erased_function> handler) -> typename event_info::token_type {
-                        auto h = std::static_pointer_cast<__type_erased_this_function_impl<void(Args...)>>(handler);
-                        return adder(std::static_pointer_cast<T>(self).get(), [target, h](Args... args) { h->func(target, std::forward<Args>(args)...); });
+                std::function<typename event_info::token_type(meta_class*, meta_class*, __type_erased_function*)>(
+                    [adder](meta_class * self, meta_class * target, __type_erased_function * handler) -> typename event_info::token_type {
+                        auto h = static_cast<__type_erased_this_function_impl<void(Args...)>*>(handler);
+                        auto func = h->func;
+                        return adder(static_cast<T*>(self), [target, func](Args... args) { func(target, std::forward<Args>(args)...); });
                     }));
         }
     }
@@ -871,9 +903,9 @@ namespace xaml
             std::string ename = __event_name(name);
             add_method_ex<T, void, typename event_info::token_type>(
                 ename,
-                std::function<void(std::shared_ptr<meta_class>, typename event_info::token_type)>(
-                    [remover](std::shared_ptr<meta_class> self, typename event_info::token_type token) -> void {
-                        remover(std::static_pointer_cast<T>(self).get(), token);
+                std::function<void(meta_class*, typename event_info::token_type)>(
+                    [remover](meta_class* self, typename event_info::token_type token) -> void {
+                        remover(static_cast<T*>(self), token);
                     }));
         }
     }
@@ -886,9 +918,9 @@ namespace xaml
             std::string ename = __event_name(name);
             add_method_ex<T, void, Args...>(
                 ename,
-                std::function<void(std::shared_ptr<meta_class>, Args...)>(
-                    [getter](std::shared_ptr<meta_class> self, Args... args) -> void {
-                        getter(std::static_pointer_cast<T>(self).get())(std::forward<Args>(args)...);
+                std::function<void(meta_class*, Args...)>(
+                    [getter](meta_class* self, Args... args) -> void {
+                        getter(static_cast<T*>(self))(std::forward<Args>(args)...);
                     }));
         }
     }

@@ -21,7 +21,7 @@ namespace xaml
 {
     class window;
 
-    class application : public meta_class_impl<application>
+    class application : public meta_class
     {
     private:
         friend class window;

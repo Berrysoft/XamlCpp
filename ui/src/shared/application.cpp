@@ -26,11 +26,7 @@ namespace xaml
         m_modules.emplace(path, m);
     }
 
-    application::~application()
-    {
-        unbind_all();
-        cleanup_context();
-    }
+    application::~application() {}
 
 #if defined(WIN32) || defined(__MINGW32__)
     struct local_free_deleter

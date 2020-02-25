@@ -166,7 +166,7 @@ namespace xaml
                     auto def_attr = get_attribute<default_property>(*t);
                     if (def_attr)
                     {
-                        prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                        prop_name = def_attr->get_property_name();
                     }
                 }
                 auto prop = get_property(*t, prop_name);
@@ -298,7 +298,7 @@ namespace xaml
                 auto def_attr = get_attribute<default_property>(mc.type);
                 if (def_attr)
                 {
-                    string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                    string_view prop_name = def_attr->get_property_name();
                     auto prop = get_property(mc.type, prop_name);
                     if (prop.can_write())
                     {
@@ -379,7 +379,7 @@ namespace xaml
                         auto def_attr = get_attribute<default_property>(mc.type);
                         if (def_attr)
                         {
-                            string_view prop_name = static_pointer_cast<default_property>(def_attr)->get_property_name();
+                            string_view prop_name = def_attr->get_property_name();
                             auto prop = get_property(mc.type, prop_name);
                             if (prop.can_write())
                             {

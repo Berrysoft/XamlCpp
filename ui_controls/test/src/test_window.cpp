@@ -50,8 +50,8 @@ namespace xaml::test
             btn->set_valignment(valignment_t::center);
             // Add the button to the grid, and set its column and row.
             g->add_child(btn);
-            grid::set_column(btn, 1);
-            grid::set_row(btn, 2);
+            grid::set_column(*btn, 1);
+            grid::set_row(*btn, 2);
         }
         {
             // Construct a label.
@@ -63,8 +63,8 @@ namespace xaml::test
             lb->set_text(U("Username:"));
             // Add the label to the grid, and set its column and row.
             g->add_child(lb);
-            grid::set_column(lb, 0);
-            grid::set_row(lb, 0);
+            grid::set_column(*lb, 0);
+            grid::set_row(*lb, 0);
         }
         {
             // Construct an entry (single-line text box).
@@ -74,8 +74,8 @@ namespace xaml::test
             et->set_halignment(halignment_t::left);
             et->set_valignment(valignment_t::center);
             g->add_child(et);
-            grid::set_column(et, 1);
-            grid::set_row(et, 0);
+            grid::set_column(*et, 1);
+            grid::set_row(*et, 0);
         }
         {
             auto lb2 = make_shared<label>();
@@ -84,8 +84,8 @@ namespace xaml::test
             lb2->set_valignment(valignment_t::center);
             lb2->set_text(U("Password:"));
             g->add_child(lb2);
-            grid::set_column(lb2, 0);
-            grid::set_row(lb2, 1);
+            grid::set_column(*lb2, 0);
+            grid::set_row(*lb2, 1);
         }
         {
             auto pet = make_shared<password_entry>();
@@ -93,8 +93,8 @@ namespace xaml::test
             pet->set_text(U("123456"));
             pet->set_valignment(valignment_t::center);
             g->add_child(pet);
-            grid::set_column(pet, 1);
-            grid::set_row(pet, 1);
+            grid::set_column(*pet, 1);
+            grid::set_row(*pet, 1);
         }
         {
             // Construct a cnavas.
@@ -106,8 +106,8 @@ namespace xaml::test
             cv->add_redraw(mem_fn_bind(&test_window::on_canvas_redraw, this));
             // Add the canvas to the grid, and set its column and row.
             g->add_child(cv);
-            grid::set_column(cv, 0);
-            grid::set_row(cv, 3);
+            grid::set_column(*cv, 0);
+            grid::set_row(*cv, 3);
         }
         {
             auto box = make_shared<combo_box>();
@@ -117,8 +117,8 @@ namespace xaml::test
             box->set_items(combo_source);
             box->set_sel_id(1);
             g->add_child(box);
-            grid::set_column(box, 1);
-            grid::set_row(box, 3);
+            grid::set_column(*box, 1);
+            grid::set_row(*box, 3);
 
             auto panel = make_shared<stack_panel>();
             panel->set_orientation(orientation::vertical);
@@ -145,8 +145,8 @@ namespace xaml::test
                 panel->add_child(btn);
             }
             g->add_child(panel);
-            grid::set_column(panel, 2);
-            grid::set_row(panel, 3);
+            grid::set_column(*panel, 2);
+            grid::set_row(*panel, 3);
         }
     }
 
