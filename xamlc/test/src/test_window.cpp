@@ -2,21 +2,6 @@
 #include <test_window.hpp>
 #include <xaml/ui/msgbox.hpp>
 
-#ifdef XAML_TEST_GEN_FAKE
-#include <xaml/deserializer.hpp>
-#include <xaml/parser.hpp>
-#else
-#include <xaml/ui/controls/check_box.hpp>
-#include <xaml/ui/controls/combo_box.hpp>
-#include <xaml/ui/controls/entry.hpp>
-#include <xaml/ui/controls/grid.hpp>
-#include <xaml/ui/controls/label.hpp>
-#include <xaml/ui/controls/password_entry.hpp>
-#include <xaml/ui/controls/radio_box.hpp>
-#include <xaml/ui/controls/stack_panel.hpp>
-#include <xaml/ui/controls/uniform_grid.hpp>
-#endif // XAML_TEST_GEN_FAKE
-
 #include <test.xaml.g.cpp>
 
 using namespace std;

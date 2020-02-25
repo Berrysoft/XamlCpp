@@ -6,10 +6,21 @@
 using namespace std;
 using namespace xaml;
 
-extern "C" XAML_UI_META_API void init_meta(void* ctx) noexcept
+extern "C"
 {
-    shared_ptr<meta_context>* pctx = (shared_ptr<meta_context>*)ctx;
-    ui_init_traits::init_meta(pctx ? *pctx : nullptr);
+    XAML_UI_META_API void init_meta(void* ctx) noexcept
+    {
+        shared_ptr<meta_context>* pctx = (shared_ptr<meta_context>*)ctx;
+        ui_init_traits::init_meta(pctx ? *pctx : nullptr);
+    }
+
+    const char* const s_headers[] = {
+        "xaml/ui/application.hpp",
+        "xaml/ui/container.hpp",
+        "xaml/ui/window.hpp",
+        nullptr
+    };
+    XAML_UI_META_API const char* const* include_headers() noexcept { return s_headers; }
 }
 
 namespace xaml

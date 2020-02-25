@@ -2,6 +2,7 @@
 #define XAMLC_COMPILER_HPP
 
 #include <iosfwd>
+#include <vector>
 #include <xaml/meta/meta.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/xaml_node.hpp>
@@ -15,8 +16,9 @@ namespace xaml
         compiler_module(std::string_view path) : module(path) {}
         ~compiler_module() override {}
 
-        XAMLC_API bool can_compile(std::type_index type);
-        XAMLC_API std::string compile(std::type_index type, std::string_view code);
+        XAMLC_API bool can_compile(std::type_index type) noexcept;
+        XAMLC_API std::string compile(std::type_index type, std::string_view code) noexcept;
+        XAMLC_API std::vector<std::string_view> include_headers() noexcept;
     };
 
     XAMLC_API void add_compiler_module(std::string_view path);
@@ -32,6 +34,9 @@ namespace xaml
 
     protected:
         XAMLC_API std::ostream& write_indent(std::ostream& stream);
+
+        XAMLC_API std::ostream& write_include(std::ostream& stream, std::string_view header);
+        XAMLC_API std::ostream& write_includes(std::ostream& stream, std::vector<std::string_view> const& headers);
 
         XAMLC_API std::ostream& write_begin_block(std::ostream& stream);
         XAMLC_API std::ostream& write_end_block(std::ostream& stream);

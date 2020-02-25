@@ -154,7 +154,7 @@ namespace xaml
 
     void module::register_meta() noexcept
     {
-        void (*pinit)(void*) noexcept = (void (*)(void*) noexcept)get_method("init_meta");
+        auto pinit = (void (*)(void*) noexcept)get_method("init_meta");
         if (pinit)
         {
             auto context = __get_context();

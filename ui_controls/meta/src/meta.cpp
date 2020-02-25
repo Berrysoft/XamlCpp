@@ -53,6 +53,22 @@ extern "C"
         stream << " }";
         *(string*)res = stream.str();
     }
+
+    const char* const s_headers[] = {
+        "xaml/ui/controls/button.hpp",
+        "xaml/ui/controls/canvas.hpp",
+        "xaml/ui/controls/check_box.hpp",
+        "xaml/ui/controls/combo_box.hpp",
+        "xaml/ui/controls/entry.hpp",
+        "xaml/ui/controls/grid.hpp",
+        "xaml/ui/controls/label.hpp",
+        "xaml/ui/controls/password_entry.hpp",
+        "xaml/ui/controls/radio_box.hpp",
+        "xaml/ui/controls/stack_panel.hpp",
+        "xaml/ui/controls/uniform_grid.hpp",
+        nullptr
+    };
+    XAML_UI_CONTROLS_META_API const char* const* include_headers() noexcept { return s_headers; }
 }
 
 namespace xaml

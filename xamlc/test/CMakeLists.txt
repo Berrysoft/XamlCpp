@@ -21,7 +21,7 @@ else()
     set(XAMLCPP_FAKE_COMMAND "")
 endif()
 
-add_custom_target(xaml_test_gen DEPENDS xaml_meta xaml_ui_controls_meta xamlcpp)
+add_custom_target(xaml_test_gen DEPENDS xaml_ui_meta xaml_ui_controls_meta xamlcpp)
 add_custom_command(TARGET xaml_test_gen POST_BUILD
     COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp test.xaml --no-logo ${XAMLCPP_FAKE_COMMAND} -L ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -L ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
     WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}

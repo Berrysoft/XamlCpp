@@ -13,19 +13,35 @@ using namespace std;
 
 namespace xaml
 {
-    bool compiler_module::can_compile(type_index type)
+    bool compiler_module::can_compile(type_index type) noexcept
     {
-        int (*pcc)(void*) noexcept = (int (*)(void*) noexcept)get_method("can_compile");
+        auto pcc = (int (*)(void*) noexcept)get_method("can_compile");
         return pcc ? pcc(&type) : false;
     }
 
-    string compiler_module::compile(type_index type, string_view code)
+    string compiler_module::compile(type_index type, string_view code) noexcept
     {
-        void (*pc)(void*, const char*, void*) noexcept = (void (*)(void*, const char*, void*) noexcept)get_method("compile");
+        auto pc = (void (*)(void*, const char*, void*) noexcept)get_method("compile");
         if (pc)
         {
             string result;
             pc(&type, code.data(), &result);
+            return result;
+        }
+        return {};
+    }
+
+    vector<string_view> compiler_module::include_headers() noexcept
+    {
+        auto pih = (const char* const* (*)() noexcept)get_method("include_headers");
+        if (pih)
+        {
+            const char* const* headers = pih();
+            vector<string_view> result;
+            for (; *headers; headers++)
+            {
+                result.push_back(*headers);
+            }
             return result;
         }
         return {};
@@ -128,6 +144,20 @@ namespace xaml
     ostream& compiler::write_indent(ostream& stream)
     {
         fill_n(ostream_iterator<char>(stream), indent_count * 4, ' ');
+        return stream;
+    }
+
+    ostream& compiler::write_include(ostream& stream, string_view header)
+    {
+        return write_indent(stream) << "#include <" << header << '>' << endl;
+    }
+
+    ostream& compiler::write_includes(ostream& stream, vector<string_view> const& headers)
+    {
+        for (auto h : headers)
+        {
+            write_include(stream, h);
+        }
         return stream;
     }
 
@@ -355,6 +385,13 @@ namespace xaml
         {
             if (node.map_class)
             {
+                vector<string_view> all_headers;
+                for (auto& m : m_cmodules)
+                {
+                    vector<string_view> hs = m.second->include_headers();
+                    all_headers.insert(all_headers.end(), hs.begin(), hs.end());
+                }
+                write_includes(stream, all_headers);
                 auto [ns, name] = *node.map_class;
                 write_init_decl(stream, ns, name);
                 write_begin_block(stream);
@@ -372,12 +409,18 @@ namespace xaml
         return stream;
     }
 
+    static vector<string_view> fake_headers = {
+        "xaml/deserializer.hpp",
+        "xaml/parser.hpp"
+    };
+
     ostream& compiler::compile_fake(ostream& stream, xaml_node& node, string_view path)
     {
         if (stream)
         {
             if (node.map_class)
             {
+                write_includes(stream, fake_headers);
                 auto [ns, name] = *node.map_class;
                 write_init_decl(stream, ns, name);
                 write_begin_block(stream);
