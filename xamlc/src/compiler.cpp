@@ -239,7 +239,8 @@ namespace xaml
         ostringstream s;
         auto [ns, n] = *this_node.map_class;
         s << "::xaml::mem_fn_bind(&::" << ns << "::" << n << "::" << ev.value << ", this)";
-        return write_call(stream, name, "add_", ev.info.name(), { s.str() });
+        string arg = s.str();
+        return write_call(stream, name, "add_", ev.info.name(), { arg });
     }
 
     ostream& compiler::write_markup(ostream& stream, string_view name, string_view prop, shared_ptr<meta_class> markup)
@@ -252,13 +253,15 @@ namespace xaml
             {
                 ostringstream s;
                 s << "[" << name << "](auto&, auto value) { " << name << "->set_" << prop << "(value); }";
-                write_call(stream, b->get_element(), "add_", __get_property_changed_event_name(b->get_path()), { s.str() });
+                string arg = s.str();
+                write_call(stream, b->get_element(), "add_", __get_property_changed_event_name(b->get_path()), { arg });
             }
             if (mode & binding_mode::one_way_to_source)
             {
                 ostringstream s;
                 s << "[" << b->get_element() << "](auto&, auto value) { " << b->get_element() << "->set_" << b->get_path() << "(value); }";
-                write_call(stream, name, "add_", __get_property_changed_event_name(prop), { s.str() });
+                string arg = s.str();
+                write_call(stream, name, "add_", __get_property_changed_event_name(prop), { arg });
             }
         }
         return stream;
