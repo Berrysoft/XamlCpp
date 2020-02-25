@@ -26,5 +26,3 @@ set_target_properties(xaml PROPERTIES
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
-
-add_subdirectory(test)

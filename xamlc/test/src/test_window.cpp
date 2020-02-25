@@ -1,8 +1,23 @@
 #include <cmath>
 #include <test_window.hpp>
+#include <xaml/ui/msgbox.hpp>
+
+#ifdef XAML_TEST_GEN_FAKE
 #include <xaml/deserializer.hpp>
 #include <xaml/parser.hpp>
-#include <xaml/ui/msgbox.hpp>
+#else
+#include <xaml/ui/controls/check_box.hpp>
+#include <xaml/ui/controls/combo_box.hpp>
+#include <xaml/ui/controls/entry.hpp>
+#include <xaml/ui/controls/grid.hpp>
+#include <xaml/ui/controls/label.hpp>
+#include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/controls/radio_box.hpp>
+#include <xaml/ui/controls/stack_panel.hpp>
+#include <xaml/ui/controls/uniform_grid.hpp>
+#endif // XAML_TEST_GEN_FAKE
+
+#include <test.xaml.g.cpp>
 
 using namespace std;
 using namespace xaml;
@@ -12,17 +27,6 @@ namespace xaml::test
     test_window::test_window() : window(), tmr(2s)
     {
         tmr.add_tick(mem_fn_bind(&test_window::on_timer_tick, this));
-    }
-
-    void test_window::init_components()
-    {
-        parser p("test.xaml");
-        if (p.is_open())
-        {
-            deserializer des{};
-            xaml_node node = p.parse();
-            des.deserialize(node, static_pointer_cast<test_window>(shared_from_this()));
-        }
     }
 
     void test_window::on_timer_tick(timer&)
