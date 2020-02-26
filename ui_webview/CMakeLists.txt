@@ -35,7 +35,7 @@ target_include_directories(xaml_ui_webview
 target_link_libraries(xaml_ui_webview xaml_ui)
 if(${BUILD_WINDOWS})
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
-        file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.8.355 ${CMAKE_BINARY_DIR}/webview2.nupkg)
+        file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.430 ${CMAKE_BINARY_DIR}/webview2.nupkg)
         message(STATUS "WebView2 downloaded")
     endif()
 
