@@ -25,16 +25,19 @@ int main(int argc, char** argv)
 #else
     auto app = application::init(argc, argv);
 #endif // WIN32 || __MINGW32__
+    auto wnd = make_shared<test_window>();
 
 #ifdef XAML_TEST_GEN_FAKE
-    init_parser();
-    register_class<test_window>();
-    app->add_module("xaml_ui_meta");
-    app->add_module("xaml_ui_controls_meta");
+    meta_context ctx{};
+    init_parser(ctx);
+    register_class<test_window>(ctx);
+    app->add_module(ctx, "xaml_ui_meta");
+    app->add_module(ctx, "xaml_ui_controls_meta");
+    wnd->init_components(ctx);
+#else
+    wnd->init_components();
 #endif // XAML_TEST_GEN_FAKE
 
-    auto wnd = make_shared<test_window>();
-    wnd->init_components();
     wnd->show();
     return app->run();
 }

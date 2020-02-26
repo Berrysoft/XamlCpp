@@ -19,7 +19,11 @@ namespace xaml::test
 
         ~test_window() override {}
 
+#ifdef XAML_TEST_GEN_FAKE
+        void init_components(meta_context& ctx);
+#else
         void init_components();
+#endif // XAML_TEST_GEN_FAKE
 
         void on_timer_tick(timer&);
 

@@ -179,6 +179,11 @@ namespace xaml
         return write_type(write_indent(stream) << "void ", ns, name) << "::init_components()" << endl;
     }
 
+    ostream& compiler::write_init_decl_with_meta(ostream& stream, string_view ns, string_view name)
+    {
+        return write_type(write_indent(stream) << "void ", ns, name) << "::init_components(::xaml::meta_context& ctx)" << endl;
+    }
+
     ostream& compiler::write_type(ostream& stream, type_index type)
     {
         auto t = *m_ctx->get_type_name(type);
@@ -300,8 +305,8 @@ namespace xaml
 
     ostream& compiler::write_deserialize(ostream& stream, string_view path)
     {
-        write_indent(stream) << "::xaml::parser __p(\"" << path << "\");" << endl;
-        write_indent(stream) << "::xaml::deserializer __des{};" << endl;
+        write_indent(stream) << "::xaml::parser __p(ctx, \"" << path << "\");" << endl;
+        write_indent(stream) << "::xaml::deserializer __des{ ctx };" << endl;
         write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
         return stream;
     }
@@ -422,7 +427,7 @@ namespace xaml
             {
                 write_includes(stream, fake_headers);
                 auto [ns, name] = *node.map_class;
-                write_init_decl(stream, ns, name);
+                write_init_decl_with_meta(stream, ns, name);
                 write_begin_block(stream);
                 write_deserialize(stream, path);
                 write_type(write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<", ns, name) << ">(shared_from_this()));" << endl;
