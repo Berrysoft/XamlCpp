@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iterator>
 #include <ostream>
-#include <unordered_map>
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
@@ -13,15 +12,15 @@ using namespace std;
 
 namespace xaml
 {
-    bool compiler_module::can_compile(type_index type) noexcept
+    static bool can_compile(module& m, type_index type) noexcept
     {
-        auto pcc = (int (*)(void*) noexcept)get_method("can_compile");
+        auto pcc = (int (*)(void*) noexcept)m.get_method("can_compile");
         return pcc ? pcc(&type) : false;
     }
 
-    string compiler_module::compile(type_index type, string_view code) noexcept
+    static string module_compile(module& m, type_index type, string_view code) noexcept
     {
-        auto pc = (void (*)(void*, const char*, void*) noexcept)get_method("compile");
+        auto pc = (void (*)(void*, const char*, void*) noexcept)m.get_method("compile");
         if (pc)
         {
             string result;
@@ -31,9 +30,9 @@ namespace xaml
         return {};
     }
 
-    vector<string_view> compiler_module::include_headers() noexcept
+    static vector<string_view> include_headers(module& m) noexcept
     {
-        auto pih = (const char* const* (*)() noexcept)get_method("include_headers");
+        auto pih = (const char* const* (*)() noexcept)m.get_method("include_headers");
         if (pih)
         {
             const char* const* headers = pih();
@@ -45,15 +44,6 @@ namespace xaml
             return result;
         }
         return {};
-    }
-
-    static unordered_map<string_view, unique_ptr<compiler_module>> m_cmodules;
-
-    void add_compiler_module(meta_context& ctx, string_view path)
-    {
-        auto m = make_unique<compiler_module>(path);
-        m->register_meta(ctx);
-        m_cmodules.emplace(path, move(m));
     }
 
     static array int_types{
@@ -90,7 +80,7 @@ namespace xaml
         return false;
     }
 
-    static string xaml_cpp_compile(meta_context& ctx, type_index type, string_view code)
+    string compiler::xaml_cpp_compile(type_index type, string_view code)
     {
         if (type == type_index(typeid(bool)))
         {
@@ -121,20 +111,20 @@ namespace xaml
             stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
             return stream.str();
         }
-        else if (ctx.is_registered_enum(type))
+        else if (m_ctx->is_registered_enum(type))
         {
-            auto [ns, name] = *ctx.get_type_name(type);
+            auto [ns, name] = *m_ctx->get_type_name(type);
             std::ostringstream stream;
             stream << "::" << ns << "::" << name << "::" << code;
             return stream.str();
         }
         else
         {
-            for (auto& p : m_cmodules)
+            for (auto& p : m_ctx->get_modules())
             {
-                if (p.second->can_compile(type))
+                if (can_compile(*p.second, type))
                 {
-                    return p.second->compile(type, code);
+                    return module_compile(*p.second, type, code);
                 }
             }
             return (string)code;
@@ -143,7 +133,7 @@ namespace xaml
 
     ostream& compiler::write_indent(ostream& stream)
     {
-        fill_n(ostream_iterator<char>(stream), indent_count * 4, ' ');
+        fill_n(ostream_iterator<char>(stream), m_indent_count * 4, ' ');
         return stream;
     }
 
@@ -164,13 +154,13 @@ namespace xaml
     ostream& compiler::write_begin_block(ostream& stream)
     {
         write_indent(stream) << '{' << endl;
-        indent_count++;
+        m_indent_count++;
         return stream;
     }
 
     ostream& compiler::write_end_block(ostream& stream)
     {
-        indent_count--;
+        m_indent_count--;
         return write_indent(stream) << '}' << endl;
     }
 
@@ -240,11 +230,11 @@ namespace xaml
     {
         if (node_type == host_type)
         {
-            return write_set_property(stream, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
+            return write_set_property(stream, name, prop, xaml_cpp_compile(prop_type, value));
         }
         else
         {
-            return write_set_property(stream, host_type, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
+            return write_set_property(stream, host_type, name, prop, xaml_cpp_compile(prop_type, value));
         }
     }
 
@@ -262,11 +252,11 @@ namespace xaml
     {
         if (node_type == host_type)
         {
-            return write_add_property(stream, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
+            return write_add_property(stream, name, prop, xaml_cpp_compile(prop_type, value));
         }
         else
         {
-            return write_add_property(stream, host_type, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
+            return write_add_property(stream, host_type, name, prop, xaml_cpp_compile(prop_type, value));
         }
     }
 
@@ -391,9 +381,9 @@ namespace xaml
             if (node.map_class)
             {
                 vector<string_view> all_headers;
-                for (auto& m : m_cmodules)
+                for (auto& m : m_ctx->get_modules())
                 {
-                    vector<string_view> hs = m.second->include_headers();
+                    vector<string_view> hs = include_headers(*m.second);
                     all_headers.insert(all_headers.end(), hs.begin(), hs.end());
                 }
                 write_includes(stream, all_headers);

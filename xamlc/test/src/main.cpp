@@ -14,6 +14,10 @@ using namespace std;
 using namespace xaml;
 using namespace xaml::test;
 
+#ifdef XAML_TEST_GEN_FAKE
+meta_context ctx{};
+#endif // XAML_TEST_GEN_FAKE
+
 #if defined(WIN32) || defined(__MINGW32__)
 INT APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, INT)
 #else
@@ -28,11 +32,10 @@ int main(int argc, char** argv)
     auto wnd = make_shared<test_window>();
 
 #ifdef XAML_TEST_GEN_FAKE
-    meta_context ctx{};
     init_parser(ctx);
     register_class<test_window>(ctx);
-    app->add_module(ctx, "xaml_ui_meta");
-    app->add_module(ctx, "xaml_ui_controls_meta");
+    ctx.add_module("xaml_ui_meta");
+    ctx.add_module("xaml_ui_controls_meta");
     wnd->init_components(ctx);
 #else
     wnd->init_components();

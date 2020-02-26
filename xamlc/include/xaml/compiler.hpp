@@ -2,6 +2,7 @@
 #define XAMLC_COMPILER_HPP
 
 #include <iosfwd>
+#include <unordered_map>
 #include <vector>
 #include <xaml/meta/meta.hpp>
 #include <xaml/meta/module.hpp>
@@ -9,29 +10,18 @@
 
 namespace xaml
 {
-    class compiler_module : public module
-    {
-    public:
-        compiler_module() : module() {}
-        compiler_module(std::string_view path) : module(path) {}
-        ~compiler_module() override {}
-
-        XAMLC_API bool can_compile(std::type_index type) noexcept;
-        XAMLC_API std::string compile(std::type_index type, std::string_view code) noexcept;
-        XAMLC_API std::vector<std::string_view> include_headers() noexcept;
-    };
-
-    XAMLC_API void add_compiler_module(meta_context& ctx, std::string_view path);
-
     class compiler
     {
     private:
         meta_context* m_ctx;
-        size_t indent_count{ 0 };
+        size_t m_indent_count{ 0 };
 
     public:
         compiler(meta_context& ctx) : m_ctx(&ctx) {}
         ~compiler() {}
+
+    private:
+        XAMLC_API std::string xaml_cpp_compile(std::type_index type, std::string_view code);
 
     protected:
         XAMLC_API std::ostream& write_indent(std::ostream& stream);

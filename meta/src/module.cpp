@@ -150,13 +150,4 @@ namespace xaml
         }
     }
 #endif // WIN32 || __MINGW32__
-
-    void module::register_meta(meta_context& ctx) noexcept
-    {
-        auto pinit = (void (*)(void*) noexcept)get_method("init_meta");
-        if (pinit)
-        {
-            pinit(&ctx);
-        }
-    }
 } // namespace xaml

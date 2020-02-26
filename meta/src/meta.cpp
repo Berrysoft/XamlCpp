@@ -4,6 +4,18 @@ using namespace std;
 
 namespace xaml
 {
+    module* meta_context::add_module(string_view path)
+    {
+        auto m = make_unique<module>(path);
+        auto pinit = (void (*)(void*) noexcept)m->get_method("init_meta");
+        if (pinit)
+        {
+            pinit(this);
+            return modules_map.emplace(path, move(m)).first->second.get();
+        }
+        return nullptr;
+    }
+
     string meta_context::get_real_namespace(string_view ns)
     {
         string sns{ ns };

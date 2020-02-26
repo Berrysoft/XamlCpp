@@ -2,7 +2,6 @@
 #define XAML_MODULE_MODULE_HPP
 
 #include <string_view>
-#include <xaml/meta/meta.hpp>
 #include <xaml/utility.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
@@ -61,11 +60,7 @@ namespace xaml
         XAML_META_API void open(std::string_view name);
         XAML_META_API void close();
 
-    protected:
         XAML_META_API void* get_method(std::string_view name);
-
-    public:
-        XAML_META_API void register_meta(meta_context& ctx) noexcept;
     };
 } // namespace xaml
 

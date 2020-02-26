@@ -18,13 +18,6 @@ namespace xaml
 
     shared_ptr<application> application::current() { return s_current; }
 
-    void application::add_module(meta_context& ctx, string_view path)
-    {
-        auto m = make_unique<module>(path);
-        m->register_meta(ctx);
-        m_modules.emplace(path, move(m));
-    }
-
     application::~application() {}
 
 #if defined(WIN32) || defined(__MINGW32__)

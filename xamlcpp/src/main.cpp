@@ -83,7 +83,7 @@ int main(int argc, char** argv)
             meta_context ctx{};
             for (auto& m : modules)
             {
-                add_compiler_module(ctx, m);
+                ctx.add_module(m);
             }
             init_parser(ctx);
             parser p{ ctx, inf };

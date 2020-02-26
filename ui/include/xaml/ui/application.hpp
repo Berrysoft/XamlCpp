@@ -27,7 +27,6 @@ namespace xaml
         friend class window;
 
         std::vector<string_t> m_cmd_lines{};
-        std::unordered_map<std::string_view, std::unique_ptr<module>> m_modules{};
 
         std::shared_ptr<xaml::window> m_main_wnd{ nullptr };
         int m_quit_value{ 0 };
@@ -60,8 +59,6 @@ namespace xaml
         }
 
     public:
-        XAML_UI_API void add_module(meta_context& ctx, std::string_view path);
-
         XAML_UI_API int run();
         XAML_UI_API void quit(int value = 0);
 

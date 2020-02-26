@@ -16,6 +16,7 @@
 #include <unordered_set>
 #include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
+#include <xaml/meta/module.hpp>
 #include <xaml/utility.hpp>
 
 namespace xaml
@@ -348,6 +349,8 @@ namespace xaml
     class meta_context
     {
     private:
+        std::unordered_map<std::string_view, std::unique_ptr<module>> modules_map;
+
         std::unordered_map<std::string, std::string> namespace_map;
         std::unordered_map<std::string, std::unordered_map<std::string, std::type_index>> type_map;
         std::unordered_map<std::type_index, std::tuple<std::string, std::string>> type_name_map;
@@ -360,10 +363,12 @@ namespace xaml
         std::map<std::size_t, std::unique_ptr<__binding_guard>> bind_map;
         std::size_t bind_index;
 
-    private:
+    public:
+        XAML_META_API module* add_module(std::string_view path);
+        std::unordered_map<std::string_view, std::unique_ptr<module>>& get_modules() { return modules_map; }
+
         XAML_META_API std::string get_real_namespace(std::string_view ns);
 
-    public:
         // TYPE METHODS
 
         // Get type with namespace and name.
