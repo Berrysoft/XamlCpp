@@ -18,7 +18,7 @@ namespace xaml
             rectangle real_real = real * udpi / 96.0;
             if (!__get_webview())
             {
-                m_webview = make_shared<webview_ie>();
+                m_webview = make_shared<webview_edge2>();
                 m_webview->create_async(get_handle(), real_real, [this, real_real]() {
                     if (!*m_webview)
                     {
