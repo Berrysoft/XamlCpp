@@ -26,7 +26,7 @@ using boost::filesystem::directory_iterator;
 using boost::filesystem::path;
 #endif // !__APPLE__
 
-int main(int argc, char** argv)
+int main(int argc, char const* const* argv)
 {
     try
     {

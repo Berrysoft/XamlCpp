@@ -269,6 +269,23 @@ namespace xaml
         return write_call(stream, name, "add_", ev.info.name(), { arg });
     }
 
+    ostream& compiler::write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop)
+    {
+        {
+            ostringstream s;
+            s << source_name << "->get_" << source_prop << "()";
+            string arg = s.str();
+            write_set_property(stream, target_name, target_prop, { arg });
+        }
+        {
+            ostringstream s;
+            s << "[" << target_name << "](auto&, auto value) { " << target_name << "->set_" << target_prop << "(value); }";
+            string arg = s.str();
+            write_call(stream, source_name, "add_", __get_property_changed_event_name(source_prop), { arg });
+        }
+        return stream;
+    }
+
     ostream& compiler::write_markup(ostream& stream, string_view name, string_view prop, shared_ptr<meta_class> markup)
     {
         if (markup->this_type() == type_index(typeid(binding)))
@@ -277,17 +294,11 @@ namespace xaml
             auto mode = b->get_mode();
             if (mode & binding_mode::one_way)
             {
-                ostringstream s;
-                s << "[" << name << "](auto&, auto value) { " << name << "->set_" << prop << "(value); }";
-                string arg = s.str();
-                write_call(stream, b->get_element(), "add_", __get_property_changed_event_name(b->get_path()), { arg });
+                write_bind(stream, name, prop, b->get_element(), b->get_path());
             }
             if (mode & binding_mode::one_way_to_source)
             {
-                ostringstream s;
-                s << "[" << b->get_element() << "](auto&, auto value) { " << b->get_element() << "->set_" << b->get_path() << "(value); }";
-                string arg = s.str();
-                write_call(stream, name, "add_", __get_property_changed_event_name(prop), { arg });
+                write_bind(stream, b->get_element(), b->get_path(), name, prop);
             }
         }
         return stream;

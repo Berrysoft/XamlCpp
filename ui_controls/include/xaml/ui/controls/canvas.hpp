@@ -191,6 +191,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     private:
+        ULONG_PTR m_token;
         wil::unique_hdc_window m_store_dc;
 
     public:

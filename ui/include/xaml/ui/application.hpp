@@ -32,7 +32,7 @@ namespace xaml
         int m_quit_value{ 0 };
 
     private:
-        XAML_UI_API application(int argc, char_t** argv);
+        XAML_UI_API application(int argc, char_t const* const* argv);
 
     public:
         XAML_UI_API virtual ~application();
@@ -62,7 +62,7 @@ namespace xaml
         XAML_UI_API int run();
         XAML_UI_API void quit(int value = 0);
 
-        XAML_UI_API static std::shared_ptr<application> init(int argc, char_t** argv);
+        XAML_UI_API static std::shared_ptr<application> init(int argc, char_t const* const* argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(WIN32) || defined(__MINGW32__)
         XAML_UI_API static std::shared_ptr<application> init(LPTSTR lpCmdLine);

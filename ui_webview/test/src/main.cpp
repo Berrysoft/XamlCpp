@@ -13,7 +13,7 @@ using namespace xaml::test;
 #if defined(WIN32) || defined(__MINGW32__)
 INT APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR lpCmdLine, INT)
 #else
-int main(int argc, char** argv)
+int main(int argc, char const* const* argv)
 #endif // WIN32 || __MINGW32__
 {
 #if defined(WIN32) || defined(__MINGW32__)

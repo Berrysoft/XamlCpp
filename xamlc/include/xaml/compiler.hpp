@@ -50,6 +50,7 @@ namespace xaml
         XAMLC_API std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_event(std::ostream& stream, xaml_node& this_node, std::string_view name, xaml_event& ev);
 
+        XAMLC_API std::ostream& write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop);
         XAMLC_API std::ostream& write_markup(std::ostream& stream, std::string_view name, std::string_view prop, std::shared_ptr<meta_class> markup);
 
         XAMLC_API std::ostream& write_deserialize(std::ostream& stream, std::string_view path);

@@ -36,9 +36,11 @@ namespace xaml
     bool drawing_font::get_bold() const { return m_object.bold; }
 #endif // USE_CUSTOM_DRAWING_TYPES
 
+#ifndef XAML_UI_WINDOWS
     canvas::canvas() : control()
     {
     }
 
     canvas::~canvas() {}
+#endif // !XAML_UI_WINDOWS
 } // namespace xaml

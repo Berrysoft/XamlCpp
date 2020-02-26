@@ -36,7 +36,7 @@ namespace xaml
 
     static LOGFONT s_default_font;
 
-    application::application(int argc, char_t** argv) : m_cmd_lines(argv, argv + argc)
+    application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);

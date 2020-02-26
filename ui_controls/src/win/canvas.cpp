@@ -130,6 +130,17 @@ namespace xaml
         m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), get_PointF(p, __get_dpi()), brush.get_handle());
     }
 
+    canvas::canvas() : control()
+    {
+        GdiplusStartupInput gdiplusStartupInput{};
+        GdiplusStartup(&m_token, &gdiplusStartupInput, NULL);
+    }
+
+    canvas::~canvas()
+    {
+        GdiplusShutdown(m_token);
+    }
+
     optional<LRESULT> canvas::__wnd_proc(window_message const& msg)
     {
         if (get_handle() && msg.hWnd == get_handle())
@@ -175,17 +186,4 @@ namespace xaml
             }
         }
     }
-
-    struct gdiplus_init_guard
-    {
-        ULONG_PTR token;
-        gdiplus_init_guard()
-        {
-            GdiplusStartupInput gdiplusStartupInput{};
-            GdiplusStartup(&token, &gdiplusStartupInput, NULL);
-        }
-        ~gdiplus_init_guard() { GdiplusShutdown(token); }
-    };
-
-    static gdiplus_init_guard init_guard{};
 } // namespace xaml

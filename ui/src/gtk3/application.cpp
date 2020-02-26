@@ -5,7 +5,7 @@ using namespace std;
 
 namespace xaml
 {
-    application::application(int argc, char_t** argv)
+    application::application(int argc, char_t const* const* argv)
     {
         gtk_init(&argc, &argv);
         m_cmd_lines.assign(argv, argv + argc);

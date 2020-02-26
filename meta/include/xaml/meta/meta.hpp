@@ -962,47 +962,8 @@ namespace xaml
         token_type source_token;
 
     public:
-        __binding_guard(meta_context& ctx, std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time)
-            : target(target), source(source)
-        {
-            auto starget = target.lock();
-            auto ssource = source.lock();
-            this->target_prop = ctx.get_property(target.lock()->this_type(), target_prop);
-            target_event = ctx.get_event(target.lock()->this_type(), __get_property_changed_event_name(target_prop));
-            this->source_prop = ctx.get_property(source.lock()->this_type(), source_prop);
-            source_event = ctx.get_event(source.lock()->this_type(), __get_property_changed_event_name(source_prop));
-            this->target_prop.set(starget.get(), this->source_prop.get(ssource.get()));
-            if (mode & binding_mode::one_way)
-            {
-                source_token = source_event.add(
-                    ssource.get(),
-                    std::function<void()>(
-                        [this]() -> void {
-                            if (auto ssource = this->source.lock())
-                                if (auto starget = this->target.lock())
-                                    this->target_prop.set(starget.get(), this->source_prop.get(ssource.get()));
-                        }));
-            }
-            if (mode & binding_mode::one_way_to_source)
-            {
-                target_token = target_event.add(
-                    starget.get(),
-                    std::function<void()>(
-                        [this]() -> void {
-                            if (auto ssource = this->source.lock())
-                                if (auto starget = this->target.lock())
-                                    this->source_prop.set(ssource.get(), this->target_prop.get(starget.get()));
-                        }));
-            }
-        }
-
-        ~__binding_guard()
-        {
-            if (auto ssource = source.lock())
-                source_event.remove(ssource.get(), source_token);
-            if (auto starget = target.lock())
-                target_event.remove(starget.get(), target_token);
-        }
+        XAML_META_API __binding_guard(meta_context& ctx, std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
+        XAML_META_API ~__binding_guard();
     };
 
     // REGISTER CLASS METHOD
