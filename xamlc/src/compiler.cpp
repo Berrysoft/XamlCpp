@@ -275,7 +275,7 @@ namespace xaml
             ostringstream s;
             s << source_name << "->get_" << source_prop << "()";
             string arg = s.str();
-            write_set_property(stream, target_name, target_prop, { arg });
+            write_set_property(stream, target_name, target_prop, { (string_view)arg });
         }
         {
             ostringstream s;
