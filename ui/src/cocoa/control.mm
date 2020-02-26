@@ -2,10 +2,6 @@
 
 namespace xaml
 {
-    control::~control()
-    {
-    }
-
     void control::__set_rect(rectangle const& real)
     {
         NSView* view = get_handle();

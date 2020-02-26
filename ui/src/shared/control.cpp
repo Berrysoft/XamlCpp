@@ -7,6 +7,10 @@ namespace xaml
 {
     control::control() : meta_class() {}
 
+    control::~control()
+    {
+    }
+
     void control::set_parent(weak_ptr<control> value)
     {
         auto sparent = m_parent.lock();

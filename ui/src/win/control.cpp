@@ -30,10 +30,6 @@ namespace xaml
         return from_native(s) + offset;
     }
 
-    control::~control()
-    {
-    }
-
     size control::__get_real_size() const
     {
         UINT udpi = GetDpiForWindow(get_handle());

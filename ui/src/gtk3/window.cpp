@@ -9,7 +9,11 @@ namespace xaml
 {
     window::~window()
     {
-        close();
+        if (get_handle() && !gtk_widget_in_destruction(get_handle()))
+        {
+            close();
+            gtk_widget_destroy(get_handle());
+        }
     }
 
     void window::__draw(rectangle const& region)
@@ -98,6 +102,7 @@ namespace xaml
     {
         window* self = (window*)arg;
         application::current()->window_removed(static_pointer_cast<window>(self->shared_from_this()));
+        self->set_handle(nullptr);
     }
 
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
