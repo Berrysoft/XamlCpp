@@ -2,6 +2,7 @@
 #include <wil/com.h>
 #include <xaml/ui/webview/webview.hpp>
 
+#include <ExDisp.h>
 #include <atlbase.h>
 #include <atlwin.h>
 
@@ -16,7 +17,7 @@ namespace xaml
         webview_ie* m_webview;
 
     public:
-        WebBrowserSink(xaml::webview_ie* view) : m_ref(1), m_webview(view) {}
+        WebBrowserSink(xaml::webview_ie* view) : m_ref(0), m_webview(view) {}
         ~WebBrowserSink() {}
 
         STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
@@ -64,7 +65,7 @@ namespace xaml
     private:
         CAxWindow m_container{};
         wil::com_ptr<IWebBrowser2> m_browser{ nullptr };
-        std::unique_ptr<WebBrowserSink> m_sink{ nullptr };
+        wil::com_ptr<WebBrowserSink> m_sink{ nullptr };
 
     public:
         ~webview_ie() override {}

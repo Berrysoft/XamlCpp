@@ -2,6 +2,7 @@
 #include <win/webview_ie.hpp>
 
 #include <ExDispID.h>
+#include <Shlwapi.h>
 
 using namespace std;
 
@@ -71,15 +72,10 @@ namespace xaml
         {
             RECT r = to_native<RECT>(rect);
             m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
-            THROW_IF_FAILED(m_container.CreateControl(L"shell.Explorer.2"));
-            THROW_IF_FAILED(m_container.QueryControl(&m_browser));
-            wil::com_ptr<IConnectionPointContainer> spConnectionPointContainer;
-            THROW_IF_FAILED(m_browser->QueryInterface(&spConnectionPointContainer));
-            wil::com_ptr<IConnectionPoint> spConnectionPoint;
-            THROW_IF_FAILED(spConnectionPointContainer->FindConnectionPoint(__uuidof(DWebBrowserEvents2), &spConnectionPoint));
-            DWORD cookie;
-            m_sink = make_unique<WebBrowserSink>(this);
-            THROW_IF_FAILED(spConnectionPoint->Advise(m_sink.get(), &cookie));
+            m_sink = new WebBrowserSink(this);
+            wil::com_ptr<IUnknown> control;
+            THROW_IF_FAILED(m_container.CreateControlEx(L"Shell.Explorer.2", nullptr, nullptr, &control, __uuidof(DWebBrowserEvents2), m_sink.get()));
+            THROW_IF_FAILED(control->QueryInterface(&m_browser));
         }
         catch (wil::ResultException const&)
         {
