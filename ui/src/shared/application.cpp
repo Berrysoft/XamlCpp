@@ -1,4 +1,3 @@
-#include <xaml/meta/binding.hpp>
 #include <xaml/ui/application.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)

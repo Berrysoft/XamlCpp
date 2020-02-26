@@ -152,4 +152,16 @@ namespace xaml
     {
         prop_type_map[type][(string)name].type = prop_type;
     }
+
+    size_t meta_context::bind(weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)
+    {
+        bind_index++;
+        bind_map.emplace(bind_index, make_unique<__binding_guard>(*this, target, target_prop, source, source_prop, mode));
+        return bind_index;
+    }
+
+    void meta_context::unbind(size_t token)
+    {
+        bind_map.erase(token);
+    }
 } // namespace xaml

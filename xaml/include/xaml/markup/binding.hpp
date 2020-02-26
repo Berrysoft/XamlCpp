@@ -2,7 +2,6 @@
 #define XAML_BINDING_EXTENSION_HPP
 
 #include <xaml/markup/markup_extension.hpp>
-#include <xaml/meta/binding.hpp>
 #include <xaml/meta/default_property.hpp>
 #include <xaml/meta/enum_meta.hpp>
 #include <xaml/strings.hpp>

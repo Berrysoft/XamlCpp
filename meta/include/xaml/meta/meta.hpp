@@ -332,6 +332,19 @@ namespace xaml
         friend class meta_context;
     };
 
+    enum class binding_mode
+    {
+        one_time = 0x0,
+        one_way = 0x1,
+        one_way_to_source = 0x2,
+        two_way = one_way | one_way_to_source
+    };
+
+    constexpr int operator&(binding_mode lhs, binding_mode rhs) { return (int)lhs & (int)rhs; }
+    constexpr int operator|(binding_mode lhs, binding_mode rhs) { return (int)lhs | (int)rhs; }
+
+    class __binding_guard;
+
     class meta_context
     {
     private:
@@ -344,6 +357,8 @@ namespace xaml
         std::unordered_multimap<std::type_index, std::unique_ptr<__type_erased_function>> ctor_map;
         std::unordered_map<std::type_index, std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>>> method_map;
         std::unordered_map<std::type_index, std::unordered_map<std::string, __type_index_wrapper>> prop_type_map;
+        std::map<std::size_t, std::unique_ptr<__binding_guard>> bind_map;
+        std::size_t bind_index;
 
     private:
         XAML_META_API std::string get_real_namespace(std::string_view ns);
@@ -914,6 +929,74 @@ namespace xaml
             add_event_add_erased_this_ex<T, Args...>(name, adder);
             add_event_remove_ex<T, Args...>(name, remover);
             add_event_invoke_ex<T, Args...>(name, getter);
+        }
+
+        XAML_META_API std::size_t bind(std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
+        XAML_META_API void unbind(std::size_t token);
+    };
+
+    inline std::string __get_property_changed_event_name(std::string_view name)
+    {
+        return (std::string)name + "_changed";
+    }
+
+    class __binding_guard
+    {
+    private:
+        using token_type = typename event<>::token_type;
+
+        std::weak_ptr<meta_class> target;
+        std::weak_ptr<meta_class> source;
+
+        property_info target_prop;
+        event_info target_event;
+        property_info source_prop;
+        event_info source_event;
+
+        token_type target_token;
+        token_type source_token;
+
+    public:
+        __binding_guard(meta_context& ctx, std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time)
+            : target(target), source(source)
+        {
+            auto starget = target.lock();
+            auto ssource = source.lock();
+            this->target_prop = ctx.get_property(target.lock()->this_type(), target_prop);
+            target_event = ctx.get_event(target.lock()->this_type(), __get_property_changed_event_name(target_prop));
+            this->source_prop = ctx.get_property(source.lock()->this_type(), source_prop);
+            source_event = ctx.get_event(source.lock()->this_type(), __get_property_changed_event_name(source_prop));
+            this->target_prop.set(starget.get(), this->source_prop.get(ssource.get()));
+            if (mode & binding_mode::one_way)
+            {
+                source_token = source_event.add(
+                    ssource.get(),
+                    std::function<void()>(
+                        [this]() -> void {
+                            if (auto ssource = this->source.lock())
+                                if (auto starget = this->target.lock())
+                                    this->target_prop.set(starget.get(), this->source_prop.get(ssource.get()));
+                        }));
+            }
+            if (mode & binding_mode::one_way_to_source)
+            {
+                target_token = target_event.add(
+                    starget.get(),
+                    std::function<void()>(
+                        [this]() -> void {
+                            if (auto ssource = this->source.lock())
+                                if (auto starget = this->target.lock())
+                                    this->source_prop.set(ssource.get(), this->target_prop.get(starget.get()));
+                        }));
+            }
+        }
+
+        ~__binding_guard()
+        {
+            if (auto ssource = source.lock())
+                source_event.remove(ssource.get(), source_token);
+            if (auto starget = target.lock())
+                target_event.remove(starget.get(), target_token);
         }
     };
 
