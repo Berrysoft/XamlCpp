@@ -22,8 +22,8 @@ namespace xaml
         return (std::string)name + "_changed";
     }
 
-    XAML_META_API std::size_t bind(std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
-    XAML_META_API void unbind(std::size_t token);
+    XAML_META_API std::size_t bind(meta_context& ctx, std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
+    XAML_META_API void unbind(meta_context& ctx, std::size_t token);
 } // namespace xaml
 
 #endif // !XAML_META_BINDING_HPP

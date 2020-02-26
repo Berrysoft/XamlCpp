@@ -23,15 +23,15 @@ namespace xaml
         token_type source_token;
 
     public:
-        __binding_guard(weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode = binding_mode::one_time)
+        __binding_guard(meta_context& ctx, weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode = binding_mode::one_time)
             : target(target), source(source)
         {
             auto starget = target.lock();
             auto ssource = source.lock();
-            this->target_prop = get_property(target.lock()->this_type(), target_prop);
-            target_event = get_event(target.lock()->this_type(), __get_property_changed_event_name(target_prop));
-            this->source_prop = get_property(source.lock()->this_type(), source_prop);
-            source_event = get_event(source.lock()->this_type(), __get_property_changed_event_name(source_prop));
+            this->target_prop = ctx.get_property(target.lock()->this_type(), target_prop);
+            target_event = ctx.get_event(target.lock()->this_type(), __get_property_changed_event_name(target_prop));
+            this->source_prop = ctx.get_property(source.lock()->this_type(), source_prop);
+            source_event = ctx.get_event(source.lock()->this_type(), __get_property_changed_event_name(source_prop));
             this->target_prop.set(starget.get(), this->source_prop.get(ssource.get()));
             if (mode & binding_mode::one_way)
             {
@@ -66,18 +66,18 @@ namespace xaml
         }
     };
 
-    static map<size_t, unique_ptr<__binding_guard>> bind_map;
-    static size_t bind_index = 0;
+    static unordered_map<meta_context*, map<size_t, unique_ptr<__binding_guard>>> bind_map;
+    static unordered_map<meta_context*, size_t> bind_index;
 
-    size_t bind(weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)
+    size_t bind(meta_context& ctx, weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)
     {
-        bind_index++;
-        bind_map.emplace(bind_index, make_unique<__binding_guard>(target, target_prop, source, source_prop, mode));
-        return bind_index;
+        bind_index[&ctx]++;
+        bind_map[&ctx].emplace(bind_index[&ctx], make_unique<__binding_guard>(ctx, target, target_prop, source, source_prop, mode));
+        return bind_index[&ctx];
     }
 
-    void unbind(size_t token)
+    void unbind(meta_context& ctx, size_t token)
     {
-        bind_map.erase(token);
+        bind_map[&ctx].erase(token);
     }
 } // namespace xaml

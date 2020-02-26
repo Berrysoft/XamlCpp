@@ -1,4 +1,3 @@
-#include <xaml/meta/meta.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
@@ -152,13 +151,12 @@ namespace xaml
     }
 #endif // WIN32 || __MINGW32__
 
-    void module::register_meta() noexcept
+    void module::register_meta(meta_context& ctx) noexcept
     {
         auto pinit = (void (*)(void*) noexcept)get_method("init_meta");
         if (pinit)
         {
-            auto context = __get_context();
-            pinit(&context);
+            pinit(&ctx);
         }
     }
 } // namespace xaml

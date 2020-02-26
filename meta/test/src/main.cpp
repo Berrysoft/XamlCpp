@@ -33,7 +33,7 @@ public:
 
     ~calculator() override {}
 
-    static void register_class() noexcept
+    REGISTER_CLASS_DECL()
     {
         // Register a type named "calculator" in namespace "test".
         // The namespace is optional.
@@ -53,27 +53,27 @@ public:
 int main()
 {
     // Initialize metadata context.
-    init_context();
+    meta_context ctx{};
     // A helper method to register many classes.
-    register_class<calculator>();
+    register_class<calculator>(ctx);
 
     // We suppressed some failure check because we know it will success.
 
     // Get a type named "calculator" in namespace "test".
-    auto t = *get_type("test", "calculator");
+    auto t = *ctx.get_type("test", "calculator");
     // Construct the class with default constructor.
     // It is as same as calling operator new, so you should manully wrap it.
-    unique_ptr<meta_class> mc{ construct(t) };
+    unique_ptr<meta_class> mc{ ctx.construct(t) };
     // Get the event named "value_changed".
-    auto ev = get_event<calculator const&, int>(t, "value_changed");
+    auto ev = ctx.get_event<calculator const&, int>(t, "value_changed");
     // Add a handler to the event of the object.
     auto token = ev.add(mc.get(), function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.
-    invoke_method<void>(mc.get(), "plus", 1, 1);
+    ctx.invoke_method<void>(mc.get(), "plus", 1, 1);
     // Get the property named "value".
-    auto prop = get_property(t, "value");
+    auto prop = ctx.get_property(t, "value");
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
     prop.set(mc.get(), "100");
@@ -82,9 +82,9 @@ int main()
     ev.remove(mc.get(), token);
     // Although `value` has changed, the handler won't be called,
     // because the handler has been removed.
-    invoke_method<void>(mc.get(), "minus", 1, 1);
+    ctx.invoke_method<void>(mc.get(), "minus", 1, 1);
     // Invoke the static method.
-    cout << "3 * 7 = " << *invoke_static_method<int>(t, "multiply", 3, 7) << endl;
+    cout << "3 * 7 = " << *ctx.invoke_static_method<int>(t, "multiply", 3, 7) << endl;
     cout << endl;
     observable_vector<int> obs{ 1, 2, 3 };
     obs.add_vector_changed([](observable_vector<int>&, vector_changed_args<int>& args) {
