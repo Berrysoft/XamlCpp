@@ -73,6 +73,7 @@ namespace xaml
 
         XAML_UI_API void show();
         XAML_UI_API void close();
+        XAML_UI_API void hide();
 
         PROP_EVENT(resizable, bool)
         EVENT(resizable_changed, window&, bool)

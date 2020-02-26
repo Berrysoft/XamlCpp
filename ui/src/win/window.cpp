@@ -110,6 +110,11 @@ namespace xaml
         SendMessage(get_handle(), WM_CLOSE, 0, 0);
     }
 
+    void window::hide()
+    {
+        ShowWindow(get_handle(), SW_HIDE);
+    }
+
     rectangle window::get_client_region() const
     {
         return __get_real_client_region() * 96.0 / get_dpi();

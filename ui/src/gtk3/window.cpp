@@ -91,6 +91,11 @@ namespace xaml
         gtk_window_close(GTK_WINDOW(get_handle()));
     }
 
+    void window::hide()
+    {
+        gtk_widget_hide(get_handle());
+    }
+
     rectangle window::get_client_region() const
     {
         gint width, height;

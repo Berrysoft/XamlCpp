@@ -109,6 +109,11 @@ namespace xaml
         [__get_window() performClose:nil];
     }
 
+    void window::hide()
+    {
+        [__get_window() setIsVisible:NO];
+    }
+
     rectangle window::get_client_region() const
     {
         NSWindow* window = __get_window();
