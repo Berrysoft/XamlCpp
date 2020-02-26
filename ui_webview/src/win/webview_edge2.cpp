@@ -12,30 +12,34 @@ namespace xaml
     {
         try
         {
-            THROW_IF_FAILED(CreateWebView2Environment(
-                Callback<IWebView2CreateWebView2EnvironmentCompletedHandler>(
-                    [=](HRESULT result, IWebView2Environment* env) -> HRESULT {
+            THROW_IF_FAILED(CreateCoreWebView2Environment(
+                Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+                    [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
                         try
                         {
                             THROW_IF_FAILED(result);
                             m_env = env;
-                            THROW_IF_FAILED(env->CreateWebView(
+                            THROW_IF_FAILED(env->CreateCoreWebView2Host(
                                 parent,
-                                Callback<IWebView2CreateWebViewCompletedHandler>(
-                                    [=](HRESULT result, IWebView2WebView* webview) -> HRESULT {
+                                Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
+                                    [=](HRESULT result, ICoreWebView2Host* webview) -> HRESULT {
                                         try
                                         {
                                             THROW_IF_FAILED(result);
                                             m_view = webview;
                                             THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
+                                            wil::com_ptr<ICoreWebView2> view;
+                                            THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
                                             EventRegistrationToken token;
-                                            THROW_IF_FAILED(m_view->add_NavigationCompleted(
-                                                Callback<IWebView2NavigationCompletedEventHandler>(
-                                                    [this](IWebView2WebView*, IWebView2NavigationCompletedEventArgs*) -> HRESULT {
+                                            THROW_IF_FAILED(view->add_NavigationCompleted(
+                                                Callback<ICoreWebView2NavigationCompletedEventHandler>(
+                                                    [this](ICoreWebView2*, ICoreWebView2NavigationCompletedEventArgs*) -> HRESULT {
                                                         try
                                                         {
+                                                            wil::com_ptr<ICoreWebView2> view;
+                                                            THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
                                                             wil::unique_cotaskmem_string uri;
-                                                            THROW_IF_FAILED(m_view->get_Source(&uri));
+                                                            THROW_IF_FAILED(view->get_Source(&uri));
                                                             invoke_navigated(uri.get());
                                                             return S_OK;
                                                         }
@@ -43,15 +47,14 @@ namespace xaml
                                                     })
                                                     .Get(),
                                                 &token));
-                                            wil::com_ptr<IWebView2WebView5> view5;
-                                            THROW_IF_FAILED(m_view->QueryInterface(&view5));
-                                            THROW_IF_FAILED(view5->add_WebResourceRequested(
-                                                Callback<IWebView2WebResourceRequestedEventHandler>(
-                                                    [this](IWebView2WebView*, IWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
+                                            THROW_IF_FAILED(view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
+                                            THROW_IF_FAILED(view->add_WebResourceRequested(
+                                                Callback<ICoreWebView2WebResourceRequestedEventHandler>(
+                                                    [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
                                                         try
                                                         {
                                                             resource_requested_args args{};
-                                                            wil::com_ptr<IWebView2WebResourceRequest> req;
+                                                            wil::com_ptr<ICoreWebView2WebResourceRequest> req;
                                                             THROW_IF_FAILED(e->get_Request(&req));
 
                                                             wil::unique_cotaskmem_string method;
@@ -74,7 +77,7 @@ namespace xaml
                                                             {
                                                                 auto& res = *args.response;
                                                                 wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
-                                                                wil::com_ptr<IWebView2WebResourceResponse> response;
+                                                                wil::com_ptr<ICoreWebView2WebResourceResponse> response;
                                                                 THROW_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (string_t)res.content_type).c_str(), &response));
                                                                 THROW_IF_FAILED(e->put_Response(response.get()));
                                                             }
@@ -105,7 +108,9 @@ namespace xaml
 
     void webview_edge2::navigate(string_view_t uri)
     {
-        THROW_IF_FAILED(m_view->Navigate(uri.data()));
+        wil::com_ptr<ICoreWebView2> view;
+        THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
+        THROW_IF_FAILED(view->Navigate(uri.data()));
     }
 
     void webview_edge2::set_location(point p)
