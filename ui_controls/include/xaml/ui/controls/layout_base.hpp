@@ -48,7 +48,7 @@ namespace xaml
     public:
 #define ADD_LAYOUT_BASE_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, layout_base);
             ADD_LAYOUT_BASE_MEMBERS();

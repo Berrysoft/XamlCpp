@@ -80,16 +80,17 @@ int main(int argc, char** argv)
                     }
                 }
             }
+            meta_context ctx{};
             for (auto& m : modules)
             {
-                add_compiler_module(m);
+                add_compiler_module(ctx, m);
             }
-            init_parser();
-            parser p{ inf };
+            init_parser(ctx);
+            parser p{ ctx, inf };
             if (p.is_open())
             {
                 auto node = p.parse();
-                compiler c{};
+                compiler c{ ctx };
                 ofstream stream{ ouf_path.string() };
                 if (vm.count("fake"))
                 {

@@ -54,7 +54,7 @@ namespace xaml
     ADD_EVENT(click);           \
     ADD_DEF_PROP(text)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, button);
             ADD_CTOR_DEF();

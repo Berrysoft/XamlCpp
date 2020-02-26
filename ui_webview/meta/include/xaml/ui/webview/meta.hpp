@@ -8,7 +8,7 @@ namespace xaml
 {
     struct ui_webview_init_traits
     {
-        XAML_UI_WEBVIEW_META_API static void init_meta(std::shared_ptr<meta_context> const& ctx = nullptr) noexcept;
+        XAML_UI_WEBVIEW_META_API static void init_meta(meta_context& ctx) noexcept;
     };
 } // namespace xaml
 

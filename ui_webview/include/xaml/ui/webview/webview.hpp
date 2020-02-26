@@ -118,7 +118,7 @@ public:                                                                         
     ADD_CONTROL_MEMBERS();    \
     ADD_PROP_EVENT(uri)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, webview);
             ADD_CTOR_DEF();

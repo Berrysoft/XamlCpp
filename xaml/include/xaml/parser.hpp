@@ -13,7 +13,7 @@
 
 namespace xaml
 {
-    XAML_API void init_parser() noexcept;
+    XAML_API void init_parser(meta_context& ctx) noexcept;
 
     struct xaml_no_default_constructor : std::logic_error
     {
@@ -42,13 +42,14 @@ namespace xaml
     class parser
     {
     private:
-        xmlTextReaderPtr reader{ nullptr };
-        xmlParserInputBufferPtr buffer{ nullptr };
+        meta_context* m_ctx;
+        xmlTextReaderPtr m_reader{ nullptr };
+        xmlParserInputBufferPtr m_buffer{ nullptr };
 
     public:
         constexpr bool is_open() const noexcept
         {
-            return reader;
+            return m_reader;
         }
 
         XAML_API void open(std::string_view file);
@@ -60,9 +61,9 @@ namespace xaml
 
         static constexpr load_memory_t load_memory{};
 
-        XAML_API parser();
-        parser(std::string_view file) : parser() { open(file); }
-        parser(std::string_view xml, load_memory_t) : parser() { load(xml); }
+        XAML_API parser(meta_context& ctx);
+        parser(meta_context& ctx, std::string_view file) : parser(ctx) { open(file); }
+        parser(meta_context& ctx, std::string_view xml, load_memory_t) : parser(ctx) { load(xml); }
         XAML_API ~parser();
 
     private:

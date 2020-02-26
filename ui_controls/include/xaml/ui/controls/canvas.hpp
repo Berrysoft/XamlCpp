@@ -222,7 +222,7 @@ namespace xaml
     ADD_CONTROL_MEMBERS();   \
     ADD_EVENT(redraw)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, canvas);
             ADD_CTOR_DEF();

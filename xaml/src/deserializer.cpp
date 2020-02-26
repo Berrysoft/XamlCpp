@@ -45,10 +45,10 @@ namespace xaml
         if (node.map_class)
         {
             auto [ns, name] = *node.map_class;
-            auto map_type = get_type(ns, name);
+            auto map_type = m_ctx->get_type(ns, name);
             if (map_type) t = *map_type;
         }
-        shared_ptr<meta_class> c{ construct(t) };
+        shared_ptr<meta_class> c{ m_ctx->construct(t) };
         if (c)
         {
             deserialize_impl(c, node, root ? root : c);
@@ -89,7 +89,7 @@ namespace xaml
         }
         for (auto& ev : node.events)
         {
-            auto method = __get_first_method(root->this_type(), ev.value);
+            auto method = m_ctx->__get_first_method(root->this_type(), ev.value);
             if (method)
             {
                 ev.info.add_erased_this(mc.get(), root.get(), method);
@@ -114,7 +114,7 @@ namespace xaml
                 auto& n = get<markup_node>(value);
                 deserializer_markup_context context{ mc, prop.info.name(), symbols, static_pointer_cast<control>(mc.lock())->get_data_context() };
                 auto ex = deserialize(n);
-                static_pointer_cast<markup_extension>(ex)->provide(context);
+                static_pointer_cast<markup_extension>(ex)->provide(*m_ctx, context);
                 break;
             }
             case 2: // xaml_node
@@ -149,7 +149,7 @@ namespace xaml
 
     shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
     {
-        shared_ptr<meta_class> ex{ construct(node.type) };
+        shared_ptr<meta_class> ex{ m_ctx->construct(node.type) };
         for (auto& p : node.properties)
         {
             auto& value = p.value;

@@ -25,7 +25,7 @@ namespace xaml
     ADD_MULTICONTAINER_MEMBERS(); \
     ADD_PROP(orientation)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, stack_panel);
             ADD_CTOR_DEF();

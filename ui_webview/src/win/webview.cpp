@@ -14,18 +14,20 @@ namespace xaml
         {
             set_handle(sparent->get_handle());
             rectangle real = region - get_margin();
+            UINT udpi = GetDpiForWindow(get_handle());
+            rectangle real_real = real * udpi / 96.0;
             if (!__get_webview())
             {
                 m_webview = make_shared<webview_edge2>();
-                m_webview->create_async(get_handle(), real, [this, real]() {
+                m_webview->create_async(get_handle(), real_real, [this, real_real]() {
                     if (!*m_webview)
                     {
                         m_webview = make_shared<webview_edge>();
-                        m_webview->create_async(get_handle(), real, [this, real]() {
+                        m_webview->create_async(get_handle(), real_real, [this, real_real]() {
                             if (!*m_webview)
                             {
                                 m_webview = make_shared<webview_ie>();
-                                m_webview->create_async(get_handle(), real, [this]() {
+                                m_webview->create_async(get_handle(), real_real, [this]() {
                                     if (!*m_webview)
                                     {
                                         m_webview = nullptr;
@@ -49,7 +51,7 @@ namespace xaml
                 });
             }
             __set_size_noevent({ real.width, real.height });
-            if (__get_webview() && *__get_webview()) m_webview->set_rect(real);
+            if (__get_webview() && *__get_webview()) m_webview->set_rect(real_real);
         }
     }
 
@@ -71,7 +73,7 @@ namespace xaml
     {
         if (__get_webview() && *__get_webview())
         {
-            m_webview->set_size(get_size());
+            m_webview->set_size(__get_real_size());
         }
     }
 

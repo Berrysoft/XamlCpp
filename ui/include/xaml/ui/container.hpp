@@ -38,7 +38,7 @@ namespace xaml
     ADD_EVENT(child_changed);   \
     ADD_DEF_PROP(child)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, container);
             ADD_CONTAINER_MEMBERS();
@@ -69,7 +69,7 @@ namespace xaml
     ADD_COLLECTION_PROP(child, std::shared_ptr<control>); \
     ADD_DEF_PROP(child)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, multicontainer);
             ADD_MULTICONTAINER_MEMBERS();

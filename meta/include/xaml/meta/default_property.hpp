@@ -18,7 +18,7 @@ namespace xaml
         default_property(std::string_view prop_name = {}) : m_property_name(prop_name) {}
         ~default_property() override {}
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, default_property);
             ADD_CTOR_DEF();

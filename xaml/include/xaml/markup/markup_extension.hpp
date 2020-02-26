@@ -18,12 +18,12 @@ namespace xaml
     public:
         virtual ~markup_extension() {}
 
-        virtual void provide(markup_context& context) = 0;
+        virtual void provide(meta_context& ctx, markup_context& context) = 0;
 
 #define ADD_MARKUP_EXTENSION_MEMBERS()
 
     public:
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, markup_extension);
             ADD_MARKUP_EXTENSION_MEMBERS();

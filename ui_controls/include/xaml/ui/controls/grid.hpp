@@ -135,7 +135,7 @@ namespace xaml
     ADD_ATTACH_PROP(column_span, control&); \
     ADD_ATTACH_PROP(row_span, control&)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, grid);
             ADD_CTOR_DEF();

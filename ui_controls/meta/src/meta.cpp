@@ -17,7 +17,7 @@ using namespace xaml;
 static ostream& compile_grid_length(ostream& stream, grid_length length)
 {
     stream << "{ " << length.value << ", ";
-    stream << enum_meta<grid_layout, char>{}(length.layout);
+    stream << "::xaml::grid_layout::" << enum_meta<grid_layout, char>{}(length.layout);
     return stream << " }";
 }
 
@@ -25,8 +25,8 @@ extern "C"
 {
     XAML_UI_CONTROLS_META_API void init_meta(void* ctx) noexcept
     {
-        shared_ptr<meta_context>* pctx = (shared_ptr<meta_context>*)ctx;
-        ui_controls_init_traits::init_meta(pctx ? *pctx : nullptr);
+        meta_context* pctx = (meta_context*)ctx;
+        ui_controls_init_traits::init_meta(*pctx);
     }
 
     XAML_UI_CONTROLS_META_API int can_compile(void* t) noexcept
@@ -73,16 +73,15 @@ extern "C"
 
 namespace xaml
 {
-    void ui_controls_init_traits::init_meta(shared_ptr<meta_context> const& ctx) noexcept
+    void ui_controls_init_traits::init_meta(meta_context& ctx) noexcept
     {
-        init_context(ctx);
         register_class<
             layout_base, grid, uniform_grid, stack_panel,
             canvas,
             button, check_box, radio_box,
             label,
             entry, password_entry,
-            combo_box>();
+            combo_box>(ctx);
         REGISTER_ENUM(xaml, grid_layout);
         REGISTER_ENUM(xaml, orientation);
     }

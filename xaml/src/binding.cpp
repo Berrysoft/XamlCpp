@@ -5,8 +5,8 @@ using namespace std;
 
 namespace xaml
 {
-    void binding::provide(markup_context& context)
+    void binding::provide(meta_context& ctx, markup_context& context)
     {
-        xaml::bind(context.current_element(), context.current_property(), context.find_element(m_element), m_path, m_mode);
+        xaml::bind(ctx, context.current_element(), context.current_property(), context.find_element(m_element), m_path, m_mode);
     }
 } // namespace xaml

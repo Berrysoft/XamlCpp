@@ -49,7 +49,7 @@ namespace xaml
     ADD_PROP_EVENT(is_checked); \
     ADD_PROP(group)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, radio_box);
             ADD_CTOR_DEF();

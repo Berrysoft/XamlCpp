@@ -57,7 +57,7 @@ namespace xaml
     ADD_PROP_EVENT(text);        \
     ADD_DEF_PROP(text)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, combo_box);
             ADD_CTOR_DEF();

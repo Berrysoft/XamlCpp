@@ -28,7 +28,7 @@ namespace xaml
     ADD_ENTRY_MEMBERS();             \
     ADD_PROP_EVENT(password_char)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, password_entry);
             ADD_CTOR_DEF();

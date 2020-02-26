@@ -53,7 +53,7 @@ namespace xaml
         {
         }
 
-        XAML_API void provide(markup_context& context) override;
+        XAML_API void provide(meta_context& ctx, markup_context& context) override;
 
 #define ADD_BINDING_EXTENSION_MEMBERS() \
     ADD_MARKUP_EXTENSION_MEMBERS();     \
@@ -63,7 +63,7 @@ namespace xaml
     ADD_DEF_PROP(path)
 
     public:
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, binding);
             ADD_CTOR_DEF();

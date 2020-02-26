@@ -29,7 +29,7 @@ namespace xaml
     ADD_PROP(rows);                \
     ADD_PROP(orientation)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, uniform_grid);
             ADD_CTOR_DEF();

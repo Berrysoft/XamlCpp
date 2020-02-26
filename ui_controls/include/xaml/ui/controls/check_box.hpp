@@ -45,7 +45,7 @@ namespace xaml
     ADD_BUTTON_MEMBERS();       \
     ADD_PROP_EVENT(is_checked)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, check_box);
             ADD_CTOR_DEF();

@@ -21,16 +21,17 @@ namespace xaml
         XAMLC_API std::vector<std::string_view> include_headers() noexcept;
     };
 
-    XAMLC_API void add_compiler_module(std::string_view path);
+    XAMLC_API void add_compiler_module(meta_context& ctx, std::string_view path);
 
     class compiler
     {
-    public:
-        compiler() {}
-        ~compiler() {}
-
     private:
+        meta_context* m_ctx;
         size_t indent_count{ 0 };
+
+    public:
+        compiler(meta_context& ctx) : m_ctx(&ctx) {}
+        ~compiler() {}
 
     protected:
         XAMLC_API std::ostream& write_indent(std::ostream& stream);

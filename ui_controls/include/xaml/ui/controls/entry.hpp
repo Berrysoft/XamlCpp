@@ -48,7 +48,7 @@ namespace xaml
     ADD_PROP(text_halignment); \
     ADD_DEF_PROP(text)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, entry);
             ADD_CTOR_DEF();

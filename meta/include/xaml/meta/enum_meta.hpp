@@ -45,8 +45,6 @@ namespace xaml
         TKey1& at2(TKey2 const& key) noexcept { return m_map1[m_hasher2(key)]; }
     };
 
-    STRING_CONST(__namespace_delimeter, "::")
-
     template <typename TEnum, typename TChar, __unordered_bimap<std::basic_string_view<TChar>, TEnum>* pmap>
     struct __enum_meta_helper
     {
@@ -55,12 +53,9 @@ namespace xaml
             return pmap->at1(str);
         }
 
-        inline std::basic_string<TChar> operator()(TEnum e) const noexcept
+        inline std::basic_string_view<TChar> operator()(TEnum e) const noexcept
         {
-            auto [ns, name] = *get_type_name(std::type_index(typeid(TEnum)));
-            std::basic_ostringstream<TChar> stream;
-            stream << __namespace_delimeter<TChar> << ns << __namespace_delimeter<TChar> << name << __namespace_delimeter<TChar> << pmap->at2(e);
-            return stream.str();
+            return pmap->at2(e);
         }
     };
 

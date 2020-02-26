@@ -237,7 +237,7 @@ namespace xaml
     ADD_PROP_EVENT(halignment); \
     ADD_PROP_EVENT(valignment)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, control);
             ADD_CONTROL_MEMBERS();

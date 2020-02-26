@@ -47,13 +47,13 @@ namespace xaml
         return {};
     }
 
-    static unordered_map<string_view, shared_ptr<compiler_module>> m_cmodules;
+    static unordered_map<string_view, unique_ptr<compiler_module>> m_cmodules;
 
-    void add_compiler_module(string_view path)
+    void add_compiler_module(meta_context& ctx, string_view path)
     {
-        auto m = make_shared<compiler_module>(path);
-        m->register_meta();
-        m_cmodules.emplace(path, m);
+        auto m = make_unique<compiler_module>(path);
+        m->register_meta(ctx);
+        m_cmodules.emplace(path, move(m));
     }
 
     static array int_types{
@@ -90,7 +90,7 @@ namespace xaml
         return false;
     }
 
-    static string xaml_cpp_compile(type_index type, string_view code)
+    static string xaml_cpp_compile(meta_context& ctx, type_index type, string_view code)
     {
         if (type == type_index(typeid(bool)))
         {
@@ -121,9 +121,9 @@ namespace xaml
             stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
             return stream.str();
         }
-        else if (is_registered_enum(type))
+        else if (ctx.is_registered_enum(type))
         {
-            auto [ns, name] = *get_type_name(type);
+            auto [ns, name] = *ctx.get_type_name(type);
             std::ostringstream stream;
             stream << "::" << ns << "::" << name << "::" << code;
             return stream.str();
@@ -181,7 +181,7 @@ namespace xaml
 
     ostream& compiler::write_type(ostream& stream, type_index type)
     {
-        auto t = *get_type_name(type);
+        auto t = *m_ctx->get_type_name(type);
         return write_type(stream, get<0>(t), get<1>(t));
     }
 
@@ -235,11 +235,11 @@ namespace xaml
     {
         if (node_type == host_type)
         {
-            return write_set_property(stream, name, prop, xaml_cpp_compile(prop_type, value));
+            return write_set_property(stream, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
         }
         else
         {
-            return write_set_property(stream, host_type, name, prop, xaml_cpp_compile(prop_type, value));
+            return write_set_property(stream, host_type, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
         }
     }
 
@@ -257,11 +257,11 @@ namespace xaml
     {
         if (node_type == host_type)
         {
-            return write_add_property(stream, name, prop, xaml_cpp_compile(prop_type, value));
+            return write_add_property(stream, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
         }
         else
         {
-            return write_add_property(stream, host_type, name, prop, xaml_cpp_compile(prop_type, value));
+            return write_add_property(stream, host_type, name, prop, xaml_cpp_compile(*m_ctx, prop_type, value));
         }
     }
 
@@ -359,7 +359,7 @@ namespace xaml
             case 1: // markup_node
             {
                 auto& n = get<markup_node>(value);
-                deserializer des{};
+                deserializer des{ *m_ctx };
                 auto ex = des.deserialize(n);
                 write_markup(stream, node.name, prop.info.name(), ex);
                 break;

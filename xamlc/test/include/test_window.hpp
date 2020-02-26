@@ -27,7 +27,7 @@ namespace xaml::test
 
         void on_canvas_redraw(canvas& cv, drawing_context& dc);
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml::test, test_window);
             ADD_CTOR_DEF();

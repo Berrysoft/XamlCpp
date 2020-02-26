@@ -130,7 +130,7 @@ namespace xaml
     ADD_EVENT(closing);       \
     ADD_PROP_EVENT(resizable)
 
-        static void register_class() noexcept
+        REGISTER_CLASS_DECL()
         {
             REGISTER_TYPE(xaml, window);
             ADD_WINDOW_MEMBERS();
