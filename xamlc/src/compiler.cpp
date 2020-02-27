@@ -14,13 +14,15 @@ namespace xaml
 {
     static bool can_compile(module& m, type_index type) noexcept
     {
-        auto pcc = (int (*)(void*) noexcept)m.get_method("can_compile");
+        using can_compile_t = int (*)(void*) noexcept;
+        auto pcc = (can_compile_t)m.get_method("can_compile");
         return pcc ? pcc(&type) : false;
     }
 
     static string module_compile(module& m, type_index type, string_view code) noexcept
     {
-        auto pc = (void (*)(void*, const char*, void*) noexcept)m.get_method("compile");
+        using compile_t = void (*)(void*, const char*, void*) noexcept;
+        auto pc = (compile_t)m.get_method("compile");
         if (pc)
         {
             string result;
@@ -32,7 +34,8 @@ namespace xaml
 
     static vector<string_view> include_headers(module& m) noexcept
     {
-        auto pih = (const char* const* (*)() noexcept)m.get_method("include_headers");
+        using include_headers_t = const char* const* (*)() noexcept;
+        auto pih = (include_headers_t)m.get_method("include_headers");
         if (pih)
         {
             const char* const* headers = pih();
@@ -113,9 +116,8 @@ namespace xaml
         }
         else if (m_ctx->is_registered_enum(type))
         {
-            auto [ns, name] = *m_ctx->get_type_name(type);
             std::ostringstream stream;
-            stream << "::" << ns << "::" << name << "::" << code;
+            write_type(stream, type) << "::" << code;
             return stream.str();
         }
         else

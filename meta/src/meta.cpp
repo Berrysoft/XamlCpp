@@ -6,8 +6,9 @@ namespace xaml
 {
     module* meta_context::add_module(string_view path)
     {
+        using init_meta_t = void (*)(void*) noexcept;
         auto m = make_unique<module>(path);
-        auto pinit = (void (*)(void*) noexcept)m->get_method("init_meta");
+        auto pinit = (init_meta_t)m->get_method("init_meta");
         if (pinit)
         {
             pinit(this);
