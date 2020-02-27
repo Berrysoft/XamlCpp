@@ -46,6 +46,10 @@ namespace xaml
         return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, base_size.height - region.height - region.y, region.width, region.height)];
     }
 
+    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
+    {
+    }
+
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
         NSBezierPath* ellipse = path_ellipse(m_size, region);
