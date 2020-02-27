@@ -180,5 +180,6 @@ namespace xaml::test
         auto cy = cv.get_height() / 2;
         auto r = (min)(cx, cy) - 2;
         dc.draw_ellipse({ colors::black }, { cx - r, cy - r, r * 2, r * 2 });
+        dc.draw_string({ colors::pink }, { U("Arial"), 10 }, { 10, 2 * cy - 20 }, U("Hello world!"));
     }
 } // namespace xaml::test

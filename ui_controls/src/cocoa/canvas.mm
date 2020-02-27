@@ -25,10 +25,6 @@ using namespace std;
 
 namespace xaml
 {
-    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
-    {
-    }
-
     static NSColor* get_NSColor(color c)
     {
         return [NSColor colorWithCalibratedRed:(c.r / 255.0) green:(c.g / 255.0) blue:(c.b / 255.0) alpha:(c.a / 255.0)];
@@ -36,30 +32,30 @@ namespace xaml
 
     static void set_pen(NSBezierPath* path, drawing_pen const& pen)
     {
-        [path setLineWidth:pen.get_width()];
-        [get_NSColor(pen.get_color()) set];
+        [path setLineWidth:pen.width];
+        [get_NSColor(pen.stroke) set];
     }
 
     static void set_brush(NSBezierPath* path, drawing_brush const& brush)
     {
-        [get_NSColor(brush.get_color()) set];
+        [get_NSColor(brush.fill) set];
     }
 
-    NSBezierPath* drawing_context::path_ellipse(rectangle const& region)
+    static NSBezierPath* path_ellipse(size base_size, rectangle const& region)
     {
-        return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, m_size.height - region.height - region.y, region.width, region.height)];
+        return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, base_size.height - region.height - region.y, region.width, region.height)];
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        NSBezierPath* ellipse = path_ellipse(region);
+        NSBezierPath* ellipse = path_ellipse(m_size, region);
         set_pen(ellipse, pen);
         [ellipse stroke];
     }
 
     void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
-        NSBezierPath* ellipse = path_ellipse(region);
+        NSBezierPath* ellipse = path_ellipse(m_size, region);
         set_brush(ellipse, brush);
         [ellipse fill];
     }
@@ -73,44 +69,65 @@ namespace xaml
         [line stroke];
     }
 
-    NSBezierPath* drawing_context::path_rect(rectangle const& rect)
+    static NSBezierPath* path_rect(size base_size, rectangle const& rect)
     {
-        return [NSBezierPath bezierPathWithRect:NSMakeRect(rect.x, m_size.height - rect.height - rect.y, rect.width, rect.height)];
+        return [NSBezierPath bezierPathWithRect:NSMakeRect(rect.x, base_size.height - rect.height - rect.y, rect.width, rect.height)];
     }
 
     void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
-        NSBezierPath* path = path_rect(rect);
+        NSBezierPath* path = path_rect(m_size, rect);
         set_pen(path, pen);
         [path stroke];
     }
 
     void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
-        NSBezierPath* path = path_rect(rect);
+        NSBezierPath* path = path_rect(m_size, rect);
         set_brush(path, brush);
         [path fill];
     }
 
-    NSBezierPath* drawing_context::path_round_rect(rectangle const& rect, size round)
+    static NSBezierPath* path_round_rect(size base_size, rectangle const& rect, size round)
     {
-        return [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(rect.x, m_size.height - rect.height - rect.y, rect.width, rect.height)
+        return [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(rect.x, base_size.height - rect.height - rect.y, rect.width, rect.height)
                                                xRadius:round.width / 2
                                                yRadius:round.height / 2];
     }
 
     void drawing_context::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
     {
-        NSBezierPath* path = path_round_rect(rect, round);
+        NSBezierPath* path = path_round_rect(m_size, rect, round);
         set_pen(path, pen);
         [path stroke];
     }
 
     void drawing_context::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
     {
-        NSBezierPath* path = path_round_rect(rect, round);
+        NSBezierPath* path = path_round_rect(m_size, rect, round);
         set_brush(path, brush);
         [path fill];
+    }
+
+    void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
+    {
+        NSFontDescriptor* fontdes = [NSFontDescriptor fontDescriptorWithName:[NSString stringWithUTF8String:font.font_family.c_str()]
+                                                                        size:font.size];
+        NSFontDescriptorSymbolicTraits traits = 0;
+        if (font.italic) traits |= NSFontDescriptorTraitItalic;
+        if (font.bold) traits |= NSFontDescriptorTraitBold;
+        if (traits)
+        {
+            fontdes = [fontdes fontDescriptorWithSymbolicTraits:traits];  
+		}
+        NSFont* nfont = [NSFont fontWithDescriptor:fontdes size:font.size];
+        NSDictionary* attrs = @{
+                       NSFontAttributeName : nfont,
+            NSForegroundColorAttributeName : get_NSColor(brush.fill)
+		};
+        NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.data()]
+                                                                   attributes:attrs];
+        [astr drawAtPoint:to_native<NSPoint>(p)];
     }
 
     void canvas::__draw(const rectangle& region)

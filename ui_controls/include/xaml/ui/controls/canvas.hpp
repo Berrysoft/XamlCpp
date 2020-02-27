@@ -12,106 +12,25 @@
 #include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
-#if defined(XAML_UI_GTK3) || defined(XAML_UI_COCOA)
-#define USE_CUSTOM_DRAWING_TYPES
-#endif
-
 namespace xaml
 {
-#ifdef USE_CUSTOM_DRAWING_TYPES
-    struct __drawing_fill_t
+    struct drawing_brush
     {
         color fill;
     };
 
-    struct __drawing_stroke_t
+    struct drawing_pen
     {
         color stroke;
-        double width;
+        double width = 1.0;
     };
 
-    struct __drawing_font_t
+    struct drawing_font
     {
         string_t font_family;
         double size;
-        bool italic;
-        bool bold;
-    };
-#endif // USE_CUSTOM_DRAWING_TYPES
-
-    class drawing_brush
-    {
-    public:
-#ifdef XAML_UI_WINDOWS
-        using native_object_type = Gdiplus::SolidBrush;
-#elif defined(USE_CUSTOM_DRAWING_TYPES)
-        using native_object_type = __drawing_fill_t;
-#endif
-        using native_handle_type = native_object_type const*;
-
-    private:
-        native_object_type m_object;
-
-    public:
-        XAML_UI_CONTROLS_API drawing_brush(color c);
-
-        XAML_UI_CONTROLS_API color get_color() const;
-        XAML_UI_CONTROLS_API void set_color(color value);
-
-        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
-    };
-
-    class drawing_pen
-    {
-    public:
-#ifdef XAML_UI_WINDOWS
-        using native_object_type = Gdiplus::Pen;
-#elif defined(USE_CUSTOM_DRAWING_TYPES)
-        using native_object_type = __drawing_stroke_t;
-#endif
-        using native_handle_type = native_object_type const*;
-
-    private:
-        native_object_type m_object;
-
-    public:
-        XAML_UI_CONTROLS_API drawing_pen(color c, double width = 1.0);
-
-        XAML_UI_CONTROLS_API color get_color() const;
-        XAML_UI_CONTROLS_API void set_color(color value);
-
-        XAML_UI_CONTROLS_API double get_width() const;
-        XAML_UI_CONTROLS_API void set_width(double value);
-
-        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
-    };
-
-    class drawing_font
-    {
-    public:
-#ifdef XAML_UI_WINDOWS
-        using native_object_type = Gdiplus::Font;
-#elif defined(USE_CUSTOM_DRAWING_TYPES)
-        using native_object_type = __drawing_font_t;
-#endif
-        using native_handle_type = native_object_type const*;
-
-    private:
-        native_object_type m_object;
-
-    public:
-        XAML_UI_CONTROLS_API drawing_font(string_view_t family, double size, bool italic, bool bold);
-
-        XAML_UI_CONTROLS_API string_view_t get_font_family() const;
-        XAML_UI_CONTROLS_API void set_font_family(string_view_t value);
-
-        XAML_UI_CONTROLS_API double get_size() const;
-
-        XAML_UI_CONTROLS_API bool get_italic() const;
-
-        XAML_UI_CONTROLS_API bool get_bold() const;
-
-        constexpr native_handle_type get_handle() const noexcept { return &m_object; }
+        bool italic = false;
+        bool bold = false;
     };
 
     class drawing_context
@@ -158,13 +77,6 @@ namespace xaml
     public:
         constexpr size __get_size() const noexcept { return m_size; }
         void __set_size(size value) noexcept { m_size = value; }
-
-    private:
-        using path_type = OBJC_OBJECT(NSBezierPath);
-
-        path_type path_ellipse(rectangle const& region);
-        path_type path_rect(rectangle const& rect);
-        path_type path_round_rect(rectangle const& rect, size round);
 #endif // XAML_UI_COCOA
 
     public:

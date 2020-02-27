@@ -50,74 +50,24 @@ namespace xaml
         }
     }
 
-    drawing_brush::drawing_brush(color c) : m_object(Color((int32_t)c))
+    static inline Pen get_Pen(drawing_pen const& pen)
     {
+        return Pen(Color((int)pen.stroke), (REAL)pen.width);
     }
 
-    color drawing_brush::get_color() const
+    static inline SolidBrush get_Brush(drawing_brush const& brush)
     {
-        Color c;
-        check_status(m_object.GetColor(&c));
-        return color::from_argb(c.GetValue());
+        return SolidBrush(Color((int)brush.fill));
     }
 
-    void drawing_brush::set_color(color value)
-    {
-        check_status(m_object.SetColor(Color((int32_t)value)));
-    }
-
-    drawing_pen::drawing_pen(color c, double width) : m_object(Color((int32_t)c), (float)width)
-    {
-    }
-
-    color drawing_pen::get_color() const
-    {
-        Color c;
-        check_status(m_object.GetColor(&c));
-        return color::from_argb(c.GetValue());
-    }
-
-    void drawing_pen::set_color(color value)
-    {
-        check_status(m_object.SetColor(Color((int32_t)value)));
-    }
-
-    double drawing_pen::get_width() const
-    {
-        return m_object.GetWidth();
-    }
-
-    void drawing_pen::set_width(double value)
-    {
-        check_status(m_object.SetWidth((float)value));
-    }
-
-    constexpr INT get_font_style(bool italic, bool bold)
+    static constexpr INT get_font_style(bool italic, bool bold)
     {
         return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
     }
 
-    drawing_font::drawing_font(string_view_t family, double size, bool italic, bool bold) : m_object(family.data(), (REAL)size, get_font_style(italic, bold))
+    static inline Font get_Font(drawing_font const& font, double dpi)
     {
-    }
-
-    double drawing_font::get_size() const
-    {
-        return m_object.GetSize();
-    }
-
-    bool drawing_font::get_italic() const
-    {
-        return m_object.GetStyle() & FontStyleItalic;
-    }
-
-    bool drawing_font::get_bold() const
-    {
-        return m_object.GetStyle() & FontStyleBold;
-    }
-
-    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
-    {
+        return Font(font.font_family.c_str(), (REAL)(font.size * dpi / 96.0), get_font_style(font.italic, font.bold));
     }
 
     static inline RectF get_RectF(rectangle const& rect, double dpi)
@@ -132,42 +82,51 @@ namespace xaml
 
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
-        check_status(m_handle->DrawArc(pen.get_handle(), get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
+        auto p = get_Pen(pen);
+        check_status(m_handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
-        check_status(m_handle->FillPie(brush.get_handle(), get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
+        auto b = get_Brush(brush);
+        check_status(m_handle->FillPie(&b, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        check_status(m_handle->DrawEllipse(pen.get_handle(), get_RectF(region, __get_dpi())));
+        auto p = get_Pen(pen);
+        check_status(m_handle->DrawEllipse(&p, get_RectF(region, __get_dpi())));
     }
 
     void drawing_context::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
-        check_status(m_handle->FillEllipse(brush.get_handle(), get_RectF(region, __get_dpi())));
+        auto b = get_Brush(brush);
+        check_status(m_handle->FillEllipse(&b, get_RectF(region, __get_dpi())));
     }
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
-        check_status(m_handle->DrawLine(pen.get_handle(), get_PointF(startp, __get_dpi()), get_PointF(endp, __get_dpi())));
+        auto p = get_Pen(pen);
+        check_status(m_handle->DrawLine(&p, get_PointF(startp, __get_dpi()), get_PointF(endp, __get_dpi())));
     }
 
     void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
-        check_status(m_handle->DrawRectangle(pen.get_handle(), get_RectF(rect, __get_dpi())));
+        auto p = get_Pen(pen);
+        check_status(m_handle->DrawRectangle(&p, get_RectF(rect, __get_dpi())));
     }
 
     void drawing_context::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
-        check_status(m_handle->FillRectangle(brush.get_handle(), get_RectF(rect, __get_dpi())));
+        auto b = get_Brush(brush);
+        check_status(m_handle->FillRectangle(&b, get_RectF(rect, __get_dpi())));
     }
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
-        check_status(m_handle->DrawString(str.data(), (INT)str.length(), font.get_handle(), get_PointF(p, __get_dpi()), brush.get_handle()));
+        auto b = get_Brush(brush);
+        auto f = get_Font(font, __get_dpi());
+        check_status(m_handle->DrawString(str.data(), (INT)str.length(), &f, get_PointF(p, __get_dpi()), &b));
     }
 
     canvas::canvas() : control()

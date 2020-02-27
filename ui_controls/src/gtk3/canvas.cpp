@@ -4,19 +4,15 @@
 
 namespace xaml
 {
-    drawing_context::drawing_context(native_handle_type handle) : m_handle(handle)
-    {
-    }
-
     void drawing_context::set_pen(drawing_pen const& pen)
     {
-        cairo_set_source_rgba(m_handle, pen.get_color().r / 255.0, pen.get_color().g / 255.0, pen.get_color().b / 255.0, pen.get_color().a / 255.0);
-        cairo_set_line_width(m_handle, pen.get_width());
+        cairo_set_source_rgba(m_handle, pen.stroke.r / 255.0, pen.stroke.g / 255.0, pen.stroke.b / 255.0, pen.stroke.a / 255.0);
+        cairo_set_line_width(m_handle, pen.width);
     }
 
     void drawing_context::set_brush(drawing_brush const& brush)
     {
-        cairo_set_source_rgba(m_handle, brush.get_color().r / 255.0, brush.get_color().g / 255.0, brush.get_color().b / 255.0, brush.get_color().a / 255.0);
+        cairo_set_source_rgba(m_handle, brush.fill.r / 255.0, brush.fill.g / 255.0, brush.fill.b / 255.0, brush.fill.a / 255.0);
     }
 
     void drawing_context::path_arc(rectangle const& region, double start_angle, double end_angle)
@@ -113,8 +109,8 @@ namespace xaml
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
         set_brush(brush);
-        cairo_select_font_face(m_handle, font.get_font_family().data(), font.get_italic() ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.get_bold() ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(m_handle, font.get_size());
+        cairo_select_font_face(m_handle, font.font_family.c_str(), font.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(m_handle, font.size);
         cairo_move_to(m_handle, p.x, p.y);
         cairo_show_text(m_handle, str.data());
     }
