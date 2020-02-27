@@ -19,7 +19,7 @@ namespace xaml
         return nullptr;
     }
 
-    string meta_context::get_real_namespace(string_view ns)
+    string meta_context::get_real_namespace(string_view ns) const
     {
         string sns{ ns };
         auto it = namespace_map.find(sns);
@@ -33,21 +33,22 @@ namespace xaml
         }
     }
 
-    optional<type_index> meta_context::get_type(string_view ns, string_view name) noexcept
+    optional<type_index> meta_context::get_type(string_view ns, string_view name) const noexcept
     {
-        string sns{ get_real_namespace(ns) };
-        auto it = type_map[sns].find((string)name);
-        if (it != type_map[sns].end())
+        auto it = type_map.find((string)get_real_namespace(ns));
+        if (it != type_map.end())
         {
-            return make_optional(it->second);
+            auto& map = it->second;
+            auto mit = map.find((string)name);
+            if (mit != map.end())
+            {
+                return make_optional(mit->second);
+            }
         }
-        else
-        {
-            return nullopt;
-        }
+        return nullopt;
     }
 
-    optional<tuple<string, string>> meta_context::get_type_name(type_index type) noexcept
+    optional<tuple<string, string>> meta_context::get_type_name(type_index type) const noexcept
     {
         auto it = type_name_map.find(type);
         if (it != type_name_map.end())
@@ -71,7 +72,7 @@ namespace xaml
         enum_type_set.emplace(move(type));
     }
 
-    bool meta_context::is_registered_enum(type_index type) noexcept
+    bool meta_context::is_registered_enum(type_index type) const noexcept
     {
         return enum_type_set.find(type) != enum_type_set.end();
     }
@@ -81,9 +82,19 @@ namespace xaml
         namespace_map.emplace((string)xmlns, (string)ns);
     }
 
-    meta_class* meta_context::__get_attribute(type_index type, type_index attr_type) noexcept
+    meta_class const* meta_context::__get_attribute(type_index type, type_index attr_type) const noexcept
     {
-        return attribute_map[type][attr_type].get();
+        auto it = attribute_map.find(type);
+        if (it != attribute_map.end())
+        {
+            auto& map = it->second;
+            auto mit = map.find(attr_type);
+            if (mit != map.end())
+            {
+                return mit->second.get();
+            }
+        }
+        return nullptr;
     }
 
     void meta_context::set_attribute(type_index type, unique_ptr<meta_class>&& attr) noexcept
@@ -94,14 +105,18 @@ namespace xaml
         }
     }
 
-    __type_erased_function* meta_context::__get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    __type_erased_function const* meta_context::__get_static_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
     {
-        auto its = static_method_map[type].equal_range((string)name);
-        for (auto it = its.first; it != its.second; ++it)
+        auto it = static_method_map.find(type);
+        if (it != static_method_map.end())
         {
-            if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
+            auto its = it->second.equal_range((string)name);
+            for (auto it = its.first; it != its.second; ++it)
             {
-                return it->second.get();
+                if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
+                {
+                    return it->second.get();
+                }
             }
         }
         return nullptr;
@@ -112,7 +127,7 @@ namespace xaml
         static_method_map[type].emplace((string)name, move(func));
     }
 
-    __type_erased_function* meta_context::__get_constructor(type_index type, initializer_list<type_index> arg_types) noexcept
+    __type_erased_function const* meta_context::__get_constructor(type_index type, initializer_list<type_index> arg_types) const noexcept
     {
         auto its = ctor_map.equal_range(type);
         for (auto it = its.first; it != its.second; ++it)
@@ -130,25 +145,33 @@ namespace xaml
         ctor_map.emplace(type, move(ctor));
     }
 
-    __type_erased_function* meta_context::__get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) noexcept
+    __type_erased_function const* meta_context::__get_method(type_index type, string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
     {
-        auto its = method_map[type].equal_range((string)name);
-        for (auto it = its.first; it != its.second; ++it)
+        auto it = method_map.find(type);
+        if (it != method_map.end())
         {
-            if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
+            auto its = it->second.equal_range((string)name);
+            for (auto it = its.first; it != its.second; ++it)
             {
-                return it->second.get();
+                if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
+                {
+                    return it->second.get();
+                }
             }
         }
         return nullptr;
     }
 
-    __type_erased_function* meta_context::__get_first_method(type_index type, string_view name) noexcept
+    __type_erased_function const* meta_context::__get_first_method(type_index type, string_view name) const noexcept
     {
-        auto its = method_map[type].equal_range((string)name);
-        if (its.first != its.second)
+        auto it = method_map.find(type);
+        if (it != method_map.end())
         {
-            return its.first->second.get();
+            auto its = it->second.equal_range((string)name);
+            if (its.first != its.second)
+            {
+                return its.first->second.get();
+            }
         }
         return nullptr;
     }
@@ -158,14 +181,78 @@ namespace xaml
         method_map[type].emplace((string)name, move(func));
     }
 
-    type_index meta_context::__get_property_type(type_index type, string_view name) noexcept
+    type_index meta_context::__get_property_type(type_index type, string_view name) const noexcept
     {
-        return prop_type_map[type][(string)name].type;
+        auto it = prop_type_map.find(type);
+        if (it != prop_type_map.end())
+        {
+            auto& map = it->second;
+            auto mit = map.find((string)name);
+            if (mit != map.end())
+            {
+                return mit->second.type;
+            }
+        }
+        return type_index(typeid(nullptr_t));
+    }
+
+    property_info meta_context::get_property(std::type_index type, std::string_view name) const
+    {
+        property_info info = {};
+        info.m_name = name;
+        info.m_type = __get_property_type(type, name);
+        std::string pname = __property_name(name);
+        info.getter = get_method<std::any>(type, pname);
+        info.setter = get_method<void, std::any>(type, pname);
+        return info;
+    }
+
+    property_info meta_context::get_attach_property(std::type_index type, std::string_view name) const
+    {
+        property_info info = {};
+        info.m_name = name;
+        info.m_type = __get_property_type(type, name);
+        std::string pname = __attach_property_name(name);
+        info.getter = get_static_method<std::any, meta_class*>(type, pname);
+        info.setter = get_static_method<void, meta_class*, std::any>(type, pname);
+        return info;
     }
 
     void meta_context::__set_property_type(type_index type, string_view name, type_index prop_type) noexcept
     {
         prop_type_map[type][(string)name].type = prop_type;
+    }
+
+    collection_property_info meta_context::get_collection_property(std::type_index type, std::string_view name) const
+    {
+        collection_property_info info = {};
+        info.m_name = name;
+        info.m_type = __get_property_type(type, name);
+        info.adder = get_method<void, std::any>(type, __add_collection_property_name(name));
+        info.remover = get_method<void, std::any>(type, __remove_collection_property_name(name));
+        return info;
+    }
+
+    collection_property_info meta_context::get_attach_collection_property(std::type_index type, std::string_view name) const
+    {
+        collection_property_info info = {};
+        info.m_name = name;
+        info.m_type = __get_property_type(type, name);
+        info.adder = get_static_method<void, meta_class*, std::any>(type, __add_attach_collection_property_name(name));
+        info.remover = get_static_method<void, meta_class*, std::any>(type, __remove_attach_collection_property_name(name));
+        return info;
+    }
+
+    event_info meta_context::__get_event(std::type_index type, std::string_view name, std::initializer_list<std::type_index> arg_types) const
+    {
+        event_info info = {};
+        info.m_name = name;
+        std::string ename = __event_name(name);
+        info.adder = get_method<typename event_info::token_type, __type_erased_function const*>(type, ename);
+        info.adder_erased_this = get_method<typename event_info::token_type, meta_class*, __type_erased_function const*>(type, ename);
+        info.remover = get_method<void, typename event_info::token_type>(type, ename);
+        info.invoker = __get_method(type, ename, std::type_index(typeid(void)), arg_types);
+        return info;
     }
 
     size_t meta_context::bind(weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)
@@ -178,6 +265,11 @@ namespace xaml
     void meta_context::unbind(size_t token)
     {
         bind_map.erase(token);
+    }
+
+    static inline std::string __get_property_changed_event_name(std::string_view name)
+    {
+        return (std::string)name + "_changed";
     }
 
     __binding_guard::__binding_guard(meta_context& ctx, weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)

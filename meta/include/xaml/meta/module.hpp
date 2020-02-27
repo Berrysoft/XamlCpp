@@ -60,7 +60,7 @@ namespace xaml
         XAML_META_API void open(std::string_view name);
         XAML_META_API void close();
 
-        XAML_META_API void* get_method(std::string_view name);
+        XAML_META_API void* get_method(std::string_view name) const;
     };
 } // namespace xaml
 

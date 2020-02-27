@@ -265,10 +265,10 @@ namespace xaml
 
     private:
         std::string m_name;
-        std::function<token_type(meta_class*, __type_erased_function*)> adder;
-        std::function<token_type(meta_class*, meta_class*, __type_erased_function*)> adder_erased_this;
+        std::function<token_type(meta_class*, __type_erased_function const*)> adder;
+        std::function<token_type(meta_class*, meta_class*, __type_erased_function const*)> adder_erased_this;
         std::function<void(meta_class*, token_type)> remover;
-        __type_erased_function* invoker;
+        __type_erased_function const* invoker;
 
     public:
         std::string_view name() const noexcept { return m_name; }
@@ -303,7 +303,7 @@ namespace xaml
             return 0;
         }
 
-        token_type add_erased_this(meta_class* self, meta_class* target, __type_erased_function* func)
+        token_type add_erased_this(meta_class* self, meta_class* target, __type_erased_function const* func)
         {
             if (adder_erased_this)
             {
@@ -325,7 +325,7 @@ namespace xaml
         {
             if (match_arg_type<Args...>())
             {
-                auto i = static_cast<__type_erased_function_impl<void(meta_class*, Args...)>*>(invoker);
+                auto i = static_cast<__type_erased_function_impl<void(meta_class*, Args...)> const*>(invoker);
                 i->func(self, std::forward<Args>(args)...);
             }
         }
@@ -365,17 +365,17 @@ namespace xaml
 
     public:
         XAML_META_API module* add_module(std::string_view path);
-        std::unordered_map<std::string_view, std::unique_ptr<module>>& get_modules() { return modules_map; }
+        std::unordered_map<std::string_view, std::unique_ptr<module>> const& get_modules() const { return modules_map; }
 
-        XAML_META_API std::string get_real_namespace(std::string_view ns);
+        XAML_META_API std::string get_real_namespace(std::string_view ns) const;
 
         // TYPE METHODS
 
         // Get type with namespace and name.
-        XAML_META_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) noexcept;
+        XAML_META_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) const noexcept;
 
         // Get the namespace and name of the type.
-        XAML_META_API std::optional<std::tuple<std::string, std::string>> get_type_name(std::type_index type) noexcept;
+        XAML_META_API std::optional<std::tuple<std::string, std::string>> get_type_name(std::type_index type) const noexcept;
 
         XAML_META_API void __register_type(std::string_view ns, std::string_view name, std::type_index type) noexcept;
 
@@ -396,20 +396,20 @@ namespace xaml
             __register_enum(t);
         }
 
-        XAML_META_API bool is_registered_enum(std::type_index type) noexcept;
+        XAML_META_API bool is_registered_enum(std::type_index type) const noexcept;
 
         // Add a map between xmlns and C++ namespace.
         XAML_META_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 
         // ATTRIBUTE METHODS
 
-        XAML_META_API meta_class* __get_attribute(std::type_index type, std::type_index attr_type) noexcept;
+        XAML_META_API meta_class const* __get_attribute(std::type_index type, std::type_index attr_type) const noexcept;
 
         // Get an attribute instance with specified type and attribute type.
         template <typename TAttr>
-        TAttr* get_attribute(std::type_index type) noexcept
+        TAttr const* get_attribute(std::type_index type) const noexcept
         {
-            return static_cast<TAttr*>(__get_attribute(type, std::type_index(typeid(TAttr))));
+            return static_cast<TAttr const*>(__get_attribute(type, std::type_index(typeid(TAttr))));
         }
 
         // Set an attribute to specified type.
@@ -419,15 +419,15 @@ namespace xaml
 
         // FUNCTION METHODS - STATIC METHOD
 
-        XAML_META_API __type_erased_function* __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+        XAML_META_API __type_erased_function const* __get_static_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
 
         template <typename Return, typename... Args>
-        std::function<Return(Args...)> get_static_method(std::type_index type, std::string_view name) noexcept
+        std::function<Return(Args...)> get_static_method(std::type_index type, std::string_view name) const noexcept
         {
             auto method = __get_static_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
             if (method)
             {
-                return std::function<Return(Args...)>(static_cast<__type_erased_function_impl<Return(Args...)>*>(method)->func);
+                return static_cast<__type_erased_function_impl<Return(Args...)> const*>(method)->func;
             }
             else
             {
@@ -436,7 +436,7 @@ namespace xaml
         }
 
         template <typename Return, typename... Args>
-        __optional_return_t<Return> invoke_static_method(std::type_index type, std::string_view name, Args... args)
+        __optional_return_t<Return> invoke_static_method(std::type_index type, std::string_view name, Args... args) const
         {
             auto m = get_static_method<Return, Args...>(type, name);
             if (m)
@@ -488,16 +488,15 @@ namespace xaml
 
         // FUNCTION METHODS - CONSTRUCTOR
 
-        XAML_META_API __type_erased_function* __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) noexcept;
+        XAML_META_API __type_erased_function const* __get_constructor(std::type_index type, std::initializer_list<std::type_index> arg_types) const noexcept;
 
         template <typename... Args>
-        std::function<meta_class*(Args...)> get_constructor(std::type_index type) noexcept
+        std::function<meta_class*(Args...)> get_constructor(std::type_index type) const noexcept
         {
             auto ctor = __get_constructor(type, { std::type_index(typeid(Args))... });
             if (ctor)
             {
-                return std::function<meta_class*(Args...)>(
-                    static_cast<__type_erased_function_impl<meta_class*(Args...)>*>(ctor)->func);
+                return static_cast<__type_erased_function_impl<meta_class*(Args...)> const*>(ctor)->func;
             }
             else
             {
@@ -506,7 +505,7 @@ namespace xaml
         }
 
         template <typename... Args>
-        meta_class* construct(std::type_index type, Args... args) noexcept
+        meta_class* construct(std::type_index type, Args... args) const noexcept
         {
             auto ctor = get_constructor<Args...>(type);
             if (ctor)
@@ -534,18 +533,17 @@ namespace xaml
 
         // FUNCTION METHODS - MEMBER METHODS
 
-        XAML_META_API __type_erased_function* __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) noexcept;
+        XAML_META_API __type_erased_function const* __get_method(std::type_index type, std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
 
-        XAML_META_API __type_erased_function* __get_first_method(std::type_index type, std::string_view name) noexcept;
+        XAML_META_API __type_erased_function const* __get_first_method(std::type_index type, std::string_view name) const noexcept;
 
         template <typename Return, typename... Args>
-        std::function<Return(meta_class*, Args...)> get_method(std::type_index type, std::string_view name) noexcept
+        std::function<Return(meta_class*, Args...)> get_method(std::type_index type, std::string_view name) const noexcept
         {
             auto m = __get_method(type, name, std::type_index(typeid(Return)), { std::type_index(typeid(meta_class*)), std::type_index(typeid(Args))... });
             if (m)
             {
-                return std::function<Return(meta_class*, Args...)>(
-                    static_cast<__type_erased_this_function_impl<Return(Args...)>*>(m)->func);
+                return static_cast<__type_erased_this_function_impl<Return(Args...)> const*>(m)->func;
             }
             else
             {
@@ -554,7 +552,7 @@ namespace xaml
         }
 
         template <typename Return, typename... Args>
-        __optional_return_t<Return> invoke_method(meta_class* obj, std::string_view name, Args... args) noexcept
+        __optional_return_t<Return> invoke_method(meta_class* obj, std::string_view name, Args... args) const noexcept
         {
             auto m = get_method<Return, Args...>(obj->this_type(), name);
             if (m)
@@ -608,39 +606,21 @@ namespace xaml
 
         // PROPERTY
 
-        inline std::string __property_name(std::string_view name)
+        static std::string __property_name(std::string_view name)
         {
             return "prop@" + (std::string)name;
         }
 
-        inline std::string __attach_property_name(std::string_view name)
+        static std::string __attach_property_name(std::string_view name)
         {
             return "aprop@" + (std::string)name;
         }
 
-        XAML_META_API std::type_index __get_property_type(std::type_index type, std::string_view name) noexcept;
+        XAML_META_API std::type_index __get_property_type(std::type_index type, std::string_view name) const noexcept;
 
-        inline property_info get_property(std::type_index type, std::string_view name)
-        {
-            property_info info = {};
-            info.m_name = name;
-            info.m_type = __get_property_type(type, name);
-            std::string pname = __property_name(name);
-            info.getter = get_method<std::any>(type, pname);
-            info.setter = get_method<void, std::any>(type, pname);
-            return info;
-        }
+        XAML_META_API property_info get_property(std::type_index type, std::string_view name) const;
 
-        inline property_info get_attach_property(std::type_index type, std::string_view name)
-        {
-            property_info info = {};
-            info.m_name = name;
-            info.m_type = __get_property_type(type, name);
-            std::string pname = __attach_property_name(name);
-            info.getter = get_static_method<std::any, meta_class*>(type, pname);
-            info.setter = get_static_method<void, meta_class*, std::any>(type, pname);
-            return info;
-        }
+        XAML_META_API property_info get_attach_property(std::type_index type, std::string_view name) const;
 
         XAML_META_API void __set_property_type(std::type_index type, std::string_view name, std::type_index prop_type) noexcept;
 
@@ -723,45 +703,29 @@ namespace xaml
         // COLLECTION PROPERTY
         // Usually a vector.
 
-        inline std::string __add_collection_property_name(std::string_view name)
+        static std::string __add_collection_property_name(std::string_view name)
         {
             return "cprop@a@" + (std::string)name;
         }
 
-        inline std::string __remove_collection_property_name(std::string_view name)
+        static std::string __remove_collection_property_name(std::string_view name)
         {
             return "cprop@r@" + (std::string)name;
         }
 
-        inline std::string __add_attach_collection_property_name(std::string_view name)
+        static std::string __add_attach_collection_property_name(std::string_view name)
         {
             return "caprop@a@" + (std::string)name;
         }
 
-        inline std::string __remove_attach_collection_property_name(std::string_view name)
+        static std::string __remove_attach_collection_property_name(std::string_view name)
         {
             return "caprop@r@" + (std::string)name;
         }
 
-        inline collection_property_info get_collection_property(std::type_index type, std::string_view name)
-        {
-            collection_property_info info = {};
-            info.m_name = name;
-            info.m_type = __get_property_type(type, name);
-            info.adder = get_method<void, std::any>(type, __add_collection_property_name(name));
-            info.remover = get_method<void, std::any>(type, __remove_collection_property_name(name));
-            return info;
-        }
+        XAML_META_API collection_property_info get_collection_property(std::type_index type, std::string_view name) const;
 
-        inline collection_property_info get_attach_collection_property(std::type_index type, std::string_view name)
-        {
-            collection_property_info info = {};
-            info.m_name = name;
-            info.m_type = __get_property_type(type, name);
-            info.adder = get_static_method<void, meta_class*, std::any>(type, __add_attach_collection_property_name(name));
-            info.remover = get_static_method<void, meta_class*, std::any>(type, __remove_attach_collection_property_name(name));
-            return info;
-        }
+        XAML_META_API collection_property_info get_attach_collection_property(std::type_index type, std::string_view name) const;
 
         template <typename T, typename TValue>
         void add_collection_property_add(std::string_view name, std::function<void(T*, TValue)> adder)
@@ -841,25 +805,15 @@ namespace xaml
 
         // EVENT
 
-        inline std::string __event_name(std::string_view name)
+        static std::string __event_name(std::string_view name)
         {
             return "event@" + (std::string)name;
         }
 
-        inline event_info __get_event(std::type_index type, std::string_view name, std::initializer_list<std::type_index> arg_types)
-        {
-            event_info info = {};
-            info.m_name = name;
-            std::string ename = __event_name(name);
-            info.adder = get_method<typename event_info::token_type, __type_erased_function*>(type, ename);
-            info.adder_erased_this = get_method<typename event_info::token_type, meta_class*, __type_erased_function*>(type, ename);
-            info.remover = get_method<void, typename event_info::token_type>(type, ename);
-            info.invoker = __get_method(type, ename, std::type_index(typeid(void)), arg_types);
-            return info;
-        }
+        XAML_META_API event_info __get_event(std::type_index type, std::string_view name, std::initializer_list<std::type_index> arg_types) const;
 
         template <typename... Args>
-        event_info get_event(std::type_index type, std::string_view name)
+        event_info get_event(std::type_index type, std::string_view name) const
         {
             return __get_event(type, name, { std::type_index(typeid(meta_class*)), std::type_index(typeid(Args))... });
         }
@@ -870,11 +824,11 @@ namespace xaml
             if (adder)
             {
                 std::string ename = __event_name(name);
-                add_method_ex<T, typename event_info::token_type, __type_erased_function*>(
+                add_method_ex<T, typename event_info::token_type, __type_erased_function const*>(
                     ename,
-                    std::function<typename event_info::token_type(meta_class*, __type_erased_function*)>(
-                        [adder](meta_class * self, __type_erased_function * handler) -> typename event_info::token_type {
-                            auto h = static_cast<__type_erased_function_impl<void(Args...)>*>(handler);
+                    std::function<typename event_info::token_type(meta_class*, __type_erased_function const*)>(
+                        [adder](meta_class * self, __type_erased_function const* handler) -> typename event_info::token_type {
+                            auto h = static_cast<__type_erased_function_impl<void(Args...)> const*>(handler);
                             return adder(static_cast<T*>(self), std::move(h->func));
                         }));
             }
@@ -886,11 +840,11 @@ namespace xaml
             if (adder)
             {
                 std::string ename = __event_name(name);
-                add_method_ex<T, typename event_info::token_type, meta_class*, __type_erased_function*>(
+                add_method_ex<T, typename event_info::token_type, meta_class*, __type_erased_function const*>(
                     ename,
-                    std::function<typename event_info::token_type(meta_class*, meta_class*, __type_erased_function*)>(
-                        [adder](meta_class * self, meta_class * target, __type_erased_function * handler) -> typename event_info::token_type {
-                            auto h = static_cast<__type_erased_this_function_impl<void(Args...)>*>(handler);
+                    std::function<typename event_info::token_type(meta_class*, meta_class*, __type_erased_function const*)>(
+                        [adder](meta_class * self, meta_class * target, __type_erased_function const* handler) -> typename event_info::token_type {
+                            auto h = static_cast<__type_erased_this_function_impl<void(Args...)> const*>(handler);
                             auto func = h->func;
                             return adder(static_cast<T*>(self), [target, func](Args... args) { func(target, std::forward<Args>(args)...); });
                         }));
@@ -939,11 +893,6 @@ namespace xaml
         XAML_META_API std::size_t bind(std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);
         XAML_META_API void unbind(std::size_t token);
     };
-
-    inline std::string __get_property_changed_event_name(std::string_view name)
-    {
-        return (std::string)name + "_changed";
-    }
 
     class __binding_guard
     {

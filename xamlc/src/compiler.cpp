@@ -12,14 +12,14 @@ using namespace std;
 
 namespace xaml
 {
-    static bool can_compile(module& m, type_index type) noexcept
+    static bool can_compile(module const& m, type_index type) noexcept
     {
         using can_compile_t = int (*)(void*) noexcept;
         auto pcc = (can_compile_t)m.get_method("can_compile");
         return pcc ? pcc(&type) : false;
     }
 
-    static string module_compile(module& m, type_index type, string_view code) noexcept
+    static string module_compile(module const& m, type_index type, string_view code) noexcept
     {
         using compile_t = void (*)(void*, const char*, void*) noexcept;
         auto pc = (compile_t)m.get_method("compile");
@@ -32,7 +32,7 @@ namespace xaml
         return {};
     }
 
-    static vector<string_view> include_headers(module& m) noexcept
+    static vector<string_view> include_headers(module const& m) noexcept
     {
         using include_headers_t = const char* const* (*)() noexcept;
         auto pih = (include_headers_t)m.get_method("include_headers");
@@ -283,7 +283,7 @@ namespace xaml
             ostringstream s;
             s << "[" << target_name << "](auto&, auto value) { " << target_name << "->set_" << target_prop << "(value); }";
             string arg = s.str();
-            write_call(stream, source_name, "add_", __get_property_changed_event_name(source_prop), { arg });
+            write_call(stream, source_name, "add_", (std::string)source_prop + "_changed", { arg });
         }
         return stream;
     }

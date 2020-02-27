@@ -109,7 +109,7 @@ namespace xaml
         }
     }
 
-    void* module::get_method(string_view name)
+    void* module::get_method(string_view name) const
     {
         FARPROC p = GetProcAddress(get_handle(), name.data());
         return (void*)p;
@@ -135,7 +135,7 @@ namespace xaml
         }
     }
 
-    void* module::get_method(string_view name)
+    void* module::get_method(string_view name) const
     {
         void* p = dlsym(get_handle(), name.data());
         return p;
