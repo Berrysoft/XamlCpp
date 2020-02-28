@@ -5,7 +5,6 @@
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
-#include <xaml/ui/controls/meta.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 #include <xaml/ui/controls/radio_box.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
@@ -23,10 +22,18 @@ static ostream& compile_grid_length(ostream& stream, grid_length length)
 
 extern "C"
 {
-    XAML_UI_CONTROLS_META_API void init_meta(void* ctx) noexcept
+    XAML_UI_CONTROLS_META_API void init_meta(void* pctx) noexcept
     {
-        meta_context* pctx = (meta_context*)ctx;
-        ui_controls_init_traits::init_meta(*pctx);
+        meta_context& ctx = *(meta_context*)pctx;
+        register_class<
+            layout_base, grid, uniform_grid, stack_panel,
+            canvas,
+            button, check_box, radio_box,
+            label,
+            entry, password_entry,
+            combo_box>(ctx);
+        REGISTER_ENUM(xaml, grid_layout);
+        REGISTER_ENUM(xaml, orientation);
     }
 
     XAML_UI_CONTROLS_META_API int can_compile(void* t) noexcept
@@ -70,19 +77,3 @@ extern "C"
     };
     XAML_UI_CONTROLS_META_API const char* const* include_headers() noexcept { return s_headers; }
 }
-
-namespace xaml
-{
-    void ui_controls_init_traits::init_meta(meta_context& ctx) noexcept
-    {
-        register_class<
-            layout_base, grid, uniform_grid, stack_panel,
-            canvas,
-            button, check_box, radio_box,
-            label,
-            entry, password_entry,
-            combo_box>(ctx);
-        REGISTER_ENUM(xaml, grid_layout);
-        REGISTER_ENUM(xaml, orientation);
-    }
-} // namespace xaml
