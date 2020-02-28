@@ -15,19 +15,16 @@ typedef struct _XamlFixedWidget XamlFixedWidget;
 struct _XamlFixedWidget
 {
     GtkWidget* widget;
-    gint x, y, width, height;
+    GtkAllocation alloc;
 };
 
-static XamlFixedWidget* xaml_fixed_widget_new(GtkWidget* widget, gint x, gint y, gint width, gint height)
+static XamlFixedWidget* xaml_fixed_widget_new(GtkWidget* widget, GtkAllocation* alloc)
 {
     XamlFixedWidget* result = malloc(sizeof(XamlFixedWidget));
     if (result)
     {
         result->widget = widget;
-        result->x = x;
-        result->y = y;
-        result->width = width;
-        result->height = height;
+        result->alloc = *alloc;
     }
     return result;
 }
@@ -96,13 +93,13 @@ static void get_size(XamlFixed* self, GtkOrientation direction, gint* minimal, g
         {
             gint ww;
             gtk_widget_get_preferred_width(w->widget, NULL, &ww);
-            *natural = MAX(*natural, w->x + ww);
+            *natural = MAX(*natural, w->alloc.x + ww);
         }
         else
         {
             gint wh;
             gtk_widget_get_preferred_height(w->widget, NULL, &wh);
-            *natural = MAX(*natural, w->y + wh);
+            *natural = MAX(*natural, w->alloc.y + wh);
         }
     }
 }
@@ -144,11 +141,9 @@ static void xaml_fixed_size_allocate(GtkWidget* widget, GtkAllocation* allocatio
             continue;
 
         /* Give the child its allocation */
-        GtkAllocation child_allocation;
-        child_allocation.x = w->x + allocation->x;
-        child_allocation.y = w->y + allocation->y;
-        child_allocation.width = w->width;
-        child_allocation.height = w->height;
+        GtkAllocation child_allocation = w->alloc;
+        child_allocation.x += allocation->x;
+        child_allocation.y += allocation->y;
         gtk_widget_size_allocate(w->widget, &child_allocation);
     }
 }
@@ -168,7 +163,8 @@ static void xaml_fixed_add(GtkContainer* container, GtkWidget* widget)
 
     /* Add the child to our list of children. 
      * All the real work is done in gtk_widget_set_parent(). */
-    XamlFixedWidget* w = xaml_fixed_widget_new(widget, 0, 0, 100, 100);
+    GtkAllocation alloc = { 0, 0, 0, 0 };
+    XamlFixedWidget* w = xaml_fixed_widget_new(widget, &alloc);
     priv->children = g_list_append(priv->children, w);
     gtk_widget_set_parent(widget, GTK_WIDGET(container));
 
@@ -235,25 +231,19 @@ static void xaml_fixed_forall(GtkContainer* container, gboolean include_internal
     g_list_foreach(priv->children, xaml_fixed_forall_callback, &data);
 }
 
-void xaml_fixed_move(XamlFixed* container, GtkWidget* widget, gint x, gint y, gint width, gint height)
+void xaml_fixed_child_size_allocate(XamlFixed* self, GtkWidget* child, GtkAllocation* alloc)
 {
-    if (width < 0) width = 0;
-    if (height < 1) height = 1;
+    XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(self);
 
-    XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(container);
-
-    GList* link = g_list_find_xaml_fixed_widget(priv->children, widget);
+    GList* link = g_list_find_xaml_fixed_widget(priv->children, child);
     if (link)
     {
         XamlFixedWidget* w = link->data;
         gboolean was_visible = gtk_widget_get_visible(w->widget);
-        w->x = x;
-        w->y = y;
-        w->width = width;
-        w->height = height;
+        w->alloc = *alloc;
 
         /* Queue redraw */
         if (was_visible)
-            gtk_widget_queue_resize(GTK_WIDGET(container));
+            gtk_widget_queue_resize(GTK_WIDGET(self));
     }
 }

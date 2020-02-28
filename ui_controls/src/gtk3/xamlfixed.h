@@ -27,7 +27,7 @@ struct _XamlFixedClass
 
 GType xaml_fixed_get_type(void) G_GNUC_CONST;
 GtkWidget* xaml_fixed_new(void);
-void xaml_fixed_move(XamlFixed* self, GtkWidget* child, gint x, gint y, gint width, gint height);
+void xaml_fixed_child_size_allocate(XamlFixed* self, GtkWidget* child, GtkAllocation* alloc);
 
 G_END_DECLS
 

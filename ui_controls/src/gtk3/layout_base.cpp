@@ -21,7 +21,10 @@ namespace xaml
                     gtk_container_add(GTK_CONTAINER(get_handle()), c->get_handle());
                     m_put_map[c] = true;
                 }
-                xaml_fixed_move(XAML_FIXED(get_handle()), c->get_handle(), (gint)(subreal.x - real.x), (gint)(subreal.y - real.y), (gint)subreal.width, (gint)subreal.height);
+                subreal.x -= real.x;
+                subreal.y -= real.y;
+                GtkAllocation alloc = to_native<GtkAllocation>(subreal);
+                xaml_fixed_child_size_allocate(XAML_FIXED(get_handle()), c->get_handle(), &alloc);
             }
         });
     }
