@@ -1,7 +1,7 @@
 #include <test_window.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/controls/grid.hpp>
-#include <xaml/ui/webview/webview.hpp>
+#include <xaml/ui/controls/webview.hpp>
 
 using namespace std;
 

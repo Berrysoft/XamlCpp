@@ -1,6 +1,6 @@
 #include <atomic>
 #include <wil/com.h>
-#include <xaml/ui/webview/webview.hpp>
+#include <xaml/ui/controls/webview.hpp>
 
 #include <ExDisp.h>
 #include <atlbase.h>
