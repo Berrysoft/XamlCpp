@@ -1,6 +1,6 @@
 #import <cocoa/XamlWebViewDelegate.h>
 #include <shared/atomic_guard.hpp>
-#include <xaml/ui/webview/webview.hpp>
+#include <xaml/ui/controls/webview.hpp>
 
 @implementation XamlWebViewDelegate
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation;

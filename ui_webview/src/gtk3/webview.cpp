@@ -1,6 +1,6 @@
 #include <shared/atomic_guard.hpp>
 #include <webkit2/webkit2.h>
-#include <xaml/ui/webview/webview.hpp>
+#include <xaml/ui/controls/webview.hpp>
 
 using namespace std;
 

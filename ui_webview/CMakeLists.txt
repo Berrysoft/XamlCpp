@@ -9,7 +9,7 @@ if(${BUILD_COCOA})
     endif()
 endif()
 
-file(GLOB WV_HEADERS "include/xaml/ui/webview/*.hpp")
+file(GLOB WV_HEADERS "include/xaml/ui/controls/*.hpp")
 
 if(${BUILD_WINDOWS})
     file(GLOB WV_SOURCE "src/win/*.cpp")
@@ -87,7 +87,7 @@ set_target_properties(xaml_ui_webview PROPERTIES
     SOVERSION ${CMAKE_PROJECT_VERSION}
 )
 
-install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/webview)
+install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/controls)
 
 add_subdirectory(meta)
 
