@@ -45,11 +45,4 @@ namespace xaml
         }
         gtk_label_set_xalign(GTK_LABEL(get_handle()), align);
     }
-
-    void label::__size_to_fit()
-    {
-        int width = gtk_widget_get_allocated_width(get_handle());
-        int height = gtk_widget_get_allocated_height(get_handle());
-        __set_size_noevent({ (double)width, (double)height });
-    }
 } // namespace xaml

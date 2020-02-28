@@ -53,4 +53,6 @@ namespace xaml
         UINT udpi = GetDpiForWindow(get_handle());
         set_margin(value * 96.0 / udpi);
     }
+
+    void control::__size_to_fit() {}
 } // namespace xaml

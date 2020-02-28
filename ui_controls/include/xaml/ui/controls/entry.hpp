@@ -29,7 +29,10 @@ namespace xaml
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+
+#ifndef XAML_UI_COCOA
         XAML_UI_CONTROLS_API void __size_to_fit() override;
+#endif // !XAML_UI_COCOA
 
     private:
         XAML_UI_CONTROLS_API void draw_size();

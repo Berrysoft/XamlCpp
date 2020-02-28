@@ -82,14 +82,6 @@ namespace xaml
         combo.selectable = m_is_editable;
     }
 
-    void combo_box::__size_to_fit()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle();
-        [combo sizeToFit];
-        NSRect frame = combo.frame;
-        __set_size_noevent(from_native(frame.size));
-    }
-
     void combo_box::__on_changed()
     {
         NSComboBox* combo = (NSComboBox*)get_handle();

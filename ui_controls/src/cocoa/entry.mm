@@ -73,12 +73,4 @@ namespace xaml
         NSTextField* textField = (NSTextField*)get_handle();
         set_text([textField.stringValue UTF8String]);
     }
-
-    void entry::__size_to_fit()
-    {
-        NSTextField* textField = (NSTextField*)get_handle();
-        [textField sizeToFit];
-        NSRect frame = textField.frame;
-        __set_size_noevent(from_native(frame.size));
-    }
 }

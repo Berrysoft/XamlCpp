@@ -72,13 +72,6 @@ namespace xaml
         g_signal_connect(G_OBJECT(get_handle()), "changed", G_CALLBACK(combo_box::on_changed), this);
     }
 
-    void combo_box::__size_to_fit()
-    {
-        int width = gtk_widget_get_allocated_width(get_handle());
-        int height = gtk_widget_get_allocated_height(get_handle());
-        __set_size_noevent({ (double)width, (double)height });
-    }
-
     void combo_box::on_changed(GtkComboBox* widget, gpointer data)
     {
         combo_box* self = (combo_box*)data;

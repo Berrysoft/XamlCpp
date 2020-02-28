@@ -35,11 +35,4 @@ namespace xaml
         button* s = (button*)data;
         s->m_click(*s);
     }
-
-    void button::__size_to_fit()
-    {
-        int width = gtk_widget_get_allocated_width(get_handle());
-        int height = gtk_widget_get_allocated_height(get_handle());
-        __set_size_noevent({ (double)width, (double)height });
-    }
 } // namespace xaml

@@ -57,12 +57,4 @@ namespace xaml
         }
         textField.alignment = align;
     }
-
-    void label::__size_to_fit()
-    {
-        NSTextField* textField = (NSTextField*)get_handle();
-        [textField sizeToFit];
-        NSRect frame = textField.frame;
-        __set_size_noevent(from_native(frame.size));
-    }
 }

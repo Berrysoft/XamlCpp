@@ -15,6 +15,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_CONTROLS_API std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -35,7 +36,6 @@ namespace xaml
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
-        XAML_UI_CONTROLS_API void __size_to_fit() override;
 
     private:
         XAML_UI_CONTROLS_API void draw_size();

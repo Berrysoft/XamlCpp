@@ -48,8 +48,6 @@ namespace xaml
             sparent->__parent_redraw();
     }
 
-    void control::__size_to_fit() {}
-
 #ifndef XAML_UI_WINDOWS
     size control::__get_real_size() const
     {

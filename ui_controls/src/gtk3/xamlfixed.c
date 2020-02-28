@@ -18,7 +18,7 @@ struct _XamlFixedWidget
     gint x, y, width, height;
 };
 
-XamlFixedWidget* xaml_fixed_widget_new(GtkWidget* widget, gint x, gint y, gint width, gint height)
+static XamlFixedWidget* xaml_fixed_widget_new(GtkWidget* widget, gint x, gint y, gint width, gint height)
 {
     XamlFixedWidget* result = malloc(sizeof(XamlFixedWidget));
     if (result)
@@ -32,14 +32,14 @@ XamlFixedWidget* xaml_fixed_widget_new(GtkWidget* widget, gint x, gint y, gint w
     return result;
 }
 
-void xaml_fixed_widget_destroy(XamlFixedWidget* widget)
+static void xaml_fixed_widget_destroy(XamlFixedWidget* widget)
 {
     free(widget);
 }
 
 /* Forward declarations */
-static void xaml_fixed_get_preferred_width(GtkWidget* widget, int* minimal, int* natural);
-static void xaml_fixed_get_preferred_height(GtkWidget* widget, int* minimal, int* natural);
+static void xaml_fixed_get_preferred_width(GtkWidget* widget, gint* minimal, gint* natural);
+static void xaml_fixed_get_preferred_height(GtkWidget* widget, gint* minimal, gint* natural);
 static void xaml_fixed_size_allocate(GtkWidget* widget, GtkAllocation* allocation);
 static GType xaml_fixed_child_type(GtkContainer* container);
 static void xaml_fixed_add(GtkContainer* container, GtkWidget* widget);
@@ -78,13 +78,37 @@ GtkWidget* xaml_fixed_new()
     return GTK_WIDGET(g_object_new(xaml_fixed_get_type(), NULL));
 }
 
-static void get_size(XamlFixed* self, GtkOrientation direction, int* minimal, int* natural)
+static void get_size(XamlFixed* self, GtkOrientation direction, gint* minimal, gint* natural)
 {
-    *minimal = *natural = 10;
+    guint border = gtk_container_get_border_width(GTK_CONTAINER(self));
+    *minimal = *natural = border * 2;
+
+    XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(self);
+    GList* iter;
+    for (iter = priv->children; iter; iter = g_list_next(iter))
+    {
+        XamlFixedWidget* w = iter->data;
+
+        if (!gtk_widget_get_visible(w->widget))
+            continue;
+
+        if (direction == GTK_ORIENTATION_HORIZONTAL)
+        {
+            gint ww;
+            gtk_widget_get_preferred_width(w->widget, NULL, &ww);
+            *natural = MAX(*natural, w->x + ww);
+        }
+        else
+        {
+            gint wh;
+            gtk_widget_get_preferred_height(w->widget, NULL, &wh);
+            *natural = MAX(*natural, w->y + wh);
+        }
+    }
 }
 
 /* Get the width of the container */
-static void xaml_fixed_get_preferred_width(GtkWidget* widget, int* minimal, int* natural)
+static void xaml_fixed_get_preferred_width(GtkWidget* widget, gint* minimal, gint* natural)
 {
     g_return_if_fail(widget != NULL);
     g_return_if_fail(XAML_IS_FIXED(widget));
@@ -93,7 +117,7 @@ static void xaml_fixed_get_preferred_width(GtkWidget* widget, int* minimal, int*
 }
 
 /* Get the height of the container */
-static void xaml_fixed_get_preferred_height(GtkWidget* widget, int* minimal, int* natural)
+static void xaml_fixed_get_preferred_height(GtkWidget* widget, gint* minimal, gint* natural)
 {
     g_return_if_fail(widget != NULL);
     g_return_if_fail(XAML_IS_FIXED(widget));
@@ -123,8 +147,8 @@ static void xaml_fixed_size_allocate(GtkWidget* widget, GtkAllocation* allocatio
         GtkAllocation child_allocation;
         child_allocation.x = w->x + allocation->x;
         child_allocation.y = w->y + allocation->y;
-        child_allocation.width = 100;
-        child_allocation.height = 100;
+        child_allocation.width = w->width;
+        child_allocation.height = w->height;
         gtk_widget_size_allocate(w->widget, &child_allocation);
     }
 }

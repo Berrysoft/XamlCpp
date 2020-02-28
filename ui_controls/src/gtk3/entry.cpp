@@ -56,8 +56,6 @@ namespace xaml
     void entry::__size_to_fit()
     {
         gtk_entry_set_width_chars(GTK_ENTRY(get_handle()), (gint)m_text.length());
-        int width = gtk_widget_get_allocated_width(get_handle());
-        int height = gtk_widget_get_allocated_height(get_handle());
-        __set_size_noevent({ (double)width, (double)height });
+        control::__size_to_fit();
     }
 } // namespace xaml

@@ -83,12 +83,4 @@ namespace xaml
     {
         m_click(*this);
     }
-
-    void button::__size_to_fit()
-    {
-        NSMatrix* matrix = (NSMatrix*)get_handle();
-        [matrix sizeToFit];
-        NSRect frame = matrix.frame;
-        __set_size_noevent(from_native(frame.size));
-    }
 }
