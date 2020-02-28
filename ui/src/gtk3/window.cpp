@@ -23,14 +23,8 @@ namespace xaml
         {
             set_handle(gtk_window_new(GTK_WINDOW_TOPLEVEL));
             application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
-            g_signal_connect(
-                G_OBJECT(get_handle()), "destroy",
-                G_CALLBACK(window::on_destroy),
-                this);
-            g_signal_connect(
-                G_OBJECT(get_handle()), "configure-event",
-                G_CALLBACK(window::on_configure_event),
-                this);
+            g_signal_connect(G_OBJECT(get_handle()), "destroy", G_CALLBACK(window::on_destroy), this);
+            g_signal_connect(G_OBJECT(get_handle()), "configure-event", G_CALLBACK(window::on_configure_event), this);
         }
         {
             atomic_guard guard{ m_resizing };
@@ -113,16 +107,19 @@ namespace xaml
     gboolean window::on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data)
     {
         window* self = (window*)data;
-        if (event->type == GDK_CONFIGURE && self->get_handle() && !self->m_resizing.exchange(true))
+        if (event->type == GDK_CONFIGURE && self->get_handle())
         {
-            gint x, y;
-            gtk_window_get_position(GTK_WINDOW(self->get_handle()), &x, &y);
-            self->set_location({ (double)x, (double)y });
-            gint width, height;
-            gtk_window_get_size(GTK_WINDOW(self->get_handle()), &width, &height);
-            self->set_size({ (double)width, (double)height });
-            self->__draw({});
-            self->m_resizing = false;
+            atomic_guard guard{ self->m_resizing };
+            if (!guard.exchange(true))
+            {
+                gint x, y;
+                gtk_window_get_position(GTK_WINDOW(self->get_handle()), &x, &y);
+                self->set_location({ (double)x, (double)y });
+                gint width, height;
+                gtk_window_get_size(GTK_WINDOW(self->get_handle()), &width, &height);
+                self->set_size({ (double)width, (double)height });
+                self->__draw({});
+            }
         }
         return FALSE;
     }

@@ -6,24 +6,22 @@
 
 G_BEGIN_DECLS
 
-#define XAML_FIXED_TYPE (xaml_fixed_get_type())
-#define XAML_FIXED(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), XAML_FIXED_TYPE, XamlFixed))
-#define XAML_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), XAML_FIXED_TYPE, XamlFixedClass))
-#define XAML_IS_FIXED(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), XAML_FIXED_TYPE))
-#define XAML_IS_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), XAML_FIXED_TYPE))
+#define XAML_TYPE_FIXED (xaml_fixed_get_type())
+#define XAML_FIXED(obj) (G_TYPE_CHECK_INSTANCE_CAST((obj), XAML_TYPE_FIXED, XamlFixed))
+#define XAML_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST((klass), XAML_TYPE_FIXED, XamlFixedClass))
+#define XAML_IS_FIXED(obj) (G_TYPE_CHECK_INSTANCE_TYPE((obj), XAML_TYPE_FIXED))
+#define XAML_IS_FIXED_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE((klass), XAML_TYPE_FIXED))
+#define XAML_FIXED_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS((obj), XAML_TYPE_FIXED, XamlFixedClass))
 
-typedef struct _XamlFixed XamlFixed;
-typedef struct _XamlFixedClass XamlFixedClass;
-
-struct _XamlFixed
+typedef struct _XamlFixed
 {
     GtkContainer parent_instance;
-};
+} XamlFixed;
 
-struct _XamlFixedClass
+typedef struct _XamlFixedClass
 {
     GtkContainerClass parent_class;
-};
+} XamlFixedClass;
 
 GType xaml_fixed_get_type(void) G_GNUC_CONST;
 GtkWidget* xaml_fixed_new(void);
