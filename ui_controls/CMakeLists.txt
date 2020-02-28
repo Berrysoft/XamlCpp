@@ -20,7 +20,7 @@ if(${BUILD_WINDOWS})
 elseif(${BUILD_COCOA})
     file(GLOB UIC_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
-    file(GLOB UIC_SOURCE "src/gtk3/*.c*")
+    file(GLOB UIC_SOURCE "src/gtk3/*.c" "src/gtk3/*.cpp")
 endif()
 
 file(GLOB UIC_SHARED_SOURCE "src/shared/*.cpp")
