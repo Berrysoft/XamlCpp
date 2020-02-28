@@ -1,3 +1,4 @@
+#include <gtk3/xamlfixed.h>
 #include <xaml/ui/controls/layout_base.hpp>
 
 using namespace std;
@@ -8,7 +9,7 @@ namespace xaml
     {
         if (!get_handle())
         {
-            set_handle(gtk_fixed_new());
+            set_handle(xaml_fixed_new());
         }
         rectangle real = region - get_margin();
         __draw_impl(region, [this, &real](shared_ptr<control> c, rectangle const& subrect) {
@@ -17,10 +18,10 @@ namespace xaml
                 rectangle subreal = subrect - c->get_margin();
                 if (!m_put_map[c])
                 {
-                    gtk_fixed_put(GTK_FIXED(get_handle()), c->get_handle(), (gint)(subreal.x - real.x), (gint)(subreal.y - real.y));
+                    gtk_container_add(GTK_CONTAINER(get_handle()), c->get_handle());
                     m_put_map[c] = true;
                 }
-                gtk_fixed_move(GTK_FIXED(get_handle()), c->get_handle(), (gint)(subreal.x - real.x), (gint)(subreal.y - real.y));
+                xaml_fixed_move(XAML_FIXED(get_handle()), c->get_handle(), (gint)(subreal.x - real.x), (gint)(subreal.y - real.y), (gint)subreal.width, (gint)subreal.height);
             }
         });
     }
