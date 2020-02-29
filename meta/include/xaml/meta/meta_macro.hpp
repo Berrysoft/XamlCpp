@@ -6,14 +6,14 @@
 #define REGISTER_CLASS_DECL(ns, name)                                   \
     static ::std::unique_ptr<reflection_info> register_class() noexcept \
     {                                                                   \
-        using self_type = name;                                         \
+        using self_type = ::ns::name;                                   \
         auto ref = ::xaml::__make_reflection_info<self_type>(#ns, #name);
 
 #define REGISTER_CLASS_END() \
     return ref;              \
     }
 
-#define REGISTER_ENUM(ns, name) ctx.register_enum<name>(#ns, #name)
+#define REGISTER_ENUM(ns, name) ctx.register_type(::xaml::__make_enum_reflection_info<::ns::name>(#ns, #name))
 
 #define ADD_CTOR(...) ref->add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ref->add_constructor<self_type>()

@@ -15,7 +15,7 @@ namespace xaml
 
     static string get_no_default_constructor_error(reflection_info const* t)
     {
-        auto [ns, name] = t->get_type_name();
+        auto& [ns, name] = t->get_type_name();
         ostringstream oss;
         oss << "Type \"" << ns << "::" << name << "\" doesn't have a default constructor.";
         return oss.str();
@@ -38,9 +38,9 @@ namespace xaml
 
     static string get_xaml_no_member(reflection_info const* type, string_view name)
     {
-        auto [ns, name] = type->get_type_name();
+        auto& [ns, n] = type->get_type_name();
         ostringstream oss;
-        oss << "There's no member named " << name << " in type \"" << ns << "::" << name << "\".";
+        oss << "There's no member named " << name << " in type \"" << ns << "::" << n << "\".";
         return oss.str();
     }
 
@@ -51,7 +51,7 @@ namespace xaml
     static string get_random_name(reflection_info const* ref)
     {
         static size_t index = 0;
-        auto [ns, name] = ref->get_type_name();
+        auto& [ns, name] = ref->get_type_name();
         ostringstream oss;
         oss << "__" << ns << "__" << name << "__" << index++;
         return oss.str();
@@ -123,53 +123,49 @@ namespace xaml
         auto t = m_ctx->get_type(ns, name);
         if (t)
         {
-            auto ref = m_ctx->get_reflection(*t);
-            if (ref)
+            markup_node node{ t, get_random_name(t) };
+            while (i < value.length())
             {
-                markup_node node{ ref, get_random_name(ref) };
-                while (i < value.length())
+                while (i < value.length() && isspace(value[i])) i++;
+                size_t start_index = i;
+                for (; i < value.length(); i++)
                 {
-                    while (i < value.length() && isspace(value[i])) i++;
-                    size_t start_index = i;
-                    for (; i < value.length(); i++)
+                    if (value[i] == ',')
                     {
-                        if (value[i] == ',')
-                        {
-                            i = start_index;
-                            break;
-                        }
-                        else if (value[i] == '=')
-                            break;
+                        i = start_index;
+                        break;
                     }
-                    string_view prop_name = value.substr(start_index, i - start_index);
-                    while (i < value.length() && value[i] == '=') i++;
-                    start_index = i;
-                    for (; i < value.length(); i++)
+                    else if (value[i] == '=')
+                        break;
+                }
+                string_view prop_name = value.substr(start_index, i - start_index);
+                while (i < value.length() && value[i] == '=') i++;
+                start_index = i;
+                for (; i < value.length(); i++)
+                {
+                    if (value[i] == ',') break;
+                }
+                string_view prop_value = value.substr(start_index, i - start_index);
+                while (i < value.length() && value[i] == ',') i++;
+                if (prop_name.empty())
+                {
+                    auto def_attr = t->get_attribute<default_property>();
+                    if (def_attr)
                     {
-                        if (value[i] == ',') break;
-                    }
-                    string_view prop_value = value.substr(start_index, i - start_index);
-                    while (i < value.length() && value[i] == ',') i++;
-                    if (prop_name.empty())
-                    {
-                        auto def_attr = ref->get_attribute<default_property>();
-                        if (def_attr)
-                        {
-                            prop_name = def_attr->get_property_name();
-                        }
-                    }
-                    auto prop = ref->get_property(prop_name);
-                    if (prop->can_write())
-                    {
-                        node.properties.push_back({ ref, prop, (string)prop_value });
-                    }
-                    else
-                    {
-                        throw xaml_no_member(ref, prop_name);
+                        prop_name = def_attr->get_property_name();
                     }
                 }
-                return node;
+                auto prop = t->get_property(prop_name);
+                if (prop && prop->can_write())
+                {
+                    node.properties.push_back({ t, prop, (string)prop_value });
+                }
+                else
+                {
+                    throw xaml_no_member(t, prop_name);
+                }
             }
+            return node;
         }
         throw xaml_bad_type(ns, name);
     }
@@ -218,7 +214,7 @@ namespace xaml
                             }
                         }
                     }
-                    else if (attr_ns != "xmlns" && attr_name != "xmlns")
+                    else if (attr_name.substr(0, 5) != "xmlns")
                     {
                         size_t dm_index = attr_name.find_first_of('.');
                         if (dm_index != string_view::npos)
@@ -228,11 +224,11 @@ namespace xaml
                             auto t = m_ctx->get_type(attr_ns, class_name);
                             if (t)
                             {
-                                auto prop = ref->get_attach_property(attach_prop_name);
-                                if (prop.can_write())
+                                auto prop = t->get_property(attach_prop_name);
+                                if (prop && prop->can_write())
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
-                                    mc.properties.push_back({ *t, prop, (string)attr_value });
+                                    mc.properties.push_back({ t, prop, (string)attr_value });
                                 }
                             }
                             else
@@ -242,8 +238,8 @@ namespace xaml
                         }
                         else
                         {
-                            auto prop = m_ctx->get_property(mc.type, attr_name);
-                            if (prop.can_write())
+                            auto prop = mc.type->get_property(attr_name);
+                            if (prop && prop->can_write())
                             {
                                 string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
                                 if (attr_value.front() == '{' && attr_value.back() == '}')
@@ -256,18 +252,18 @@ namespace xaml
                                     mc.properties.push_back({ mc.type, prop, (string)attr_value });
                                 }
                             }
-                            else if (!prop.can_read())
+                            else
                             {
-                                auto ev = m_ctx->get_event(mc.type, attr_name);
-                                if (ev.can_add())
+                                auto ev = mc.type->get_event(attr_name);
+                                if (ev && ev->can_add())
                                 {
                                     string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
                                     mc.events.push_back({ ev, (string)attr_value });
                                 }
-                            }
-                            else
-                            {
-                                throw xaml_no_member(mc.type, attr_name);
+                                else
+                                {
+                                    throw xaml_no_member(mc.type, attr_name);
+                                }
                             }
                         }
                     }
@@ -282,12 +278,12 @@ namespace xaml
             case XML_TEXT_NODE:
             case XML_CDATA_SECTION_NODE:
             {
-                auto def_attr = m_ctx->get_attribute<default_property>(mc.type);
+                auto def_attr = mc.type->get_attribute<default_property>();
                 if (def_attr)
                 {
                     string_view prop_name = def_attr->get_property_name();
-                    auto prop = m_ctx->get_property(mc.type, prop_name);
-                    if (prop.can_write())
+                    auto prop = mc.type->get_property(prop_name);
+                    if (prop && prop->can_write())
                     {
                         mc.properties.push_back({ mc.type, prop, (string)get_string_view(xmlTextReaderConstValue(m_reader)) });
                     }
@@ -302,8 +298,8 @@ namespace xaml
             {
                 string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
                 string_view name = get_string_view(xmlTextReaderConstName(m_reader));
-                auto t = *m_ctx->get_type(ns, name);
-                if (mc.type == t)
+                auto t = m_ctx->get_type(ns, name);
+                if (mc.type->get_type() == t->get_type())
                 {
                     return ret;
                 }
@@ -332,20 +328,20 @@ namespace xaml
                         {
                             clean_up(ret);
                         }
-                        else if (mc.type == *t)
+                        else if (mc.type->get_type() == t->get_type())
                         {
-                            auto prop = m_ctx->get_property(mc.type, prop_name);
-                            if (prop.can_write())
+                            auto prop = mc.type->get_property(prop_name);
+                            if (prop && prop->can_write())
                             {
                                 mc.properties.push_back({ mc.type, prop, move(child) });
                             }
                         }
                         else
                         {
-                            auto prop = m_ctx->get_attach_property(*t, prop_name);
-                            if (prop.can_write())
+                            auto prop = t->get_property(prop_name);
+                            if (prop && prop->can_write())
                             {
-                                mc.properties.push_back({ *t, prop, move(child) });
+                                mc.properties.push_back({ t, prop, move(child) });
                             }
                         }
                     }
@@ -363,21 +359,21 @@ namespace xaml
                     }
                     else
                     {
-                        auto def_attr = m_ctx->get_attribute<default_property>(mc.type);
+                        auto def_attr = mc.type->get_attribute<default_property>();
                         if (def_attr)
                         {
                             string_view prop_name = def_attr->get_property_name();
-                            auto prop = m_ctx->get_property(mc.type, prop_name);
-                            if (prop.can_write())
+                            auto prop = mc.type->get_property(prop_name);
+                            if (prop && prop->can_write())
                             {
                                 mc.properties.push_back({ mc.type, prop, move(child) });
                             }
                             else
                             {
-                                auto info = m_ctx->get_collection_property(mc.type, prop_name);
-                                if (info.can_add())
+                                auto info = mc.type->get_collection_property(prop_name);
+                                if (info && info->can_add())
                                 {
-                                    auto& prop = mc.collection_properties[(string)info.name()];
+                                    auto& prop = mc.collection_properties[(string)info->name()];
                                     prop.host_type = mc.type;
                                     prop.info = info;
                                     prop.values.push_back(move(child));
@@ -409,7 +405,7 @@ namespace xaml
         auto t = m_ctx->get_type(ns, name);
         if (t)
         {
-            xaml_node mc{ *t };
+            xaml_node mc{ t };
             int ret = parse_members(mc);
             return make_tuple(ret, mc);
         }
@@ -429,7 +425,7 @@ namespace xaml
             auto t = m_ctx->get_type(ns, name);
             if (t)
             {
-                xaml_node mc{ *t };
+                xaml_node mc{ t };
                 ret = parse_members(mc);
                 clean_up(ret);
                 return mc;
@@ -440,6 +436,6 @@ namespace xaml
             }
         }
         clean_up(ret);
-        return { type_index(typeid(nullptr_t)) };
+        return { nullptr };
     }
 } // namespace xaml

@@ -31,14 +31,14 @@ namespace xaml::test
 
         void on_canvas_redraw(canvas& cv, drawing_context& dc);
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml::test, test_window)
         {
-            REGISTER_TYPE(xaml::test, test_window);
             ADD_CTOR_DEF();
             ADD_WINDOW_MEMBERS();
             ADD_METHOD(on_button_click);
             ADD_METHOD(on_canvas_redraw);
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml::test
 

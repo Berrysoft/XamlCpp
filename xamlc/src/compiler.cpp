@@ -117,7 +117,8 @@ namespace xaml
         else if (m_ctx->is_registered_enum(type))
         {
             std::ostringstream stream;
-            write_type(stream, type) << "::" << code;
+            auto t = m_ctx->get_enum_type(type);
+            write_type(stream, t) << "::" << code;
             return stream.str();
         }
         else
@@ -176,10 +177,16 @@ namespace xaml
         return write_type(write_indent(stream) << "void ", ns, name) << "::init_components(::xaml::meta_context& ctx)" << endl;
     }
 
-    ostream& compiler::write_type(ostream& stream, type_index type)
+    ostream& compiler::write_type(ostream& stream, reflection_info const* type)
     {
-        auto t = *m_ctx->get_type_name(type);
-        return write_type(stream, get<0>(t), get<1>(t));
+        auto& [ns, name] = type->get_type_name();
+        return write_type(stream, ns, name);
+    }
+
+    ostream& compiler::write_type(ostream& stream, enum_reflection_info const* type)
+    {
+        auto& [ns, name] = type->get_type_name();
+        return write_type(stream, ns, name);
     }
 
     ostream& compiler::write_type(ostream& stream, string_view ns, string_view name)
@@ -202,7 +209,7 @@ namespace xaml
         return stream;
     }
 
-    ostream& compiler::write_construct(ostream& stream, string_view name, type_index type)
+    ostream& compiler::write_construct(ostream& stream, string_view name, reflection_info const* type)
     {
         return write_type(write_indent(stream) << "auto " << name << " = ::std::make_shared<", type) << ">();" << endl;
     }
@@ -212,7 +219,7 @@ namespace xaml
         return write_args(write_indent(stream) << name << "->" << prefix << method << '(', args) << ");" << endl;
     }
 
-    ostream& compiler::write_static_call(ostream& stream, type_index type, string_view prefix, string_view method, initializer_list<string_view> args)
+    ostream& compiler::write_static_call(ostream& stream, reflection_info const* type, string_view prefix, string_view method, initializer_list<string_view> args)
     {
         return write_args(write_type(write_indent(stream), type) << "::" << prefix << method << '(', args) << ");" << endl;
     }
@@ -222,13 +229,13 @@ namespace xaml
         return write_call(stream, name, "set_", prop, { value });
     }
 
-    ostream& compiler::write_set_property(ostream& stream, type_index type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_set_property(ostream& stream, reflection_info const* type, string_view name, string_view prop, string_view value)
     {
         string deref_name = "*" + (string)name;
         return write_static_call(stream, type, "set_", prop, { deref_name, value });
     }
 
-    ostream& compiler::write_set_property(ostream& stream, type_index node_type, type_index host_type, type_index prop_type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_set_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, type_index prop_type, string_view name, string_view prop, string_view value)
     {
         if (node_type == host_type)
         {
@@ -245,12 +252,12 @@ namespace xaml
         return write_call(stream, name, "add_", prop, { value });
     }
 
-    ostream& compiler::write_add_property(ostream& stream, type_index type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_add_property(ostream& stream, reflection_info const* type, string_view name, string_view prop, string_view value)
     {
         return write_static_call(stream, type, "add_", prop, { name, value });
     }
 
-    ostream& compiler::write_add_property(ostream& stream, type_index node_type, type_index host_type, type_index prop_type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_add_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, type_index prop_type, string_view name, string_view prop, string_view value)
     {
         if (node_type == host_type)
         {
@@ -268,7 +275,7 @@ namespace xaml
         auto [ns, n] = *this_node.map_class;
         s << "::xaml::mem_fn_bind(&::" << ns << "::" << n << "::" << ev.value << ", this)";
         string arg = s.str();
-        return write_call(stream, name, "add_", ev.info.name(), { arg });
+        return write_call(stream, name, "add_", ev.info->name(), { arg });
     }
 
     ostream& compiler::write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop)
@@ -329,14 +336,14 @@ namespace xaml
             switch (value.index())
             {
             case 0: // std::string
-                write_set_property(stream, node.type, prop.host_type, prop.info.type(), get_node_name(node, is_this), prop.info.name(), get<string>(value));
+                write_set_property(stream, node.type, prop.host_type, prop.info->type(), get_node_name(node, is_this), prop.info->name(), get<string>(value));
                 break;
             case 2: // xaml_node
             {
                 auto& n = get<xaml_node>(value);
                 write_construct(stream, n.name, n.type);
                 compile_impl(stream, n, this_node, false);
-                write_set_property(stream, node.type, prop.host_type, prop.info.type(), get_node_name(node, is_this), prop.info.name(), n.name);
+                write_set_property(stream, node.type, prop.host_type, prop.info->type(), get_node_name(node, is_this), prop.info->name(), n.name);
                 break;
             }
             }
@@ -347,7 +354,7 @@ namespace xaml
             {
                 write_construct(stream, n.name, n.type);
                 compile_impl(stream, n, this_node, false);
-                write_add_property(stream, node.type, prop.second.host_type, prop.second.info.type(), get_node_name(node, is_this), prop.second.info.name(), n.name);
+                write_add_property(stream, node.type, prop.second.host_type, prop.second.info->type(), get_node_name(node, is_this), prop.second.info->name(), n.name);
             }
         }
         for (auto& ev : node.events)
@@ -369,7 +376,7 @@ namespace xaml
                 auto& n = get<markup_node>(value);
                 deserializer des{ *m_ctx };
                 auto ex = des.deserialize(n);
-                write_markup(stream, node.name, prop.info.name(), ex);
+                write_markup(stream, node.name, prop.info->name(), ex);
                 break;
             }
             case 2: // xaml_node

@@ -35,19 +35,20 @@ namespace xaml
         XAMLC_API std::ostream& write_init_decl(std::ostream& stream, std::string_view ns, std::string_view name);
         XAMLC_API std::ostream& write_init_decl_with_meta(std::ostream& stream, std::string_view ns, std::string_view name);
 
-        XAMLC_API std::ostream& write_type(std::ostream& stream, std::type_index type);
+        XAMLC_API std::ostream& write_type(std::ostream& stream, reflection_info const* type);
+        XAMLC_API std::ostream& write_type(std::ostream& stream, enum_reflection_info const* type);
         XAMLC_API std::ostream& write_type(std::ostream& stream, std::string_view ns, std::string_view name);
         XAMLC_API std::ostream& write_args(std::ostream& stream, std::initializer_list<std::string_view> args);
-        XAMLC_API std::ostream& write_construct(std::ostream& stream, std::string_view name, std::type_index type);
+        XAMLC_API std::ostream& write_construct(std::ostream& stream, std::string_view name, reflection_info const* type);
         XAMLC_API std::ostream& write_call(std::ostream& stream, std::string_view name, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);
-        XAMLC_API std::ostream& write_static_call(std::ostream& stream, std::type_index type, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);
+        XAMLC_API std::ostream& write_static_call(std::ostream& stream, reflection_info const* type, std::string_view prefix, std::string_view method, std::initializer_list<std::string_view> args);
 
         XAMLC_API std::ostream& write_set_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_set_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_set_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_set_property(std::ostream& stream, reflection_info const* type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_set_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_add_property(std::ostream& stream, std::type_index type, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_add_property(std::ostream& stream, std::type_index node_type, std::type_index host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_add_property(std::ostream& stream, reflection_info const* type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_add_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_event(std::ostream& stream, xaml_node& this_node, std::string_view name, xaml_event& ev);
 
         XAMLC_API std::ostream& write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop);

@@ -672,6 +672,29 @@ namespace xaml
         }
     };
 
+    class enum_reflection_info
+    {
+    private:
+        std::type_index m_type{ typeid(std::nullptr_t) };
+        std::tuple<std::string, std::string> m_name;
+
+    public:
+        std::type_index get_type() const noexcept { return m_type; }
+        std::tuple<std::string, std::string> const& get_type_name() const noexcept { return m_name; }
+
+        template <typename T>
+        friend std::unique_ptr<enum_reflection_info> __make_enum_reflection_info(std::string_view ns, std::string_view name);
+    };
+
+    template <typename T>
+    std::unique_ptr<enum_reflection_info> __make_enum_reflection_info(std::string_view ns, std::string_view name)
+    {
+        auto ref = std::make_unique<enum_reflection_info>();
+        ref->m_type = std::type_index(typeid(T));
+        ref->m_name = std::make_tuple<std::string, std::string>((std::string)ns, (std::string)name);
+        return ref;
+    }
+
     enum class binding_mode
     {
         one_time = 0x0,
@@ -692,10 +715,10 @@ namespace xaml
 
         std::unordered_map<std::string, std::string> namespace_map;
         std::unordered_map<std::string, std::unordered_map<std::string, std::type_index>> type_map;
-        std::unordered_set<std::type_index> enum_type_set;
+        std::unordered_map<std::type_index, std::unique_ptr<enum_reflection_info>> enum_map;
         std::unordered_map<std::type_index, std::unique_ptr<reflection_info>> ref_map;
         std::map<std::size_t, std::unique_ptr<__binding_guard>> bind_map;
-        std::size_t bind_index;
+        std::size_t bind_index{ 0 };
 
     public:
         XAML_META_API module* add_module(std::string_view path);
@@ -706,26 +729,16 @@ namespace xaml
         // Add a map between xmlns and C++ namespace.
         XAML_META_API void add_xml_namespace(std::string_view xmlns, std::string_view ns) noexcept;
 
-        // TYPE METHODS
-
         // Get type with namespace and name.
-        XAML_META_API std::optional<std::type_index> get_type(std::string_view ns, std::string_view name) const noexcept;
+        XAML_META_API reflection_info const* get_type(std::string_view ns, std::string_view name) const noexcept;
 
-        XAML_META_API reflection_info const* get_reflection(std::type_index type) const noexcept;
+        XAML_META_API reflection_info const* get_type(std::type_index type) const noexcept;
 
         XAML_META_API void register_type(std::unique_ptr<reflection_info>&& ref) noexcept;
 
-    protected:
-        XAML_META_API void __register_enum(std::type_index type) noexcept;
+        XAML_META_API enum_reflection_info const* get_enum_type(std::type_index type) const noexcept;
 
-    public:
-        template <typename TEnum, typename = std::enable_if_t<std::is_enum_v<TEnum>>>
-        void register_enum(std::string_view ns, std::string_view name) noexcept
-        {
-            auto t = std::type_index(typeid(TEnum));
-            type_map[(string)ns].emplace(name, t);
-            __register_enum(t);
-        }
+        XAML_META_API void register_type(std::unique_ptr<enum_reflection_info>&& ref) noexcept;
 
         XAML_META_API bool is_registered_enum(std::type_index type) const noexcept;
 
@@ -746,8 +759,8 @@ namespace xaml
         property_info const* source_prop;
         event_info const* source_event;
 
-        token_type target_token;
-        token_type source_token;
+        std::optional<token_type> target_token;
+        std::optional<token_type> source_token;
 
     public:
         XAML_META_API __binding_guard(meta_context& ctx, std::weak_ptr<meta_class> target, std::string_view target_prop, std::weak_ptr<meta_class> source, std::string_view source_prop, binding_mode mode = binding_mode::one_time);

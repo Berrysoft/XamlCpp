@@ -6,49 +6,53 @@
 using namespace std;
 using namespace xaml;
 
-// The class should inherit `xaml::meta_class`.
-// `xaml_class_impl` is a helper class to implement some key features of `meta_class`.
-class calculator : public meta_class
+namespace xaml::test
 {
-public:
-    // Adds a property named "value" with type "int",
-    // and raise "value_changed" event when it changes.
-    // To simply get or set its value, call `int get_value()`
-    // or `void set_value(int)`.
-    PROP_EVENT(value, int)
-
-    // Adds an event named "value_changed" with signature
-    // `void(calculator const&, int)`.
-    // It is necessary for the property above.
-    // To simply add a handler, call `size_t add_value_changed(function<void(calculator const&,int)>)`;
-    // to remove it, call `void remove_value_changed(size_t)`,
-    // the parameter is the return value of the add method.
-    EVENT(value_changed, calculator const&, int)
-
-public:
-    void plus(int x, int y) { set_value(x + y); }
-    void minus(int x, int y) { set_value(x - y); }
-
-    static int multiply(int x, int y) { return x * y; }
-
-    ~calculator() override {}
-
-    // Register a type named "calculator" in namespace "test".
-    // The namespace is optional.
-    REGISTER_CLASS_DECL(test, calculator)
+    // The class should inherit `xaml::meta_class`.
+    class calculator : public meta_class
     {
-        // Add default constructor.
-        ADD_CTOR_DEF();
-        // Add methods `plus` and `minus`.
-        ADD_METHOD(plus);
-        ADD_METHOD(minus);
-        // Add static method `multiply`.
-        ADD_STATIC_METHOD(multiply);
-        // Add property `value` and event `value_changed`.
-        ADD_PROP_EVENT(value);
-    }
-    REGISTER_CLASS_END()
-};
+    public:
+        // Adds a property named "value" with type "int",
+        // and raise "value_changed" event when it changes.
+        // To simply get or set its value, call `int get_value()`
+        // or `void set_value(int)`.
+        PROP_EVENT(value, int)
+
+        // Adds an event named "value_changed" with signature
+        // `void(calculator const&, int)`.
+        // It is necessary for the property above.
+        // To simply add a handler, call `size_t add_value_changed(function<void(calculator const&,int)>)`;
+        // to remove it, call `void remove_value_changed(size_t)`,
+        // the parameter is the return value of the add method.
+        EVENT(value_changed, calculator const&, int)
+
+    public:
+        void plus(int x, int y) { set_value(x + y); }
+        void minus(int x, int y) { set_value(x - y); }
+
+        static int multiply(int x, int y) { return x * y; }
+
+        ~calculator() override {}
+
+        // Register a type named "calculator" in namespace "test".
+        // The namespace is optional.
+        REGISTER_CLASS_DECL(xaml::test, calculator)
+        {
+            // Add default constructor.
+            ADD_CTOR_DEF();
+            // Add methods `plus` and `minus`.
+            ADD_METHOD(plus);
+            ADD_METHOD(minus);
+            // Add static method `multiply`.
+            ADD_STATIC_METHOD(multiply);
+            // Add property `value` and event `value_changed`.
+            ADD_PROP_EVENT(value);
+        }
+        REGISTER_CLASS_END()
+    };
+} // namespace xaml::test
+
+using namespace xaml::test;
 
 int main()
 {
@@ -60,21 +64,20 @@ int main()
     // We suppressed some failure check because we know it will success.
 
     // Get a type named "calculator" in namespace "test".
-    auto t = *ctx.get_type("test", "calculator");
-    auto& ref = *ctx.get_reflection(t);
+    auto& t = *ctx.get_type("xaml::test", "calculator");
     // Construct the class with default constructor.
     // It is as same as calling operator new, so you should manully wrap it.
-    unique_ptr<meta_class> mc{ ref.construct() };
+    unique_ptr<meta_class> mc{ t.construct() };
     // Get the event named "value_changed".
-    auto& ev = *ref.get_event("value_changed");
+    auto& ev = *t.get_event("value_changed");
     // Add a handler to the event of the object.
     auto token = ev.add(mc.get(), function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.
-    ref.invoke_method<void>(*mc, "plus", 1, 1);
+    t.invoke_method<void>(*mc, "plus", 1, 1);
     // Get the property named "value".
-    auto& prop = *ref.get_property("value");
+    auto& prop = *t.get_property("value");
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
     prop.set(mc.get(), "100");
@@ -83,9 +86,9 @@ int main()
     ev.remove(mc.get(), token);
     // Although `value` has changed, the handler won't be called,
     // because the handler has been removed.
-    ref.invoke_method<void>(*mc, "minus", 1, 1);
+    t.invoke_method<void>(*mc, "minus", 1, 1);
     // Invoke the static method.
-    cout << "3 * 7 = " << *ref.invoke_static_method<int>("multiply", 3, 7) << endl;
+    cout << "3 * 7 = " << *t.invoke_static_method<int>("multiply", 3, 7) << endl;
     cout << endl;
     observable_vector<int> obs{ 1, 2, 3 };
     obs.add_vector_changed([](observable_vector<int>&, vector_changed_args<int>& args) {

@@ -125,7 +125,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_event(string_view name, function<size_t(meta_class*, __type_erased_function const*)>&& adder, std::function<std::size_t(meta_class*, meta_class*, __type_erased_function const*)>&& adder_erased_this, function<void(meta_class*, size_t)>&& remover, unique_ptr<__type_erased_function>&& invoker)
+    void reflection_info::__add_event(string_view name, function<size_t(meta_class*, __type_erased_function const*)>&& adder, function<size_t(meta_class*, meta_class*, __type_erased_function const*)>&& adder_erased_this, function<void(meta_class*, size_t)>&& remover, unique_ptr<__type_erased_function>&& invoker)
     {
         auto ev = make_unique<event_info>();
         ev->m_name = name;
@@ -165,7 +165,7 @@ namespace xaml
         }
     }
 
-    optional<type_index> meta_context::get_type(string_view ns, string_view name) const noexcept
+    reflection_info const* meta_context::get_type(string_view ns, string_view name) const noexcept
     {
         auto it = type_map.find((string)get_real_namespace(ns));
         if (it != type_map.end())
@@ -174,13 +174,13 @@ namespace xaml
             auto mit = map.find((string)name);
             if (mit != map.end())
             {
-                return make_optional(mit->second);
+                return get_type(mit->second);
             }
         }
-        return nullopt;
+        return nullptr;
     }
 
-    reflection_info const* meta_context::get_reflection(type_index type) const noexcept
+    reflection_info const* meta_context::get_type(type_index type) const noexcept
     {
         auto it = ref_map.find(type);
         if (it != ref_map.end())
@@ -193,19 +193,32 @@ namespace xaml
     void meta_context::register_type(unique_ptr<reflection_info>&& ref) noexcept
     {
         auto type = ref->get_type();
-        auto [ns, name] = ref->get_type_name();
-        type_map[(string)ns].emplace(name, type);
+        auto& [ns, name] = ref->get_type_name();
+        type_map[ns].emplace(name, type);
         ref_map[type] = move(ref);
     }
 
-    void meta_context::__register_enum(type_index type) noexcept
+    enum_reflection_info const* meta_context::get_enum_type(type_index type) const noexcept
     {
-        enum_type_set.emplace(move(type));
+        auto it = enum_map.find(type);
+        if (it != enum_map.end())
+        {
+            return it->second.get();
+        }
+        return nullptr;
+    }
+
+    void meta_context::register_type(unique_ptr<enum_reflection_info>&& ref) noexcept
+    {
+        auto type = ref->get_type();
+        auto& [ns, name] = ref->get_type_name();
+        type_map[ns].emplace(name, type);
+        enum_map[type] = move(ref);
     }
 
     bool meta_context::is_registered_enum(type_index type) const noexcept
     {
-        return enum_type_set.find(type) != enum_type_set.end();
+        return enum_map.find(type) != enum_map.end();
     }
 
     void meta_context::add_xml_namespace(string_view xmlns, string_view ns) noexcept
@@ -231,12 +244,12 @@ namespace xaml
     }
 
     __binding_guard::__binding_guard(meta_context& ctx, weak_ptr<meta_class> target, string_view target_prop, weak_ptr<meta_class> source, string_view source_prop, binding_mode mode)
-        : target(target), source(source)
+        : target(target), source(source), target_token(nullopt), source_token(nullopt)
     {
         auto starget = target.lock();
         auto ssource = source.lock();
-        auto tf = ctx.get_reflection(starget->this_type());
-        auto sf = ctx.get_reflection(ssource->this_type());
+        auto tf = ctx.get_type(starget->this_type());
+        auto sf = ctx.get_type(ssource->this_type());
         this->target_prop = tf->get_property(target_prop);
         target_event = tf->get_event(__get_property_changed_event_name(target_prop));
         this->source_prop = sf->get_property(source_prop);
@@ -269,9 +282,11 @@ namespace xaml
 
     __binding_guard::~__binding_guard()
     {
-        if (auto ssource = source.lock())
-            source_event->remove(ssource.get(), source_token);
-        if (auto starget = target.lock())
-            target_event->remove(starget.get(), target_token);
+        if (source_token)
+            if (auto ssource = source.lock())
+                source_event->remove(ssource.get(), *source_token);
+        if (target_token)
+            if (auto starget = target.lock())
+                target_event->remove(starget.get(), *target_token);
     }
 } // namespace xaml
