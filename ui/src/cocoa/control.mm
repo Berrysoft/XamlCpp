@@ -17,12 +17,12 @@ namespace xaml
     void control::__size_to_fit()
     {
         NSView* view = get_handle();
-        if ([view isMemberOfClass:[NSControl class]])
+        if ([view isKindOfClass:[NSControl class]])
         {
             NSControl* control = (NSControl*)view;
             [control sizeToFit];
             NSRect frame = view.frame;
             __set_size_noevent(from_native(frame.size));
-		}
+        }
     }
 }
