@@ -122,13 +122,13 @@ namespace xaml
         if (font.bold) traits |= NSFontDescriptorTraitBold;
         if (traits)
         {
-            fontdes = [fontdes fontDescriptorWithSymbolicTraits:traits];  
-		}
+            fontdes = [fontdes fontDescriptorWithSymbolicTraits:traits];
+        }
         NSFont* nfont = [NSFont fontWithDescriptor:fontdes size:font.size];
         NSDictionary* attrs = @{
-                       NSFontAttributeName : nfont,
+            NSFontAttributeName : nfont,
             NSForegroundColorAttributeName : get_NSColor(brush.fill)
-		};
+        };
         NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.data()]
                                                                    attributes:attrs];
         [astr drawAtPoint:to_native<NSPoint>(p)];

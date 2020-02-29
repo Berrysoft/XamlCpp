@@ -56,5 +56,5 @@ namespace xaml
         {
             set_uri(webview.URL.absoluteString.UTF8String);
         }
-	}
+    }
 }

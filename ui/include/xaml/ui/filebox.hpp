@@ -3,10 +3,10 @@
 
 #include <functional>
 #include <vector>
+#include <xaml/array_view.hpp>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/objc.hpp>
 #include <xaml/ui/window.hpp>
-#include <xaml/array_view.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <ShObjIdl.h>
