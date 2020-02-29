@@ -5,7 +5,7 @@ if(${BUILD_COCOA})
     if(CMAKE_VERSION VERSION_LESS 3.16)
         set(SET_OBJCXX_MANULLY ON)
     else()
-        enable_language(OBJC OBJCXX)
+        enable_language(OBJCXX)
     endif()
 endif()
 

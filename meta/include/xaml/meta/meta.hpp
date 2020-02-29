@@ -640,7 +640,7 @@ namespace xaml
     {
         void operator()(reflection_info& ref, std::string_view name, Return (T::*method)(Args...))
         {
-            ref.add_method<Return, Args...>(name, [method](meta_class* self, Args... args) -> Return { return (((T*)self)->*method)(std::forward<Args>(args)...); });
+            ref.add_method<Return, Args...>(name, std::function<Return(meta_class*, Args...)>([method](meta_class* self, Args... args) -> Return { return (((T*)self)->*method)(std::forward<Args>(args)...); }));
         }
     };
 
@@ -652,7 +652,7 @@ namespace xaml
     {
         void operator()(reflection_info& ref, std::string_view name, Return (*method)(Args...))
         {
-            ref.add_static_method<Return, Args...>(name, method);
+            ref.add_static_method<Return, Args...>(name, std::function<Return(Args...)>(method));
         }
     };
 
@@ -666,9 +666,9 @@ namespace xaml
         {
             ref.add_event<Args...>(
                 name,
-                [adder](meta_class* self, __type_erased_function const* f) -> std::size_t { return adder(self, static_cast<__type_erased_function_impl<void(Args...)> const*>(f)->func); },
+                std::function<std::size_t(meta_class*, __type_erased_function const*)>([adder](meta_class* self, __type_erased_function const* f) -> std::size_t { return adder(self, static_cast<__type_erased_function_impl<void(Args...)> const*>(f)->func); }),
                 std::move(remover),
-                [getter](meta_class* self, Args... args) { (((T*)self)->*getter)(std::forward<Args>(args)...); });
+                std::function<void(meta_class*, Args...)>([getter](meta_class* self, Args... args) { (((T*)self)->*getter)(std::forward<Args>(args)...); }));
         }
     };
 
