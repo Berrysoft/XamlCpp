@@ -17,20 +17,20 @@ namespace xaml
 
     struct markup_node
     {
-        std::type_index type;
+        reflection_info const* type;
         std::string name;
         std::vector<xaml_property> properties;
     };
 
     struct xaml_event
     {
-        event_info info;
+        event_info const* info;
         std::string value;
     };
 
     struct xaml_node
     {
-        std::type_index type;
+        reflection_info const* type;
         std::string name;
         std::optional<std::tuple<std::string, std::string>> map_class;
         std::vector<xaml_property> properties;
@@ -40,15 +40,15 @@ namespace xaml
 
     struct xaml_property
     {
-        std::type_index host_type{ typeid(std::nullptr_t) };
-        property_info info;
+        reflection_info const* host_type;
+        property_info const* info;
         std::variant<std::string, markup_node, xaml_node> value;
     };
 
     struct xaml_collection_property
     {
-        std::type_index host_type{ typeid(std::nullptr_t) };
-        collection_property_info info;
+        reflection_info const* host_type;
+        collection_property_info const* info;
         std::vector<xaml_node> values;
     };
 } // namespace xaml

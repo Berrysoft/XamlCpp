@@ -237,11 +237,11 @@ namespace xaml
     ADD_PROP_EVENT(halignment); \
     ADD_PROP_EVENT(valignment)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, control)
         {
-            REGISTER_TYPE(xaml, control);
             ADD_CONTROL_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

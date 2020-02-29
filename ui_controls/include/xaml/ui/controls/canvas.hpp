@@ -135,12 +135,12 @@ namespace xaml
     ADD_CONTROL_MEMBERS();   \
     ADD_EVENT(redraw)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, canvas)
         {
-            REGISTER_TYPE(xaml, canvas);
             ADD_CTOR_DEF();
             ADD_CANVAS_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

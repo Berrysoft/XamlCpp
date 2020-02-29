@@ -49,12 +49,12 @@ namespace xaml
     ADD_PROP_EVENT(is_checked); \
     ADD_PROP(group)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, radio_box)
         {
-            REGISTER_TYPE(xaml, radio_box);
             ADD_CTOR_DEF();
             ADD_RADIO_BOX_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

@@ -51,12 +51,12 @@ namespace xaml
     ADD_PROP(text_halignment); \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, entry)
         {
-            REGISTER_TYPE(xaml, entry);
             ADD_CTOR_DEF();
             ADD_ENTRY_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

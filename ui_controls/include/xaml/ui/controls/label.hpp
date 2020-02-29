@@ -39,12 +39,12 @@ namespace xaml
     ADD_PROP(text_halignment); \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, label)
         {
-            REGISTER_TYPE(xaml, label);
             ADD_CTOR_DEF();
             ADD_LABEL_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

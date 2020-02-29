@@ -23,11 +23,11 @@ namespace xaml
 #define ADD_MARKUP_EXTENSION_MEMBERS()
 
     public:
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, markup_extension)
         {
-            REGISTER_TYPE(xaml, markup_extension);
             ADD_MARKUP_EXTENSION_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

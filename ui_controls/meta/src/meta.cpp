@@ -26,7 +26,7 @@ extern "C"
     {
         meta_context& ctx = *(meta_context*)pctx;
         register_class<
-            layout_base, grid, uniform_grid, stack_panel,
+            grid, uniform_grid, stack_panel,
             canvas,
             button, check_box, radio_box,
             label,

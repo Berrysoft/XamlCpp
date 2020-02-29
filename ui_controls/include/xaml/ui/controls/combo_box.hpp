@@ -57,12 +57,12 @@ namespace xaml
     ADD_PROP_EVENT(text);        \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, combo_box)
         {
-            REGISTER_TYPE(xaml, combo_box);
             ADD_CTOR_DEF();
             ADD_COMBO_BOX_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

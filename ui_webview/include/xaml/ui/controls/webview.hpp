@@ -118,12 +118,12 @@ public:                                                                         
     ADD_CONTROL_MEMBERS();    \
     ADD_PROP_EVENT(uri)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, webview)
         {
-            REGISTER_TYPE(xaml, webview);
             ADD_CTOR_DEF();
             ADD_WEBVIEW_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

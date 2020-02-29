@@ -28,12 +28,12 @@ namespace xaml
     ADD_ENTRY_MEMBERS();             \
     ADD_PROP_EVENT(password_char)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, password_entry)
         {
-            REGISTER_TYPE(xaml, password_entry);
             ADD_CTOR_DEF();
             ADD_PASSWORD_ENTRY_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

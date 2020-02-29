@@ -21,7 +21,7 @@ namespace xaml
 {
     class window;
 
-    class application : public meta_class
+    class application
     {
     private:
         friend class window;
@@ -73,11 +73,6 @@ namespace xaml
         XAML_UI_API HFONT __default_font() const;
         XAML_UI_API HFONT __default_font(HWND hWnd) const;
 #endif // XAML_UI_WINDOWS
-
-        REGISTER_CLASS_DECL()
-        {
-            REGISTER_TYPE(xaml, application);
-        }
     };
 } // namespace xaml
 

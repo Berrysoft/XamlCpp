@@ -38,11 +38,11 @@ namespace xaml
     ADD_EVENT(child_changed);   \
     ADD_DEF_PROP(child)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, container)
         {
-            REGISTER_TYPE(xaml, container);
             ADD_CONTAINER_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 
     class multicontainer : public control
@@ -69,11 +69,11 @@ namespace xaml
     ADD_COLLECTION_PROP(child, std::shared_ptr<control>); \
     ADD_DEF_PROP(child)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, multicontainer)
         {
-            REGISTER_TYPE(xaml, multicontainer);
             ADD_MULTICONTAINER_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

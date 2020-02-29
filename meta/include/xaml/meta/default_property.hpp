@@ -18,13 +18,13 @@ namespace xaml
         default_property(std::string_view prop_name = {}) : m_property_name(prop_name) {}
         ~default_property() override {}
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, default_property)
         {
-            REGISTER_TYPE(xaml, default_property);
             ADD_CTOR_DEF();
             ADD_CTOR(std::string_view);
             ADD_PROP(property_name);
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

@@ -25,12 +25,12 @@ namespace xaml
     ADD_MULTICONTAINER_MEMBERS(); \
     ADD_PROP(orientation)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, stack_panel)
         {
-            REGISTER_TYPE(xaml, stack_panel);
             ADD_CTOR_DEF();
             ADD_STACK_PANEL_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

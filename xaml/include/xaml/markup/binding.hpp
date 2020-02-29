@@ -62,12 +62,12 @@ namespace xaml
     ADD_DEF_PROP(path)
 
     public:
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, binding)
         {
-            REGISTER_TYPE(xaml, binding);
             ADD_CTOR_DEF();
             ADD_BINDING_EXTENSION_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

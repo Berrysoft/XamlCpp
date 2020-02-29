@@ -33,11 +33,10 @@ public:
 
     ~calculator() override {}
 
-    REGISTER_CLASS_DECL()
+    // Register a type named "calculator" in namespace "test".
+    // The namespace is optional.
+    REGISTER_CLASS_DECL(test, calculator)
     {
-        // Register a type named "calculator" in namespace "test".
-        // The namespace is optional.
-        REGISTER_TYPE(test, calculator);
         // Add default constructor.
         ADD_CTOR_DEF();
         // Add methods `plus` and `minus`.
@@ -48,6 +47,7 @@ public:
         // Add property `value` and event `value_changed`.
         ADD_PROP_EVENT(value);
     }
+    REGISTER_CLASS_END()
 };
 
 int main()
@@ -61,19 +61,20 @@ int main()
 
     // Get a type named "calculator" in namespace "test".
     auto t = *ctx.get_type("test", "calculator");
+    auto& ref = *ctx.get_reflection(t);
     // Construct the class with default constructor.
     // It is as same as calling operator new, so you should manully wrap it.
-    unique_ptr<meta_class> mc{ ctx.construct(t) };
+    unique_ptr<meta_class> mc{ ref.construct() };
     // Get the event named "value_changed".
-    auto ev = ctx.get_event<calculator const&, int>(t, "value_changed");
+    auto& ev = *ref.get_event("value_changed");
     // Add a handler to the event of the object.
     auto token = ev.add(mc.get(), function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.
-    ctx.invoke_method<void>(mc.get(), "plus", 1, 1);
+    ref.invoke_method<void>(*mc, "plus", 1, 1);
     // Get the property named "value".
-    auto prop = ctx.get_property(t, "value");
+    auto& prop = *ref.get_property("value");
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
     prop.set(mc.get(), "100");
@@ -82,9 +83,9 @@ int main()
     ev.remove(mc.get(), token);
     // Although `value` has changed, the handler won't be called,
     // because the handler has been removed.
-    ctx.invoke_method<void>(mc.get(), "minus", 1, 1);
+    ref.invoke_method<void>(*mc, "minus", 1, 1);
     // Invoke the static method.
-    cout << "3 * 7 = " << *ctx.invoke_static_method<int>(t, "multiply", 3, 7) << endl;
+    cout << "3 * 7 = " << *ref.invoke_static_method<int>("multiply", 3, 7) << endl;
     cout << endl;
     observable_vector<int> obs{ 1, 2, 3 };
     obs.add_vector_changed([](observable_vector<int>&, vector_changed_args<int>& args) {

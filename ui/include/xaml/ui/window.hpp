@@ -131,11 +131,11 @@ namespace xaml
     ADD_EVENT(closing);       \
     ADD_PROP_EVENT(resizable)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, window)
         {
-            REGISTER_TYPE(xaml, window);
             ADD_WINDOW_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

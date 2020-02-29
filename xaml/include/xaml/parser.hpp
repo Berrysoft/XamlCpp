@@ -17,7 +17,7 @@ namespace xaml
 
     struct xaml_no_default_constructor : std::logic_error
     {
-        XAML_API xaml_no_default_constructor(std::type_index t);
+        XAML_API xaml_no_default_constructor(reflection_info const* t);
         ~xaml_no_default_constructor() override {}
     };
 
@@ -35,7 +35,7 @@ namespace xaml
 
     struct xaml_no_member : std::logic_error
     {
-        XAML_API xaml_no_member(std::type_index type, std::string_view name);
+        XAML_API xaml_no_member(reflection_info const* type, std::string_view name);
         ~xaml_no_member() override {}
     };
 

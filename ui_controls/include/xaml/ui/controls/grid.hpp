@@ -135,12 +135,12 @@ namespace xaml
     ADD_ATTACH_PROP(column_span, control&); \
     ADD_ATTACH_PROP(row_span, control&)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, grid)
         {
-            REGISTER_TYPE(xaml, grid);
             ADD_CTOR_DEF();
             ADD_GRID_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

@@ -54,12 +54,12 @@ namespace xaml
     ADD_EVENT(click);           \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, button)
         {
-            REGISTER_TYPE(xaml, button);
             ADD_CTOR_DEF();
             ADD_BUTTON_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 

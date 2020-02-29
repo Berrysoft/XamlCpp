@@ -47,12 +47,6 @@ namespace xaml
 
     public:
 #define ADD_LAYOUT_BASE_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
-
-        REGISTER_CLASS_DECL()
-        {
-            REGISTER_TYPE(xaml, layout_base);
-            ADD_LAYOUT_BASE_MEMBERS();
-        }
     };
 } // namespace xaml
 

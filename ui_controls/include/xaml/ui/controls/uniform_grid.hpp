@@ -29,12 +29,12 @@ namespace xaml
     ADD_PROP(rows);                \
     ADD_PROP(orientation)
 
-        REGISTER_CLASS_DECL()
+        REGISTER_CLASS_DECL(xaml, uniform_grid)
         {
-            REGISTER_TYPE(xaml, uniform_grid);
             ADD_CTOR_DEF();
             ADD_UNIFORM_GRID_MEMBERS();
         }
+        REGISTER_CLASS_END()
     };
 } // namespace xaml
 
