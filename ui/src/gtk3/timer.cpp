@@ -1,10 +1,11 @@
+#include <gtk/gtk.h>
 #include <xaml/ui/timer.hpp>
 
 using namespace std;
 
 namespace xaml
 {
-    gboolean timer::on_timeout(gpointer data)
+    int timer::on_timeout(void* data)
     {
         timer* self = (timer*)data;
         self->m_tick(*self);

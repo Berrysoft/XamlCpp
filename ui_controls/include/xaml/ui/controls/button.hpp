@@ -21,7 +21,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     protected:
-        static void on_clicked(GtkButton* button, gpointer data);
+        static void on_clicked(void* button, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA

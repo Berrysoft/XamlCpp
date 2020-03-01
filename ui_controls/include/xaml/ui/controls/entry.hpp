@@ -19,7 +19,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static void on_changed(GtkEditable* editable, gpointer data);
+        static void on_changed(void* editable, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA

@@ -110,7 +110,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static gboolean on_draw(GtkWidget* widget, cairo_t* cr, gpointer data);
+        static int on_draw(void* widget, void* cr, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA

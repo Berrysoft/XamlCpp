@@ -31,8 +31,8 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static void on_destroy(GtkWidget* w, gpointer arg);
-        static gboolean on_configure_event(GtkWidget* widget, GdkEvent* event, gpointer data);
+        static void on_destroy(void* w, void* arg);
+        static int on_configure_event(void* widget, void* event, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA

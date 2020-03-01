@@ -18,7 +18,7 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     protected:
-        static void on_toggled(GtkToggleButton* button, gpointer data);
+        static void on_toggled(void* button, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA

@@ -7,10 +7,6 @@
 #include <xaml/array_view.hpp>
 #include <xaml/ui/control.hpp>
 
-#ifdef XAML_UI_GTK3
-#include <webkit2/webkit2.h>
-#endif
-
 namespace xaml
 {
     struct web_request
@@ -87,7 +83,7 @@ public:                                                                         
 
 #ifdef XAML_UI_GTK3
     private:
-        static void on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, gpointer data);
+        static void on_load_changed(void* web_view, int load_event, void* data);
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA
