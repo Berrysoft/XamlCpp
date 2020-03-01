@@ -24,6 +24,15 @@ namespace xaml
         SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
     }
 
+    void control::__set_rect(rectangle const& region)
+    {
+        rectangle real = region - get_margin();
+        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        rectangle real_real = real * udpi / 96.0;
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+        __set_size_noevent({ real.width, real.height });
+    }
+
     size control::__measure_text_size(string_view_t str, size offset) const
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(get_handle()->handle);

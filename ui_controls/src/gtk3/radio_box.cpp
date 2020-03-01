@@ -15,6 +15,7 @@ namespace xaml
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
             g_signal_connect(G_OBJECT(get_handle()->handle), "toggled", G_CALLBACK(radio_box::on_toggled), this);
+            draw_text();
         }
         button::__draw(region);
         draw_checked();

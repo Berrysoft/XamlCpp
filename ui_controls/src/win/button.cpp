@@ -49,11 +49,7 @@ namespace xaml
                 draw_default();
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
-            rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle()->handle);
-            rectangle real_real = real * udpi / 96.0;
-            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
-            __set_size_noevent({ real.width, real.height });
+            __set_rect(region);
         }
     }
 

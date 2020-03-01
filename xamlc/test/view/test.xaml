@@ -7,7 +7,7 @@
     <entry grid.column="1" margin="0, 5" valignment="center">John</entry>
     <label grid.row="1" margin="10" text_halignment="right" valignment="center">Password:</label>
     <password_entry grid.column="1" grid.row="1" margin="0, 5" valignment="center">123456</password_entry>
-    <stack_panel grid.column="2" grid.row="0" grid.row_span="2" margin="5" orientation="vertical">
+    <stack_panel grid.column="2" grid.row="0" grid.row_span="3" margin="5" orientation="vertical">
       <radio_box margin="5, 0" group="a">Radio 1</radio_box>
       <radio_box margin="5, 0" group="a" is_checked="true">Radio 2</radio_box>
       <radio_box margin="5, 0" group="a">Radio 3</radio_box>
@@ -15,7 +15,7 @@
       <radio_box margin="5, 0" group="b">Radio 5 in another group</radio_box>
     </stack_panel>
     <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
-    <button x:name="mybutton" grid.column="1" grid.column_span="2" grid.row="2" is_default="true" valignment="center" click="on_button_click">Hello</button>
+    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click">Hello</button>
     <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
     <uniform_grid grid.column="1" grid.row="3" margin="5" valignment="top">
       <check_box margin="5">Check 1</check_box>

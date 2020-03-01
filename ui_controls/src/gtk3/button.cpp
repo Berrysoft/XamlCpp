@@ -13,11 +13,9 @@ namespace xaml
             h->handle = gtk_button_new();
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
+            draw_text();
         }
-        rectangle real = region - get_margin();
-        __set_size_noevent({ real.width, real.height });
-        draw_size();
-        draw_text();
+        __set_rect(region);
     }
 
     void button::draw_text()

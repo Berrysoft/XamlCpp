@@ -11,12 +11,8 @@ namespace xaml
         if (!get_handle())
         {
             draw_editable();
-            draw_items();
         }
-        rectangle real = region - get_margin();
-        __set_size_noevent({ real.width, real.height });
-        draw_sel();
-        draw_text();
+        __set_rect(region);
     }
 
     void combo_box::draw_text()
@@ -68,6 +64,9 @@ namespace xaml
         }
         set_handle(h);
         g_signal_connect(G_OBJECT(get_handle()->handle), "changed", G_CALLBACK(combo_box::on_changed), this);
+        draw_items();
+        draw_sel();
+        draw_text();
     }
 
     void combo_box::on_changed(void* widget, void* data)
@@ -78,6 +77,10 @@ namespace xaml
         {
             auto entry = gtk_bin_get_child(GTK_BIN(self->get_handle()->handle));
             self->set_text(gtk_entry_get_text(GTK_ENTRY(entry)));
+        }
+        else if (self->get_sel_id() == size_t(-1))
+        {
+            self->set_text({});
         }
         else
         {

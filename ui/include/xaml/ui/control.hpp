@@ -107,10 +107,8 @@ namespace xaml
         virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) { return std::nullopt; }
 #endif
 
-#ifdef XAML_UI_COCOA
     protected:
-        XAML_UI_API void __set_rect(rectangle const& real);
-#endif // XAML_UI_COCOA
+        XAML_UI_API void __set_rect(rectangle const& region);
 
     public:
         XAML_UI_API control();

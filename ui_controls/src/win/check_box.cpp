@@ -1,3 +1,4 @@
+#include <wil/resource.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/check_box.hpp>
 #include <xaml/ui/native_control.hpp>
@@ -22,6 +23,7 @@ namespace xaml
                     break;
                 }
             }
+            break;
         }
         }
         return nullopt;

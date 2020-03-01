@@ -6,6 +6,13 @@ using namespace std;
 
 namespace xaml
 {
+    void control::__set_rect(rectangle const& region)
+    {
+        rectangle real = region - get_margin();
+        __set_size_noevent({ real.width, real.height });
+        draw_size();
+    }
+
     void control::__size_to_fit()
     {
         int width, height;

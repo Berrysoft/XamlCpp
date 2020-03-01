@@ -14,11 +14,22 @@ namespace xaml
 {
     static unordered_map<HWND, weak_ptr<control>> window_map;
 
+    static wil::unique_hbrush white_brush{ CreateSolidBrush(RGB(255, 255, 255)) };
+
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = window_map[hWnd].lock();
         auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
+        if (!result)
+        {
+            switch (msg.Msg)
+            {
+            case WM_CTLCOLORSTATIC:
+                result = (intptr_t)white_brush.get();
+                break;
+            }
+        }
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
 

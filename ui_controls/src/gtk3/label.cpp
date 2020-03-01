@@ -12,12 +12,10 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = gtk_label_new(m_text.c_str());
             set_handle(h);
+            draw_text();
+            draw_alignment();
         }
-        rectangle real = region - get_margin();
-        __set_size_noevent({ real.width, real.height });
-        draw_size();
-        draw_text();
-        draw_alignment();
+        __set_rect(region);
     }
 
     void label::draw_text()

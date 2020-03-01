@@ -130,7 +130,7 @@ namespace xaml
             g_signal_connect(G_OBJECT(get_handle()->handle), "draw", G_CALLBACK(canvas::on_draw), this);
         }
         m_real_region = region - get_margin();
-        draw_size();
+        __set_rect(region);
     }
 
     int canvas::on_draw(void* widget, void* cr, void* data)

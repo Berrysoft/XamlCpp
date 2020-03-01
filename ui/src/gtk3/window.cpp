@@ -20,7 +20,6 @@ namespace xaml
 
     void window::__draw(rectangle const& region)
     {
-        bool new_run = !get_handle();
         if (!get_handle())
         {
             auto h = make_shared<native_control>();
@@ -29,22 +28,12 @@ namespace xaml
             application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
             g_signal_connect(G_OBJECT(get_handle()->handle), "destroy", G_CALLBACK(window::on_destroy), this);
             g_signal_connect(G_OBJECT(get_handle()->handle), "configure-event", G_CALLBACK(window::on_configure_event), this);
+            draw_title();
+            draw_resizable();
         }
-        {
-            atomic_guard guard{ m_resizing };
-            if (!guard.exchange(true))
-            {
-                draw_size();
-                gtk_window_move(GTK_WINDOW(get_handle()->handle), (gint)get_x(), (gint)get_y());
-            }
-        }
-        draw_title();
-        if (get_child())
-        {
-            draw_child();
-        }
+        draw_size();
+        draw_child();
         gtk_widget_show_all(get_handle()->handle);
-        draw_resizable();
     }
 
     void window::__parent_redraw()
@@ -55,9 +44,14 @@ namespace xaml
 
     void window::draw_size()
     {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_window_resize(GTK_WINDOW(get_handle()->handle), rw, rh);
-        gtk_window_set_default_size(GTK_WINDOW(get_handle()->handle), rw, rh);
+        atomic_guard guard{ m_resizing };
+        if (!guard.exchange(true))
+        {
+            auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
+            gtk_window_resize(GTK_WINDOW(get_handle()->handle), rw, rh);
+            gtk_window_set_default_size(GTK_WINDOW(get_handle()->handle), rw, rh);
+            gtk_window_move(GTK_WINDOW(get_handle()->handle), (gint)get_x(), (gint)get_y());
+        }
     }
 
     void window::draw_title()
@@ -67,14 +61,17 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->__draw(get_client_region());
-        if (get_handle() != get_child()->get_handle())
+        if (get_child())
         {
-            g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_handle()->handle)) };
-            if (!list || list->data != get_child()->get_handle()->handle)
+            get_child()->__draw(get_client_region());
+            if (get_handle() != get_child()->get_handle())
             {
-                if (list) gtk_container_remove(GTK_CONTAINER(get_handle()->handle), GTK_WIDGET(list->data));
-                gtk_container_add(GTK_CONTAINER(get_handle()->handle), get_child()->get_handle()->handle);
+                g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_handle()->handle)) };
+                if (!list || list->data != get_child()->get_handle()->handle)
+                {
+                    if (list) gtk_container_remove(GTK_CONTAINER(get_handle()->handle), GTK_WIDGET(list->data));
+                    gtk_container_add(GTK_CONTAINER(get_handle()->handle), get_child()->get_handle()->handle);
+                }
             }
         }
     }
