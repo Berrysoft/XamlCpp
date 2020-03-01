@@ -22,12 +22,6 @@ namespace xaml
         draw_alignment();
     }
 
-    void entry::draw_size()
-    {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_widget_set_size_request(get_handle()->handle, rw, rh);
-    }
-
     void entry::draw_text()
     {
         gtk_entry_set_text(GTK_ENTRY(get_handle()->handle), m_text.c_str());

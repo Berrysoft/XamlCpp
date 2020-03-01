@@ -34,9 +34,7 @@ namespace xaml
             atomic_guard guard{ m_resizing };
             if (!guard.exchange(true))
             {
-                auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-                gtk_window_resize(GTK_WINDOW(get_handle()->handle), rw, rh);
-                gtk_window_set_default_size(GTK_WINDOW(get_handle()->handle), rw, rh);
+                draw_size();
                 gtk_window_move(GTK_WINDOW(get_handle()->handle), (gint)get_x(), (gint)get_y());
             }
         }
@@ -53,6 +51,13 @@ namespace xaml
     {
         if (get_handle())
             __draw({});
+    }
+
+    void window::draw_size()
+    {
+        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
+        gtk_window_resize(GTK_WINDOW(get_handle()->handle), rw, rh);
+        gtk_window_set_default_size(GTK_WINDOW(get_handle()->handle), rw, rh);
     }
 
     void window::draw_title()

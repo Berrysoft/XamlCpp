@@ -19,12 +19,6 @@ namespace xaml
         draw_text();
     }
 
-    void combo_box::draw_size()
-    {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_widget_set_size_request(get_handle()->handle, rw, rh);
-    }
-
     void combo_box::draw_text()
     {
         if (m_is_editable)

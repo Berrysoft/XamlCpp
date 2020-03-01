@@ -129,6 +129,7 @@ namespace xaml
 
         constexpr double get_height() const noexcept { return m_real_region.height; }
 
+    public:
 #define ADD_CANVAS_MEMBERS() \
     ADD_CONTROL_MEMBERS();   \
     ADD_EVENT(redraw)

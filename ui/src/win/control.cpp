@@ -57,5 +57,11 @@ namespace xaml
         set_margin(value * 96.0 / udpi);
     }
 
+    void control::draw_size()
+    {
+        auto real_size = __get_real_size();
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+    }
+
     void control::__size_to_fit() {}
 } // namespace xaml

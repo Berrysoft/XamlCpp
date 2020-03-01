@@ -26,12 +26,6 @@ namespace xaml
         gtk_button_set_label(GTK_BUTTON(get_handle()->handle), m_text.c_str());
     }
 
-    void button::draw_size()
-    {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_widget_set_size_request(get_handle()->handle, rw, rh);
-    }
-
     void button::draw_default() {}
 
     void button::on_clicked(void*, void* data)

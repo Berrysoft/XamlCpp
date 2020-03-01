@@ -27,15 +27,17 @@ namespace xaml
 #ifdef XAML_UI_COCOA
     public:
         void __on_action();
+
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_size() override;
 #endif // XAML_UI_COCOA
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
     protected:
-        XAML_UI_CONTROLS_API void draw_size();
-        XAML_UI_CONTROLS_API void draw_text();
-        XAML_UI_CONTROLS_API void draw_default();
+        XAML_UI_CONTROLS_API virtual void draw_text();
+        XAML_UI_CONTROLS_API virtual void draw_default();
 
     public:
         EVENT(text_changed, button&, string_view_t)

@@ -68,10 +68,13 @@ namespace xaml
 
                                                             wil::com_ptr<IStream> stream;
                                                             THROW_IF_FAILED(req->get_Content(&stream));
-                                                            auto count = wil::stream_size(stream.get());
-                                                            vector<std::byte> data(count);
-                                                            THROW_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
-                                                            args.request.data = data;
+                                                            if (stream)
+                                                            {
+                                                                auto count = wil::stream_size(stream.get());
+                                                                vector<std::byte> data(count);
+                                                                THROW_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
+                                                                args.request.data = data;
+                                                            }
 
                                                             invoke_resource_requested(args);
                                                             if (args.response)

@@ -34,10 +34,9 @@ namespace xaml
         XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // !XAML_UI_COCOA
 
-    private:
-        XAML_UI_CONTROLS_API void draw_size();
-        XAML_UI_CONTROLS_API void draw_text();
-        XAML_UI_CONTROLS_API void draw_alignment();
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_text();
+        XAML_UI_CONTROLS_API virtual void draw_alignment();
 
         PROP(text_halignment, halignment_t)
 

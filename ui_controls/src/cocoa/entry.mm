@@ -37,14 +37,6 @@ namespace xaml
         draw_alignment();
     }
 
-    void entry::draw_size()
-    {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSRect frame = textField.frame;
-        frame.size = to_native<NSSize>(get_size());
-        textField.frame = frame;
-    }
-
     void entry::draw_text()
     {
         NSTextField* textField = (NSTextField*)get_handle()->handle;

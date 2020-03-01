@@ -21,12 +21,6 @@ namespace xaml
         draw_alignment();
     }
 
-    void label::draw_size()
-    {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_widget_set_size_request(get_handle()->handle, rw, rh);
-    }
-
     void label::draw_text()
     {
         gtk_label_set_label(GTK_LABEL(get_handle()->handle), m_text.c_str());

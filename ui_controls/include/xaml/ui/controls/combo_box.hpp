@@ -37,12 +37,11 @@ namespace xaml
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
-    private:
-        XAML_UI_CONTROLS_API void draw_size();
-        XAML_UI_CONTROLS_API void draw_items();
-        XAML_UI_CONTROLS_API void draw_text();
-        XAML_UI_CONTROLS_API void draw_sel();
-        XAML_UI_CONTROLS_API void draw_editable();
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_items();
+        XAML_UI_CONTROLS_API virtual void draw_text();
+        XAML_UI_CONTROLS_API virtual void draw_sel();
+        XAML_UI_CONTROLS_API virtual void draw_editable();
 
         EVENT(text_changed, combo_box&, std::optional<string_t> const&)
         PROP_EVENT(text, std::optional<string_t>)

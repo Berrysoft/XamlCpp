@@ -27,4 +27,12 @@ namespace xaml
             __set_size_noevent(from_native(frame.size));
         }
     }
+
+    void control::draw_size()
+    {
+        NSView* view = get_handle()->handle;
+        NSRect frame = view.frame;
+        frame.size = to_native<NSSize>(get_size());
+        view.frame = frame;
+    }
 }

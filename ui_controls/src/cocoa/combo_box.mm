@@ -35,14 +35,6 @@ namespace xaml
         draw_editable();
     }
 
-    void combo_box::draw_size()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        NSRect frame = combo.frame;
-        frame.size = to_native<NSSize>(get_size());
-        combo.frame = frame;
-    }
-
     void combo_box::draw_text()
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;

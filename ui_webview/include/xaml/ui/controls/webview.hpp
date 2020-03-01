@@ -97,11 +97,13 @@ public:                                                                         
 #ifdef XAML_UI_WINDOWS
     private:
         void draw_create();
+
+    protected:
+        XAML_UI_WEBVIEW_API virtual void draw_size() override;
 #endif // XAML_UI_WINDOWS
 
-    private:
-        void draw_size();
-        void draw_uri();
+    protected:
+        XAML_UI_WEBVIEW_API virtual void draw_uri();
 
     public:
         EVENT(uri_changed, webview&, string_view_t)

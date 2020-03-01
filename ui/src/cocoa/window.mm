@@ -59,15 +59,7 @@ namespace xaml
             atomic_guard guard{ m_resizing };
             if (!guard.exchange(true))
             {
-                CGFloat fw = (CGFloat)get_width();
-                CGFloat fh = (CGFloat)get_height();
-                NSRect frame = [window frame];
-                frame.size = { fw, fh };
-                frame.origin.x = (CGFloat)get_x();
-                NSScreen* screen = window.screen;
-                NSRect screen_frame = screen.frame;
-                frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
-                [window setFrame:frame display:YES];
+                draw_size();
             }
         }
         draw_title();
@@ -83,6 +75,20 @@ namespace xaml
         if (get_window())
             __draw({});
     }
+
+    void window::draw_size()
+    {
+        NSWindow* window = get_window()->window;
+        CGFloat fw = (CGFloat)get_width();
+        CGFloat fh = (CGFloat)get_height();
+        NSRect frame = [window frame];
+        frame.size = { fw, fh };
+        frame.origin.x = (CGFloat)get_x();
+        NSScreen* screen = window.screen;
+        NSRect screen_frame = screen.frame;
+        frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
+        [window setFrame:frame display:YES];
+	}
 
     void window::draw_title()
     {

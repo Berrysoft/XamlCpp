@@ -57,12 +57,6 @@ namespace xaml
         }
     }
 
-    void combo_box::draw_size()
-    {
-        auto real_size = __get_real_size();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-    }
-
     void combo_box::draw_text()
     {
         if (m_text)

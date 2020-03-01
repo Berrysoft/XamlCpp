@@ -5,7 +5,16 @@ using namespace std;
 
 namespace xaml
 {
-    control::control() : meta_class() {}
+    control::control() : meta_class()
+    {
+        add_size_changed([this](control const&, size) {
+            if (get_handle())
+            {
+                draw_size();
+                __parent_redraw();
+            }
+        });
+    }
 
     control::~control()
     {

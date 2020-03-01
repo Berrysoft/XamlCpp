@@ -22,10 +22,9 @@ namespace xaml
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
-    private:
-        XAML_UI_CONTROLS_API void draw_size();
-        XAML_UI_CONTROLS_API void draw_text();
-        XAML_UI_CONTROLS_API void draw_alignment();
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_text();
+        XAML_UI_CONTROLS_API virtual void draw_alignment();
 
         PROP(text_halignment, halignment_t)
 
