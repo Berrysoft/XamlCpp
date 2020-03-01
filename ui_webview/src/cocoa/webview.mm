@@ -46,14 +46,6 @@ namespace xaml
         [webview loadRequest:nsrequest];
     }
 
-    void webview::draw_size()
-    {
-        WKWebView* webview = (WKWebView*)get_handle()->handle;
-        NSRect frame = webview.frame;
-        frame.size = to_native<NSSize>(get_size());
-        webview.frame = frame;
-    }
-
     void webview::__on_navigated()
     {
         WKWebView* webview = (WKWebView*)get_handle()->handle;

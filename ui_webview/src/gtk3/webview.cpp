@@ -2,7 +2,6 @@
 #include <webkit2/webkit2.h>
 #include <xaml/ui/controls/webview.hpp>
 #include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_drawing.hpp>
 
 using namespace std;
 
@@ -25,12 +24,6 @@ namespace xaml
     void webview::draw_uri()
     {
         webkit_web_view_load_uri(WEBKIT_WEB_VIEW(get_handle()->handle), get_uri().data());
-    }
-
-    void webview::draw_size()
-    {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_widget_set_size_request(get_handle()->handle, rw, rh);
     }
 
     void webview::on_load_changed(void* web_view, int load_event, void* data)

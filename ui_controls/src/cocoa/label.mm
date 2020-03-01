@@ -1,6 +1,5 @@
 #include <xaml/ui/controls/label.hpp>
 #include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_drawing.hpp>
 
 using namespace std;
 
