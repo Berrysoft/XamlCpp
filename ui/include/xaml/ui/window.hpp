@@ -5,27 +5,27 @@
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/container.hpp>
 
-#ifdef XAML_UI_WINDOWS
-#include <wil/resource.h>
-#endif // XAML_UI_WINDOWS
-
 namespace xaml
 {
-#ifdef XAML_UI_WINDOWS
-    class window;
-
-    XAML_UI_API LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-    XAML_UI_API std::shared_ptr<window> __get_window(HWND hWnd);
-#endif // XAML_UI_WINDOWS
+    struct native_window;
 
     class window : public container
     {
-#ifdef XAML_UI_WINDOWS
+    public:
+        using native_window_type = std::shared_ptr<native_window>;
+
     private:
-        wil::unique_hdc_window m_store_dc{ nullptr };
+        native_window_type m_window{ nullptr };
 
     public:
-        XAML_UI_API virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        native_window_type get_window() const noexcept { return m_window; }
+
+    protected:
+        void set_window(native_window_type value) { m_window = value; }
+
+#ifdef XAML_UI_WINDOWS
+    public:
+        XAML_UI_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
         XAML_UI_API void __copy_hdc(rectangle const& region, HDC hDC);
 #endif // XAML_UI_WINDOWS
 
@@ -36,18 +36,6 @@ namespace xaml
 #endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA
-    public:
-        using __native_window_type = OBJC_OBJECT(NSWindow);
-
-    private:
-        __native_window_type m_window;
-
-    public:
-        inline __native_window_type __get_window() const { return m_window; }
-
-    protected:
-        void __set_window(__native_window_type value) { m_window = value; }
-
     public:
         void __on_did_resize();
         bool __on_should_close();

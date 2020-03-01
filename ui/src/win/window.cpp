@@ -3,6 +3,9 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -31,7 +34,7 @@ namespace xaml
     window::~window()
     {
         close();
-        window_map.erase(get_handle());
+        window_map.erase(get_handle()->handle);
     }
 
     void window::__draw(rectangle const& region)
@@ -48,7 +51,8 @@ namespace xaml
             this->__create(params);
             auto shared_this = static_pointer_cast<window>(shared_from_this());
             application::current()->window_added(shared_this);
-            window_map[get_handle()] = weak_ptr{ shared_this };
+            window_map[get_handle()->handle] = weak_ptr{ shared_this };
+            set_window(make_shared<native_window>());
         }
         {
             atomic_guard guard(m_resizing);
@@ -56,21 +60,21 @@ namespace xaml
             {
                 point real_location = __get_real_location();
                 size real_size = __get_real_size();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_location.x, (int)real_location.y, (int)real_size.width, (int)real_size.height, SWP_NOZORDER));
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_location.x, (int)real_location.y, (int)real_size.width, (int)real_size.height, SWP_NOZORDER));
             }
         }
         draw_resizable();
         draw_title();
-        auto wnd_dc = wil::GetDC(get_handle());
-        m_store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
+        auto wnd_dc = wil::GetDC(get_handle()->handle);
+        get_window()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
         rectangle cr = __get_real_client_region();
         wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)cr.width, (int)cr.height) };
-        wil::unique_hbitmap ori_bitmap{ SelectBitmap(m_store_dc.get(), bitmap.release()) };
+        wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
         if (get_child())
         {
             draw_child();
         }
-        THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle(), nullptr, FALSE));
+        THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle()->handle, nullptr, FALSE));
     }
 
     void window::__parent_redraw()
@@ -80,7 +84,7 @@ namespace xaml
 
     void window::draw_title()
     {
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle(), m_title.c_str()));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowText(get_handle()->handle, m_title.c_str()));
     }
 
     void window::draw_child()
@@ -90,29 +94,29 @@ namespace xaml
 
     void window::draw_resizable()
     {
-        LONG_PTR style = GetWindowLongPtr(get_handle(), GWL_STYLE);
+        LONG_PTR style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
         if (m_resizable)
             style |= WS_THICKFRAME | WS_MAXIMIZEBOX;
         else
             style &= (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX);
-        SetWindowLongPtr(get_handle(), GWL_STYLE, style);
+        SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
     }
 
     void window::show()
     {
         __draw({});
-        ShowWindow(get_handle(), SW_SHOWNORMAL);
-        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()));
+        ShowWindow(get_handle()->handle, SW_SHOWNORMAL);
+        THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()->handle));
     }
 
     void window::close()
     {
-        SendMessage(get_handle(), WM_CLOSE, 0, 0);
+        SendMessage(get_handle()->handle, WM_CLOSE, 0, 0);
     }
 
     void window::hide()
     {
-        ShowWindow(get_handle(), SW_HIDE);
+        ShowWindow(get_handle()->handle, SW_HIDE);
     }
 
     rectangle window::get_client_region() const
@@ -123,16 +127,16 @@ namespace xaml
     rectangle window::__get_real_client_region() const
     {
         RECT r = {};
-        THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle(), &r));
+        THROW_IF_WIN32_BOOL_FALSE(GetClientRect(get_handle()->handle, &r));
         return from_native(r);
     }
 
     void window::__copy_hdc(rectangle const& region, HDC hDC)
     {
-        THROW_IF_WIN32_BOOL_FALSE(BitBlt(m_store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, hDC, 0, 0, SRCCOPY));
+        THROW_IF_WIN32_BOOL_FALSE(BitBlt(get_window()->store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, hDC, 0, 0, SRCCOPY));
     }
 
-    optional<LRESULT> window::__wnd_proc(window_message const& msg)
+    optional<std::intptr_t> window::__wnd_proc(window_message const& msg)
     {
         PAINTSTRUCT ps;
         wil::unique_hdc_paint hDC;
@@ -145,7 +149,7 @@ namespace xaml
             {
                 double udpi = get_dpi();
                 RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                 rectangle r = from_native(rect);
                 __set_real_location({ r.x, r.y });
                 __set_real_size({ r.width, r.height });
@@ -160,7 +164,7 @@ namespace xaml
             {
                 double udpi = get_dpi();
                 RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                 rectangle r = from_native(rect);
                 __set_real_location({ r.x, r.y });
             }
@@ -172,10 +176,10 @@ namespace xaml
             if (get_handle() && !guard.exchange(true))
             {
                 size real_size = __get_real_size();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                SendMessage(get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
+                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
                 RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle(), &rect));
+                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                 rectangle r = from_native(rect);
                 __set_real_location({ r.x, r.y });
                 __draw({});
@@ -184,11 +188,11 @@ namespace xaml
         }
         case WM_PAINT:
         {
-            hDC = wil::BeginPaint(get_handle(), &ps);
+            hDC = wil::BeginPaint(get_handle()->handle, &ps);
             rectangle region = __get_real_client_region();
-            THROW_IF_WIN32_BOOL_FALSE(Rectangle(m_store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
+            THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
-            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, m_store_dc.get(), 0, 0, SRCCOPY));
+            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, get_window()->store_dc.get(), 0, 0, SRCCOPY));
             return result;
         }
         case WM_CLOSE:
@@ -220,6 +224,6 @@ namespace xaml
 
     double window::get_dpi() const
     {
-        return (double)GetDpiForWindow(get_handle());
+        return (double)GetDpiForWindow(get_handle()->handle);
     }
 } // namespace xaml

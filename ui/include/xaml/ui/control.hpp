@@ -2,22 +2,14 @@
 #define XAML_UI_CONTROL_HPP
 
 #include <map>
+#include <memory>
+#include <optional>
 #include <string_view>
 #include <xaml/meta/conv.hpp>
 #include <xaml/meta/enum_meta.hpp>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/strings.hpp>
 #include <xaml/ui/drawing.hpp>
-#include <xaml/ui/objc.hpp>
-
-#ifdef XAML_UI_WINDOWS
-#include <Windows.h>
-#include <optional>
-#elif defined(XAML_UI_GTK3)
-#include <gtk/gtk.h>
-#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
-#import <xaml/ui/cocoa/XamlDelegate.h>
-#endif
 
 namespace xaml
 {
@@ -107,26 +99,22 @@ namespace xaml
     {
     };
 
+    struct native_control;
+
     class control : public meta_class
     {
     public:
-#ifdef XAML_UI_WINDOWS
-        using native_handle_type = HWND;
-#elif defined(XAML_UI_GTK3)
-        using native_handle_type = GtkWidget*;
-#elif defined(XAML_UI_COCOA)
-        using native_handle_type = OBJC_OBJECT(NSView);
-#endif // XAML_UI_WINDOWS
+        using native_handle_type = std::shared_ptr<native_control>;
 
     private:
-        native_handle_type m_handle{ OBJC_NIL };
+        native_handle_type m_handle{ nullptr };
 
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
-        operator bool() const noexcept { return m_handle != OBJC_NIL; }
+        operator bool() const noexcept { return (bool)m_handle; }
 
     protected:
-        void set_handle(native_handle_type h) noexcept OBJC_BLOCK({ m_handle = h; });
+        void set_handle(native_handle_type h) noexcept { m_handle = h; }
 
 #ifdef XAML_UI_WINDOWS
     protected:
@@ -134,24 +122,12 @@ namespace xaml
         XAML_UI_API size __measure_text_size(string_view_t str, size offset) const;
 
     public:
-        virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) { return std::nullopt; }
+        virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) { return std::nullopt; }
 #endif
 
 #ifdef XAML_UI_COCOA
     protected:
         XAML_UI_API void __set_rect(rectangle const& real);
-
-    public:
-        using __native_delegate_type = OBJC_OBJECT(XamlDelegate);
-
-    private:
-        __native_delegate_type m_delegate{ OBJC_NIL };
-
-    public:
-        inline __native_delegate_type __get_delegate() const noexcept { return m_delegate; }
-
-    protected:
-        void __set_delegate(__native_delegate_type value) OBJC_BLOCK({ m_delegate = value; });
 #endif // XAML_UI_COCOA
 
     public:

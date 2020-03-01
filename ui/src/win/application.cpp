@@ -2,6 +2,8 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -80,6 +82,6 @@ namespace xaml
     void application::quit(int value)
     {
         m_quit_value = value;
-        if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle());
+        if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle()->handle);
     }
 } // namespace xaml

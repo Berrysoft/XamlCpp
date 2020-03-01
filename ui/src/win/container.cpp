@@ -4,9 +4,9 @@ using namespace std;
 
 namespace xaml
 {
-    optional<LRESULT> multicontainer::__wnd_proc(window_message const& msg)
+    optional<std::intptr_t> multicontainer::__wnd_proc(window_message const& msg)
     {
-        optional<LRESULT> result = nullopt;
+        optional<std::intptr_t> result = nullopt;
         for (auto c : m_children)
         {
             auto r = c->__wnd_proc(msg);

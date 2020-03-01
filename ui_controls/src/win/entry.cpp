@@ -1,6 +1,7 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/entry.hpp>
+#include <xaml/ui/native_control.hpp>
 
 #include <CommCtrl.h>
 
@@ -8,27 +9,27 @@ using namespace std;
 
 namespace xaml
 {
-    optional<LRESULT> entry::__wnd_proc(window_message const& msg)
+    optional<std::intptr_t> entry::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
         case WM_COMMAND:
         {
             HWND h = (HWND)msg.lParam;
-            if (get_handle() == h)
+            if (get_handle() && get_handle()->handle == h)
             {
                 switch (HIWORD(msg.wParam))
                 {
                 case EN_UPDATE:
                 {
-                    int len = Edit_GetTextLength(get_handle());
+                    int len = Edit_GetTextLength(get_handle()->handle);
                     string_t t(len, U('\0'));
-                    Edit_GetText(get_handle(), t.data(), len + 1);
+                    Edit_GetText(get_handle()->handle, t.data(), len + 1);
                     DWORD start, end;
-                    SendMessage(get_handle(), EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
+                    SendMessage(get_handle()->handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
                     set_text(t);
-                    SetFocus(get_handle());
-                    Edit_SetSel(get_handle(), start, end);
+                    SetFocus(get_handle()->handle);
+                    Edit_SetSel(get_handle()->handle, start, end);
                     break;
                 }
                 }
@@ -56,26 +57,25 @@ namespace xaml
                 this->__create(params);
             }
             rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle());
+            UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
-            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
             __set_size_noevent({ real.width, real.height });
             draw_text();
             draw_alignment();
-            SetParent(get_handle(), sparent->get_handle());
-            ShowWindow(get_handle(), SW_SHOW);
+            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
     void entry::draw_size()
     {
         auto real_size = __get_real_size();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 
     void entry::draw_text()
     {
-        THROW_IF_WIN32_BOOL_FALSE(Edit_SetText(get_handle(), m_text.c_str()));
+        THROW_IF_WIN32_BOOL_FALSE(Edit_SetText(get_handle()->handle, m_text.c_str()));
     }
 
     void entry::draw_alignment()
@@ -93,7 +93,7 @@ namespace xaml
             style |= ES_LEFT;
             break;
         }
-        SetWindowLongPtr(get_handle(), GWL_STYLE, style);
+        SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
     }
 
     void entry::__size_to_fit()

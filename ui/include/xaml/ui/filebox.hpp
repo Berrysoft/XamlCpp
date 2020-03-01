@@ -8,13 +8,6 @@
 #include <xaml/ui/objc.hpp>
 #include <xaml/ui/window.hpp>
 
-#ifdef XAML_UI_WINDOWS
-#include <ShObjIdl.h>
-#include <wil/com.h>
-#elif defined(XAML_UI_GTK3)
-#include <gtk/gtk.h>
-#endif // XAML_UI_WINDOWS
-
 namespace xaml
 {
     struct filebox_filter
@@ -23,19 +16,15 @@ namespace xaml
         string_t pattern;
     };
 
+    struct native_filebox;
+
     class filebox
     {
     private:
-#ifdef XAML_UI_WINDOWS
-        using native_handle_type = wil::com_ptr<IFileDialog>;
-#elif defined(XAML_UI_GTK3)
-        using native_handle_type = GtkWidget*;
-#elif defined(XAML_UI_COCOA)
-        using native_handle_type = OBJC_OBJECT(NSSavePanel);
-#endif // XAML_UI_WINDOWS
-
-    private:
         std::vector<string_t> m_results{};
+
+    public:
+        using native_handle_type = std::shared_ptr<native_filebox>;
 
     protected:
         native_handle_type m_handle{ OBJC_NIL };
@@ -48,7 +37,7 @@ namespace xaml
         inline native_handle_type get_handle() const noexcept { return m_handle; }
 
     protected:
-        void set_handle(native_handle_type value) noexcept OBJC_BLOCK({ m_handle = value; });
+        void set_handle(native_handle_type value) noexcept { m_handle = value; }
 
     public:
         PROP_STRING(title)

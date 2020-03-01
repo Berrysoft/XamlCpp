@@ -4,14 +4,6 @@
 #include <xaml/ui/control.hpp>
 #include <xaml/ui/drawing.hpp>
 
-#ifdef XAML_UI_WINDOWS
-#include <gdiplus.h>
-#include <memory>
-#include <wil/resource.h>
-#elif defined(XAML_UI_COCOA)
-#include <xaml/ui/objc.hpp>
-#endif // XAML_UI_WINDOWS
-
 namespace xaml
 {
     struct drawing_brush
@@ -33,19 +25,15 @@ namespace xaml
         bool bold = false;
     };
 
+    struct native_drawing_context;
+
     class drawing_context
     {
     public:
-#ifdef XAML_UI_WINDOWS
-        using native_handle_type = Gdiplus::Graphics*;
-#elif defined(XAML_UI_GTK3)
-        using native_handle_type = cairo_t*;
-#elif defined(XAML_UI_COCOA)
-        using native_handle_type = OBJC_OBJECT(NSGraphicsContext);
-#endif
+        using native_handle_type = native_drawing_context*;
 
     private:
-        native_handle_type m_handle{ OBJC_NIL };
+        native_handle_type m_handle{ nullptr };
 
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
@@ -92,6 +80,8 @@ namespace xaml
         XAML_UI_CONTROLS_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
+    struct native_canvas;
+
     class canvas : public control
     {
     public:
@@ -101,13 +91,21 @@ namespace xaml
     private:
         rectangle m_real_region{};
 
-#ifdef XAML_UI_WINDOWS
+    public:
+        using native_canvas_type = std::shared_ptr<native_canvas>;
+
     private:
-        ULONG_PTR m_token;
-        wil::unique_hdc_window m_store_dc;
+        native_canvas_type m_canvas;
 
     public:
-        XAML_UI_CONTROLS_API virtual std::optional<LRESULT> __wnd_proc(window_message const& msg) override;
+        native_canvas_type get_canvas() const noexcept { return m_canvas; }
+
+    protected:
+        void set_canvas(native_canvas_type value) noexcept { m_canvas = value; }
+
+#ifdef XAML_UI_WINDOWS
+    public:
+        XAML_UI_CONTROLS_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3

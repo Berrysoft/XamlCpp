@@ -1,6 +1,7 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/native_control.hpp>
 
 #include <CommCtrl.h>
 
@@ -26,7 +27,7 @@ namespace xaml
                 params.height = 50;
                 params.parent = sparent.get();
                 this->__create(params);
-                default_char = Edit_GetPasswordChar(get_handle());
+                default_char = Edit_GetPasswordChar(get_handle()->handle);
             }
             entry::__draw(region);
             draw_password_char();
@@ -35,6 +36,6 @@ namespace xaml
 
     void password_entry::draw_password_char()
     {
-        Edit_SetPasswordChar(get_handle(), m_password_char ? m_password_char : default_char);
+        Edit_SetPasswordChar(get_handle()->handle, m_password_char ? m_password_char : default_char);
     }
 } // namespace xaml

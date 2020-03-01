@@ -37,7 +37,7 @@ namespace xaml
     {
     public:
         virtual ~native_webview() {}
-        virtual void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
+        virtual void create_async(std::intptr_t parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
         virtual operator bool() const = 0;
         virtual void navigate(string_view_t uri) = 0;
         virtual void set_location(point p) = 0;
@@ -73,16 +73,16 @@ public:                                                                         
 
 #ifdef XAML_UI_WINDOWS
     public:
-        using __native_webview_type = std::shared_ptr<native_webview>;
+        using native_webview_type = std::shared_ptr<native_webview>;
 
     private:
-        __native_webview_type m_webview{ OBJC_NIL };
+        native_webview_type m_webview{ nullptr };
 
     public:
-        __native_webview_type __get_webview() const noexcept { return m_webview; }
+        native_webview_type get_webview() const noexcept { return m_webview; }
 
     protected:
-        void __set_webview(__native_webview_type value) OBJC_BLOCK({ m_webview = value; });
+        void set_webview(native_webview_type value) { m_webview = value; }
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3

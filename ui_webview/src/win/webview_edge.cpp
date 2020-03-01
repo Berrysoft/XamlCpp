@@ -34,7 +34,7 @@ namespace xaml
         }
     };
 
-    void webview_edge::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
+    void webview_edge::create_async(intptr_t parent, rectangle const& rect, function<void()>&& callback)
     {
         try
         {

@@ -1,5 +1,6 @@
 #include <unordered_map>
 #include <wil/result_macros.h>
+#include <xaml/ui/native_timer.hpp>
 #include <xaml/ui/timer.hpp>
 
 using namespace std;
@@ -8,7 +9,7 @@ namespace xaml
 {
     static unordered_map<UINT_PTR, timer*> timer_map;
 
-    void timer::on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
+    void native_timer::on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
     {
         auto self = timer_map[nIdEvent];
         if (self)
@@ -21,8 +22,8 @@ namespace xaml
     {
         if (!m_enabled.exchange(true))
         {
-            __set_id(SetTimer(NULL, 0, (UINT)m_interval.count(), timer::on_tick));
-            timer_map[__get_id()] = this;
+            get_handle()->id = SetTimer(NULL, 0, (UINT)m_interval.count(), native_timer::on_tick);
+            timer_map[get_handle()->id] = this;
         }
     }
 
@@ -30,8 +31,8 @@ namespace xaml
     {
         if (m_enabled.exchange(false))
         {
-            THROW_IF_WIN32_BOOL_FALSE(KillTimer(NULL, __get_id()));
-            timer_map.erase(__get_id());
+            THROW_IF_WIN32_BOOL_FALSE(KillTimer(NULL, get_handle()->id));
+            timer_map.erase(get_handle()->id);
         }
     }
 } // namespace xaml

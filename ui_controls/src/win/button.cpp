@@ -1,6 +1,7 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/button.hpp>
+#include <xaml/ui/native_control.hpp>
 
 #include <CommCtrl.h>
 
@@ -8,14 +9,14 @@ using namespace std;
 
 namespace xaml
 {
-    optional<LRESULT> button::__wnd_proc(window_message const& msg)
+    optional<std::intptr_t> button::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
         case WM_COMMAND:
         {
             HWND h = (HWND)msg.lParam;
-            if (get_handle() == h)
+            if (get_handle() && get_handle()->handle == h)
             {
                 switch (HIWORD(msg.wParam))
                 {
@@ -46,35 +47,35 @@ namespace xaml
                 this->__create(params);
             }
             rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle());
+            UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
-            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
             __set_size_noevent({ real.width, real.height });
             draw_text();
             draw_default();
-            SetParent(get_handle(), sparent->get_handle());
+            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
     void button::draw_size()
     {
         auto real_size = __get_real_size();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 
     void button::draw_text()
     {
-        THROW_IF_WIN32_BOOL_FALSE(Button_SetText(get_handle(), m_text.c_str()));
+        THROW_IF_WIN32_BOOL_FALSE(Button_SetText(get_handle()->handle, m_text.c_str()));
     }
 
     void button::draw_default()
     {
-        auto style = GetWindowLongPtr(get_handle(), GWL_STYLE);
+        auto style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
         if (m_is_default)
             style |= BS_DEFPUSHBUTTON;
         else
             style &= ~BS_DEFPUSHBUTTON;
-        Button_SetStyle(get_handle(), style, FALSE);
+        Button_SetStyle(get_handle()->handle, style, FALSE);
     }
 
     void button::__size_to_fit()

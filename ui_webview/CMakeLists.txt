@@ -27,8 +27,8 @@ target_include_directories(xaml_ui_webview
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ${XAML_PRIVATE_INCLUDE_DIRS}
     PRIVATE
+        ${XAML_PRIVATE_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
@@ -78,7 +78,7 @@ elseif(${BUILD_GTK3})
     link_directories(${WEBKIT4_LIBRARY_DIRS})
     add_definitions(${WEBKIT4_CFLAGS_OTHER})
 
-    target_include_directories(xaml_ui_webview PUBLIC ${WEBKIT4_INCLUDE_DIRS})
+    target_include_directories(xaml_ui_webview PRIVATE ${WEBKIT4_INCLUDE_DIRS})
     target_link_libraries(xaml_ui_webview ${WEBKIT4_LIBRARIES})
 endif()
 

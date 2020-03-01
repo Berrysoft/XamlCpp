@@ -1,6 +1,7 @@
 #include <ShellScalingApi.h>
 #include <Windows.h>
 #include <wil/result_macros.h>
+#include <xaml/ui/native_drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;

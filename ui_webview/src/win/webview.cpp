@@ -3,6 +3,7 @@
 #include <win/webview_edge2.hpp>
 #include <win/webview_ie.hpp>
 #include <xaml/ui/controls/webview.hpp>
+#include <xaml/ui/native_control.hpp>
 
 using namespace std;
 
@@ -14,20 +15,20 @@ namespace xaml
         {
             set_handle(sparent->get_handle());
             rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle());
+            UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
-            if (!__get_webview())
+            if (!get_webview())
             {
                 m_webview = make_shared<webview_edge2>();
-                m_webview->create_async(get_handle(), real_real, [this, real_real]() {
+                m_webview->create_async((intptr_t)get_handle()->handle, real_real, [this, real_real]() {
                     if (!*m_webview)
                     {
                         m_webview = make_shared<webview_edge>();
-                        m_webview->create_async(get_handle(), real_real, [this, real_real]() {
+                        m_webview->create_async((intptr_t)get_handle()->handle, real_real, [this, real_real]() {
                             if (!*m_webview)
                             {
                                 m_webview = make_shared<webview_ie>();
-                                m_webview->create_async(get_handle(), real_real, [this]() {
+                                m_webview->create_async((intptr_t)get_handle()->handle, real_real, [this]() {
                                     if (!*m_webview)
                                     {
                                         m_webview = nullptr;
@@ -51,7 +52,7 @@ namespace xaml
                 });
             }
             __set_size_noevent({ real.width, real.height });
-            if (__get_webview() && *__get_webview()) m_webview->set_rect(real_real);
+            if (get_webview() && *get_webview()) m_webview->set_rect(real_real);
         }
     }
 
@@ -71,7 +72,7 @@ namespace xaml
 
     void webview::draw_size()
     {
-        if (__get_webview() && *__get_webview())
+        if (get_webview() && *get_webview())
         {
             m_webview->set_size(__get_real_size());
         }
@@ -79,7 +80,7 @@ namespace xaml
 
     void webview::draw_uri()
     {
-        if (__get_webview() && *__get_webview())
+        if (get_webview() && *get_webview())
         {
             m_webview->navigate(get_uri());
         }

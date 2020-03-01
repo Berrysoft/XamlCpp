@@ -2,6 +2,7 @@
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/combo_box.hpp>
+#include <xaml/ui/native_control.hpp>
 
 #include <CommCtrl.h>
 
@@ -9,23 +10,23 @@ using namespace std;
 
 namespace xaml
 {
-    optional<LRESULT> combo_box::__wnd_proc(window_message const& msg)
+    optional<std::intptr_t> combo_box::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
         {
         case WM_COMMAND:
         {
             HWND h = (HWND)msg.lParam;
-            if (get_handle() == h)
+            if (get_handle() && get_handle()->handle == h)
             {
                 switch (HIWORD(msg.wParam))
                 {
                 case CBN_SELCHANGE:
                 {
-                    set_sel_id(ComboBox_GetCurSel(get_handle()));
-                    int count = ComboBox_GetTextLength(get_handle());
+                    set_sel_id(ComboBox_GetCurSel(get_handle()->handle));
+                    int count = ComboBox_GetTextLength(get_handle()->handle);
                     string_t text(count, U('\0'));
-                    ComboBox_GetText(get_handle(), text.data(), count);
+                    ComboBox_GetText(get_handle()->handle, text.data(), count);
                     set_text(text);
                     break;
                 }
@@ -46,31 +47,31 @@ namespace xaml
                 draw_items();
             }
             rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle());
+            UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
-            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
             __set_size_noevent({ real.width, real.height });
             draw_sel();
             draw_text();
-            SetParent(get_handle(), sparent->get_handle());
+            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
     void combo_box::draw_size()
     {
         auto real_size = __get_real_size();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle(), HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 
     void combo_box::draw_text()
     {
         if (m_text)
         {
-            ComboBox_SetText(get_handle(), m_text->c_str());
+            ComboBox_SetText(get_handle()->handle, m_text->c_str());
         }
         else
         {
-            ComboBox_SetText(get_handle(), nullptr);
+            ComboBox_SetText(get_handle()->handle, nullptr);
         }
     }
 
@@ -78,13 +79,13 @@ namespace xaml
     {
         for (auto item : get_items())
         {
-            ComboBox_AddString(get_handle(), item->c_str());
+            ComboBox_AddString(get_handle()->handle, item->c_str());
         }
     }
 
     void combo_box::draw_sel()
     {
-        ComboBox_SetCurSel(get_handle(), get_sel_id());
+        ComboBox_SetCurSel(get_handle()->handle, get_sel_id());
     }
 
     void combo_box::draw_editable()
@@ -126,21 +127,21 @@ namespace xaml
 
     void combo_box::insert_item(size_t index, string_t const& value)
     {
-        ComboBox_InsertString(get_handle(), index, value.c_str());
+        ComboBox_InsertString(get_handle()->handle, index, value.c_str());
     }
 
     void combo_box::remove_item(size_t index)
     {
-        ComboBox_DeleteString(get_handle(), index);
+        ComboBox_DeleteString(get_handle()->handle, index);
     }
 
     void combo_box::clear_items()
     {
-        ComboBox_ResetContent(get_handle());
+        ComboBox_ResetContent(get_handle()->handle);
     }
 
     void combo_box::replace_item(size_t index, string_t const& value)
     {
-        ComboBox_SetItemData(get_handle(), index, value.c_str());
+        ComboBox_SetItemData(get_handle()->handle, index, value.c_str());
     }
 } // namespace xaml

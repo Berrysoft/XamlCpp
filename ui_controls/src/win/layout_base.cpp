@@ -1,5 +1,6 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/controls/layout_base.hpp>
+#include <xaml/ui/native_control.hpp>
 
 using namespace std;
 
@@ -10,11 +11,11 @@ namespace xaml
         if (auto sparent = get_parent().lock())
         {
             set_handle(sparent->get_handle());
-            SendMessage(get_handle(), WM_SETREDRAW, FALSE, 0);
+            SendMessage(get_handle()->handle, WM_SETREDRAW, FALSE, 0);
             __draw_impl(region, [this](shared_ptr<control> c, rectangle const&) {
-                SendMessage(c->get_handle(), WM_SETFONT, (WPARAM)application::current()->__default_font(get_handle()), TRUE);
+                SendMessage(c->get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(get_handle()->handle), TRUE);
             });
-            SendMessage(get_handle(), WM_SETREDRAW, TRUE, 0);
+            SendMessage(get_handle()->handle, WM_SETREDRAW, TRUE, 0);
         }
     }
 } // namespace xaml
