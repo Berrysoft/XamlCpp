@@ -29,7 +29,6 @@ namespace xaml
         wil::unique_hdc_window hDC = wil::GetWindowDC(get_handle()->handle);
         SIZE s = {};
         THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
         return from_native(s) + offset;
     }
 

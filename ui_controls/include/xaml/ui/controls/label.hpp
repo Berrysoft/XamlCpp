@@ -14,6 +14,9 @@ namespace xaml
         XAML_UI_CONTROLS_API ~label() override;
 
 #ifdef XAML_UI_WINDOWS
+    private:
+        rectangle m_real_region;
+
     public:
         XAML_UI_CONTROLS_API std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
         XAML_UI_CONTROLS_API void __size_to_fit() override;

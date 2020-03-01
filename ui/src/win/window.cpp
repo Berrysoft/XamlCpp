@@ -43,7 +43,7 @@ namespace xaml
         {
             window_create_params params = {};
             params.class_name = U("XamlWindow");
-            params.style = WS_OVERLAPPEDWINDOW;
+            params.style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
             params.x = CW_USEDEFAULT;
             params.y = CW_USEDEFAULT;
             params.width = CW_USEDEFAULT;
@@ -53,33 +53,33 @@ namespace xaml
             application::current()->window_added(shared_this);
             window_map[get_handle()->handle] = weak_ptr{ shared_this };
             set_window(make_shared<native_window>());
+            draw_resizable();
+            draw_title();
         }
-        {
-            atomic_guard guard(m_resizing);
-            if (!guard.exchange(true))
-            {
-                point real_location = __get_real_location();
-                size real_size = __get_real_size();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_location.x, (int)real_location.y, (int)real_size.width, (int)real_size.height, SWP_NOZORDER));
-            }
-        }
-        draw_resizable();
-        draw_title();
+        draw_size();
+        draw_child();
         auto wnd_dc = wil::GetDC(get_handle()->handle);
         get_window()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
         rectangle cr = __get_real_client_region();
         wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)cr.width, (int)cr.height) };
         wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
-        if (get_child())
-        {
-            draw_child();
-        }
         THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle()->handle, nullptr, FALSE));
     }
 
     void window::__parent_redraw()
     {
         __draw({});
+    }
+
+    void window::draw_size()
+    {
+        atomic_guard guard(m_resizing);
+        if (!guard.exchange(true))
+        {
+            point real_location = __get_real_location();
+            size real_size = __get_real_size();
+            THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_location.x, (int)real_location.y, (int)real_size.width, (int)real_size.height, SWP_NOZORDER));
+        }
     }
 
     void window::draw_title()
@@ -89,7 +89,8 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->__draw(get_client_region());
+        if (get_child())
+            get_child()->__draw(get_client_region());
     }
 
     void window::draw_resizable()

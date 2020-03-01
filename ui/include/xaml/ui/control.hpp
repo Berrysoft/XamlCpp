@@ -18,27 +18,9 @@ namespace xaml
     class control;
 
 #ifdef XAML_UI_WINDOWS
-    struct window_message
-    {
-        HWND hWnd;
-        UINT Msg;
-        WPARAM wParam;
-        LPARAM lParam;
-    };
-
-    struct window_create_params
-    {
-        string_t class_name;
-        string_t window_name;
-        DWORD style;
-        DWORD ex_style;
-        int x;
-        int y;
-        int width;
-        int height;
-        control* parent;
-    };
-#endif
+    struct window_message;
+    struct window_create_params;
+#endif // XAML_UI_WINDOWS
 
     enum class halignment_t
     {

@@ -124,7 +124,7 @@ namespace xaml
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
         for (auto& c : m_children)
         {
-            auto index = m_indecies[c.operator->()];
+            auto index = m_indecies[c.get()];
             double subx = get<1>(columns[(min)(index.column, columns.size() - 1)]) + real.x;
             double suby = get<1>(rows[(min)(index.row, rows.size() - 1)]) + real.y;
             double subw = accumulate(columns.begin() + (min)(index.column, columns.size() - 1), columns.begin() + (min)(index.column + (max<size_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);

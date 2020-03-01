@@ -45,15 +45,15 @@ namespace xaml
             {
                 draw_editable();
                 draw_items();
+                draw_sel();
+                draw_text();
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             rectangle real = region - get_margin();
             UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
             THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
             __set_size_noevent({ real.width, real.height });
-            draw_sel();
-            draw_text();
-            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
@@ -116,7 +116,6 @@ namespace xaml
             fh = (max)(fh, msize.height);
         }
         __set_size_noevent({ fw, fh });
-        draw_size();
     }
 
     void combo_box::insert_item(size_t index, string_t const& value)

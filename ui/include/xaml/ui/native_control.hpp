@@ -13,6 +13,31 @@
 
 namespace xaml
 {
+#ifdef XAML_UI_WINDOWS
+    class control;
+
+    struct window_message
+    {
+        HWND hWnd;
+        UINT Msg;
+        WPARAM wParam;
+        LPARAM lParam;
+    };
+
+    struct window_create_params
+    {
+        string_t class_name;
+        string_t window_name;
+        DWORD style;
+        DWORD ex_style;
+        int x;
+        int y;
+        int width;
+        int height;
+        control* parent;
+    };
+#endif
+
     struct native_control
     {
     public:

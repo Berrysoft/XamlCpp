@@ -55,15 +55,15 @@ namespace xaml
                 params.height = 50;
                 params.parent = sparent.get();
                 this->__create(params);
+                draw_text();
+                draw_alignment();
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             rectangle real = region - get_margin();
             UINT udpi = GetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
             THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
             __set_size_noevent({ real.width, real.height });
-            draw_text();
-            draw_alignment();
-            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
@@ -93,6 +93,5 @@ namespace xaml
     void entry::__size_to_fit()
     {
         __set_size_noevent(__measure_text_size(m_text, { 2, 5 }));
-        draw_size();
     }
 } // namespace xaml

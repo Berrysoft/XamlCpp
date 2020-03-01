@@ -28,9 +28,12 @@ namespace xaml
                 params.parent = sparent.get();
                 this->__create(params);
                 default_char = Edit_GetPasswordChar(get_handle()->handle);
+                draw_password_char();
+                draw_text();
+                draw_alignment();
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             entry::__draw(region);
-            draw_password_char();
         }
     }
 

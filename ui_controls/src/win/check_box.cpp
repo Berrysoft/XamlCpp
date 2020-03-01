@@ -29,11 +29,15 @@ namespace xaml
 
     void check_box::__draw(rectangle const& region)
     {
+        bool new_draw = !get_handle();
         button::__draw(region);
-        LONG_PTR style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
-        style |= BS_AUTOCHECKBOX;
-        SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
-        draw_checked();
+        if (new_draw)
+        {
+            LONG_PTR style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
+            style |= BS_AUTOCHECKBOX;
+            SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
+            draw_checked();
+        }
     }
 
     void check_box::draw_checked()
@@ -44,6 +48,5 @@ namespace xaml
     void check_box::__size_to_fit()
     {
         __set_size_noevent(__measure_text_size(get_text(), { 10, 5 }));
-        draw_size();
     }
 } // namespace xaml

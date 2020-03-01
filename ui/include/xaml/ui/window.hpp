@@ -47,12 +47,8 @@ namespace xaml
     protected:
         XAML_UI_API void __parent_redraw() override;
 
-#ifndef XAML_UI_WINDOWS
     protected:
         XAML_UI_API virtual void draw_size() override;
-#endif // !XAML_UI_WINDOWS
-
-    protected:
         XAML_UI_API virtual void draw_title();
         XAML_UI_API virtual void draw_child();
         XAML_UI_API virtual void draw_resizable();
