@@ -15,7 +15,7 @@ namespace xaml
             NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
             [button setButtonType:NSButtonTypeSwitch];
             draw_checked();
-		}
+        }
     }
 
     void check_box::draw_checked()
