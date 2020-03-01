@@ -88,7 +88,7 @@ namespace xaml
         NSRect screen_frame = screen.frame;
         frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
         [window setFrame:frame display:YES];
-	}
+    }
 
     void window::draw_title()
     {
