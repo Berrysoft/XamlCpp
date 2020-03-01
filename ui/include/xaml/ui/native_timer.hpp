@@ -1,6 +1,7 @@
 #ifndef XAML_UI_NATIVE_TIMER_HPP
 #define XAML_UI_NATIVE_TIMER_HPP
 
+#include <xaml/ui/objc.hpp>
 #include <xaml/utility.hpp>
 
 #ifdef XAML_UI_WINDOWS

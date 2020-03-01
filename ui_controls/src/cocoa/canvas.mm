@@ -1,6 +1,9 @@
 #import <cocoa/XamlCanvasView.h>
 #include <functional>
 #include <xaml/ui/controls/canvas.hpp>
+#include <xaml/ui/controls/native_canvas.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlCanvasView : NSView
 @synthesize classPointer;
@@ -135,11 +138,13 @@ namespace xaml
         if (!get_handle())
         {
             XamlCanvasView* view = [[XamlCanvasView alloc] initWithClassPointer:this];
-            set_handle(view);
+            auto h = make_shared<native_control>();
+            h->handle = view;
+            set_handle(h);
         }
         m_real_region = region - get_margin();
-        XamlCanvasView* view = (XamlCanvasView*)get_handle();
-        NSView* pview = get_parent().lock()->get_handle();
+        XamlCanvasView* view = (XamlCanvasView*)get_handle()->handle;
+        NSView* pview = get_parent().lock()->get_handle()->handle;
         NSRect frame = pview.frame;
         view.frame = NSMakeRect(m_real_region.x, frame.size.height - m_real_region.height - m_real_region.y, m_real_region.width, m_real_region.height);
         [view setNeedsDisplay:YES];

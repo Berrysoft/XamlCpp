@@ -1,3 +1,5 @@
+#import <Cocoa/Cocoa.h>
+#include <xaml/ui/native_drawing.hpp>
 #include <xaml/ui/screen.hpp>
 
 using namespace std;

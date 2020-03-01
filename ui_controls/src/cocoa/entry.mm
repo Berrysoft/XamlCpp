@@ -1,5 +1,7 @@
 #import <cocoa/XamlEntryDelegate.h>
 #include <xaml/ui/controls/entry.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlEntryDelegate
 - (void)controlTextDidChange:(NSNotification*)obj
@@ -8,6 +10,8 @@
     ptr->__on_changed();
 }
 @end
+
+using namespace std;
 
 namespace xaml
 {
@@ -22,8 +26,10 @@ namespace xaml
             textField.selectable = YES;
             XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
             textField.delegate = delegate;
-            set_handle(textField);
-            __set_delegate(delegate);
+            auto h = make_shared<native_control>();
+            h->handle = textField;
+            h->delegate = delegate;
+            set_handle(h);
         }
         rectangle real = region - get_margin();
         __set_rect(real);
@@ -33,7 +39,7 @@ namespace xaml
 
     void entry::draw_size()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSRect frame = textField.frame;
         frame.size = to_native<NSSize>(get_size());
         textField.frame = frame;
@@ -41,14 +47,14 @@ namespace xaml
 
     void entry::draw_text()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         textField.stringValue = ns_title;
     }
 
     void entry::draw_alignment()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSTextAlignment align;
         switch (m_text_halignment)
         {
@@ -70,7 +76,7 @@ namespace xaml
 
     void entry::__on_changed()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         set_text([textField.stringValue UTF8String]);
     }
 }

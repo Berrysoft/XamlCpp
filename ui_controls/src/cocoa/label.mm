@@ -1,4 +1,6 @@
 #include <xaml/ui/controls/label.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
 
 using namespace std;
 
@@ -13,7 +15,9 @@ namespace xaml
             textField.drawsBackground = NO;
             textField.editable = NO;
             textField.selectable = NO;
-            set_handle(textField);
+            auto h = make_shared<native_control>();
+            h->handle = textField;
+            set_handle(h);
         }
         rectangle real = region - get_margin();
         __set_rect(real);
@@ -23,7 +27,7 @@ namespace xaml
 
     void label::draw_size()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSRect frame = textField.frame;
         frame.size = to_native<NSSize>(get_size());
         textField.frame = frame;
@@ -31,14 +35,14 @@ namespace xaml
 
     void label::draw_text()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         textField.stringValue = ns_title;
     }
 
     void label::draw_alignment()
     {
-        NSTextField* textField = (NSTextField*)get_handle();
+        NSTextField* textField = (NSTextField*)get_handle()->handle;
         NSTextAlignment align;
         switch (m_text_halignment)
         {

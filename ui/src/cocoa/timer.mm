@@ -1,4 +1,5 @@
 #import <cocoa/XamlTimerDelegate.h>
+#include <xaml/ui/native_timer.hpp>
 #include <xaml/ui/timer.hpp>
 
 @implementation XamlTimerDelegate : XamlDelegate
@@ -33,7 +34,7 @@ namespace xaml
         {
             XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
             NSTimer* timer = [delegate newTimer:m_interval.count() / 1000.0];
-            __set_handle(timer);
+            get_handle()->handle = timer;
         }
     }
 
@@ -41,8 +42,8 @@ namespace xaml
     {
         if (m_enabled.exchange(false))
         {
-            [__get_handle() invalidate];
-            __set_handle(nil);
+            [get_handle()->handle invalidate];
+            get_handle()->handle = nil;
         }
     }
 }

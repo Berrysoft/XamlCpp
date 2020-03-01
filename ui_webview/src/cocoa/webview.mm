@@ -1,6 +1,8 @@
 #import <cocoa/XamlWebViewDelegate.h>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/controls/webview.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlWebViewDelegate
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation;
@@ -9,6 +11,8 @@
     ptr->__on_navigated();
 }
 @end
+
+using namespace std;
 
 namespace xaml
 {
@@ -23,8 +27,10 @@ namespace xaml
             [webview setAutoresizingMask:NSViewWidthSizable | NSViewHeightSizable];
             XamlWebViewDelegate* delegate = [[XamlWebViewDelegate alloc] initWithClassPointer:this];
             webview.navigationDelegate = delegate;
-            set_handle(webview);
-            __set_delegate(delegate);
+            auto h = make_shared<native_control>();
+            h->handle = webview;
+            h->delegate = delegate;
+            set_handle(h);
             draw_uri();
         }
         __set_size_noevent({ real.width, real.height });
@@ -33,7 +39,7 @@ namespace xaml
 
     void webview::draw_uri()
     {
-        WKWebView* webview = (WKWebView*)get_handle();
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
         NSString* nsurlstring = [NSString stringWithUTF8String:m_uri.c_str()];
         NSURL* nsurl = [NSURL URLWithString:nsurlstring];
         NSURLRequest* nsrequest = [NSURLRequest requestWithURL:nsurl];
@@ -42,7 +48,7 @@ namespace xaml
 
     void webview::draw_size()
     {
-        WKWebView* webview = (WKWebView*)get_handle();
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
         NSRect frame = webview.frame;
         frame.size = to_native<NSSize>(get_size());
         webview.frame = frame;
@@ -50,7 +56,7 @@ namespace xaml
 
     void webview::__on_navigated()
     {
-        WKWebView* webview = (WKWebView*)get_handle();
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
         atomic_guard guard(m_navigating);
         if (!guard.exchange(true))
         {

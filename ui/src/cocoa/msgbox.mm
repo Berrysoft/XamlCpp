@@ -1,3 +1,4 @@
+#import <Cocoa/Cocoa.h>
 #include <vector>
 #include <xaml/ui/msgbox.hpp>
 

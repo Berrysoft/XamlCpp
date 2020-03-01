@@ -1,6 +1,9 @@
 #import <cocoa/XamlWindowDelegate.h>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
+#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
 @implementation XamlWindowDelegate : XamlDelegate
@@ -28,7 +31,8 @@ namespace xaml
 {
     window::~window()
     {
-        [__get_window() close];
+        NSWindow* window = get_window()->window;
+        [window close];
     }
 
     void window::__draw(rectangle const& region)
@@ -42,11 +46,15 @@ namespace xaml
                                                                defer:NO];
             XamlWindowDelegate* delegate = [[XamlWindowDelegate alloc] initWithClassPointer:this];
             window.delegate = delegate;
-            __set_window(window);
-            set_handle(window.contentView);
+            auto h = make_shared<native_control>();
+            auto w = make_shared<native_window>();
+            w->window = window;
+            h->handle = window.contentView;
+            set_window(w);
+            set_handle(h);
             application::current()->window_added(static_pointer_cast<xaml::window>(shared_from_this()));
         }
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         {
             atomic_guard guard{ m_resizing };
             if (!guard.exchange(true))
@@ -72,13 +80,13 @@ namespace xaml
 
     void window::__parent_redraw()
     {
-        if (__get_window())
+        if (get_window())
             __draw({});
     }
 
     void window::draw_title()
     {
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         NSString* nstitle = [NSString stringWithUTF8String:m_title.data()];
         [window setTitle:nstitle];
     }
@@ -90,7 +98,7 @@ namespace xaml
 
     void window::draw_resizable()
     {
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         if (m_resizable)
             window.styleMask |= NSWindowStyleMaskResizable;
         else
@@ -100,30 +108,32 @@ namespace xaml
     void window::show()
     {
         __draw({});
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         [window makeKeyAndOrderFront:nil];
     }
 
     void window::close()
     {
-        [__get_window() performClose:nil];
+        NSWindow* window = get_window()->window;
+        [window performClose:nil];
     }
 
     void window::hide()
     {
-        [__get_window() setIsVisible:NO];
+        NSWindow* window = get_window()->window;
+        [window setIsVisible:NO];
     }
 
     rectangle window::get_client_region() const
     {
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         NSRect frame = [[window contentView] frame];
         return from_native(frame);
     }
 
     void window::__on_did_resize()
     {
-        NSWindow* window = __get_window();
+        NSWindow* window = get_window()->window;
         NSRect frame = window.frame;
         {
             atomic_guard guard{ m_resizing };

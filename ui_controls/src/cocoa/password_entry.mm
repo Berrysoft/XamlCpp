@@ -1,4 +1,8 @@
+#import <cocoa/XamlEntryDelegate.h>
 #include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/native_control.hpp>
+
+using namespace std;
 
 namespace xaml
 {
@@ -11,7 +15,12 @@ namespace xaml
             textField.drawsBackground = YES;
             textField.editable = YES;
             textField.selectable = YES;
-            set_handle(textField);
+            XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
+            textField.delegate = delegate;
+            auto h = make_shared<native_control>();
+            h->handle = textField;
+            h->delegate = delegate;
+            set_handle(h);
         }
         entry::__draw(region);
         draw_password_char();
