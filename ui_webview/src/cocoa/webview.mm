@@ -33,8 +33,7 @@ namespace xaml
             set_handle(h);
             draw_uri();
         }
-        __set_size_noevent({ real.width, real.height });
-        draw_size();
+        __set_rect(region);
     }
 
     void webview::draw_uri()

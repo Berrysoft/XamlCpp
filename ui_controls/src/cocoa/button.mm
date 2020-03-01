@@ -38,15 +38,15 @@ namespace xaml
             h->delegate = delegate;
             h->handle = [delegate newButton];
             set_handle(h);
+            NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
+            NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
+            [button setBezelStyle:NSBezelStyleRounded];
+            draw_text();
+            draw_default();
         }
-        rectangle real = region - get_margin();
+        __set_rect(region);
         NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
-        [button setBezelStyle:NSBezelStyleRounded];
-        __set_rect(real);
         matrix.cellSize = matrix.frame.size;
-        draw_text();
-        draw_default();
     }
 
     void button::draw_text()

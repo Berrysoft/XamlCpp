@@ -28,11 +28,10 @@ namespace xaml
             h->delegate = delegate;
             set_handle(h);
             draw_items();
+            draw_sel();
+            draw_editable();
         }
-        rectangle real = region - get_margin();
-        __set_rect(real);
-        draw_sel();
-        draw_editable();
+        __set_rect(region);
     }
 
     void combo_box::draw_text()

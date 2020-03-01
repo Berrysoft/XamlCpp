@@ -7,11 +7,15 @@ namespace xaml
 {
     void radio_box::__draw(rectangle const& region)
     {
+        bool new_draw = !get_handle();
         button::__draw(region);
-        NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
-        [button setButtonType:NSButtonTypeRadio];
-        draw_checked();
+        if (new_draw)
+        {
+            NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
+            NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
+            [button setButtonType:NSButtonTypeRadio];
+            draw_checked();
+        }
     }
 
     void radio_box::draw_checked()

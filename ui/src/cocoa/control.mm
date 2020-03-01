@@ -4,8 +4,9 @@
 
 namespace xaml
 {
-    void control::__set_rect(rectangle const& real)
+    void control::__set_rect(rectangle const& region)
     {
+        rectangle real = region - get_margin();
         NSView* view = get_handle()->handle;
         NSView* parent_view = get_parent().lock()->get_handle()->handle;
         NSRect frame = view.frame;

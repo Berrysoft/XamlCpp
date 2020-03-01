@@ -143,10 +143,8 @@ namespace xaml
             set_handle(h);
         }
         m_real_region = region - get_margin();
+        __set_rect(region);
         XamlCanvasView* view = (XamlCanvasView*)get_handle()->handle;
-        NSView* pview = get_parent().lock()->get_handle()->handle;
-        NSRect frame = pview.frame;
-        view.frame = NSMakeRect(m_real_region.x, frame.size.height - m_real_region.height - m_real_region.y, m_real_region.width, m_real_region.height);
         [view setNeedsDisplay:YES];
     }
 

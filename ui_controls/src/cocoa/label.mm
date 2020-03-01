@@ -17,11 +17,10 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = textField;
             set_handle(h);
+            draw_text();
+            draw_alignment();
         }
-        rectangle real = region - get_margin();
-        __set_rect(real);
-        draw_text();
-        draw_alignment();
+        __set_rect(region);
     }
 
     void label::draw_text()

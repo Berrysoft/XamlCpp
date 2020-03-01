@@ -53,21 +53,11 @@ namespace xaml
             set_window(w);
             set_handle(h);
             application::current()->window_added(static_pointer_cast<xaml::window>(shared_from_this()));
+            draw_title();
+            draw_resizable();
         }
-        NSWindow* window = get_window()->window;
-        {
-            atomic_guard guard{ m_resizing };
-            if (!guard.exchange(true))
-            {
-                draw_size();
-            }
-        }
-        draw_title();
-        if (get_child())
-        {
-            draw_child();
-        }
-        draw_resizable();
+        draw_size();
+        draw_child();
     }
 
     void window::__parent_redraw()
@@ -78,16 +68,20 @@ namespace xaml
 
     void window::draw_size()
     {
-        NSWindow* window = get_window()->window;
-        CGFloat fw = (CGFloat)get_width();
-        CGFloat fh = (CGFloat)get_height();
-        NSRect frame = [window frame];
-        frame.size = { fw, fh };
-        frame.origin.x = (CGFloat)get_x();
-        NSScreen* screen = window.screen;
-        NSRect screen_frame = screen.frame;
-        frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
-        [window setFrame:frame display:YES];
+        atomic_guard guard{ m_resizing };
+        if (!guard.exchange(true))
+        {
+            NSWindow* window = get_window()->window;
+            CGFloat fw = (CGFloat)get_width();
+            CGFloat fh = (CGFloat)get_height();
+            NSRect frame = [window frame];
+            frame.size = { fw, fh };
+            frame.origin.x = (CGFloat)get_x();
+            NSScreen* screen = window.screen;
+            NSRect screen_frame = screen.frame;
+            frame.origin.y = screen_frame.size.height - fh - (CGFloat)get_y();
+            [window setFrame:frame display:YES];
+        }
     }
 
     void window::draw_title()
@@ -99,7 +93,8 @@ namespace xaml
 
     void window::draw_child()
     {
-        get_child()->__draw(get_client_region());
+        if (get_child())
+            get_child()->__draw(get_client_region());
     }
 
     void window::draw_resizable()

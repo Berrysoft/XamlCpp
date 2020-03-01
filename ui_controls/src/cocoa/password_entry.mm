@@ -21,9 +21,11 @@ namespace xaml
             h->handle = textField;
             h->delegate = delegate;
             set_handle(h);
+            draw_password_char();
+            draw_text();
+            draw_alignment();
         }
         entry::__draw(region);
-        draw_password_char();
     }
 
     void password_entry::draw_password_char()
