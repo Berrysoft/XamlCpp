@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <test_window.hpp>
+#include <xaml/ui/colors.hpp>
 #include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>

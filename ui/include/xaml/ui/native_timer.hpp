@@ -6,8 +6,6 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
-#elif defined(XAML_UI_COCOA) && defined(__OBJC__)
-#import <xaml/ui/cocoa/XamlDelegate.h>
 #endif
 
 namespace xaml
@@ -20,10 +18,8 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_COCOA
-    public:
         using native_handle_type = OBJC_OBJECT(NSTimer);
 
-    public:
         native_handle_type handle;
 #endif // XAML_UI_COCOA
     };

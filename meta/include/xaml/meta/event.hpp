@@ -48,7 +48,7 @@ namespace xaml
     template <typename T, typename Class, typename... Args>
     constexpr decltype(auto) mem_fn_bind(Class (T::*f)(Args...), T* t)
     {
-        return [=](Args... args) { return (t->*f)(args...); };
+        return [=](Args... args) { return (t->*f)(std::forward<Args>(args)...); };
     }
 } // namespace xaml
 

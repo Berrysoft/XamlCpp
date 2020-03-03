@@ -2,18 +2,20 @@
 #define XAML_UI_NATIVE_DRAWING_HPP
 
 #include <xaml/ui/drawing.hpp>
+#include <xaml/ui/objc.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
 #include <gdiplus.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
-#elif defined(XAML_UI_COCOA)
-#include <xaml/ui/objc.hpp>
 #endif // XAML_UI_WINDOWS
 
 namespace xaml
 {
+    template <typename To, typename From>
+    inline To to_native(From) = delete;
+
 #ifdef XAML_UI_WINDOWS
     constexpr size from_native(SIZE s)
     {

@@ -12,15 +12,12 @@ namespace xaml
     struct native_window
     {
 #ifdef XAML_UI_WINDOWS
-    public:
         wil::unique_hdc_window store_dc{ nullptr };
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_COCOA
-    public:
         using native_window_type = OBJC_OBJECT(NSWindow);
 
-    public:
         native_window_type window;
 #endif // XAML_UI_COCOA
     };

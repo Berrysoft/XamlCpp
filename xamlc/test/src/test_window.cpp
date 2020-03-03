@@ -1,5 +1,6 @@
 #include <cmath>
 #include <test_window.hpp>
+#include <xaml/ui/colors.hpp>
 #include <xaml/ui/msgbox.hpp>
 
 #ifdef XAML_TEST_GEN_FAKE

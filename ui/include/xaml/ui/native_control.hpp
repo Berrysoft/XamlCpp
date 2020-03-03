@@ -40,7 +40,6 @@ namespace xaml
 
     struct native_control
     {
-    public:
 #ifdef XAML_UI_WINDOWS
         using native_handle_type = HWND;
 #elif defined(XAML_UI_GTK3)
@@ -49,14 +48,11 @@ namespace xaml
         using native_handle_type = OBJC_OBJECT(NSView);
 #endif // XAML_UI_WINDOWS
 
-    public:
         native_handle_type handle{ OBJC_NIL };
 
 #ifdef XAML_UI_COCOA
-    public:
         using native_delegate_type = OBJC_OBJECT(XamlDelegate);
 
-    public:
         native_delegate_type delegate{ OBJC_NIL };
 #endif // XAML_UI_COCOA
     };
