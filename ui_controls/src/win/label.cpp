@@ -25,10 +25,10 @@ namespace xaml
                 UINT udpi = GetDpiForWindow(get_handle()->handle);
                 rectangle region = m_real_region * udpi / 96.0;
                 HDC dc = parent->get_window()->store_dc.get();
-                SelectFont(dc, application::current()->__default_font());
+                wil::unique_hfont oldf{ SelectFont(dc, application::current()->__default_font(get_handle()->handle)) };
                 SIZE s = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(dc, m_text.c_str(), (int)m_text.length(), &s));
-                size text_size = from_native(s) * udpi / 96.0;
+                size text_size = from_native(s);
                 double real_x = region.x;
                 switch (m_text_halignment)
                 {
@@ -40,6 +40,7 @@ namespace xaml
                     break;
                 }
                 TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length());
+                wil::unique_hfont newf{ SelectFont(dc, oldf.release()) };
             }
             break;
         }
