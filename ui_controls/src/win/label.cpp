@@ -40,7 +40,7 @@ namespace xaml
                     break;
                 }
                 TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length());
-                wil::unique_hfont newf{ SelectFont(dc, oldf.release()) };
+                DeleteFont(SelectFont(dc, oldf.release()));
             }
             break;
         }
