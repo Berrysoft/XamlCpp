@@ -95,11 +95,15 @@ namespace xaml
         }
 
     public:
+        XAML_UI_API rectangle get_client_region() const;
+
+#ifdef XAML_UI_WINDOWS
+    public:
         XAML_UI_API point __get_real_location() const;
         XAML_UI_API void __set_real_location(point value);
 
-        XAML_UI_API rectangle get_client_region() const;
         XAML_UI_API rectangle __get_real_client_region() const;
+#endif // XAML_UI_WINDOWS
 
         EVENT(closing, window&, bool&)
 

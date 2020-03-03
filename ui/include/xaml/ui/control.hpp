@@ -143,9 +143,11 @@ namespace xaml
         EVENT(size_changed, control&, size)
         PROP_CONSTEXPR_EVENT(size, size)
 
+#ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_API size __get_real_size() const;
         XAML_UI_API void __set_real_size(size value);
+#endif // XAML_UI_WINDOWS
 
     public:
         constexpr double get_width() const noexcept { return m_size.width; }
@@ -174,9 +176,11 @@ namespace xaml
         EVENT(margin_changed, control&, margin)
         PROP_CONSTEXPR_EVENT(margin, margin)
 
+#ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_API margin __get_real_margin() const;
         XAML_UI_API void __set_real_margin(margin const& value);
+#endif // XAML_UI_WINDOWS
 
         EVENT(halignment_changed, control&, halignment_t)
         PROP_CONSTEXPR_EVENT(halignment, halignment_t)
