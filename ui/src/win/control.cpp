@@ -36,9 +36,13 @@ namespace xaml
     size control::__measure_text_size(string_view_t str, size offset) const
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(get_handle()->handle);
-        SIZE s = {};
-        THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
-        return from_native(s) + offset;
+        if (hDC)
+        {
+            SIZE s = {};
+            THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
+            return from_native(s) + offset;
+        }
+        return {};
     }
 
     size control::__get_real_size() const

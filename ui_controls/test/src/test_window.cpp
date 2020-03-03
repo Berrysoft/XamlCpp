@@ -5,6 +5,7 @@
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
 #include <xaml/ui/filebox.hpp>
 #include <xaml/ui/msgbox.hpp>
@@ -108,6 +109,17 @@ namespace xaml::test
             g->add_child(cv);
             grid::set_column(*cv, 0);
             grid::set_row(*cv, 3);
+        }
+        {
+            auto prog = make_shared<progress>();
+            prog->set_margin({ 10, 10, 10, 10 });
+            prog->set_valignment(valignment_t::center);
+            prog->set_minimum(0);
+            prog->set_maximum(100);
+            prog->set_value(30);
+            g->add_child(prog);
+            grid::set_column(*prog, 2);
+            grid::set_row(*prog, 2);
         }
         {
             auto box = make_shared<combo_box>();

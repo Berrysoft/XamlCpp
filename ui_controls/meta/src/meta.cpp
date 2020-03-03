@@ -6,6 +6,7 @@
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
+#include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/controls/radio_box.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
 #include <xaml/ui/controls/uniform_grid.hpp>
@@ -70,6 +71,7 @@ extern "C"
         "xaml/ui/controls/grid.hpp",
         "xaml/ui/controls/label.hpp",
         "xaml/ui/controls/password_entry.hpp",
+        "xaml/ui/controls/progress.hpp",
         "xaml/ui/controls/radio_box.hpp",
         "xaml/ui/controls/stack_panel.hpp",
         "xaml/ui/controls/uniform_grid.hpp",
