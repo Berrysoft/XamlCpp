@@ -33,9 +33,9 @@ namespace xaml
         XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // XAML_UI_WINDOWS
 
-    private:
-        void draw_checked();
-        void draw_group();
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_checked();
+        XAML_UI_CONTROLS_API virtual void draw_group();
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
