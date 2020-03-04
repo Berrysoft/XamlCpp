@@ -26,19 +26,23 @@ namespace xaml
     private:
         friend class window;
 
-        std::vector<string_t> m_cmd_lines{};
-
-        std::shared_ptr<xaml::window> m_main_wnd{ nullptr };
-        int m_quit_value{ 0 };
-
-    private:
+    protected:
         XAML_UI_API application(int argc, char_t const* const* argv);
 
     public:
         XAML_UI_API virtual ~application();
 
+    private:
+        std::vector<string_t> m_cmd_lines{};
+
+    public:
         array_view<string_t> get_cmd_lines() const noexcept { return m_cmd_lines; }
 
+    private:
+        std::shared_ptr<xaml::window> m_main_wnd{ nullptr };
+        int m_quit_value{ 0 };
+
+    public:
         std::shared_ptr<window> get_main_window() const { return m_main_wnd; }
 
     protected:
