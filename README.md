@@ -16,11 +16,10 @@ XamlCpp is a cross-platform GUI framework. With some simple, platform-specific w
 
 An example is [here](./ui_controls/test/src/main.cpp)
 
-GUI is divided into several parts. The basic framework is divided into two parts, one for desktop environment and another for mobile environment(on plan).
-Others projects, containing controls, are framework-independent and should work on all platforms.
-This design is based on a truth that we can't simply port the GUI for desktop to mobile environment, but should rewrite the front-end to make better use of different features.
+GUI is divided into several parts.
+The basic UI project is responsible for the main loop, windows and system dialogs. It is necessary to run a GUI application.
 
-### UI(Desktop)
+### UI
 It supports desktop environment with concepts of "window" and "screen", and many dialogs like "message box" and "file box".
 It also supports high DPI settings even on Windows.
 #### Supported platforms
@@ -30,18 +29,8 @@ It also supports high DPI settings even on Windows.
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
 |Cocoa|Cocoa|MacOS|MacOS|
 
-### MUI(Mobile, on plan)
-It supports mobile environment with concepts of "page". It doesn't provide "application", instead, you should "inject" the pages to native projects.
-That means, it works much like Xamarin.Forms.
-#### Supported platforms(on plan and may change)
-|Name|API set|Supported OS|Recommanded OS|
-|-|-|-|-|
-|WinRT|Windows Runtime|Windows 10+|Windows 10+|
-|Android|JetPack|Android|Android|
-|iOS|Cocoa|iOS|iOS|
-
 ### Controls
-Basic controls, works on all platforms including desktop and mobile(on plan).
+Common controls, works on all platforms.
 
 ### WebView
 A webview control. It is a single project because it needs much more dependencies and thus it is optional.
