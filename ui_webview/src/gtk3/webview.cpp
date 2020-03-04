@@ -14,6 +14,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = webkit_web_view_new();
             set_handle(h);
+            g_signal_connect(G_OBJECT(get_handle()->handle), "load-changed", G_CALLBACK(webview::on_load_changed), this);
             draw_uri();
         }
         rectangle real = region - get_margin();
@@ -28,7 +29,7 @@ namespace xaml
 
     void webview::on_load_changed(void* web_view, int load_event, void* data)
     {
-        if (load_event == WEBKIT_LOAD_FINISHED)
+        if (load_event == WEBKIT_LOAD_COMMITTED)
         {
             webview* self = (webview*)data;
             atomic_guard guard(self->m_navigating);
