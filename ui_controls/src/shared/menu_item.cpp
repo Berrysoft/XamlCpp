@@ -15,8 +15,16 @@ namespace xaml
 
     void popup_menu_item::add_submenu(shared_ptr<menu_item> const& child)
     {
-        m_submenu.push_back(child);
-        child->set_parent(static_pointer_cast<control>(shared_from_this()));
+        if (child)
+        {
+            auto it = find(m_submenu.begin(), m_submenu.end(), child);
+            if (it == m_submenu.end())
+            {
+                m_submenu.push_back(child);
+                child->set_parent(static_pointer_cast<control>(shared_from_this()));
+                __parent_redraw();
+            }
+        }
     }
 
     void popup_menu_item::remove_submenu(shared_ptr<menu_item> const& child)
@@ -24,7 +32,9 @@ namespace xaml
         auto it = find(m_submenu.begin(), m_submenu.end(), child);
         if (it != m_submenu.end())
         {
+            child->set_parent({});
             m_submenu.erase(it);
+            __parent_redraw();
         }
     }
 

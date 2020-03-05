@@ -20,10 +20,10 @@ namespace xaml
 
     void multicontainer::remove_child(shared_ptr<control> const& child)
     {
-        child->set_parent({});
         auto it = find(m_children.begin(), m_children.end(), child);
         if (it != m_children.end())
         {
+            child->set_parent({});
             m_children.erase(it);
             __parent_redraw();
         }

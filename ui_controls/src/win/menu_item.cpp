@@ -2,11 +2,28 @@
 #include <xaml/ui/controls/menu_bar.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
 #include <xaml/ui/controls/native_menu.hpp>
+#include <xaml/ui/native_control.hpp>
 
 using namespace std;
 
 namespace xaml
 {
+    optional<intptr_t> menu_item::__wnd_proc(window_message const& msg)
+    {
+        switch (msg.Msg)
+        {
+        case WM_COMMAND:
+        {
+            if (LOWORD(msg.wParam) == get_menu()->handle)
+            {
+                m_click(*this);
+            }
+            break;
+        }
+        }
+        return nullopt;
+    }
+
     static UINT menu_id{ 0 };
 
     void menu_item::__draw_impl(uint32_t flags)
@@ -51,6 +68,17 @@ namespace xaml
         THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, get_menu()->handle, flags, get_menu()->handle, m_text.c_str()));
     }
 
+    optional<intptr_t> popup_menu_item::__wnd_proc(window_message const& msg)
+    {
+        optional<std::intptr_t> result = nullopt;
+        for (auto& c : m_submenu)
+        {
+            auto r = c->__wnd_proc(msg);
+            if (r) result = r;
+        }
+        return result;
+    }
+
     void popup_menu_item::__draw(rectangle const& region)
     {
         auto sparent = get_parent().lock();
@@ -83,7 +111,6 @@ namespace xaml
                 draw_append(MF_STRING | MF_POPUP);
             }
         }
-
     }
 
     void popup_menu_item::draw_submenu()

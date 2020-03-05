@@ -30,6 +30,9 @@ namespace xaml
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
 #ifdef XAML_UI_WINDOWS
+    public:
+        XAML_UI_CONTROLS_API std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
+
     protected:
         XAML_UI_CONTROLS_API void __draw_impl(std::uint32_t flags);
         XAML_UI_CONTROLS_API virtual void draw_append(std::uint32_t flags);
@@ -65,6 +68,9 @@ namespace xaml
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
 #ifdef XAML_UI_WINDOWS
+    public:
+        XAML_UI_CONTROLS_API std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
+
     protected:
         XAML_UI_CONTROLS_API void draw_append(std::uint32_t flags) override;
 #endif // XAML_UI_WINDOWS
