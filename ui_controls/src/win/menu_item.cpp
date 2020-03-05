@@ -43,17 +43,13 @@ namespace xaml
             set_handle(sparent->get_handle());
             if (!get_menu())
             {
-                auto m = make_shared<native_menu_item>();
-                m->parent = hpmenu;
-                m->handle = menu_id++;
-                set_menu(m);
-                draw_append(flags);
+                draw_append(hpmenu, flags);
             }
             else if (hpmenu != get_menu()->parent)
             {
                 THROW_IF_WIN32_BOOL_FALSE(DeleteMenu(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND));
                 get_menu()->parent = hpmenu;
-                draw_append(flags);
+                draw_append(hpmenu, flags);
             }
         }
     }
@@ -63,8 +59,15 @@ namespace xaml
         __draw_impl(MF_STRING);
     }
 
-    void menu_item::draw_append(uint32_t flags)
+    void menu_item::draw_append(void* pmenu, uint32_t flags)
     {
+        if (!get_menu())
+        {
+            auto m = make_shared<native_menu_item>();
+            m->parent = (HMENU)pmenu;
+            m->handle = menu_id++;
+            set_menu(m);
+        }
         THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, get_menu()->handle, flags, get_menu()->handle, m_text.c_str()));
     }
 
@@ -81,36 +84,7 @@ namespace xaml
 
     void popup_menu_item::__draw(rectangle const& region)
     {
-        auto sparent = get_parent().lock();
-        HMENU hpmenu = nullptr;
-        if (auto pmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
-        {
-            hpmenu = static_pointer_cast<native_popup_menu_item>(pmenu->get_menu())->menu.get();
-        }
-        else if (auto pmenu = dynamic_pointer_cast<menu_bar>(sparent))
-        {
-            hpmenu = pmenu->get_menu()->handle.get();
-        }
-        if (hpmenu)
-        {
-            set_handle(sparent->get_handle());
-            if (!get_menu())
-            {
-                auto m = make_shared<native_popup_menu_item>();
-                m->parent = hpmenu;
-                m->handle = menu_id++;
-                m->menu.reset(CreateMenu());
-                set_menu(m);
-                draw_submenu();
-                draw_append(MF_STRING | MF_POPUP);
-            }
-            else if (hpmenu != get_menu()->parent)
-            {
-                THROW_IF_WIN32_BOOL_FALSE(DeleteMenu(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND));
-                get_menu()->parent = hpmenu;
-                draw_append(MF_STRING | MF_POPUP);
-            }
-        }
+        __draw_impl(MF_STRING | MF_POPUP);
     }
 
     void popup_menu_item::draw_submenu()
@@ -121,8 +95,17 @@ namespace xaml
         }
     }
 
-    void popup_menu_item::draw_append(uint32_t flags)
+    void popup_menu_item::draw_append(void* pmenu, uint32_t flags)
     {
+        if (!get_menu())
+        {
+            auto m = make_shared<native_popup_menu_item>();
+            m->parent = (HMENU)pmenu;
+            m->handle = menu_id++;
+            m->menu.reset(CreateMenu());
+            set_menu(m);
+            draw_submenu();
+        }
         auto pm = static_pointer_cast<native_popup_menu_item>(get_menu());
         THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, pm->handle, flags, (UINT_PTR)pm->menu.get(), get_text().data()));
     }
