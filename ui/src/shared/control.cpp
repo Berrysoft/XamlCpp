@@ -42,10 +42,6 @@ namespace xaml
             {
                 c->set_child(static_pointer_cast<control>(shared_from_this()));
             }
-            else
-            {
-                return;
-            }
             m_parent = svalue;
             m_parent_changed(*this, *svalue);
         }

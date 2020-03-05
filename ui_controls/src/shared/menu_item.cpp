@@ -1,4 +1,7 @@
+#include <xaml/ui/controls/menu_bar.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
+
+using namespace std;
 
 namespace xaml
 {
@@ -6,15 +9,73 @@ namespace xaml
 
     menu_item::~menu_item() {}
 
-    check_menu_item::check_menu_item() : menu_item() {}
+    popup_menu_item::popup_menu_item() : menu_item() {}
+
+    popup_menu_item::~popup_menu_item() {}
+
+    void popup_menu_item::add_submenu(shared_ptr<menu_item> const& child)
+    {
+        m_submenu.push_back(child);
+        child->set_parent(static_pointer_cast<control>(shared_from_this()));
+    }
+
+    void popup_menu_item::remove_submenu(shared_ptr<menu_item> const& child)
+    {
+        auto it = find(m_submenu.begin(), m_submenu.end(), child);
+        if (it != m_submenu.end())
+        {
+            m_submenu.erase(it);
+        }
+    }
+
+    check_menu_item::check_menu_item() : menu_item()
+    {
+        add_is_checked_changed([this](check_menu_item&, bool) { if(get_handle()) draw_checked(); });
+    }
 
     check_menu_item::~check_menu_item() {}
 
-    radio_menu_item::radio_menu_item() : menu_item() {}
+    radio_menu_item::radio_menu_item() : menu_item()
+    {
+        add_is_checked_changed([this](radio_menu_item&, bool) {
+            if (get_handle())
+            {
+                draw_checked();
+                draw_group();
+            }
+        });
+    }
 
     radio_menu_item::~radio_menu_item() {}
 
-    separator_menu_item::separator_menu_item() : menu_item() {}
+#ifndef XAML_UI_GTK3
+    void radio_menu_item::draw_group()
+    {
+        if (auto sparent = get_parent().lock())
+        {
+            if (get_is_checked())
+            {
+                if (auto multic = dynamic_pointer_cast<menu_bar>(sparent))
+                {
+                    for (auto& c : multic->get_children())
+                    {
+                        if (auto rc = dynamic_pointer_cast<radio_menu_item>(c))
+                        {
+                            if (c != shared_from_this() && rc->get_group() == get_group())
+                            {
+                                rc->set_is_checked(false);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+#endif // !XAML_UI_GTK3
+
+    separator_menu_item::separator_menu_item() : menu_item()
+    {
+    }
 
     separator_menu_item::~separator_menu_item() {}
-}
+} // namespace xaml

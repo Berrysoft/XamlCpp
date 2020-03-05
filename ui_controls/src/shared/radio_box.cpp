@@ -7,7 +7,7 @@ namespace xaml
 {
     radio_box::radio_box() : button()
     {
-        add_is_checked_changed([this](radio_box const&, bool) {
+        add_is_checked_changed([this](radio_box&, bool) {
             if (get_handle())
             {
                 draw_checked();

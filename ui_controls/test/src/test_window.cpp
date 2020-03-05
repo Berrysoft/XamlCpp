@@ -1,10 +1,13 @@
 #include <algorithm>
 #include <test_window.hpp>
+#include <xaml/ui/application.hpp>
 #include <xaml/ui/colors.hpp>
 #include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
+#include <xaml/ui/controls/menu_bar.hpp>
+#include <xaml/ui/controls/menu_item.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 #include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
@@ -160,6 +163,21 @@ namespace xaml::test
             g->add_child(panel);
             grid::set_column(*panel, 2);
             grid::set_row(*panel, 3);
+        }
+        {
+            auto mbar = make_shared<menu_bar>();
+            {
+                auto mfile = make_shared<popup_menu_item>();
+                mfile->set_text(U("File"));
+                {
+                    auto mquit = make_shared<menu_item>();
+                    mquit->set_text(U("Quit"));
+                    mquit->add_click([](menu_item&) { application::current()->quit(); });
+                    mfile->add_submenu(mquit);
+                }
+                mbar->add_child(mfile);
+            }
+            g->add_child(mbar);
         }
     }
 

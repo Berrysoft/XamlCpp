@@ -5,6 +5,8 @@
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
+#include <xaml/ui/controls/menu_bar.hpp>
+#include <xaml/ui/controls/menu_item.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 #include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/controls/radio_box.hpp>
@@ -31,6 +33,7 @@ extern "C"
             canvas,
             button, check_box, radio_box,
             label,
+            menu_bar, menu_item, check_menu_item, radio_menu_item, separator_menu_item,
             entry, password_entry,
             combo_box>(ctx);
         REGISTER_ENUM(xaml, grid_layout);
@@ -70,6 +73,8 @@ extern "C"
         "xaml/ui/controls/entry.hpp",
         "xaml/ui/controls/grid.hpp",
         "xaml/ui/controls/label.hpp",
+        "xaml/ui/controls/menu_bar.hpp",
+        "xaml/ui/controls/menu_item.hpp",
         "xaml/ui/controls/password_entry.hpp",
         "xaml/ui/controls/progress.hpp",
         "xaml/ui/controls/radio_box.hpp",

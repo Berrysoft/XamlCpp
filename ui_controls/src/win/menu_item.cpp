@@ -1,20 +1,132 @@
+#include <wil/result_macros.h>
+#include <xaml/ui/controls/menu_bar.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
+#include <xaml/ui/controls/native_menu.hpp>
+
+using namespace std;
 
 namespace xaml
 {
+    static UINT menu_id{ 0 };
+
+    void menu_item::__draw_impl(uint32_t flags)
+    {
+        auto sparent = get_parent().lock();
+        HMENU hpmenu = nullptr;
+        if (auto pmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
+        {
+            hpmenu = static_pointer_cast<native_popup_menu_item>(pmenu->get_menu())->menu.get();
+        }
+        else if (auto pmenu = dynamic_pointer_cast<menu_bar>(sparent))
+        {
+            hpmenu = pmenu->get_menu()->handle.get();
+        }
+        if (hpmenu)
+        {
+            set_handle(sparent->get_handle());
+            if (!get_menu())
+            {
+                auto m = make_shared<native_menu_item>();
+                m->parent = hpmenu;
+                m->handle = menu_id++;
+                set_menu(m);
+                draw_append(flags);
+            }
+            else if (hpmenu != get_menu()->parent)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(DeleteMenu(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND));
+                get_menu()->parent = hpmenu;
+                draw_append(flags);
+            }
+        }
+    }
+
     void menu_item::__draw(rectangle const& region)
     {
+        __draw_impl(MF_STRING);
+    }
+
+    void menu_item::draw_append(uint32_t flags)
+    {
+        THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, get_menu()->handle, flags, get_menu()->handle, m_text.c_str()));
+    }
+
+    void popup_menu_item::__draw(rectangle const& region)
+    {
+        auto sparent = get_parent().lock();
+        HMENU hpmenu = nullptr;
+        if (auto pmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
+        {
+            hpmenu = static_pointer_cast<native_popup_menu_item>(pmenu->get_menu())->menu.get();
+        }
+        else if (auto pmenu = dynamic_pointer_cast<menu_bar>(sparent))
+        {
+            hpmenu = pmenu->get_menu()->handle.get();
+        }
+        if (hpmenu)
+        {
+            set_handle(sparent->get_handle());
+            if (!get_menu())
+            {
+                auto m = make_shared<native_popup_menu_item>();
+                m->parent = hpmenu;
+                m->handle = menu_id++;
+                m->menu.reset(CreateMenu());
+                set_menu(m);
+                draw_submenu();
+                draw_append(MF_STRING | MF_POPUP);
+            }
+            else if (hpmenu != get_menu()->parent)
+            {
+                THROW_IF_WIN32_BOOL_FALSE(DeleteMenu(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND));
+                get_menu()->parent = hpmenu;
+                draw_append(MF_STRING | MF_POPUP);
+            }
+        }
+
+    }
+
+    void popup_menu_item::draw_submenu()
+    {
+        for (auto& child : m_submenu)
+        {
+            child->__draw({});
+        }
+    }
+
+    void popup_menu_item::draw_append(uint32_t flags)
+    {
+        auto pm = static_pointer_cast<native_popup_menu_item>(get_menu());
+        THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, pm->handle, flags, (UINT_PTR)pm->menu.get(), get_text().data()));
+    }
+
+    void check_menu_item::__draw(rectangle const& region)
+    {
+        __draw_impl(MF_STRING | MF_UNCHECKED);
     }
 
     void check_menu_item::draw_checked()
     {
+        CheckMenuItem(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
+    }
+
+    void radio_menu_item::__draw(rectangle const& region)
+    {
+        __draw_impl(MF_STRING | MF_UNCHECKED);
+        MENUITEMINFO info;
+        info.cbSize = sizeof(MENUITEMINFO);
+        THROW_IF_WIN32_BOOL_FALSE(GetMenuItemInfo(get_menu()->parent, get_menu()->handle, FALSE, &info));
+        info.fType |= MFT_RADIOCHECK;
+        THROW_IF_WIN32_BOOL_FALSE(SetMenuItemInfo(get_menu()->parent, get_menu()->handle, FALSE, &info));
     }
 
     void radio_menu_item::draw_checked()
     {
+        CheckMenuItem(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
     }
 
-    void radio_menu_item::draw_group()
+    void separator_menu_item::__draw(rectangle const& region)
     {
+        __draw_impl(MF_SEPARATOR);
     }
 } // namespace xaml

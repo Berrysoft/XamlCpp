@@ -1,10 +1,13 @@
 #ifndef XAML_UI_CONTROLS_MENU_ITEM_HPP
 #define XAML_UI_CONTROLS_MENU_ITEM_HPP
 
+#include <xaml/meta/default_property.hpp>
 #include <xaml/ui/control.hpp>
 
 namespace xaml
 {
+    struct native_menu_item;
+
     class menu_item : public control
     {
     public:
@@ -12,15 +15,25 @@ namespace xaml
         XAML_UI_CONTROLS_API ~menu_item();
 
     public:
-        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+        using native_menu_type = std::shared_ptr<native_menu_item>;
 
-    protected:
-        std::vector<std::shared_ptr<menu_item>> m_submenu{};
+    private:
+        native_menu_type m_menu{ nullptr };
 
     public:
-        XAML_UI_CONTROLS_API void add_submenu(std::shared_ptr<menu_item> const& child);
-        XAML_UI_CONTROLS_API void remove_submenu(std::shared_ptr<menu_item> const& child);
-        array_view<std::shared_ptr<menu_item>> get_submenu() const noexcept { return m_submenu; }
+        native_menu_type get_menu() const noexcept { return m_menu; }
+
+    protected:
+        void set_menu(native_menu_type value) { m_menu = value; }
+
+    public:
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+
+#ifdef XAML_UI_WINDOWS
+    protected:
+        XAML_UI_CONTROLS_API void __draw_impl(std::uint32_t flags);
+        XAML_UI_CONTROLS_API virtual void draw_append(std::uint32_t flags);
+#endif // XAML_UI_WINDOWS
 
     public:
         PROP_STRING(text)
@@ -28,11 +41,11 @@ namespace xaml
         EVENT(click, menu_item&)
 
     public:
-#define ADD_MENU_ITEM_MEMBERS()                               \
-    ADD_CONTROL_MEMBERS();                                    \
-    ADD_COLLECTION_PROP(submenu, std::shared_ptr<menu_item>); \
-    ADD_PROP(text);                                           \
-    ADD_EVENT(click)
+#define ADD_MENU_ITEM_MEMBERS() \
+    ADD_CONTROL_MEMBERS();      \
+    ADD_PROP(text);             \
+    ADD_EVENT(click);           \
+    ADD_DEF_PROP(text)
 
         REGISTER_CLASS_DECL(xaml, menu_item)
         {
@@ -42,11 +55,52 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class popup_menu_item : public menu_item
+    {
+    public:
+        XAML_UI_CONTROLS_API popup_menu_item();
+        XAML_UI_CONTROLS_API ~popup_menu_item();
+
+    public:
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+
+#ifdef XAML_UI_WINDOWS
+    protected:
+        XAML_UI_CONTROLS_API void draw_append(std::uint32_t flags) override;
+#endif // XAML_UI_WINDOWS
+
+    private:
+        std::vector<std::shared_ptr<menu_item>> m_submenu{};
+
+    public:
+        XAML_UI_CONTROLS_API void add_submenu(std::shared_ptr<menu_item> const& child);
+        XAML_UI_CONTROLS_API void remove_submenu(std::shared_ptr<menu_item> const& child);
+        array_view<std::shared_ptr<menu_item>> get_submenu() const noexcept { return m_submenu; }
+
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_submenu();
+
+    public:
+#define ADD_POPUP_MENU_ITEM_MEMBERS() \
+    ADD_MENU_ITEM_MEMBERS();          \
+    ADD_COLLECTION_PROP(submenu, std::shared_ptr<menu_item>)
+
+        REGISTER_CLASS_DECL(xaml, popup_menu_item)
+        {
+            ADD_CTOR_DEF();
+            ADD_POPUP_MENU_ITEM_MEMBERS();
+        }
+        REGISTER_CLASS_END()
+    };
+
     class check_menu_item : public menu_item
     {
     public:
         XAML_UI_CONTROLS_API check_menu_item();
         XAML_UI_CONTROLS_API ~check_menu_item();
+
+    public:
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
     protected:
         XAML_UI_CONTROLS_API virtual void draw_checked();
@@ -73,6 +127,9 @@ namespace xaml
     public:
         XAML_UI_CONTROLS_API radio_menu_item();
         XAML_UI_CONTROLS_API ~radio_menu_item();
+
+    public:
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
     protected:
         XAML_UI_CONTROLS_API virtual void draw_checked();
@@ -103,6 +160,9 @@ namespace xaml
     public:
         XAML_UI_CONTROLS_API separator_menu_item();
         XAML_UI_CONTROLS_API ~separator_menu_item();
+
+    public:
+        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
     public:
 #define ADD_SEPARATOR_MENU_ITEM_MEMBERS() ADD_MENU_ITEM_MEMBERS()
