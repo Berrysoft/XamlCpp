@@ -3,6 +3,7 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/native_menu_bar.hpp>
 #include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
@@ -58,6 +59,7 @@ namespace xaml
         }
         draw_size();
         draw_child();
+        draw_menu_bar();
     }
 
     void window::__parent_redraw()
@@ -104,6 +106,16 @@ namespace xaml
             window.styleMask |= NSWindowStyleMaskResizable;
         else
             window.styleMask &= ~NSWindowStyleMaskResizable;
+    }
+
+    void window::draw_menu_bar()
+    {
+        if (get_menu_bar())
+        {
+            get_menu_bar()->set_parent_window(static_pointer_cast<window>(shared_from_this()));
+            get_menu_bar()->__draw({});
+            [NSApp setMainMenu:get_menu_bar()->get_menu()->handle];
+        }
     }
 
     void window::show()

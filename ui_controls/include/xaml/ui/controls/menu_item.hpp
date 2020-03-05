@@ -43,6 +43,14 @@ namespace xaml
         static void on_activate(void* menu_item, void* data);
 #endif // XAML_UI_GTK3
 
+#ifdef XAML_UI_COCOA
+    protected:
+        XAML_UI_CONTROLS_API virtual void draw_append(void* pmenu);
+
+    public:
+        void __on_action();
+#endif // XAML_UI_COCOA
+
     public:
         PROP_STRING(text)
 
@@ -79,6 +87,11 @@ namespace xaml
     protected:
         XAML_UI_CONTROLS_API void draw_append(void* pmenu, std::uint32_t flags) override;
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_COCOA
+    protected:
+        XAML_UI_CONTROLS_API void draw_append(void* pmenu) override;
+#endif // XAML_UI_COCOA
 
     private:
         std::vector<std::shared_ptr<menu_item>> m_submenu{};
@@ -174,6 +187,11 @@ namespace xaml
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+
+#ifdef XAML_UI_COCOA
+    protected:
+        XAML_UI_CONTROLS_API void draw_append(void* pmenu) override;
+#endif // XAML_UI_COCOA
 
     public:
 #define ADD_SEPARATOR_MENU_ITEM_MEMBERS() ADD_MENU_ITEM_MEMBERS()

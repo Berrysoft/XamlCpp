@@ -33,9 +33,13 @@ namespace xaml
     {
 #ifdef XAML_UI_WINDOWS
         using native_menu_type = wil::unique_hmenu;
+#elif defined(XAML_UI_GTK3)
+        using native_menu_type = GtkMenu*;
+#elif defined(XAML_UI_COCOA)
+        using native_menu_type = OBJC_OBJECT(NSMenu);
+#endif // XAML_UI_WINDOWS
 
         native_menu_type menu{ nullptr };
-#endif // XAML_UI_WINDOWS
     };
 } // namespace xaml
 

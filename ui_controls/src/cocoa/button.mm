@@ -4,20 +4,6 @@
 #include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
-- (NSMatrix*)newButton
-{
-    NSButtonCell* button = [NSButtonCell new];
-    button.target = self;
-    button.action = @selector(onAction);
-    NSMatrix* matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)
-                                                  mode:NSTrackModeMatrix
-                                             prototype:(NSCell*)button
-                                          numberOfRows:1
-                                       numberOfColumns:1];
-    matrix.autorecalculatesCellSize = YES;
-    return matrix;
-}
-
 - (void)onAction
 {
     xaml::button* ptr = (xaml::button*)self.classPointer;
@@ -34,13 +20,20 @@ namespace xaml
         if (!get_handle())
         {
             XamlButtonDelegate* delegate = [[XamlButtonDelegate alloc] initWithClassPointer:this];
-            auto h = make_shared<native_control>();
-            h->delegate = delegate;
-            h->handle = [delegate newButton];
-            set_handle(h);
-            NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-            NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
+            NSButtonCell* button = [NSButtonCell new];
+            button.target = delegate;
+            button.action = @selector(onAction);
             [button setBezelStyle:NSBezelStyleRounded];
+            NSMatrix* matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)
+                                                          mode:NSTrackModeMatrix
+                                                     prototype:(NSCell*)button
+                                                  numberOfRows:1
+                                               numberOfColumns:1];
+            matrix.autorecalculatesCellSize = YES;
+            auto h = make_shared<native_control>();
+            h->handle = matrix;
+            h->delegate = delegate;
+            set_handle(h);
             draw_text();
             draw_default();
         }
