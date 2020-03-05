@@ -72,7 +72,6 @@ extern "C"
         "xaml/ui/controls/entry.hpp",
         "xaml/ui/controls/grid.hpp",
         "xaml/ui/controls/label.hpp",
-        "xaml/ui/controls/menu_bar.hpp",
         "xaml/ui/controls/menu_item.hpp",
         "xaml/ui/controls/password_entry.hpp",
         "xaml/ui/controls/progress.hpp",

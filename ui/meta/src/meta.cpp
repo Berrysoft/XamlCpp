@@ -1,5 +1,6 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/container.hpp>
+#include <xaml/ui/menu_bar.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -24,6 +25,7 @@ extern "C"
     const char* const s_headers[] = {
         "xaml/ui/application.hpp",
         "xaml/ui/container.hpp",
+        "xaml/ui/menu_bar.hpp",
         "xaml/ui/window.hpp",
         nullptr
     };

@@ -74,7 +74,9 @@ namespace xaml
             {
                 g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
                 if (!g_list_find(list.get(), get_child()->get_handle()->handle))
-                    gtk_box_pack_start(GTK_BOX(get_window()->vbox), get_child()->get_handle()->handle, FALSE, FALSE, 0);
+                {
+                    gtk_box_pack_end(GTK_BOX(get_window()->vbox), get_child()->get_handle()->handle, TRUE, TRUE, 0);
+                }
             }
         }
     }
@@ -92,7 +94,9 @@ namespace xaml
             m_menu_bar->__draw({});
             g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
             if (!g_list_find(list.get(), m_menu_bar->get_handle()->handle))
+            {
                 gtk_box_pack_start(GTK_BOX(get_window()->vbox), m_menu_bar->get_handle()->handle, FALSE, FALSE, 0);
+            }
         }
     }
 
@@ -115,10 +119,9 @@ namespace xaml
     {
         gint width, height;
         gtk_window_get_size(GTK_WINDOW(get_handle()->handle), &width, &height);
-        if (get_menu_bar())
+        if (get_menu_bar() && get_menu_bar()->get_handle())
         {
-            gint mheight;
-            gtk_widget_get_preferred_height(get_menu_bar()->get_handle()->handle, nullptr, &mheight);
+            gint mheight = gtk_widget_get_allocated_height(get_menu_bar()->get_handle()->handle);
             height -= mheight;
         }
         return { 0, 0, (double)width, (double)height };
