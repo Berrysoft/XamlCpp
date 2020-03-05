@@ -42,7 +42,7 @@ namespace xaml
                 auto h = make_shared<native_control>();
                 h->delegate = delegate;
                 set_handle(h);
-			}
+            }
         }
     }
 
@@ -61,7 +61,7 @@ namespace xaml
     void menu_item::__on_action()
     {
         m_click(*this);
-	}
+    }
 
     void popup_menu_item::__draw(rectangle const& region)
     {

@@ -1,5 +1,5 @@
-#include <xaml/ui/menu_bar.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
+#include <xaml/ui/menu_bar.hpp>
 
 using namespace std;
 
