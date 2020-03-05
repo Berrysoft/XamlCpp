@@ -16,10 +16,10 @@ namespace xaml
             g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
             g_signal_connect(G_OBJECT(get_handle()->handle), "toggled", G_CALLBACK(radio_box::on_toggled), this);
             draw_text();
+            draw_checked();
+            draw_group();
         }
         button::__draw(region);
-        draw_checked();
-        draw_group();
     }
 
     void radio_box::draw_checked()
@@ -39,7 +39,7 @@ namespace xaml
                     {
                         if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
                         {
-                            gtk_radio_button_set_group(GTK_RADIO_BUTTON(get_handle()->handle), gtk_radio_button_get_group(GTK_RADIO_BUTTON(c->get_handle()->handle)));
+                            gtk_radio_button_join_group(GTK_RADIO_BUTTON(get_handle()->handle), GTK_RADIO_BUTTON(c->get_handle()->handle));
                             break;
                         }
                     }

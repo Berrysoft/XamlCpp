@@ -3,6 +3,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <wil/resource.h>
+#elif defined(XAML_UI_GTK3)
+#include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
 #import <xaml/ui/cocoa/XamlDelegate.h>
 #endif // XAML_UI_WINDOWS
@@ -14,6 +16,11 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
         wil::unique_hdc_window store_dc{ nullptr };
 #endif // XAML_UI_WINDOWS
+
+#ifdef XAML_UI_GTK3
+        GtkWidget* vbox;
+        GtkWidget* menu_bar;
+#endif // XAML_UI_GTK3
 
 #ifdef XAML_UI_COCOA
         using native_window_type = OBJC_OBJECT(NSWindow);

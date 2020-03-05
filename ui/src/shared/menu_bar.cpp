@@ -1,4 +1,4 @@
-#include <xaml/ui/controls/menu_bar.hpp>
+#include <xaml/ui/menu_bar.hpp>
 
 namespace xaml
 {

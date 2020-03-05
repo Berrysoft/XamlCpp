@@ -19,7 +19,7 @@ namespace xaml
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
-        auto wnd = window_map[hWnd].lock();
+        auto wnd = static_pointer_cast<window>(window_map[hWnd].lock());
         auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
         if (!result)
         {
@@ -69,6 +69,7 @@ namespace xaml
         }
         draw_size();
         draw_child();
+        draw_menu_bar();
         auto wnd_dc = wil::GetDC(get_handle()->handle);
         get_window()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
         rectangle cr = __get_real_client_region();
@@ -112,6 +113,15 @@ namespace xaml
         else
             style &= (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX);
         SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
+    }
+
+    void window::draw_menu_bar()
+    {
+        if (get_menu_bar())
+        {
+            get_menu_bar()->set_parent_window(static_pointer_cast<window>(shared_from_this()));
+            get_menu_bar()->__draw({});
+        }
     }
 
     void window::show()
@@ -221,7 +231,9 @@ namespace xaml
             application::current()->window_removed(static_pointer_cast<window>(shared_from_this()));
             break;
         }
-        return get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+        auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+        if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
+        return result;
     }
 
     point window::__get_real_location() const

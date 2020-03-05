@@ -15,7 +15,8 @@ extern "C"
             control,
             container,
             multicontainer,
-            window>(ctx);
+            window,
+            menu_bar>(ctx);
         REGISTER_ENUM(xaml, halignment_t);
         REGISTER_ENUM(xaml, valignment_t);
     }

@@ -38,6 +38,11 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_append(void* pmenu, std::uint32_t flags);
 #endif // XAML_UI_WINDOWS
 
+#ifdef XAML_UI_GTK3
+    protected:
+        static void on_activate(void* menu_item, void* data);
+#endif // XAML_UI_GTK3
+
     public:
         PROP_STRING(text)
 

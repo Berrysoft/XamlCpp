@@ -15,9 +15,9 @@ namespace xaml
             g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
             g_signal_connect(G_OBJECT(get_handle()->handle), "toggled", G_CALLBACK(check_box::on_toggled), this);
             draw_text();
+            draw_checked();
         }
         button::__draw(region);
-        draw_checked();
     }
 
     void check_box::draw_checked()

@@ -6,12 +6,12 @@
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/controls/grid.hpp>
 #include <xaml/ui/controls/label.hpp>
-#include <xaml/ui/controls/menu_bar.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
 #include <xaml/ui/controls/password_entry.hpp>
 #include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
 #include <xaml/ui/filebox.hpp>
+#include <xaml/ui/menu_bar.hpp>
 #include <xaml/ui/msgbox.hpp>
 
 using namespace std;
@@ -172,12 +172,12 @@ namespace xaml::test
                 {
                     auto mquit = make_shared<menu_item>();
                     mquit->set_text(U("Quit"));
-                    mquit->add_click([](menu_item&) { application::current()->quit(); });
+                    mquit->add_click([this](menu_item&) { close(); });
                     mfile->add_submenu(mquit);
                 }
                 mbar->add_child(mfile);
             }
-            g->add_child(mbar);
+            set_menu_bar(mbar);
         }
     }
 

@@ -4,6 +4,7 @@
 #include <atomic>
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/ui/container.hpp>
+#include <xaml/ui/menu_bar.hpp>
 
 namespace xaml
 {
@@ -52,6 +53,7 @@ namespace xaml
         XAML_UI_API virtual void draw_title();
         XAML_UI_API virtual void draw_child();
         XAML_UI_API virtual void draw_resizable();
+        XAML_UI_API virtual void draw_menu_bar();
 
     public:
         XAML_UI_API window();
@@ -110,19 +112,27 @@ namespace xaml
         EVENT(title_changed, window&, string_view_t)
         PROP_STRING_EVENT(title)
 
+    private:
+        std::shared_ptr<menu_bar> m_menu_bar{ nullptr };
+
+    public:
+        std::shared_ptr<menu_bar> get_menu_bar() const noexcept { return m_menu_bar; }
+        void set_menu_bar(std::shared_ptr<menu_bar> const& value) { m_menu_bar = value; }
+
     public:
         double get_dpi() const;
 
     public:
-#define ADD_WINDOW_MEMBERS()  \
-    ADD_CONTAINER_MEMBERS();  \
-    ADD_PROP(title);          \
-    ADD_EVENT(title_changed); \
-    ADD_PROP_EVENT(location); \
-    ADD_PROP(x);              \
-    ADD_PROP(y);              \
-    ADD_EVENT(closing);       \
-    ADD_PROP_EVENT(resizable)
+#define ADD_WINDOW_MEMBERS()   \
+    ADD_CONTAINER_MEMBERS();   \
+    ADD_PROP(title);           \
+    ADD_EVENT(title_changed);  \
+    ADD_PROP_EVENT(location);  \
+    ADD_PROP(x);               \
+    ADD_PROP(y);               \
+    ADD_EVENT(closing);        \
+    ADD_PROP_EVENT(resizable); \
+    ADD_PROP(menu_bar)
 
         REGISTER_CLASS_DECL(xaml, window)
         {
