@@ -9,7 +9,7 @@ namespace xaml
 {
     void menu_bar::__draw(rectangle const& region)
     {
-        if (!get_handle())
+        if (!get_menu())
         {
             auto pwnd = get_parent_window().lock();
             auto m = make_shared<native_menu_bar>();
