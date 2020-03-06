@@ -39,6 +39,7 @@ namespace xaml
                 NSMenuItem* mitem = get_menu()->handle;
                 mitem.target = delegate;
                 mitem.action = @selector(onAction);
+                mitem.title = [NSString stringWithUTF8String:m_text.c_str()];
                 auto h = make_shared<native_control>();
                 h->delegate = delegate;
                 set_handle(h);
@@ -83,7 +84,7 @@ namespace xaml
             auto m = make_shared<native_popup_menu_item>();
             m->parent = (__bridge NSMenu*)pmenu;
             m->handle = [NSMenuItem new];
-            m->menu = [NSMenu new];
+            m->menu = [[NSMenu alloc] initWithTitle:[NSString stringWithUTF8String:get_text().data()]];
             set_menu(m);
             draw_submenu();
         }

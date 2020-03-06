@@ -130,7 +130,7 @@ namespace xaml
         };
         NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.data()]
                                                                    attributes:attrs];
-        [astr drawAtPoint:to_native<NSPoint>(p)];
+        [astr drawAtPoint:NSMakePoint(p.x, m_size.height - p.y - font.size)];
     }
 
     void canvas::__draw(const rectangle& region)
