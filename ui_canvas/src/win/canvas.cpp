@@ -54,9 +54,14 @@ namespace xaml
         }
     }
 
-    static inline Pen get_Pen(drawing_pen const& pen)
+    constexpr REAL get_WIDTH(double width, double dpi)
     {
-        return Pen(Color((int)pen.stroke), (REAL)pen.width);
+        return (REAL)(width * dpi / 96.0);
+    }
+
+    static inline Pen get_Pen(drawing_pen const& pen, double dpi)
+    {
+        return Pen(Color((int)pen.stroke), get_WIDTH(pen.width, dpi));
     }
 
     static inline SolidBrush get_Brush(drawing_brush const& brush)
@@ -71,7 +76,7 @@ namespace xaml
 
     static inline Font get_Font(drawing_font const& font, double dpi)
     {
-        return Font(font.font_family.c_str(), (REAL)(font.size * dpi / 96.0), get_font_style(font.italic, font.bold), UnitPixel);
+        return Font(font.font_family.c_str(), get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
     }
 
     static inline RectF get_RectF(rectangle const& rect, double dpi)
@@ -86,7 +91,7 @@ namespace xaml
 
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
-        auto p = get_Pen(pen);
+        auto p = get_Pen(pen, __get_dpi());
         check_status(m_handle->handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
     }
 
@@ -98,7 +103,7 @@ namespace xaml
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        auto p = get_Pen(pen);
+        auto p = get_Pen(pen, __get_dpi());
         check_status(m_handle->handle->DrawEllipse(&p, get_RectF(region, __get_dpi())));
     }
 
@@ -110,13 +115,13 @@ namespace xaml
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
     {
-        auto p = get_Pen(pen);
+        auto p = get_Pen(pen, __get_dpi());
         check_status(m_handle->handle->DrawLine(&p, get_PointF(startp, __get_dpi()), get_PointF(endp, __get_dpi())));
     }
 
     void drawing_context::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
-        auto p = get_Pen(pen);
+        auto p = get_Pen(pen, __get_dpi());
         check_status(m_handle->handle->DrawRectangle(&p, get_RectF(rect, __get_dpi())));
     }
 
