@@ -44,6 +44,38 @@ namespace xaml
         [get_NSColor(brush.fill) set];
     }
 
+    static NSBezierPath* path_arc(size base_size, rectangle const& region, double start_angle, double end_angle)
+    {
+        NSBezierPath* path = [NSBezierPath bezierPath];
+        size radius = { region.width / 2, region.height / 2 };
+        point centerp = { region.x + radius.width, region.y + radius.height };
+        point startp = centerp + point{ radius.width * cos(start_angle), radius.height * sin(start_angle) };
+        [path moveToPoint:NSMakePoint(startp.x, base_size.height - startp.y)];
+        [path appendBezierPathWithArcWithCenter:NSMakePoint(centerp.x, base_size.height - centerp.y)
+                                         radius:radius.width
+                                     startAngle:-start_angle
+                                       endAngle:-end_angle
+                                      clockwise:YES];
+        NSAffineTransform *transform = [NSAffineTransform transform];
+        [transform scaleXBy:1 yBy:radius.height / radius.width];
+        return path;
+	}
+
+    void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
+    {
+        NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
+        set_pen(arc, pen);
+        [arc stroke];
+    }
+
+    void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
+    {
+        NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
+        [arc closePath];
+        set_brush(arc, brush);
+        [arc fill];
+    }
+
     static NSBezierPath* path_ellipse(size base_size, rectangle const& region)
     {
         return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, base_size.height - region.height - region.y, region.width, region.height)];
