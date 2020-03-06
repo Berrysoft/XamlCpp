@@ -1,5 +1,4 @@
 #include <xaml/ui/controls/button.hpp>
-#include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/check_box.hpp>
 #include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/controls/entry.hpp>
@@ -29,7 +28,6 @@ extern "C"
         meta_context& ctx = *(meta_context*)pctx;
         register_class<
             grid, uniform_grid, stack_panel,
-            canvas,
             button, check_box, radio_box,
             label,
             menu_item, check_menu_item, radio_menu_item, separator_menu_item,
@@ -66,7 +64,6 @@ extern "C"
 
     const char* const s_headers[] = {
         "xaml/ui/controls/button.hpp",
-        "xaml/ui/controls/canvas.hpp",
         "xaml/ui/controls/check_box.hpp",
         "xaml/ui/controls/combo_box.hpp",
         "xaml/ui/controls/entry.hpp",

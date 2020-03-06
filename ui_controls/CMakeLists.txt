@@ -31,15 +31,12 @@ target_include_directories(xaml_ui_controls
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ${XAML_PRIVATE_INCLUDE_DIRS}
     PRIVATE
+        ${XAML_PRIVATE_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 target_link_libraries(xaml_ui_controls xaml_ui)
-if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui_controls gdiplus)
-endif()
 
 set_target_properties(xaml_ui_controls PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}

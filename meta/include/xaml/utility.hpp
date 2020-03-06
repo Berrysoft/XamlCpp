@@ -72,11 +72,23 @@
 #define XAML_UI_CONTROLS_META_API __XAML_META_IMPORT
 #endif // xaml_ui_controls_meta_EXPORTS
 
+#ifdef xaml_ui_canvas_EXPORTS
+#define XAML_UI_CANVAS_API __XAML_EXPORT
+#else
+#define XAML_UI_CANVAS_API __XAML_IMPORT
+#endif // xaml_ui_canvas_EXPORTS
+
+#ifdef xaml_ui_canvas_meta_EXPORTS
+#define XAML_UI_CANVAS_META_API __XAML_META_EXPORT
+#else
+#define XAML_UI_CANVAS_META_API __XAML_META_IMPORT
+#endif // xaml_ui_canvas_meta_EXPORTS
+
 #ifdef xaml_ui_webview_EXPORTS
 #define XAML_UI_WEBVIEW_API __XAML_EXPORT
 #else
 #define XAML_UI_WEBVIEW_API __XAML_IMPORT
-#endif // xaml_ui_controls_EXPORTS
+#endif // xaml_ui_webview_EXPORTS
 
 #ifdef xaml_ui_webview_meta_EXPORTS
 #define XAML_UI_WEBVIEW_META_API __XAML_META_EXPORT

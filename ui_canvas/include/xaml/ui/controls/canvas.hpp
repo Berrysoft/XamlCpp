@@ -38,7 +38,7 @@ namespace xaml
     public:
         inline native_handle_type get_handle() const noexcept { return m_handle; }
 
-        XAML_UI_CONTROLS_API drawing_context(native_handle_type handle);
+        XAML_UI_CANVAS_API drawing_context(native_handle_type handle);
 
 #ifdef XAML_UI_WINDOWS
     private:
@@ -68,16 +68,16 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        XAML_UI_CONTROLS_API void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
-        XAML_UI_CONTROLS_API void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle);
-        XAML_UI_CONTROLS_API void draw_ellipse(drawing_pen const& pen, rectangle const& region);
-        XAML_UI_CONTROLS_API void fill_ellipse(drawing_brush const& brush, rectangle const& region);
-        XAML_UI_CONTROLS_API void draw_line(drawing_pen const& pen, point startp, point endp);
-        XAML_UI_CONTROLS_API void draw_rect(drawing_pen const& pen, rectangle const& rect);
-        XAML_UI_CONTROLS_API void fill_rect(drawing_brush const& brush, rectangle const& rect);
-        XAML_UI_CONTROLS_API void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
-        XAML_UI_CONTROLS_API void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
-        XAML_UI_CONTROLS_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
+        XAML_UI_CANVAS_API void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle);
+        XAML_UI_CANVAS_API void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle);
+        XAML_UI_CANVAS_API void draw_ellipse(drawing_pen const& pen, rectangle const& region);
+        XAML_UI_CANVAS_API void fill_ellipse(drawing_brush const& brush, rectangle const& region);
+        XAML_UI_CANVAS_API void draw_line(drawing_pen const& pen, point startp, point endp);
+        XAML_UI_CANVAS_API void draw_rect(drawing_pen const& pen, rectangle const& rect);
+        XAML_UI_CANVAS_API void fill_rect(drawing_brush const& brush, rectangle const& rect);
+        XAML_UI_CANVAS_API void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round);
+        XAML_UI_CANVAS_API void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round);
+        XAML_UI_CANVAS_API void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str);
     };
 
     struct native_canvas;
@@ -85,8 +85,8 @@ namespace xaml
     class canvas : public control
     {
     public:
-        XAML_UI_CONTROLS_API canvas();
-        XAML_UI_CONTROLS_API ~canvas() override;
+        XAML_UI_CANVAS_API canvas();
+        XAML_UI_CANVAS_API ~canvas() override;
 
     private:
         rectangle m_real_region{};
@@ -105,7 +105,7 @@ namespace xaml
 
 #ifdef XAML_UI_WINDOWS
     public:
-        XAML_UI_CONTROLS_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
+        XAML_UI_CANVAS_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -121,7 +121,7 @@ namespace xaml
     public:
         EVENT(redraw, canvas&, drawing_context&)
 
-        XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
+        XAML_UI_CANVAS_API void __draw(rectangle const& region) override;
 
         constexpr size get_size() const noexcept { return { m_real_region.width, m_real_region.height }; }
 

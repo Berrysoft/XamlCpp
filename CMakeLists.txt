@@ -94,11 +94,12 @@ endif()
 
 option(BUILD_WEBVIEW "Build webview." ON)
 
-set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml xamlc)
+set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml xamlc)
 
 add_subdirectory(meta)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
+add_subdirectory(ui_canvas)
 if(${BUILD_WEBVIEW})
     if(NOT ${BUILD_GTK3} OR (UNIX AND NOT APPLE))
         add_subdirectory(ui_webview)
