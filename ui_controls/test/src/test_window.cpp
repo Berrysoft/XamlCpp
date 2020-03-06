@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <test_window.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/colors.hpp>
