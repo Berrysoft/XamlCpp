@@ -56,10 +56,10 @@ namespace xaml
                                      startAngle:-start_angle
                                        endAngle:-end_angle
                                       clockwise:YES];
-        NSAffineTransform *transform = [NSAffineTransform transform];
+        NSAffineTransform* transform = [NSAffineTransform transform];
         [transform scaleXBy:1 yBy:radius.height / radius.width];
         return path;
-	}
+    }
 
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
