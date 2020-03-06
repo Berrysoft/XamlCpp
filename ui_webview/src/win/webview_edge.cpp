@@ -1,3 +1,5 @@
+#ifdef XAML_UI_WEBVIEW_EDGE
+
 #include "winrt/Windows.Foundation.h"
 #include "winrt/Windows.Storage.Streams.h"
 #include "winrt/Windows.Web.Http.h"
@@ -99,3 +101,5 @@ namespace xaml
         m_view.Bounds({ (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
     }
 } // namespace xaml
+
+#endif // XAML_UI_WEBVIEW_EDGE

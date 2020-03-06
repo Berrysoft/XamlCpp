@@ -1,3 +1,5 @@
+#ifdef XAML_UI_WEBVIEW_WEBVIEW2
+
 #include <Shlwapi.h>
 #include <wil/result_macros.h>
 #include <win/webview_edge2.hpp>
@@ -136,3 +138,5 @@ namespace xaml
         THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
     }
 } // namespace xaml
+
+#endif // XAML_UI_WEBVIEW_WEBVIEW2
