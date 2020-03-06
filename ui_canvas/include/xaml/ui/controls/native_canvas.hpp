@@ -36,8 +36,10 @@ namespace xaml
         native_handle_type handle{ OBJC_NIL };
 
 #if defined(XAML_UI_WINDOWS) && defined(XAML_UI_CANVAS_DIRECT2D)
+        using native_d2_type = ID2D1Factory*;
         using native_dwrite_type = wil::com_ptr<IDWriteFactory>;
 
+        native_d2_type d2{ nullptr };
         native_dwrite_type dwrite{ nullptr };
 #endif // XAML_UI_WINDOWS && XAML_UI_CANVAS_DIRECT2D
     };

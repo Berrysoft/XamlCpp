@@ -40,11 +40,13 @@ target_include_directories(xaml_ui_canvas
 target_link_libraries(xaml_ui_canvas xaml_ui)
 if(${BUILD_WINDOWS})
     if(${BUILD_DIRECT2D})
-        target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_DIRECT2D")
+        target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_DIRECT2D" "-D_USE_MATH_DEFINES")
         target_link_libraries(xaml_ui_canvas D2d1 Dwrite)
     else()
         target_link_libraries(xaml_ui_canvas gdiplus)
     endif()
+elseif(${BUILD_GTK3})
+    target_compile_definitions(xaml_ui_canvas PRIVATE "-D_USE_MATH_DEFINES")
 endif()
 
 set_target_properties(xaml_ui_canvas PROPERTIES

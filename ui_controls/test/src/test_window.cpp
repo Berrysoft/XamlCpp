@@ -210,7 +210,8 @@ namespace xaml::test
         auto cx = cv.get_width() / 2;
         auto cy = cv.get_height() / 2;
         auto r = (min)(cx, cy) - 2;
-        dc.draw_ellipse({ colors::black }, { cx - r, cy - r, r * 2, r * 2 });
+        dc.draw_arc({ colors::black }, { cx - r, cy - r, r * 2, r * 2 }, M_PI, 2 * M_PI);
+        dc.draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
         dc.draw_string({ colors::pink }, { U("Arial"), 20 }, { 10, 2 * cy - 30 }, U("Hello world!"));
     }
 } // namespace xaml::test

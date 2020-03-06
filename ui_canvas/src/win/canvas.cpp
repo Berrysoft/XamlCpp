@@ -92,13 +92,13 @@ namespace xaml
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
         auto p = get_Pen(pen, __get_dpi());
-        check_status(m_handle->handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
+        check_status(m_handle->handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)(end_angle - start_angle)));
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
         auto b = get_Brush(brush);
-        check_status(m_handle->handle->FillPie(&b, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)end_angle));
+        check_status(m_handle->handle->FillPie(&b, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)(end_angle - start_angle)));
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)

@@ -1,3 +1,5 @@
+#include <cmath>
+#include <tuple>
 #include <windowsx.h>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/native_canvas.hpp>
@@ -36,17 +38,54 @@ namespace xaml
         return to_native<D2D1_POINT_2F>(p * dpi / 96.0);
     }
 
+    static D2D1_SIZE_F get_SIZE(size s, double dpi)
+    {
+        return to_native<D2D1_SIZE_F>(s * dpi / 96.0);
+    }
+
     constexpr FLOAT get_WIDTH(double width, double dpi)
     {
         return (FLOAT)(width * dpi / 96.0);
     }
 
+    static constexpr tuple<size, point, point, point> get_arc(rectangle const& region, double start_angle, double end_angle)
+    {
+        size radius = { region.width / 2, region.height / 2 };
+        point centerp = { region.x + radius.width, region.y + radius.height };
+        point startp = centerp + point{ radius.width * cos(start_angle), radius.height * sin(start_angle) };
+        point endp = centerp + point{ radius.width * cos(end_angle), radius.height * sin(end_angle) };
+        return make_tuple(radius, centerp, startp, endp);
+    }
+
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
+        wil::com_ptr<ID2D1PathGeometry> geo;
+        THROW_IF_FAILED(m_handle->d2->CreatePathGeometry(&geo));
+        wil::com_ptr<ID2D1GeometrySink> sink;
+        THROW_IF_FAILED(geo->Open(&sink));
+        auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
+        sink->BeginFigure(get_POINT(startp, __get_dpi()), D2D1_FIGURE_BEGIN_HOLLOW);
+        sink->AddArc(D2D1::ArcSegment(get_POINT(endp, __get_dpi()), get_SIZE(radius, __get_dpi()), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > M_PI) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+        sink->EndFigure(D2D1_FIGURE_END_OPEN);
+        THROW_IF_FAILED(sink->Close());
+        auto b = get_Brush(m_handle->handle.get(), pen.stroke);
+        m_handle->handle->DrawGeometry(geo.get(), b.get(), get_WIDTH(pen.width, __get_dpi()));
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
+        wil::com_ptr<ID2D1PathGeometry> geo;
+        THROW_IF_FAILED(m_handle->d2->CreatePathGeometry(&geo));
+        wil::com_ptr<ID2D1GeometrySink> sink;
+        THROW_IF_FAILED(geo->Open(&sink));
+        auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
+        sink->BeginFigure(get_POINT(centerp, __get_dpi()), D2D1_FIGURE_BEGIN_FILLED);
+        sink->AddLine(get_POINT(startp, __get_dpi()));
+        sink->AddArc(D2D1::ArcSegment(get_POINT(endp, __get_dpi()), get_SIZE(radius, __get_dpi()), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > M_PI) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+        sink->EndFigure(D2D1_FIGURE_END_CLOSED);
+        THROW_IF_FAILED(sink->Close());
+        auto b = get_Brush(m_handle->handle.get(), brush.fill);
+        m_handle->handle->FillGeometry(geo.get(), b.get());
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
@@ -126,6 +165,7 @@ namespace xaml
                 target->BeginDraw();
                 target->Clear(D2D1::ColorF(D2D1::ColorF::White));
                 native_drawing_context ctx{};
+                ctx.d2 = get_canvas()->factory.get();
                 ctx.handle = target.query<ID2D1RenderTarget>();
                 THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**)&ctx.dwrite));
                 drawing_context dc{ &ctx };
