@@ -39,8 +39,8 @@ namespace xaml
                     real_x = region.x + region.width - text_size.width;
                     break;
                 }
-                TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length());
-                DeleteFont(SelectFont(dc, oldf.release()));
+                THROW_IF_WIN32_BOOL_FALSE(TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length()));
+                THROW_IF_WIN32_BOOL_FALSE(DeleteFont(SelectFont(dc, oldf.release())));
             }
             break;
         }

@@ -39,7 +39,12 @@ target_include_directories(xaml_ui_canvas
 
 target_link_libraries(xaml_ui_canvas xaml_ui)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui_canvas gdiplus)
+    if(${BUILD_DIRECT2D})
+        target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_DIRECT2D")
+        target_link_libraries(xaml_ui_canvas D2d1 Dwrite)
+    else()
+        target_link_libraries(xaml_ui_canvas gdiplus)
+    endif()
 endif()
 
 set_target_properties(xaml_ui_canvas PROPERTIES

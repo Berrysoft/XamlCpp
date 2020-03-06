@@ -157,7 +157,7 @@ namespace xaml
                 rectangle region = m_real_region * udpi / 96.0;
                 THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_canvas()->store_dc.get(), -1, -1, (int)region.width + 1, (int)region.height + 1));
                 Graphics g{ get_canvas()->store_dc.get() };
-                g.SetPageUnit(UnitPixel);
+                check_status(g.SetPageUnit(UnitPixel));
                 native_drawing_context ctx{};
                 ctx.handle = &g;
                 drawing_context dc{ &ctx };
@@ -188,7 +188,7 @@ namespace xaml
                 auto wnd_dc = wil::GetDC(get_handle()->handle);
                 get_canvas()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
                 wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
-                wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_canvas()->store_dc.get(), bitmap.release()) };
+                DeleteBitmap(SelectBitmap(get_canvas()->store_dc.get(), bitmap.release()));
             }
         }
     }

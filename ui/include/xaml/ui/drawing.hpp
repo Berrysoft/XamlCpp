@@ -261,11 +261,11 @@ namespace xaml
     struct alignas(1) color
     {
         std::uint8_t a, r, g, b;
-        constexpr operator std::int32_t() const noexcept { return ((std::int32_t)a << 24) + ((std::int32_t)r << 16) + ((std::int32_t)g << 8) + (std::int32_t)b; }
-        static constexpr color from_argb(std::int32_t v) noexcept { return { (std::uint8_t)((v >> 24) & 0xFF), (std::uint8_t)((v >> 16) & 0xFF), (std::uint8_t)((v >> 8) & 0xFF), (std::uint8_t)(v & 0xFF) }; }
+        constexpr operator std::uint32_t() const noexcept { return ((std::uint32_t)a << 24) + ((std::uint32_t)r << 16) + ((std::uint32_t)g << 8) + (std::uint32_t)b; }
+        static constexpr color from_argb(std::uint32_t v) noexcept { return { (std::uint8_t)((v >> 24) & 0xFF), (std::uint8_t)((v >> 16) & 0xFF), (std::uint8_t)((v >> 8) & 0xFF), (std::uint8_t)(v & 0xFF) }; }
     };
 
-    constexpr bool operator==(color lhs, color rhs) { return (std::int32_t)lhs == (std::int32_t)rhs; }
+    constexpr bool operator==(color lhs, color rhs) { return (std::uint32_t)lhs == (std::uint32_t)rhs; }
     constexpr bool operator!=(color lhs, color rhs) { return !(lhs == rhs); }
 } // namespace xaml
 #endif // !XAML_UI_DRAWING_HPP
