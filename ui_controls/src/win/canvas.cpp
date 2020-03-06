@@ -71,7 +71,7 @@ namespace xaml
 
     static inline Font get_Font(drawing_font const& font, double dpi)
     {
-        return Font(font.font_family.c_str(), (REAL)(font.size * dpi / 96.0), get_font_style(font.italic, font.bold));
+        return Font(font.font_family.c_str(), (REAL)(font.size * dpi / 96.0), get_font_style(font.italic, font.bold), UnitPixel);
     }
 
     static inline RectF get_RectF(rectangle const& rect, double dpi)
