@@ -78,10 +78,6 @@ namespace xaml
 
         void set_location(point p) override;
         void set_size(size s) override;
-        void set_rect(rectangle const& rect) override
-        {
-            set_location({ rect.x, rect.y });
-            set_size({ rect.width, rect.height });
-        }
+        void set_rect(rectangle const& rect) override;
     };
 } // namespace xaml

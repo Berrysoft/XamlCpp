@@ -46,15 +46,13 @@ namespace xaml
             {
                 auto& res = *args.response;
                 pDispParams->rgvarg[0].pvarVal->boolVal = VARIANT_TRUE;
-                IDispatch* pDisp = pDispParams->rgvarg[6].pdispVal;
-                wil::com_ptr<IWebBrowser2> browser;
-                THROW_IF_FAILED(pDisp->QueryInterface(&browser));
+                wil::com_ptr<IDispatch> pDisp = pDispParams->rgvarg[6].pdispVal;
+                wil::com_ptr<IWebBrowser2> browser = pDisp.query<IWebBrowser2>();
                 THROW_IF_FAILED(browser->Stop());
                 m_webview->navigate(U("about:blank"));
                 wil::com_ptr<IDispatch> doc;
                 THROW_IF_FAILED(browser->get_Document(&doc));
-                wil::com_ptr<IPersistStreamInit> psi;
-                THROW_IF_FAILED(doc->QueryInterface(&psi));
+                wil::com_ptr<IPersistStreamInit> psi = doc.query<IPersistStreamInit>();
                 wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
                 THROW_IF_FAILED(psi->Load(res_data.get()));
             }
@@ -76,7 +74,7 @@ namespace xaml
             m_sink = new WebBrowserSink(this);
             wil::com_ptr<IUnknown> control;
             THROW_IF_FAILED(m_container.CreateControlEx(L"Shell.Explorer.2", nullptr, nullptr, &control, __uuidof(DWebBrowserEvents2), m_sink.get()));
-            THROW_IF_FAILED(control->QueryInterface(&m_browser));
+            m_browser = control.query<IWebBrowser2>();
         }
         catch (wil::ResultException const&)
         {
@@ -94,13 +92,17 @@ namespace xaml
 
     void webview_ie::set_location(point p)
     {
-        THROW_IF_FAILED(m_browser->put_Left((long)p.x));
-        THROW_IF_FAILED(m_browser->put_Top((long)p.y));
+        THROW_IF_WIN32_BOOL_FALSE(m_container.SetWindowPos(HWND_TOP, (int)p.x, (int)p.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE));
     }
 
     void webview_ie::set_size(size s)
     {
-        THROW_IF_FAILED(m_browser->put_Width((long)s.width));
-        THROW_IF_FAILED(m_browser->put_Height((long)s.height));
+        THROW_IF_WIN32_BOOL_FALSE(m_container.SetWindowPos(HWND_TOP, 0, 0, (int)s.width, (int)s.height, SWP_NOZORDER | SWP_NOMOVE));
+    }
+
+    void webview_ie::set_rect(rectangle const& rect)
+    {
+        RECT r = to_native<RECT>(rect);
+        THROW_IF_WIN32_BOOL_FALSE(m_container.SetWindowPos(HWND_TOP, &r, SWP_NOZORDER));
     }
 } // namespace xaml
