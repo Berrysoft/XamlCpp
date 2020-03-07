@@ -213,6 +213,7 @@ namespace xaml::test
         auto r = (min)(cx, cy) - 2;
         dc.draw_arc({ colors::black }, { cx - r, cy - r, r * 2, r * 2 }, M_PI, 2 * M_PI);
         dc.draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
-        dc.draw_string({ colors::pink }, { U("Arial"), 20 }, { 10, 2 * cy - 30 }, U("Hello world!"));
+        dc.draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.5 + 2 }, { r / 10, r / 10 });
+        dc.draw_string({ colors::pink }, { U("Arial"), r / 5 }, { r / 10, 2 * cy - r / 3 }, U("Hello world!"));
     }
 } // namespace xaml::test

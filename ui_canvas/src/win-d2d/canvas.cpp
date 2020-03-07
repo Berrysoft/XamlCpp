@@ -122,6 +122,22 @@ namespace xaml
         m_handle->handle->FillRectangle(r, b.get());
     }
 
+    void drawing_context::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
+    {
+        auto r = get_RECT(rect, __get_dpi());
+        auto s = get_SIZE(round, __get_dpi());
+        auto b = get_Brush(m_handle->handle.get(), pen.stroke);
+        m_handle->handle->DrawRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get(), get_WIDTH(pen.width, __get_dpi()));
+    }
+
+    void drawing_context::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
+    {
+        auto r = get_RECT(rect, __get_dpi());
+        auto s = get_SIZE(round, __get_dpi());
+        auto b = get_Brush(m_handle->handle.get(), brush.fill);
+        m_handle->handle->FillRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get());
+    }
+
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
         auto b = get_Brush(m_handle->handle.get(), brush.fill);

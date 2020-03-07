@@ -89,16 +89,21 @@ namespace xaml
         return to_native<PointF>(p * dpi / 96.0);
     }
 
+    static inline SizeF get_SizeF(size s, double dpi)
+    {
+        return to_native<SizeF>(s * dpi / 96.0);
+    }
+
     void drawing_context::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
         auto p = get_Pen(pen, __get_dpi());
-        check_status(m_handle->handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)(end_angle - start_angle)));
+        check_status(m_handle->handle->DrawArc(&p, get_RectF(region, __get_dpi()), (REAL)(start_angle / M_PI * 180), (REAL)((end_angle - start_angle) / M_PI * 180)));
     }
 
     void drawing_context::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
         auto b = get_Brush(brush);
-        check_status(m_handle->handle->FillPie(&b, get_RectF(region, __get_dpi()), (REAL)start_angle, (REAL)(end_angle - start_angle)));
+        check_status(m_handle->handle->FillPie(&b, get_RectF(region, __get_dpi()), (REAL)(start_angle / M_PI * 180), (REAL)((end_angle - start_angle) / M_PI * 180)));
     }
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
@@ -129,6 +134,52 @@ namespace xaml
     {
         auto b = get_Brush(brush);
         check_status(m_handle->handle->FillRectangle(&b, get_RectF(rect, __get_dpi())));
+    }
+
+    static unique_ptr<GraphicsPath> RoundedRect(RectF bounds, SizeF size)
+    {
+        PointF ori_loc;
+        bounds.GetLocation(&ori_loc);
+        RectF arc{ ori_loc, { size.Width * 2, size.Height * 2 } };
+        auto path = make_unique<GraphicsPath>();
+
+        if (size.Width == 0 && size.Height == 0)
+        {
+            path->AddRectangle(bounds);
+            return path;
+        }
+
+        // top left arc
+        path->AddArc(arc, 180, 90);
+
+        // top right arc
+        arc.X = bounds.Width + bounds.X - size.Width * 2;
+        path->AddArc(arc, 270, 90);
+
+        // bottom right arc
+        arc.Y = bounds.Height + bounds.Y - size.Height * 2;
+        path->AddArc(arc, 0, 90);
+
+        // bottom left arc
+        arc.X = bounds.X;
+        path->AddArc(arc, 90, 90);
+
+        path->CloseFigure();
+        return path;
+    }
+
+    void drawing_context::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
+    {
+        auto p = get_Pen(pen, __get_dpi());
+        auto path = RoundedRect(get_RectF(rect, __get_dpi()), get_SizeF(round, __get_dpi()));
+        check_status(m_handle->handle->DrawPath(&p, path.get()));
+    }
+
+    void drawing_context::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
+    {
+        auto b = get_Brush(brush);
+        auto path = RoundedRect(get_RectF(rect, __get_dpi()), get_SizeF(round, __get_dpi()));
+        check_status(m_handle->handle->FillPath(&b, path.get()));
     }
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
