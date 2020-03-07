@@ -55,8 +55,8 @@ namespace xaml
             m->parent = (__bridge NSMenu*)pmenu;
             m->handle = [NSMenuItem new];
             set_menu(m);
+            [get_menu()->parent addItem:get_menu()->handle];
         }
-        [get_menu()->parent addItem:get_menu()->handle];
     }
 
     void menu_item::__on_action()
@@ -87,9 +87,9 @@ namespace xaml
             m->menu = [[NSMenu alloc] initWithTitle:[NSString stringWithUTF8String:get_text().data()]];
             set_menu(m);
             draw_submenu();
+            [get_menu()->parent addItem:get_menu()->handle];
+            get_menu()->handle.submenu = static_pointer_cast<native_popup_menu_item>(get_menu())->menu;
         }
-        [get_menu()->parent addItem:get_menu()->handle];
-        get_menu()->handle.submenu = static_pointer_cast<native_popup_menu_item>(get_menu())->menu;
     }
 
     void check_menu_item::__draw(rectangle const& region)
@@ -125,7 +125,7 @@ namespace xaml
             m->parent = (__bridge NSMenu*)pmenu;
             m->handle = [NSMenuItem separatorItem];
             set_menu(m);
+            [get_menu()->parent addItem:get_menu()->handle];
         }
-        [get_menu()->parent addItem:get_menu()->handle];
     }
 }

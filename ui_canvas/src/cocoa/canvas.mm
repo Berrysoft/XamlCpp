@@ -1,3 +1,4 @@
+#include <cmath>
 #import <cocoa/XamlCanvasView.h>
 #include <functional>
 #include <xaml/ui/controls/canvas.hpp>
@@ -53,8 +54,8 @@ namespace xaml
         [path moveToPoint:NSMakePoint(startp.x, base_size.height - startp.y)];
         [path appendBezierPathWithArcWithCenter:NSMakePoint(centerp.x, base_size.height - centerp.y)
                                          radius:radius.width
-                                     startAngle:-start_angle
-                                       endAngle:-end_angle
+                                     startAngle:-start_angle / M_PI * 180
+                                       endAngle:-end_angle / M_PI * 180
                                       clockwise:YES];
         NSAffineTransform* transform = [NSAffineTransform transform];
         [transform scaleXBy:1 yBy:radius.height / radius.width];
