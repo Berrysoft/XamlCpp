@@ -36,7 +36,7 @@ namespace xaml
         native_handle_type handle{ OBJC_NIL };
 
 #if defined(XAML_UI_WINDOWS) && defined(XAML_UI_CANVAS_DIRECT2D)
-        using native_d2_type = ID2D1Factory*;
+        using native_d2_type = wil::com_ptr<ID2D1Factory>;
         using native_dwrite_type = wil::com_ptr<IDWriteFactory>;
 
         native_d2_type d2{ nullptr };
@@ -51,8 +51,8 @@ namespace xaml
         wil::com_ptr<ID2D1Factory> factory;
 #else
         ULONG_PTR token;
-#endif // XAML_UI_CANVAS_DIRECT2D
         wil::unique_hdc_window store_dc;
+#endif // XAML_UI_CANVAS_DIRECT2D
 #endif
     };
 

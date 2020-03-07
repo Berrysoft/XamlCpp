@@ -132,7 +132,10 @@ namespace xaml
             font.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
             DWRITE_FONT_STRETCH_NORMAL, get_WIDTH(font.size, __get_dpi()), L"", &format));
         auto size = m_handle->handle->GetSize();
-        m_handle->handle->DrawText(str.data(), (UINT32)str.length(), format.get(), get_RECT({ p.x, p.y, p.x + size.width, p.y + size.height }, __get_dpi()), b.get());
+        auto region = get_RECT({ p.x, p.y, p.x, p.y },__get_dpi());
+        region.right += size.width;
+        region.bottom += size.height;
+        m_handle->handle->DrawText(str.data(), (UINT32)str.length(), format.get(), region, b.get());
     }
 
     canvas::canvas() : control() {}
@@ -147,34 +150,33 @@ namespace xaml
             {
             case WM_PAINT:
             {
-                UINT udpi = GetDpiForWindow(get_handle()->handle);
-                rectangle region = m_real_region * udpi / 96.0;
-                wil::com_ptr<ID2D1DCRenderTarget> target;
-                auto prop = D2D1::RenderTargetProperties(
-                    D2D1_RENDER_TARGET_TYPE_DEFAULT,
-                    D2D1::PixelFormat(
-                        DXGI_FORMAT_B8G8R8A8_UNORM,
-                        D2D1_ALPHA_MODE_PREMULTIPLIED),
-                    0,
-                    0,
-                    D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
-                    D2D1_FEATURE_LEVEL_DEFAULT);
-                THROW_IF_FAILED(get_canvas()->factory->CreateDCRenderTarget(&prop, &target));
-                RECT rc_region = { 0, 0, (LONG)region.width, (LONG)region.height };
-                THROW_IF_FAILED(target->BindDC(get_canvas()->store_dc.get(), &rc_region));
-                target->BeginDraw();
-                target->Clear(D2D1::ColorF(D2D1::ColorF::White));
-                native_drawing_context ctx{};
-                ctx.d2 = get_canvas()->factory.get();
-                ctx.handle = target.query<ID2D1RenderTarget>();
-                THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), (IUnknown**)&ctx.dwrite));
-                drawing_context dc{ &ctx };
-                dc.__set_dpi((double)udpi);
-                m_redraw(*this, dc);
-                THROW_IF_FAILED(target->EndDraw());
                 if (auto wnd = __get_window(get_handle()->handle))
                 {
-                    wnd->__copy_hdc(region, get_canvas()->store_dc.get());
+                    UINT udpi = GetDpiForWindow(get_handle()->handle);
+                    rectangle region = m_real_region * udpi / 96.0;
+                    wil::com_ptr<ID2D1DCRenderTarget> target;
+                    auto prop = D2D1::RenderTargetProperties(
+                        D2D1_RENDER_TARGET_TYPE_DEFAULT,
+                        D2D1::PixelFormat(
+                            DXGI_FORMAT_B8G8R8A8_UNORM,
+                            D2D1_ALPHA_MODE_PREMULTIPLIED),
+                        0,
+                        0,
+                        D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
+                        D2D1_FEATURE_LEVEL_DEFAULT);
+                    THROW_IF_FAILED(get_canvas()->factory->CreateDCRenderTarget(&prop, &target));
+                    RECT rc_region = to_native<RECT>(region);
+                    THROW_IF_FAILED(target->BindDC(wnd->get_window()->store_dc.get(), &rc_region));
+                    target->BeginDraw();
+                    target->Clear(D2D1::ColorF(D2D1::ColorF::White));
+                    native_drawing_context ctx{};
+                    ctx.d2 = get_canvas()->factory.copy<ID2D1Factory>();
+                    ctx.handle = target.query<ID2D1RenderTarget>();
+                    THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), ctx.dwrite.put_unknown()));
+                    drawing_context dc{ &ctx };
+                    dc.__set_dpi((double)udpi);
+                    m_redraw(*this, dc);
+                    THROW_IF_FAILED(target->EndDraw());
                 }
                 break;
             }
@@ -195,16 +197,7 @@ namespace xaml
                 set_canvas(cv);
             }
             auto real = region - get_margin();
-            if (m_real_region != real)
-            {
-                m_real_region = real;
-                UINT udpi = GetDpiForWindow(get_handle()->handle);
-                rectangle real_real = m_real_region * udpi / 96.0;
-                auto wnd_dc = wil::GetDC(get_handle()->handle);
-                get_canvas()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-                wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
-                DeleteBitmap(SelectBitmap(get_canvas()->store_dc.get(), bitmap.release()));
-            }
+            m_real_region = real;
         }
     }
 } // namespace xaml
