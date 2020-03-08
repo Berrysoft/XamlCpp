@@ -1,4 +1,4 @@
-#include <xaml/ui/controls/webview.hpp>
+#include <xaml/ui/controls/native_webview.hpp>
 
 #include "winrt/Windows.Web.UI.Interop.h"
 

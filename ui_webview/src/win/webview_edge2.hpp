@@ -1,5 +1,5 @@
 #include <wil/com.h>
-#include <xaml/ui/controls/webview.hpp>
+#include <xaml/ui/controls/native_webview.hpp>
 
 #include <WebView2.h>
 

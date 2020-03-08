@@ -1,5 +1,6 @@
 #include <shared/atomic_guard.hpp>
 #include <win/webview_ie.hpp>
+#include <xaml/ui/controls/native_webview.hpp>
 #include <xaml/ui/controls/webview.hpp>
 #include <xaml/ui/native_control.hpp>
 
