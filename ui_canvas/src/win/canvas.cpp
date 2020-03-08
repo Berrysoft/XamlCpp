@@ -1,10 +1,13 @@
-#include <win/canvas_d2d.hpp>
 #include <win/canvas_gdiplus.hpp>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/native_canvas.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
+
+#ifdef XAML_UI_CANVAS_DIRECT2D
+#include <win/canvas_d2d.hpp>
+#endif // XAML_UI_CANVAS_DIRECT2D
 
 using namespace std;
 
@@ -45,11 +48,15 @@ namespace xaml
                 __set_size_noevent({ real.width, real.height });
                 if (!get_canvas())
                 {
+#ifdef XAML_UI_CANVAS_DIRECT2D
                     set_canvas(make_shared<canvas_d2d>());
                     if (!get_canvas()->create(nullptr, m_real_region))
                     {
                         set_canvas(make_shared<canvas_gdiplus>());
                     }
+#else
+                    set_canvas(make_shared<canvas_gdiplus>());
+#endif // XAML_UI_CANVAS_DIRECT2D
                 }
                 if (auto wnd = __get_window(get_handle()->handle))
                 {

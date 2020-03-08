@@ -1,3 +1,5 @@
+#ifdef XAML_UI_CANVAS_DIRECT2D
+
 #include <tuple>
 #include <win/canvas_d2d.hpp>
 #include <xaml/ui/native_window.hpp>
@@ -166,16 +168,13 @@ namespace xaml
         return factory;
     }
 
-    canvas_d2d::canvas_d2d()
-    {
-        d2d = try_create_factory();
-    }
+    canvas_d2d::canvas_d2d() {}
 
     canvas_d2d::~canvas_d2d() {}
 
     bool canvas_d2d::create(shared_ptr<window> wnd, rectangle const& real)
     {
-        return (bool)d2d;
+        return (bool)(d2d = try_create_factory());
     }
 
     void canvas_d2d::begin_paint(shared_ptr<window> wnd, rectangle const& real, function<void(drawing_context&)> paint_func)
@@ -207,3 +206,5 @@ namespace xaml
         THROW_IF_FAILED(target->EndDraw());
     }
 } // namespace xaml
+
+#endif // XAML_UI_CANVAS_DIRECT2D
