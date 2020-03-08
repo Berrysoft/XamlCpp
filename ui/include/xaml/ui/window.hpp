@@ -27,7 +27,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
-        XAML_UI_API void __copy_hdc(rectangle const& region, HDC hDC);
+        XAML_UI_API void __copy_hdc(rectangle const& region, void* hDC);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -120,7 +120,7 @@ namespace xaml
         void set_menu_bar(std::shared_ptr<menu_bar> const& value) { m_menu_bar = value; }
 
     public:
-        double get_dpi() const;
+        XAML_UI_API double get_dpi() const;
 
     public:
 #define ADD_WINDOW_MEMBERS()   \

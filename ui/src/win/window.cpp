@@ -153,9 +153,9 @@ namespace xaml
         return from_native(r);
     }
 
-    void window::__copy_hdc(rectangle const& region, HDC hDC)
+    void window::__copy_hdc(rectangle const& region, void* hDC)
     {
-        THROW_IF_WIN32_BOOL_FALSE(BitBlt(get_window()->store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, hDC, 0, 0, SRCCOPY));
+        THROW_IF_WIN32_BOOL_FALSE(BitBlt(get_window()->store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, (HDC)hDC, 0, 0, SRCCOPY));
     }
 
     optional<std::intptr_t> window::__wnd_proc(window_message const& msg)

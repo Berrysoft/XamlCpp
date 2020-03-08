@@ -40,15 +40,6 @@ namespace xaml
 
         XAML_UI_CANVAS_API drawing_context(native_handle_type handle);
 
-#ifdef XAML_UI_WINDOWS
-    private:
-        double m_dpi{ 96.0 };
-
-    public:
-        constexpr double __get_dpi() const noexcept { return m_dpi; }
-        void __set_dpi(double value) noexcept { m_dpi = value; }
-#endif // XAML_UI_WINDOWS
-
 #ifdef XAML_UI_GTK3
     private:
         void set_pen(drawing_pen const& pen);
@@ -91,6 +82,7 @@ namespace xaml
     private:
         rectangle m_real_region{};
 
+#ifdef XAML_UI_WINDOWS
     public:
         using native_canvas_type = std::shared_ptr<native_canvas>;
 
@@ -103,7 +95,6 @@ namespace xaml
     protected:
         void set_canvas(native_canvas_type value) noexcept { m_canvas = value; }
 
-#ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_CANVAS_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
 #endif // XAML_UI_WINDOWS
@@ -122,12 +113,6 @@ namespace xaml
         EVENT(redraw, canvas&, drawing_context&)
 
         XAML_UI_CANVAS_API void __draw(rectangle const& region) override;
-
-        constexpr size get_size() const noexcept { return { m_real_region.width, m_real_region.height }; }
-
-        constexpr double get_width() const noexcept { return m_real_region.width; }
-
-        constexpr double get_height() const noexcept { return m_real_region.height; }
 
     public:
 #define ADD_CANVAS_MEMBERS() \
