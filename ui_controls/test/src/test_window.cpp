@@ -172,7 +172,7 @@ namespace xaml::test
                 mfile->set_text(U("File"));
                 {
                     auto mquit = make_shared<menu_item>();
-                    mquit->set_text(U("Quit"));
+                    mquit->set_text(U("Close"));
                     mquit->add_click([this](menu_item&) { close(); });
                     mfile->add_submenu(mquit);
                 }
