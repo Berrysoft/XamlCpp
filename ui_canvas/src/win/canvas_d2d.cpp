@@ -47,6 +47,9 @@ namespace xaml
         return (FLOAT)(width * dpi / 96.0);
     }
 
+#define CHECK_SIZE(r) \
+    if ((r).width < 1 || (r).height < 1) return
+
     static constexpr tuple<size, point, point, point> get_arc(rectangle const& region, double start_angle, double end_angle)
     {
         size radius = { region.width / 2, region.height / 2 };
@@ -58,6 +61,7 @@ namespace xaml
 
     void drawing_context_d2d::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
+        CHECK_SIZE(region);
         wil::com_ptr<ID2D1PathGeometry> geo;
         THROW_IF_FAILED(d2d->CreatePathGeometry(&geo));
         wil::com_ptr<ID2D1GeometrySink> sink;
@@ -73,6 +77,7 @@ namespace xaml
 
     void drawing_context_d2d::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
+        CHECK_SIZE(region);
         wil::com_ptr<ID2D1PathGeometry> geo;
         THROW_IF_FAILED(d2d->CreatePathGeometry(&geo));
         wil::com_ptr<ID2D1GeometrySink> sink;
@@ -89,6 +94,7 @@ namespace xaml
 
     void drawing_context_d2d::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
+        CHECK_SIZE(region);
         auto e = get_ELLIPSE(region, dpi);
         auto b = get_Brush(target.get(), pen.stroke);
         target->DrawEllipse(e, b.get(), get_WIDTH(pen.width, dpi));
@@ -96,6 +102,7 @@ namespace xaml
 
     void drawing_context_d2d::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
+        CHECK_SIZE(region);
         auto e = get_ELLIPSE(region, dpi);
         auto b = get_Brush(target.get(), brush.fill);
         target->FillEllipse(e, b.get());
@@ -109,6 +116,7 @@ namespace xaml
 
     void drawing_context_d2d::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
+        CHECK_SIZE(rect);
         auto r = get_RECT(rect, dpi);
         auto b = get_Brush(target.get(), pen.stroke);
         target->DrawRectangle(r, b.get(), get_WIDTH(pen.width, dpi));
@@ -116,6 +124,7 @@ namespace xaml
 
     void drawing_context_d2d::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
+        CHECK_SIZE(rect);
         auto r = get_RECT(rect, dpi);
         auto b = get_Brush(target.get(), brush.fill);
         target->FillRectangle(r, b.get());
@@ -123,6 +132,7 @@ namespace xaml
 
     void drawing_context_d2d::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
     {
+        CHECK_SIZE(rect);
         auto r = get_RECT(rect, dpi);
         auto s = get_SIZE(round, dpi);
         auto b = get_Brush(target.get(), pen.stroke);
@@ -131,6 +141,7 @@ namespace xaml
 
     void drawing_context_d2d::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
     {
+        CHECK_SIZE(rect);
         auto r = get_RECT(rect, dpi);
         auto s = get_SIZE(round, dpi);
         auto b = get_Brush(target.get(), brush.fill);
@@ -140,12 +151,14 @@ namespace xaml
     void drawing_context_d2d::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
         auto b = get_Brush(target.get(), brush.fill);
+        auto fsize = get_WIDTH(font.size, dpi);
+        if (fsize <= 0) return;
         wil::com_ptr<IDWriteTextFormat> format;
         THROW_IF_FAILED(dwrite->CreateTextFormat(
             font.font_family.c_str(), nullptr,
             font.bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL,
             font.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
-            DWRITE_FONT_STRETCH_NORMAL, get_WIDTH(font.size, dpi), L"", &format));
+            DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
         auto size = target->GetSize();
         auto region = get_RECT({ p.x, p.y, p.x, p.y }, dpi);
         region.right += size.width;
@@ -181,6 +194,7 @@ namespace xaml
     {
         double dpi = wnd->get_dpi();
         rectangle region = real * dpi / 96.0;
+        CHECK_SIZE(region);
         wil::com_ptr<ID2D1DCRenderTarget> target;
         auto prop = D2D1::RenderTargetProperties(
             D2D1_RENDER_TARGET_TYPE_DEFAULT,

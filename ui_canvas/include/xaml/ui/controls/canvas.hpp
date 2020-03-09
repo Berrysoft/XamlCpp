@@ -40,6 +40,14 @@ namespace xaml
 
         XAML_UI_CANVAS_API drawing_context(native_handle_type handle);
 
+#ifdef XAML_UI_GTK3
+        void set_pen(drawing_pen const& pen);
+        void set_brush(drawing_brush const& brush);
+        void path_arc(rectangle const& region, double start_angle, double end_angle);
+        void path_rect(rectangle const& rect);
+        void path_round_rect(rectangle const& rect, size round);
+#endif // XAML_UI_GTK3
+
 #ifdef XAML_UI_COCOA
     private:
         size m_size;

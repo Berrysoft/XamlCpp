@@ -37,13 +37,11 @@ A canvas control.
 #### Supported platforms
 |Name|API set|
 |-|-|
-|Win32|Direct2D -> GDI+ \* \*\*|
-|GTK+3|OpenGL -> Cairo \*|
+|Win32|Direct2D -> GDI+ \*|
+|GTK+3|Cairo|
 |Cocoa|NSGraphicsContext|
 
-\* Indicates the search order.
-
-\*\* GDI is not supported because it lacks some key features.
+\* Indicates the search order. GDI is not supported because it lacks some key features.
 
 ### WebView
 A webview control.
