@@ -20,7 +20,8 @@ using namespace xaml;
 using namespace boost::program_options;
 
 #ifndef __APPLE__
-using namespace std::filesystem;
+using std::filesystem::directory_iterator;
+using std::filesystem::path;
 #else
 using boost::filesystem::directory_iterator;
 using boost::filesystem::path;
