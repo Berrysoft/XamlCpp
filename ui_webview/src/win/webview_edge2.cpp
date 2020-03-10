@@ -29,20 +29,17 @@ namespace xaml
                                         try
                                         {
                                             THROW_IF_FAILED(result);
-                                            m_view = webview;
-                                            THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
-                                            wil::com_ptr<ICoreWebView2> view;
-                                            THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
+                                            m_host = webview;
+                                            THROW_IF_FAILED(m_host->put_Bounds(to_native<RECT>(rect)));
+                                            THROW_IF_FAILED(m_host->get_CoreWebView2(&m_view));
                                             EventRegistrationToken token;
-                                            THROW_IF_FAILED(view->add_NavigationCompleted(
+                                            THROW_IF_FAILED(m_view->add_NavigationCompleted(
                                                 Callback<ICoreWebView2NavigationCompletedEventHandler>(
                                                     [this](ICoreWebView2*, ICoreWebView2NavigationCompletedEventArgs*) -> HRESULT {
                                                         try
                                                         {
-                                                            wil::com_ptr<ICoreWebView2> view;
-                                                            THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
                                                             wil::unique_cotaskmem_string uri;
-                                                            THROW_IF_FAILED(view->get_Source(&uri));
+                                                            THROW_IF_FAILED(m_view->get_Source(&uri));
                                                             invoke_navigated(uri.get());
                                                             return S_OK;
                                                         }
@@ -50,8 +47,8 @@ namespace xaml
                                                     })
                                                     .Get(),
                                                 &token));
-                                            THROW_IF_FAILED(view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
-                                            THROW_IF_FAILED(view->add_WebResourceRequested(
+                                            THROW_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
+                                            THROW_IF_FAILED(m_view->add_WebResourceRequested(
                                                 Callback<ICoreWebView2WebResourceRequestedEventHandler>(
                                                     [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
                                                         try
@@ -114,28 +111,26 @@ namespace xaml
 
     void webview_edge2::navigate(string_view_t uri)
     {
-        wil::com_ptr<ICoreWebView2> view;
-        THROW_IF_FAILED(m_view->get_CoreWebView2(&view));
-        THROW_IF_FAILED(view->Navigate(uri.data()));
+        THROW_IF_FAILED(m_view->Navigate(uri.data()));
     }
 
     void webview_edge2::set_location(point p)
     {
         RECT bounds;
-        THROW_IF_FAILED(m_view->get_Bounds(&bounds));
-        THROW_IF_FAILED(m_view->put_Bounds({ (LONG)p.x, (LONG)p.y, bounds.right, bounds.bottom }));
+        THROW_IF_FAILED(m_host->get_Bounds(&bounds));
+        THROW_IF_FAILED(m_host->put_Bounds({ (LONG)p.x, (LONG)p.y, bounds.right, bounds.bottom }));
     }
 
     void webview_edge2::set_size(size s)
     {
         RECT bounds;
-        THROW_IF_FAILED(m_view->get_Bounds(&bounds));
-        THROW_IF_FAILED(m_view->put_Bounds({ bounds.left, bounds.top, bounds.left + (LONG)s.width, bounds.top + (LONG)s.height }));
+        THROW_IF_FAILED(m_host->get_Bounds(&bounds));
+        THROW_IF_FAILED(m_host->put_Bounds({ bounds.left, bounds.top, bounds.left + (LONG)s.width, bounds.top + (LONG)s.height }));
     }
 
     void webview_edge2::set_rect(rectangle const& rect)
     {
-        THROW_IF_FAILED(m_view->put_Bounds(to_native<RECT>(rect)));
+        THROW_IF_FAILED(m_host->put_Bounds(to_native<RECT>(rect)));
     }
 } // namespace xaml
 

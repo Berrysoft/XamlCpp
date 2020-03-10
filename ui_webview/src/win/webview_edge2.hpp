@@ -9,7 +9,8 @@ namespace xaml
     {
     private:
         wil::com_ptr<ICoreWebView2Environment> m_env{ nullptr };
-        wil::com_ptr<ICoreWebView2Host> m_view{ nullptr };
+        wil::com_ptr<ICoreWebView2Host> m_host{ nullptr };
+        wil::com_ptr<ICoreWebView2> m_view{ nullptr };
 
     public:
         ~webview_edge2() override {}
