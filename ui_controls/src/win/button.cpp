@@ -70,6 +70,6 @@ namespace xaml
 
     void button::__size_to_fit()
     {
-        __set_size_noevent(__measure_text_size(m_text, { 2, 2 }));
+        __set_size_noevent(__measure_text_size(m_text, { 5, 5 }));
     }
 } // namespace xaml

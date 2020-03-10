@@ -128,7 +128,7 @@ namespace xaml::test
         }
         {
             auto box = make_shared<combo_box>();
-            box->set_halignment(halignment_t::left);
+            box->set_halignment(halignment_t::center);
             box->set_valignment(valignment_t::top);
             box->set_margin({ 10, 10, 10, 10 });
             box->set_items(combo_source);

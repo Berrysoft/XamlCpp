@@ -107,7 +107,7 @@ namespace xaml
         double fw = 0.0, fh = 0.0;
         for (auto item : get_items())
         {
-            size msize = __measure_text_size(*item, { 2, 5 });
+            size msize = __measure_text_size(*item, { 5, 5 });
             fw = (max)(fw, msize.width);
             fh = (max)(fh, msize.height);
         }
