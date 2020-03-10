@@ -40,7 +40,7 @@ namespace xaml
                     break;
                 }
                 THROW_IF_WIN32_BOOL_FALSE(TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length()));
-                THROW_IF_WIN32_BOOL_FALSE(DeleteFont(SelectFont(dc, oldf.release())));
+                SelectFont(dc, oldf.release());
             }
             break;
         }

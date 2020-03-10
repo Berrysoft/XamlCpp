@@ -1,4 +1,6 @@
 #include <Windows.h>
+#include <map>
+#include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
@@ -37,6 +39,7 @@ namespace xaml
     }
 
     static LOGFONT s_default_font;
+    static map<UINT, wil::unique_hfont> s_dpi_fonts;
 
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
@@ -51,22 +54,28 @@ namespace xaml
         s_default_font.lfWidth = (LONG)(s_default_font.lfWidth * 96.0 / ddpi);
     }
 
-    static HFONT get_default_font(double ddpi)
+    static HFONT get_default_font(UINT udpi)
     {
+        auto it = s_dpi_fonts.find(udpi);
+        if (it != s_dpi_fonts.end())
+        {
+            return it->second.get();
+        }
         LOGFONT f = s_default_font;
-        f.lfHeight = (LONG)(f.lfHeight * ddpi / 96.0);
-        f.lfWidth = (LONG)(f.lfWidth * ddpi / 96.0);
-        return CreateFontIndirect(&f);
+        f.lfHeight = (LONG)(f.lfHeight * (double)udpi / 96.0);
+        f.lfWidth = (LONG)(f.lfWidth * (double)udpi / 96.0);
+        auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
+        return p.second ? p.first->second.get() : NULL;
     }
 
     HFONT application::__default_font() const
     {
-        return get_default_font((double)GetDpiForSystem());
+        return get_default_font(GetDpiForSystem());
     }
 
     HFONT application::__default_font(HWND hWnd) const
     {
-        return get_default_font((double)GetDpiForWindow(hWnd));
+        return get_default_font(GetDpiForWindow(hWnd));
     }
 
     int application::run()
