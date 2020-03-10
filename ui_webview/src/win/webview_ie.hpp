@@ -70,7 +70,7 @@ namespace xaml
     public:
         ~webview_ie() override {}
 
-        void create_async(std::intptr_t parent, rectangle const& rect, std::function<void()>&& callback) override;
+        void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback) override;
 
         operator bool() const override { return (bool)m_browser; }
 

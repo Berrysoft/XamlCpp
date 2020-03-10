@@ -65,12 +65,12 @@ namespace xaml
     }
     CATCH_RETURN();
 
-    void webview_ie::create_async(intptr_t parent, rectangle const& rect, function<void()>&& callback)
+    void webview_ie::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
         try
         {
             RECT r = to_native<RECT>(rect);
-            m_container.Create((HWND)parent, &r, 0, WS_CHILD | WS_VISIBLE);
+            m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
             m_sink = new WebBrowserSink(this);
             wil::com_ptr<IUnknown> control;
             THROW_IF_FAILED(m_container.CreateControlEx(L"Shell.Explorer.2", nullptr, nullptr, &control, __uuidof(DWebBrowserEvents2), m_sink.get()));

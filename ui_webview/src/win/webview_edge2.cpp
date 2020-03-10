@@ -11,7 +11,7 @@ using namespace Microsoft::WRL;
 
 namespace xaml
 {
-    void webview_edge2::create_async(intptr_t parent, rectangle const& rect, function<void()>&& callback)
+    void webview_edge2::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
         try
         {
@@ -23,7 +23,7 @@ namespace xaml
                             THROW_IF_FAILED(result);
                             m_env = env;
                             THROW_IF_FAILED(env->CreateCoreWebView2Host(
-                                (HWND)parent,
+                                parent,
                                 Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
                                     [=](HRESULT result, ICoreWebView2Host* webview) -> HRESULT {
                                         try

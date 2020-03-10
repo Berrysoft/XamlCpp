@@ -20,7 +20,7 @@ namespace xaml
     {
 #ifdef XAML_UI_WEBVIEW_WEBVIEW2
         m_webview = make_shared<webview_edge2>();
-        m_webview->create_async((intptr_t)get_handle()->handle, real, [this, real]() {
+        m_webview->create_async(get_handle()->handle, real, [this, real]() {
             if (!*m_webview)
             {
                 create_edge(real);
@@ -40,7 +40,7 @@ namespace xaml
     {
 #ifdef XAML_UI_WEBVIEW_EDGE
         m_webview = make_shared<webview_edge>();
-        m_webview->create_async((intptr_t)get_handle()->handle, real, [this, real]() {
+        m_webview->create_async(get_handle()->handle, real, [this, real]() {
             if (!*m_webview)
             {
                 create_ie(real);
@@ -59,7 +59,7 @@ namespace xaml
     void webview::create_ie(rectangle const& real)
     {
         m_webview = make_shared<webview_ie>();
-        m_webview->create_async((intptr_t)get_handle()->handle, real, [this]() {
+        m_webview->create_async(get_handle()->handle, real, [this]() {
             if (!*m_webview)
             {
                 m_webview = nullptr;

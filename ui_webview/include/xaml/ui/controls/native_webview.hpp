@@ -4,6 +4,10 @@
 #include <functional>
 #include <xaml/ui/controls/webview.hpp>
 
+#ifdef XAML_UI_WINDOWS
+#include <Windows.h>
+#endif // XAML_UI_WINDOWS
+
 namespace xaml
 {
 #ifdef XAML_UI_WINDOWS
@@ -11,7 +15,7 @@ namespace xaml
     {
     public:
         virtual ~native_webview() {}
-        virtual void create_async(std::intptr_t parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
+        virtual void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
         virtual operator bool() const = 0;
         virtual void navigate(string_view_t uri) = 0;
         virtual void set_location(point p) = 0;
