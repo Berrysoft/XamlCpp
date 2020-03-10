@@ -39,6 +39,7 @@ namespace xaml
 #ifdef XAML_UI_COCOA
     public:
         void __on_did_resize();
+        void __on_did_move();
         bool __on_should_close();
 #endif // XAML_UI_COCOA
 

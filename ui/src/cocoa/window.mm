@@ -14,6 +14,12 @@
     window->__on_did_resize();
 }
 
+- (void)windowDidMove:(NSNotification*)notification
+{
+    xaml::window* window = (xaml::window*)self->classPointer;
+    window->__on_did_move();
+}
+
 - (BOOL)windowShouldClose:(NSWindow*)sender
 {
     xaml::window* window = (xaml::window*)self->classPointer;
@@ -148,13 +154,23 @@ namespace xaml
     {
         NSWindow* window = get_window()->window;
         NSRect frame = window.frame;
+        atomic_guard guard{ m_resizing };
+        if (!guard.exchange(true))
         {
-            atomic_guard guard{ m_resizing };
-            if (!guard.exchange(true))
-            {
-                set_size(from_native(frame.size));
-                __draw({});
-            }
+            set_size(from_native(frame.size));
+            __draw({});
+        }
+    }
+
+    void window::__on_did_move()
+    {
+        NSWindow* window = get_window()->window;
+        NSRect frame = window.frame;
+        atomic_guard guard{ m_resizing };
+        if (!guard.exchange(true))
+        {
+            set_location(from_native(frame.origin));
+            __draw({});
         }
     }
 
