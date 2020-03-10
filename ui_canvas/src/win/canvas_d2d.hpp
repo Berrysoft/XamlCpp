@@ -34,7 +34,9 @@ namespace xaml
     class canvas_d2d : public native_canvas
     {
     private:
+        wil::com_ptr<ID2D1DCRenderTarget> target{ nullptr };
         wil::com_ptr<ID2D1Factory> d2d{ nullptr };
+        wil::com_ptr<IDWriteFactory> dwrite{ nullptr };
 
     public:
         canvas_d2d();

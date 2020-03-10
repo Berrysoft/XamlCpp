@@ -160,8 +160,6 @@ namespace xaml
 
     optional<std::intptr_t> window::__wnd_proc(window_message const& msg)
     {
-        PAINTSTRUCT ps;
-        wil::unique_hdc_paint hDC;
         switch (msg.Msg)
         {
         case WM_SIZE:
@@ -210,7 +208,8 @@ namespace xaml
         }
         case WM_PAINT:
         {
-            hDC = wil::BeginPaint(get_handle()->handle, &ps);
+            PAINTSTRUCT ps;
+            wil::unique_hdc_paint hDC = wil::BeginPaint(get_handle()->handle, &ps);
             rectangle region = __get_real_client_region();
             THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;

@@ -187,7 +187,29 @@ namespace xaml
 
     bool canvas_d2d::create(shared_ptr<window> wnd, rectangle const& real)
     {
-        return (bool)(d2d = try_create_factory());
+        if (d2d = try_create_factory())
+        {
+            try
+            {
+                auto prop = D2D1::RenderTargetProperties(
+                    D2D1_RENDER_TARGET_TYPE_DEFAULT,
+                    D2D1::PixelFormat(
+                        DXGI_FORMAT_B8G8R8A8_UNORM,
+                        D2D1_ALPHA_MODE_PREMULTIPLIED),
+                    0,
+                    0,
+                    D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
+                    D2D1_FEATURE_LEVEL_DEFAULT);
+                THROW_IF_FAILED(d2d->CreateDCRenderTarget(&prop, &target));
+                THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), dwrite.put_unknown()));
+                return true;
+            }
+            catch (wil::ResultException const&)
+            {
+                return false;
+            }
+        }
+        return false;
     }
 
     void canvas_d2d::begin_paint(shared_ptr<window> wnd, rectangle const& real, function<void(drawing_context&)> paint_func)
@@ -195,17 +217,6 @@ namespace xaml
         double dpi = wnd->get_dpi();
         rectangle region = real * dpi / 96.0;
         CHECK_SIZE(region);
-        wil::com_ptr<ID2D1DCRenderTarget> target;
-        auto prop = D2D1::RenderTargetProperties(
-            D2D1_RENDER_TARGET_TYPE_DEFAULT,
-            D2D1::PixelFormat(
-                DXGI_FORMAT_B8G8R8A8_UNORM,
-                D2D1_ALPHA_MODE_PREMULTIPLIED),
-            0,
-            0,
-            D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
-            D2D1_FEATURE_LEVEL_DEFAULT);
-        THROW_IF_FAILED(d2d->CreateDCRenderTarget(&prop, &target));
         RECT rc_region = to_native<RECT>(region);
         THROW_IF_FAILED(target->BindDC(wnd->get_window()->store_dc.get(), &rc_region));
         target->BeginDraw();
@@ -213,8 +224,8 @@ namespace xaml
         drawing_context_d2d ctx{};
         ctx.d2d = d2d.copy<ID2D1Factory>();
         ctx.target = target.query<ID2D1RenderTarget>();
+        ctx.dwrite = dwrite.copy<IDWriteFactory>();
         ctx.dpi = dpi;
-        THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), ctx.dwrite.put_unknown()));
         drawing_context dc{ &ctx };
         paint_func(dc);
         THROW_IF_FAILED(target->EndDraw());
