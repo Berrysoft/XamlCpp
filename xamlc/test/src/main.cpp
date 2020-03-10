@@ -36,6 +36,7 @@ int main(int argc, char const* const* argv)
     register_class<test_window>(ctx);
     ctx.add_module("xaml_ui_meta");
     ctx.add_module("xaml_ui_controls_meta");
+    ctx.add_module("xaml_ui_canvas_meta");
     wnd->init_components(ctx);
 #else
     wnd->init_components();
