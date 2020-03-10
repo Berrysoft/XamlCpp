@@ -8,14 +8,14 @@ find_package(LibXml2 REQUIRED)
 
 add_library(xaml ${XAML_SOURCES})
 target_link_libraries(xaml ${LIBXML2_LIBRARIES})
-target_link_libraries(xaml xaml_ui)
+target_link_libraries(xaml xaml_meta)
 
 target_include_directories(xaml
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        ${LIBXML2_INCLUDE_DIR}
     PRIVATE
+        ${LIBXML2_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 

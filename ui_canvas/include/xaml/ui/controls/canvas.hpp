@@ -118,7 +118,7 @@ namespace xaml
     ADD_CONTROL_MEMBERS();   \
     ADD_EVENT(redraw)
 
-        REGISTER_CLASS_DECL(xaml, canvas)
+        REGISTER_CLASS_DECL(xaml, canvas, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_CANVAS_MEMBERS();

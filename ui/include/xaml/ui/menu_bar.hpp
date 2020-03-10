@@ -43,7 +43,7 @@ namespace xaml
     public:
 #define ADD_MENU_BAR_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
 
-        REGISTER_CLASS_DECL(xaml, menu_bar)
+        REGISTER_CLASS_DECL(xaml, menu_bar, "xaml/ui")
         {
             ADD_CTOR_DEF();
             ADD_MENU_BAR_MEMBERS();

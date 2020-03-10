@@ -33,8 +33,8 @@ extern "C"
             menu_item, check_menu_item, radio_menu_item, separator_menu_item,
             entry, password_entry,
             combo_box>(ctx);
-        REGISTER_ENUM(xaml, grid_layout);
-        REGISTER_ENUM(xaml, orientation);
+        REGISTER_ENUM(xaml, grid_layout, "xaml/ui/controls/grid.hpp");
+        REGISTER_ENUM(xaml, orientation, "xaml/ui/controls/layout_base.hpp");
     }
 
     XAML_UI_CONTROLS_META_API int can_compile(void* t) noexcept
@@ -43,39 +43,27 @@ extern "C"
         return (type == type_index(typeid(array_view<grid_length>))) ? 1 : 0;
     }
 
-    XAML_UI_CONTROLS_META_API void compile(void* t, const char* code, void* res) noexcept
+    XAML_UI_CONTROLS_META_API void compile(void* t, const char* code, size_t code_len, void* res) noexcept
     {
-        auto lengths = value_converter_traits<array_view<grid_length>>::convert(code);
-        ostringstream stream;
-        stream << "{ ";
-        auto bit = lengths.begin();
-        auto eit = lengths.end();
-        if (bit != eit)
+        if (can_compile(t))
         {
-            compile_grid_length(stream, *bit);
-            for (++bit; bit != eit; ++bit)
+            auto lengths = value_converter_traits<array_view<grid_length>>::convert(string_view{ code, code_len });
+            ostringstream stream;
+            stream << "{ ";
+            auto bit = lengths.begin();
+            auto eit = lengths.end();
+            if (bit != eit)
             {
-                compile_grid_length(stream << ", ", *bit);
+                compile_grid_length(stream, *bit);
+                for (++bit; bit != eit; ++bit)
+                {
+                    compile_grid_length(stream << ", ", *bit);
+                }
             }
+            stream << " }";
+            *(string*)res = stream.str();
+            return;
         }
-        stream << " }";
-        *(string*)res = stream.str();
+        *(string*)res = {};
     }
-
-    const char* const s_headers[] = {
-        "xaml/ui/controls/button.hpp",
-        "xaml/ui/controls/check_box.hpp",
-        "xaml/ui/controls/combo_box.hpp",
-        "xaml/ui/controls/entry.hpp",
-        "xaml/ui/controls/grid.hpp",
-        "xaml/ui/controls/label.hpp",
-        "xaml/ui/controls/menu_item.hpp",
-        "xaml/ui/controls/password_entry.hpp",
-        "xaml/ui/controls/progress.hpp",
-        "xaml/ui/controls/radio_box.hpp",
-        "xaml/ui/controls/stack_panel.hpp",
-        "xaml/ui/controls/uniform_grid.hpp",
-        nullptr
-    };
-    XAML_UI_CONTROLS_META_API const char* const* include_headers() noexcept { return s_headers; }
 }

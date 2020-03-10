@@ -36,7 +36,7 @@ namespace xaml
     ADD_PROP(minimum);         \
     ADD_PROP(maximum)
 
-        REGISTER_CLASS_DECL(xaml, progress)
+        REGISTER_CLASS_DECL(xaml, progress, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_PROGRESS_MEMBERS();

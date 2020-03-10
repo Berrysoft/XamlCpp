@@ -1,8 +1,8 @@
 #ifndef XAML_PARSER_HPP
 #define XAML_PARSER_HPP
 
-#include <libxml/xmlreader.h>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -10,6 +10,12 @@
 #include <variant>
 #include <vector>
 #include <xaml/xaml_node.hpp>
+
+typedef struct _xmlTextReader xmlTextReader;
+typedef xmlTextReader* xmlTextReaderPtr;
+
+typedef struct _xmlParserInputBuffer xmlParserInputBuffer;
+typedef xmlParserInputBuffer* xmlParserInputBufferPtr;
 
 namespace xaml
 {
@@ -42,18 +48,18 @@ namespace xaml
     class parser
     {
     private:
-        meta_context* m_ctx;
+        meta_context* m_ctx{ nullptr };
         xmlTextReaderPtr m_reader{ nullptr };
         xmlParserInputBufferPtr m_buffer{ nullptr };
+        std::set<std::string> m_headers{};
 
     public:
-        constexpr bool is_open() const noexcept
-        {
-            return m_reader;
-        }
+        constexpr bool is_open() const noexcept { return m_reader; }
 
         XAML_API void open(std::string_view file);
         XAML_API void load(std::string_view xml);
+
+        std::set<std::string> const& get_headers() const noexcept { return m_headers; }
 
         struct load_memory_t
         {

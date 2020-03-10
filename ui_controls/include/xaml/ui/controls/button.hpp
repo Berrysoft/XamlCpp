@@ -56,7 +56,7 @@ namespace xaml
     ADD_EVENT(click);           \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL(xaml, button)
+        REGISTER_CLASS_DECL(xaml, button, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_BUTTON_MEMBERS();

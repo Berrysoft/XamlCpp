@@ -1,3 +1,4 @@
+#include <libxml/xmlreader.h>
 #include <sstream>
 #include <xaml/markup/binding.hpp>
 #include <xaml/meta/meta.hpp>
@@ -10,7 +11,7 @@ namespace xaml
     void init_parser(meta_context& ctx) noexcept
     {
         register_class<binding>(ctx);
-        REGISTER_ENUM(xaml, binding_mode);
+        REGISTER_ENUM(xaml, binding_mode, "xaml/markup/binding.hpp");
     }
 
     static string get_no_default_constructor_error(reflection_info const* t)
@@ -48,12 +49,24 @@ namespace xaml
     {
     }
 
+    static ostream& write_valid_name(ostream& stream, string_view name)
+    {
+        for (char c : name)
+        {
+            if (isdigit(c) || isalpha(c))
+                stream << c;
+            else
+                stream << '_';
+        }
+        return stream;
+    }
+
     static string get_random_name(reflection_info const* ref)
     {
         static size_t index = 0;
         auto& [ns, name] = ref->get_type_name();
         ostringstream oss;
-        oss << "__" << ns << "__" << name << "__" << index++;
+        write_valid_name(oss << "__", ns) << "__" << name << "__" << index++;
         return oss.str();
     }
 
@@ -123,6 +136,7 @@ namespace xaml
         auto t = m_ctx->get_type(ns, name);
         if (t)
         {
+            m_headers.emplace(t->get_include_file());
             markup_node node{ t, get_random_name(t) };
             while (i < value.length())
             {
@@ -224,6 +238,7 @@ namespace xaml
                             auto t = m_ctx->get_type(attr_ns, class_name);
                             if (t)
                             {
+                                m_headers.emplace(t->get_include_file());
                                 auto prop = t->get_property(attach_prop_name);
                                 if (prop && prop->can_write())
                                 {
@@ -323,6 +338,7 @@ namespace xaml
                     auto t = m_ctx->get_type(ns, class_name);
                     if (t)
                     {
+                        m_headers.emplace(t->get_include_file());
                         auto [ret, child] = parse_impl();
                         if (ret != 1)
                         {
@@ -405,6 +421,7 @@ namespace xaml
         auto t = m_ctx->get_type(ns, name);
         if (t)
         {
+            m_headers.emplace(t->get_include_file());
             xaml_node mc{ t };
             int ret = parse_members(mc);
             return make_tuple(ret, mc);
@@ -425,6 +442,7 @@ namespace xaml
             auto t = m_ctx->get_type(ns, name);
             if (t)
             {
+                m_headers.emplace(t->get_include_file());
                 xaml_node mc{ t };
                 ret = parse_members(mc);
                 clean_up(ret);

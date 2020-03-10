@@ -28,7 +28,7 @@ namespace xaml
     ADD_ENTRY_MEMBERS();             \
     ADD_PROP_EVENT(password_char)
 
-        REGISTER_CLASS_DECL(xaml, password_entry)
+        REGISTER_CLASS_DECL(xaml, password_entry, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_PASSWORD_ENTRY_MEMBERS();

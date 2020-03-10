@@ -25,7 +25,7 @@ namespace xaml
     ADD_MULTICONTAINER_MEMBERS(); \
     ADD_PROP(orientation)
 
-        REGISTER_CLASS_DECL(xaml, stack_panel)
+        REGISTER_CLASS_DECL(xaml, stack_panel, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_STACK_PANEL_MEMBERS();

@@ -135,7 +135,7 @@ namespace xaml
     ADD_ATTACH_PROP(column_span, control&); \
     ADD_ATTACH_PROP(row_span, control&)
 
-        REGISTER_CLASS_DECL(xaml, grid)
+        REGISTER_CLASS_DECL(xaml, grid, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_GRID_MEMBERS();

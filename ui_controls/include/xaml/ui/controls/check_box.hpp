@@ -45,7 +45,7 @@ namespace xaml
     ADD_BUTTON_MEMBERS();       \
     ADD_PROP_EVENT(is_checked)
 
-        REGISTER_CLASS_DECL(xaml, check_box)
+        REGISTER_CLASS_DECL(xaml, check_box, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_CHECK_BOX_MEMBERS();

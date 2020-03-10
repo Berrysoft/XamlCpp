@@ -38,7 +38,7 @@ namespace xaml
     ADD_EVENT(child_changed);   \
     ADD_DEF_PROP(child)
 
-        REGISTER_CLASS_DECL(xaml, container)
+        REGISTER_CLASS_DECL(xaml, container, "xaml/ui")
         {
             ADD_CONTAINER_MEMBERS();
         }
@@ -69,7 +69,7 @@ namespace xaml
     ADD_COLLECTION_PROP(child, std::shared_ptr<control>); \
     ADD_DEF_PROP(child)
 
-        REGISTER_CLASS_DECL(xaml, multicontainer)
+        REGISTER_CLASS_DECL_FILE(xaml, multicontainer, "xaml/ui/container.hpp")
         {
             ADD_MULTICONTAINER_MEMBERS();
         }

@@ -2,6 +2,7 @@
 #define XAMLC_COMPILER_HPP
 
 #include <iosfwd>
+#include <set>
 #include <unordered_map>
 #include <vector>
 #include <xaml/meta/meta.hpp>
@@ -27,7 +28,16 @@ namespace xaml
         XAMLC_API std::ostream& write_indent(std::ostream& stream);
 
         XAMLC_API std::ostream& write_include(std::ostream& stream, std::string_view header);
-        XAMLC_API std::ostream& write_includes(std::ostream& stream, std::vector<std::string_view> const& headers);
+
+        template <typename Container>
+        std::ostream& write_includes(std::ostream& stream, Container&& headers)
+        {
+            for (auto h : headers)
+            {
+                write_include(stream, h);
+            }
+            return stream;
+        }
 
         XAMLC_API std::ostream& write_begin_block(std::ostream& stream);
         XAMLC_API std::ostream& write_end_block(std::ostream& stream);
@@ -60,7 +70,7 @@ namespace xaml
         XAMLC_API std::ostream& compile_extensions(std::ostream& stream, xaml_node& node, bool is_this);
 
     public:
-        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node);
+        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node, std::set<std::string> const& headers);
         XAMLC_API std::ostream& compile_fake(std::ostream& stream, xaml_node& node, std::string_view path);
     };
 } // namespace xaml

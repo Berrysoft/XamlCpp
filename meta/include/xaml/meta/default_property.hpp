@@ -18,7 +18,7 @@ namespace xaml
         default_property(std::string_view prop_name = {}) : m_property_name(prop_name) {}
         ~default_property() override {}
 
-        REGISTER_CLASS_DECL(xaml, default_property)
+        REGISTER_CLASS_DECL(xaml, default_property, "xaml/meta")
         {
             ADD_CTOR_DEF();
             ADD_CTOR(std::string_view);

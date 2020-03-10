@@ -49,7 +49,7 @@ namespace xaml
     ADD_PROP_EVENT(is_checked); \
     ADD_PROP(group)
 
-        REGISTER_CLASS_DECL(xaml, radio_box)
+        REGISTER_CLASS_DECL(xaml, radio_box, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_RADIO_BOX_MEMBERS();

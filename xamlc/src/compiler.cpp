@@ -6,7 +6,6 @@
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
-#include <xaml/ui/drawing.hpp>
 
 using namespace std;
 
@@ -21,28 +20,28 @@ namespace xaml
 
     static string module_compile(module const& m, type_index type, string_view code) noexcept
     {
-        using compile_t = void (*)(void*, const char*, void*) noexcept;
+        using compile_t = void (*)(void*, const char*, size_t, void*) noexcept;
         auto pc = (compile_t)m.get_method("compile");
         if (pc)
         {
             string result;
-            pc(&type, code.data(), &result);
+            pc(&type, code.data(), code.length(), &result);
             return result;
         }
         return {};
     }
 
-    static vector<string_view> include_headers(module const& m) noexcept
+    static set<string_view> include_headers(module const& m) noexcept
     {
         using include_headers_t = const char* const* (*)() noexcept;
         auto pih = (include_headers_t)m.get_method("include_headers");
         if (pih)
         {
             const char* const* headers = pih();
-            vector<string_view> result;
+            set<string_view> result;
             for (; *headers; headers++)
             {
-                result.push_back(*headers);
+                result.emplace(*headers);
             }
             return result;
         }
@@ -63,24 +62,10 @@ namespace xaml
         type_index(typeid(wstring)), type_index(typeid(wstring_view))
     };
 
-    static array t2d_types{
-        type_index(typeid(tuple<double, double>)), type_index(typeid(pair<double, double>)), type_index(typeid(array<double, 2>)),
-        type_index(typeid(point)), type_index(typeid(size))
-    };
-
-    static array t4d_types{
-        type_index(typeid(tuple<double, double, double, double>)), type_index(typeid(array<double, 4>)),
-        type_index(typeid(rectangle)), type_index(typeid(margin))
-    };
-
     template <size_t N>
-    static bool is_of_type(type_index type, array<type_index, N> const& arr)
+    static bool is_of_type(type_index const& type, array<type_index, N> const& arr)
     {
-        for (auto& t : arr)
-        {
-            if (t == type) return true;
-        }
-        return false;
+        return find(arr.begin(), arr.end(), type) != arr.end();
     }
 
     string compiler::xaml_cpp_compile(type_index type, string_view code)
@@ -98,20 +83,6 @@ namespace xaml
         {
             ostringstream stream;
             stream << "U(" << quoted(code) << ')';
-            return stream.str();
-        }
-        else if (is_of_type(type, t2d_types))
-        {
-            ostringstream stream;
-            auto t = value_converter_traits<tuple<double, double>>::convert(code);
-            stream << "{ " << get<0>(t) << ", " << get<1>(t) << " }";
-            return stream.str();
-        }
-        else if (is_of_type(type, t4d_types))
-        {
-            ostringstream stream;
-            auto t = value_converter_traits<tuple<double, double, double, double>>::convert(code);
-            stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
             return stream.str();
         }
         else if (m_ctx->is_registered_enum(type))
@@ -142,16 +113,10 @@ namespace xaml
 
     ostream& compiler::write_include(ostream& stream, string_view header)
     {
-        return write_indent(stream) << "#include <" << header << '>' << endl;
-    }
-
-    ostream& compiler::write_includes(ostream& stream, vector<string_view> const& headers)
-    {
-        for (auto h : headers)
-        {
-            write_include(stream, h);
-        }
-        return stream;
+        if (!header.empty())
+            return write_indent(stream) << "#include <" << header << '>' << endl;
+        else
+            return stream;
     }
 
     ostream& compiler::write_begin_block(ostream& stream)
@@ -394,17 +359,17 @@ namespace xaml
         return stream;
     }
 
-    ostream& compiler::compile(ostream& stream, xaml_node& node)
+    ostream& compiler::compile(ostream& stream, xaml_node& node, set<string> const& headers)
     {
         if (stream)
         {
             if (node.map_class)
             {
-                vector<string_view> all_headers;
+                auto all_headers = headers;
                 for (auto& m : m_ctx->get_modules())
                 {
-                    vector<string_view> hs = include_headers(*m.second);
-                    all_headers.insert(all_headers.end(), hs.begin(), hs.end());
+                    set<string_view> hs = include_headers(*m.second);
+                    all_headers.insert(hs.begin(), hs.end());
                 }
                 write_includes(stream, all_headers);
                 auto [ns, name] = *node.map_class;
@@ -424,7 +389,7 @@ namespace xaml
         return stream;
     }
 
-    static vector<string_view> fake_headers = {
+    static array<string_view, 2> fake_headers = {
         "xaml/deserializer.hpp",
         "xaml/parser.hpp"
     };

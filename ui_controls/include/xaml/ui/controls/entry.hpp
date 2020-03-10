@@ -50,7 +50,7 @@ namespace xaml
     ADD_PROP(text_halignment); \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL(xaml, entry)
+        REGISTER_CLASS_DECL(xaml, entry, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_ENTRY_MEMBERS();

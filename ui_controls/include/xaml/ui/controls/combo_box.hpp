@@ -56,7 +56,7 @@ namespace xaml
     ADD_PROP_EVENT(text);        \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL(xaml, combo_box)
+        REGISTER_CLASS_DECL(xaml, combo_box, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_COMBO_BOX_MEMBERS();

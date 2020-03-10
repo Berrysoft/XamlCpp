@@ -63,7 +63,7 @@ namespace xaml
     ADD_EVENT(click);           \
     ADD_DEF_PROP(text)
 
-        REGISTER_CLASS_DECL(xaml, menu_item)
+        REGISTER_CLASS_DECL(xaml, menu_item, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_MENU_ITEM_MEMBERS();
@@ -109,7 +109,7 @@ namespace xaml
     ADD_MENU_ITEM_MEMBERS();          \
     ADD_COLLECTION_PROP(submenu, std::shared_ptr<menu_item>)
 
-        REGISTER_CLASS_DECL(xaml, popup_menu_item)
+        REGISTER_CLASS_DECL_FILE(xaml, popup_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
             ADD_CTOR_DEF();
             ADD_POPUP_MENU_ITEM_MEMBERS();
@@ -138,7 +138,7 @@ namespace xaml
     ADD_MENU_ITEM_MEMBERS();          \
     ADD_PROP_EVENT(is_checked)
 
-        REGISTER_CLASS_DECL(xaml, check_menu_item)
+        REGISTER_CLASS_DECL_FILE(xaml, check_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
             ADD_CTOR_DEF();
             ADD_CHECK_MENU_ITEM_MEMBERS();
@@ -171,7 +171,7 @@ namespace xaml
     ADD_PROP_EVENT(is_checked);       \
     ADD_PROP(group)
 
-        REGISTER_CLASS_DECL(xaml, radio_menu_item)
+        REGISTER_CLASS_DECL_FILE(xaml, radio_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
             ADD_CTOR_DEF();
             ADD_RADIO_MENU_ITEM_MEMBERS();
@@ -196,7 +196,7 @@ namespace xaml
     public:
 #define ADD_SEPARATOR_MENU_ITEM_MEMBERS() ADD_MENU_ITEM_MEMBERS()
 
-        REGISTER_CLASS_DECL(xaml, separator_menu_item)
+        REGISTER_CLASS_DECL_FILE(xaml, separator_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
             ADD_CTOR_DEF();
             ADD_SEPARATOR_MENU_ITEM_MEMBERS();

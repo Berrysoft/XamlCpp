@@ -98,7 +98,7 @@ int main(int argc, char const* const* argv)
                 }
                 else
                 {
-                    c.compile(stream, node);
+                    c.compile(stream, node, p.get_headers());
                 }
             }
             else

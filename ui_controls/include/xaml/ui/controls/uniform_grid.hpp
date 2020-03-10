@@ -29,7 +29,7 @@ namespace xaml
     ADD_PROP(rows);                \
     ADD_PROP(orientation)
 
-        REGISTER_CLASS_DECL(xaml, uniform_grid)
+        REGISTER_CLASS_DECL(xaml, uniform_grid, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_UNIFORM_GRID_MEMBERS();

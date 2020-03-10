@@ -135,7 +135,7 @@ namespace xaml
     ADD_PROP_EVENT(resizable); \
     ADD_PROP(menu_bar)
 
-        REGISTER_CLASS_DECL(xaml, window)
+        REGISTER_CLASS_DECL(xaml, window, "xaml/ui")
         {
             ADD_WINDOW_MEMBERS();
         }

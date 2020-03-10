@@ -23,7 +23,7 @@ namespace xaml
 #define ADD_MARKUP_EXTENSION_MEMBERS()
 
     public:
-        REGISTER_CLASS_DECL(xaml, markup_extension)
+        REGISTER_CLASS_DECL_NOFILE(xaml, markup_extension)
         {
             ADD_MARKUP_EXTENSION_MEMBERS();
         }

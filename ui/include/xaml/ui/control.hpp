@@ -126,13 +126,6 @@ namespace xaml
         std::weak_ptr<control> get_parent() const { return m_parent; }
         XAML_UI_API void set_parent(std::weak_ptr<control> value);
 
-    private:
-        std::shared_ptr<meta_class> m_data_context{ nullptr };
-
-    public:
-        std::shared_ptr<meta_class> get_data_context() const { return m_data_context ? m_data_context : (m_parent.expired() ? nullptr : m_parent.lock()->get_data_context()); }
-        void set_data_context(std::shared_ptr<meta_class> const& value) { m_data_context = value; }
-
     public:
         virtual std::shared_ptr<control> get_root_window() { return m_parent.expired() ? nullptr : m_parent.lock()->get_root_window(); }
 
@@ -193,7 +186,6 @@ namespace xaml
 
     public:
 #define ADD_CONTROL_MEMBERS()   \
-    ADD_PROP(data_context);     \
     ADD_PROP_EVENT(size);       \
     ADD_PROP(width);            \
     ADD_PROP(height);           \
@@ -201,7 +193,7 @@ namespace xaml
     ADD_PROP_EVENT(halignment); \
     ADD_PROP_EVENT(valignment)
 
-        REGISTER_CLASS_DECL(xaml, control)
+        REGISTER_CLASS_DECL(xaml, control, "xaml/ui")
         {
             ADD_CONTROL_MEMBERS();
         }

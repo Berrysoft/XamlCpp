@@ -94,7 +94,7 @@ namespace xaml
     ADD_CONTROL_MEMBERS();    \
     ADD_PROP_EVENT(uri)
 
-        REGISTER_CLASS_DECL(xaml, webview)
+        REGISTER_CLASS_DECL(xaml, webview, "xaml/ui/controls")
         {
             ADD_CTOR_DEF();
             ADD_WEBVIEW_MEMBERS();

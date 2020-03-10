@@ -1,7 +1,6 @@
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/markup_extension.hpp>
 #include <xaml/parser.hpp>
-#include <xaml/ui/control.hpp>
 
 using namespace std;
 
@@ -16,11 +15,10 @@ namespace xaml
         string_view current_property() const override { return prop; }
 
         map<string, weak_ptr<meta_class>>& symbols;
-        weak_ptr<meta_class> data_context;
         weak_ptr<meta_class> find_element(string_view name) const override
         {
             if (name.empty())
-                return data_context;
+                return current;
             else
             {
                 auto it = symbols.find((string)name);
@@ -31,8 +29,8 @@ namespace xaml
             }
         }
 
-        deserializer_markup_context(weak_ptr<meta_class> current, string_view prop, map<string, weak_ptr<meta_class>>& symbols, weak_ptr<meta_class> data_context)
-            : current(current), prop(prop), symbols(symbols), data_context(data_context)
+        deserializer_markup_context(weak_ptr<meta_class> current, string_view prop, map<string, weak_ptr<meta_class>>& symbols)
+            : current(current), prop(prop), symbols(symbols)
         {
         }
 
@@ -113,7 +111,7 @@ namespace xaml
             case 1: // markup_node
             {
                 auto& n = get<markup_node>(value);
-                deserializer_markup_context context{ mc, prop.info->name(), symbols, static_pointer_cast<control>(mc.lock())->get_data_context() };
+                deserializer_markup_context context{ mc, prop.info->name(), symbols };
                 auto ex = deserialize(n);
                 static_pointer_cast<markup_extension>(ex)->provide(*m_ctx, context);
                 break;

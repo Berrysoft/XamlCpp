@@ -36,7 +36,7 @@ namespace xaml::test
 
         // Register a type named "calculator" in namespace "test".
         // The namespace is optional.
-        REGISTER_CLASS_DECL(xaml::test, calculator)
+        REGISTER_CLASS_DECL_NOFILE(xaml::test, calculator)
         {
             // Add default constructor.
             ADD_CTOR_DEF();

@@ -111,11 +111,6 @@ namespace xaml
         }
     };
 
-    struct __type_index_wrapper
-    {
-        std::type_index type{ typeid(std::nullptr_t) };
-    };
-
     // A type-erased function, for storage convinence.
     struct __type_erased_function
     {
@@ -354,11 +349,28 @@ namespace xaml
         friend class reflection_info;
     };
 
-    class reflection_info
+    class reflection_info_base
     {
-    private:
+    protected:
         std::type_index m_type{ typeid(std::nullptr_t) };
         std::tuple<std::string, std::string> m_name;
+        std::string m_include;
+
+    public:
+        std::type_index get_type() const noexcept { return m_type; }
+        std::tuple<std::string, std::string> const& get_type_name() const noexcept { return m_name; }
+        std::string_view get_include_file() const noexcept { return m_include; }
+
+        reflection_info_base(std::type_index type, std::string_view ns, std::string_view name, std::string_view include)
+            : m_type(type), m_name(std::make_tuple<std::string, std::string>((std::string)ns, (std::string)name)), m_include(include)
+        {
+        }
+        virtual ~reflection_info_base() {}
+    };
+
+    class reflection_info : public reflection_info_base
+    {
+    private:
         std::unordered_map<std::type_index, std::unique_ptr<meta_class>> m_attribute_map;
         std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>> m_static_method_map;
         std::vector<std::unique_ptr<__type_erased_function>> m_ctors;
@@ -368,8 +380,8 @@ namespace xaml
         std::unordered_map<std::string, std::unique_ptr<event_info>> m_event_map;
 
     public:
-        std::type_index get_type() const noexcept { return m_type; }
-        std::tuple<std::string, std::string> const& get_type_name() const noexcept { return m_name; }
+        using reflection_info_base::reflection_info_base;
+        ~reflection_info() override {}
 
     public:
         std::unordered_map<std::type_index, std::unique_ptr<meta_class>> const& get_attributes() const noexcept { return m_attribute_map; }
@@ -618,19 +630,7 @@ namespace xaml
                     std::move(remover), std::move(i));
             }
         }
-
-        template <typename T>
-        friend std::unique_ptr<reflection_info> __make_reflection_info(std::string_view ns, std::string_view name);
     };
-
-    template <typename T>
-    std::unique_ptr<reflection_info> __make_reflection_info(std::string_view ns, std::string_view name)
-    {
-        auto ref = std::make_unique<reflection_info>();
-        ref->m_type = std::type_index(typeid(T));
-        ref->m_name = std::make_tuple<std::string, std::string>((std::string)ns, (std::string)name);
-        return ref;
-    }
 
     template <typename T, typename TMethod>
     struct __add_method_deduce_helper;
@@ -672,28 +672,12 @@ namespace xaml
         }
     };
 
-    class enum_reflection_info
+    class enum_reflection_info : public reflection_info_base
     {
-    private:
-        std::type_index m_type{ typeid(std::nullptr_t) };
-        std::tuple<std::string, std::string> m_name;
-
     public:
-        std::type_index get_type() const noexcept { return m_type; }
-        std::tuple<std::string, std::string> const& get_type_name() const noexcept { return m_name; }
-
-        template <typename T>
-        friend std::unique_ptr<enum_reflection_info> __make_enum_reflection_info(std::string_view ns, std::string_view name);
+        using reflection_info_base::reflection_info_base;
+        ~enum_reflection_info() override {}
     };
-
-    template <typename T>
-    std::unique_ptr<enum_reflection_info> __make_enum_reflection_info(std::string_view ns, std::string_view name)
-    {
-        auto ref = std::make_unique<enum_reflection_info>();
-        ref->m_type = std::type_index(typeid(T));
-        ref->m_name = std::make_tuple<std::string, std::string>((std::string)ns, (std::string)name);
-        return ref;
-    }
 
     enum class binding_mode
     {

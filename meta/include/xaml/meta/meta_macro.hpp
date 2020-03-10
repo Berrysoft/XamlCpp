@@ -3,17 +3,20 @@
 
 #include <xaml/meta/meta.hpp>
 
-#define REGISTER_CLASS_DECL(ns, name)                                   \
-    static ::std::unique_ptr<reflection_info> register_class() noexcept \
-    {                                                                   \
-        using self_type = ::ns::name;                                   \
-        auto ref = ::xaml::__make_reflection_info<self_type>(#ns, #name);
+#define REGISTER_CLASS_DECL_FILE(ns, name, file)                                \
+    static ::std::unique_ptr<::xaml::reflection_info> register_class() noexcept \
+    {                                                                           \
+        using self_type = ::ns::name;                                           \
+        auto ref = ::std::make_unique<::xaml::reflection_info>(::std::type_index(typeid(self_type)), #ns, #name, file);
+
+#define REGISTER_CLASS_DECL(ns, name, prefix) REGISTER_CLASS_DECL_FILE(ns, name, prefix "/" #name ".hpp")
+#define REGISTER_CLASS_DECL_NOFILE(ns, name) REGISTER_CLASS_DECL_FILE(ns, name, "")
 
 #define REGISTER_CLASS_END() \
     return ref;              \
     }
 
-#define REGISTER_ENUM(ns, name) ctx.register_type(::xaml::__make_enum_reflection_info<::ns::name>(#ns, #name))
+#define REGISTER_ENUM(ns, name, file) ctx.register_type(::std::make_unique<::xaml::enum_reflection_info>(::std::type_index(typeid(::ns::name)), #ns, #name, file))
 
 #define ADD_CTOR(...) ref->add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ref->add_constructor<self_type>()
