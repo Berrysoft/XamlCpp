@@ -47,6 +47,6 @@ namespace xaml
 
     void radio_box::__size_to_fit()
     {
-        __set_size_noevent(__measure_text_size(get_text(), { 10, 5 }));
+        __set_size_noevent(__measure_text_size(get_text(), { 0, 5 }));
     }
 } // namespace xaml
