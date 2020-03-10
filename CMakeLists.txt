@@ -92,6 +92,12 @@ elseif(${BUILD_GTK3})
     set(XAML_PRIVATE_INCLUDE_DIRS ${GTK3_INCLUDE_DIRS})
 endif()
 
+if(APPLE)
+    find_package(Boost REQUIRED COMPONENTS program_options filesystem)
+else()
+    find_package(Boost REQUIRED COMPONENTS program_options)
+endif()
+
 option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml xamlc)

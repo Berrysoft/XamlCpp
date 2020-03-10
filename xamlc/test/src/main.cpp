@@ -1,4 +1,4 @@
-#include <test_window.hpp>
+#include <test.xaml.hpp>
 #include <xaml/ui/application.hpp>
 
 #ifdef XAML_TEST_GEN_FAKE

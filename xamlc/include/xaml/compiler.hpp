@@ -70,7 +70,7 @@ namespace xaml
         XAMLC_API std::ostream& compile_extensions(std::ostream& stream, xaml_node& node, bool is_this);
 
     public:
-        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node, std::set<std::string> const& headers);
+        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node, std::string_view path, std::set<std::string> const& headers);
         XAMLC_API std::ostream& compile_fake(std::ostream& stream, xaml_node& node, std::string_view path);
     };
 } // namespace xaml

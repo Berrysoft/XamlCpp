@@ -31,7 +31,7 @@ namespace xaml::test
 
         void on_canvas_redraw(canvas& cv, drawing_context& dc);
 
-        REGISTER_CLASS_DECL_NOFILE(xaml::test, test_window)
+        REGISTER_CLASS_DECL_FILE(xaml::test, test_window, "test.xaml.hpp")
         {
             ADD_CTOR_DEF();
             ADD_WINDOW_MEMBERS();

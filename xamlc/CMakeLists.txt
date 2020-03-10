@@ -6,6 +6,10 @@ file(GLOB XAMLC_SOURCES "src/*.cpp")
 add_library(xamlc ${XAMLC_SOURCES})
 target_link_libraries(xamlc xaml)
 
+if(APPLE)
+    target_link_libraries(xamlc PRIVATE Boost::filesystem)
+endif()
+
 target_include_directories(xamlc
     PUBLIC 
         $<INSTALL_INTERFACE:include>    

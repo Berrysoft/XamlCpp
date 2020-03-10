@@ -7,6 +7,18 @@
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
 
+#ifndef __APPLE__
+#include <filesystem>
+#else
+#include <boost/filesystem.hpp>
+#endif // !__APPLE__
+
+#ifndef __APPLE__
+using namespace std::filesystem;
+#else
+using boost::filesystem::path;
+#endif // !__APPLE__
+
 using namespace std;
 
 namespace xaml
@@ -31,21 +43,25 @@ namespace xaml
         return {};
     }
 
-    static set<string_view> include_headers(module const& m) noexcept
+    static void include_headers(module const& m, set<string>& h)
     {
         using include_headers_t = const char* const* (*)() noexcept;
         auto pih = (include_headers_t)m.get_method("include_headers");
         if (pih)
         {
             const char* const* headers = pih();
-            set<string_view> result;
             for (; *headers; headers++)
             {
-                result.emplace(*headers);
+                h.emplace(*headers);
             }
-            return result;
         }
-        return {};
+    }
+
+    static set<string> include_headers(module const& m) noexcept
+    {
+        set<string> result;
+        include_headers(m, result);
+        return result;
     }
 
     static array int_types{
@@ -359,7 +375,12 @@ namespace xaml
         return stream;
     }
 
-    ostream& compiler::compile(ostream& stream, xaml_node& node, set<string> const& headers)
+    static inline string get_path_associated_header_path(string_view p)
+    {
+        return path{ p }.filename().string() + ".hpp";
+    }
+
+    ostream& compiler::compile(ostream& stream, xaml_node& node, string_view path, set<string> const& headers)
     {
         if (stream)
         {
@@ -368,9 +389,9 @@ namespace xaml
                 auto all_headers = headers;
                 for (auto& m : m_ctx->get_modules())
                 {
-                    set<string_view> hs = include_headers(*m.second);
-                    all_headers.insert(hs.begin(), hs.end());
+                    include_headers(*m.second, all_headers);
                 }
+                all_headers.emplace(get_path_associated_header_path(path));
                 write_includes(stream, all_headers);
                 auto [ns, name] = *node.map_class;
                 write_init_decl(stream, ns, name);
@@ -401,6 +422,7 @@ namespace xaml
             if (node.map_class)
             {
                 write_includes(stream, fake_headers);
+                write_include(stream, get_path_associated_header_path(path));
                 auto [ns, name] = *node.map_class;
                 write_init_decl_with_meta(stream, ns, name);
                 write_begin_block(stream);

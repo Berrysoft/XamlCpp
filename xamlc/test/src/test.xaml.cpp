@@ -1,13 +1,7 @@
 #include <cmath>
-#include <test_window.hpp>
+#include <test.xaml.hpp>
 #include <xaml/ui/colors.hpp>
 #include <xaml/ui/msgbox.hpp>
-
-#ifdef XAML_TEST_GEN_FAKE
-#include <test.xaml.g.fake.cpp>
-#else
-#include <test.xaml.g.cpp>
-#endif // XAML_TEST_GEN_FAKE
 
 using namespace std;
 using namespace xaml;

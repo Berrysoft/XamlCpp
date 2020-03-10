@@ -1,10 +1,9 @@
 project(XamlUITest CXX)
 
 file(GLOB TEST_SOURCE "src/*.cpp")
+add_executable(ui_test ${TEST_SOURCE})
 if(WIN32)
-    add_executable(ui_test WIN32 ${TEST_SOURCE})
-else()
-    add_executable(ui_test ${TEST_SOURCE})
+    set_target_properties(ui_test PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 target_compile_definitions(ui_test PRIVATE "-D_USE_MATH_DEFINES")
 target_include_directories(ui_test PUBLIC include)
