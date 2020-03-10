@@ -19,10 +19,6 @@ if(UNIX)
     target_link_libraries(xaml_meta PUBLIC dl)
 endif()
 
-if(APPLE)
-    target_link_libraries(xaml_meta PRIVATE Boost::filesystem)
-endif()
-
 target_include_directories(xaml_meta
     PUBLIC 
         $<INSTALL_INTERFACE:include>    

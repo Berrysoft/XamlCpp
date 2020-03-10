@@ -1,45 +1,24 @@
+#include <filesystem>
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
-#include <filesystem>
 #include <system_error>
 #else
 #include <dlfcn.h>
-
-#ifdef __APPLE__
-#include <boost/filesystem.hpp>
-#else
-#include <filesystem>
-#endif // __APPLE__
 #endif // WIN32 || __MINGW32__
 
 constexpr std::string_view module_prefix{ "lib" };
 
 using namespace std;
-
-#ifndef __APPLE__
 using namespace std::filesystem;
-#else
-using namespace boost::filesystem;
-#endif // !__APPLE__
 
 namespace xaml
 {
-    static inline path get_path(string_view p)
-    {
-        return path{ p.begin(), p.end() };
-    }
-
-    static inline path get_path(wstring_view p)
-    {
-        return path{ p.begin(), p.end() };
-    }
-
     static path get_right_path(string_view name)
     {
-        path p = get_path(name);
-        if (!p.has_extension()) p.replace_extension(get_path(module_extension));
+        path p = name;
+        if (!p.has_extension()) p.replace_extension(module_extension);
         return p;
     }
 
@@ -93,7 +72,7 @@ namespace xaml
                 return get_full_path(p.string(), true);
             }
             else
-                return get_path(name);
+                return name;
         }
     }
 

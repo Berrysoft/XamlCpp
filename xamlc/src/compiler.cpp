@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <filesystem>
 #include <iomanip>
 #include <iterator>
 #include <ostream>
@@ -7,19 +8,8 @@
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
 
-#ifndef __APPLE__
-#include <filesystem>
-#else
-#include <boost/filesystem.hpp>
-#endif // !__APPLE__
-
-#ifndef __APPLE__
-using std::filesystem::path;
-#else
-using boost::filesystem::path;
-#endif // !__APPLE__
-
 using namespace std;
+using std::filesystem::path;
 
 namespace xaml
 {
@@ -377,7 +367,7 @@ namespace xaml
 
     static inline string get_path_associated_header_path(string_view p)
     {
-        return path{ p.begin(), p.end() }.filename().string() + ".hpp";
+        return path{ p }.filename().string() + ".hpp";
     }
 
     ostream& compiler::compile(ostream& stream, xaml_node& node, string_view path, set<string> const& headers)

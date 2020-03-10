@@ -1,4 +1,5 @@
 #include <boost/program_options.hpp>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <set>
@@ -9,23 +10,11 @@
 #include <xaml/meta/module.hpp>
 #include <xaml/parser.hpp>
 
-#ifndef __APPLE__
-#include <filesystem>
-#else
-#include <boost/filesystem.hpp>
-#endif // !__APPLE__
-
 using namespace std;
 using namespace xaml;
 using namespace boost::program_options;
-
-#ifndef __APPLE__
 using std::filesystem::directory_iterator;
 using std::filesystem::path;
-#else
-using boost::filesystem::directory_iterator;
-using boost::filesystem::path;
-#endif // !__APPLE__
 
 int main(int argc, char const* const* argv)
 {
