@@ -64,6 +64,7 @@ namespace xaml
         }
         set_handle(h);
         g_signal_connect(G_OBJECT(get_handle()->handle), "changed", G_CALLBACK(combo_box::on_changed), this);
+        draw_visible();
         draw_items();
         draw_sel();
         draw_text();

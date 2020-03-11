@@ -14,6 +14,7 @@ namespace xaml
             h->handle = gtk_menu_item_new_with_label(m_text.c_str());
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "activate", G_CALLBACK(menu_item::on_activate), this);
+            draw_visible();
         }
     }
 

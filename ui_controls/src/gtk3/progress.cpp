@@ -12,6 +12,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = gtk_progress_bar_new();
             set_handle(h);
+            draw_visible();
             draw_progress();
         }
         __set_rect(region);

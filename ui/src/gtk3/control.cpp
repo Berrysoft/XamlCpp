@@ -26,4 +26,9 @@ namespace xaml
         auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
         gtk_widget_set_size_request(get_handle()->handle, rw, rh);
     }
+
+    void control::draw_visible()
+    {
+        gtk_widget_set_visible(get_handle()->handle, m_is_visible);
+    }
 } // namespace xaml

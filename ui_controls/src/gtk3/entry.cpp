@@ -13,6 +13,7 @@ namespace xaml
             h->handle = gtk_entry_new();
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "changed", G_CALLBACK(entry::on_changed), this);
+            draw_visible();
             draw_text();
             draw_alignment();
         }

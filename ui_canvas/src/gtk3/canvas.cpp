@@ -127,6 +127,7 @@ namespace xaml
             h->handle = gtk_drawing_area_new();
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "draw", G_CALLBACK(canvas::on_draw), this);
+            draw_visible();
         }
         __set_rect(region);
     }

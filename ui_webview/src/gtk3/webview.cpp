@@ -15,6 +15,7 @@ namespace xaml
             h->handle = webkit_web_view_new();
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "load-changed", G_CALLBACK(webview::on_load_changed), this);
+            draw_visible();
             draw_uri();
         }
         rectangle real = region - get_margin();

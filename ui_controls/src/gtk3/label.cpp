@@ -12,6 +12,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = gtk_label_new(m_text.c_str());
             set_handle(h);
+            draw_visible();
             draw_text();
             draw_alignment();
         }

@@ -39,7 +39,6 @@ namespace xaml
         draw_size();
         draw_child();
         draw_menu_bar();
-        gtk_widget_show_all(get_handle()->handle);
     }
 
     void window::__parent_redraw()
@@ -103,6 +102,8 @@ namespace xaml
     void window::show()
     {
         __draw({});
+        gtk_widget_show_all(get_handle()->handle);
+        set_is_visible(true);
     }
 
     void window::close()
@@ -113,6 +114,7 @@ namespace xaml
     void window::hide()
     {
         gtk_widget_hide(get_handle()->handle);
+        set_is_visible(false);
     }
 
     rectangle window::get_client_region() const
