@@ -2,7 +2,7 @@
 #define XAML_UI_NATIVE_WINDOW_HPP
 
 #ifdef XAML_UI_WINDOWS
-#include <wil/resource.h>
+#include <Windows.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
@@ -13,10 +13,6 @@ namespace xaml
 {
     struct native_window
     {
-#ifdef XAML_UI_WINDOWS
-        wil::unique_hdc_window store_dc{ nullptr };
-#endif // XAML_UI_WINDOWS
-
 #ifdef XAML_UI_GTK3
         GtkWidget* vbox;
         GtkWidget* menu_bar;

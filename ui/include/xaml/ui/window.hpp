@@ -27,7 +27,6 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_API virtual std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
-        XAML_UI_API void __copy_hdc(rectangle const& region, void* hDC);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3

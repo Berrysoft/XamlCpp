@@ -1,11 +1,11 @@
 #include <shared/atomic_guard.hpp>
 #include <unordered_map>
+#include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
-#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -63,7 +63,6 @@ namespace xaml
             auto shared_this = static_pointer_cast<window>(shared_from_this());
             application::current()->window_added(shared_this);
             window_map[get_handle()->handle] = weak_ptr{ shared_this };
-            set_window(make_shared<native_window>());
             draw_resizable();
             draw_title();
         }
@@ -148,11 +147,6 @@ namespace xaml
         return from_native(r);
     }
 
-    void window::__copy_hdc(rectangle const& region, void* hDC)
-    {
-        THROW_IF_WIN32_BOOL_FALSE(BitBlt(get_window()->store_dc.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, (HDC)hDC, 0, 0, SRCCOPY));
-    }
-
     optional<std::intptr_t> window::__wnd_proc(window_message const& msg)
     {
         switch (msg.Msg)
@@ -200,20 +194,6 @@ namespace xaml
                 __draw({});
             }
             break;
-        }
-        case WM_PAINT:
-        {
-            PAINTSTRUCT ps;
-            wil::unique_hdc_paint hDC = wil::BeginPaint(get_handle()->handle, &ps);
-            get_window()->store_dc.reset(CreateCompatibleDC(hDC.get()));
-            rectangle cr = __get_real_client_region();
-            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(hDC.get(), (int)cr.width, (int)cr.height) };
-            wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
-            rectangle region = __get_real_client_region();
-            THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 2, (int)region.height + 2));
-            auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
-            THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, get_window()->store_dc.get(), 0, 0, SRCCOPY));
-            return result;
         }
         case WM_CLOSE:
         {

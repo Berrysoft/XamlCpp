@@ -2,7 +2,6 @@
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/native_canvas.hpp>
 #include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
 #include <CommCtrl.h>
