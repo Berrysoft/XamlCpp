@@ -21,8 +21,10 @@ namespace xaml
     {
         string_t font_family;
         double size;
-        bool italic = false;
-        bool bold = false;
+        bool italic;
+        bool bold;
+        halignment_t halign;
+        valignment_t valign;
     };
 
     struct native_drawing_context;

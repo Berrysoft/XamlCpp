@@ -177,11 +177,40 @@ namespace xaml
         check_status(handle->FillPath(&b, path.get()));
     }
 
+    static StringAlignment get_Align(halignment_t align)
+    {
+        switch (align)
+        {
+        case halignment_t::center:
+            return StringAlignmentCenter;
+        case halignment_t::right:
+            return StringAlignmentFar;
+        default:
+            return StringAlignmentNear;
+        }
+    }
+
     void drawing_context_gdiplus::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
         auto b = get_Brush(brush);
         auto f = get_Font(font, dpi);
-        check_status(handle->DrawString(str.data(), (INT)str.length(), &f, get_PointF(p, dpi), &b));
+        StringFormat fmt{};
+        auto a = get_Align(font.halign);
+        check_status(fmt.SetAlignment(a));
+        check_status(fmt.SetLineAlignment(a));
+        auto pf = get_PointF(p, dpi);
+        RectF r;
+        check_status(handle->MeasureString(str.data(), (INT)str.length(), &f, pf, &r));
+        switch (font.valign)
+        {
+        case valignment_t::center:
+            pf.Y -= r.Height / 2;
+            break;
+        case valignment_t::bottom:
+            pf.Y -= r.Height;
+            break;
+        }
+        check_status(handle->DrawString(str.data(), (INT)str.length(), &f, pf, &fmt, &b));
     }
 
     canvas_gdiplus::canvas_gdiplus()

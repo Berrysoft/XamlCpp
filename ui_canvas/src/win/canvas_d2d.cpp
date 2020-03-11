@@ -142,9 +142,29 @@ namespace xaml
             DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
         auto size = target->GetSize();
         auto region = to_native<D2D1_RECT_F, rectangle>({ p.x, p.y, p.x, p.y });
-        region.right += size.width;
-        region.bottom += size.height;
-        target->DrawText(str.data(), (UINT32)str.length(), format.get(), region, b.get());
+        wil::com_ptr<IDWriteTextLayout> layout;
+        THROW_IF_FAILED(dwrite->CreateTextLayout(str.data(), (UINT32)str.length(), format.get(), size.width, size.height, &layout));
+        DWRITE_TEXT_METRICS metrics;
+        THROW_IF_FAILED(layout->GetMetrics(&metrics));
+        switch (font.halign)
+        {
+        case halignment_t::center:
+            region.left -= metrics.width / 2;
+            break;
+        case halignment_t::right:
+            region.left -= metrics.width;
+            break;
+        }
+        switch (font.valign)
+        {
+        case valignment_t::center:
+            region.top -= metrics.height / 2;
+            break;
+        case valignment_t::bottom:
+            region.top -= metrics.height;
+            break;
+        }
+        target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
     }
 
     static ID2D1Factory* try_create_factory()
@@ -181,7 +201,7 @@ namespace xaml
                             D2D1_ALPHA_MODE_PREMULTIPLIED),
                         0,
                         0,
-                        D2D1_RENDER_TARGET_USAGE_GDI_COMPATIBLE,
+                        D2D1_RENDER_TARGET_USAGE_NONE,
                         D2D1_FEATURE_LEVEL_DEFAULT);
                     THROW_IF_FAILED(d2d->CreateDCRenderTarget(&prop, &target));
                     THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), dwrite.put_unknown()));

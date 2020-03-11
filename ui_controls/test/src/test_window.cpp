@@ -214,6 +214,6 @@ namespace xaml::test
         dc.draw_arc({ colors::black }, { cx - r, cy - r, r * 2, r * 2 }, M_PI, 2 * M_PI);
         dc.draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
         dc.draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.5 + 2 }, { r / 10, r / 10 });
-        dc.draw_string({ colors::pink }, { U("Arial"), r / 5 }, { r / 10, 2 * cy - r / 3 }, U("Hello world!"));
+        dc.draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, halignment_t::center, valignment_t::bottom }, { cx, cy + r / 2 }, U("Hello world!"));
     }
 } // namespace xaml::test
