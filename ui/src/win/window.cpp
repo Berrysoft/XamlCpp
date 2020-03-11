@@ -210,7 +210,7 @@ namespace xaml
             wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(hDC.get(), (int)cr.width, (int)cr.height) };
             wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
             rectangle region = __get_real_client_region();
-            THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
+            THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 2, (int)region.height + 2));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
             THROW_IF_WIN32_BOOL_FALSE(BitBlt(hDC.get(), (int)region.x, (int)region.y, (int)region.width, (int)region.height, get_window()->store_dc.get(), 0, 0, SRCCOPY));
             return result;

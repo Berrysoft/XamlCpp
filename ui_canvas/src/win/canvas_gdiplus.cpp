@@ -195,29 +195,22 @@ namespace xaml
         GdiplusShutdown(token);
     }
 
-    bool canvas_gdiplus::create(shared_ptr<window> wnd, rectangle const& real)
+    bool canvas_gdiplus::create(HWND wnd, size real)
     {
-        double dpi = wnd->get_dpi();
-        rectangle real_real = real * dpi / 96.0;
-        auto wnd_dc = wil::GetDC(wnd->get_handle()->handle);
-        store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)real_real.width, (int)real_real.height) };
-        DeleteBitmap(SelectBitmap(store_dc.get(), bitmap.release()));
         return true;
     }
 
-    void canvas_gdiplus::begin_paint(shared_ptr<window> wnd, rectangle const& real, function<void(drawing_context&)> paint_func)
+    void canvas_gdiplus::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
     {
-        double dpi = wnd->get_dpi();
-        rectangle region = real * dpi / 96.0;
-        THROW_IF_WIN32_BOOL_FALSE(Rectangle(store_dc.get(), -1, -1, (int)region.width + 1, (int)region.height + 1));
-        Graphics g{ store_dc.get() };
+        UINT dpi = GetDpiForWindow(wnd);
+        size region = real * dpi / 96.0;
+        THROW_IF_WIN32_BOOL_FALSE(Rectangle(hdc, -1, -1, (int)region.width + 2, (int)region.height + 2));
+        Graphics g{ hdc };
         check_status(g.SetPageUnit(UnitPixel));
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;
-        ctx.dpi = dpi;
+        ctx.dpi = (double)dpi;
         drawing_context dc{ &ctx };
         paint_func(dc);
-        wnd->__copy_hdc(region, store_dc.get());
     }
 } // namespace xaml

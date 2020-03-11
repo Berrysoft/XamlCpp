@@ -175,7 +175,6 @@ namespace xaml
             h->handle = view;
             set_handle(h);
         }
-        m_real_region = region - get_margin();
         __set_rect(region);
         XamlCanvasView* view = (XamlCanvasView*)get_handle()->handle;
         [view setNeedsDisplay:YES];

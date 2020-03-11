@@ -78,9 +78,6 @@ namespace xaml
         XAML_UI_CANVAS_API canvas();
         XAML_UI_CANVAS_API ~canvas() override;
 
-    private:
-        rectangle m_real_region{};
-
 #ifdef XAML_UI_WINDOWS
     public:
         using native_canvas_type = std::shared_ptr<native_canvas>;

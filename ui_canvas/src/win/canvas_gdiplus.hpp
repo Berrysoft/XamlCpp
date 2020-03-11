@@ -33,14 +33,13 @@ namespace xaml
     {
     private:
         ULONG_PTR token{};
-        wil::unique_hdc_window store_dc{ nullptr };
 
     public:
         canvas_gdiplus();
         ~canvas_gdiplus() override;
 
-        bool create(std::shared_ptr<window> wnd, rectangle const& real) override;
-        void begin_paint(std::shared_ptr<window> wnd, rectangle const& real, std::function<void(drawing_context&)> paint_func) override;
+        bool create(HWND wnd, size real) override;
+        void begin_paint(HWND wnd, HDC dc, size real, std::function<void(drawing_context&)> paint_func) override;
     };
 
     inline size from_native(Gdiplus::SizeF s)

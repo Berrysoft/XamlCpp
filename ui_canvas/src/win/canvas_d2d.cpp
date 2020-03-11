@@ -166,7 +166,7 @@ namespace xaml
 
     canvas_d2d::~canvas_d2d() {}
 
-    bool canvas_d2d::create(shared_ptr<window> wnd, rectangle const& real)
+    bool canvas_d2d::create(HWND wnd, size real)
     {
         if (!d2d)
         {
@@ -196,13 +196,13 @@ namespace xaml
         return false;
     }
 
-    void canvas_d2d::begin_paint(shared_ptr<window> wnd, rectangle const& real, function<void(drawing_context&)> paint_func)
+    void canvas_d2d::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
     {
-        double dpi = wnd->get_dpi();
-        rectangle region = real * dpi / 96.0;
+        UINT dpi = GetDpiForWindow(wnd);
+        size region = real * dpi / 96.0;
         CHECK_SIZE(region);
-        RECT rc_region = to_native<RECT>(region);
-        THROW_IF_FAILED(target->BindDC(wnd->get_window()->store_dc.get(), &rc_region));
+        RECT rc_region = to_native<RECT, rectangle>({ 0, 0, region.width, region.height });
+        THROW_IF_FAILED(target->BindDC(hdc, &rc_region));
         target->BeginDraw();
         target->SetDpi((FLOAT)dpi, (FLOAT)dpi);
         target->Clear(D2D1::ColorF(D2D1::ColorF::White));

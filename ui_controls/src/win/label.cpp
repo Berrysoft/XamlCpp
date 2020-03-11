@@ -18,31 +18,32 @@ namespace xaml
     {
         switch (msg.Msg)
         {
-        case WM_PAINT:
+        case WM_DRAWITEM:
         {
-            if (auto parent = __get_window(msg.hWnd))
+            DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
+            if (ds->hwndItem == get_handle()->handle)
             {
-                UINT udpi = GetDpiForWindow(get_handle()->handle);
-                rectangle region = m_real_region * udpi / 96.0;
-                HDC dc = parent->get_window()->store_dc.get();
+                size region = __get_real_size();
+                HDC dc = ds->hDC;
+                THROW_IF_WIN32_BOOL_FALSE(Rectangle(dc, -1, -1, (int)region.width + 2, (int)region.height + 2));
                 wil::unique_hfont oldf{ SelectFont(dc, application::current()->__default_font(get_handle()->handle)) };
                 SIZE s = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(dc, m_text.c_str(), (int)m_text.length(), &s));
                 size text_size = from_native(s);
-                double real_x = region.x;
+                double real_x = 0;
                 switch (m_text_halignment)
                 {
                 case halignment_t::center:
-                    real_x = region.x + region.width / 2 - text_size.width / 2;
+                    real_x += region.width / 2 - text_size.width / 2;
                     break;
                 case halignment_t::right:
-                    real_x = region.x + region.width - text_size.width;
+                    real_x += region.width - text_size.width;
                     break;
                 }
-                THROW_IF_WIN32_BOOL_FALSE(TextOut(dc, (int)real_x, (int)region.y, m_text.c_str(), (int)m_text.length()));
+                THROW_IF_WIN32_BOOL_FALSE(TextOut(dc, (int)real_x, 0, m_text.c_str(), (int)m_text.length()));
                 SelectFont(dc, oldf.release());
             }
-            break;
+            return TRUE;
         }
         }
         return nullopt;
@@ -52,10 +53,22 @@ namespace xaml
     {
         if (auto sparent = get_parent().lock())
         {
-            set_handle(get_parent().lock()->get_handle());
-            rectangle real = region - get_margin();
-            m_real_region = real;
-            __set_size_noevent({ real.width, real.height });
+            if (!get_handle())
+            {
+                window_create_params params = {};
+                params.class_name = WC_STATIC;
+                params.style = WS_CHILD | WS_VISIBLE | SS_OWNERDRAW;
+                params.x = 0;
+                params.y = 0;
+                params.width = 100;
+                params.height = 50;
+                params.parent = sparent.get();
+                this->__create(params);
+                draw_text();
+                draw_alignment();
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
+            }
+            __set_rect(region);
         }
     }
 

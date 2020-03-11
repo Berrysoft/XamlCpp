@@ -5,6 +5,8 @@
 #include <xaml/ui/native_window.hpp>
 #include <xaml/ui/window.hpp>
 
+#include <CommCtrl.h>
+
 #ifdef XAML_UI_CANVAS_DIRECT2D
 #include <win/canvas_d2d.hpp>
 #endif // XAML_UI_CANVAS_DIRECT2D
@@ -65,21 +67,18 @@ namespace xaml
 
     optional<std::intptr_t> canvas::__wnd_proc(window_message const& msg)
     {
-        if (get_handle() && msg.hWnd == get_handle()->handle)
+        switch (msg.Msg)
         {
-            switch (msg.Msg)
+        case WM_DRAWITEM:
+        {
+            DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
+            if (ds->hwndItem == get_handle()->handle)
             {
-            case WM_PAINT:
-            {
-                PAINTSTRUCT ps;
-                auto hDC = wil::BeginPaint(get_handle()->handle, &ps);
-                if (auto wnd = __get_window(get_handle()->handle))
-                {
-                    m_canvas->begin_paint(wnd, m_real_region, [this](drawing_context& dc) { m_redraw(*this, dc); });
-                }
-                break;
+                auto hDC = ds->hDC;
+                m_canvas->begin_paint(ds->hwndItem, ds->hDC, get_size(), [this](drawing_context& dc) { m_redraw(*this, dc); });
             }
-            }
+            return TRUE;
+        }
         }
         return nullopt;
     }
@@ -88,29 +87,33 @@ namespace xaml
     {
         if (auto sparent = get_parent().lock())
         {
-            set_handle(sparent->get_handle());
-            auto real = region - get_margin();
-            if (m_real_region != real)
+            if (!get_handle())
             {
-                m_real_region = real;
-                __set_size_noevent({ real.width, real.height });
-                if (auto wnd = __get_window(get_handle()->handle))
-                {
-                    if (!get_canvas())
-                    {
-#ifdef XAML_UI_CANVAS_DIRECT2D
-                        set_canvas(make_shared<canvas_d2d>());
-                        if (!get_canvas()->create(wnd, m_real_region))
-                        {
-                            set_canvas(make_shared<canvas_gdiplus>());
-                        }
-#else
-                        set_canvas(make_shared<canvas_gdiplus>());
-#endif // XAML_UI_CANVAS_DIRECT2D
-                    }
-                    get_canvas()->create(wnd, m_real_region);
-                }
+                window_create_params params = {};
+                params.class_name = WC_STATIC;
+                params.style = WS_CHILD | WS_VISIBLE | SS_OWNERDRAW;
+                params.x = 0;
+                params.y = 0;
+                params.width = 100;
+                params.height = 50;
+                params.parent = sparent.get();
+                this->__create(params);
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
+            __set_rect(region);
+            if (!get_canvas())
+            {
+#ifdef XAML_UI_CANVAS_DIRECT2D
+                set_canvas(make_shared<canvas_d2d>());
+                if (!get_canvas()->create(get_handle()->handle, get_size()))
+                {
+                    set_canvas(make_shared<canvas_gdiplus>());
+                }
+#else
+                set_canvas(make_shared<canvas_gdiplus>());
+#endif // XAML_UI_CANVAS_DIRECT2D
+            }
+            get_canvas()->create(get_handle()->handle, get_size());
         }
     }
 } // namespace xaml

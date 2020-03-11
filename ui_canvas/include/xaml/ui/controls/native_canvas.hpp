@@ -4,9 +4,11 @@
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/window.hpp>
 
-#ifdef XAML_UI_GTK3
+#ifdef XAML_UI_WINDOWS
+#include <Windows.h>
+#elif defined(XAML_UI_GTK3)
 #include <cairo.h>
-#endif // XAML_UI_GTK3
+#endif // XAML_UI_WINDOWS
 
 namespace xaml
 {
@@ -36,8 +38,8 @@ namespace xaml
     struct native_canvas
     {
         virtual ~native_canvas() {}
-        virtual bool create(std::shared_ptr<window> wnd, rectangle const& real) = 0;
-        virtual void begin_paint(std::shared_ptr<window> wnd, rectangle const& real, std::function<void(drawing_context&)> paint_func) = 0;
+        virtual bool create(HWND wnd, size real) = 0;
+        virtual void begin_paint(HWND wnd, HDC dc, size real, std::function<void(drawing_context&)> paint_func) = 0;
     };
 #endif // XAML_UI_WINDOWS
 

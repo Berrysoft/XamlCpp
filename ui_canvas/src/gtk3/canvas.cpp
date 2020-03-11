@@ -128,7 +128,6 @@ namespace xaml
             set_handle(h);
             g_signal_connect(G_OBJECT(get_handle()->handle), "draw", G_CALLBACK(canvas::on_draw), this);
         }
-        m_real_region = region - get_margin();
         __set_rect(region);
     }
 
