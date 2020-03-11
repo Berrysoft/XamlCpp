@@ -70,11 +70,6 @@ namespace xaml
         draw_size();
         draw_child();
         draw_menu_bar();
-        auto wnd_dc = wil::GetDC(get_handle()->handle);
-        get_window()->store_dc.reset(CreateCompatibleDC(wnd_dc.get()));
-        rectangle cr = __get_real_client_region();
-        wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(wnd_dc.get(), (int)cr.width, (int)cr.height) };
-        wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
         THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle()->handle, nullptr, FALSE));
     }
 
@@ -210,6 +205,10 @@ namespace xaml
         {
             PAINTSTRUCT ps;
             wil::unique_hdc_paint hDC = wil::BeginPaint(get_handle()->handle, &ps);
+            get_window()->store_dc.reset(CreateCompatibleDC(hDC.get()));
+            rectangle cr = __get_real_client_region();
+            wil::unique_hbitmap bitmap{ CreateCompatibleBitmap(hDC.get(), (int)cr.width, (int)cr.height) };
+            wil::unique_hbitmap ori_bitmap{ SelectBitmap(get_window()->store_dc.get(), bitmap.release()) };
             rectangle region = __get_real_client_region();
             THROW_IF_WIN32_BOOL_FALSE(Rectangle(get_window()->store_dc.get(), (int)region.x - 1, (int)region.y - 1, (int)region.width + 1, (int)region.height + 1));
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;

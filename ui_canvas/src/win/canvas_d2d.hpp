@@ -12,7 +12,6 @@ namespace xaml
 {
     struct drawing_context_d2d : native_drawing_context
     {
-        double dpi{ 96.0 };
         wil::com_ptr<ID2D1RenderTarget> target{ nullptr };
         wil::com_ptr<ID2D1Factory> d2d{ nullptr };
         wil::com_ptr<IDWriteFactory> dwrite{ nullptr };

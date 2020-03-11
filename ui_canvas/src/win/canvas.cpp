@@ -71,6 +71,8 @@ namespace xaml
             {
             case WM_PAINT:
             {
+                PAINTSTRUCT ps;
+                auto hDC = wil::BeginPaint(get_handle()->handle, &ps);
                 if (auto wnd = __get_window(get_handle()->handle))
                 {
                     m_canvas->begin_paint(wnd, m_real_region, [this](drawing_context& dc) { m_redraw(*this, dc); });
@@ -92,20 +94,20 @@ namespace xaml
             {
                 m_real_region = real;
                 __set_size_noevent({ real.width, real.height });
-                if (!get_canvas())
-                {
-#ifdef XAML_UI_CANVAS_DIRECT2D
-                    set_canvas(make_shared<canvas_d2d>());
-                    if (!get_canvas()->create(nullptr, m_real_region))
-                    {
-                        set_canvas(make_shared<canvas_gdiplus>());
-                    }
-#else
-                    set_canvas(make_shared<canvas_gdiplus>());
-#endif // XAML_UI_CANVAS_DIRECT2D
-                }
                 if (auto wnd = __get_window(get_handle()->handle))
                 {
+                    if (!get_canvas())
+                    {
+#ifdef XAML_UI_CANVAS_DIRECT2D
+                        set_canvas(make_shared<canvas_d2d>());
+                        if (!get_canvas()->create(wnd, m_real_region))
+                        {
+                            set_canvas(make_shared<canvas_gdiplus>());
+                        }
+#else
+                        set_canvas(make_shared<canvas_gdiplus>());
+#endif // XAML_UI_CANVAS_DIRECT2D
+                    }
                     get_canvas()->create(wnd, m_real_region);
                 }
             }
