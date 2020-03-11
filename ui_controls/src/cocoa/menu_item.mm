@@ -43,9 +43,16 @@ namespace xaml
                 auto h = make_shared<native_control>();
                 h->delegate = delegate;
                 set_handle(h);
+                draw_visible();
             }
         }
     }
+
+    void menu_item::draw_visible()
+    {
+        NSMenuItem* item = (NSMenuItem*)get_menu()->handle;
+        item.hidden = !get_is_visible();
+	}
 
     void menu_item::draw_append(void* pmenu)
     {

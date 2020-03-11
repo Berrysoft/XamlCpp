@@ -36,4 +36,10 @@ namespace xaml
         frame.size = to_native<NSSize>(get_size());
         view.frame = frame;
     }
+
+    void control::draw_visible()
+    {
+        NSView* view = get_handle()->handle;
+        view.hidden = !m_is_visible;
+	}
 }

@@ -27,6 +27,7 @@ namespace xaml
             h->handle = combo;
             h->delegate = delegate;
             set_handle(h);
+            draw_visible();
             draw_items();
             draw_sel();
             draw_editable();

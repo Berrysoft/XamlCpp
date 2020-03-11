@@ -31,6 +31,7 @@ namespace xaml
             h->handle = webview;
             h->delegate = delegate;
             set_handle(h);
+            draw_visible();
             draw_uri();
         }
         __set_rect(region);

@@ -174,6 +174,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = view;
             set_handle(h);
+            draw_visible();
         }
         __set_rect(region);
         XamlCanvasView* view = (XamlCanvasView*)get_handle()->handle;

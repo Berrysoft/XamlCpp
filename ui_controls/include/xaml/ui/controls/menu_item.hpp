@@ -45,6 +45,7 @@ namespace xaml
 
 #ifdef XAML_UI_COCOA
     protected:
+        XAML_UI_CONTROLS_API void draw_visible() override;
         XAML_UI_CONTROLS_API virtual void draw_append(void* pmenu);
 
     public:

@@ -49,7 +49,11 @@ namespace xaml
         XAML_UI_API void __parent_redraw() override;
 
     protected:
-        XAML_UI_API virtual void draw_size() override;
+#ifdef XAML_UI_COCOA
+        XAML_UI_API void draw_visible() override;
+#endif // XAML_UI_COCOA
+
+        XAML_UI_API void draw_size() override;
         XAML_UI_API virtual void draw_title();
         XAML_UI_API virtual void draw_child();
         XAML_UI_API virtual void draw_resizable();

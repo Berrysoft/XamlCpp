@@ -29,6 +29,7 @@ namespace xaml
             h->handle = textField;
             h->delegate = delegate;
             set_handle(h);
+            draw_visible();
             draw_text();
             draw_alignment();
         }

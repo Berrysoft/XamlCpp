@@ -74,6 +74,15 @@ namespace xaml
             __draw({});
     }
 
+    void window::draw_visible()
+    {
+        NSWindow* window = get_window()->window;
+        if (get_is_visible())
+            [window makeKeyAndOrderFront:nil];
+        else
+            [window orderOut:nil];
+	}
+
     void window::draw_size()
     {
         atomic_guard guard{ m_resizing };
@@ -120,7 +129,6 @@ namespace xaml
         {
             get_menu_bar()->set_parent_window(static_pointer_cast<window>(shared_from_this()));
             get_menu_bar()->__draw({});
-            [NSApp setMainMenu:get_menu_bar()->get_menu()->handle];
         }
     }
 
@@ -128,6 +136,10 @@ namespace xaml
     {
         __draw({});
         NSWindow* window = get_window()->window;
+        if (application::current()->get_main_window()->get_window()->window == window)
+        {
+            [window makeMainWindow];  
+		}
         [window makeKeyAndOrderFront:nil];
     }
 

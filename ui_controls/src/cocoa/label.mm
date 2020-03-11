@@ -17,6 +17,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = textField;
             set_handle(h);
+            draw_visible();
             draw_text();
             draw_alignment();
         }

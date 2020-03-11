@@ -13,6 +13,7 @@ namespace xaml
             auto h = make_shared<native_control>();
             h->handle = prog;
             set_handle(h);
+            draw_visible();
             draw_progress();
         }
         __set_rect(region);
