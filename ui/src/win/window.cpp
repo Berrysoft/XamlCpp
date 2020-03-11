@@ -54,7 +54,7 @@ namespace xaml
         {
             window_create_params params = {};
             params.class_name = U("XamlWindow");
-            params.style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
+            params.style = WS_OVERLAPPEDWINDOW;
             params.x = CW_USEDEFAULT;
             params.y = CW_USEDEFAULT;
             params.width = CW_USEDEFAULT;
