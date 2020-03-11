@@ -183,7 +183,7 @@ namespace xaml
     void canvas::__on_draw_rect()
     {
         drawing_context dc{ nullptr };
-        dc.__set_size({ m_real_region.width, m_real_region.height });
+        dc.__set_size(get_size());
         m_redraw(*this, dc);
     }
 }
