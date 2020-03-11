@@ -181,8 +181,12 @@ namespace xaml
         EVENT(valignment_changed, control&, valignment_t)
         PROP_CONSTEXPR_EVENT(valignment, valignment_t)
 
+        EVENT(is_visible_changed, control&, bool)
+        PROP_CONSTEXPR_EVENT(is_visible, bool)
+
     protected:
         XAML_UI_API virtual void draw_size();
+        XAML_UI_API virtual void draw_visible();
 
     public:
 #define ADD_CONTROL_MEMBERS()   \

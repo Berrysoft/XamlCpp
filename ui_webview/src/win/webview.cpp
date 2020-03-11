@@ -98,6 +98,7 @@ namespace xaml
             }
         });
         m_webview->set_resource_requested([this](resource_requested_args& args) { m_resource_requested(*this, args); });
+        draw_visible();
         draw_uri();
         __parent_redraw();
     }
@@ -107,6 +108,14 @@ namespace xaml
         if (get_webview() && *get_webview())
         {
             m_webview->set_size(__get_real_size());
+        }
+    }
+
+    void webview::draw_visible()
+    {
+        if (get_webview() && *get_webview())
+        {
+            m_webview->set_visible(get_is_visible());
         }
     }
 

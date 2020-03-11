@@ -21,6 +21,8 @@ namespace xaml
 
         void navigate(string_view_t uri) override;
 
+        void set_visible(bool vis) override;
+
         void set_location(point p) override;
         void set_size(size s) override;
         void set_rect(rectangle const& rect) override;

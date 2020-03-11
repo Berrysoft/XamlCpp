@@ -55,6 +55,7 @@ namespace xaml
                 params.height = 50;
                 params.parent = sparent.get();
                 this->__create(params);
+                draw_visible();
                 draw_text();
                 draw_alignment();
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);

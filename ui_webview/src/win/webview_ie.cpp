@@ -90,6 +90,11 @@ namespace xaml
         THROW_IF_FAILED(m_browser->Navigate(u.get(), &empty, &empty, &empty, &empty));
     }
 
+    void webview_ie::set_visible(bool vis)
+    {
+        m_container.ShowWindow(vis ? SW_SHOWNORMAL : SW_HIDE);
+    }
+
     void webview_ie::set_location(point p)
     {
         THROW_IF_WIN32_BOOL_FALSE(m_container.SetWindowPos(HWND_TOP, (int)p.x, (int)p.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE));

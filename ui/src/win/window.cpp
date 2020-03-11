@@ -122,6 +122,7 @@ namespace xaml
     {
         __draw({});
         ShowWindow(get_handle()->handle, SW_SHOWNORMAL);
+        set_is_visible(true);
         THROW_IF_WIN32_BOOL_FALSE(BringWindowToTop(get_handle()->handle));
     }
 
@@ -132,7 +133,7 @@ namespace xaml
 
     void window::hide()
     {
-        ShowWindow(get_handle()->handle, SW_HIDE);
+        set_is_visible(false);
     }
 
     rectangle window::get_client_region() const

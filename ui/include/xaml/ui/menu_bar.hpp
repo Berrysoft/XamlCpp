@@ -40,6 +40,10 @@ namespace xaml
     protected:
         XAML_UI_API virtual void draw_submenu();
 
+#ifndef XAML_UI_GTK3
+        XAML_UI_API void draw_visible() override;
+#endif // !XAML_UI_GTK3
+
     public:
 #define ADD_MENU_BAR_MEMBERS() ADD_MULTICONTAINER_MEMBERS()
 

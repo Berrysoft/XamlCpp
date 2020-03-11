@@ -45,6 +45,7 @@ namespace xaml
                 params.height = 14;
                 params.parent = sparent.get();
                 this->__create(params);
+                draw_visible();
                 draw_text();
                 draw_default();
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);

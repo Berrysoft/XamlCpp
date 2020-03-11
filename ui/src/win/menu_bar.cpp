@@ -16,7 +16,7 @@ namespace xaml
             auto m = make_shared<native_menu_bar>();
             m->handle.reset(CreateMenu());
             set_menu(m);
-            THROW_IF_WIN32_BOOL_FALSE(SetMenu(get_handle()->handle, get_menu()->handle.get()));
+            draw_visible();
         }
         draw_submenu();
         THROW_IF_WIN32_BOOL_FALSE(DrawMenuBar(get_handle()->handle));
@@ -27,6 +27,17 @@ namespace xaml
         for (auto& child : m_children)
         {
             child->__draw({});
+        }
+    }
+
+    void menu_bar::draw_visible()
+    {
+        if (get_is_visible())
+            THROW_IF_WIN32_BOOL_FALSE(SetMenu(get_handle()->handle, get_menu()->handle.get()));
+        else
+        {
+            if (GetMenu(get_handle()->handle) == get_menu()->handle.get())
+                THROW_IF_WIN32_BOOL_FALSE(SetMenu(get_handle()->handle, nullptr));
         }
     }
 } // namespace xaml

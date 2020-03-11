@@ -75,5 +75,10 @@ namespace xaml
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
     }
 
+    void control::draw_visible()
+    {
+        ShowWindow(get_handle()->handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
+    }
+
     void control::__size_to_fit() {}
 } // namespace xaml

@@ -18,6 +18,7 @@ namespace xaml
         virtual void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback = {}) = 0;
         virtual operator bool() const = 0;
         virtual void navigate(string_view_t uri) = 0;
+        virtual void set_visible(bool vis) = 0;
         virtual void set_location(point p) = 0;
         virtual void set_size(size s) = 0;
         virtual void set_rect(rectangle const& rect) = 0;

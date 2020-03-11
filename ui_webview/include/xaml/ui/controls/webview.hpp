@@ -77,7 +77,8 @@ namespace xaml
         void draw_create();
 
     protected:
-        XAML_UI_WEBVIEW_API virtual void draw_size() override;
+        XAML_UI_WEBVIEW_API void draw_size() override;
+        XAML_UI_WEBVIEW_API void draw_visible() override;
 #endif // XAML_UI_WINDOWS
 
     protected:

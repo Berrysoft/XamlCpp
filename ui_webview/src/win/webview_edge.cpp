@@ -84,6 +84,11 @@ namespace xaml
         m_view.Navigate(Uri{ uri });
     }
 
+    void webview_edge::set_visible(bool vis)
+    {
+        m_view.IsVisible(vis);
+    }
+
     void webview_edge::set_location(point p)
     {
         auto bounds = m_view.Bounds();

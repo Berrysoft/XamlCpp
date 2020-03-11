@@ -114,6 +114,11 @@ namespace xaml
         THROW_IF_FAILED(m_view->Navigate(uri.data()));
     }
 
+    void webview_edge2::set_visible(bool vis)
+    {
+        THROW_IF_FAILED(m_host->put_IsVisible(vis));
+    }
+
     void webview_edge2::set_location(point p)
     {
         RECT bounds;

@@ -47,6 +47,7 @@ namespace xaml
                 draw_items();
                 draw_sel();
                 draw_text();
+                draw_visible();
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             __set_rect(region);

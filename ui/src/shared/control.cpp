@@ -5,7 +5,7 @@ using namespace std;
 
 namespace xaml
 {
-    control::control() : meta_class()
+    control::control() : meta_class(), m_is_visible(true)
     {
         add_size_changed([this](control const&, size) {
             if (get_handle())
@@ -14,11 +14,10 @@ namespace xaml
                 __parent_redraw();
             }
         });
+        add_is_visible_changed([this](control const&, bool) { if (get_handle()) draw_visible(); });
     }
 
-    control::~control()
-    {
-    }
+    control::~control() {}
 
     void control::set_parent(weak_ptr<control> value)
     {

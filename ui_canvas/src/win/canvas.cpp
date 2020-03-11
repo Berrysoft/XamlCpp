@@ -98,6 +98,7 @@ namespace xaml
                 params.parent = sparent.get();
                 this->__create(params);
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);
+                draw_visible();
             }
             __set_rect(region);
             if (!get_canvas())
