@@ -28,8 +28,8 @@ namespace xaml
         {
             if (NSApp.mainMenu == get_menu()->handle)
                 [NSApp setMainMenu:nil];
-		}
-	}
+        }
+    }
 
     void menu_bar::draw_submenu()
     {

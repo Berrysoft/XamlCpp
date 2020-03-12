@@ -41,5 +41,5 @@ namespace xaml
     {
         NSView* view = get_handle()->handle;
         view.hidden = !m_is_visible;
-	}
+    }
 }

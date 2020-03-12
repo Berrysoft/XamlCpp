@@ -81,7 +81,7 @@ namespace xaml
             [window makeKeyAndOrderFront:nil];
         else
             [window orderOut:nil];
-	}
+    }
 
     void window::draw_size()
     {
@@ -138,8 +138,8 @@ namespace xaml
         NSWindow* window = get_window()->window;
         if (application::current()->get_main_window()->get_window()->window == window)
         {
-            [window makeMainWindow];  
-		}
+            [window makeMainWindow];
+        }
         [window makeKeyAndOrderFront:nil];
     }
 
