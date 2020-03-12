@@ -163,7 +163,27 @@ namespace xaml
         };
         NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.data()]
                                                                    attributes:attrs];
-        [astr drawAtPoint:NSMakePoint(p.x, m_size.height - p.y - font.size)];
+        NSSize str_size = astr.size;
+        NSPoint location = NSMakePoint(p.x, m_size.height - p.y - str_size.height);
+        switch (font.halign)
+        {
+        case halignment_t::center:
+            location.x -= str_size.width / 2;
+            break;
+        case halignment_t::right:
+            location.x -= str_size.width;
+            break;
+        }
+        switch (font.valign)
+        {
+        case valignment_t::center:
+            location.y += str_size.height / 2;
+            break;
+        case valignment_t::bottom:
+            location.y += str_size.height;
+            break;
+        }
+        [astr drawAtPoint:location];
     }
 
     void canvas::__draw(const rectangle& region)
