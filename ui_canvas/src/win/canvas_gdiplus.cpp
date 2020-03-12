@@ -200,7 +200,7 @@ namespace xaml
         check_status(fmt.SetLineAlignment(a));
         auto pf = get_PointF(p, dpi);
         RectF r;
-        check_status(handle->MeasureString(str.data(), (INT)str.length(), &f, pf, &r));
+        check_status(handle->MeasureString(str.data(), (INT)str.length(), &f, pf, &fmt, &r));
         switch (font.valign)
         {
         case valignment_t::center:
@@ -232,10 +232,8 @@ namespace xaml
     void canvas_gdiplus::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
     {
         UINT dpi = GetDpiForWindow(wnd);
-        size region = real * dpi / 96.0;
-        THROW_IF_WIN32_BOOL_FALSE(Rectangle(hdc, -1, -1, (int)region.width + 2, (int)region.height + 2));
         Graphics g{ hdc };
-        check_status(g.SetPageUnit(UnitPixel));
+        check_status(g.Clear(Color::White));
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;
         ctx.dpi = (double)dpi;
