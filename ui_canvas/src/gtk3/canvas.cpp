@@ -115,6 +115,26 @@ namespace xaml
         set_brush(brush);
         cairo_select_font_face(m_handle->handle, font.font_family.c_str(), font.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(m_handle->handle, font.size);
+        cairo_text_extents_t extent;
+        cairo_text_extents(m_handle->handle, str.data(), &extent);
+        switch (font.halign)
+        {
+        case halignment_t::center:
+            p.x -= extent.width / 2;
+            break;
+        case halignment_t::right:
+            p.x -= extent.width;
+            break;
+        }
+        switch (font.valign)
+        {
+        case valignment_t::center:
+            p.y += extent.height / 2;
+            break;
+        case valignment_t::top:
+            p.y += extent.height;
+            break;
+        }
         cairo_move_to(m_handle->handle, p.x, p.y);
         cairo_show_text(m_handle->handle, str.data());
     }
