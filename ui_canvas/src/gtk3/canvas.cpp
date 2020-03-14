@@ -125,6 +125,8 @@ namespace xaml
         case halignment_t::right:
             p.x -= extent.width;
             break;
+        default:
+            break;
         }
         switch (font.valign)
         {
@@ -133,6 +135,8 @@ namespace xaml
             break;
         case valignment_t::top:
             p.y += extent.height;
+            break;
+        default:
             break;
         }
         cairo_move_to(m_handle->handle, p.x, p.y);

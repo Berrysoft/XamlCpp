@@ -173,6 +173,8 @@ namespace xaml
         case halignment_t::right:
             location.x -= str_size.width;
             break;
+        default:
+            break;
         }
         switch (font.valign)
         {
@@ -181,6 +183,8 @@ namespace xaml
             break;
         case valignment_t::bottom:
             location.y += str_size.height;
+            break;
+        default:
             break;
         }
         [astr drawAtPoint:location];
