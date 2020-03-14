@@ -38,11 +38,6 @@ target_include_directories(xaml_ui_controls
 
 target_link_libraries(xaml_ui_controls xaml_ui)
 
-set_target_properties(xaml_ui_controls PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)
 
 add_subdirectory(meta)

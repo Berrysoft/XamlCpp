@@ -45,11 +45,6 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui ${GTK3_LIBRARIES})
 endif()
 
-set_target_properties(xaml_ui PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 if(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)

@@ -92,11 +92,6 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui_webview ${WEBKIT4_LIBRARIES})
 endif()
 
-set_target_properties(xaml_ui_webview PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/controls)
 
 add_subdirectory(meta)

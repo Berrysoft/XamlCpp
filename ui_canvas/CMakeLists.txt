@@ -44,11 +44,6 @@ if(${BUILD_WINDOWS})
 endif()
 target_compile_definitions(xaml_ui_canvas PRIVATE "-D_USE_MATH_DEFINES")
 
-set_target_properties(xaml_ui_canvas PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
 
 add_subdirectory(meta)

@@ -27,11 +27,6 @@ target_include_directories(xaml_meta
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set_target_properties(xaml_meta PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)
 install(FILES ${META_HEADERS} DESTINATION include/xaml/meta)
 

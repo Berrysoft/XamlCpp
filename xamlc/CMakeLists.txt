@@ -14,11 +14,6 @@ target_include_directories(xamlc
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-set_target_properties(xamlc PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
-
 install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml)
 
 add_subdirectory(test)

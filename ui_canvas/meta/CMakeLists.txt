@@ -10,8 +10,3 @@ target_include_directories(xaml_ui_canvas_meta
 )
 
 target_link_libraries(xaml_ui_canvas_meta xaml_ui_canvas)
-
-set_target_properties(xaml_ui_canvas_meta PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)

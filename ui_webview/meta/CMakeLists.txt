@@ -10,8 +10,3 @@ target_include_directories(xaml_ui_webview_meta
 )
 
 target_link_libraries(xaml_ui_webview_meta xaml_ui_webview)
-
-set_target_properties(xaml_ui_webview_meta PROPERTIES
-    VERSION ${CMAKE_PROJECT_VERSION}
-    SOVERSION ${CMAKE_PROJECT_VERSION}
-)
