@@ -23,11 +23,6 @@ namespace xaml
         }
     }
 
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
-    {
-        return msgbox(parent, message, title, {}, style, buttons);
-    }
-
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
     {
         GtkWidget* dialog = gtk_message_dialog_new(parent && parent->get_handle() ? GTK_WINDOW(parent->get_handle()->handle) : NULL, GTK_DIALOG_DESTROY_WITH_PARENT, get_style(style), GTK_BUTTONS_NONE, "%s", instruction.empty() ? message.data() : instruction.data());

@@ -20,11 +20,6 @@ namespace xaml
         }
     }
 
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
-    {
-        return msgbox(parent, message, title, {}, style, buttons);
-    }
-
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
     {
         NSAlert* alert = [NSAlert new];

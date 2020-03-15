@@ -26,17 +26,12 @@ namespace xaml
         }
     }
 
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
-    {
-        return (msgbox_result)MessageBox(parent ? parent->get_handle()->handle : NULL, message.data(), title.data(), get_style(style) | (UINT)buttons);
-    }
-
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
     {
         TASKDIALOGCONFIG config{};
         config.cbSize = sizeof(TASKDIALOGCONFIG);
         if (parent) config.hwndParent = parent->get_handle()->handle;
-        config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION;
+        config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_SIZE_TO_CONTENT;
         config.pszWindowTitle = title.data();
         config.pszMainInstruction = instruction.data();
         config.pszContent = message.data();

@@ -44,14 +44,11 @@ namespace xaml
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
-        SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        THROW_IF_WIN32_BOOL_FALSE(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2));
         NONCLIENTMETRICS ncm{};
         ncm.cbSize = sizeof(ncm);
-        THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0));
+        THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0, 96));
         s_default_font = ncm.lfMessageFont;
-        double ddpi = (double)GetDpiForSystem();
-        s_default_font.lfHeight = (LONG)(s_default_font.lfHeight * 96.0 / ddpi);
-        s_default_font.lfWidth = (LONG)(s_default_font.lfWidth * 96.0 / ddpi);
     }
 
     static HFONT get_default_font(UINT udpi)
