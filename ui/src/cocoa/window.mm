@@ -77,10 +77,7 @@ namespace xaml
     void window::draw_visible()
     {
         NSWindow* window = get_window()->window;
-        if (get_is_visible())
-            [window makeKeyAndOrderFront:nil];
-        else
-            [window orderOut:nil];
+        [window setIsVisible:get_is_visible()];
     }
 
     void window::draw_size()
@@ -135,11 +132,8 @@ namespace xaml
     void window::show()
     {
         __draw({});
+        set_is_visible(true);
         NSWindow* window = get_window()->window;
-        if (application::current()->get_main_window()->get_window()->window == window)
-        {
-            [window makeMainWindow];
-        }
         [window makeKeyAndOrderFront:nil];
     }
 
@@ -151,8 +145,7 @@ namespace xaml
 
     void window::hide()
     {
-        NSWindow* window = get_window()->window;
-        [window setIsVisible:NO];
+        set_is_visible(false);
     }
 
     rectangle window::get_client_region() const
