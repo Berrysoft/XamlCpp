@@ -1,80 +1,84 @@
 #include <filesystem>
+#include <string>
+#include <vector>
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
 #include <Windows.h>
 #include <system_error>
+
+constexpr std::wstring_view module_prefix{};
 #else
 #include <dlfcn.h>
-#endif // WIN32 || __MINGW32__
 
 constexpr std::string_view module_prefix{ "lib" };
+#endif // WIN32 || __MINGW32__
 
 using namespace std;
 using namespace std::filesystem;
 
 namespace xaml
 {
-    static path get_right_path(string_view name)
+    template <typename Char>
+    static vector<basic_string<Char>> split(basic_string_view<Char> str, Char separater)
     {
-        path p = name;
-        if (!p.has_extension()) p.replace_extension(module_extension);
-        return p;
+        size_t index = 0, offset = 0;
+        vector<basic_string<Char>> result;
+        for (;;)
+        {
+            index = str.find_first_of(separater, offset);
+            if (index > offset)
+            {
+                auto sub = str.substr(offset, index - offset);
+                if (!sub.empty())
+                    result.emplace_back(sub);
+            }
+            if (index == basic_string_view<Char>::npos) break;
+            offset = index + 1;
+        }
+        return result;
     }
 
-    static path get_in_lib_path(string_view name)
+#if defined(WIN32) || defined(__MINGW32__)
+    static vector<wstring> get_search_path()
     {
-        path p{ name.begin(), name.end() };
-        if (p.has_parent_path())
-        {
-            if (p.has_filename())
-            {
-                return p.parent_path() / path{ U("..") } / path{ U("lib") } / p.filename();
-            }
-            else
-            {
-                return p;
-            }
-        }
-        else
-        {
-            return path{ U("..") } / path{ U("lib") } / p;
-        }
+        wstring buffer(32767, U('\0'));
+        DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
+        buffer.resize(count);
+        vector<wstring> result = split<wchar_t>(buffer, U(';'));
+        result.push_back(L".");
+        return result;
     }
+#else
+    static vector<string> get_search_path()
+    {
+#ifdef __APPLE__
+        constexpr string_view ld_library_path = "DYLD_LIBRARY_PATH";
+#else
+        constexpr string_view ld_library_path = "LD_LIBRARY_PATH";
+#endif // __APPLE__
+        char* ldp = getenv(ld_library_path.data());
+        vector<string> result = split<char>(ldp ? ldp : "", ':');
+        result.push_back("../lib");
+        return result;
+    }
+#endif // WIN32 || __MINGW32__
 
     static path get_full_path(string_view name, bool in_lib = false)
     {
-        path p = get_right_path(name);
-        if (exists(p))
+        path pname = name;
+        if (pname.is_absolute()) return pname;
+        auto search_dirs = get_search_path();
+        for (auto& dir : search_dirs)
         {
-            return p;
+            path fullname{ module_prefix };
+            fullname += pname;
+            fullname += module_extension;
+            path p = path{ dir } / fullname;
+            if (exists(p)) return p;
         }
-        else
-        {
-            if (name.length() >= module_prefix.length() && module_prefix == name.substr(0, 3))
-            {
-                p = get_right_path(name.substr(4));
-            }
-            else
-            {
-                auto filename = path{ U("lib") };
-                filename += p.filename();
-                p.remove_filename();
-                p /= filename;
-                string nname = p.string();
-                p = get_right_path(nname);
-            }
-            if (exists(p))
-                return p;
-            else if (!in_lib)
-            {
-                p = get_in_lib_path(name);
-                return get_full_path(p.string(), true);
-            }
-            else
-                return name;
-        }
+        return name;
     }
 
 #if defined(WIN32) || defined(__MINGW32__)
