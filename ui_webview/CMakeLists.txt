@@ -43,6 +43,7 @@ if(${BUILD_WINDOWS})
         target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_WEBVIEW2")
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
+            message(STATUS "Download WebView2...")
             file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.430 ${CMAKE_BINARY_DIR}/webview2.nupkg)
             message(STATUS "WebView2 downloaded")
         endif()
@@ -67,7 +68,8 @@ if(${BUILD_WINDOWS})
         target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_EDGE")
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200203.5 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
+            message(STATUS "Downloading CppWinRT...")
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200316.3 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
             message(STATUS "CppWinRT downloaded")
         endif()
 
