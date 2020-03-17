@@ -51,7 +51,7 @@ namespace xaml
         s_default_font = ncm.lfMessageFont;
     }
 
-    static HFONT get_default_font(UINT udpi)
+    void* application::__default_font(unsigned int udpi) const
     {
         auto it = s_dpi_fonts.find(udpi);
         if (it != s_dpi_fonts.end())
@@ -63,16 +63,6 @@ namespace xaml
         f.lfWidth = (LONG)(f.lfWidth * (double)udpi / 96.0);
         auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
         return p.second ? p.first->second.get() : NULL;
-    }
-
-    HFONT application::__default_font() const
-    {
-        return get_default_font(GetDpiForSystem());
-    }
-
-    HFONT application::__default_font(HWND hWnd) const
-    {
-        return get_default_font(GetDpiForWindow(hWnd));
     }
 
     int application::run()

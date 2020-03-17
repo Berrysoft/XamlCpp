@@ -1,6 +1,7 @@
 #include <xaml/ui/application.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
+#include <Windows.h>
 #include <shellapi.h>
 #endif // WIN32 || __MINGW32__
 
@@ -26,7 +27,7 @@ namespace xaml
         void operator()(void* pointer) const noexcept { LocalFree((HLOCAL)pointer); }
     };
 
-    shared_ptr<application> application::init(LPTSTR lpCmdLine)
+    shared_ptr<application> application::init(char_t const* lpCmdLine)
     {
         int argc;
 #ifdef UNICODE

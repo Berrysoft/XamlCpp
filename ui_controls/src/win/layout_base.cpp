@@ -11,7 +11,7 @@ namespace xaml
         if (auto sparent = get_parent().lock())
         {
             set_handle(sparent->get_handle());
-            HFONT def_font = application::current()->__default_font(get_handle()->handle);
+            HFONT def_font = (HFONT)application::current()->__default_font(GetDpiForWindow(get_handle()->handle));
             __draw_impl(region, [this, def_font](shared_ptr<control> c, rectangle const& region) {
                 SendMessage(c->get_handle()->handle, WM_SETFONT, (WPARAM)def_font, FALSE);
             });

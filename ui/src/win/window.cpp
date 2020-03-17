@@ -21,14 +21,12 @@ namespace xaml
         window_message msg = { hWnd, Msg, wParam, lParam };
         auto wnd = static_pointer_cast<window>(window_map[hWnd].lock());
         auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
-        if (!result)
+        switch (msg.Msg)
         {
-            switch (msg.Msg)
-            {
-            case WM_CTLCOLORSTATIC:
+        case WM_CTLCOLORSTATIC:
+            if (!result)
                 result = (intptr_t)white_brush.get();
-                break;
-            }
+            break;
         }
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
     }
@@ -187,7 +185,7 @@ namespace xaml
             {
                 size real_size = __get_real_size();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
+                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(GetDpiForWindow(get_handle()->handle)), TRUE);
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                 rectangle r = from_native(rect);

@@ -3,6 +3,7 @@
 #include <xaml/strings.hpp>
 
 #if defined(WIN32) || defined(__MINGW32__)
+#include <Windows.h>
 #include <system_error>
 #else
 #include <dlfcn.h>
@@ -90,7 +91,7 @@ namespace xaml
 
     void* module::get_method(string_view name) const
     {
-        FARPROC p = GetProcAddress(get_handle(), name.data());
+        FARPROC p = GetProcAddress((HMODULE)get_handle(), name.data());
         return (void*)p;
     }
 
@@ -98,7 +99,7 @@ namespace xaml
     {
         if (get_handle())
         {
-            FreeLibrary(get_handle());
+            FreeLibrary((HMODULE)get_handle());
             set_handle(nullptr);
         }
     }

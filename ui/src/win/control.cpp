@@ -21,7 +21,7 @@ namespace xaml
             params.parent ? params.parent->get_handle()->handle : nullptr,
             nullptr, GetModuleHandle(nullptr), nullptr));
         set_handle(h);
-        SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(), TRUE);
+        SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(GetDpiForWindow(get_handle()->handle)), TRUE);
     }
 
     void control::__set_rect(rectangle const& region)

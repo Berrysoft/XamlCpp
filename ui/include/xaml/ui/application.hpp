@@ -13,10 +13,6 @@
 #include <xaml/strings.hpp>
 #include <xaml/ui/objc.hpp>
 
-#if defined(WIN32) || defined(__MINGW32__)
-#include <Windows.h>
-#endif // WIN32 || __MINGW32__
-
 namespace xaml
 {
     class window;
@@ -69,13 +65,12 @@ namespace xaml
         XAML_UI_API static std::shared_ptr<application> init(int argc, char_t const* const* argv);
         static std::shared_ptr<application> init() { return init(0, nullptr); }
 #if defined(WIN32) || defined(__MINGW32__)
-        XAML_UI_API static std::shared_ptr<application> init(LPTSTR lpCmdLine);
+        XAML_UI_API static std::shared_ptr<application> init(char_t const* lpCmdLine);
 #endif // WIN32 || __MINGW32__
         XAML_UI_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS
-        XAML_UI_API HFONT __default_font() const;
-        XAML_UI_API HFONT __default_font(HWND hWnd) const;
+        XAML_UI_API void* __default_font(unsigned int udpi) const;
 #endif // XAML_UI_WINDOWS
     };
 } // namespace xaml

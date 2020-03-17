@@ -4,10 +4,6 @@
 #include <string_view>
 #include <xaml/utility.hpp>
 
-#if defined(WIN32) || defined(__MINGW32__)
-#include <Windows.h>
-#endif // WIN32 || __MINGW32__
-
 namespace xaml
 {
 #if defined(WIN32) || defined(__MINGW32__)
@@ -21,11 +17,8 @@ namespace xaml
     class module
     {
     public:
-#if defined(WIN32) || defined(__MINGW32__)
-        using native_handle_type = HMODULE;
-#else
         using native_handle_type = void*;
-#endif
+
     private:
         native_handle_type m_handle{ nullptr };
 
