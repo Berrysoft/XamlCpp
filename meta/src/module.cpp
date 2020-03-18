@@ -11,11 +11,11 @@
 #include <dlfcn.h>
 #endif // WIN32 || __MINGW32__
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__MINGW32__)
 constexpr xaml::path_string_view_t module_prefix{};
 #else
-constexpr xaml::path_string_view_t module_prefix{ "lib" };
-#endif // WIN32
+constexpr xaml::path_string_view_t module_prefix{ P("lib") };
+#endif // WIN32 && !__MINGW32__
 
 using namespace std;
 using namespace std::filesystem;
