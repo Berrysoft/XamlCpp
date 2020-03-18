@@ -25,11 +25,11 @@ namespace xaml::test
         void init_components();
 #endif // XAML_TEST_GEN_FAKE
 
-        void on_timer_tick(timer&);
+        void on_timer_tick(std::reference_wrapper<timer>);
 
-        void on_button_click(button& btn);
+        void on_button_click(std::reference_wrapper<button> btn);
 
-        void on_canvas_redraw(canvas& cv, drawing_context& dc);
+        void on_canvas_redraw(std::reference_wrapper<canvas> cv, std::reference_wrapper<drawing_context> dc);
 
         REGISTER_CLASS_DECL_FILE(xaml::test, test_window, "test.xaml.hpp")
         {

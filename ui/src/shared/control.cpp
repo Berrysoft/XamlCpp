@@ -42,7 +42,7 @@ namespace xaml
                 c->set_child(static_pointer_cast<control>(shared_from_this()));
             }
             m_parent = svalue;
-            m_parent_changed(*this, *svalue);
+            m_parent_changed(*this, *svalue.get());
         }
     }
 

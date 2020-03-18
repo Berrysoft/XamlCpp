@@ -43,10 +43,10 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_sel();
         XAML_UI_CONTROLS_API virtual void draw_editable();
 
-        EVENT(text_changed, combo_box&, std::optional<string_t> const&)
+        EVENT(text_changed, std::reference_wrapper<combo_box>, std::optional<string_view_t>)
         PROP_EVENT(text, std::optional<string_t>)
 
-        EVENT(is_editable_changed, combo_box&, bool)
+        EVENT(is_editable_changed, std::reference_wrapper<combo_box>, bool)
         PROP_CONSTEXPR_EVENT(is_editable, bool)
 
     public:

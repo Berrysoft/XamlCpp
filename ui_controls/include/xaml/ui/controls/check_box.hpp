@@ -38,7 +38,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, check_box&, bool)
+        EVENT(is_checked_changed, std::reference_wrapper<check_box>, bool)
 
     public:
 #define ADD_CHECK_BOX_MEMBERS() \

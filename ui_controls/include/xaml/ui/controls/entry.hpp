@@ -40,7 +40,7 @@ namespace xaml
 
         PROP(text_halignment, halignment_t)
 
-        EVENT(text_changed, entry&, string_view_t)
+        EVENT(text_changed, std::reference_wrapper<entry>, string_view_t)
         PROP_STRING_EVENT(text)
 
     public:

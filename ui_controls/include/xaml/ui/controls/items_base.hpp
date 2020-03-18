@@ -52,7 +52,7 @@ namespace xaml
         }
 
     public:
-        EVENT(items_changed, items_base&, observable_vector_view<T>)
+        EVENT(items_changed, std::reference_wrapper<items_base>, observable_vector_view<T>)
         PROP_RD(items, observable_vector_view<T>)
         void set_items(observable_vector_view<T> value)
         {
@@ -65,7 +65,7 @@ namespace xaml
             }
         }
 
-        EVENT(sel_id_changed, items_base&, std::size_t)
+        EVENT(sel_id_changed, std::reference_wrapper<items_base>, std::size_t)
         PROP_CONSTEXPR_EVENT(sel_id, std::size_t)
 
     public:

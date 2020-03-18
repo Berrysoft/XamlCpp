@@ -24,7 +24,7 @@ namespace xaml::test
         // To simply add a handler, call `size_t add_value_changed(function<void(calculator const&,int)>)`;
         // to remove it, call `void remove_value_changed(size_t)`,
         // the parameter is the return value of the add method.
-        EVENT(value_changed, calculator const&, int)
+        EVENT(value_changed, std::reference_wrapper<calculator>, int)
 
     public:
         void plus(int x, int y) { set_value(x + y); }
@@ -71,7 +71,7 @@ int main()
     // Get the event named "value_changed".
     auto& ev = *t.get_event("value_changed");
     // Add a handler to the event of the object.
-    auto token = ev.add(mc.get(), function<void(calculator const&, int)>([](calculator const&, int i) { cout << "Value changed: " << i << endl; }));
+    auto token = ev.add(mc.get(), *make_type_erased_function<void, std::reference_wrapper<calculator>, int>([](calculator&, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.

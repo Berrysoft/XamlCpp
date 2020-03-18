@@ -85,7 +85,7 @@ namespace xaml
         XAML_UI_WEBVIEW_API virtual void draw_uri();
 
     public:
-        EVENT(uri_changed, webview&, string_view_t)
+        EVENT(uri_changed, std::reference_wrapper<webview>, string_view_t)
         PROP_STRING_EVENT(uri)
 
         XAML_UI_WEBVIEW_API bool get_can_go_forward();
@@ -94,7 +94,7 @@ namespace xaml
         XAML_UI_WEBVIEW_API void go_forward();
         XAML_UI_WEBVIEW_API void go_back();
 
-        EVENT(resource_requested, webview&, resource_requested_args&)
+        EVENT(resource_requested, std::reference_wrapper<webview>, std::reference_wrapper<resource_requested_args>)
 
     public:
 #define ADD_WEBVIEW_MEMBERS() \

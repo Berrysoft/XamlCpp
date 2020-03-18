@@ -64,7 +64,7 @@ namespace xaml
         XAML_UI_API void start();
         XAML_UI_API void stop();
 
-        EVENT(tick, timer&)
+        EVENT(tick, std::reference_wrapper<timer>)
     };
 } // namespace xaml
 

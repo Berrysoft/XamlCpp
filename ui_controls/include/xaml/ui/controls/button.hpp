@@ -40,13 +40,13 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_default();
 
     public:
-        EVENT(text_changed, button&, string_view_t)
+        EVENT(text_changed, std::reference_wrapper<button>, string_view_t)
         PROP_STRING_EVENT(text)
 
         PROP_EVENT(is_default, bool)
-        EVENT(is_default_changed, button&, bool)
+        EVENT(is_default_changed, std::reference_wrapper<button>, bool)
 
-        EVENT(click, button&)
+        EVENT(click, std::reference_wrapper<button>)
 
     public:
 #define ADD_BUTTON_MEMBERS()    \

@@ -21,9 +21,9 @@
 #define ADD_CTOR(...) ref->add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ref->add_constructor<self_type>()
 
-#define ADD_METHOD(name) ::xaml::__add_method_deduce_helper<self_type, decltype(&self_type::name)>{}(*ref, #name, &self_type::name)
+#define ADD_METHOD(name) ref->add_method(#name, ::xaml::make_type_erased_this_function(&self_type::name))
 
-#define ADD_STATIC_METHOD(name) ::xaml::__add_static_method_deduce_helper<self_type, decltype(&self_type::name)>{}(*ref, #name, &self_type::name)
+#define ADD_STATIC_METHOD(name) ref->add_static_method(#name, ::xaml::make_type_erased_function(&self_type::name))
 
 #define PROP_RD(name, type) \
 private:                    \
@@ -135,48 +135,39 @@ public:                                                                         
         },                                                                                            \
         &self_type::m_##name)
 
+#define __DETERMINE_NEQ_AND_RAISE_EVENT(name) \
+    if (m_##name != value)                    \
+    {                                         \
+        m_##name = value;                     \
+        m_##name##_changed(*this, value);     \
+    }
+
 #define PROP_EVENT(name, type)                \
     PROP_RD(name, type)                       \
     void set_##name(type value)               \
     {                                         \
-        if (m_##name != value)                \
-        {                                     \
-            m_##name = value;                 \
-            m_##name##_changed(*this, value); \
-        }                                     \
+        __DETERMINE_NEQ_AND_RAISE_EVENT(name) \
     }
 
 #define PROP_REF_EVENT(name, type)            \
     PROP_RD(name, type)                       \
     void set_##name(type const& value)        \
     {                                         \
-        if (m_##name != value)                \
-        {                                     \
-            m_##name = value;                 \
-            m_##name##_changed(*this, value); \
-        }                                     \
+        __DETERMINE_NEQ_AND_RAISE_EVENT(name) \
     }
 
 #define PROP_CONSTEXPR_EVENT(name, type)      \
     PROP_CONSTEXPR_RD(name, type)             \
     void set_##name(type value)               \
     {                                         \
-        if (m_##name != value)                \
-        {                                     \
-            m_##name = value;                 \
-            m_##name##_changed(*this, value); \
-        }                                     \
+        __DETERMINE_NEQ_AND_RAISE_EVENT(name) \
     }
 
 #define PROP_STRING_EVENT(name)                  \
     PROP_STRING_RD(name)                         \
     void set_##name(::xaml::string_view_t value) \
     {                                            \
-        if (m_##name != value)                   \
-        {                                        \
-            m_##name = (::xaml::string_t)value;  \
-            m_##name##_changed(*this, m_##name); \
-        }                                        \
+        __DETERMINE_NEQ_AND_RAISE_EVENT(name)    \
     }
 
 #define ADD_PROP_EVENT(name) \

@@ -3,17 +3,14 @@
 
 #include <algorithm>
 #include <any>
-#include <array>
 #include <functional>
 #include <initializer_list>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <typeindex>
 #include <unordered_map>
-#include <unordered_set>
 #include <xaml/array_view.hpp>
 #include <xaml/meta/conv.hpp>
 #include <xaml/meta/event.hpp>
@@ -111,16 +108,16 @@ namespace xaml
         }
     };
 
-    // A type-erased function, for storage convinence.
-    struct __type_erased_function
+    struct type_erased_function
     {
-        virtual bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept = 0;
-        virtual bool is_same_return_type(std::type_index type) const noexcept = 0;
+        std::type_index return_type{ typeid(std::nullptr_t) };
+        std::vector<std::type_index> args_type;
+        std::function<std::any(array_view<std::any>)> func;
 
-        template <typename... Args>
-        bool is_same_arg_type() const noexcept
+        bool is_same_return_type(std::type_index t) const noexcept { return return_type == t; }
+        bool is_same_arg_type(std::initializer_list<std::type_index> ts) const noexcept
         {
-            return is_same_arg_type({ std::type_index(typeid(Args))... });
+            return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
 
         template <typename Return>
@@ -129,52 +126,95 @@ namespace xaml
             return is_same_return_type(std::type_index(typeid(Return)));
         }
 
-        virtual ~__type_erased_function() {}
+        template <typename... Args>
+        bool is_same_arg_type() const noexcept
+        {
+            return is_same_arg_type({ std::type_index(typeid(Args))... });
+        }
+
+        operator bool() const { return (bool)func; }
+
+        std::any operator()(array_view<std::any> args) const { return func(args); }
     };
 
-    template <typename T>
-    struct __type_erased_function_impl;
+    struct type_erased_this_function
+    {
+        std::type_index return_type{ typeid(std::nullptr_t) };
+        std::vector<std::type_index> args_type;
+        std::function<std::any(meta_class*, array_view<std::any>)> func;
+
+        bool is_same_return_type(std::type_index const& t) const noexcept { return return_type == t; }
+        bool is_same_arg_type(std::initializer_list<std::type_index> ts) const noexcept
+        {
+            return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
+        }
+
+        template <typename Return>
+        bool is_same_return_type() const noexcept
+        {
+            return is_same_return_type(std::type_index(typeid(Return)));
+        }
+
+        template <typename... Args>
+        bool is_same_arg_type() const noexcept
+        {
+            return is_same_arg_type({ std::type_index(typeid(Args))... });
+        }
+
+        operator bool() const { return (bool)func; }
+
+        std::any operator()(meta_class* self, array_view<std::any> args) const { return func(self, args); }
+    };
+
+    template <typename Return, typename... Args, typename F, std::size_t... Indicies>
+    std::unique_ptr<type_erased_function> __make_type_erased_function_impl(F&& f, std::index_sequence<Indicies...>)
+    {
+        auto func = std::make_unique<type_erased_function>();
+        func->return_type = std::type_index(typeid(Return));
+        func->args_type = { std::type_index(typeid(Args))... };
+        if constexpr (std::is_same_v<Return, void>)
+            func->func = [f](array_view<std::any> args) -> std::any { f(std::forward<Args>(std::any_cast<Args>(args[Indicies]))...); return {}; };
+        else
+            func->func = [f](array_view<std::any> args) -> std::any { return f(std::forward<Args>(std::any_cast<Args>(args[Indicies]))...); };
+        return func;
+    }
 
     template <typename Return, typename... Args>
-    struct __type_erased_function_impl<Return(Args...)> : __type_erased_function
+    std::unique_ptr<type_erased_function> make_type_erased_function(Return (*f)(Args...))
     {
-    private:
-        static inline bool is_same_arg_type_impl(std::initializer_list<std::type_index> lhs, std::initializer_list<std::type_index> rhs)
-        {
-            return std::equal(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
-        }
+        return __make_type_erased_function_impl<Return, Args...>(f, std::make_index_sequence<sizeof...(Args)>{});
+    }
 
-    public:
-        bool is_same_arg_type(std::initializer_list<std::type_index> types) const noexcept override final
-        {
-            return is_same_arg_type_impl({ std::type_index(typeid(Args))... }, types);
-        }
-        bool is_same_return_type(std::type_index type) const noexcept override final
-        {
-            return type == std::type_index(typeid(Return));
-        }
-        ~__type_erased_function_impl() override {}
-
-        std::function<Return(Args...)> func{};
-    };
-
-    template <typename T>
-    struct __type_erased_this_function_impl;
-
-    template <typename Return, typename... Args>
-    struct __type_erased_this_function_impl<Return(Args...)> : __type_erased_function_impl<Return(meta_class*, Args...)>
+    template <typename Return, typename... Args, typename F>
+    std::unique_ptr<type_erased_function> make_type_erased_function(F&& f)
     {
-        ~__type_erased_this_function_impl() override {}
+        return __make_type_erased_function_impl<Return, Args...>(std::forward<F>(f), std::make_index_sequence<sizeof...(Args)>{});
+    }
 
-        template <typename T, typename F>
-        void set_func(F&& f)
-        {
-            this->func = std::function<Return(meta_class*, Args...)>(
-                [f](meta_class* self, Args... args) -> Return {
-                    return std::mem_fn(f)(static_cast<T*>(self), std::forward<Args>(args)...);
-                });
-        }
-    };
+    template <typename Class, typename Return, typename... Args, typename F, std::size_t... Indicies>
+    std::unique_ptr<type_erased_this_function> __make_type_erased_this_function_impl(F&& f, std::index_sequence<Indicies...>)
+    {
+        auto func = std::make_unique<type_erased_this_function>();
+        func->return_type = std::type_index(typeid(Return));
+        func->args_type = { std::type_index(typeid(Args))... };
+        if constexpr (std::is_same_v<Return, void>)
+            func->func = [f](meta_class* self, array_view<std::any> args) -> std::any { f(static_cast<Class*>(self), std::forward<Args>(std::any_cast<Args>(args[Indicies]))...); return {}; };
+        else
+            func->func = [f](meta_class* self, array_view<std::any> args) -> std::any { return f(static_cast<Class*>(self), std::forward<Args>(std::any_cast<Args>(args[Indicies]))...); };
+        return func;
+    }
+
+    template <typename Class, typename Return, typename... Args>
+    std::unique_ptr<type_erased_this_function> make_type_erased_this_function(Return (Class::*f)(Args...))
+    {
+        return __make_type_erased_this_function_impl<Class, Return, Args...>(std::mem_fn(f), std::make_index_sequence<sizeof...(Args)>{});
+    }
+
+    template <typename Class, typename Return, typename... Args, typename F>
+    std::unique_ptr<type_erased_this_function> make_type_erased_this_function(F&& f)
+    {
+        return __make_type_erased_this_function_impl<Class, Return, Args...>(std::forward<F>(f), std::make_index_sequence<sizeof...(Args)>{});
+    }
 
     template <typename T>
     struct __optional_return
@@ -281,10 +321,10 @@ namespace xaml
 
     private:
         std::string m_name;
-        std::function<token_type(meta_class*, __type_erased_function const*)> adder;
-        std::function<token_type(meta_class*, meta_class*, __type_erased_function const*)> adder_erased_this;
+        std::function<token_type(meta_class*, type_erased_function const&)> adder;
+        std::function<token_type(meta_class*, meta_class*, type_erased_this_function const&)> adder_this;
         std::function<void(meta_class*, token_type)> remover;
-        std::unique_ptr<__type_erased_function> invoker;
+        std::unique_ptr<type_erased_this_function> invoker;
 
     public:
         std::string_view name() const noexcept { return m_name; }
@@ -292,38 +332,20 @@ namespace xaml
         bool can_remove() const noexcept { return (bool)remover; }
         bool can_invoke() const noexcept { return (bool)invoker; }
 
-        template <typename... Args>
-        bool match_arg_type() const
-        {
-            return invoker && invoker->is_same_arg_type<meta_class*, Args...>();
-        }
-
-        template <typename... Args>
-        token_type add(meta_class* self, std::function<void(Args...)> handler) const
+        token_type add(meta_class* self, type_erased_function const& handler) const
         {
             if (adder)
             {
-                if (match_arg_type<Args...>())
-                {
-                    auto h = __type_erased_function_impl<void(Args...)>{};
-                    h.func = handler;
-                    return adder(self, &h);
-                }
-                if constexpr (sizeof...(Args) == 0)
-                {
-                    auto h = __type_erased_function_impl<void(Args...)>{};
-                    h.func = [handler](Args... args) -> void { handler(args...); };
-                    return adder(self, &h);
-                }
+                return adder(self, handler);
             }
             return 0;
         }
 
-        token_type add_erased_this(meta_class* self, meta_class* target, __type_erased_function const* func) const
+        token_type add_this(meta_class* self, meta_class* target, type_erased_this_function const& func) const
         {
-            if (adder_erased_this)
+            if (adder_this)
             {
-                return adder_erased_this(self, target, func);
+                return adder_this(self, target, func);
             }
             return 0;
         }
@@ -339,11 +361,7 @@ namespace xaml
         template <typename... Args>
         void invoke(meta_class* self, Args... args) const
         {
-            if (match_arg_type<Args...>())
-            {
-                auto i = static_cast<__type_erased_function_impl<void(meta_class*, Args...)> const*>(invoker.get());
-                i->func(self, std::forward<Args>(args)...);
-            }
+            invoker(self, { std::forward<Args>(args)... });
         }
 
         friend class reflection_info;
@@ -372,9 +390,9 @@ namespace xaml
     {
     private:
         std::unordered_map<std::type_index, std::unique_ptr<meta_class>> m_attribute_map;
-        std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>> m_static_method_map;
-        std::vector<std::unique_ptr<__type_erased_function>> m_ctors;
-        std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>> m_method_map;
+        std::vector<std::unique_ptr<type_erased_function>> m_ctors;
+        std::unordered_multimap<std::string, std::unique_ptr<type_erased_this_function>> m_method_map;
+        std::unordered_multimap<std::string, std::unique_ptr<type_erased_function>> m_static_method_map;
         std::unordered_map<std::string, std::unique_ptr<property_info>> m_prop_map;
         std::unordered_map<std::string, std::unique_ptr<collection_property_info>> m_collection_prop_map;
         std::unordered_map<std::string, std::unique_ptr<event_info>> m_event_map;
@@ -399,40 +417,26 @@ namespace xaml
         XAML_META_API void set_attribute(std::unique_ptr<meta_class>&& attr) noexcept;
 
     public:
-        std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>> const& get_static_methods() const noexcept { return m_static_method_map; }
+        auto const& get_static_methods() const noexcept { return m_static_method_map; }
 
     protected:
-        XAML_META_API __type_erased_function const* __get_static_method(std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
+        XAML_META_API type_erased_function const& __get_static_method(std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
 
     public:
         template <typename Return, typename... Args>
-        std::function<Return(Args...)> get_static_method(std::string_view name) const noexcept
-        {
-            auto method = __get_static_method(name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
-            if (method)
-            {
-                return static_cast<__type_erased_function_impl<Return(Args...)> const*>(method)->func;
-            }
-            else
-            {
-                return {};
-            }
-        }
-
-        template <typename Return, typename... Args>
         __optional_return_t<Return> invoke_static_method(std::string_view name, Args... args) const
         {
-            auto m = get_static_method<Return, Args...>(name);
+            auto& m = __get_static_method(name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
             if (m)
             {
                 if constexpr (std::is_same_v<Return, void>)
                 {
-                    m(std::forward<Args>(args)...);
+                    m({ std::forward<Args>(args)... });
                     return true;
                 }
                 else
                 {
-                    return std::make_optional<Return>(m(std::forward<Args>(args)...));
+                    return std::make_optional<Return>(std::any_cast<Return>(m({ std::forward<Args>(args)... })));
                 }
             }
             else
@@ -448,49 +452,23 @@ namespace xaml
             }
         }
 
-    protected:
-        XAML_META_API void __add_static_method(std::string_view name, std::unique_ptr<__type_erased_function>&& func) noexcept;
+    public:
+        XAML_META_API void add_static_method(std::string_view name, std::unique_ptr<type_erased_function>&& func) noexcept;
 
     public:
-        template <typename Return, typename... Args>
-        void add_static_method(std::string_view name, std::function<Return(Args...)>&& func)
-        {
-            if (func)
-            {
-                auto f = std::make_unique<__type_erased_function_impl<Return(Args...)>>();
-                f->func = func;
-                __add_static_method(name, std::move(f));
-            }
-        }
-
-    public:
-        array_view<std::unique_ptr<__type_erased_function>> get_constructors() const noexcept { return m_ctors; }
+        array_view<std::unique_ptr<type_erased_function>> get_constructors() const noexcept { return m_ctors; }
 
     protected:
-        XAML_META_API __type_erased_function const* __get_constructor(std::initializer_list<std::type_index> arg_types) const noexcept;
+        XAML_META_API type_erased_function const& __get_constructor(std::initializer_list<std::type_index> arg_types) const noexcept;
 
     public:
-        template <typename... Args>
-        std::function<meta_class*(Args...)> get_constructor() const noexcept
-        {
-            auto ctor = __get_constructor({ std::type_index(typeid(Args))... });
-            if (ctor)
-            {
-                return static_cast<__type_erased_function_impl<meta_class*(Args...)> const*>(ctor)->func;
-            }
-            else
-            {
-                return {};
-            }
-        }
-
         template <typename... Args>
         meta_class* construct(Args... args) const noexcept
         {
-            auto ctor = get_constructor<Args...>();
+            auto& ctor = __get_constructor({ std::type_index(typeid(Args))... });
             if (ctor)
             {
-                return ctor(std::forward<Args>(args)...);
+                return std::any_cast<meta_class*>(ctor({ std::forward<Args>(args)... }));
             }
             else
             {
@@ -498,53 +476,36 @@ namespace xaml
             }
         }
 
-    protected:
-        XAML_META_API void __add_constructor(std::unique_ptr<__type_erased_function>&& ctor) noexcept;
-
     public:
+        XAML_META_API void add_constructor(std::unique_ptr<type_erased_function>&& ctor) noexcept;
+
         template <typename T, typename... Args>
         void add_constructor() noexcept
         {
-            auto c = std::make_unique<__type_erased_function_impl<meta_class*(Args...)>>();
-            c->func = [](Args... args) -> meta_class* { return new T(std::forward<Args>(args)...); };
-            __add_constructor(std::move(c));
+            add_constructor(make_type_erased_function<meta_class*, Args...>([](Args... args) -> meta_class* { return new T(std::forward<Args>(args)...); }));
         }
 
     public:
-        std::unordered_multimap<std::string, std::unique_ptr<__type_erased_function>> const& get_methods() const noexcept { return m_method_map; }
+        auto const& get_methods() const noexcept { return m_method_map; }
 
     protected:
-        XAML_META_API __type_erased_function const* __get_method(std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
+        XAML_META_API type_erased_this_function const& __get_method(std::string_view name, std::type_index ret_type, std::initializer_list<std::type_index> arg_types) const noexcept;
 
     public:
-        template <typename Return, typename... Args>
-        std::function<Return(meta_class*, Args...)> get_method(std::string_view name) const noexcept
-        {
-            auto m = __get_method(name, std::type_index(typeid(Return)), { std::type_index(typeid(meta_class*)), std::type_index(typeid(Args))... });
-            if (m)
-            {
-                return static_cast<__type_erased_this_function_impl<Return(Args...)> const*>(m)->func;
-            }
-            else
-            {
-                return {};
-            }
-        }
-
         template <typename Return, typename... Args>
         __optional_return_t<Return> invoke_method(meta_class& obj, std::string_view name, Args... args) const noexcept
         {
-            auto m = get_method<Return, Args...>(name);
+            auto& m = __get_method(name, std::type_index(typeid(Return)), { std::type_index(typeid(Args))... });
             if (m)
             {
                 if constexpr (std::is_same_v<Return, void>)
                 {
-                    m(&obj, std::forward<Args>(args)...);
+                    m(&obj, { std::forward<Args>(args)... });
                     return true;
                 }
                 else
                 {
-                    return std::make_optional<Return>(m(&obj, std::forward<Args>(args)...));
+                    return std::make_optional<Return>(m(&obj, { std::forward<Args>(args)... }));
                 }
             }
             else
@@ -560,20 +521,8 @@ namespace xaml
             }
         }
 
-    protected:
-        XAML_META_API void __add_method(std::string_view name, std::unique_ptr<__type_erased_function>&& func) noexcept;
-
     public:
-        template <typename Return, typename... Args>
-        void add_method(std::string_view name, std::function<Return(meta_class*, Args...)>&& func)
-        {
-            if (func)
-            {
-                auto f = std::make_unique<__type_erased_this_function_impl<__remove_const_func_t<Return(Args...)>>>();
-                f->func = std::move(func);
-                __add_method(name, std::move(f));
-            }
-        }
+        XAML_META_API void add_method(std::string_view name, std::unique_ptr<type_erased_this_function>&& func) noexcept;
 
     public:
         std::unordered_map<std::string, std::unique_ptr<property_info>> const& get_properties() const noexcept { return m_prop_map; }
@@ -609,50 +558,21 @@ namespace xaml
         XAML_META_API event_info const* get_event(std::string_view name) const noexcept;
 
     protected:
-        XAML_META_API void __add_event(std::string_view name, std::function<std::size_t(meta_class*, __type_erased_function const*)>&& adder, std::function<std::size_t(meta_class*, meta_class*, __type_erased_function const*)>&& adder_erased_this, std::function<void(meta_class*, std::size_t)>&& remover, std::unique_ptr<__type_erased_function>&& invoker);
+        XAML_META_API void __add_event(std::string_view name, std::function<std::size_t(meta_class*, type_erased_function const&)>&& adder, std::function<std::size_t(meta_class*, meta_class*, type_erased_this_function const&)>&& adder_erased_this, std::function<void(meta_class*, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker);
 
     public:
         template <typename... Args>
-        void add_event(std::string_view name, std::function<std::size_t(meta_class*, __type_erased_function const*)>&& adder, std::function<void(meta_class*, std::size_t)>&& remover, std::function<void(meta_class*, Args...)>&& invoker)
+        void add_event(std::string_view name, std::function<std::size_t(meta_class*, type_erased_function const&)>&& adder, std::function<void(meta_class*, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
         {
             if (invoker)
             {
-                auto i = std::make_unique<__type_erased_function_impl<void(meta_class*, Args...)>>();
-                i->func = std::move(invoker);
                 __add_event(
                     name, std::move(adder),
-                    [adder](meta_class* self, meta_class* target, __type_erased_function const* func) -> std::size_t {
-                        auto f = static_cast<__type_erased_this_function_impl<void(Args...)> const*>(func);
-                        __type_erased_function_impl<void(Args...)> h{};
-                        h.func = [target, f](Args... args) { f->func(target, std::forward<Args>(args)...); };
-                        return adder(self, &h);
+                    [adder](meta_class* self, meta_class* target, type_erased_this_function const& func) -> std::size_t {
+                        return adder(self, *make_type_erased_function<void, Args...>([target, &func](Args... args) { func(target, { std::forward<Args>(args)... }); }));
                     },
-                    std::move(remover), std::move(i));
+                    std::move(remover), std::move(invoker));
             }
-        }
-    };
-
-    template <typename T, typename TMethod>
-    struct __add_method_deduce_helper;
-
-    template <typename T, typename Return, typename... Args>
-    struct __add_method_deduce_helper<T, Return (T::*)(Args...)>
-    {
-        void operator()(reflection_info& ref, std::string_view name, Return (T::*method)(Args...))
-        {
-            ref.add_method<Return, Args...>(name, std::function<Return(meta_class*, Args...)>([method](meta_class* self, Args... args) -> Return { return (((T*)self)->*method)(std::forward<Args>(args)...); }));
-        }
-    };
-
-    template <typename T, typename TMethod>
-    struct __add_static_method_deduce_helper;
-
-    template <typename T, typename Return, typename... Args>
-    struct __add_static_method_deduce_helper<T, Return (*)(Args...)>
-    {
-        void operator()(reflection_info& ref, std::string_view name, Return (*method)(Args...))
-        {
-            ref.add_static_method<Return, Args...>(name, std::function<Return(Args...)>(method));
         }
     };
 
@@ -666,9 +586,9 @@ namespace xaml
         {
             ref.add_event<Args...>(
                 name,
-                std::function<std::size_t(meta_class*, __type_erased_function const*)>([adder](meta_class* self, __type_erased_function const* f) -> std::size_t { return adder(self, static_cast<__type_erased_function_impl<void(Args...)> const*>(f)->func); }),
+                std::function<std::size_t(meta_class*, type_erased_function const&)>([adder](meta_class* self, type_erased_function const& f) -> std::size_t { return adder(self, [f](Args... args) { f({ std::any(std::forward<Args>(args))... }); }); }),
                 std::move(remover),
-                std::function<void(meta_class*, Args...)>([getter](meta_class* self, Args... args) { (((T*)self)->*getter)(std::forward<Args>(args)...); }));
+                make_type_erased_this_function<T, void, Args...>([getter](T* self, Args... args) { (self->*getter)(std::forward<Args>(args)...); }));
         }
     };
 

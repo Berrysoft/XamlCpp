@@ -71,12 +71,12 @@ namespace xaml
         XAML_UI_API void hide();
 
         PROP_EVENT(resizable, bool)
-        EVENT(resizable_changed, window&, bool)
+        EVENT(resizable_changed, std::reference_wrapper<window>, bool)
 
     private:
         std::atomic<bool> m_resizing{ false };
 
-        EVENT(location_changed, window&, point)
+        EVENT(location_changed, std::reference_wrapper<window>, point)
 
         PROP_CONSTEXPR_EVENT(location, point)
 
@@ -111,9 +111,9 @@ namespace xaml
         XAML_UI_API rectangle __get_real_client_region() const;
 #endif // XAML_UI_WINDOWS
 
-        EVENT(closing, window&, bool&)
+        EVENT(closing, std::reference_wrapper<window>, std::reference_wrapper<bool>)
 
-        EVENT(title_changed, window&, string_view_t)
+        EVENT(title_changed, std::reference_wrapper<window>, string_view_t)
         PROP_STRING_EVENT(title)
 
     private:

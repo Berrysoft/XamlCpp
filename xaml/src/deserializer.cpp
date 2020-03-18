@@ -91,7 +91,7 @@ namespace xaml
             auto [first, second] = ref->get_methods().equal_range(ev.value);
             if (first != second)
             {
-                ev.info->add_erased_this(mc.get(), root.get(), first->second.get());
+                ev.info->add_this(mc.get(), root.get(), *first->second);
             }
             else
             {

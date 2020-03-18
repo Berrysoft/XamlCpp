@@ -108,7 +108,7 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        EVENT(redraw, canvas&, drawing_context&)
+        EVENT(redraw, std::reference_wrapper<canvas>, std::reference_wrapper<drawing_context>)
 
         XAML_UI_CANVAS_API void __draw(rectangle const& region) override;
 

@@ -23,7 +23,7 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_progress();
 
     public:
-        EVENT(value_changed, progress&, std::size_t)
+        EVENT(value_changed, std::reference_wrapper<progress>, std::size_t)
         PROP_CONSTEXPR_EVENT(value, std::size_t)
 
         PROP_CONSTEXPR(minimum, std::size_t)

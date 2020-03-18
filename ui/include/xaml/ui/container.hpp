@@ -17,7 +17,7 @@ namespace xaml
         container() : control() {}
         virtual ~container() override {}
 
-        EVENT(child_changed, container&, std::shared_ptr<control>)
+        EVENT(child_changed, std::reference_wrapper<container>, std::shared_ptr<control>)
 
     public:
         std::shared_ptr<control> get_child() const noexcept { return m_child; }

@@ -318,7 +318,7 @@ namespace xaml
         using difference_type = typename __vector_type::difference_type;
 
     public:
-        EVENT(vector_changed, observable_vector&, vector_changed_args<T>&)
+        EVENT(vector_changed, std::reference_wrapper<observable_vector>, std::reference_wrapper<vector_changed_args<T>>)
 
     public:
         observable_vector() noexcept : m_vec() {}

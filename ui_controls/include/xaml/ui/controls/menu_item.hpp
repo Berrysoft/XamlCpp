@@ -55,7 +55,7 @@ namespace xaml
     public:
         PROP_STRING(text)
 
-        EVENT(click, menu_item&)
+        EVENT(click, std::reference_wrapper<menu_item>)
 
     public:
 #define ADD_MENU_ITEM_MEMBERS() \
@@ -132,7 +132,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, check_menu_item&, bool)
+        EVENT(is_checked_changed, std::reference_wrapper<check_menu_item>, bool)
 
     public:
 #define ADD_CHECK_MENU_ITEM_MEMBERS() \
@@ -162,7 +162,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, radio_menu_item&, bool)
+        EVENT(is_checked_changed, std::reference_wrapper<radio_menu_item>, bool)
 
         PROP_STRING(group)
 

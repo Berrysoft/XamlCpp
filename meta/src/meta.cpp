@@ -22,55 +22,58 @@ namespace xaml
         }
     }
 
-    __type_erased_function const* reflection_info::__get_static_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
+    static type_erased_function s_empty_erased_function{};
+    static type_erased_this_function s_empty_erased_this_function{};
+
+    type_erased_function const& reflection_info::__get_static_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
     {
         auto its = m_static_method_map.equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
         {
             if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
             {
-                return it->second.get();
+                return *it->second;
             }
         }
-        return nullptr;
+        return s_empty_erased_function;
     }
 
-    void reflection_info::__add_static_method(string_view name, unique_ptr<__type_erased_function>&& func) noexcept
+    void reflection_info::add_static_method(string_view name, std::unique_ptr<type_erased_function>&& func) noexcept
     {
         m_static_method_map.emplace((string)name, move(func));
     }
 
-    __type_erased_function const* reflection_info::__get_constructor(initializer_list<type_index> arg_types) const noexcept
+    type_erased_function const& reflection_info::__get_constructor(initializer_list<type_index> arg_types) const noexcept
     {
         for (auto& ctor : m_ctors)
         {
             if (ctor->is_same_arg_type(arg_types))
             {
-                return ctor.get();
+                return *ctor;
             }
         }
-        return nullptr;
+        return s_empty_erased_function;
     }
 
-    void reflection_info::__add_constructor(unique_ptr<__type_erased_function>&& ctor) noexcept
+    void reflection_info::add_constructor(std::unique_ptr<type_erased_function>&& ctor) noexcept
     {
         m_ctors.push_back(move(ctor));
     }
 
-    __type_erased_function const* reflection_info::__get_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
+    type_erased_this_function const& reflection_info::__get_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
     {
         auto its = m_method_map.equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
         {
             if (it->second->is_same_arg_type(arg_types) && it->second->is_same_return_type(ret_type))
             {
-                return it->second.get();
+                return *it->second;
             }
         }
-        return nullptr;
+        return s_empty_erased_this_function;
     }
 
-    void reflection_info::__add_method(string_view name, unique_ptr<__type_erased_function>&& func) noexcept
+    void reflection_info::add_method(string_view name, std::unique_ptr<type_erased_this_function>&& func) noexcept
     {
         m_method_map.emplace((string)name, move(func));
     }
@@ -125,12 +128,12 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_event(string_view name, function<size_t(meta_class*, __type_erased_function const*)>&& adder, function<size_t(meta_class*, meta_class*, __type_erased_function const*)>&& adder_erased_this, function<void(meta_class*, size_t)>&& remover, unique_ptr<__type_erased_function>&& invoker)
+    void reflection_info::__add_event(string_view name, function<size_t(meta_class*, type_erased_function const&)>&& adder, function<size_t(meta_class*, meta_class*, type_erased_this_function const&)>&& adder_erased_this, function<void(meta_class*, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
     {
         auto ev = make_unique<event_info>();
         ev->m_name = name;
         ev->adder = move(adder);
-        ev->adder_erased_this = move(adder_erased_this);
+        ev->adder_this = move(adder_erased_this);
         ev->remover = move(remover);
         ev->invoker = move(invoker);
         m_event_map[ev->m_name] = move(ev);
@@ -259,7 +262,7 @@ namespace xaml
             this->target_prop->set(starget.get(), this->source_prop->get(ssource.get()));
             source_token = source_event->add(
                 ssource.get(),
-                function<void()>(
+                *make_type_erased_function<void>(
                     [this]() -> void {
                         if (auto ssource = this->source.lock())
                             if (auto starget = this->target.lock())
@@ -271,7 +274,7 @@ namespace xaml
             this->source_prop->set(ssource.get(), this->target_prop->get(starget.get()));
             target_token = target_event->add(
                 starget.get(),
-                function<void()>(
+                *make_type_erased_function<void>(
                     [this]() -> void {
                         if (auto ssource = this->source.lock())
                             if (auto starget = this->target.lock())

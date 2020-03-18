@@ -39,7 +39,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, radio_box&, bool)
+        EVENT(is_checked_changed, std::reference_wrapper<radio_box>, bool)
 
         PROP_STRING(group)
 

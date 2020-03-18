@@ -117,7 +117,7 @@ namespace xaml
         virtual void __draw(rectangle const& region) = 0;
         XAML_UI_API virtual void __size_to_fit();
 
-        EVENT(parent_changed, control&, control&)
+        EVENT(parent_changed, std::reference_wrapper<control>, std::reference_wrapper<control>)
 
     private:
         std::weak_ptr<control> m_parent{};
@@ -133,7 +133,7 @@ namespace xaml
         XAML_UI_API virtual void __parent_redraw();
 
     private:
-        EVENT(size_changed, control&, size)
+        EVENT(size_changed, std::reference_wrapper<control>, size)
         PROP_CONSTEXPR_EVENT(size, size)
 
 #ifdef XAML_UI_WINDOWS
@@ -166,7 +166,7 @@ namespace xaml
     protected:
         void __set_size_noevent(size value) { m_size = value; }
 
-        EVENT(margin_changed, control&, margin)
+        EVENT(margin_changed, std::reference_wrapper<control>, margin)
         PROP_CONSTEXPR_EVENT(margin, margin)
 
 #ifdef XAML_UI_WINDOWS
@@ -175,13 +175,13 @@ namespace xaml
         XAML_UI_API void __set_real_margin(margin const& value);
 #endif // XAML_UI_WINDOWS
 
-        EVENT(halignment_changed, control&, halignment_t)
+        EVENT(halignment_changed, std::reference_wrapper<control>, halignment_t)
         PROP_CONSTEXPR_EVENT(halignment, halignment_t)
 
-        EVENT(valignment_changed, control&, valignment_t)
+        EVENT(valignment_changed, std::reference_wrapper<control>, valignment_t)
         PROP_CONSTEXPR_EVENT(valignment, valignment_t)
 
-        EVENT(is_visible_changed, control&, bool)
+        EVENT(is_visible_changed, std::reference_wrapper<control>, bool)
         PROP_CONSTEXPR_EVENT(is_visible, bool)
 
     protected:

@@ -20,7 +20,7 @@ namespace xaml
         XAML_UI_CONTROLS_API void draw_password_char();
 
     public:
-        EVENT(password_char_changed, password_entry&, char_t)
+        EVENT(password_char_changed, std::reference_wrapper<password_entry>, char_t)
         PROP_CONSTEXPR_EVENT(password_char, char_t)
 
     public:
