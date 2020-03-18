@@ -13,96 +13,77 @@ namespace xaml
 {
     void webview_edge2::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
     {
-        try
-        {
-            THROW_IF_FAILED(CreateCoreWebView2Environment(
-                Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-                    [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
-                        try
-                        {
-                            THROW_IF_FAILED(result);
-                            m_env = env;
-                            THROW_IF_FAILED(env->CreateCoreWebView2Host(
-                                parent,
-                                Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
-                                    [=](HRESULT result, ICoreWebView2Host* webview) -> HRESULT {
-                                        try
-                                        {
-                                            THROW_IF_FAILED(result);
-                                            m_host = webview;
-                                            THROW_IF_FAILED(m_host->put_Bounds(to_native<RECT>(rect)));
-                                            THROW_IF_FAILED(m_host->get_CoreWebView2(&m_view));
-                                            EventRegistrationToken token;
-                                            THROW_IF_FAILED(m_view->add_NavigationCompleted(
-                                                Callback<ICoreWebView2NavigationCompletedEventHandler>(
-                                                    [this](ICoreWebView2*, ICoreWebView2NavigationCompletedEventArgs*) -> HRESULT {
-                                                        try
-                                                        {
-                                                            wil::unique_cotaskmem_string uri;
-                                                            THROW_IF_FAILED(m_view->get_Source(&uri));
-                                                            invoke_navigated(uri.get());
-                                                            return S_OK;
-                                                        }
-                                                        CATCH_RETURN();
-                                                    })
-                                                    .Get(),
-                                                &token));
-                                            THROW_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
-                                            THROW_IF_FAILED(m_view->add_WebResourceRequested(
-                                                Callback<ICoreWebView2WebResourceRequestedEventHandler>(
-                                                    [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
-                                                        try
-                                                        {
-                                                            resource_requested_args args{};
-                                                            wil::com_ptr<ICoreWebView2WebResourceRequest> req;
-                                                            THROW_IF_FAILED(e->get_Request(&req));
-
-                                                            wil::unique_cotaskmem_string method;
-                                                            THROW_IF_FAILED(req->get_Method(&method));
-                                                            args.request.method = method.get();
-
-                                                            wil::unique_cotaskmem_string uri;
-                                                            THROW_IF_FAILED(req->get_Uri(&uri));
-                                                            args.request.uri = uri.get();
-
-                                                            wil::com_ptr<IStream> stream;
-                                                            THROW_IF_FAILED(req->get_Content(&stream));
-                                                            if (stream)
-                                                            {
-                                                                auto count = wil::stream_size(stream.get());
-                                                                vector<std::byte> data(count);
-                                                                THROW_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
-                                                                args.request.data = data;
-                                                            }
-
-                                                            invoke_resource_requested(args);
-                                                            if (args.response)
-                                                            {
-                                                                auto& res = *args.response;
-                                                                wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
-                                                                wil::com_ptr<ICoreWebView2WebResourceResponse> response;
-                                                                THROW_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (string_t)res.content_type).c_str(), &response));
-                                                                THROW_IF_FAILED(e->put_Response(response.get()));
-                                                            }
-                                                            return S_OK;
-                                                        }
-                                                        CATCH_RETURN();
-                                                    })
-                                                    .Get(),
-                                                &token));
-                                            callback();
+        HRESULT hr = CreateCoreWebView2Environment(
+            Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+                [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+                    RETURN_IF_FAILED(result);
+                    m_env = env;
+                    RETURN_IF_FAILED(env->CreateCoreWebView2Host(
+                        parent,
+                        Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
+                            [=](HRESULT result, ICoreWebView2Host* webview) -> HRESULT {
+                                RETURN_IF_FAILED(result);
+                                m_host = webview;
+                                RETURN_IF_FAILED(m_host->put_Bounds(to_native<RECT>(rect)));
+                                RETURN_IF_FAILED(m_host->get_CoreWebView2(&m_view));
+                                EventRegistrationToken token;
+                                RETURN_IF_FAILED(m_view->add_NavigationCompleted(
+                                    Callback<ICoreWebView2NavigationCompletedEventHandler>(
+                                        [this](ICoreWebView2*, ICoreWebView2NavigationCompletedEventArgs*) -> HRESULT {
+                                            wil::unique_cotaskmem_string uri;
+                                            RETURN_IF_FAILED(m_view->get_Source(&uri));
+                                            invoke_navigated(uri.get());
                                             return S_OK;
-                                        }
-                                        CATCH_RETURN();
-                                    })
-                                    .Get()));
-                            return S_OK;
-                        }
-                        CATCH_RETURN();
-                    })
-                    .Get()));
-        }
-        catch (wil::ResultException const&)
+                                        })
+                                        .Get(),
+                                    &token));
+                                RETURN_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
+                                RETURN_IF_FAILED(m_view->add_WebResourceRequested(
+                                    Callback<ICoreWebView2WebResourceRequestedEventHandler>(
+                                        [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
+                                            resource_requested_args args{};
+                                            wil::com_ptr<ICoreWebView2WebResourceRequest> req;
+                                            RETURN_IF_FAILED(e->get_Request(&req));
+
+                                            wil::unique_cotaskmem_string method;
+                                            RETURN_IF_FAILED(req->get_Method(&method));
+                                            args.request.method = method.get();
+
+                                            wil::unique_cotaskmem_string uri;
+                                            RETURN_IF_FAILED(req->get_Uri(&uri));
+                                            args.request.uri = uri.get();
+
+                                            wil::com_ptr<IStream> stream;
+                                            RETURN_IF_FAILED(req->get_Content(&stream));
+                                            if (stream)
+                                            {
+                                                auto count = wil::stream_size(stream.get());
+                                                vector<std::byte> data(count);
+                                                RETURN_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
+                                                args.request.data = data;
+                                            }
+
+                                            invoke_resource_requested(args);
+                                            if (args.response)
+                                            {
+                                                auto& res = *args.response;
+                                                wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
+                                                wil::com_ptr<ICoreWebView2WebResourceResponse> response;
+                                                RETURN_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (string_t)res.content_type).c_str(), &response));
+                                                RETURN_IF_FAILED(e->put_Response(response.get()));
+                                            }
+                                            return S_OK;
+                                        })
+                                        .Get(),
+                                    &token));
+                                callback();
+                                return S_OK;
+                            })
+                            .Get()));
+                    return S_OK;
+                })
+                .Get());
+        if (FAILED(hr))
         {
             m_view = nullptr;
             callback();
