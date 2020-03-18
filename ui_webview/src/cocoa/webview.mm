@@ -55,4 +55,28 @@ namespace xaml
             set_uri(webview.URL.absoluteString.UTF8String);
         }
     }
+
+    void webview::go_forward()
+    {
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
+        [webview goForward];
+    }
+
+    void webview::go_back()
+    {
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
+        [webview goBack];
+    }
+
+    bool webview::get_can_go_forward()
+    {
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
+        return webview.canGoForward;
+    }
+
+    bool webview::get_can_go_back()
+    {
+        WKWebView* webview = (WKWebView*)get_handle()->handle;
+        return webview.canGoBack;
+    }
 }

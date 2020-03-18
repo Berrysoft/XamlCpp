@@ -23,5 +23,11 @@ namespace xaml
         void set_location(point p) override;
         void set_size(size s) override;
         void set_rect(rectangle const& rect) override;
+
+        void go_forward() override;
+        void go_back() override;
+
+        bool get_can_go_forward() override;
+        bool get_can_go_back() override;
     };
 } // namespace xaml

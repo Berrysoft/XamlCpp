@@ -54,9 +54,9 @@ namespace xaml
         void set_webview(native_webview_type value) { m_webview = value; }
 
     private:
-        XAML_UI_WEBVIEW_API void create_edge2(rectangle const& real);
-        XAML_UI_WEBVIEW_API void create_edge(rectangle const& real);
-        XAML_UI_WEBVIEW_API void create_ie(rectangle const& real);
+        void create_edge2(rectangle const& real);
+        void create_edge(rectangle const& real);
+        void create_ie(rectangle const& real);
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -87,6 +87,12 @@ namespace xaml
     public:
         EVENT(uri_changed, webview&, string_view_t)
         PROP_STRING_EVENT(uri)
+
+        XAML_UI_WEBVIEW_API bool get_can_go_forward();
+        XAML_UI_WEBVIEW_API bool get_can_go_back();
+
+        XAML_UI_WEBVIEW_API void go_forward();
+        XAML_UI_WEBVIEW_API void go_back();
 
         EVENT(resource_requested, webview&, resource_requested_args&)
 

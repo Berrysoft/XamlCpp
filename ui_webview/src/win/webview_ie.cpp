@@ -58,6 +58,17 @@ namespace xaml
             }
             break;
         }
+        case DISPID_COMMANDSTATECHANGE:
+            switch (pDispParams->rgvarg[1].lVal)
+            {
+            case CSC_NAVIGATEFORWARD:
+                m_can_go_forward = pDispParams->rgvarg[0].boolVal;
+                break;
+            case CSC_NAVIGATEBACK:
+                m_can_go_back = pDispParams->rgvarg[0].boolVal;
+                break;
+            }
+            break;
         default:
             break;
         }
@@ -109,5 +120,29 @@ namespace xaml
     {
         RECT r = to_native<RECT>(rect);
         THROW_IF_WIN32_BOOL_FALSE(m_container.SetWindowPos(HWND_TOP, &r, SWP_NOZORDER));
+    }
+
+    void webview_ie::go_forward()
+    {
+        THROW_IF_FAILED(m_browser->GoForward());
+    }
+
+    void webview_ie::go_back()
+    {
+        THROW_IF_FAILED(m_browser->GoBack());
+    }
+
+    bool webview_ie::get_can_go_forward()
+    {
+        BOOL value;
+        THROW_IF_FAILED(m_sink->get_CanGoForward(&value));
+        return value;
+    }
+
+    bool webview_ie::get_can_go_back()
+    {
+        BOOL value;
+        THROW_IF_FAILED(m_sink->get_CanGoBack(&value));
+        return value;
     }
 } // namespace xaml

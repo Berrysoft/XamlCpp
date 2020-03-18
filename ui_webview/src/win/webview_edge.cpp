@@ -105,6 +105,26 @@ namespace xaml
     {
         m_view.Bounds({ (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
     }
+
+    void webview_edge::go_forward()
+    {
+        m_view.GoForward();
+    }
+
+    void webview_edge::go_back()
+    {
+        m_view.GoBack();
+    }
+
+    bool webview_edge::get_can_go_forward()
+    {
+        return m_view.CanGoForward();
+    }
+
+    bool webview_edge::get_can_go_back()
+    {
+        return m_view.CanGoBack();
+    }
 } // namespace xaml
 
 #endif // XAML_UI_WEBVIEW_EDGE

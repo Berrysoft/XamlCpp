@@ -15,6 +15,8 @@ namespace xaml
     protected:
         std::atomic<ULONG> m_ref;
         webview_ie* m_webview;
+        BOOL m_can_go_forward;
+        BOOL m_can_go_back;
 
     public:
         WebBrowserSink(xaml::webview_ie* view) : m_ref(0), m_webview(view) {}
@@ -58,6 +60,18 @@ namespace xaml
         }
 
         STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) override;
+
+        STDMETHODIMP get_CanGoForward(BOOL* pbValue)
+        {
+            *pbValue = m_can_go_forward;
+            return S_OK;
+        }
+
+        STDMETHODIMP get_CanGoBack(BOOL* pbValue)
+        {
+            *pbValue = m_can_go_back;
+            return S_OK;
+        }
     };
 
     class webview_ie : public native_webview
@@ -81,5 +95,11 @@ namespace xaml
         void set_location(point p) override;
         void set_size(size s) override;
         void set_rect(rectangle const& rect) override;
+
+        void go_forward() override;
+        void go_back() override;
+
+        bool get_can_go_forward() override;
+        bool get_can_go_back() override;
     };
 } // namespace xaml

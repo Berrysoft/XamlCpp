@@ -22,6 +22,10 @@ namespace xaml
         virtual void set_location(point p) = 0;
         virtual void set_size(size s) = 0;
         virtual void set_rect(rectangle const& rect) = 0;
+        virtual bool get_can_go_forward() = 0;
+        virtual void go_forward() = 0;
+        virtual bool get_can_go_back() = 0;
+        virtual void go_back() = 0;
 
 #define __NATIVE_WEBVIEW_EVENT(name, arg)                                                    \
 private:                                                                                     \

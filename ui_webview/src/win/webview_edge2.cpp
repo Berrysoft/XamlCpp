@@ -118,6 +118,30 @@ namespace xaml
     {
         THROW_IF_FAILED(m_host->put_Bounds(to_native<RECT>(rect)));
     }
+
+    void webview_edge2::go_forward()
+    {
+        THROW_IF_FAILED(m_view->GoForward());
+    }
+
+    void webview_edge2::go_back()
+    {
+        THROW_IF_FAILED(m_view->GoBack());
+    }
+
+    bool webview_edge2::get_can_go_forward()
+    {
+        BOOL value;
+        THROW_IF_FAILED(m_view->get_CanGoForward(&value));
+        return value;
+    }
+
+    bool webview_edge2::get_can_go_back()
+    {
+        BOOL value;
+        THROW_IF_FAILED(m_view->get_CanGoBack(&value));
+        return value;
+    }
 } // namespace xaml
 
 #endif // XAML_UI_WEBVIEW_WEBVIEW2

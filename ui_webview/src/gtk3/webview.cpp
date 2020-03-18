@@ -40,4 +40,24 @@ namespace xaml
             }
         }
     }
+
+    void webview::go_forward()
+    {
+        webkit_web_view_go_forward(WEBKIT_WEB_VIEW(self->get_handle()->handle));
+    }
+
+    void webview::go_back()
+    {
+        webkit_web_view_go_back(WEBKIT_WEB_VIEW(self->get_handle()->handle));
+    }
+
+    bool webview::get_can_go_forward()
+    {
+        return webkit_web_view_can_go_forward(WEBKIT_WEB_VIEW(self->get_handle()->handle));
+    }
+
+    bool webview::get_can_go_back()
+    {
+        return webkit_web_view_can_go_back(WEBKIT_WEB_VIEW(self->get_handle()->handle));
+    }
 } // namespace xaml

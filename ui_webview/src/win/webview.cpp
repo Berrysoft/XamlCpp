@@ -126,4 +126,38 @@ namespace xaml
             m_webview->navigate(get_uri());
         }
     }
+
+    void webview::go_forward()
+    {
+        if (get_webview() && *get_webview())
+        {
+            m_webview->go_forward();
+        }
+    }
+
+    void webview::go_back()
+    {
+        if (get_webview() && *get_webview())
+        {
+            m_webview->go_back();
+        }
+    }
+
+    bool webview::get_can_go_forward()
+    {
+        if (get_webview() && *get_webview())
+        {
+            return m_webview->get_can_go_forward();
+        }
+        return false;
+    }
+
+    bool webview::get_can_go_back()
+    {
+        if (get_webview() && *get_webview())
+        {
+            return m_webview->get_can_go_back();
+        }
+        return false;
+    }
 } // namespace xaml
