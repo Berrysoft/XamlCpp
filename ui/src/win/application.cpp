@@ -15,7 +15,7 @@ namespace xaml
     static BOOL take_over_message(MSG& msg)
     {
         BOOL bRet = GetMessage(&msg, nullptr, 0, 0);
-        THROW_HR_IF(E_FAIL, bRet < 0);
+        THROW_LAST_ERROR_IF(bRet < 0);
         if (bRet > 0)
         {
             TranslateMessage(&msg);
@@ -72,7 +72,7 @@ namespace xaml
         {
             if (!m_main_wnd) PostQuitMessage(m_quit_value);
         }
-        return (int)msg.wParam;
+        return m_quit_value;
     }
 
     void application::quit(int value)
