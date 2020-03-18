@@ -259,7 +259,7 @@ namespace xaml
         }
         {
             ostringstream s;
-            s << "[" << target_name << "](auto&, auto value) { " << target_name << "->set_" << target_prop << "(value); }";
+            s << "[" << target_name << "](auto, auto value) { " << target_name << "->set_" << target_prop << "(value); }";
             string arg = s.str();
             write_call(stream, source_name, "add_", (std::string)source_prop + "_changed", { arg });
         }

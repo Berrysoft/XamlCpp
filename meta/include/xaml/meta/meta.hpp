@@ -615,7 +615,7 @@ namespace xaml
     class meta_context
     {
     private:
-        std::unordered_map<std::string_view, std::unique_ptr<module>> modules_map;
+        std::unordered_map<path_string_t, std::unique_ptr<module>> modules_map;
 
         std::unordered_map<std::string, std::string> namespace_map;
         std::unordered_map<std::string, std::unordered_map<std::string, std::type_index>> type_map;
@@ -625,8 +625,8 @@ namespace xaml
         std::size_t bind_index{ 0 };
 
     public:
-        XAML_META_API module* add_module(std::string_view path);
-        std::unordered_map<std::string_view, std::unique_ptr<module>> const& get_modules() const { return modules_map; }
+        XAML_META_API module* add_module(path_string_view_t path);
+        std::unordered_map<path_string_t, std::unique_ptr<module>> const& get_modules() const { return modules_map; }
 
         XAML_META_API std::string get_real_namespace(std::string_view ns) const;
 

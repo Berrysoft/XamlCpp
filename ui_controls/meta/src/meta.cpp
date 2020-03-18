@@ -10,6 +10,7 @@
 #include <xaml/ui/controls/radio_box.hpp>
 #include <xaml/ui/controls/stack_panel.hpp>
 #include <xaml/ui/controls/uniform_grid.hpp>
+#include <xaml/version.hpp>
 
 using namespace std;
 using namespace xaml;
@@ -23,6 +24,8 @@ static ostream& compile_grid_length(ostream& stream, grid_length length)
 
 extern "C"
 {
+    XAML_UI_CONTROLS_META_API void xaml_version(version* ver) noexcept { *ver = current_version; }
+
     XAML_UI_CONTROLS_META_API void init_meta(void* pctx) noexcept
     {
         meta_context& ctx = *(meta_context*)pctx;

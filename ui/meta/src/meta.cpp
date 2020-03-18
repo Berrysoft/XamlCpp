@@ -4,6 +4,7 @@
 #include <xaml/ui/drawing.hpp>
 #include <xaml/ui/menu_bar.hpp>
 #include <xaml/ui/window.hpp>
+#include <xaml/version.hpp>
 
 using namespace std;
 
@@ -30,6 +31,8 @@ using namespace xaml;
 
 extern "C"
 {
+    XAML_UI_META_API void xaml_version(version* ver) noexcept { *ver = current_version; }
+
     XAML_UI_META_API void init_meta(void* pctx) noexcept
     {
         meta_context& ctx = *(meta_context*)pctx;

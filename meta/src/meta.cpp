@@ -139,7 +139,7 @@ namespace xaml
         m_event_map[ev->m_name] = move(ev);
     }
 
-    module* meta_context::add_module(string_view path)
+    module* meta_context::add_module(path_string_view_t path)
     {
         using init_meta_t = void (*)(void*) noexcept;
         auto m = make_unique<module>(path);

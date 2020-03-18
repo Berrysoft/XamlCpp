@@ -34,9 +34,9 @@ int main(int argc, char const* const* argv)
 #ifdef XAML_TEST_GEN_FAKE
     init_parser(ctx);
     register_class<test_window>(ctx);
-    ctx.add_module("xaml_ui_meta");
-    ctx.add_module("xaml_ui_controls_meta");
-    ctx.add_module("xaml_ui_canvas_meta");
+    ctx.add_module(P("xaml_ui_meta"));
+    ctx.add_module(P("xaml_ui_controls_meta"));
+    ctx.add_module(P("xaml_ui_canvas_meta"));
     wnd->init_components(ctx);
 #else
     wnd->init_components();

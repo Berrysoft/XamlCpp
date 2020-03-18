@@ -2,19 +2,52 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <set>
+#include <map>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 #include <xaml/compiler.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/parser.hpp>
+#include <xaml/version.hpp>
 
 using namespace std;
 using namespace xaml;
 using namespace boost::program_options;
 using std::filesystem::directory_iterator;
 using std::filesystem::path;
+
+optional<version> is_later(map<path_string_t, tuple<path_string_t, version>> const& modules, path_string_t const& new_module)
+{
+    try
+    {
+        module m;
+        m.open(new_module);
+        auto pxaml_version = (void (*)(version*) noexcept)m.get_method("xaml_version");
+        if (pxaml_version)
+        {
+            auto it = modules.find(new_module);
+            version ver;
+            pxaml_version(&ver);
+            if (it == modules.end())
+                return ver;
+            else if (ver > get<1>(it->second))
+                return ver;
+            else
+                return nullopt;
+        }
+        else
+        {
+            return nullopt;
+        }
+    }
+    catch (system_error const&)
+    {
+        return nullopt;
+    }
+}
 
 int main(int argc, char const* const* argv)
 {
@@ -53,7 +86,7 @@ int main(int argc, char const* const* argv)
         {
             string inf = vm["input-file"].as<string>();
             path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
-            set<string> modules;
+            map<path_string_t, tuple<path_string_t, version>> modules;
             auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
             for (auto& dir : lib_dirs)
             {
@@ -66,14 +99,17 @@ int main(int argc, char const* const* argv)
                         {
                             p = read_symlink(p);
                         }
-                        modules.emplace(p.string());
+                        path_string_t p_str = p.native();
+                        path_string_t p_file = p.filename().native();
+                        if (auto pver = is_later(modules, p_file))
+                            modules.emplace(p_file, make_tuple(p_str, *pver));
                     }
                 }
             }
             meta_context ctx{};
             for (auto& m : modules)
             {
-                ctx.add_module(m);
+                ctx.add_module(get<0>(m.second));
             }
             init_parser(ctx);
             parser p{ ctx, inf };
