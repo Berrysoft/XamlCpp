@@ -10,19 +10,19 @@
 @implementation XamlWindowDelegate : XamlDelegate
 - (void)windowDidResize:(NSNotification*)notification
 {
-    xaml::window* window = (xaml::window*)self->classPointer;
+    xaml::window* window = (xaml::window*)self.classPointer;
     window->__on_did_resize();
 }
 
 - (void)windowDidMove:(NSNotification*)notification
 {
-    xaml::window* window = (xaml::window*)self->classPointer;
+    xaml::window* window = (xaml::window*)self.classPointer;
     window->__on_did_move();
 }
 
 - (BOOL)windowShouldClose:(NSWindow*)sender
 {
-    xaml::window* window = (xaml::window*)self->classPointer;
+    xaml::window* window = (xaml::window*)self.classPointer;
     BOOL close = window->__on_should_close() ? YES : NO;
     if (close)
     {
@@ -101,8 +101,7 @@ namespace xaml
     void window::draw_title()
     {
         NSWindow* window = get_window()->window;
-        NSString* nstitle = [NSString stringWithUTF8String:m_title.data()];
-        [window setTitle:nstitle];
+        window.title = [NSString stringWithUTF8String:m_title.data()];
     }
 
     void window::draw_child()

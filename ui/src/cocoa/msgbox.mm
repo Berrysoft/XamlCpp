@@ -23,11 +23,12 @@ namespace xaml
     msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
     {
         NSAlert* alert = [NSAlert new];
-        if (instruction.empty())
-            [alert setMessageText:[NSString stringWithUTF8String:title.data()]];
-        else
+        if (!title.empty())
+            alert.window.title = [NSString stringWithUTF8String:title.data()];
+        if (!instruction.empty())
             [alert setMessageText:[NSString stringWithUTF8String:instruction.data()]];
-        [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
+        if (!message.empty())
+            [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
         alert.alertStyle = get_style(style);
         vector<msgbox_result> res;
         for (auto& button : buttons)
