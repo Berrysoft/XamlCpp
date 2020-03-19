@@ -99,7 +99,7 @@ static void xaml_fixed_add(GtkContainer* container, GtkWidget* widget)
     if (!g_hash_table_contains(priv->children, widget))
     {
         gtk_widget_unparent(widget);
-        GtkAllocation* alloc = malloc(sizeof(GtkAllocation));
+        GtkAllocation* alloc = g_new(GtkAllocation, 1);
         g_hash_table_insert(priv->children, widget, alloc);
         gtk_widget_set_parent(widget, GTK_WIDGET(container));
 
@@ -153,7 +153,7 @@ static void xaml_fixed_init(XamlFixed* fixed)
     gtk_widget_set_has_window(GTK_WIDGET(fixed), FALSE);
 
     XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(fixed);
-    priv->children = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, free);
+    priv->children = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
 }
 
 GtkWidget* xaml_fixed_new()
