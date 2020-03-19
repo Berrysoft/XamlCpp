@@ -71,10 +71,8 @@ namespace xaml
             constexpr value_type* operator&() noexcept { return m_ptr; }
             constexpr value_type const* operator&() const noexcept { return m_ptr; }
 
-            constexpr value_type* operator->() noexcept { return m_ptr; }
-            constexpr value_type const* operator->() const noexcept { return m_ptr; }
-            constexpr value_type& operator*() noexcept { return *m_ptr; }
-            constexpr value_type const& operator*() const noexcept { return *m_ptr; }
+            constexpr value_type& get() noexcept { return *m_ptr; }
+            constexpr value_type const& get() const noexcept { return *m_ptr; }
 
             constexpr operator value_type&() noexcept { return *m_ptr; }
             constexpr operator value_type const&() const noexcept { return *m_ptr; }

@@ -32,7 +32,7 @@ namespace xaml
                 }
                 else
                 {
-                    gtk_entry_set_text(GTK_ENTRY(entry), get_items()[get_sel_id()]->c_str());
+                    gtk_entry_set_text(GTK_ENTRY(entry), get_items()[get_sel_id()].get().c_str());
                 }
             }
         }
@@ -42,7 +42,7 @@ namespace xaml
     {
         for (auto item : get_items())
         {
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(get_handle()->handle), item->c_str());
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(get_handle()->handle), item.get().c_str());
         }
     }
 

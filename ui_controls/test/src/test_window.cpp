@@ -158,7 +158,7 @@ namespace xaml::test
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
                 btn->set_text(U("Show"));
-                btn->add_click([this, box](button&) { msgbox(static_pointer_cast<window>(shared_from_this()), *combo_source[box->get_sel_id()], U("Show selected item")); });
+                btn->add_click([this, box](button&) { msgbox(static_pointer_cast<window>(shared_from_this()), combo_source[box->get_sel_id()].get(), U("Show selected item")); });
                 panel->add_child(btn);
             }
             g->add_child(panel);

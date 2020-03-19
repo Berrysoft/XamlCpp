@@ -50,7 +50,7 @@ namespace xaml
             }
             else
             {
-                combo.stringValue = [NSString stringWithUTF8String:get_items()[get_sel_id()]->c_str()];
+                combo.stringValue = [NSString stringWithUTF8String:get_items()[get_sel_id()].get().c_str()];
             }
         }
     }
@@ -60,7 +60,7 @@ namespace xaml
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         for (auto item : get_items())
         {
-            [combo addItemWithObjectValue:[NSString stringWithUTF8String:item->c_str()]];
+            [combo addItemWithObjectValue:[NSString stringWithUTF8String:item.get().c_str()]];
         }
     }
 

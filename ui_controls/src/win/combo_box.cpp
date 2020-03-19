@@ -44,11 +44,6 @@ namespace xaml
             if (!get_handle())
             {
                 draw_editable();
-                draw_items();
-                draw_sel();
-                draw_text();
-                draw_visible();
-                SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             __set_rect(region);
         }
@@ -70,7 +65,7 @@ namespace xaml
     {
         for (auto item : get_items())
         {
-            ComboBox_AddString(get_handle()->handle, item->c_str());
+            ComboBox_AddString(get_handle()->handle, item.get().c_str());
         }
     }
 
@@ -100,6 +95,11 @@ namespace xaml
                 params.style |= CBS_DROPDOWNLIST;
             }
             this->__create(params);
+            draw_items();
+            draw_sel();
+            draw_text();
+            draw_visible();
+            SetParent(get_handle()->handle, sparent->get_handle()->handle);
         }
     }
 
@@ -108,7 +108,7 @@ namespace xaml
         double fw = 0.0, fh = 0.0;
         for (auto item : get_items())
         {
-            size msize = __measure_text_size(*item, { 5, 5 });
+            size msize = __measure_text_size(item.get(), { 5, 5 });
             fw = (max)(fw, msize.width);
             fh = (max)(fh, msize.height);
         }
