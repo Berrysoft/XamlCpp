@@ -3,9 +3,6 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
-#include <typeindex>
-#include <unordered_map>
 #include <vector>
 #include <xaml/array_view.hpp>
 #include <xaml/meta/meta_macro.hpp>
@@ -63,10 +60,7 @@ namespace xaml
         XAML_UI_API void quit(int value = 0);
 
         XAML_UI_API static std::shared_ptr<application> init(int argc, char_t const* const* argv);
-        static std::shared_ptr<application> init() { return init(0, nullptr); }
-#if defined(WIN32) || defined(__MINGW32__)
-        XAML_UI_API static std::shared_ptr<application> init(char_t const* lpCmdLine);
-#endif // WIN32 || __MINGW32__
+        XAML_UI_API static std::shared_ptr<application> init();
         XAML_UI_API static std::shared_ptr<application> current();
 
 #ifdef XAML_UI_WINDOWS

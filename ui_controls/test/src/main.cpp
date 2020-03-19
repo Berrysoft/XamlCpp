@@ -19,7 +19,7 @@ int main(int argc, char const* const* argv)
 {
     // Initialize and get default application object.
 #if defined(WIN32) || defined(__MINGW32__)
-    auto app = application::init(lpCmdLine);
+    auto app = application::init();
 #else
     auto app = application::init(argc, argv);
 #endif // WIN32 || __MINGW32__

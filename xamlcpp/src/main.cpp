@@ -14,10 +14,9 @@
 #include <xaml/version.hpp>
 
 using namespace std;
+using namespace std::filesystem;
 using namespace xaml;
 using namespace boost::program_options;
-using std::filesystem::directory_iterator;
-using std::filesystem::path;
 
 optional<version> is_later(map<path_string_t, tuple<path_string_t, version>> const& modules, path_string_t const& new_module)
 {
