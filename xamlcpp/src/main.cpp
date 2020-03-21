@@ -128,19 +128,19 @@ int main(int argc, char const* const* argv)
             }
             else
             {
-                cerr << "Cannot open " << inf << endl;
+                cout << "Cannot open " << inf << endl;
                 return 1;
             }
         }
         else
         {
-            cerr << "Input file must be specified" << endl;
+            cout << "Input file must be specified" << endl;
             return 1;
         }
     }
     catch (exception const& e)
     {
-        cerr << e.what() << endl;
+        cout << e.what() << endl;
         return 1;
     }
 }
