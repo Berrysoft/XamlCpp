@@ -161,7 +161,6 @@ namespace xaml
                 rectangle r = from_native(rect);
                 __set_real_location({ r.x, r.y });
                 __set_real_size({ r.width, r.height });
-                __draw({});
             }
             break;
         }
