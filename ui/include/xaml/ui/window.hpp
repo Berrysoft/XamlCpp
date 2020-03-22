@@ -74,7 +74,7 @@ namespace xaml
         EVENT(resizable_changed, std::reference_wrapper<window>, bool)
 
     private:
-        std::atomic<bool> m_resizing{ false };
+        std::atomic_bool m_resizing{ false };
 
         EVENT(location_changed, std::reference_wrapper<window>, point)
 

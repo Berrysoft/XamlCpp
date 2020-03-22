@@ -30,7 +30,6 @@ namespace xaml
                 draw_create();
             }
         });
-
 #else
         create_edge(real);
 #endif // XAML_UI_WEBVIEW_WEBVIEW2
@@ -50,7 +49,6 @@ namespace xaml
                 draw_create();
             }
         });
-
 #else
         create_ie(real);
 #endif // XAML_UI_WEBVIEW_EDGE
@@ -84,7 +82,7 @@ namespace xaml
                 create_edge2(real_real);
             }
             __set_size_noevent({ real.width, real.height });
-            if (get_webview() && *get_webview()) m_webview->set_rect(real_real);
+            if (m_created) m_webview->set_rect(real_real);
         }
     }
 
@@ -92,12 +90,13 @@ namespace xaml
     {
         m_webview->set_navigated([this](string_view_t uri) {
             atomic_guard guard(m_navigating);
-            if (!guard.exchange(true))
+            if (!guard.test_and_set())
             {
                 set_uri(uri);
             }
         });
         m_webview->set_resource_requested([this](resource_requested_args& args) { m_resource_requested(*this, args); });
+        m_created.store(true);
         draw_visible();
         draw_uri();
         __parent_redraw();
@@ -105,7 +104,7 @@ namespace xaml
 
     void webview::draw_size()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             m_webview->set_size(__get_real_size());
         }
@@ -113,7 +112,7 @@ namespace xaml
 
     void webview::draw_visible()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             m_webview->set_visible(get_is_visible());
         }
@@ -121,7 +120,7 @@ namespace xaml
 
     void webview::draw_uri()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             m_webview->navigate(get_uri());
         }
@@ -129,7 +128,7 @@ namespace xaml
 
     void webview::go_forward()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             m_webview->go_forward();
         }
@@ -137,7 +136,7 @@ namespace xaml
 
     void webview::go_back()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             m_webview->go_back();
         }
@@ -145,7 +144,7 @@ namespace xaml
 
     bool webview::get_can_go_forward()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             return m_webview->get_can_go_forward();
         }
@@ -154,7 +153,7 @@ namespace xaml
 
     bool webview::get_can_go_back()
     {
-        if (get_webview() && *get_webview())
+        if (m_created)
         {
             return m_webview->get_can_go_back();
         }

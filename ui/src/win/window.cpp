@@ -78,7 +78,7 @@ namespace xaml
     void window::draw_size()
     {
         atomic_guard guard(m_resizing);
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             point real_location = __get_real_location();
             size real_size = __get_real_size();
@@ -153,7 +153,7 @@ namespace xaml
         case WM_SIZE:
         {
             atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.exchange(true))
+            if (get_handle() && !guard.test_and_set())
             {
                 double udpi = get_dpi();
                 RECT rect = {};
@@ -167,7 +167,7 @@ namespace xaml
         case WM_MOVE:
         {
             atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.exchange(true))
+            if (get_handle() && !guard.test_and_set())
             {
                 double udpi = get_dpi();
                 RECT rect = {};
@@ -180,7 +180,7 @@ namespace xaml
         case WM_DPICHANGED:
         {
             atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.exchange(true))
+            if (get_handle() && !guard.test_and_set())
             {
                 size real_size = __get_real_size();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));

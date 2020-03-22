@@ -50,7 +50,7 @@ namespace xaml
     void window::draw_size()
     {
         atomic_guard guard{ m_resizing };
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
             gtk_window_resize(GTK_WINDOW(get_handle()->handle), rw, rh);
@@ -142,7 +142,7 @@ namespace xaml
         if (((GdkEvent*)event)->type == GDK_CONFIGURE && self->get_handle())
         {
             atomic_guard guard{ self->m_resizing };
-            if (!guard.exchange(true))
+            if (!guard.test_and_set())
             {
                 gint x, y;
                 gtk_window_get_position(GTK_WINDOW(self->get_handle()->handle), &x, &y);

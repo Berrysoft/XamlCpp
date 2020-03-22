@@ -2,25 +2,23 @@
 #define XAML_UI_INTERNAL_SHARED_ATOMIC_GUARD_HPP
 
 #include <atomic>
-#include <optional>
 
 namespace xaml
 {
-    template <typename T>
     struct atomic_guard
     {
     private:
-        std::atomic<T>& m_atomic_ref;
-        std::optional<T> m_old_value;
+        std::atomic_bool* m_atomic_ref;
+        bool m_old_value;
 
     public:
-        atomic_guard(std::atomic<T>& ref) : m_atomic_ref(ref), m_old_value(std::nullopt) {}
+        atomic_guard(std::atomic_bool& ref) noexcept : m_atomic_ref(&ref), m_old_value(true) {}
 
-        T exchange(T value) { return *(m_old_value = m_atomic_ref.exchange(value)); }
+        bool test_and_set() noexcept { return m_old_value = m_atomic_ref->exchange(true); }
 
-        ~atomic_guard()
+        ~atomic_guard() noexcept
         {
-            if (m_old_value) m_atomic_ref = *m_old_value;
+            if (!m_old_value) m_atomic_ref->store(false);
         }
     };
 } // namespace xaml

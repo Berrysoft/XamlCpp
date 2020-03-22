@@ -38,7 +38,7 @@ namespace xaml
         XAML_UI_WEBVIEW_API ~webview() override;
 
     private:
-        std::atomic<bool> m_navigating{ false };
+        std::atomic_bool m_navigating{ false };
 
 #ifdef XAML_UI_WINDOWS
     public:
@@ -54,6 +54,8 @@ namespace xaml
         void set_webview(native_webview_type value) { m_webview = value; }
 
     private:
+        std::atomic_bool m_created{ false };
+
         void create_edge2(rectangle const& real);
         void create_edge(rectangle const& real);
         void create_ie(rectangle const& real);

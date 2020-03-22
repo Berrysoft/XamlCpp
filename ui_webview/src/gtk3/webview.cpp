@@ -34,7 +34,7 @@ namespace xaml
         {
             webview* self = (webview*)data;
             atomic_guard guard(self->m_navigating);
-            if (!guard.exchange(true))
+            if (!guard.test_and_set())
             {
                 self->set_uri(webkit_web_view_get_uri(WEBKIT_WEB_VIEW(self->get_handle()->handle)));
             }
