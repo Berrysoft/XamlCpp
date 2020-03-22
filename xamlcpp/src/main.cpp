@@ -94,10 +94,6 @@ int main(int argc, char const* const* argv)
                     auto p = en.path();
                     if (p.has_extension() && p.extension().native() == module_extension)
                     {
-                        while (is_symlink(p))
-                        {
-                            p = read_symlink(p);
-                        }
                         path_string_t p_str = p.native();
                         path_string_t p_file = p.filename().native();
                         if (auto pver = is_later(modules, p_file))
