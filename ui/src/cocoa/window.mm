@@ -83,7 +83,7 @@ namespace xaml
     void window::draw_size()
     {
         atomic_guard guard{ m_resizing };
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             NSWindow* window = get_window()->window;
             CGFloat fw = (CGFloat)get_width();
@@ -159,7 +159,7 @@ namespace xaml
         NSWindow* window = get_window()->window;
         NSRect frame = window.frame;
         atomic_guard guard{ m_resizing };
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             set_size(from_native(frame.size));
             __draw({});
@@ -171,7 +171,7 @@ namespace xaml
         NSWindow* window = get_window()->window;
         NSRect frame = window.frame;
         atomic_guard guard{ m_resizing };
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             set_location(from_native(frame.origin));
             __draw({});

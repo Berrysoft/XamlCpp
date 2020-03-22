@@ -6,6 +6,12 @@
 #include <xaml/ui/timer.hpp>
 #include <xaml/ui/window.hpp>
 
+#ifdef XAML_TEST_GEN_FAKE
+#define INIT_COMPONENTS_ARGS ::xaml::meta_context& ctx
+#else
+#define INIT_COMPONENTS_ARGS
+#endif // XAML_TEST_GEN_FAKE
+
 namespace xaml::test
 {
     class test_window : public window
@@ -19,11 +25,7 @@ namespace xaml::test
 
         ~test_window() override {}
 
-#ifdef XAML_TEST_GEN_FAKE
-        void init_components(meta_context& ctx);
-#else
-        void init_components();
-#endif // XAML_TEST_GEN_FAKE
+        void init_components(INIT_COMPONENTS_ARGS);
 
         void on_timer_tick(std::reference_wrapper<timer>);
 

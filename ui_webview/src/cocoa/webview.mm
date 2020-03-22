@@ -50,7 +50,7 @@ namespace xaml
     {
         WKWebView* webview = (WKWebView*)get_handle()->handle;
         atomic_guard guard(m_navigating);
-        if (!guard.exchange(true))
+        if (!guard.test_and_set())
         {
             set_uri(webview.URL.absoluteString.UTF8String);
         }
