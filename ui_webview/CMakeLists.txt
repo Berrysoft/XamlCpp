@@ -1,14 +1,5 @@
 project(XamlWebView CXX)
 
-if(${BUILD_COCOA})
-    set(SET_OBJCXX_MANULLY OFF)
-    if(CMAKE_VERSION VERSION_LESS 3.16)
-        set(SET_OBJCXX_MANULLY ON)
-    else()
-        enable_language(OBJCXX)
-    endif()
-endif()
-
 file(GLOB WV_HEADERS "include/xaml/ui/controls/*.hpp")
 
 if(${BUILD_WINDOWS})

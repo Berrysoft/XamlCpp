@@ -1,18 +1,5 @@
 project(XamlUIControls CXX)
 
-if(${BUILD_COCOA})
-    set(SET_OBJCXX_MANULLY OFF)
-    if(CMAKE_VERSION VERSION_LESS 3.16)
-        set(SET_OBJCXX_MANULLY ON)
-    else()
-        enable_language(OBJCXX)
-    endif()
-endif()
-
-if(${BUILD_GTK3})
-    enable_language(C)
-endif()
-
 file(GLOB UIC_HEADERS "include/xaml/ui/controls/*.hpp")
 
 if(${BUILD_WINDOWS})
