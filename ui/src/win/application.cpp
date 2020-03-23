@@ -2,7 +2,7 @@
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>

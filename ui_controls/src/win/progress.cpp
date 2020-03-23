@@ -1,4 +1,4 @@
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/native_control.hpp>
 

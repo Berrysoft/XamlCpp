@@ -3,7 +3,7 @@
 #include <vector>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 
 using namespace std;
 

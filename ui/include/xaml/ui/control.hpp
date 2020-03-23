@@ -189,6 +189,11 @@ namespace xaml
         XAML_UI_API virtual void draw_visible();
 
     public:
+        EVENT(mouse_down, std::reference_wrapper<control>)
+        EVENT(mouse_up, std::reference_wrapper<control>)
+        EVENT(mouse_move, std::reference_wrapper<control>)
+
+    public:
 #define ADD_CONTROL_MEMBERS()   \
     ADD_PROP_EVENT(size);       \
     ADD_PROP(width);            \

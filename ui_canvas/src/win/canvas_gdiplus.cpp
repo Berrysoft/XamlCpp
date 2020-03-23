@@ -1,6 +1,6 @@
 #include <stdexcept>
 #include <win/canvas_gdiplus.hpp>
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 #include <windowsx.h>
 #include <xaml/ui/native_control.hpp>
 

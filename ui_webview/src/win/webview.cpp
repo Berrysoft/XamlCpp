@@ -1,5 +1,5 @@
 #include <shared/atomic_guard.hpp>
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 #include <win/webview_ie.hpp>
 #include <xaml/ui/controls/native_webview.hpp>
 #include <xaml/ui/controls/webview.hpp>

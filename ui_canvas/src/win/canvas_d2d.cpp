@@ -3,7 +3,7 @@
 #include <tuple>
 #include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>
-#include <win/pinvoke.h>
+#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
 

@@ -2,11 +2,11 @@
 #include <unordered_map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-#include <win/pinvoke.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -186,13 +186,9 @@ namespace xaml
             atomic_guard guard(m_resizing);
             if (get_handle() && !guard.test_and_set())
             {
+                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(HIWORD(msg.wParam)), TRUE);
                 size real_size = __get_real_size();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle)), TRUE);
-                RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
-                rectangle r = from_native(rect);
-                __set_real_location({ r.x, r.y });
                 __draw({});
             }
             break;
