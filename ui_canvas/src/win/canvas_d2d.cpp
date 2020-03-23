@@ -196,16 +196,7 @@ namespace xaml
             {
                 try
                 {
-                    auto prop = D2D1::RenderTargetProperties(
-                        D2D1_RENDER_TARGET_TYPE_DEFAULT,
-                        D2D1::PixelFormat(
-                            DXGI_FORMAT_B8G8R8A8_UNORM,
-                            D2D1_ALPHA_MODE_PREMULTIPLIED),
-                        0,
-                        0,
-                        D2D1_RENDER_TARGET_USAGE_NONE,
-                        D2D1_FEATURE_LEVEL_DEFAULT);
-                    THROW_IF_FAILED(d2d->CreateDCRenderTarget(&prop, &target));
+                    THROW_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(wnd), &target));
                     THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), dwrite.put_unknown()));
                     return true;
                 }
@@ -218,13 +209,12 @@ namespace xaml
         return false;
     }
 
-    void canvas_d2d::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
+    void canvas_d2d::begin_paint(HWND wnd, size real, function<void(drawing_context&)> paint_func)
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
         size region = real * dpi / 96.0;
         CHECK_SIZE(region);
-        RECT rc_region = to_native<RECT, rectangle>({ 0, 0, region.width, region.height });
-        THROW_IF_FAILED(target->BindDC(hdc, &rc_region));
+        target->Resize(D2D1::SizeU((UINT32)region.width, (UINT32)region.height));
         target->BeginDraw();
         target->SetDpi((FLOAT)dpi, (FLOAT)dpi);
         target->Clear(D2D1::ColorF(D2D1::ColorF::White));

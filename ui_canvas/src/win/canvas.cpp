@@ -73,8 +73,7 @@ namespace xaml
             DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
             if (ds->hwndItem == get_handle()->handle)
             {
-                auto hDC = ds->hDC;
-                m_canvas->begin_paint(ds->hwndItem, ds->hDC, get_size(), [this](drawing_context& dc) { m_redraw(*this, dc); });
+                m_canvas->begin_paint(ds->hwndItem, get_size(), [this](drawing_context& dc) { m_redraw(*this, dc); });
             }
             return TRUE;
         }

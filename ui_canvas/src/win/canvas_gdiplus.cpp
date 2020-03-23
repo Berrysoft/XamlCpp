@@ -230,10 +230,10 @@ namespace xaml
         return true;
     }
 
-    void canvas_gdiplus::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
+    void canvas_gdiplus::begin_paint(HWND wnd, size real, function<void(drawing_context&)> paint_func)
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
-        Graphics g{ hdc };
+        Graphics g{ wnd };
         check_status(g.Clear(Color::White));
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;

@@ -33,7 +33,7 @@ namespace xaml
     class canvas_d2d : public native_canvas
     {
     private:
-        wil::com_ptr<ID2D1DCRenderTarget> target{ nullptr };
+        wil::com_ptr<ID2D1HwndRenderTarget> target{ nullptr };
         wil::com_ptr<ID2D1Factory> d2d{ nullptr };
         wil::com_ptr<IDWriteFactory> dwrite{ nullptr };
 
@@ -42,7 +42,7 @@ namespace xaml
         ~canvas_d2d() override;
 
         bool create(HWND wnd) override;
-        void begin_paint(HWND wnd, HDC dc, size real, std::function<void(drawing_context&)> paint_func) override;
+        void begin_paint(HWND wnd, size real, std::function<void(drawing_context&)> paint_func) override;
     };
 
     inline size from_native(D2D1_SIZE_F s)
