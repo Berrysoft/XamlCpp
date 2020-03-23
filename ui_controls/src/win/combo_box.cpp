@@ -26,7 +26,7 @@ namespace xaml
                     set_sel_id(ComboBox_GetCurSel(get_handle()->handle));
                     int count = ComboBox_GetTextLength(get_handle()->handle);
                     string_t text(count, U('\0'));
-                    ComboBox_GetText(get_handle()->handle, text.data(), count);
+                    ComboBox_GetText(get_handle()->handle, text.data(), count + 1);
                     set_text(text);
                     break;
                 }
