@@ -1,6 +1,7 @@
 project(XamlUI CXX)
 
 file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
+file(GLOB UI_WINDOWS_HEADERS "include/xaml/ui/win/*.h")
 file(GLOB UI_COCOA_HEADERS "include/xaml/ui/cocoa/*.h")
 
 if(${BUILD_WINDOWS})
@@ -34,7 +35,9 @@ elseif(${BUILD_GTK3})
 endif()
 
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
-if(${BUILD_COCOA})
+if(${BUILD_WINDOWS})
+    install(FILES ${UI_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win)
+elseif(${BUILD_COCOA})
     install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
 endif()
 
