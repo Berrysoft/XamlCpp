@@ -69,8 +69,8 @@ namespace xaml
             draw_title();
         }
         draw_size();
-        draw_child();
         draw_menu_bar();
+        draw_child();
         THROW_IF_WIN32_BOOL_FALSE(InvalidateRect(get_handle()->handle, nullptr, FALSE));
     }
 
