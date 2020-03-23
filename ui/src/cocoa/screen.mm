@@ -13,7 +13,7 @@ namespace xaml
         {
             NSRect frame = screen.frame;
             NSRect vframe = screen.visibleFrame;
-            ms.push_back({ from_native(frame), from_native(vframe), 72.0 });
+            ms.push_back({ from_native(frame), from_native(vframe) });
         }
         return ms;
     }

@@ -1,3 +1,4 @@
+#include <win/pinvoke.h>
 #include <xaml/ui/controls/progress.hpp>
 #include <xaml/ui/native_control.hpp>
 
@@ -38,7 +39,7 @@ namespace xaml
 
     void progress::__size_to_fit()
     {
-        static int cyVScroll = GetSystemMetricsForDpi(SM_CYVSCROLL, 96);
+        static int cyVScroll = XamlGetSystemMetricsForDpi(SM_CYVSCROLL, 96);
         __set_size_noevent({ get_width(), (double)cyVScroll });
     }
 } // namespace xaml

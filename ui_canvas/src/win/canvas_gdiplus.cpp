@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <win/canvas_gdiplus.hpp>
+#include <win/pinvoke.h>
 #include <windowsx.h>
 #include <xaml/ui/native_control.hpp>
 
@@ -231,7 +232,7 @@ namespace xaml
 
     void canvas_gdiplus::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
     {
-        UINT dpi = GetDpiForWindow(wnd);
+        UINT dpi = XamlGetDpiForWindow(wnd);
         Graphics g{ hdc };
         check_status(g.Clear(Color::White));
         drawing_context_gdiplus ctx{};

@@ -2,6 +2,7 @@
 
 #include <tuple>
 #include <win/canvas_d2d.hpp>
+#include <win/pinvoke.h>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
 
@@ -218,7 +219,7 @@ namespace xaml
 
     void canvas_d2d::begin_paint(HWND wnd, HDC hdc, size real, function<void(drawing_context&)> paint_func)
     {
-        UINT dpi = GetDpiForWindow(wnd);
+        UINT dpi = XamlGetDpiForWindow(wnd);
         size region = real * dpi / 96.0;
         CHECK_SIZE(region);
         RECT rc_region = to_native<RECT, rectangle>({ 0, 0, region.width, region.height });

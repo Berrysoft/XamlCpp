@@ -2,6 +2,7 @@
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <win/pinvoke.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/container.hpp>
 #include <xaml/ui/control.hpp>
@@ -21,13 +22,13 @@ namespace xaml
             params.parent ? params.parent->get_handle()->handle : nullptr,
             nullptr, GetModuleHandle(nullptr), nullptr));
         set_handle(h);
-        SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(GetDpiForWindow(get_handle()->handle)), TRUE);
+        SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle)), TRUE);
     }
 
     void control::__set_rect(rectangle const& region)
     {
         rectangle real = region - get_margin();
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
         rectangle real_real = real * udpi / 96.0;
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
         __set_size_noevent({ real.width, real.height });
@@ -47,25 +48,25 @@ namespace xaml
 
     size control::__get_real_size() const
     {
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
         return get_size() * udpi / 96.0;
     }
 
     void control::__set_real_size(size value)
     {
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
         set_size(value * 96.0 / udpi);
     }
 
     margin control::__get_real_margin() const
     {
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
         return get_margin() * udpi / 96.0;
     }
 
     void control::__set_real_margin(margin const& value)
     {
-        UINT udpi = GetDpiForWindow(get_handle()->handle);
+        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
         set_margin(value * 96.0 / udpi);
     }
 

@@ -11,7 +11,6 @@ namespace xaml
     {
         rectangle region;
         rectangle client;
-        double dpi;
     };
 
     XAML_UI_API std::vector<monitor> get_monitors();

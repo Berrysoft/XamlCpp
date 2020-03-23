@@ -2,6 +2,7 @@
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <win/pinvoke.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
@@ -44,11 +45,8 @@ namespace xaml
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
-        THROW_IF_WIN32_BOOL_FALSE(SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2));
-        NONCLIENTMETRICS ncm{};
-        ncm.cbSize = sizeof(ncm);
-        THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0, 96));
-        s_default_font = ncm.lfMessageFont;
+        THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
+        THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, 96));
     }
 
     void* application::__default_font(unsigned int udpi) const

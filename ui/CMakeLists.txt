@@ -26,7 +26,7 @@ target_include_directories(xaml_ui
 
 target_link_libraries(xaml_ui xaml_meta)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui Comctl32 Shcore)
+    target_link_libraries(xaml_ui Comctl32)
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui "-framework Cocoa")
 elseif(${BUILD_GTK3})

@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
+#include <win/pinvoke.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
@@ -23,6 +24,9 @@ namespace xaml
         auto result = wnd ? wnd->__wnd_proc(msg) : nullopt;
         switch (msg.Msg)
         {
+        case WM_NCCREATE:
+            if (hWnd) THROW_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
+            break;
         case WM_CTLCOLORSTATIC:
             if (!result)
                 result = (intptr_t)white_brush.get();
@@ -184,7 +188,7 @@ namespace xaml
             {
                 size real_size = __get_real_size();
                 THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(GetDpiForWindow(get_handle()->handle)), TRUE);
+                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle)), TRUE);
                 RECT rect = {};
                 THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                 rectangle r = from_native(rect);
@@ -224,6 +228,6 @@ namespace xaml
 
     double window::get_dpi() const
     {
-        return (double)GetDpiForWindow(get_handle()->handle);
+        return (double)XamlGetDpiForWindow(get_handle()->handle);
     }
 } // namespace xaml
