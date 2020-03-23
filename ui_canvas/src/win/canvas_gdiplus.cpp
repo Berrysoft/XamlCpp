@@ -225,7 +225,7 @@ namespace xaml
         GdiplusShutdown(token);
     }
 
-    bool canvas_gdiplus::create(HWND wnd, size real)
+    bool canvas_gdiplus::create(HWND wnd)
     {
         return true;
     }

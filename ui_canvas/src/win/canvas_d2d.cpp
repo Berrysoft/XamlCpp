@@ -1,6 +1,7 @@
 #ifdef XAML_UI_CANVAS_DIRECT2D
 
 #include <tuple>
+#include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>
 #include <win/pinvoke.h>
 #include <xaml/ui/native_control.hpp>
@@ -187,7 +188,7 @@ namespace xaml
 
     canvas_d2d::~canvas_d2d() {}
 
-    bool canvas_d2d::create(HWND wnd, size real)
+    bool canvas_d2d::create(HWND wnd)
     {
         if (!d2d)
         {

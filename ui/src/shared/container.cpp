@@ -13,7 +13,8 @@ namespace xaml
             {
                 m_children.push_back(child);
                 child->set_parent(static_pointer_cast<control>(shared_from_this()));
-                __parent_redraw();
+                if (get_handle())
+                    __parent_redraw();
             }
         }
     }
@@ -25,7 +26,8 @@ namespace xaml
         {
             child->set_parent({});
             m_children.erase(it);
-            __parent_redraw();
+            if (get_handle())
+                __parent_redraw();
         }
     }
 } // namespace xaml

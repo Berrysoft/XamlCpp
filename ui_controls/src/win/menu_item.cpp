@@ -15,7 +15,7 @@ namespace xaml
         {
         case WM_COMMAND:
         {
-            if (LOWORD(msg.wParam) == get_menu()->handle)
+            if (get_menu() && LOWORD(msg.wParam) == get_menu()->handle)
             {
                 m_click(*this);
             }

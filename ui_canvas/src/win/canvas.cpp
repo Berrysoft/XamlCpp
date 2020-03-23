@@ -105,7 +105,7 @@ namespace xaml
             {
 #ifdef XAML_UI_CANVAS_DIRECT2D
                 set_canvas(make_shared<canvas_d2d>());
-                if (!get_canvas()->create(get_handle()->handle, get_size()))
+                if (!get_canvas()->create(get_handle()->handle))
                 {
                     set_canvas(make_shared<canvas_gdiplus>());
                 }
@@ -113,7 +113,7 @@ namespace xaml
                 set_canvas(make_shared<canvas_gdiplus>());
 #endif // XAML_UI_CANVAS_DIRECT2D
             }
-            get_canvas()->create(get_handle()->handle, get_size());
+            get_canvas()->create(get_handle()->handle);
         }
     }
 } // namespace xaml

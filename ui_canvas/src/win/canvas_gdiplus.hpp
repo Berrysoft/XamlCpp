@@ -38,7 +38,7 @@ namespace xaml
         canvas_gdiplus();
         ~canvas_gdiplus() override;
 
-        bool create(HWND wnd, size real) override;
+        bool create(HWND wnd) override;
         void begin_paint(HWND wnd, HDC dc, size real, std::function<void(drawing_context&)> paint_func) override;
     };
 

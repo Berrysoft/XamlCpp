@@ -41,7 +41,7 @@ namespace xaml
         canvas_d2d();
         ~canvas_d2d() override;
 
-        bool create(HWND wnd, size real) override;
+        bool create(HWND wnd) override;
         void begin_paint(HWND wnd, HDC dc, size real, std::function<void(drawing_context&)> paint_func) override;
     };
 

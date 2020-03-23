@@ -36,17 +36,23 @@ static vector<wil::unique_hmodule> modules{};
 static void init_methods()
 {
     wil::unique_hmodule user32{ LoadLibraryEx(L"User32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32) };
-    pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32.get(), "SetProcessDPIAware");
-    pSetProcessDpiAwarenessContext = (pfSetProcessDpiAwarenessContext)GetProcAddress(user32.get(), "SetProcessDpiAwarenessContext");
-    pEnableNonClientDpiScaling = (pfEnableNonClientDpiScaling)GetProcAddress(user32.get(), "EnableNonClientDpiScaling");
-    pSystemParametersInfoForDpi = (pfSystemParametersInfoForDpi)GetProcAddress(user32.get(), "SystemParametersInfoForDpi");
-    pGetSystemMetricsForDpi = (pfGetSystemMetricsForDpi)GetProcAddress(user32.get(), "GetSystemMetricsForDpi");
-    pGetDpiForSystem = (pfGetDpiForSystem)GetProcAddress(user32.get(), "GetDpiForSystem");
-    pGetDpiForWindow = (pfGetDpiForWindow)GetProcAddress(user32.get(), "GetDpiForWindow");
-    modules.push_back(std::move(user32));
+    if (user32)
+    {
+        pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32.get(), "SetProcessDPIAware");
+        pSetProcessDpiAwarenessContext = (pfSetProcessDpiAwarenessContext)GetProcAddress(user32.get(), "SetProcessDpiAwarenessContext");
+        pEnableNonClientDpiScaling = (pfEnableNonClientDpiScaling)GetProcAddress(user32.get(), "EnableNonClientDpiScaling");
+        pSystemParametersInfoForDpi = (pfSystemParametersInfoForDpi)GetProcAddress(user32.get(), "SystemParametersInfoForDpi");
+        pGetSystemMetricsForDpi = (pfGetSystemMetricsForDpi)GetProcAddress(user32.get(), "GetSystemMetricsForDpi");
+        pGetDpiForSystem = (pfGetDpiForSystem)GetProcAddress(user32.get(), "GetDpiForSystem");
+        pGetDpiForWindow = (pfGetDpiForWindow)GetProcAddress(user32.get(), "GetDpiForWindow");
+        modules.push_back(std::move(user32));
+    }
     wil::unique_hmodule shcore{ LoadLibraryEx(L"Shcore.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32) };
-    pSetProcessDpiAwareness = (pfSetProcessDpiAwareness)GetProcAddress(shcore.get(), "SetProcessDpiAwareness");
-    modules.push_back(std::move(shcore));
+    if (shcore)
+    {
+        pSetProcessDpiAwareness = (pfSetProcessDpiAwareness)GetProcAddress(shcore.get(), "SetProcessDpiAwareness");
+        modules.push_back(std::move(shcore));
+    }
 }
 
 static once_flag init_once_flag{};

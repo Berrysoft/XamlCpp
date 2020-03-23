@@ -1,4 +1,5 @@
 #include <shared/atomic_guard.hpp>
+#include <win/pinvoke.h>
 #include <win/webview_ie.hpp>
 #include <xaml/ui/controls/native_webview.hpp>
 #include <xaml/ui/controls/webview.hpp>
@@ -75,7 +76,7 @@ namespace xaml
         {
             set_handle(sparent->get_handle());
             rectangle real = region - get_margin();
-            UINT udpi = GetDpiForWindow(get_handle()->handle);
+            UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
             rectangle real_real = real * udpi / 96.0;
             if (!get_webview())
             {
