@@ -34,6 +34,8 @@ namespace xaml
     inline constexpr path_string_view_t module_extension{ P(".so") };
 #endif // WIN32 || __MINGW32__
 
+    XAML_META_API std::vector<path_string_t> get_module_search_path();
+
     class module
     {
     public:

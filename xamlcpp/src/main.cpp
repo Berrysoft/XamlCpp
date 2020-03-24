@@ -18,16 +18,16 @@ using namespace std::filesystem;
 using namespace xaml;
 using namespace boost::program_options;
 
-optional<version> is_later(map<path_string_t, tuple<path_string_t, version>> const& modules, path_string_t const& new_module)
+optional<version> is_later(map<path_string_t, tuple<path_string_t, version>> const& modules, path const& new_module)
 {
     try
     {
         module m;
-        m.open(new_module);
+        m.open(new_module.native());
         auto pxaml_version = (void (*)(version*) noexcept)m.get_method("xaml_version");
         if (pxaml_version)
         {
-            auto it = modules.find(new_module);
+            auto it = modules.find(new_module.filename());
             version ver;
             pxaml_version(&ver);
             if (it == modules.end())
@@ -89,8 +89,11 @@ int main(int argc, char const* const* argv)
             string inf = vm["input-file"].as<string>();
             path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
             map<path_string_t, tuple<path_string_t, version>> modules;
-            auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
-            for (path dir : lib_dirs)
+            auto lib_path = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
+            auto def_search_path = get_module_search_path();
+            vector<path> lib_dirs{ lib_path.begin(), lib_path.end() };
+            lib_dirs.insert(lib_dirs.end(), def_search_path.begin(), def_search_path.end());
+            for (auto& dir : lib_dirs)
             {
                 if (verbose) cout << "Searching " << dir << "..." << endl;
                 for (auto& en : directory_iterator{ dir })
@@ -101,12 +104,10 @@ int main(int argc, char const* const* argv)
                         if (verbose) cout << "Determining " << p << "..." << endl;
                         if (p.has_extension() && p.extension().native() == module_extension)
                         {
-                            path_string_t p_str = p.native();
-                            path_string_t p_file = p.filename().native();
-                            if (auto pver = is_later(modules, p_file))
+                            if (auto pver = is_later(modules, p))
                             {
                                 if (verbose) cout << "Select " << p.filename() << '(' << *pver << ')' << " at " << p << endl;
-                                modules.emplace(p_file, make_tuple(p_str, *pver));
+                                modules.emplace(p.filename(), make_tuple(p.native(), *pver));
                             }
                         }
                     }

@@ -43,7 +43,7 @@ namespace xaml
     }
 
 #if defined(WIN32) || defined(__MINGW32__)
-    static vector<path_string_t> get_search_path()
+    vector<path_string_t> get_module_search_path()
     {
         wstring buffer(32767, U('\0'));
         DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
@@ -53,7 +53,7 @@ namespace xaml
         return result;
     }
 #else
-    static vector<path_string_t> get_search_path()
+    vector<path_string_t> get_module_search_path()
     {
 #ifdef __APPLE__
         constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
@@ -71,7 +71,7 @@ namespace xaml
     {
         path pname = name;
         if (pname.is_absolute()) return pname;
-        auto search_dirs = get_search_path();
+        auto search_dirs = get_module_search_path();
         search_dirs.insert(search_dirs.end(), sds.begin(), sds.end());
         for (auto& dir : search_dirs)
         {
