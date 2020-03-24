@@ -1,6 +1,7 @@
 #ifndef XAML_MODULE_MODULE_HPP
 #define XAML_MODULE_MODULE_HPP
 
+#include <filesystem>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -34,8 +35,6 @@ namespace xaml
     inline constexpr path_string_view_t module_extension{ P(".so") };
 #endif // WIN32 || __MINGW32__
 
-    XAML_META_API std::vector<path_string_t> get_module_search_path();
-
     class module
     {
     public:
@@ -54,7 +53,7 @@ namespace xaml
 
     public:
         module() {}
-        module(path_string_view_t name) : module() { open(name); }
+        module(std::filesystem::path const& name) : module() { open(name); }
 
         module(module const&) = delete;
         module& operator=(module const&) = delete;
@@ -73,12 +72,12 @@ namespace xaml
         virtual ~module() { close(); }
 
     private:
-        std::vector<path_string_t> m_search_dir;
+        std::vector<std::filesystem::path> m_search_dir;
 
     public:
-        void add_search_dir(path_string_view_t dir) { m_search_dir.emplace_back(dir); }
+        void add_search_dir(std::filesystem::path const& dir) { m_search_dir.emplace_back(dir); }
 
-        XAML_META_API void open(path_string_view_t name);
+        XAML_META_API void open(std::filesystem::path const& name);
         XAML_META_API void close();
 
         XAML_META_API void* get_method(std::string_view name) const;

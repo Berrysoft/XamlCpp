@@ -22,11 +22,11 @@ using namespace std::filesystem;
 
 namespace xaml
 {
-    static vector<path_string_t> split(path_string_view_t str, path_char_t separater)
+    static vector<path> split(path_string_view_t str, path_char_t separater)
     {
         if (str.empty()) return {};
         size_t index = 0, offset = 0;
-        vector<path_string_t> result;
+        vector<path> result;
         for (;;)
         {
             index = str.find_first_of(separater, offset);
@@ -43,17 +43,17 @@ namespace xaml
     }
 
 #if defined(WIN32) || defined(__MINGW32__)
-    vector<path_string_t> get_module_search_path()
+    static vector<path> get_module_search_path()
     {
-        wstring buffer(32767, U('\0'));
+        wstring buffer(32767, P('\0'));
         DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
         buffer.resize(count);
-        vector<path_string_t> result = split(buffer, U(';'));
+        vector<path> result = split(buffer, P(';'));
         result.push_back(P("."));
         return result;
     }
 #else
-    vector<path_string_t> get_module_search_path()
+    static vector<path> get_module_search_path()
     {
 #ifdef __APPLE__
         constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
@@ -61,16 +61,16 @@ namespace xaml
         constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
 #endif // __APPLE__
         char* ldp = getenv(ld_library_path.data());
-        vector<path_string_t> result = split(ldp ? ldp : "", ':');
+        vector<path> result = split(ldp ? ldp : "", ':');
         result.push_back(P("../lib"));
         return result;
     }
 #endif // WIN32 || __MINGW32__
 
-    static path get_full_path(path_string_view_t name, vector<path_string_t> const& sds)
+    static path get_full_path(path const& name, vector<path> const& sds)
     {
+        if (name.is_absolute()) return name;
         path pname = name;
-        if (pname.is_absolute()) return pname;
         auto search_dirs = get_module_search_path();
         search_dirs.insert(search_dirs.end(), sds.begin(), sds.end());
         for (auto& dir : search_dirs)
@@ -85,7 +85,7 @@ namespace xaml
     }
 
 #if defined(WIN32) || defined(__MINGW32__)
-    void module::open(path_string_view_t name)
+    void module::open(path const& name)
     {
         close();
         auto p = get_full_path(name, m_search_dir);
@@ -111,7 +111,7 @@ namespace xaml
         }
     }
 #else
-    void module::open(path_string_view_t name)
+    void module::open(path const& name)
     {
         close();
         auto p = get_full_path(name, m_search_dir);

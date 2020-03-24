@@ -284,9 +284,9 @@ namespace xaml
         return stream;
     }
 
-    ostream& compiler::write_deserialize(ostream& stream, string_view path)
+    ostream& compiler::write_deserialize(ostream& stream, filesystem::path const& path)
     {
-        write_indent(stream) << "::xaml::parser __p(ctx, \"" << path << "\");" << endl;
+        write_indent(stream) << "::xaml::parser __p(ctx, " << path << ");" << endl;
         write_indent(stream) << "::xaml::deserializer __des{ ctx };" << endl;
         write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
         return stream;
@@ -365,12 +365,12 @@ namespace xaml
         return stream;
     }
 
-    static inline string get_path_associated_header_path(string_view p)
+    static inline string get_path_associated_header_path(filesystem::path const& p)
     {
-        return path{ p }.filename().string() + ".hpp";
+        return p.filename().string() + ".hpp";
     }
 
-    ostream& compiler::compile(ostream& stream, xaml_node& node, string_view path, set<string> const& headers)
+    ostream& compiler::compile(ostream& stream, xaml_node& node, filesystem::path const& path, set<string> const& headers)
     {
         if (stream)
         {
@@ -405,7 +405,7 @@ namespace xaml
         "xaml/parser.hpp"
     };
 
-    ostream& compiler::compile_fake(ostream& stream, xaml_node& node, string_view path)
+    ostream& compiler::compile_fake(ostream& stream, xaml_node& node, filesystem::path const& path)
     {
         if (stream)
         {

@@ -5,6 +5,7 @@
 #include <xaml/parser.hpp>
 
 using namespace std;
+using namespace std::filesystem;
 
 namespace xaml
 {
@@ -102,10 +103,10 @@ namespace xaml
         xmlCleanupMemory();
     }
 
-    void parser::open(string_view file)
+    void parser::open(path const& file)
     {
         m_buffer = nullptr;
-        m_reader = xmlNewTextReaderFilename(file.data());
+        m_reader = xmlNewTextReaderFilename(file.string().c_str());
     }
 
     void parser::load(string_view xml)

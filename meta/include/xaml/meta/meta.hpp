@@ -625,7 +625,7 @@ namespace xaml
         std::size_t bind_index{ 0 };
 
     public:
-        XAML_META_API module* add_module(path_string_view_t path);
+        XAML_META_API module* add_module(std::filesystem::path const& path);
         std::unordered_map<path_string_t, std::unique_ptr<module>> const& get_modules() const noexcept { return modules_map; }
 
         XAML_META_API std::string get_real_namespace(std::string_view ns) const;

@@ -1,6 +1,7 @@
 #ifndef XAML_PARSER_HPP
 #define XAML_PARSER_HPP
 
+#include <filesystem>
 #include <optional>
 #include <set>
 #include <string>
@@ -56,7 +57,7 @@ namespace xaml
     public:
         constexpr bool is_open() const noexcept { return m_reader; }
 
-        XAML_API void open(std::string_view file);
+        XAML_API void open(std::filesystem::path const& file);
         XAML_API void load(std::string_view xml);
 
         std::set<std::string> const& get_headers() const noexcept { return m_headers; }
@@ -68,7 +69,7 @@ namespace xaml
         static constexpr load_memory_t load_memory{};
 
         XAML_API parser(meta_context& ctx);
-        parser(meta_context& ctx, std::string_view file) : parser(ctx) { open(file); }
+        parser(meta_context& ctx, std::filesystem::path const& file) : parser(ctx) { open(file); }
         parser(meta_context& ctx, std::string_view xml, load_memory_t) : parser(ctx) { load(xml); }
         XAML_API ~parser();
 

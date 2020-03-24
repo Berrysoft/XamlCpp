@@ -64,14 +64,14 @@ namespace xaml
         XAMLC_API std::ostream& write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop);
         XAMLC_API std::ostream& write_markup(std::ostream& stream, std::string_view name, std::string_view prop, std::shared_ptr<meta_class> markup);
 
-        XAMLC_API std::ostream& write_deserialize(std::ostream& stream, std::string_view path);
+        XAMLC_API std::ostream& write_deserialize(std::ostream& stream, std::filesystem::path const& path);
 
         XAMLC_API std::ostream& compile_impl(std::ostream& stream, xaml_node& node, xaml_node& this_node, bool is_this);
         XAMLC_API std::ostream& compile_extensions(std::ostream& stream, xaml_node& node, bool is_this);
 
     public:
-        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node, std::string_view path, std::set<std::string> const& headers);
-        XAMLC_API std::ostream& compile_fake(std::ostream& stream, xaml_node& node, std::string_view path);
+        XAMLC_API std::ostream& compile(std::ostream& stream, xaml_node& node, std::filesystem::path const& path, std::set<std::string> const& headers);
+        XAMLC_API std::ostream& compile_fake(std::ostream& stream, xaml_node& node, std::filesystem::path const& path);
     };
 } // namespace xaml
 
