@@ -1,6 +1,4 @@
 #include <ShellScalingApi.h>
-#include <mutex>
-#include <vector>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <xaml/ui/win/dpi.h>
@@ -31,11 +29,13 @@ static pfGetDpiForSystem pGetDpiForSystem = nullptr;
 using pfGetDpiForWindow = UINT(WINAPI*)(HWND);
 static pfGetDpiForWindow pGetDpiForWindow = nullptr;
 
-static vector<wil::unique_hmodule> modules{};
+static wil::unique_hmodule user32 = nullptr;
+static wil::unique_hmodule shcore = nullptr;
 
-static void init_methods()
+void WINAPI XamlInitializeDpiFunc()
 {
-    wil::unique_hmodule user32{ LoadLibraryEx(L"User32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32) };
+    if (!user32)
+        user32.reset(LoadLibraryEx(L"User32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
     if (user32)
     {
         pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32.get(), "SetProcessDPIAware");
@@ -45,26 +45,17 @@ static void init_methods()
         pGetSystemMetricsForDpi = (pfGetSystemMetricsForDpi)GetProcAddress(user32.get(), "GetSystemMetricsForDpi");
         pGetDpiForSystem = (pfGetDpiForSystem)GetProcAddress(user32.get(), "GetDpiForSystem");
         pGetDpiForWindow = (pfGetDpiForWindow)GetProcAddress(user32.get(), "GetDpiForWindow");
-        modules.push_back(std::move(user32));
     }
-    wil::unique_hmodule shcore{ LoadLibraryEx(L"Shcore.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32) };
+    if (!shcore)
+        shcore.reset(LoadLibraryEx(L"Shcore.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
     if (shcore)
     {
         pSetProcessDpiAwareness = (pfSetProcessDpiAwareness)GetProcAddress(shcore.get(), "SetProcessDpiAwareness");
-        modules.push_back(std::move(shcore));
     }
-}
-
-static once_flag init_once_flag{};
-
-static inline void init_methods_once()
-{
-    call_once(init_once_flag, init_methods);
 }
 
 BOOL WINAPI XamlSetProcessBestDpiAwareness()
 {
-    init_methods_once();
     if (pSetProcessDpiAwarenessContext)
     {
         return pSetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
@@ -86,7 +77,6 @@ BOOL WINAPI XamlSetProcessBestDpiAwareness()
 
 BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd)
 {
-    init_methods_once();
     if (pEnableNonClientDpiScaling)
     {
         return pEnableNonClientDpiScaling(hwnd);
@@ -99,7 +89,6 @@ BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd)
 
 BOOL WINAPI XamlSystemDefaultFontForDpi(LPLOGFONT lfFont, UINT dpi)
 {
-    init_methods_once();
     NONCLIENTMETRICS ncm{};
     ncm.cbSize = sizeof(ncm);
     if (pSystemParametersInfoForDpi)
@@ -120,7 +109,6 @@ BOOL WINAPI XamlSystemDefaultFontForDpi(LPLOGFONT lfFont, UINT dpi)
 
 int WINAPI XamlGetSystemMetricsForDpi(int nIndex, UINT dpi)
 {
-    init_methods_once();
     if (pGetSystemMetricsForDpi)
     {
         return pGetSystemMetricsForDpi(nIndex, dpi);
@@ -133,7 +121,6 @@ int WINAPI XamlGetSystemMetricsForDpi(int nIndex, UINT dpi)
 
 UINT WINAPI XamlGetDpiForWindow(HWND hWnd)
 {
-    init_methods_once();
     if (hWnd)
     {
         if (pGetDpiForWindow)

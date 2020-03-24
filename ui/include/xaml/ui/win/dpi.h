@@ -9,6 +9,8 @@ extern "C"
 {
 #endif // __cplusplus
 
+    XAML_UI_API void WINAPI XamlInitializeDpiFunc();
+
     XAML_UI_API BOOL WINAPI XamlSetProcessBestDpiAwareness();
 
     XAML_UI_API BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd);

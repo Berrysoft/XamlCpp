@@ -2,11 +2,11 @@
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-#include <xaml/ui/win/dpi.h>
 #include <windowsx.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
+#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/window.hpp>
 
 using namespace std;
@@ -45,6 +45,7 @@ namespace xaml
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
+        XamlInitializeDpiFunc();
         THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
         THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, 96));
     }
