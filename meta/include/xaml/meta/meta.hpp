@@ -626,7 +626,7 @@ namespace xaml
 
     public:
         XAML_META_API module* add_module(path_string_view_t path);
-        std::unordered_map<path_string_t, std::unique_ptr<module>> const& get_modules() const { return modules_map; }
+        std::unordered_map<path_string_t, std::unique_ptr<module>> const& get_modules() const noexcept { return modules_map; }
 
         XAML_META_API std::string get_real_namespace(std::string_view ns) const;
 
@@ -639,6 +639,8 @@ namespace xaml
         XAML_META_API reflection_info const* get_type(std::type_index type) const noexcept;
 
         XAML_META_API void register_type(std::unique_ptr<reflection_info>&& ref) noexcept;
+
+        std::unordered_map<std::string, std::unordered_map<std::string, std::type_index>> const& get_types() const noexcept { return type_map; }
 
         XAML_META_API enum_reflection_info const* get_enum_type(std::type_index type) const noexcept;
 

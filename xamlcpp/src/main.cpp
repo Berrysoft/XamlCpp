@@ -59,6 +59,7 @@ int main(int argc, char const* const* argv)
             "output-file,o", value<string>(), "Output C++ file")(
             "library-path,L", value<vector<string>>(), "Search library path")(
             "fake,f", "Generate deserialize code")(
+            "verbose,v", "Show detailed output")(
             "no-logo", "Cancellation to show copyright infomation");
         positional_options_description p;
         p.add("input-file", -1);
@@ -81,6 +82,8 @@ int main(int argc, char const* const* argv)
             return 1;
         }
 
+        bool verbose = vm.count("verbose");
+
         if (vm.count("input-file"))
         {
             string inf = vm["input-file"].as<string>();
@@ -89,6 +92,7 @@ int main(int argc, char const* const* argv)
             auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
             for (auto& dir : lib_dirs)
             {
+                if (verbose) cout << "Searching " << path{ dir } << "..." << endl;
                 for (auto& en : directory_iterator{ dir })
                 {
                     auto p = en.path();
@@ -97,7 +101,10 @@ int main(int argc, char const* const* argv)
                         path_string_t p_str = p.native();
                         path_string_t p_file = p.filename().native();
                         if (auto pver = is_later(modules, p_file))
+                        {
+                            if (verbose) cout << "Select " << p.filename() << '(' << *pver << ')' << " at " << p << endl;
                             modules.emplace(p_file, make_tuple(p_str, *pver));
+                        }
                     }
                 }
             }
@@ -107,6 +114,19 @@ int main(int argc, char const* const* argv)
                 ctx.add_module(get<0>(m.second));
             }
             init_parser(ctx);
+            if (verbose)
+            {
+                cout << "Registered types:" << endl;
+                for (auto& pair : ctx.get_types())
+                {
+                    auto& ns = pair.first;
+                    for (auto& p : pair.second)
+                    {
+                        auto& name = p.first;
+                        cout << ns << "::" << name << endl;
+                    }
+                }
+            }
             parser p{ ctx, inf };
             if (p.is_open())
             {
@@ -115,10 +135,12 @@ int main(int argc, char const* const* argv)
                 ofstream stream{ ouf_path.string() };
                 if (vm.count("fake"))
                 {
+                    if (verbose) cout << "Compiling fake to " << path{ inf } << "..." << endl;
                     c.compile_fake(stream, node, inf);
                 }
                 else
                 {
+                    if (verbose) cout << "Compiling to " << path{ inf } << "..." << endl;
                     c.compile(stream, node, inf, p.get_headers());
                 }
             }
