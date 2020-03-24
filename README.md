@@ -25,9 +25,11 @@ It also supports high DPI settings even on Windows.
 #### Supported platforms
 |Name|API set|Supported OS|Recommanded OS|
 |-|-|-|-|
-|Win32|Windows API, GDI+|Windows|Windows|
+|Win32|Windows API, GDI+|Windows\*|Windows|
 |GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
 |Cocoa|Cocoa|MacOS|MacOS|
+
+\* At least Windows 7.
 
 ### Controls
 Common controls, works on all platforms.
