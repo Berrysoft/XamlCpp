@@ -29,8 +29,6 @@ namespace xaml
 
 #if defined(WIN32) || defined(__MINGW32__)
     inline constexpr path_string_view_t module_extension{ P(".dll") };
-#elif defined(__APPLE__)
-    inline constexpr path_string_view_t module_extension{ P(".dylib") };
 #else
     inline constexpr path_string_view_t module_extension{ P(".so") };
 #endif // WIN32 || __MINGW32__
