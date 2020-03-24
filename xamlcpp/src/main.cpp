@@ -58,7 +58,7 @@ int main(int argc, char const* const* argv)
             "input-file,i", value<string>(), "Input XAML file")(
             "output-file,o", value<string>(), "Output C++ file")(
             "library-path,L", value<vector<string>>(), "Search library path")(
-            "fake,f", "Generate deserialize code")(
+            "fake,f", bool_switch(), "Generate deserialize code")(
             "verbose,v", "Show detailed output")(
             "no-logo", "Cancellation to show copyright infomation");
         positional_options_description p;
@@ -135,7 +135,7 @@ int main(int argc, char const* const* argv)
                 auto node = p.parse();
                 compiler c{ ctx };
                 ofstream stream{ ouf_path.string() };
-                if (vm.count("fake"))
+                if (vm.count("fake") && vm["fake"].as<bool>())
                 {
                     if (verbose) cout << "Compiling fake to " << path{ inf } << "..." << endl;
                     c.compile_fake(stream, node, inf);
