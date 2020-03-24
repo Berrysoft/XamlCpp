@@ -79,7 +79,7 @@ namespace xaml
             auto entry = gtk_bin_get_child(GTK_BIN(self->get_handle()->handle));
             self->set_text(gtk_entry_get_text(GTK_ENTRY(entry)));
         }
-        else if (self->get_sel_id() == size_t(-1))
+        else if (self->get_sel_id() < 0 || self->get_sel_id() >= self->get_items().size())
         {
             self->set_text({});
         }
