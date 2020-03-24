@@ -81,6 +81,13 @@ namespace xaml
     {
     };
 
+    enum class mouse_button
+    {
+        left,
+        right,
+        middle
+    };
+
     struct native_control;
 
     class control : public meta_class
@@ -189,9 +196,9 @@ namespace xaml
         XAML_UI_API virtual void draw_visible();
 
     public:
-        EVENT(mouse_down, std::reference_wrapper<control>)
-        EVENT(mouse_up, std::reference_wrapper<control>)
-        EVENT(mouse_move, std::reference_wrapper<control>)
+        EVENT(mouse_down, std::reference_wrapper<control>, mouse_button)
+        EVENT(mouse_up, std::reference_wrapper<control>, mouse_button)
+        EVENT(mouse_move, std::reference_wrapper<control>, point)
 
     public:
 #define ADD_CONTROL_MEMBERS()   \

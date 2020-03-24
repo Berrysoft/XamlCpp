@@ -152,64 +152,84 @@ namespace xaml
 
     optional<std::intptr_t> window::__wnd_proc(window_message const& msg)
     {
-        switch (msg.Msg)
+        if (get_handle() && msg.hWnd == get_handle()->handle)
         {
-        case WM_SIZE:
-        {
-            atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.test_and_set())
+            switch (msg.Msg)
             {
-                double udpi = get_dpi();
-                RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
-                rectangle r = from_native(rect);
-                __set_real_location({ r.x, r.y });
-                __set_real_size({ r.width, r.height });
-            }
-            break;
-        }
-        case WM_MOVE:
-        {
-            atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.test_and_set())
+            case WM_SIZE:
             {
-                double udpi = get_dpi();
-                RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
-                rectangle r = from_native(rect);
-                __set_real_location({ r.x, r.y });
+                atomic_guard guard(m_resizing);
+                if (!guard.test_and_set())
+                {
+                    double udpi = get_dpi();
+                    RECT rect = {};
+                    THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
+                    rectangle r = from_native(rect);
+                    __set_real_location({ r.x, r.y });
+                    __set_real_size({ r.width, r.height });
+                }
+                break;
             }
-            break;
-        }
-        case WM_DPICHANGED:
-        {
-            atomic_guard guard(m_resizing);
-            if (get_handle() && !guard.test_and_set())
+            case WM_MOVE:
             {
-                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(HIWORD(msg.wParam)), TRUE);
-                size real_size = __get_real_size();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                __draw({});
+                atomic_guard guard(m_resizing);
+                if (!guard.test_and_set())
+                {
+                    double udpi = get_dpi();
+                    RECT rect = {};
+                    THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
+                    rectangle r = from_native(rect);
+                    __set_real_location({ r.x, r.y });
+                }
+                break;
             }
-            break;
-        }
-        case WM_CLOSE:
-        {
-            bool handled = false;
-            m_closing(*this, handled);
-            if (handled)
+            case WM_DPICHANGED:
             {
-                return 0;
+                atomic_guard guard(m_resizing);
+                if (!guard.test_and_set())
+                {
+                    SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(HIWORD(msg.wParam)), TRUE);
+                    size real_size = __get_real_size();
+                    THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+                    __draw({});
+                }
+                break;
             }
-            break;
+            case WM_CLOSE:
+            {
+                bool handled = false;
+                m_closing(*this, handled);
+                if (handled)
+                {
+                    return 0;
+                }
+                break;
+            }
+            case WM_LBUTTONDOWN:
+            case WM_RBUTTONDOWN:
+            case WM_MBUTTONDOWN:
+                m_mouse_down(*this, (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
+                break;
+            case WM_LBUTTONUP:
+            case WM_RBUTTONUP:
+            case WM_MBUTTONUP:
+                m_mouse_up(*this, (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
+                break;
+            case WM_MOUSEMOVE:
+            {
+                auto real_loc = from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
+                m_mouse_move(*this, real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
+                break;
+            }
+            case WM_DESTROY:
+                application::current()->window_removed(static_pointer_cast<window>(shared_from_this()));
+                break;
+            }
+            auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
+            if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
+            return result;
         }
-        case WM_DESTROY:
-            application::current()->window_removed(static_pointer_cast<window>(shared_from_this()));
-            break;
-        }
-        auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
-        if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
-        return result;
+        return nullopt;
     }
 
     point window::__get_real_location() const

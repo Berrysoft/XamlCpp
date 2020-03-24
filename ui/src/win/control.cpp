@@ -2,12 +2,12 @@
 #include <map>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
-#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/container.hpp>
 #include <xaml/ui/control.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/win/dpi.h>
 
 using namespace std;
 
@@ -29,7 +29,7 @@ namespace xaml
     {
         rectangle real = region - get_margin();
         UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        rectangle real_real = real * udpi / 96.0;
+        rectangle real_real = real * udpi / USER_DEFAULT_SCREEN_DPI;
         THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
         __set_size_noevent({ real.width, real.height });
     }
@@ -49,25 +49,25 @@ namespace xaml
     size control::__get_real_size() const
     {
         UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        return get_size() * udpi / 96.0;
+        return get_size() * udpi / USER_DEFAULT_SCREEN_DPI;
     }
 
     void control::__set_real_size(size value)
     {
         UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        set_size(value * 96.0 / udpi);
+        set_size(value * USER_DEFAULT_SCREEN_DPI / udpi);
     }
 
     margin control::__get_real_margin() const
     {
         UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        return get_margin() * udpi / 96.0;
+        return get_margin() * udpi / USER_DEFAULT_SCREEN_DPI;
     }
 
     void control::__set_real_margin(margin const& value)
     {
         UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        set_margin(value * 96.0 / udpi);
+        set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
     }
 
     void control::draw_size()
