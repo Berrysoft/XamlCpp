@@ -1,5 +1,5 @@
-#include <gtk3/xamlfixed.h>
 #include <stdlib.h>
+#include <xaml/ui/gtk3/xamlfixed.h>
 
 typedef struct _XamlFixedPrivate
 {

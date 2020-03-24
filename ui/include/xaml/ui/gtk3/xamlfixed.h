@@ -3,6 +3,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <xaml/utility.hpp>
 
 G_BEGIN_DECLS
 
@@ -23,9 +24,9 @@ typedef struct _XamlFixedClass
     GtkContainerClass parent_class;
 } XamlFixedClass;
 
-GType xaml_fixed_get_type(void) G_GNUC_CONST;
-GtkWidget* xaml_fixed_new(void);
-void xaml_fixed_child_size_allocate(XamlFixed* self, GtkWidget* child, GtkAllocation* alloc);
+XAML_UI_API GType xaml_fixed_get_type(void) G_GNUC_CONST;
+XAML_UI_API GtkWidget* xaml_fixed_new(void);
+XAML_UI_API void xaml_fixed_child_size_allocate(XamlFixed* self, GtkWidget* child, GtkAllocation* alloc);
 
 G_END_DECLS
 

@@ -14,6 +14,7 @@ namespace xaml
     struct native_window
     {
 #ifdef XAML_UI_GTK3
+        GtkWidget* window;
         GtkWidget* vbox;
         GtkWidget* menu_bar;
 #endif // XAML_UI_GTK3
