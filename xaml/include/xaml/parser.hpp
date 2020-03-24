@@ -2,21 +2,13 @@
 #define XAML_PARSER_HPP
 
 #include <filesystem>
-#include <optional>
+#include <memory>
 #include <set>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <typeindex>
-#include <variant>
-#include <vector>
 #include <xaml/xaml_node.hpp>
-
-typedef struct _xmlTextReader xmlTextReader;
-typedef xmlTextReader* xmlTextReaderPtr;
-
-typedef struct _xmlParserInputBuffer xmlParserInputBuffer;
-typedef xmlParserInputBuffer* xmlParserInputBufferPtr;
 
 namespace xaml
 {
@@ -46,21 +38,21 @@ namespace xaml
         ~xaml_no_member() override {}
     };
 
+    struct parser_impl;
+
     class parser
     {
     private:
         meta_context* m_ctx{ nullptr };
-        xmlTextReaderPtr m_reader{ nullptr };
-        xmlParserInputBufferPtr m_buffer{ nullptr };
-        std::set<std::string> m_headers{};
+        std::unique_ptr<parser_impl> m_impl{ nullptr };
 
     public:
-        constexpr bool is_open() const noexcept { return m_reader; }
+        XAML_API bool is_open() const noexcept;
 
         XAML_API void open(std::filesystem::path const& file);
         XAML_API void load(std::string_view xml);
 
-        std::set<std::string> const& get_headers() const noexcept { return m_headers; }
+       XAML_API std::set<std::string> const& get_headers() const noexcept;
 
         struct load_memory_t
         {
@@ -72,12 +64,6 @@ namespace xaml
         parser(meta_context& ctx, std::filesystem::path const& file) : parser(ctx) { open(file); }
         parser(meta_context& ctx, std::string_view xml, load_memory_t) : parser(ctx) { load(xml); }
         XAML_API ~parser();
-
-    private:
-        XAML_API markup_node parse_markup(std::string_view value);
-        XAML_API int parse_members(xaml_node& mc);
-        XAML_API std::tuple<int, xaml_node> parse_impl();
-        XAML_API void clean_up(int ret);
 
     public:
         XAML_API xaml_node parse();

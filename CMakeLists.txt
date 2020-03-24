@@ -116,6 +116,8 @@ endif()
 
 option(BUILD_WEBVIEW "Build webview." ON)
 
+add_subdirectory(pugixml)
+
 set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml xamlc)
 
 add_subdirectory(meta)

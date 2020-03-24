@@ -1,4 +1,4 @@
-#include <libxml/xmlreader.h>
+#include <pugixml.hpp>
 #include <sstream>
 #include <xaml/markup/binding.hpp>
 #include <xaml/meta/meta.hpp>
@@ -6,6 +6,7 @@
 
 using namespace std;
 using namespace std::filesystem;
+using namespace pugi;
 
 namespace xaml
 {
@@ -50,6 +51,33 @@ namespace xaml
     {
     }
 
+    struct parser_impl
+    {
+        meta_context* ctx;
+        set<string> headers{};
+        map<string, string> nss{};
+        xml_document doc{};
+        bool loaded{ false };
+
+        void load_file(path const& p)
+        {
+            auto result = doc.load_file(p.c_str());
+            loaded = result.status == status_ok;
+        }
+
+        void load_string(string_view s)
+        {
+            auto result = doc.load_string(s.data());
+            loaded = result.status == status_ok;
+        }
+
+        markup_node parse_markup(string_view value);
+        void parse_members(xaml_node& mc, xml_node& node);
+        xaml_node parse_impl(xml_node& node);
+
+        xaml_node parse();
+    };
+
     static ostream& write_valid_name(ostream& stream, string_view name)
     {
         for (char c : name)
@@ -71,51 +99,43 @@ namespace xaml
         return oss.str();
     }
 
-    static inline string_view get_string_view(const xmlChar* str)
+    static tuple<string_view, string_view> split_ns_name(string_view name)
     {
-        if (str)
+        size_t index = name.find_first_of(':');
+        if (index == string_view::npos)
         {
-            return (const char*)str;
+            return make_tuple(string_view{}, name);
         }
         else
         {
-            return {};
+            return make_tuple(name.substr(0, index), name.substr(index + 1));
         }
     }
 
-    parser::parser(meta_context& ctx) : m_ctx(&ctx)
+    parser::parser(meta_context& ctx) : m_ctx(&ctx), m_impl(make_unique<parser_impl>())
     {
-        LIBXML_TEST_VERSION;
+        m_impl->ctx = m_ctx;
     }
 
-    parser::~parser()
-    {
-        if (!m_reader)
-        {
-            xmlFreeTextReader(m_reader);
-            m_reader = nullptr;
-        }
-        if (!m_buffer)
-        {
-            xmlFreeParserInputBuffer(m_buffer);
-            m_buffer = nullptr;
-        }
-        xmlCleanupMemory();
-    }
+    parser::~parser() {}
+
+    bool parser::is_open() const noexcept { return m_impl->loaded; }
+
+    set<string> const& parser::get_headers() const noexcept { return m_impl->headers; }
+
+    xaml_node parser::parse() { return m_impl->parse(); }
 
     void parser::open(path const& file)
     {
-        m_buffer = nullptr;
-        m_reader = xmlNewTextReaderFilename(file.string().c_str());
+        m_impl->load_file(file);
     }
 
     void parser::load(string_view xml)
     {
-        m_buffer = xmlParserInputBufferCreateMem(xml.data(), (int)xml.length(), XML_CHAR_ENCODING_UTF8);
-        m_reader = xmlNewTextReader(m_buffer, nullptr);
+        m_impl->load_string(xml);
     }
 
-    markup_node parser::parse_markup(string_view value)
+    markup_node parser_impl::parse_markup(string_view value)
     {
         string_view ns, name;
         size_t sep_index = 0;
@@ -134,10 +154,10 @@ namespace xaml
             }
         }
         if (ns.empty()) ns = "xaml";
-        auto t = m_ctx->get_type(ns, name);
+        auto t = ctx->get_type(ns, name);
         if (t)
         {
-            m_headers.emplace(t->get_include_file());
+            headers.emplace(t->get_include_file());
             markup_node node{ t, get_random_name(t) };
             while (i < value.length())
             {
@@ -187,165 +207,143 @@ namespace xaml
 
     static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
 
-    int parser::parse_members(xaml_node& mc)
+    void parser_impl::parse_members(xaml_node& mc, xml_node& node)
     {
-        int ret = 1;
-        while (ret == 1)
+        switch (node.type())
         {
-            switch (xmlTextReaderNodeType(m_reader))
+        case node_element:
+        {
+            auto [xns, name] = split_ns_name(node.name());
+            auto& ns = nss[(string)xns];
+            for (auto& attr : node.attributes())
             {
-            case XML_ELEMENT_NODE:
-            {
-                int count = xmlTextReaderAttributeCount(m_reader);
-                string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
-                for (int i = 0; i < count; i++)
+                auto [attr_xns, attr_name] = split_ns_name(attr.name());
+                auto& attr_ns = nss[(string)attr_xns];
+                if (attr_xns.empty() && attr_name == "xmlns")
+                    continue;
+                else if (attr_xns == "xmlns")
+                    continue;
+                else if (attr_xns.empty())
+                    attr_ns = ns;
+                if (attr_ns == x_ns)
                 {
-                    xmlTextReaderMoveToAttributeNo(m_reader, i);
-                    string_view attr_name = get_string_view(xmlTextReaderConstName(m_reader));
-                    string_view attr_ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
-                    if (attr_ns.empty()) attr_ns = ns;
-                    if (attr_ns == x_ns)
+                    string_view attr_value = attr.value();
+                    if (attr_name == "name")
                     {
-                        string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
-                        if (attr_name == "x:name")
-                        {
-                            mc.name = attr_value;
-                        }
-                        else if (attr_name == "x:class")
-                        {
-                            auto index = attr_value.find_last_of(':');
-                            if (index != string_view::npos)
-                            {
-                                if (index > 0 && attr_value[index - 1] == ':' && index + 1 < attr_value.length())
-                                {
-                                    string_view map_ns = attr_value.substr(0, index - 1);
-                                    string_view map_name = attr_value.substr(index + 1);
-                                    mc.map_class = make_optional(make_tuple<string, string>((string)map_ns, (string)map_name));
-                                }
-                            }
-                            else
-                            {
-                                mc.map_class = make_optional(make_tuple<string, string>({}, (string)attr_value));
-                            }
-                        }
+                        mc.name = attr_value;
                     }
-                    else if (attr_name.substr(0, 5) != "xmlns")
+                    else if (attr_name == "class")
                     {
-                        size_t dm_index = attr_name.find_first_of('.');
-                        if (dm_index != string_view::npos)
+                        auto index = attr_value.find_last_of(':');
+                        if (index != string_view::npos)
                         {
-                            string_view class_name = attr_name.substr(0, dm_index);
-                            string_view attach_prop_name = attr_name.substr(dm_index + 1);
-                            auto t = m_ctx->get_type(attr_ns, class_name);
-                            if (t)
+                            if (index > 0 && attr_value[index - 1] == ':' && index + 1 < attr_value.length())
                             {
-                                m_headers.emplace(t->get_include_file());
-                                auto prop = t->get_property(attach_prop_name);
-                                if (prop && prop->can_write())
-                                {
-                                    string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
-                                    mc.properties.push_back({ t, prop, (string)attr_value });
-                                }
-                            }
-                            else
-                            {
-                                throw xaml_bad_type(attr_ns, class_name);
+                                string_view map_ns = attr_value.substr(0, index - 1);
+                                string_view map_name = attr_value.substr(index + 1);
+                                mc.map_class = make_optional(make_tuple<string, string>((string)map_ns, (string)map_name));
                             }
                         }
                         else
                         {
-                            auto prop = mc.type->get_property(attr_name);
-                            if (prop && prop->can_write())
-                            {
-                                string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
-                                if (attr_value.front() == '{' && attr_value.back() == '}')
-                                {
-                                    auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
-                                    mc.properties.push_back({ mc.type, prop, ex });
-                                }
-                                else
-                                {
-                                    mc.properties.push_back({ mc.type, prop, (string)attr_value });
-                                }
-                            }
-                            else
-                            {
-                                auto ev = mc.type->get_event(attr_name);
-                                if (ev && ev->can_add())
-                                {
-                                    string_view attr_value = get_string_view(xmlTextReaderConstValue(m_reader));
-                                    mc.events.push_back({ ev, (string)attr_value });
-                                }
-                                else
-                                {
-                                    throw xaml_no_member(mc.type, attr_name);
-                                }
-                            }
+                            mc.map_class = make_optional(make_tuple<string, string>({}, (string)attr_value));
                         }
                     }
                 }
-                if (mc.name.empty())
+                else
                 {
-                    mc.name = get_random_name(mc.type);
-                }
-                xmlTextReaderMoveToElement(m_reader);
-                break;
-            }
-            case XML_TEXT_NODE:
-            case XML_CDATA_SECTION_NODE:
-            {
-                auto def_attr = mc.type->get_attribute<default_property>();
-                if (def_attr)
-                {
-                    string_view prop_name = def_attr->get_property_name();
-                    auto prop = mc.type->get_property(prop_name);
-                    if (prop && prop->can_write())
+                    size_t dm_index = attr_name.find_first_of('.');
+                    if (dm_index != string_view::npos)
                     {
-                        mc.properties.push_back({ mc.type, prop, (string)get_string_view(xmlTextReaderConstValue(m_reader)) });
+                        string_view class_name = attr_name.substr(0, dm_index);
+                        string_view attach_prop_name = attr_name.substr(dm_index + 1);
+                        auto t = ctx->get_type(attr_ns, class_name);
+                        if (t)
+                        {
+                            headers.emplace(t->get_include_file());
+                            auto prop = t->get_property(attach_prop_name);
+                            if (prop && prop->can_write())
+                            {
+                                string_view attr_value = attr.value();
+                                mc.properties.push_back({ t, prop, (string)attr_value });
+                            }
+                        }
+                        else
+                        {
+                            throw xaml_bad_type(attr_ns, class_name);
+                        }
                     }
                     else
                     {
-                        throw xaml_no_member(mc.type, prop_name);
+                        auto prop = mc.type->get_property(attr_name);
+                        if (prop && prop->can_write())
+                        {
+                            string_view attr_value = attr.value();
+                            if (attr_value.front() == '{' && attr_value.back() == '}')
+                            {
+                                auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
+                                mc.properties.push_back({ mc.type, prop, ex });
+                            }
+                            else
+                            {
+                                mc.properties.push_back({ mc.type, prop, (string)attr_value });
+                            }
+                        }
+                        else
+                        {
+                            auto ev = mc.type->get_event(attr_name);
+                            if (ev && ev->can_add())
+                            {
+                                string_view attr_value = attr.value();
+                                mc.events.push_back({ ev, (string)attr_value });
+                            }
+                            else
+                            {
+                                throw xaml_no_member(mc.type, attr_name);
+                            }
+                        }
                     }
                 }
-                break;
             }
-            case XML_ELEMENT_DECL:
+            break;
+        }
+        case node_pcdata:
+        case node_cdata:
+        {
+            auto def_attr = mc.type->get_attribute<default_property>();
+            if (def_attr)
             {
-                string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
-                string_view name = get_string_view(xmlTextReaderConstName(m_reader));
-                auto t = m_ctx->get_type(ns, name);
-                if (mc.type->get_type() == t->get_type())
+                string_view prop_name = def_attr->get_property_name();
+                auto prop = mc.type->get_property(prop_name);
+                if (prop && prop->can_write())
                 {
-                    return ret;
+                    mc.properties.push_back({ mc.type, prop, node.value() });
                 }
-                break;
+                else
+                {
+                    throw xaml_no_member(mc.type, prop_name);
+                }
             }
-            }
-            if (xmlTextReaderIsEmptyElement(m_reader))
+            break;
+        }
+        }
+        for (auto& c : node.children())
+        {
+            if (c.type() == node_element)
             {
-                return ret;
-            }
-            ret = xmlTextReaderRead(m_reader);
-            if (xmlTextReaderNodeType(m_reader) == XML_ELEMENT_NODE)
-            {
-                string_view name = get_string_view(xmlTextReaderConstName(m_reader));
+                auto [xns, name] = split_ns_name(node.name());
+                auto& ns = nss[(string)xns];
                 size_t dm_index = name.find_first_of('.');
                 if (dm_index != string_view::npos)
                 {
-                    string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
                     string_view class_name = name.substr(0, dm_index);
                     string_view prop_name = name.substr(dm_index + 1);
-                    auto t = m_ctx->get_type(ns, class_name);
+                    auto t = ctx->get_type(ns, class_name);
                     if (t)
                     {
-                        m_headers.emplace(t->get_include_file());
-                        auto [ret, child] = parse_impl();
-                        if (ret != 1)
-                        {
-                            clean_up(ret);
-                        }
-                        else if (mc.type->get_type() == t->get_type())
+                        headers.emplace(t->get_include_file());
+                        auto child = parse_impl(c);
+                        if (mc.type->get_type() == t->get_type())
                         {
                             auto prop = mc.type->get_property(prop_name);
                             if (prop && prop->can_write())
@@ -369,63 +367,52 @@ namespace xaml
                 }
                 else
                 {
-                    auto [ret, child] = parse_impl();
-                    if (ret != 1)
+                    auto child = parse_impl(c);
+                    auto def_attr = mc.type->get_attribute<default_property>();
+                    if (def_attr)
                     {
-                        clean_up(ret);
-                    }
-                    else
-                    {
-                        auto def_attr = mc.type->get_attribute<default_property>();
-                        if (def_attr)
+                        string_view prop_name = def_attr->get_property_name();
+                        auto prop = mc.type->get_property(prop_name);
+                        if (prop && prop->can_write())
                         {
-                            string_view prop_name = def_attr->get_property_name();
-                            auto prop = mc.type->get_property(prop_name);
-                            if (prop && prop->can_write())
+                            mc.properties.push_back({ mc.type, prop, move(child) });
+                        }
+                        else
+                        {
+                            auto info = mc.type->get_collection_property(prop_name);
+                            if (info && info->can_add())
                             {
-                                mc.properties.push_back({ mc.type, prop, move(child) });
-                            }
-                            else
-                            {
-                                auto info = mc.type->get_collection_property(prop_name);
-                                if (info && info->can_add())
-                                {
-                                    auto& prop = mc.collection_properties[(string)info->name()];
-                                    prop.host_type = mc.type;
-                                    prop.info = info;
-                                    prop.values.push_back(move(child));
-                                }
+                                auto& prop = mc.collection_properties[(string)info->name()];
+                                prop.host_type = mc.type;
+                                prop.info = info;
+                                prop.values.push_back(move(child));
                             }
                         }
-                        ret = xmlTextReaderRead(m_reader);
                     }
                 }
             }
+            else
+            {
+                parse_members(mc, c);
+            }
         }
-        return ret;
-    }
-
-    void parser::clean_up(int ret)
-    {
-        xmlFreeTextReader(m_reader);
-        m_reader = nullptr;
-        if (ret < 0)
+        if (mc.name.empty())
         {
-            throw xaml_parse_error();
+            mc.name = get_random_name(mc.type);
         }
     }
 
-    tuple<int, xaml_node> parser::parse_impl()
+    xaml_node parser_impl::parse_impl(xml_node& node)
     {
-        string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
-        string_view name = get_string_view(xmlTextReaderConstName(m_reader));
-        auto t = m_ctx->get_type(ns, name);
+        auto [xns, name] = split_ns_name(node.name());
+        auto& ns = nss[(string)xns];
+        auto t = ctx->get_type(ns, name);
         if (t)
         {
-            m_headers.emplace(t->get_include_file());
+            headers.emplace(t->get_include_file());
             xaml_node mc{ t };
-            int ret = parse_members(mc);
-            return make_tuple(ret, mc);
+            parse_members(mc, node);
+            return mc;
         }
         else
         {
@@ -433,28 +420,34 @@ namespace xaml
         }
     }
 
-    xaml_node parser::parse()
+    xaml_node parser_impl::parse()
     {
-        int ret = xmlTextReaderRead(m_reader);
-        if (ret == 1)
+        xml_node& root_node = *doc.children().begin();
+        for (auto& attr : root_node.attributes())
         {
-            string_view ns = get_string_view(xmlTextReaderConstNamespaceUri(m_reader));
-            string_view name = get_string_view(xmlTextReaderConstName(m_reader));
-            auto t = m_ctx->get_type(ns, name);
-            if (t)
+            auto [ns, name] = split_ns_name(attr.name());
+            if (ns.empty() && name == "xmlns")
             {
-                m_headers.emplace(t->get_include_file());
-                xaml_node mc{ t };
-                ret = parse_members(mc);
-                clean_up(ret);
-                return mc;
+                nss.emplace(string{}, attr.value());
             }
-            else
+            else if (ns == "xmlns")
             {
-                throw xaml_bad_type(ns, name);
+                nss.emplace(name, attr.value());
             }
         }
-        clean_up(ret);
-        return { nullptr };
+        auto [xns, name] = split_ns_name(root_node.name());
+        auto& ns = nss[(string)xns];
+        auto t = ctx->get_type(ns, name);
+        if (t)
+        {
+            headers.emplace(t->get_include_file());
+            xaml_node mc{ t };
+            parse_members(mc, root_node);
+            return mc;
+        }
+        else
+        {
+            throw xaml_bad_type(ns, name);
+        }
     }
 } // namespace xaml
