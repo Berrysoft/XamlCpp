@@ -89,11 +89,8 @@ int main(int argc, char const* const* argv)
             string inf = vm["input-file"].as<string>();
             path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
             map<path_string_t, tuple<path_string_t, version>> modules;
-            auto lib_path = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
-            auto def_search_path = get_module_search_path();
-            vector<path> lib_dirs{ lib_path.begin(), lib_path.end() };
-            lib_dirs.insert(lib_dirs.end(), def_search_path.begin(), def_search_path.end());
-            for (auto& dir : lib_dirs)
+            auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
+            for (path dir : lib_dirs)
             {
                 if (verbose) cout << "Searching " << dir << "..." << endl;
                 for (auto& en : directory_iterator{ dir })
@@ -107,7 +104,7 @@ int main(int argc, char const* const* argv)
                             if (auto pver = is_later(modules, p))
                             {
                                 if (verbose) cout << "Select " << p.filename() << '(' << *pver << ')' << " at " << p << endl;
-                                modules.emplace(p.filename(), make_tuple(p.native(), *pver));
+                                modules.emplace(p.filename(), make_tuple(p, *pver));
                             }
                         }
                     }
