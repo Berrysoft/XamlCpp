@@ -80,7 +80,7 @@ int _tmain(int argc, char_t const* const* argv)
         p.add("input-file", -1);
 
         variables_map vm;
-        store(basic_command_line_parser<char_t>({ U("test.xaml") }).options(desc).positional(p).run(), vm);
+        store(basic_command_line_parser<char_t>(argc, argv).options(desc).positional(p).run(), vm);
         notify(vm);
 
         path exe{ argv[0] };
