@@ -90,20 +90,24 @@ int main(int argc, char const* const* argv)
             path ouf_path = vm.count("output-file") ? vm["output-file"].as<string>() : inf + ".g.cpp";
             map<path_string_t, tuple<path_string_t, version>> modules;
             auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string>>() : vector<string>{ exe.parent_path().string() };
-            for (auto& dir : lib_dirs)
+            for (path dir : lib_dirs)
             {
-                if (verbose) cout << "Searching " << path{ dir } << "..." << endl;
+                if (verbose) cout << "Searching " << dir << "..." << endl;
                 for (auto& en : directory_iterator{ dir })
                 {
-                    auto p = en.path();
-                    if (p.has_extension() && p.extension().native() == module_extension)
+                    if (en.is_regular_file())
                     {
-                        path_string_t p_str = p.native();
-                        path_string_t p_file = p.filename().native();
-                        if (auto pver = is_later(modules, p_file))
+                        auto p = en.path();
+                        if (verbose) cout << "Determining " << p << "..." << endl;
+                        if (p.has_extension() && p.extension().native() == module_extension)
                         {
-                            if (verbose) cout << "Select " << p.filename() << '(' << *pver << ')' << " at " << p << endl;
-                            modules.emplace(p_file, make_tuple(p_str, *pver));
+                            path_string_t p_str = p.native();
+                            path_string_t p_file = p.filename().native();
+                            if (auto pver = is_later(modules, p_file))
+                            {
+                                if (verbose) cout << "Select " << p.filename() << '(' << *pver << ')' << " at " << p << endl;
+                                modules.emplace(p_file, make_tuple(p_str, *pver));
+                            }
                         }
                     }
                 }
