@@ -56,7 +56,6 @@ namespace xaml
         {
             throw xaml_no_default_constructor(node.type);
         }
-        return nullptr;
     }
 
     void deserializer::deserialize_impl(shared_ptr<meta_class> mc, xaml_node& node, shared_ptr<meta_class> root)
@@ -72,8 +71,8 @@ namespace xaml
                 break;
             case 2: // xaml_node
             {
-                auto& node = get<xaml_node>(value);
-                prop.info->set(mc.get(), construct_impl(node, root));
+                auto& cnode = get<xaml_node>(value);
+                prop.info->set(mc.get(), construct_impl(cnode, root));
                 break;
             }
             }

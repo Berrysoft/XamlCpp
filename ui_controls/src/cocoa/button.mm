@@ -54,7 +54,6 @@ namespace xaml
     void button::draw_size()
     {
         NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
         NSRect frame = matrix.frame;
         frame.size = to_native<NSSize>(get_size());
         matrix.frame = frame;

@@ -53,9 +53,9 @@ extern "C"
         return is_of_type(type, t2d_types) || is_of_type(type, t4d_types);
     }
 
-    XAML_UI_META_API void compile(void* t, const char* code, size_t code_len, void* res) noexcept
+    XAML_UI_META_API void compile(void* ty, const char* code, size_t code_len, void* res) noexcept
     {
-        type_index& type = *(type_index*)t;
+        type_index& type = *(type_index*)ty;
         if (is_of_type(type, t2d_types))
         {
             ostringstream stream;

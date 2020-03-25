@@ -31,9 +31,9 @@ namespace xaml
     {
         auto sparent = get_parent().lock();
         HMENU hpmenu = nullptr;
-        if (auto pmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
+        if (auto ppmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
         {
-            hpmenu = static_pointer_cast<native_popup_menu_item>(pmenu->get_menu())->menu.get();
+            hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu.get();
         }
         else if (auto pmenu = dynamic_pointer_cast<menu_bar>(sparent))
         {

@@ -412,20 +412,7 @@ namespace xaml
                 nss.emplace(name, attr.value());
             }
         }
-        auto [xns, name] = split_ns_name(root_node.name());
-        string_view ns = nss[(string)xns];
-        auto t = ctx->get_type(ns, name);
-        if (t)
-        {
-            headers.emplace(t->get_include_file());
-            xaml_node mc{ t };
-            parse_members(mc, root_node);
-            return mc;
-        }
-        else
-        {
-            throw xaml_bad_type(ns, name);
-        }
+        return parse_impl(root_node);
     }
 
     static tuple<bool, xaml_node, set<string>> parse_impl(meta_context& ctx, parser_impl& impl)

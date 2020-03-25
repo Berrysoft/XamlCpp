@@ -48,13 +48,6 @@ namespace xaml
         }
     }
 
-    static set<string> include_headers(module const& m) noexcept
-    {
-        set<string> result;
-        include_headers(m, result);
-        return result;
-    }
-
     static array int_types{
         type_index(typeid(int8_t)), type_index(typeid(int16_t)), type_index(typeid(int32_t)), type_index(typeid(int64_t)),
         type_index(typeid(uint8_t)), type_index(typeid(uint16_t)), type_index(typeid(uint32_t)), type_index(typeid(uint64_t))

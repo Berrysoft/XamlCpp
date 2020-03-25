@@ -6,10 +6,12 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
+# Options for target platforms.
 option(BUILD_WINDOWS "Build for Windows with Windows API")
 option(BUILD_COCOA "Build for Mac with Cocoa")
 option(BUILD_GTK3 "Build with GTK3")
 
+# Select a platform automatically.
 if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
     if(WIN32 AND NOT MINGW)
         set(BUILD_WINDOWS ON)
@@ -22,6 +24,7 @@ if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
     endif()
 endif()
 
+# Enable other languages.
 if(${BUILD_COCOA})
     enable_language(OBJC OBJCXX)
     set(CMAKE_OBJC_STANDARD 11)
@@ -39,24 +42,21 @@ set(XAML_BUILD_DEFINITIONS "")
 set(XAML_COMPILE_OPTIONS "")
 set(XAML_LINK_OPTIONS "")
 
+# Universal definitions, independent of compilers.
 if(${BUILD_WINDOWS})
-    set(XAML_BUILD_DEFINITIONS "-DUNICODE" "-D_UNICODE" "-DXAML_UI_WINDOWS")
-    set(XAML_COMPILE_OPTIONS "")
-    set(XAML_LINK_OPTIONS "")
+    list(APPEND XAML_BUILD_DEFINITIONS "-DUNICODE" "-D_UNICODE" "-DXAML_UI_WINDOWS")
 
     if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
         list(APPEND XAML_BUILD_DEFINITIONS "-D_WIN32_WINNT=_WIN32_WINNT_WIN7")
     endif()
 elseif(${BUILD_COCOA})
-    set(XAML_BUILD_DEFINITIONS "-DXAML_UI_COCOA")
-    set(XAML_COMPILE_OPTIONS "-fobjc-arc")
-    set(XAML_LINK_OPTIONS "")
+    list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_UI_COCOA")
+    list(APPEND XAML_COMPILE_OPTIONS "-fobjc-arc")
 elseif(${BUILD_GTK3})
-    set(XAML_BUILD_DEFINITIONS "-DXAML_UI_GTK3")
-    set(XAML_COMPILE_OPTIONS "")
-    set(XAML_LINK_OPTIONS "")
+    list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_UI_GTK3")
 endif()
 
+# Versions.
 list(APPEND XAML_COMPILE_OPTIONS 
     "-DXAML_VERSION=\"${CMAKE_PROJECT_VERSION}\"" 
     "-DXAML_VERSION_MAJOR=${CMAKE_PROJECT_VERSION_MAJOR}" 
@@ -64,6 +64,7 @@ list(APPEND XAML_COMPILE_OPTIONS
     "-DXAML_VERSION_PATCH=${CMAKE_PROJECT_VERSION_PATCH}"
 )
 
+# Big object for Windows.
 if(MSVC)
     list(APPEND XAML_COMPILE_OPTIONS "/bigobj")
     list(APPEND XAML_LINK_OPTIONS "/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
@@ -71,15 +72,28 @@ elseif(MINGW)
     list(APPEND XAML_COMPILE_OPTIONS "-Wa,-mbig-obj")
 endif()
 
+# Set warnings.
+if(MSVC)
+    if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+        string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    else()
+        list(APPEND XAML_COMPILE_OPTIONS "/W4")
+    endif()
+    list(APPEND XAML_COMPILE_OPTIONS "/wd4100")
+elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    list(APPEND XAML_COMPILE_OPTIONS "-Wall")
+endif()
+
+# LTO and work around for MinGW.
 if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     if(MINGW)
         list(APPEND XAML_COMPILE_OPTIONS "-O1")
     endif()
-else()
+elseif(NOT MINGW)
     if(MSVC)
         list(APPEND XAML_COMPILE_OPTIONS "/GL")
         list(APPEND XAML_LINK_OPTIONS "/LTCG")
-    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND NOT MINGW)
+    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
         list(APPEND XAML_COMPILE_OPTIONS "-flto")
     elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
         list(APPEND XAML_COMPILE_OPTIONS "-flto")
@@ -95,7 +109,8 @@ option(BUILD_SHARED_LIBS "Build shared libs" ON)
 if(NOT ${BUILD_SHARED_LIBS})
     list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_STATIC_DEFINE")
     if(MSVC)
-        # set static library prefix to lib
+        # Set static library prefix to lib;
+        # It is not recommanded to build static libraries.
         set(CMAKE_STATIC_LIBRARY_PREFIX_CXX lib)
     endif()
 endif()

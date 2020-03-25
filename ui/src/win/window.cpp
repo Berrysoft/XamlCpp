@@ -161,7 +161,6 @@ namespace xaml
                 atomic_guard guard(m_resizing);
                 if (!guard.test_and_set())
                 {
-                    double udpi = get_dpi();
                     RECT rect = {};
                     THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                     rectangle r = from_native(rect);
@@ -175,7 +174,6 @@ namespace xaml
                 atomic_guard guard(m_resizing);
                 if (!guard.test_and_set())
                 {
-                    double udpi = get_dpi();
                     RECT rect = {};
                     THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
                     rectangle r = from_native(rect);
