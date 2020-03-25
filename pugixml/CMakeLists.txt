@@ -3,7 +3,7 @@ project(pugixml VERSION 1.10 LANGUAGES CXX)
 
 add_library(pugixml)
 
-if(${BUILD_SHARED_LIBS})
+if(${BUILD_SHARED_LIBS} AND WIN32)
     set_target_properties(pugixml
         PROPERTIES
             PREFIX xaml_
