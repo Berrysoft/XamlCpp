@@ -123,7 +123,7 @@ if(${USE_SYS_PUGIXML})
     find_package(pugixml REQUIRED)
 else()
     add_subdirectory(pugixml)
-    list(APPEND _XAML_TARGETS pugixml)
+    list(APPEND _XAML_TARGETS xaml_pugixml)
 endif()
 
 add_subdirectory(meta)
