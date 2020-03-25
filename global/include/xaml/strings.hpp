@@ -1,8 +1,6 @@
 #ifndef XAML_UI_STRINGS_HPP
 #define XAML_UI_STRINGS_HPP
 
-#include <locale>
-#include <sstream>
 #include <string>
 #include <string_view>
 #include <xaml/utility.hpp>
@@ -35,19 +33,12 @@ namespace xaml
 {
 #ifdef UNICODE
     using char_t = wchar_t;
-    using string_t = std::wstring;
-    using string_view_t = std::wstring_view;
-    using stringstream_t = std::wstringstream;
-    using istringstream_t = std::wistringstream;
-    using ostringstream_t = std::wostringstream;
 #else
     using char_t = char;
-    using string_t = std::string;
-    using string_view_t = std::string_view;
-    using stringstream_t = std::stringstream;
-    using istringstream_t = std::istringstream;
-    using ostringstream_t = std::ostringstream;
 #endif // UNICODE
+
+    using string_t = std::basic_string<char_t>;
+    using string_view_t = std::basic_string_view<char_t>;
 
     XAML_GLOBAL_API std::string __wtomb(std::wstring_view str);
 

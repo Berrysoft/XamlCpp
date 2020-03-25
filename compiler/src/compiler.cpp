@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <iterator>
 #include <ostream>
+#include <sstream>
 #include <xaml/compiler.hpp>
 #include <xaml/deserializer.hpp>
 #include <xaml/markup/binding.hpp>
@@ -93,7 +94,7 @@ namespace xaml
         }
         else if (m_ctx->is_registered_enum(type))
         {
-            std::ostringstream stream;
+            ostringstream stream;
             auto t = m_ctx->get_enum_type(type);
             write_type(stream, t) << "::" << code;
             return stream.str();
