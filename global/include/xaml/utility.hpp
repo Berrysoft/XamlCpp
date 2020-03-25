@@ -42,70 +42,52 @@
 #define __XAML_META_IMPORT __IMPORT_IMPL
 #endif // !__XAML_META_IMPORT
 
-#ifdef xaml_meta_EXPORTS
-#define XAML_META_API __XAML_EXPORT
-#else
+#ifndef XAML_GLOBAL_API
+#define XAML_GLOBAL_API __XAML_IMPORT
+#endif // !XAML_GLOBAL_API
+
+#ifndef XAML_META_API
 #define XAML_META_API __XAML_IMPORT
-#endif // xaml_meta_EXPORTS
+#endif // !XAML_META_API
 
-#ifdef xaml_ui_EXPORTS
-#define XAML_UI_API __XAML_EXPORT
-#else
+#ifndef XAML_UI_API
 #define XAML_UI_API __XAML_IMPORT
-#endif // xaml_ui_EXPORTS
+#endif // !XAML_UI_API
 
-#ifdef xaml_ui_meta_EXPORTS
-#define XAML_UI_META_API __XAML_META_EXPORT
-#else
+#ifndef XAML_UI_META_API
 #define XAML_UI_META_API __XAML_META_IMPORT
-#endif // xaml_ui_meta_EXPORTS
+#endif // !XAML_UI_META_API
 
-#ifdef xaml_ui_controls_EXPORTS
-#define XAML_UI_CONTROLS_API __XAML_EXPORT
-#else
+#ifndef XAML_UI_CONTROLS_API
 #define XAML_UI_CONTROLS_API __XAML_IMPORT
-#endif // xaml_ui_controls_EXPORTS
+#endif // !XAML_UI_CONTROLS_API
 
-#ifdef xaml_ui_controls_meta_EXPORTS
-#define XAML_UI_CONTROLS_META_API __XAML_META_EXPORT
-#else
+#ifndef XAML_UI_CONTROLS_META_API
 #define XAML_UI_CONTROLS_META_API __XAML_META_IMPORT
-#endif // xaml_ui_controls_meta_EXPORTS
+#endif // !XAML_UI_CONTROLS_META_API
 
-#ifdef xaml_ui_canvas_EXPORTS
-#define XAML_UI_CANVAS_API __XAML_EXPORT
-#else
+#ifndef XAML_UI_CANVAS_API
 #define XAML_UI_CANVAS_API __XAML_IMPORT
-#endif // xaml_ui_canvas_EXPORTS
+#endif // !XAML_UI_CANVAS_API
 
-#ifdef xaml_ui_canvas_meta_EXPORTS
-#define XAML_UI_CANVAS_META_API __XAML_META_EXPORT
-#else
+#ifndef XAML_UI_CANVAS_META_API
 #define XAML_UI_CANVAS_META_API __XAML_META_IMPORT
-#endif // xaml_ui_canvas_meta_EXPORTS
+#endif // !XAML_UI_CANVAS_META_API
 
-#ifdef xaml_ui_webview_EXPORTS
-#define XAML_UI_WEBVIEW_API __XAML_EXPORT
-#else
+#ifndef XAML_UI_WEBVIEW_API
 #define XAML_UI_WEBVIEW_API __XAML_IMPORT
-#endif // xaml_ui_webview_EXPORTS
+#endif // !XAML_UI_WEBVIEW_API
 
-#ifdef xaml_ui_webview_meta_EXPORTS
-#define XAML_UI_WEBVIEW_META_API __XAML_META_EXPORT
-#else
+#ifndef XAML_UI_WEBVIEW_META_API
 #define XAML_UI_WEBVIEW_META_API __XAML_META_IMPORT
-#endif // xaml_ui_webview_meta_EXPORTS
+#endif // !XAML_UI_WEBVIEW_META_API
 
-#ifdef xaml_EXPORTS
-#define XAML_API __XAML_EXPORT
-#else
+#ifndef XAML_API
 #define XAML_API __XAML_IMPORT
-#endif // xaml_EXPORTS
+#endif // !XAML_API
 
-#ifdef xamlc_EXPORTS
-#define XAMLC_API __XAML_EXPORT
-#else
+#ifndef XAMLC_API
 #define XAMLC_API __XAML_IMPORT
-#endif // xamlc_EXPORTS
+#endif // !XAMLC_API
 
 #endif // !XAML_UTILITY_HPP

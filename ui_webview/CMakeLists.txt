@@ -23,6 +23,10 @@ target_include_directories(xaml_ui_webview
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+if(${BUILD_SHARED_LIBS})
+    target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_API=__XAML_EXPORT")
+endif()
+
 target_link_libraries(xaml_ui_webview xaml_ui)
 if(${BUILD_WINDOWS})
     option(BUILD_WEBVIEW2 "Build webview2 which uses Edge(Chromium)." ON)

@@ -23,6 +23,10 @@ target_include_directories(xaml_ui_controls
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+if(${BUILD_SHARED_LIBS})
+    target_compile_definitions(xaml_ui_controls PRIVATE "-DXAML_UI_CONTROLS_API=__XAML_EXPORT")
+endif()
+
 target_link_libraries(xaml_ui_controls xaml_ui)
 
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)

@@ -24,6 +24,10 @@ target_include_directories(xaml_ui_canvas
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+if(${BUILD_SHARED_LIBS})
+    target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_API=__XAML_EXPORT")
+endif()
+
 target_link_libraries(xaml_ui_canvas xaml_ui)
 if(${BUILD_WINDOWS})
     if(${BUILD_DIRECT2D})

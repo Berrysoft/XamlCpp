@@ -26,6 +26,10 @@ target_include_directories(xaml_ui
         ${XAML_PRIVATE_INCLUDE_DIRS}
 )
 
+if(${BUILD_SHARED_LIBS})
+    target_compile_definitions(xaml_ui PRIVATE "-DXAML_UI_API=__XAML_EXPORT")
+endif()
+
 target_link_libraries(xaml_ui xaml_meta)
 if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui Comctl32)

@@ -3,7 +3,7 @@ project(XamlCompilerCpp CXX)
 file(GLOB XAML_CPP_SOURCE "src/*.cpp")
 
 add_executable(xamlcpp ${XAML_CPP_SOURCE})
-target_link_libraries(xamlcpp xamlc)
+target_link_libraries(xamlcpp xaml_compiler)
 
 find_package(Boost REQUIRED COMPONENTS program_options)
 

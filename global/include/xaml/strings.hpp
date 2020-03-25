@@ -5,6 +5,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <xaml/utility.hpp>
 
 #ifndef U
 #ifdef UNICODE
@@ -47,6 +48,10 @@ namespace xaml
     using istringstream_t = std::istringstream;
     using ostringstream_t = std::ostringstream;
 #endif // UNICODE
+
+    XAML_GLOBAL_API std::string __wtomb(std::wstring_view str);
+
+    XAML_GLOBAL_API std::wstring __mbtow(std::string_view str);
 } // namespace xaml
 
 #endif // !XAML_UI_STRINGS_HPP

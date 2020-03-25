@@ -2,7 +2,7 @@ project(XamlTest CXX)
 
 configure_file(view/test.xaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test.xaml COPYONLY)
 
-set(XAMLC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/xamlc/test)
+set(XAMLC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/compiler/test)
 
 add_custom_command(
     OUTPUT ${XAMLC_OUTPUT_DIR}/test.xaml.g.cpp
@@ -27,7 +27,7 @@ if(WIN32)
 endif()
 
 target_link_libraries(xaml_test xaml_ui_controls xaml_ui_canvas)
-target_link_libraries(xaml_test_fake xaml_ui_controls xaml_ui_canvas xaml)
+target_link_libraries(xaml_test_fake xaml_ui_controls xaml_ui_canvas xaml_parser)
 
 target_compile_definitions(xaml_test_fake PRIVATE "-DXAML_TEST_GEN_FAKE")
 

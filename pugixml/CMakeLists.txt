@@ -12,6 +12,8 @@ target_include_directories(xaml_pugixml
     PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>)
 
-target_compile_definitions(xaml_pugixml
-    PRIVATE
-        $<$<CXX_COMPILER_ID:MSVC>:PUGIXML_API=__declspec\(dllexport\)>)
+if(${BUILD_SHARED_LIBS})
+    target_compile_definitions(xaml_pugixml
+        PRIVATE
+            $<$<CXX_COMPILER_ID:MSVC>:PUGIXML_API=__declspec\(dllexport\)>)
+endif()

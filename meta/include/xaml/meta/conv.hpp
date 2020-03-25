@@ -2,10 +2,7 @@
 #define XAML_CONV_HPP
 
 #include <any>
-#include <cctype>
-#include <cstdlib>
 #include <initializer_list>
-#include <locale>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -394,32 +391,6 @@ namespace xaml
     struct value_converter_traits<bool, void> : __value_converter_traits_helper<bool, __stob<char>, __stob<wchar_t>>
     {
     };
-
-    inline std::string __wtomb(std::wstring_view str)
-    {
-        std::mbstate_t mb{};
-        std::string internal(str.size() * 2, '\0');
-        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
-        const wchar_t* from_next;
-        char* to_next;
-        auto result = f.out(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        if (result != std::codecvt_base::ok) return {};
-        internal.resize(to_next - internal.data());
-        return internal;
-    }
-
-    inline std::wstring __mbtow(std::string_view str)
-    {
-        std::mbstate_t mb{};
-        std::wstring internal(str.size(), L'\0');
-        auto& f = std::use_facet<std::codecvt<wchar_t, char, std::mbstate_t>>(std::locale{});
-        const char* from_next;
-        wchar_t* to_next;
-        auto result = f.in(mb, str.data(), str.data() + str.size(), from_next, internal.data(), internal.data() + internal.size(), to_next);
-        if (result != std::codecvt_base::ok) return {};
-        internal.resize(to_next - internal.data());
-        return internal;
-    }
 
     template <>
     struct value_converter_traits<std::string_view, void>
