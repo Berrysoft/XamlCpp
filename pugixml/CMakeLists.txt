@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.4)
 project(pugixml VERSION 1.10 LANGUAGES CXX)
 
-add_library(pugixml STATIC) # Auto selects static or shared based on BUILD_SHARED_LIBS
+add_library(pugixml STATIC)
+
+set_target_properties(pugixml
+  PROPERTIES
+    POSITION_INDEPENDENT_CODE ON)
 
 target_sources(pugixml
   PRIVATE
