@@ -115,8 +115,15 @@ elseif(${BUILD_GTK3})
 endif()
 
 option(BUILD_WEBVIEW "Build webview." ON)
+option(USE_SYS_PUGIXML "Use system pugixml" OFF)
 
 set(_XAML_TARGETS xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml xamlc)
+
+if(${USE_SYS_PUGIXML})
+    find_package(pugixml REQUIRED)
+else()
+    add_subdirectory(pugixml)
+endif()
 
 add_subdirectory(meta)
 add_subdirectory(ui)

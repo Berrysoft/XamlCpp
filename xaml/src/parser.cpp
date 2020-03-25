@@ -6,7 +6,7 @@
 #include <xaml/parser.hpp>
 
 using namespace std;
-using namespace filesystem;
+using namespace std::filesystem;
 using namespace pugi;
 
 namespace xaml

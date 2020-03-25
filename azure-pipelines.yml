@@ -86,13 +86,7 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: eq(variables.rid, 'linux')
-    inputs:
-      cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -Dpugixml_DIR="/usr/share/libpugixml-dev/cmake/"
-
-  - task: CMake@1
-    displayName: 'Configure all projects'
-    condition: eq(variables.plat, 'mac')
+    condition: ne(variables.plat, 'win')
     inputs:
       cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
