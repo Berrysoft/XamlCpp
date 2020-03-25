@@ -286,9 +286,8 @@ namespace xaml
 
     ostream& compiler::write_deserialize(ostream& stream, filesystem::path const& path)
     {
-        write_indent(stream) << "::xaml::parser __p(ctx, " << path << ");" << endl;
+        write_indent(stream) << "auto [__opened, __node, __headers] = ::xaml::parse_file(ctx, " << path << ");" << endl;
         write_indent(stream) << "::xaml::deserializer __des{ ctx };" << endl;
-        write_indent(stream) << "::xaml::xaml_node __node = __p.parse();" << endl;
         return stream;
     }
 

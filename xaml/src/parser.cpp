@@ -6,7 +6,7 @@
 #include <xaml/parser.hpp>
 
 using namespace std;
-using namespace std::filesystem;
+using namespace filesystem;
 using namespace pugi;
 
 namespace xaml
@@ -75,7 +75,6 @@ namespace xaml
         markup_node parse_markup(string_view value);
         void parse_members(xaml_node& mc, xml_node& node);
         xaml_node parse_impl(xml_node& node);
-
         xaml_node parse();
     };
 
@@ -111,29 +110,6 @@ namespace xaml
         {
             return make_tuple(name.substr(0, index), name.substr(index + 1));
         }
-    }
-
-    parser::parser(meta_context& ctx) : m_ctx(&ctx), m_impl(make_unique<parser_impl>())
-    {
-        m_impl->ctx = m_ctx;
-    }
-
-    parser::~parser() {}
-
-    bool parser::is_open() const noexcept { return m_impl->loaded; }
-
-    set<string> const& parser::get_headers() const noexcept { return m_impl->headers; }
-
-    xaml_node parser::parse() { return m_impl->parse(); }
-
-    void parser::open(path const& file)
-    {
-        m_impl->load_file(file);
-    }
-
-    void parser::load(string_view xml)
-    {
-        m_impl->load_string(xml);
     }
 
     markup_node parser_impl::parse_markup(string_view value)
@@ -450,5 +426,27 @@ namespace xaml
         {
             throw xaml_bad_type(ns, name);
         }
+    }
+
+    static tuple<bool, xaml_node, set<string>> parse_impl(meta_context& ctx, parser_impl& impl)
+    {
+        if (!impl.loaded) return make_tuple<bool, xaml_node, set<string>>(false, { nullptr }, {});
+        impl.ctx = &ctx;
+        xaml_node result = impl.parse();
+        return make_tuple(true, move(result), move(impl.headers));
+    }
+
+    tuple<bool, xaml_node, set<string>> parse_file(meta_context& ctx, path const& file)
+    {
+        parser_impl impl{};
+        impl.load_file(file);
+        return parse_impl(ctx, impl);
+    }
+
+    tuple<bool, xaml_node, set<string>> parse_string(meta_context& ctx, string_view xml)
+    {
+        parser_impl impl{};
+        impl.load_string(xml);
+        return parse_impl(ctx, impl);
     }
 } // namespace xaml

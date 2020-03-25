@@ -144,10 +144,9 @@ int _tmain(int argc, char_t const* const* argv)
                     }
                 }
             }
-            parser p{ ctx, inf };
-            if (p.is_open())
+            auto [opened, node, headers] = parse_file(ctx, inf);
+            if (opened)
             {
-                auto node = p.parse();
                 compiler c{ ctx };
                 ofstream stream{ ouf_path };
                 if (vm.count("fake") && vm["fake"].as<bool>())
@@ -158,7 +157,7 @@ int _tmain(int argc, char_t const* const* argv)
                 else
                 {
                     if (verbose) _tcout << U("Compiling to ") << inf << U("...") << endl;
-                    c.compile(stream, node, inf, p.get_headers());
+                    c.compile(stream, node, inf, headers);
                 }
             }
             else
