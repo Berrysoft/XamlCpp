@@ -35,13 +35,13 @@ jobs:
 
   steps:
   - script: |
-      vcpkg install libxml2:x64-windows wil:x64-windows boost-program-options:x64-windows
-    displayName: 'Install libxml2 & wil & boost-program-options'
+      vcpkg install pugixml:x64-windows wil:x64-windows boost-program-options:x64-windows
+    displayName: 'Install pugixml & wil & boost-program-options'
     condition: eq(variables.rid, 'win')
 
   - script: |
       cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
-      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost mingw-w64-x86_64-pugixml"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
     env:
@@ -49,13 +49,13 @@ jobs:
 
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt-get install gcc-9 g++-9 libgtk-3-dev libwebkit2gtk-4.0-dev libboost-all-dev ninja-build
+      sudo apt-get install gcc-9 g++-9 libgtk-3-dev libwebkit2gtk-4.0-dev libboost-all-dev libpugixml-dev ninja-build
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
     displayName: 'Install linux dependencies'
     condition: eq(variables.rid, 'linux')
 
   - script: |
-      brew install ninja boost
+      brew install ninja boost pugixml
     displayName: 'Install ninja & boost'
     condition: eq(variables.plat, 'mac')
 
