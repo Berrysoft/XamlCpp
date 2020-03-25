@@ -56,7 +56,7 @@ jobs:
 
   - script: |
       brew install ninja boost pugixml
-    displayName: 'Install ninja & boost'
+    displayName: 'Install ninja & boost & pugixml'
     condition: eq(variables.plat, 'mac')
 
   - script: |
@@ -86,7 +86,13 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: ne(variables.plat, 'win')
+    condition: eq(variables.rid, 'linux')
+    inputs:
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -Dpugixml_DIR="/usr/share/libpugixml-dev/cmake/"
+
+  - task: CMake@1
+    displayName: 'Configure all projects'
+    condition: eq(variables.plat, 'mac')
     inputs:
       cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
