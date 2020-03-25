@@ -9,6 +9,9 @@
 #include <system_error>
 #else
 #include <dlfcn.h>
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
+#endif // __APPLE__
 #endif // WIN32 || __MINGW32__
 
 #if defined(WIN32) && !defined(__MINGW32__)
@@ -42,19 +45,34 @@ namespace xaml
         return result;
     }
 
+    static path program_location()
+    {
 #if defined(WIN32) || defined(__MINGW32__)
+        wstring path(1024, L'\0');
+        if (GetModuleFileNameW(nullptr, path.data(), (DWORD)path.size()) == 0) return {};
+        return path;
+#elif defined(__APPLE__)
+        string path(1024, '\0');
+        uint32_t size = (uint32_t)path.size();
+        if (_NSGetExecutablePath(path, &size) == 0)
+            return path;
+        path.resize((size_t)size);
+        if (_NSGetExecutablePath(p, &size) != 0)
+            return {};
+        return path;
+#else
+        return read_symlink("/proc/self/exe");
+#endif // WIN32 || __MINGW32__
+    }
+
     static vector<path> get_module_search_path()
     {
+#if defined(WIN32) || defined(__MINGW32__)
         wstring buffer(32767, P('\0'));
         DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
         buffer.resize(count);
         vector<path> result = split(buffer, P(';'));
-        result.push_back(P("."));
-        return result;
-    }
 #else
-    static vector<path> get_module_search_path()
-    {
 #ifdef __APPLE__
         constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
 #else
@@ -62,10 +80,17 @@ namespace xaml
 #endif // __APPLE__
         char* ldp = getenv(ld_library_path.data());
         vector<path> result = split(ldp ? ldp : "", ':');
+#endif // WIN32 || __MINGW32__
+        result.push_back(P("."));
         result.push_back(P("../lib"));
+        auto location = program_location();
+        if (!location.empty())
+        {
+            result.push_back(location);
+            result.push_back(location / P("..") / P("lib"));
+        }
         return result;
     }
-#endif // WIN32 || __MINGW32__
 
     static path get_full_path(path const& name, vector<path> const& sds)
     {

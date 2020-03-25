@@ -1,3 +1,4 @@
+#include <iostream>
 #include <pugixml.hpp>
 #include <sstream>
 #include <xaml/markup/binding.hpp>
@@ -214,11 +215,11 @@ namespace xaml
         case node_element:
         {
             auto [xns, name] = split_ns_name(node.name());
-            auto& ns = nss[(string)xns];
+            string_view ns = nss[(string)xns];
             for (auto& attr : node.attributes())
             {
                 auto [attr_xns, attr_name] = split_ns_name(attr.name());
-                auto& attr_ns = nss[(string)attr_xns];
+                string_view attr_ns = nss[(string)attr_xns];
                 if (attr_xns.empty() && attr_name == "xmlns")
                     continue;
                 else if (attr_xns == "xmlns")
@@ -332,7 +333,7 @@ namespace xaml
             if (c.type() == node_element)
             {
                 auto [xns, name] = split_ns_name(node.name());
-                auto& ns = nss[(string)xns];
+                string_view ns = nss[(string)xns];
                 size_t dm_index = name.find_first_of('.');
                 if (dm_index != string_view::npos)
                 {
@@ -405,7 +406,7 @@ namespace xaml
     xaml_node parser_impl::parse_impl(xml_node& node)
     {
         auto [xns, name] = split_ns_name(node.name());
-        auto& ns = nss[(string)xns];
+        string_view ns = nss[(string)xns];
         auto t = ctx->get_type(ns, name);
         if (t)
         {
@@ -422,7 +423,7 @@ namespace xaml
 
     xaml_node parser_impl::parse()
     {
-        xml_node& root_node = *doc.children().begin();
+        xml_node root_node = *doc.children().begin();
         for (auto& attr : root_node.attributes())
         {
             auto [ns, name] = split_ns_name(attr.name());
@@ -436,7 +437,7 @@ namespace xaml
             }
         }
         auto [xns, name] = split_ns_name(root_node.name());
-        auto& ns = nss[(string)xns];
+        string_view ns = nss[(string)xns];
         auto t = ctx->get_type(ns, name);
         if (t)
         {
