@@ -1,12 +1,11 @@
 project(pugixml VERSION 1.10 LANGUAGES CXX)
 
-add_library(xaml_pugixml)
+add_library(xaml_pugixml ${PROJECT_SOURCE_DIR}/src/pugixml.cpp)
 add_library(pugixml ALIAS xaml_pugixml)
 
-target_sources(xaml_pugixml
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/scripts/pugixml_dll.rc
-        ${PROJECT_SOURCE_DIR}/src/pugixml.cpp)
+if(WIN32 AND NOT MINGW)
+    target_sources(xaml_pugixml PRIVATE ${PROJECT_SOURCE_DIR}/scripts/pugixml_dll.rc)
+endif()
 
 target_include_directories(xaml_pugixml
     PUBLIC
