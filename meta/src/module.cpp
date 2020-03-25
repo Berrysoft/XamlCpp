@@ -54,10 +54,10 @@ namespace xaml
 #elif defined(__APPLE__)
         string path(1024, '\0');
         uint32_t size = (uint32_t)path.size();
-        if (_NSGetExecutablePath(path, &size) == 0)
+        if (_NSGetExecutablePath(path.data(), &size) == 0)
             return path;
         path.resize((size_t)size);
-        if (_NSGetExecutablePath(p, &size) != 0)
+        if (_NSGetExecutablePath(path.data(), &size) != 0)
             return {};
         return path;
 #else
