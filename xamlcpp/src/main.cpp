@@ -1,4 +1,3 @@
-#include <boost/program_options.hpp>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
@@ -8,7 +7,10 @@
 #include <string_view>
 #include <tuple>
 #include <vector>
+#include <xaml/cmdline/deserializer.hpp>
+#include <xaml/cmdline/option.hpp>
 #include <xaml/compiler.hpp>
+#include <xaml/meta/meta_macro.hpp>
 #include <xaml/meta/module.hpp>
 #include <xaml/parser.hpp>
 #include <xaml/version.hpp>
@@ -32,7 +34,55 @@
 using namespace std;
 using namespace std::filesystem;
 using namespace xaml;
-using namespace boost::program_options;
+
+namespace xamlcpp
+{
+    struct xamlcpp_options : public meta_class
+    {
+        xamlcpp_options() : meta_class() {}
+        ~xamlcpp_options() override {}
+
+        PROP_CONSTEXPR(help, bool)
+        PROP_CONSTEXPR(fake, bool)
+        PROP_CONSTEXPR(verbose, bool)
+        PROP_CONSTEXPR(no_logo, bool)
+        PROP_STRING(input)
+        PROP_STRING(output)
+
+    private:
+        vector<string_t> m_lib_paths{};
+
+    public:
+        void add_lib_path(string_view_t p) { m_lib_paths.emplace_back(p); }
+        void remove_lib_path(string_view_t p) {}
+        array_view<string_t> get_lib_paths() const noexcept { return m_lib_paths; }
+
+        REGISTER_CLASS_DECL_NOFILE(xamlcpp, xamlcpp_options)
+        {
+            ADD_CTOR_DEF();
+
+            ADD_PROP(help);
+            ADD_PROP(fake);
+            ADD_PROP(verbose);
+            ADD_PROP(no_logo);
+            ADD_PROP(input);
+            ADD_PROP(output);
+            ADD_COLLECTION_PROP(lib_path, string_view_t);
+
+            auto attr = make_unique<cmdline::option>();
+            attr->add_arg(U('h'), U("help"), "help");
+            attr->add_arg(U('f'), U("fake"), "fake");
+            attr->add_arg(U('v'), U("verbose"), "verbose");
+            attr->add_arg(nullopt, U("no-logo"), "no_logo");
+            attr->add_arg(U('i'), U("input-file"), "input");
+            attr->add_arg(nullopt, nullopt, "input");
+            attr->add_arg(U('o'), U("output-file"), "output");
+            attr->add_arg(U('L'), U("library-path"), "lib_path");
+            ref->set_attribute(move(attr));
+        }
+        REGISTER_CLASS_END()
+    };
+} // namespace xamlcpp
 
 optional<version> is_later(map<path, tuple<path, version>> const& modules, path const& new_module)
 {
@@ -67,44 +117,36 @@ int _tmain(int argc, char_t const* const* argv)
 {
     try
     {
-        options_description desc{ "Allowed options" };
-        desc.add_options()(
-            "help,h", "Print help message")(
-            "input-file,i", _tvalue<string_t>(), "Input XAML file")(
-            "output-file,o", _tvalue<string_t>(), "Output C++ file")(
-            "library-path,L", _tvalue<vector<string_t>>(), "Search library path")(
-            "fake,f", bool_switch(), "Generate deserialize code")(
-            "verbose,v", "Show detailed output")(
-            "no-logo", "Cancellation to show copyright infomation");
-        positional_options_description pos_opt;
-        pos_opt.add("input-file", -1);
-
-        variables_map vm;
-        store(basic_command_line_parser<char_t>(argc, argv).options(desc).positional(pos_opt).run(), vm);
-        notify(vm);
+        meta_context cmdline_ctx{};
+        cmdline::init_parser(cmdline_ctx);
+        register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
+        auto refl = cmdline_ctx.get_type(type_index(typeid(xamlcpp::xamlcpp_options)));
+        auto nodes = cmdline::parse(refl, argc, argv);
+        cmdline::deserializer cli_des{ cmdline_ctx };
+        auto opts = static_pointer_cast<xamlcpp::xamlcpp_options>(cli_des.deserialize(refl, nodes));
 
         path exe{ argv[0] };
-        if (!vm.count("no-logo"))
+        if (!opts->get_no_logo())
         {
             _tcout << exe.filename().string<char_t>() << U(" ") XAML_VERSION << U('\n')
                    << U("Copyright (c) 2019-2020 Berrysoft") << U('\n')
                    << endl;
         }
 
-        if (vm.empty() || vm.count("help"))
+        if (opts->get_help())
         {
-            cout << desc << endl;
             return 1;
         }
 
-        bool verbose = vm.count("verbose");
+        bool verbose = opts->get_verbose();
 
-        if (vm.count("input-file"))
+        path inf = opts->get_input();
+        if (!inf.empty())
         {
-            path inf = vm["input-file"].as<string_t>();
-            path ouf_path = vm.count("output-file") ? vm["output-file"].as<string_t>() : inf.string<char_t>() + U(".g.cpp");
+            path ouf_path = opts->get_output();
+            if (ouf_path.empty()) ouf_path = inf.string<char_t>() + U(".g.cpp");
             map<path, tuple<path, version>> modules;
-            auto lib_dirs = vm.count("library-path") ? vm["library-path"].as<vector<string_t>>() : vector<string_t>{ exe.parent_path().string<char_t>() };
+            vector<string_t> lib_dirs = opts->get_lib_paths();
             for (path dir : lib_dirs)
             {
                 if (verbose) _tcout << U("Searching ") << dir << U("...") << endl;
@@ -149,7 +191,7 @@ int _tmain(int argc, char_t const* const* argv)
             {
                 compiler c{ ctx };
                 ofstream stream{ ouf_path };
-                if (vm.count("fake") && vm["fake"].as<bool>())
+                if (opts->get_fake())
                 {
                     if (verbose) _tcout << U("Compiling fake to ") << inf << U("...") << endl;
                     c.compile_fake(stream, node, inf);

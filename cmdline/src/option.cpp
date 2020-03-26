@@ -4,7 +4,7 @@ using namespace std;
 
 namespace xaml::cmdline
 {
-    optional<string_view> option::find_short_arg(char_t name) const
+    optional<string_view> option::find_short_arg(char_t name) const noexcept
     {
         auto it = m_short_args.find(name);
         if (it != m_short_args.end())
@@ -17,7 +17,7 @@ namespace xaml::cmdline
         }
     }
 
-    optional<string_view> option::find_long_arg(string_view_t name) const
+    optional<string_view> option::find_long_arg(string_view_t name) const noexcept
     {
         auto it = m_long_args.find((string_t)name);
         if (it != m_long_args.end())

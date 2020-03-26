@@ -6,6 +6,11 @@ using namespace std;
 
 namespace xaml::cmdline
 {
+    void init_parser(meta_context& ctx) noexcept
+    {
+        register_class<option>(ctx);
+    }
+
     no_registered_option::no_registered_option() : logic_error("There's no xaml::cmdline::option attribute registered in the specified type.") {}
 
     static string get_invalid_option_message(string_view_t opt)
@@ -17,12 +22,12 @@ namespace xaml::cmdline
 
     invalid_option::invalid_option(string_view_t opt) : logic_error(get_invalid_option_message(opt)) {}
 
-    vector<option_node> parse(reflection_info const* refl, array_view<string_t> args)
+    options parse(reflection_info const* refl, array_view<string_t> args)
     {
         option const* popt = refl->get_attribute<option>();
         if (!popt) throw no_registered_option{};
-        vector<option_node> options;
-        for (size_t i = 1; i < args.size(); i++)
+        options result;
+        for (size_t i = 0; i < args.size(); i++)
         {
             string_view_t arg = args[i];
             if (arg.empty())
@@ -40,8 +45,25 @@ namespace xaml::cmdline
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            i++;
-                            options.push_back({ prop, args[i] });
+                            if (prop->type() == type_index(typeid(bool)))
+                            {
+                                result.properties.push_back({ prop, U("true") });
+                            }
+                            else
+                            {
+                                i++;
+                                result.properties.push_back({ prop, args[i] });
+                            }
+                        }
+                        else
+                        {
+                            auto cprop = refl->get_collection_property(*pprop);
+                            if (cprop)
+                            {
+                                result.collection_properties[(string)*pprop].info = cprop;
+                                i++;
+                                result.collection_properties[(string)*pprop].values.push_back(args[i]);
+                            }
                         }
                     }
                     else
@@ -60,7 +82,7 @@ namespace xaml::cmdline
                         {
                             if (prop->type() == type_index(typeid(bool)))
                             {
-                                options.push_back({ prop, U("true") });
+                                result.properties.push_back({ prop, U("true") });
                                 for (char_t other_short_arg : switches_or_value)
                                 {
                                     if (auto pprop = popt->find_short_arg(short_arg))
@@ -68,7 +90,7 @@ namespace xaml::cmdline
                                         auto prop = refl->get_property(*pprop);
                                         if (prop)
                                         {
-                                            options.push_back({ prop, U("true") });
+                                            result.properties.push_back({ prop, U("true") });
                                         }
                                     }
                                     else
@@ -82,11 +104,28 @@ namespace xaml::cmdline
                                 if (switches_or_value.empty())
                                 {
                                     i++;
-                                    options.push_back({ prop, args[i] });
+                                    result.properties.push_back({ prop, args[i] });
                                 }
                                 else
                                 {
-                                    options.push_back({ prop, (string_t)switches_or_value });
+                                    result.properties.push_back({ prop, (string_t)switches_or_value });
+                                }
+                            }
+                        }
+                        else
+                        {
+                            auto cprop = refl->get_collection_property(*pprop);
+                            if (cprop)
+                            {
+                                result.collection_properties[(string)*pprop].info = cprop;
+                                if (switches_or_value.empty())
+                                {
+                                    i++;
+                                    result.collection_properties[(string)*pprop].values.push_back(args[i]);
+                                }
+                                else
+                                {
+                                    result.collection_properties[(string)*pprop].values.emplace_back(switches_or_value);
                                 }
                             }
                         }
@@ -104,7 +143,16 @@ namespace xaml::cmdline
                     auto prop = refl->get_property(*pdef_prop);
                     if (prop)
                     {
-                        options.push_back({ prop, (string_t)arg });
+                        result.properties.push_back({ prop, (string_t)arg });
+                    }
+                    else
+                    {
+                        auto cprop = refl->get_collection_property(*pdef_prop);
+                        if (cprop)
+                        {
+                            result.collection_properties[(string)*pdef_prop].info = cprop;
+                            result.collection_properties[(string)*pdef_prop].values.emplace_back(arg);
+                        }
                     }
                 }
                 else
@@ -113,6 +161,6 @@ namespace xaml::cmdline
                 }
             }
         }
-        return options;
+        return result;
     }
 } // namespace xaml::cmdline

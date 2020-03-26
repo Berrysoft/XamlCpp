@@ -4,14 +4,24 @@ using namespace std;
 
 namespace xaml::cmdline
 {
-    unique_ptr<meta_class> deserializer::deserialize(reflection_info const* refl, array_view<option_node> nodes)
+    shared_ptr<meta_class> deserializer::deserialize(reflection_info const* refl, options nodes)
     {
-        unique_ptr<meta_class> result{ refl->construct() };
-        for (auto& node : nodes)
+        shared_ptr<meta_class> result{ refl->construct() };
+        for (auto& prop : nodes.properties)
         {
-            if (node.info && node.info->can_write())
+            if (prop.info && prop.info->can_write())
             {
-                node.info->set(result.get(), node.value);
+                prop.info->set(result.get(), prop.value);
+            }
+        }
+        for (auto& [name, prop] : nodes.collection_properties)
+        {
+            if (prop.info && prop.info->can_add())
+            {
+                for (auto& v : prop.values)
+                {
+                    prop.info->add(result.get(), v);
+                }
             }
         }
         return result;

@@ -16,7 +16,7 @@ namespace xaml::cmdline
         ~deserializer() {}
 
     public:
-        XAML_CMDLINE_API std::unique_ptr<xaml::meta_class> deserialize(xaml::reflection_info const* refl, xaml::array_view<option_node> nodes);
+        XAML_CMDLINE_API std::shared_ptr<xaml::meta_class> deserialize(xaml::reflection_info const* refl, options nodes);
     };
 } // namespace xaml::cmdline
 
