@@ -35,8 +35,8 @@ jobs:
 
   steps:
   - script: |
-      vcpkg install wil:x64-windows boost-program-options:x64-windows
-    displayName: 'Install wil & boost-program-options'
+      vcpkg install wil:x64-windows
+    displayName: 'Install wil'
     condition: eq(variables.rid, 'win')
 
   - script: |
@@ -49,14 +49,14 @@ jobs:
 
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-      sudo apt-get install gcc-9 g++-9 libgtk-3-dev libwebkit2gtk-4.0-dev libboost-all-dev ninja-build
+      sudo apt-get install gcc-9 g++-9 libgtk-3-dev libwebkit2gtk-4.0-dev ninja-build
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 90 --slave /usr/bin/g++ g++ /usr/bin/g++-9 --slave /usr/bin/gcov gcov /usr/bin/gcov-9
     displayName: 'Install linux dependencies'
     condition: eq(variables.rid, 'linux')
 
   - script: |
-      brew install ninja boost
-    displayName: 'Install ninja & boost'
+      brew install ninja
+    displayName: 'Install ninja'
     condition: eq(variables.plat, 'mac')
 
   - script: |
@@ -70,8 +70,6 @@ jobs:
       cmake .. -GNinja $(def) -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
-    env:
-      BOOST_ROOT: 
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -82,7 +80,6 @@ jobs:
     env:
       MSYSTEM: MINGW64
       PATH: C:\msys64\mingw64\bin
-      BOOST_ROOT: 
 
   - task: CMake@1
     displayName: 'Configure all projects'

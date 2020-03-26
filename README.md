@@ -121,14 +121,14 @@ A C++17-compliant compiler is required.
 This project assumes it is built by GCC 9+ when using GNU toolchains. If building with previous versions, you should manully link it with `libstdc++fs`.
 ### Build on Windows
 #### MSVC
-`libxml2`, `wil` and `boost-program-options` are required. `vcpkg` is recommanded. Other packages will be downloaded from NuGet when configuring.
+`wil` is required. `vcpkg` is recommanded. Other packages will be downloaded from NuGet when configuring.
 #### MinGW
-`libxml2`, `gtk`, `boost` and `pkgconfig` are required. MSYS2 is recommanded for installing and building.
+`gtk` and `pkgconfig` are required. MSYS2 is recommanded for installing and building.
 ### Build on Linux
-`libxml2`, `gtk`, `webkit2gtk`, `boost` and `pkgconfig` are required.
+`gtk`, `webkit2gtk` and `pkgconfig` are required.
 ### Build on Mac
 Mac OS 10.14+ is required for some C++17 features.
 #### Cocoa
-`libxml2` is pre-installed in the system. `boost` is required.
+No other packages needed.
 #### Gtk
 `gtk` and `pkgconfig` are also required.
