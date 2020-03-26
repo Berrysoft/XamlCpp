@@ -9,8 +9,8 @@ namespace xaml
     class deserializer
     {
     private:
-        meta_context* m_ctx;
-        std::map<std::string, std::weak_ptr<meta_class>> symbols;
+        meta_context* m_ctx{ nullptr };
+        std::map<std::string, std::weak_ptr<meta_class>> symbols{};
 
     public:
         deserializer(meta_context& ctx) : m_ctx(&ctx) {}

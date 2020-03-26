@@ -17,9 +17,9 @@ namespace xaml::cmdline
         }
     }
 
-    optional<string_view> option::find_long_arg(string_t name) const
+    optional<string_view> option::find_long_arg(string_view_t name) const
     {
-        auto it = m_long_args.find(name);
+        auto it = m_long_args.find((string_t)name);
         if (it != m_long_args.end())
         {
             return m_properties.at(it->second);
@@ -32,6 +32,16 @@ namespace xaml::cmdline
 
     void option::add_arg(optional<char_t> short_name, optional<string_view_t> long_name, string_view prop_name)
     {
-        // TODO
+        if (short_name || long_name)
+        {
+            auto key = hash<string_view>{}(prop_name);
+            m_properties.emplace(key, prop_name);
+            if (short_name) m_short_args.emplace(*short_name, key);
+            if (long_name) m_long_args.emplace(*long_name, key);
+        }
+        else
+        {
+            m_default_property = prop_name;
+        }
     }
 } // namespace xaml::cmdline

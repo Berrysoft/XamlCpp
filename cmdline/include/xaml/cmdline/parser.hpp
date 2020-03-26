@@ -9,6 +9,12 @@
 
 namespace xaml::cmdline
 {
+    struct no_registered_option : std::logic_error
+    {
+        XAML_CMDLINE_API no_registered_option();
+        ~no_registered_option() override {}
+    };
+
     struct invalid_option : std::logic_error
     {
         XAML_CMDLINE_API invalid_option(string_view_t opt);
@@ -17,16 +23,15 @@ namespace xaml::cmdline
 
     struct option_node
     {
-        std::string option;
-        property_info const* info;
-        std::string value;
+        xaml::property_info const* info;
+        xaml::string_t value;
     };
 
-    XAML_CMDLINE_API std::vector<option_node> parse(reflection_info const* refl, array_view<string_t> args);
+    XAML_CMDLINE_API std::vector<option_node> parse(xaml::reflection_info const* refl, xaml::array_view<xaml::string_t> args);
 
-    inline std::vector<option_node> parse(reflection_info const* refl, int argc, char_t const* const* argv)
+    inline std::vector<option_node> parse(xaml::reflection_info const* refl, int argc, xaml::char_t const* const* argv)
     {
-        std::vector<string_t> args{ argv, argv + argc };
+        std::vector<xaml::string_t> args{ argv, argv + argc };
         return parse(refl, args);
     }
 } // namespace xaml::cmdline
