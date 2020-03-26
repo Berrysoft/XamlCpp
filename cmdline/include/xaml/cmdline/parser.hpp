@@ -4,7 +4,6 @@
 #include <stdexcept>
 #include <vector>
 #include <xaml/array_view.hpp>
-#include <xaml/cmdline/option.hpp>
 #include <xaml/meta/meta.hpp>
 #include <xaml/strings.hpp>
 
@@ -16,9 +15,16 @@ namespace xaml::cmdline
         ~invalid_option() override {}
     };
 
-    XAML_CMDLINE_API std::vector<option> parse(reflection_info const* refl, array_view<string_t> args);
+    struct option_node
+    {
+        std::string option;
+        property_info const* info;
+        std::string value;
+    };
 
-    inline std::vector<option> parse(reflection_info const* refl, int argc, char_t const* const* argv)
+    XAML_CMDLINE_API std::vector<option_node> parse(reflection_info const* refl, array_view<string_t> args);
+
+    inline std::vector<option_node> parse(reflection_info const* refl, int argc, char_t const* const* argv)
     {
         std::vector<string_t> args{ argv, argv + argc };
         return parse(refl, args);

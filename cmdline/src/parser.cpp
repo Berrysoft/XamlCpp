@@ -14,9 +14,9 @@ namespace xaml::cmdline
 
     invalid_option::invalid_option(string_view_t opt) : logic_error(get_invalid_option_message(opt)) {}
 
-    vector<option> parse(reflection_info const* refl, array_view<string_t> args)
+    vector<option_node> parse(reflection_info const* refl, array_view<string_t> args)
     {
-        vector<option> options;
+        vector<option_node> options;
         for (size_t i = 1; i < args.size(); i++)
         {
             string_view_t arg = args[i];
