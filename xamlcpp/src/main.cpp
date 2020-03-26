@@ -122,8 +122,7 @@ int _tmain(int argc, char_t const* const* argv)
         register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
         auto refl = cmdline_ctx.get_type(type_index(typeid(xamlcpp::xamlcpp_options)));
         auto nodes = cmdline::parse(refl, argc, argv);
-        cmdline::deserializer cli_des{ cmdline_ctx };
-        auto opts = static_pointer_cast<xamlcpp::xamlcpp_options>(cli_des.deserialize(refl, nodes));
+        auto opts = static_pointer_cast<xamlcpp::xamlcpp_options>(cmdline::deserialize(refl, nodes));
 
         path exe{ argv[0] };
         if (!opts->get_no_logo())

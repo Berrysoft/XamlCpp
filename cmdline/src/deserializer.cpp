@@ -4,7 +4,7 @@ using namespace std;
 
 namespace xaml::cmdline
 {
-    shared_ptr<meta_class> deserializer::deserialize(reflection_info const* refl, options nodes)
+    shared_ptr<meta_class> deserialize(reflection_info const* refl, options nodes)
     {
         shared_ptr<meta_class> result{ refl->construct() };
         for (auto& prop : nodes.properties)

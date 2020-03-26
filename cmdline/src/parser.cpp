@@ -85,7 +85,7 @@ namespace xaml::cmdline
                                 result.properties.push_back({ prop, U("true") });
                                 for (char_t other_short_arg : switches_or_value)
                                 {
-                                    if (auto pprop = popt->find_short_arg(short_arg))
+                                    if (auto pprop = popt->find_short_arg(other_short_arg))
                                     {
                                         auto prop = refl->get_property(*pprop);
                                         if (prop)

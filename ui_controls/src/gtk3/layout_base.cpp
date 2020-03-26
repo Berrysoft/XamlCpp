@@ -10,8 +10,7 @@ namespace xaml
     void layout_base::__draw(rectangle const& region)
     {
         set_handle(get_parent().lock()->get_handle());
-        rectangle real = region - get_margin();
-        __draw_impl(region, [this, &real](shared_ptr<control> c, rectangle const& subrect) {
+        __draw_impl(region, [this](shared_ptr<control> c, rectangle const& subrect) {
             if (c->get_handle() && c->get_handle() != get_handle())
             {
                 rectangle subreal = subrect - c->get_margin();
