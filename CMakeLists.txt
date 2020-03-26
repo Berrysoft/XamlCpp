@@ -119,6 +119,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+# Some private libs
 set(XAML_PRIVATE_INCLUDE_DIRS )
 
 if(${BUILD_WINDOWS})
@@ -132,8 +133,9 @@ endif()
 option(BUILD_WEBVIEW "Build webview." ON)
 option(USE_SYS_PUGIXML "Use system pugixml" OFF)
 
-set(_XAML_TARGETS xaml_global xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml_parser xaml_compiler)
+set(_XAML_TARGETS xaml_global xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml_parser xaml_compiler xaml_cmdline)
 
+# It's OK to use pugixml in the system.
 if(${USE_SYS_PUGIXML})
     find_package(pugixml REQUIRED)
 else()
@@ -143,6 +145,8 @@ endif()
 
 add_subdirectory(global)
 add_subdirectory(meta)
+add_subdirectory(parser)
+add_subdirectory(compiler)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
 add_subdirectory(ui_canvas)
@@ -154,8 +158,7 @@ if(${BUILD_WEBVIEW})
         message(WARNING "webview won't be built because of unsupported platform.")
     endif()
 endif()
-add_subdirectory(parser)
-add_subdirectory(compiler)
+add_subdirectory(cmdline)
 add_subdirectory(xamlcpp)
 
 install(

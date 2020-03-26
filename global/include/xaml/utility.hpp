@@ -90,4 +90,8 @@
 #define XAMLC_API __XAML_IMPORT
 #endif // !XAMLC_API
 
+#ifndef XAML_CMDLINE_API
+#define XAML_CMDLINE_API __XAML_IMPORT
+#endif // !XAML_CMDLINE_API
+
 #endif // !XAML_UTILITY_HPP
