@@ -78,6 +78,6 @@ namespace xaml
 
     void button::__on_action()
     {
-        m_click(*this);
+        m_click(static_pointer_cast<button>(shared_from_this()));
     }
 }

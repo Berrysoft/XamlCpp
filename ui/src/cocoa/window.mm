@@ -180,8 +180,8 @@ namespace xaml
 
     bool window::__on_should_close()
     {
-        bool handled;
-        m_closing(*this, handled);
+        auto handled = box_value(false);
+        m_closing(static_pointer_cast<window>(shared_from_this()), handled);
         return !handled;
     }
 

@@ -80,49 +80,61 @@ namespace xaml
     };
 
     template <>
-    struct type_guid<meta_box<std::int8_t>>
+    struct type_guid<meta_box<signed char>>
     {
         static constexpr guid value{ 0xdc3c96bc, 0x48ce, 0x3ef7, { 0x8c, 0x15, 0x37, 0xbc, 0x7e, 0xc8, 0x07, 0xa1 } };
     };
 
     template <>
-    struct type_guid<meta_box<std::int16_t>>
+    struct type_guid<meta_box<short>>
     {
         static constexpr guid value{ 0xe3e8f6e4, 0xe677, 0x3436, { 0x8e, 0x0e, 0x96, 0x3d, 0x3d, 0x6f, 0x81, 0x0a } };
     };
 
     template <>
-    struct type_guid<meta_box<std::int32_t>>
+    struct type_guid<meta_box<int>>
     {
         static constexpr guid value{ 0x0ce68e8c, 0x51a4, 0x3115, { 0xbe, 0x13, 0xdd, 0x1a, 0xce, 0x42, 0xe6, 0x1f } };
     };
 
     template <>
-    struct type_guid<meta_box<std::int64_t>>
+    struct type_guid<meta_box<long>>
+    {
+        static constexpr guid value{ 0x78c952b3, 0x23a5, 0x429f, { 0x84, 0xaf, 0x5c, 0xa9, 0x2b, 0x49, 0xf9, 0xfb } };
+    };
+
+    template <>
+    struct type_guid<meta_box<long long>>
     {
         static constexpr guid value{ 0xf940ae92, 0xb495, 0x342e, { 0xab, 0x07, 0xe5, 0xff, 0x86, 0x3f, 0xb4, 0x15 } };
     };
 
     template <>
-    struct type_guid<meta_box<std::uint8_t>>
+    struct type_guid<meta_box<unsigned char>>
     {
         static constexpr guid value{ 0xb3b3b9f4, 0x12da, 0x3efd, { 0xb1, 0x31, 0xdf, 0x0e, 0x1f, 0x9f, 0x91, 0x4b } };
     };
 
     template <>
-    struct type_guid<meta_box<std::uint16_t>>
+    struct type_guid<meta_box<unsigned short>>
     {
         static constexpr guid value{ 0x33d9552a, 0xdc77, 0x3314, { 0x8e, 0xa3, 0x80, 0xbf, 0x05, 0x8e, 0xa1, 0x63 } };
     };
 
     template <>
-    struct type_guid<meta_box<std::uint32_t>>
+    struct type_guid<meta_box<unsigned int>>
     {
         static constexpr guid value{ 0xe38cb0a1, 0x90ae, 0x3c05, { 0x9b, 0x2e, 0x06, 0x2a, 0x58, 0x4d, 0x6c, 0x50 } };
     };
 
     template <>
-    struct type_guid<meta_box<std::uint64_t>>
+    struct type_guid<meta_box<unsigned long>>
+    {
+        static constexpr guid value{ 0x089d52f5, 0xc09d, 0x4be7, { 0xa1, 0xce, 0x58, 0xf4, 0x54, 0x8b, 0xe8, 0x59 } };
+    };
+
+    template <>
+    struct type_guid<meta_box<unsigned long long>>
     {
         static constexpr guid value{ 0x5f5fc118, 0x3099, 0x32f3, { 0xab, 0xba, 0x75, 0x57, 0x06, 0xf8, 0xb7, 0xf8 } };
     };

@@ -40,7 +40,7 @@ namespace xaml
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         if (m_text)
         {
-            combo.stringValue = [NSString stringWithUTF8String:m_text->c_str()];
+            combo.stringValue = [NSString stringWithUTF8String:m_text->get().data()];
         }
         else
         {
@@ -82,7 +82,7 @@ namespace xaml
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         set_sel_id(combo.indexOfSelectedItem);
-        set_text(combo.stringValue.UTF8String);
+        set_text(box_value(combo.stringValue.UTF8String));
     }
 
     void combo_box::insert_item(size_t index, string_t const& value)

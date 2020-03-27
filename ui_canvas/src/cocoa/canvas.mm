@@ -207,8 +207,8 @@ namespace xaml
 
     void canvas::__on_draw_rect()
     {
-        drawing_context dc{ nullptr };
-        dc.__set_size(get_size());
-        m_redraw(*this, dc);
+        auto dc = make_shared<drawing_context>(nullptr);
+        dc->__set_size(get_size());
+        m_redraw(static_pointer_cast<canvas>(shared_from_this()), dc);
     }
 }
