@@ -45,7 +45,7 @@ namespace xaml::cmdline
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            if (prop->type() == type_guid_v<bool>)
+                            if (prop->type() == type_guid_v<meta_box<bool>>)
                             {
                                 result.properties.push_back({ prop, U("true") });
                             }
@@ -80,7 +80,7 @@ namespace xaml::cmdline
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            if (prop->type() == type_guid_v<bool>)
+                            if (prop->type() == type_guid_v<meta_box<bool>>)
                             {
                                 result.properties.push_back({ prop, U("true") });
                                 for (char_t other_short_arg : switches_or_value)

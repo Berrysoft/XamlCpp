@@ -29,8 +29,25 @@ namespace xaml
     {
     };
 
+    template <>
+    struct type_guid<meta_box<binding_mode>>
+    {
+        static constexpr guid value{ 0x01f3d35e, 0x73cc, 0x4abd, 0xbc, 0xa9, 0xe5, 0x07, 0x70, 0x9e, 0x06, 0x9a };
+    };
+
+    class binding;
+
+    template <>
+    struct type_guid<binding>
+    {
+        static constexpr guid value{ 0x9b0c4424, 0x93f5, 0x45e7, 0xb8, 0xcf, 0x60, 0x24, 0x27, 0x2d, 0x03, 0x4e };
+    };
+
     class binding : public markup_extension
     {
+    public:
+        META_CLASS_IMPL(markup_extension)
+
     private:
         std::string m_element;
 

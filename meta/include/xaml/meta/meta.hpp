@@ -62,6 +62,24 @@ namespace xaml
     struct meta_box;
 
     template <>
+    struct type_guid<meta_box<bool>>
+    {
+        static constexpr guid value{ 0xc3a0fdbf, 0xa30b, 0x315e, 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae };
+    };
+
+    template <>
+    struct type_guid<meta_box<char>>
+    {
+        static constexpr guid value{ 0x829b06f1, 0x9a66, 0x44f6, 0xb9, 0x13, 0x4a, 0x7e, 0x75, 0x30, 0xc3, 0x8a };
+    };
+
+    template <>
+    struct type_guid<meta_box<wchar_t>>
+    {
+        static constexpr guid value{ 0x2d08eb84, 0x64e6, 0x3688, 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d };
+    };
+
+    template <>
     struct type_guid<meta_box<std::int8_t>>
     {
         static constexpr guid value{ 0xdc3c96bc, 0x48ce, 0x3ef7, 0x8c, 0x15, 0x37, 0xbc, 0x7e, 0xc8, 0x07, 0xa1 };
@@ -107,6 +125,24 @@ namespace xaml
     struct type_guid<meta_box<std::uint64_t>>
     {
         static constexpr guid value{ 0x5f5fc118, 0x3099, 0x32f3, 0xab, 0xba, 0x75, 0x57, 0x06, 0xf8, 0xb7, 0xf8 };
+    };
+
+    template <>
+    struct type_guid<meta_box<float>>
+    {
+        static constexpr guid value{ 0xa0782160, 0xfcb5, 0x30dc, 0xb7, 0x5c, 0xb7, 0xc3, 0x04, 0xdf, 0xc3, 0xd3 };
+    };
+
+    template <>
+    struct type_guid<meta_box<double>>
+    {
+        static constexpr guid value{ 0x9144b7d6, 0x3d5f, 0x3b29, 0x81, 0x31, 0xff, 0x0d, 0xb5, 0x51, 0xe1, 0x7c };
+    };
+
+    template <>
+    struct type_guid<meta_box<long double>>
+    {
+        static constexpr guid value{ 0x3b0b7aa1, 0xe4c0, 0x3eab, 0x8e, 0x85, 0xbc, 0xca, 0x45, 0xb7, 0x3a, 0xaf };
     };
 
     template <>
@@ -567,7 +603,7 @@ namespace xaml
         template <typename TAttr>
         TAttr const* get_attribute() const noexcept
         {
-            return static_cast<TAttr const*>(__get_attribute(guid{ typeid(TAttr) }));
+            return static_cast<TAttr const*>(__get_attribute(type_guid_v<TAttr>));
         }
 
         XAML_META_API void set_attribute(std::unique_ptr<meta_class>&& attr) noexcept;
@@ -707,7 +743,7 @@ namespace xaml
         template <typename T>
         void add_collection_property(std::string_view name, std::function<void(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>)>&& remover, bool attach = false)
         {
-            __add_collection_property(name, type_guid_v<T>, std::move(adder), std::move(remover), attach);
+            __add_collection_property(name, type_guid_v<box_value_t<T>>, std::move(adder), std::move(remover), attach);
         }
 
     public:

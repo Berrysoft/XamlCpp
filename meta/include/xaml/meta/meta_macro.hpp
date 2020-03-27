@@ -17,7 +17,7 @@
     return ref;              \
     }
 
-#define REGISTER_ENUM(ns, name, file) ctx.register_type(::std::make_unique<::xaml::enum_reflection_info>(::std::type_index(typeid(::ns::name)), #ns, #name, file))
+#define REGISTER_ENUM(ns, name, file) ctx.register_type(::std::make_unique<::xaml::enum_reflection_info>(::xaml::type_guid_v<::xaml::box_value_t<::ns::name>>, #ns, #name, file))
 
 #define ADD_CTOR(...) ref->add_constructor<self_type, __VA_ARGS__>()
 #define ADD_CTOR_DEF() ref->add_constructor<self_type>()

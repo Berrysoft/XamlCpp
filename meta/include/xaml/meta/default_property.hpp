@@ -5,8 +5,19 @@
 
 namespace xaml
 {
+    class default_property;
+
+    template <>
+    struct type_guid<default_property>
+    {
+        static constexpr guid value{ 0xaf8c4c53, 0xa4a0, 0x4f46, 0xbd, 0x28, 0x2a, 0xf6, 0xb2, 0xfe, 0xe1, 0x79 };
+    };
+
     class default_property : public meta_class
     {
+    public:
+        META_CLASS_IMPL(meta_class)
+
     private:
         std::string m_property_name;
 

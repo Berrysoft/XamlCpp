@@ -7,10 +7,27 @@
 #include <xaml/meta/meta_macro.hpp>
 #include <xaml/strings.hpp>
 
+namespace xaml
+{
+    namespace cmdline
+    {
+        class option;
+    }
+
+    template <>
+    struct type_guid<cmdline::option>
+    {
+        static constexpr guid value{ 0x240bec4e, 0xefc2, 0x45ed, 0xa5, 0x01, 0x04, 0xc6, 0x44, 0xf3, 0xf7, 0x0d };
+    };
+} // namespace xaml
+
 namespace xaml::cmdline
 {
     class option : public meta_class
     {
+    public:
+        META_CLASS_IMPL(meta_class)
+
     private:
         std::map<char_t, size_t> m_short_args{};
         std::map<string_t, size_t> m_long_args{};

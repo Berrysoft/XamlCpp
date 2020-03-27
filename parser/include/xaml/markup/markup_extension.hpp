@@ -5,6 +5,14 @@
 
 namespace xaml
 {
+    class markup_extension;
+
+    template <>
+    struct type_guid<markup_extension>
+    {
+        static constexpr guid value{ 0x22563874, 0x590b, 0x40d0, 0x9b, 0xaa, 0x43, 0x59, 0x4c, 0x5c, 0xaa, 0x9b };
+    };
+
     struct markup_context
     {
         virtual std::weak_ptr<meta_class> current_element() const = 0;
@@ -16,6 +24,8 @@ namespace xaml
     class markup_extension : public meta_class
     {
     public:
+        META_CLASS_IMPL(meta_class)
+
         virtual ~markup_extension() {}
 
         virtual void provide(meta_context& ctx, markup_context& context) = 0;

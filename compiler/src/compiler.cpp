@@ -49,17 +49,16 @@ namespace xaml
     }
 
     static array int_types{
-        type_guid_v<int8_t>, type_guid_v<int16_t>, type_guid_v<int32_t>, type_guid_v<int64_t>,
-        type_guid_v<uint8_t>, type_guid_v<uint16_t>, type_guid_v<uint32_t>, type_guid_v<uint64_t>
+        type_guid_v<meta_box<int8_t>>, type_guid_v<meta_box<int16_t>>, type_guid_v<meta_box<int32_t>>, type_guid_v<meta_box<int64_t>>,
+        type_guid_v<meta_box<uint8_t>>, type_guid_v<meta_box<uint16_t>>, type_guid_v<meta_box<uint32_t>>, type_guid_v<meta_box<uint64_t>>
     };
 
     static array float_types{
-        type_guid_v<float>, type_guid_v<double>, type_guid_v<long double>
+        type_guid_v<meta_box<float>>, type_guid_v<meta_box<double>>, type_guid_v<meta_box<long double>>
     };
 
     static array string_types{
-        type_guid_v<string>, type_guid_v<string_view>,
-        type_guid_v<wstring>, type_guid_v<wstring_view>
+        type_guid_v<meta_box<string>>, type_guid_v<meta_box<wstring>>
     };
 
     template <size_t N>
@@ -70,7 +69,7 @@ namespace xaml
 
     string compiler::xaml_cpp_compile(guid const& type, string_view code)
     {
-        if (type == type_guid_v<bool>)
+        if (type == type_guid_v<meta_box<bool>>)
         {
             bool b = value_converter_traits<bool>::convert(box_value(code));
             return b ? "true" : "false";
