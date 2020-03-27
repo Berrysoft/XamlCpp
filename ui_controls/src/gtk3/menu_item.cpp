@@ -21,7 +21,7 @@ namespace xaml
     void menu_item::on_activate(void* m, void* data)
     {
         menu_item* self = (menu_item*)data;
-        self->m_click(*self);
+        self->m_click(static_pointer_cast<menu_item>(self->shared_from_this()));
     }
 
     void popup_menu_item::__draw(rectangle const& region)

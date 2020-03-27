@@ -1,7 +1,7 @@
-#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/controls/layout_base.hpp>
 #include <xaml/ui/native_control.hpp>
+#include <xaml/ui/win/dpi.h>
 
 using namespace std;
 

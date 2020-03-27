@@ -22,7 +22,7 @@ namespace xaml
             auto entry = gtk_bin_get_child(GTK_BIN(get_handle()->handle));
             if (m_text)
             {
-                gtk_entry_set_text(GTK_ENTRY(entry), m_text->c_str());
+                gtk_entry_set_text(GTK_ENTRY(entry), m_text->get().data());
             }
             else
             {
@@ -77,7 +77,7 @@ namespace xaml
         if (self->get_is_editable())
         {
             auto entry = gtk_bin_get_child(GTK_BIN(self->get_handle()->handle));
-            self->set_text(gtk_entry_get_text(GTK_ENTRY(entry)));
+            self->set_text(box_value(gtk_entry_get_text(GTK_ENTRY(entry))));
         }
         else if (self->get_sel_id() < 0 || self->get_sel_id() >= self->get_items().size())
         {
@@ -85,7 +85,7 @@ namespace xaml
         }
         else
         {
-            self->set_text(self->get_items()[self->get_sel_id()]);
+            self->set_text(box_value(self->get_items()[self->get_sel_id()].get()));
         }
     }
 

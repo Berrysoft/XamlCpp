@@ -1,7 +1,7 @@
 #include <gtk3/resources.hpp>
 #include <xaml/ui/filebox.hpp>
-#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/native_filebox.hpp>
+#include <xaml/ui/native_window.hpp>
 
 using namespace std;
 

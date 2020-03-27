@@ -33,6 +33,12 @@ namespace xaml
     };
 
     template <typename T>
+    T unbox_value(std::shared_ptr<meta_class> value)
+    {
+        return value_converter_traits<T>::convert(value);
+    }
+
+    template <typename T>
     struct value_converter_traits<std::shared_ptr<T>, std::enable_if_t<std::is_base_of_v<meta_class, T>>>
     {
         static std::shared_ptr<T> convert(std::shared_ptr<meta_class> value)
