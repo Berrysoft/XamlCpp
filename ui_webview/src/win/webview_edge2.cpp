@@ -41,17 +41,17 @@ namespace xaml
                                 RETURN_IF_FAILED(m_view->add_WebResourceRequested(
                                     Callback<ICoreWebView2WebResourceRequestedEventHandler>(
                                         [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
-                                            resource_requested_args args{};
+                                            auto args = make_shared<resource_requested_args>();
                                             wil::com_ptr<ICoreWebView2WebResourceRequest> req;
                                             RETURN_IF_FAILED(e->get_Request(&req));
 
                                             wil::unique_cotaskmem_string method;
                                             RETURN_IF_FAILED(req->get_Method(&method));
-                                            args.request.method = method.get();
+                                            args->request.method = method.get();
 
                                             wil::unique_cotaskmem_string uri;
                                             RETURN_IF_FAILED(req->get_Uri(&uri));
-                                            args.request.uri = uri.get();
+                                            args->request.uri = uri.get();
 
                                             wil::com_ptr<IStream> stream;
                                             RETURN_IF_FAILED(req->get_Content(&stream));
@@ -60,13 +60,13 @@ namespace xaml
                                                 auto count = wil::stream_size(stream.get());
                                                 vector<std::byte> data(count);
                                                 RETURN_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
-                                                args.request.data = data;
+                                                args->request.data = data;
                                             }
 
                                             invoke_resource_requested(args);
-                                            if (args.response)
+                                            if (args->response)
                                             {
-                                                auto& res = *args.response;
+                                                auto& res = *args->response;
                                                 wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)res.data.data(), (UINT)res.data.size());
                                                 wil::com_ptr<ICoreWebView2WebResourceResponse> response;
                                                 RETURN_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (string_t)res.content_type).c_str(), &response));

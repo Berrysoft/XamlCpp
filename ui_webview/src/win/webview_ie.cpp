@@ -38,13 +38,13 @@ namespace xaml
             break;
         case DISPID_BEFORENAVIGATE2:
         {
-            resource_requested_args args{};
-            args.request.uri = pDispParams->rgvarg[5].pvarVal->bstrVal;
-            args.request.method = U("GET");
+            auto args = make_shared<resource_requested_args>();
+            args->request.uri = pDispParams->rgvarg[5].pvarVal->bstrVal;
+            args->request.method = U("GET");
             m_webview->invoke_resource_requested(args);
-            if (args.response)
+            if (args->response)
             {
-                auto& res = *args.response;
+                auto& res = *args->response;
                 pDispParams->rgvarg[0].pvarVal->boolVal = VARIANT_TRUE;
                 wil::com_ptr<IDispatch> pDisp = pDispParams->rgvarg[6].pdispVal;
                 wil::com_ptr<IWebBrowser2> browser = pDisp.query<IWebBrowser2>();

@@ -36,7 +36,7 @@ namespace xaml::test
         grid::set_row(*view, 1);
         grid::set_column_span(*view, 2);
         abar->set_text(view->get_uri());
-        view->add_uri_changed([abar](webview&, string_view_t uri) { abar->set_text(uri); });
-        abutton->add_click([abar, view](button&) { view->set_uri(abar->get_text()); });
+        view->add_uri_changed([abar](shared_ptr<webview>, string_view_t uri) { abar->set_text(uri); });
+        abutton->add_click([abar, view](shared_ptr<button>) { view->set_uri(abar->get_text()); });
     }
 } // namespace xaml::test

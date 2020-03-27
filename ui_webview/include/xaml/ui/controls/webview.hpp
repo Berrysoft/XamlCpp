@@ -21,8 +21,18 @@ namespace xaml
         array_view<std::byte> data;
     };
 
-    struct resource_requested_args
+    struct resource_requested_args;
+
+    template <>
+    struct type_guid<resource_requested_args>
     {
+        static constexpr guid value{ 0x507c59c1, 0x5775, 0x484e, 0x9c, 0xe5, 0xbc, 0x34, 0x23, 0x85, 0x5a, 0x0b };
+    };
+
+    struct resource_requested_args : public meta_class
+    {
+        META_CLASS_IMPL(meta_class)
+
         web_request request;
         std::optional<web_response> response;
     };
@@ -30,9 +40,19 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     struct native_webview;
 #endif // XAML_UI_WINDOWS
+    class webview;
+
+    template <>
+    struct type_guid<webview>
+    {
+        static constexpr guid value{ 0xb39028bb, 0xc65f, 0x4df9, 0xa0, 0xef, 0xf2, 0x04, 0x30, 0x77, 0x40, 0xda };
+    };
 
     class webview : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_WEBVIEW_API webview();
         XAML_UI_WEBVIEW_API ~webview() override;
@@ -87,7 +107,7 @@ namespace xaml
         XAML_UI_WEBVIEW_API virtual void draw_uri();
 
     public:
-        EVENT(uri_changed, std::reference_wrapper<webview>, string_view_t)
+        EVENT(uri_changed, std::shared_ptr<webview>, string_view_t)
         PROP_STRING_EVENT(uri)
 
         XAML_UI_WEBVIEW_API bool get_can_go_forward();
@@ -96,7 +116,7 @@ namespace xaml
         XAML_UI_WEBVIEW_API void go_forward();
         XAML_UI_WEBVIEW_API void go_back();
 
-        EVENT(resource_requested, std::reference_wrapper<webview>, std::reference_wrapper<resource_requested_args>)
+        EVENT(resource_requested, std::shared_ptr<webview>, std::shared_ptr<resource_requested_args>)
 
     public:
 #define ADD_WEBVIEW_MEMBERS() \

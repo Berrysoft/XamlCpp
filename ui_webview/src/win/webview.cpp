@@ -1,9 +1,9 @@
 #include <shared/atomic_guard.hpp>
-#include <xaml/ui/win/dpi.h>
 #include <win/webview_ie.hpp>
 #include <xaml/ui/controls/native_webview.hpp>
 #include <xaml/ui/controls/webview.hpp>
 #include <xaml/ui/native_control.hpp>
+#include <xaml/ui/win/dpi.h>
 
 #ifdef XAML_UI_WEBVIEW_EDGE
 #include <win/webview_edge.hpp>
@@ -96,7 +96,9 @@ namespace xaml
                 set_uri(uri);
             }
         });
-        m_webview->set_resource_requested([this](resource_requested_args& args) { m_resource_requested(*this, args); });
+        m_webview->set_resource_requested([this](shared_ptr<resource_requested_args> args) {
+            m_resource_requested(static_pointer_cast<webview>(shared_from_this()), args);
+        });
         m_created.store(true);
         draw_visible();
         draw_uri();

@@ -39,7 +39,7 @@ public:                                                                         
     }
 
         __NATIVE_WEBVIEW_EVENT(navigated, string_view_t)
-        __NATIVE_WEBVIEW_EVENT(resource_requested, resource_requested_args&)
+        __NATIVE_WEBVIEW_EVENT(resource_requested, std::shared_ptr<resource_requested_args>)
 
 #undef __NATIVE_WEBVIEW_EVENT
     };

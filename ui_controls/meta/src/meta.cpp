@@ -51,7 +51,7 @@ extern "C"
     {
         if (can_compile(t))
         {
-            auto lengths = value_converter_traits<array_view<grid_length>>::convert(string_view{ code, code_len });
+            auto lengths = value_converter_traits<array_view<grid_length>>::convert(box_value(string_view{ code, code_len }));
             ostringstream stream;
             stream << "{ ";
             auto bit = lengths.begin();

@@ -59,14 +59,14 @@ extern "C"
         if (is_of_type(type, t2d_types))
         {
             ostringstream stream;
-            auto t = value_converter_traits<tuple<double, double>>::convert(code);
+            auto t = value_converter_traits<tuple<double, double>>::convert(box_value(code));
             stream << "{ " << get<0>(t) << ", " << get<1>(t) << " }";
             *(string*)res = stream.str();
         }
         else if (is_of_type(type, t4d_types))
         {
             ostringstream stream;
-            auto t = value_converter_traits<tuple<double, double, double, double>>::convert(code);
+            auto t = value_converter_traits<tuple<double, double, double, double>>::convert(box_value(code));
             stream << "{ " << get<0>(t) << ", " << get<1>(t) << ", " << get<2>(t) << ", " << get<3>(t) << " }";
             *(string*)res = stream.str();
         }

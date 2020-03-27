@@ -54,13 +54,13 @@ namespace xaml
                         auto req = e.Request();
                         auto method = req.Method().ToString();
                         auto uri = req.RequestUri().AbsoluteUri();
-                        resource_requested_args args{};
-                        args.request.method = method;
-                        args.request.uri = uri;
+                        auto args = make_shared<resource_requested_args>();
+                        args->request.method = method;
+                        args->request.uri = uri;
                         invoke_resource_requested(args);
-                        if (args.response)
+                        if (args->response)
                         {
-                            auto& res = *args.response;
+                            auto& res = *args->response;
                             HttpResponseMessage message;
                             auto buffer = make<ArrayViewBuffer>(res.data);
                             message.Content(HttpBufferContent{ buffer });

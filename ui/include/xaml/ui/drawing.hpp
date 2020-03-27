@@ -30,7 +30,11 @@ namespace xaml
     {
         static TTuple __convert(std::shared_ptr<meta_class> value)
         {
-            if (auto str = value->query<meta_box<std::string>>())
+            if (auto box = value->query<meta_box<TTuple>>())
+            {
+                return *box;
+            }
+            else if (auto str = value->query<meta_box<std::string>>())
             {
                 return func(str->get());
             }
@@ -123,6 +127,12 @@ namespace xaml
 
     inline std::tuple<double, double> stot2d(std::string_view str) { return __stot2d<char>(str); }
     inline std::tuple<double, double> stot2d(std::wstring_view str) { return __stot2d<wchar_t>(str); }
+
+    template <>
+    struct type_guid<meta_box<std::tuple<double, double>>>
+    {
+        static constexpr guid value{ 0x59daccd1, 0xd45f, 0x4ffb, 0xb8, 0x26, 0x7a, 0x76, 0xac, 0x70, 0x26, 0x73 };
+    };
 
     template <typename T>
     struct __can_stot2d : std::false_type
@@ -232,6 +242,12 @@ namespace xaml
 
     inline std::tuple<double, double, double, double> stot4d(std::string_view str) { return __stot4d<char>(str); }
     inline std::tuple<double, double, double, double> stot4d(std::wstring_view str) { return __stot4d<wchar_t>(str); }
+
+    template <>
+    struct type_guid<meta_box<std::tuple<double, double, double, double>>>
+    {
+        static constexpr guid value{ 0x9dfdd0ef, 0xe190, 0x44f4, 0xbd, 0x7b, 0x65, 0xff, 0x1f, 0x20, 0x4a, 0xbf };
+    };
 
     template <typename T>
     struct __can_stot4d : std::false_type

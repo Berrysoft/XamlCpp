@@ -1,10 +1,12 @@
 #include <xaml/ui/controls/webview.hpp>
 
+using namespace std;
+
 namespace xaml
 {
     webview::webview() : control()
     {
-        add_uri_changed([this](webview&, string_view_t) { if (get_handle() && !m_navigating) draw_uri(); });
+        add_uri_changed([this](shared_ptr<webview>, string_view_t) { if (get_handle() && !m_navigating) draw_uri(); });
     }
 
     webview::~webview() {}
