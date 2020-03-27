@@ -5,7 +5,7 @@ using namespace std::filesystem;
 
 namespace xaml
 {
-    meta_class const* reflection_info::__get_attribute(type_index attr_type) const noexcept
+    meta_class const* reflection_info::__get_attribute(guid attr_type) const noexcept
     {
         auto it = m_attribute_map.find(attr_type);
         if (it != m_attribute_map.end())
@@ -19,14 +19,14 @@ namespace xaml
     {
         if (attr)
         {
-            m_attribute_map[attr->this_type()] = move(attr);
+            m_attribute_map[attr->get_type()] = move(attr);
         }
     }
 
     static type_erased_function s_empty_erased_function{};
     static type_erased_this_function s_empty_erased_this_function{};
 
-    type_erased_function const& reflection_info::__get_static_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
+    type_erased_function const& reflection_info::__get_static_method(string_view name, guid ret_type, initializer_list<guid> arg_types) const noexcept
     {
         auto its = m_static_method_map.equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -44,7 +44,7 @@ namespace xaml
         m_static_method_map.emplace((string)name, move(func));
     }
 
-    type_erased_function const& reflection_info::__get_constructor(initializer_list<type_index> arg_types) const noexcept
+    type_erased_function const& reflection_info::__get_constructor(initializer_list<guid> arg_types) const noexcept
     {
         for (auto& ctor : m_ctors)
         {
@@ -61,7 +61,7 @@ namespace xaml
         m_ctors.push_back(move(ctor));
     }
 
-    type_erased_this_function const& reflection_info::__get_method(string_view name, type_index ret_type, initializer_list<type_index> arg_types) const noexcept
+    type_erased_this_function const& reflection_info::__get_method(string_view name, guid ret_type, initializer_list<guid> arg_types) const noexcept
     {
         auto its = m_method_map.equal_range((string)name);
         for (auto it = its.first; it != its.second; ++it)
@@ -89,7 +89,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_property(string_view name, type_index type, function<any(meta_class*)>&& getter, function<void(meta_class*, any)>&& setter, bool attach)
+    void reflection_info::__add_property(string_view name, guid type, function<shared_ptr<meta_class>(std::shared_ptr<meta_class>)>&& getter, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& setter, bool attach)
     {
         auto prop = make_unique<property_info>();
         prop->m_name = name;
@@ -109,7 +109,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_collection_property(string_view name, type_index type, function<void(meta_class*, any)>&& adder, function<void(meta_class*, any)>&& remover, bool attach)
+    void reflection_info::__add_collection_property(string_view name, guid type, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& adder, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& remover, bool attach)
     {
         auto prop = make_unique<collection_property_info>();
         prop->m_name = name;
@@ -129,7 +129,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_event(string_view name, function<size_t(meta_class*, type_erased_function const&)>&& adder, function<size_t(meta_class*, meta_class*, type_erased_this_function const&)>&& adder_erased_this, function<void(meta_class*, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
+    void reflection_info::__add_event(string_view name, function<size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, function<void(std::shared_ptr<meta_class>, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
     {
         auto ev = make_unique<event_info>();
         ev->m_name = name;
@@ -184,7 +184,7 @@ namespace xaml
         return nullptr;
     }
 
-    reflection_info const* meta_context::get_type(type_index type) const noexcept
+    reflection_info const* meta_context::get_type(guid type) const noexcept
     {
         auto it = ref_map.find(type);
         if (it != ref_map.end())
@@ -202,7 +202,7 @@ namespace xaml
         ref_map[type] = move(ref);
     }
 
-    enum_reflection_info const* meta_context::get_enum_type(type_index type) const noexcept
+    enum_reflection_info const* meta_context::get_enum_type(guid type) const noexcept
     {
         auto it = enum_map.find(type);
         if (it != enum_map.end())
@@ -220,7 +220,7 @@ namespace xaml
         enum_map[type] = move(ref);
     }
 
-    bool meta_context::is_registered_enum(type_index type) const noexcept
+    bool meta_context::is_registered_enum(guid type) const noexcept
     {
         return enum_map.find(type) != enum_map.end();
     }
@@ -252,34 +252,34 @@ namespace xaml
     {
         auto starget = target.lock();
         auto ssource = source.lock();
-        auto tf = ctx.get_type(starget->this_type());
-        auto sf = ctx.get_type(ssource->this_type());
+        auto tf = ctx.get_type(starget->get_type());
+        auto sf = ctx.get_type(ssource->get_type());
         this->target_prop = tf->get_property(target_prop);
         target_event = tf->get_event(__get_property_changed_event_name(target_prop));
         this->source_prop = sf->get_property(source_prop);
         source_event = sf->get_event(__get_property_changed_event_name(source_prop));
         if (mode & binding_mode::one_way)
         {
-            this->target_prop->set(starget.get(), this->source_prop->get(ssource.get()));
+            this->target_prop->set(starget, this->source_prop->get(ssource));
             source_token = source_event->add(
-                ssource.get(),
+                ssource,
                 *make_type_erased_function<void>(
                     [this]() -> void {
                         if (auto ssource = this->source.lock())
                             if (auto starget = this->target.lock())
-                                this->target_prop->set(starget.get(), this->source_prop->get(ssource.get()));
+                                this->target_prop->set(starget, this->source_prop->get(ssource));
                     }));
         }
         if (mode & binding_mode::one_way_to_source)
         {
-            this->source_prop->set(ssource.get(), this->target_prop->get(starget.get()));
+            this->source_prop->set(ssource, this->target_prop->get(starget));
             target_token = target_event->add(
-                starget.get(),
+                starget,
                 *make_type_erased_function<void>(
                     [this]() -> void {
                         if (auto ssource = this->source.lock())
                             if (auto starget = this->target.lock())
-                                this->source_prop->set(ssource.get(), this->target_prop->get(starget.get()));
+                                this->source_prop->set(ssource, this->target_prop->get(starget));
                     }));
         }
     }
@@ -288,9 +288,9 @@ namespace xaml
     {
         if (source_token)
             if (auto ssource = source.lock())
-                source_event->remove(ssource.get(), *source_token);
+                source_event->remove(ssource, *source_token);
         if (target_token)
             if (auto starget = target.lock())
-                target_event->remove(starget.get(), *target_token);
+                target_event->remove(starget, *target_token);
     }
 } // namespace xaml

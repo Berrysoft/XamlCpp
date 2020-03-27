@@ -1,13 +1,14 @@
 #ifndef XAML_META_MACRO_HPP
 #define XAML_META_MACRO_HPP
 
+#include <xaml/meta/conv.hpp>
 #include <xaml/meta/meta.hpp>
 
 #define REGISTER_CLASS_DECL_FILE(ns, name, file)                                \
     static ::std::unique_ptr<::xaml::reflection_info> register_class() noexcept \
     {                                                                           \
         using self_type = ::ns::name;                                           \
-        auto ref = ::std::make_unique<::xaml::reflection_info>(::std::type_index(typeid(self_type)), #ns, #name, file);
+        auto ref = ::std::make_unique<::xaml::reflection_info>(::xaml::type_guid_v<self_type>, #ns, #name, file);
 
 #define REGISTER_CLASS_DECL(ns, name, prefix) REGISTER_CLASS_DECL_FILE(ns, name, prefix "/" #name ".hpp")
 #define REGISTER_CLASS_DECL_NOFILE(ns, name) REGISTER_CLASS_DECL_FILE(ns, name, "")
@@ -62,58 +63,58 @@ public:                          \
     PROP_STRING_RD(name)  \
     void set_##name(::xaml::string_view_t value) noexcept { m_##name = (::xaml::string_t)value; }
 
-#define ADD_PROP_TYPE(name, type) ref->add_property<type>(                                        \
-    #name,                                                                                        \
-    ::std::function<::std::any(::xaml::meta_class*)>(                                             \
-        [](::xaml::meta_class* self) -> ::std::any {                                              \
-            return ((self_type*)self)->get_##name();                                              \
-        }),                                                                                       \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                       \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                  \
-            ((self_type*)self)->set_##name(::xaml::value_converter_traits<type>::convert(value)); \
+#define ADD_PROP_TYPE(name, type) ref->add_property<type>(                                                                 \
+    #name,                                                                                                                 \
+    ::std::function<::std::shared_ptr<::xaml::meta_class>(::std::shared_ptr<::xaml::meta_class>)>(                         \
+        [](::std::shared_ptr<::xaml::meta_class> self) -> ::std::shared_ptr<::xaml::meta_class> {                          \
+            return ::xaml::box_value(::std::static_pointer_cast<self_type>(self)->get_##name());                           \
+        }),                                                                                                                \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(                   \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void {              \
+            ::std::static_pointer_cast<self_type>(self)->set_##name(::xaml::value_converter_traits<type>::convert(value)); \
         }))
 
 #define __GET_PROP_TYPE(name) decltype(::std::declval<self_type*>()->get_##name())
 
 #define ADD_PROP(name) ADD_PROP_TYPE(name, __GET_PROP_TYPE(name))
 
-#define ADD_ATTACH_PROP_TYPE(name, ctype, rtype) ref->add_property<rtype>(                              \
-    #name,                                                                                              \
-    ::std::function<::std::any(::xaml::meta_class*)>(                                                   \
-        [](::xaml::meta_class* self) -> ::std::any {                                                    \
-            return self_type::get_##name((ctype)*self);                                                 \
-        }),                                                                                             \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                             \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                        \
-            self_type::set_##name((ctype)*self, ::xaml::value_converter_traits<rtype>::convert(value)); \
-        }),                                                                                             \
+#define ADD_ATTACH_PROP_TYPE(name, ctype, rtype) ref->add_property<rtype>(                                    \
+    #name,                                                                                                    \
+    ::std::function<::std::shared_ptr<::xaml::meta_class>(::std::shared_ptr<::xaml::meta_class>)>(            \
+        [](::std::shared_ptr<::xaml::meta_class> self) -> ::std::shared_ptr<::xaml::meta_class> {             \
+            return ::xaml::box_value(self_type::get_##name((ctype)*self));                                    \
+        }),                                                                                                   \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(      \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void { \
+            self_type::set_##name((ctype)*self, ::xaml::value_converter_traits<rtype>::convert(value));       \
+        }),                                                                                                   \
     true)
 
 #define __GET_ATTACH_PROP_TYPE(name, ctype) decltype(self_type::get_##name(::std::declval<ctype>()))
 
 #define ADD_ATTACH_PROP(name, ctype) ADD_ATTACH_PROP_TYPE(name, ctype, __GET_ATTACH_PROP_TYPE(name, ctype))
 
-#define ADD_COLLECTION_PROP(name, type) ref->add_collection_property<type>(                          \
-    #name,                                                                                           \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                          \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                     \
-            ((self_type*)self)->add_##name(::xaml::value_converter_traits<type>::convert(value));    \
-        }),                                                                                          \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                          \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                     \
-            ((self_type*)self)->remove_##name(::xaml::value_converter_traits<type>::convert(value)); \
+#define ADD_COLLECTION_PROP(name, type) ref->add_collection_property<type>(                                                   \
+    #name,                                                                                                                    \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(                      \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void {                 \
+            ::std::static_pointer_cast<self_type>(self)->add_##name(::xaml::value_converter_traits<type>::convert(value));    \
+        }),                                                                                                                   \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(                      \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void {                 \
+            ::std::static_pointer_cast<self_type>(self)->remove_##name(::xaml::value_converter_traits<type>::convert(value)); \
         }))
 
-#define ADD_ATTACH_COLLECTION_PROP(name, ctype, type) ref->add_collection_property<type>(                 \
-    #name,                                                                                                \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                               \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                          \
-            self_type::add_##name((ctype*)self, ::xaml::value_converter_traits<type>::convert(value));    \
-        }),                                                                                               \
-    ::std::function<void(::xaml::meta_class*, ::std::any)>(                                               \
-        [](::xaml::meta_class* self, ::std::any value) -> void {                                          \
-            self_type::remove_##name((ctype*)self, ::xaml::value_converter_traits<type>::convert(value)); \
-        }),                                                                                               \
+#define ADD_ATTACH_COLLECTION_PROP(name, ctype, type) ref->add_collection_property<type>(                     \
+    #name,                                                                                                    \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(      \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void { \
+            self_type::add_##name((ctype*)self, ::xaml::value_converter_traits<type>::convert(value));        \
+        }),                                                                                                   \
+    ::std::function<void(::std::shared_ptr<::xaml::meta_class>, ::std::shared_ptr<::xaml::meta_class>)>(      \
+        [](::std::shared_ptr<::xaml::meta_class> self, ::std::shared_ptr<::xaml::meta_class> value) -> void { \
+            self_type::remove_##name((ctype*)self, ::xaml::value_converter_traits<type>::convert(value));     \
+        }),                                                                                                   \
     true)
 
 #define EVENT(name, ...)                                                                       \
@@ -127,19 +128,19 @@ public:                                                                         
 #define ADD_EVENT(name)                                                                               \
     ::xaml::__add_event_deduce_helper<self_type, decltype(::std::declval<self_type*>()->m_##name)>{}( \
         *ref, #name,                                                                                  \
-        [](::xaml::meta_class* self, auto f) -> ::std::size_t {                                       \
-            return ((self_type*)self)->add_##name(::std::move(f));                                    \
+        [](::std::shared_ptr<::xaml::meta_class> self, auto f) -> ::std::size_t {                     \
+            return ::std::static_pointer_cast<self_type>(self)->add_##name(::std::move(f));           \
         },                                                                                            \
-        [](::xaml::meta_class* self, std::size_t token) -> void {                                     \
-            ((self_type*)self)->remove_##name(token);                                                 \
+        [](::std::shared_ptr<::xaml::meta_class> self, std::size_t token) -> void {                   \
+            ::std::static_pointer_cast<self_type>(self)->remove_##name(token);                        \
         },                                                                                            \
         &self_type::m_##name)
 
-#define __DETERMINE_NEQ_AND_RAISE_EVENT(name) \
-    if (m_##name != value)                    \
-    {                                         \
-        m_##name = value;                     \
-        m_##name##_changed(*this, value);     \
+#define __DETERMINE_NEQ_AND_RAISE_EVENT(name)                                                    \
+    if (m_##name != value)                                                                       \
+    {                                                                                            \
+        m_##name = value;                                                                        \
+        m_##name##_changed(shared_from_this()->query<::std::decay_t<decltype(*this)>>(), value); \
     }
 
 #define PROP_EVENT(name, type)                \

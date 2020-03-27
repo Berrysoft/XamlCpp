@@ -1,12 +1,12 @@
 #ifndef XAML_CONV_HPP
 #define XAML_CONV_HPP
 
-#include <any>
 #include <initializer_list>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <typeindex>
+#include <typeinfo>
+#include <xaml/meta/meta.hpp>
 #include <xaml/strings.hpp>
 #include <xaml/utility.hpp>
 
@@ -19,53 +19,49 @@ namespace xaml
         using return_type = std::decay_t<T>;
 
     public:
-        static return_type convert(std::any value)
+        static return_type convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(return_type))
+            if (value)
             {
-                return std::any_cast<return_type>(value);
+                if (auto box = value->query<meta_box<T>>())
+                {
+                    return *box;
+                }
             }
             return {};
+        }
+    };
+
+    template <typename T>
+    struct value_converter_traits<std::shared_ptr<T>, std::enable_if_t<std::is_base_of_v<meta_class, T>>>
+    {
+        static std::shared_ptr<T> convert(std::shared_ptr<meta_class> value)
+        {
+            return value ? value->query<T>() : nullptr;
         }
     };
 
     template <typename T, T (*func)(std::string_view), T (*wfunc)(std::wstring_view)>
     struct __value_converter_traits_helper
     {
-        static T convert(std::any value)
+        static T convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(T))
+            if (value)
             {
-                return std::any_cast<T>(value);
+                if (auto box = value->query<meta_box<T>>())
+                {
+                    return *box;
+                }
+                else if (auto str = value->query<meta_box<std::string>>())
+                {
+                    return func(str->get());
+                }
+                else if (auto wstr = value->query<meta_box<std::wstring>>())
+                {
+                    return wfunc(wstr->get());
+                }
             }
-            else if (value.type() == typeid(std::string))
-            {
-                return func(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return func(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return func(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return wfunc(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return wfunc(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return wfunc(std::any_cast<const wchar_t*>(value));
-            }
-            else
-            {
-                return {};
-            }
+            return {};
         }
     };
 
@@ -395,92 +391,56 @@ namespace xaml
     template <>
     struct value_converter_traits<std::string_view, void>
     {
-        static std::string convert(std::any value)
+        static std::string convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(std::string))
+            if (value)
             {
-                return std::any_cast<std::string>(value);
+                if (auto str = value->query<meta_box<std::string>>())
+                {
+                    return *str;
+                }
+                else if (auto wstr = value->query<meta_box<std::wstring>>())
+                {
+                    return __wtomb(wstr->get());
+                }
             }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return (std::string)std::any_cast<std::string_view>(value);
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return std::any_cast<const char*>(value);
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return __wtomb(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return __wtomb(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return __wtomb(std::any_cast<const wchar_t*>(value));
-            }
-            else
-            {
-                return {};
-            }
+            return {};
         }
     };
 
     template <>
     struct value_converter_traits<std::wstring_view, void>
     {
-        static std::wstring convert(std::any value)
+        static std::wstring convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(std::string))
+            if (value)
             {
-                return __mbtow(std::any_cast<std::string>(value));
+                if (auto str = value->query<meta_box<std::string>>())
+                {
+                    return __mbtow(str->get());
+                }
+                else if (auto wstr = value->query<meta_box<std::wstring>>())
+                {
+                    return *wstr;
+                }
             }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return __mbtow(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return __mbtow(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return std::any_cast<std::wstring>(value);
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return (std::wstring)std::any_cast<std::wstring_view>(value);
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return std::any_cast<const wchar_t*>(value);
-            }
-            else
-            {
-                return {};
-            }
+            return {};
         }
     };
 
     template <typename T>
     struct value_converter_traits<std::optional<T>, void>
     {
-        static std::optional<T> convert(std::any value)
+        static std::optional<T> convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(std::nullopt_t))
+            if (value)
             {
-                return std::nullopt;
+                if (auto box = value.query<meta_box<T>>())
+                {
+                    return *box;
+                }
             }
-            else if (value.type() == typeid(std::optional<T>))
-            {
-                return std::any_cast<std::optional<T>>(value);
-            }
-            else
-            {
-                return std::make_optional<T>(value_converter_traits<T>::convert(value));
-            }
+            return std::nullopt;
         }
     };
 } // namespace xaml

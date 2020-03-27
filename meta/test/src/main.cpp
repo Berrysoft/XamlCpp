@@ -6,12 +6,29 @@
 using namespace std;
 using namespace xaml;
 
+namespace xaml
+{
+    namespace test
+    {
+        class calculator;
+    }
+
+    template <>
+    struct type_guid<xaml::test::calculator>
+    {
+        static constexpr guid value{ 0x2662320c, 0xb748, 0x435d, 0xae, 0xfb, 0xc5, 0x2e, 0xed, 0xb9, 0xa9, 0xb5 };
+    };
+} // namespace xaml
+
 namespace xaml::test
 {
     // The class should inherit `xaml::meta_class`.
     class calculator : public meta_class
     {
     public:
+        // Add type info.
+        META_CLASS_IMPL(meta_class)
+
         // Adds a property named "value" with type "int",
         // and raise "value_changed" event when it changes.
         // To simply get or set its value, call `int get_value()`
@@ -24,7 +41,7 @@ namespace xaml::test
         // To simply add a handler, call `size_t add_value_changed(function<void(calculator const&,int)>)`;
         // to remove it, call `void remove_value_changed(size_t)`,
         // the parameter is the return value of the add method.
-        EVENT(value_changed, std::reference_wrapper<calculator>, int)
+        EVENT(value_changed, std::shared_ptr<calculator>, int)
 
     public:
         void plus(int x, int y) { set_value(x + y); }
@@ -67,26 +84,26 @@ int main()
     auto& t = *ctx.get_type("xaml::test", "calculator");
     // Construct the class with default constructor.
     // It is as same as calling operator new, so you should manully wrap it.
-    unique_ptr<meta_class> mc{ t.construct() };
+    auto mc{ t.construct() };
     // Get the event named "value_changed".
     auto& ev = *t.get_event("value_changed");
     // Add a handler to the event of the object.
-    auto token = ev.add(mc.get(), *make_type_erased_function<void, std::reference_wrapper<calculator>, int>([](calculator&, int i) { cout << "Value changed: " << i << endl; }));
+    auto token = ev.add(mc, *make_type_erased_function<void, shared_ptr<calculator>, int>([](shared_ptr<calculator>, int i) { cout << "Value changed: " << i << endl; }));
     // Invoke the method of the object.
     // The property `value` has changed, so the event will be raised,
     // and the handler will be called.
-    t.invoke_method<void>(*mc, "plus", 1, 1);
+    t.invoke_method<void>(mc, "plus", 1, 1);
     // Get the property named "value".
     auto& prop = *t.get_property("value");
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
-    prop.set(mc.get(), "100");
-    prop.set(mc.get(), L"200"sv);
+    prop.set(mc, box_value("100"));
+    prop.set(mc, box_value(L"200"sv));
     // Remove the handler.
-    ev.remove(mc.get(), token);
+    ev.remove(mc, token);
     // Although `value` has changed, the handler won't be called,
     // because the handler has been removed.
-    t.invoke_method<void>(*mc, "minus", 1, 1);
+    t.invoke_method<void>(mc, "minus", 1, 1);
     // Invoke the static method.
     cout << "3 * 7 = " << *t.invoke_static_method<int>("multiply", 3, 7) << endl;
     cout << endl;
