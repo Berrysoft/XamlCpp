@@ -184,9 +184,9 @@ namespace xaml
     {
         using type = meta_box<T>;
 
-        std::shared_ptr<type> operator()(T&& value)
+        std::shared_ptr<type> operator()(T value)
         {
-            return std::make_shared<meta_box<T>>(std::forward<T>(value));
+            return std::make_shared<meta_box<T>>(std::move(value));
         }
     };
 

@@ -16,7 +16,7 @@ namespace xaml::cmdline
     static string get_invalid_option_message(string_view_t opt)
     {
         ostringstream stream;
-        stream << "Invalid option: " << quoted(value_converter_traits<string_view>::convert(opt));
+        stream << "Invalid option: " << quoted(value_converter_traits<string_view>::convert(box_value(opt)));
         return stream.str();
     }
 
@@ -45,7 +45,7 @@ namespace xaml::cmdline
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            if (prop->type() == type_index(typeid(bool)))
+                            if (prop->type() == type_guid_v<bool>)
                             {
                                 result.properties.push_back({ prop, U("true") });
                             }
@@ -80,7 +80,7 @@ namespace xaml::cmdline
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            if (prop->type() == type_index(typeid(bool)))
+                            if (prop->type() == type_guid_v<bool>)
                             {
                                 result.properties.push_back({ prop, U("true") });
                                 for (char_t other_short_arg : switches_or_value)

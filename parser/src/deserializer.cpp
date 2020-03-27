@@ -67,12 +67,12 @@ namespace xaml
             switch (value.index())
             {
             case 0: // string
-                prop.info->set(mc.get(), get<string>(value));
+                prop.info->set(mc, box_value(get<string>(value)));
                 break;
             case 2: // xaml_node
             {
                 auto& cnode = get<xaml_node>(value);
-                prop.info->set(mc.get(), construct_impl(cnode, root));
+                prop.info->set(mc, construct_impl(cnode, root));
                 break;
             }
             }
@@ -81,16 +81,16 @@ namespace xaml
         {
             for (auto& n : prop.second.values)
             {
-                prop.second.info->add(mc.get(), construct_impl(n, root));
+                prop.second.info->add(mc, construct_impl(n, root));
             }
         }
         for (auto& ev : node.events)
         {
-            auto ref = m_ctx->get_type(root->this_type());
+            auto ref = m_ctx->get_type(root->get_type());
             auto [first, second] = ref->get_methods().equal_range(ev.value);
             if (first != second)
             {
-                ev.info->add_this(mc.get(), root.get(), *first->second);
+                ev.info->add_this(mc, root, *first->second);
             }
             else
             {
@@ -154,7 +154,7 @@ namespace xaml
             switch (value.index())
             {
             case 0: // string
-                p.info->set(ex.get(), get<string>(value));
+                p.info->set(ex, box_value(get<string>(value)));
                 break;
             }
         }

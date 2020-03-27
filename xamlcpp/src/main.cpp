@@ -39,6 +39,8 @@ namespace xamlcpp
 {
     struct xamlcpp_options : public meta_class
     {
+        META_CLASS_IMPL(meta_class)
+
         xamlcpp_options() : meta_class() {}
         ~xamlcpp_options() override {}
 
@@ -120,7 +122,7 @@ int _tmain(int argc, char_t const* const* argv)
         meta_context cmdline_ctx{};
         cmdline::init_parser(cmdline_ctx);
         register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
-        auto refl = cmdline_ctx.get_type(type_index(typeid(xamlcpp::xamlcpp_options)));
+        auto refl = cmdline_ctx.get_type(type_guid_v<xamlcpp::xamlcpp_options>);
         auto nodes = cmdline::parse(refl, argc, argv);
         auto opts = static_pointer_cast<xamlcpp::xamlcpp_options>(cmdline::deserialize(refl, nodes));
 

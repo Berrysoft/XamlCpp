@@ -11,7 +11,7 @@ namespace xaml::cmdline
         {
             if (prop.info && prop.info->can_write())
             {
-                prop.info->set(result.get(), prop.value);
+                prop.info->set(result, box_value(prop.value));
             }
         }
         for (auto& [name, prop] : nodes.collection_properties)
@@ -20,7 +20,7 @@ namespace xaml::cmdline
             {
                 for (auto& v : prop.values)
                 {
-                    prop.info->add(result.get(), v);
+                    prop.info->add(result, box_value(v));
                 }
             }
         }

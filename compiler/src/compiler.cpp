@@ -14,16 +14,16 @@ using std::filesystem::path;
 
 namespace xaml
 {
-    static bool can_compile(module const& m, type_index type) noexcept
+    static bool can_compile(module const& m, guid const& type) noexcept
     {
-        using can_compile_t = int (*)(void*) noexcept;
+        using can_compile_t = int (*)(void const*) noexcept;
         auto pcc = (can_compile_t)m.get_method("can_compile");
         return pcc ? pcc(&type) : false;
     }
 
-    static string module_compile(module const& m, type_index type, string_view code) noexcept
+    static string module_compile(module const& m, guid const& type, string_view code) noexcept
     {
-        using compile_t = void (*)(void*, const char*, size_t, void*) noexcept;
+        using compile_t = void (*)(void const*, const char*, size_t, void*) noexcept;
         auto pc = (compile_t)m.get_method("compile");
         if (pc)
         {
@@ -49,30 +49,30 @@ namespace xaml
     }
 
     static array int_types{
-        type_index(typeid(int8_t)), type_index(typeid(int16_t)), type_index(typeid(int32_t)), type_index(typeid(int64_t)),
-        type_index(typeid(uint8_t)), type_index(typeid(uint16_t)), type_index(typeid(uint32_t)), type_index(typeid(uint64_t))
+        type_guid_v<int8_t>, type_guid_v<int16_t>, type_guid_v<int32_t>, type_guid_v<int64_t>,
+        type_guid_v<uint8_t>, type_guid_v<uint16_t>, type_guid_v<uint32_t>, type_guid_v<uint64_t>
     };
 
     static array float_types{
-        type_index(typeid(float)), type_index(typeid(double)), type_index(typeid(long double))
+        type_guid_v<float>, type_guid_v<double>, type_guid_v<long double>
     };
 
     static array string_types{
-        type_index(typeid(string)), type_index(typeid(string_view)),
-        type_index(typeid(wstring)), type_index(typeid(wstring_view))
+        type_guid_v<string>, type_guid_v<string_view>,
+        type_guid_v<wstring>, type_guid_v<wstring_view>
     };
 
     template <size_t N>
-    static bool is_of_type(type_index const& type, array<type_index, N> const& arr)
+    static bool is_of_type(guid const& type, array<guid, N> const& arr)
     {
         return find(arr.begin(), arr.end(), type) != arr.end();
     }
 
-    string compiler::xaml_cpp_compile(type_index type, string_view code)
+    string compiler::xaml_cpp_compile(guid const& type, string_view code)
     {
-        if (type == type_index(typeid(bool)))
+        if (type == type_guid_v<bool>)
         {
-            bool b = value_converter_traits<bool>::convert(code);
+            bool b = value_converter_traits<bool>::convert(box_value(code));
             return b ? "true" : "false";
         }
         else if (is_of_type(type, int_types) || is_of_type(type, float_types))
@@ -200,7 +200,7 @@ namespace xaml
         return write_static_call(stream, type, "set_", prop, { deref_name, value });
     }
 
-    ostream& compiler::write_set_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, type_index prop_type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_set_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, guid const& prop_type, string_view name, string_view prop, string_view value)
     {
         if (node_type == host_type)
         {
@@ -222,7 +222,7 @@ namespace xaml
         return write_static_call(stream, type, "add_", prop, { name, value });
     }
 
-    ostream& compiler::write_add_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, type_index prop_type, string_view name, string_view prop, string_view value)
+    ostream& compiler::write_add_property(ostream& stream, reflection_info const* node_type, reflection_info const* host_type, guid const& prop_type, string_view name, string_view prop, string_view value)
     {
         if (node_type == host_type)
         {
@@ -262,7 +262,7 @@ namespace xaml
 
     ostream& compiler::write_markup(ostream& stream, string_view name, string_view prop, shared_ptr<meta_class> markup)
     {
-        if (markup->this_type() == type_index(typeid(binding)))
+        if (markup->get_type() == type_guid_v<binding>)
         {
             auto b = static_pointer_cast<binding>(markup);
             auto mode = b->get_mode();

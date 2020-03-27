@@ -22,7 +22,7 @@ namespace xaml
         ~compiler() {}
 
     private:
-        XAMLC_API std::string xaml_cpp_compile(std::type_index type, std::string_view code);
+        XAMLC_API std::string xaml_cpp_compile(guid const& type, std::string_view code);
 
     protected:
         XAMLC_API std::ostream& write_indent(std::ostream& stream);
@@ -55,10 +55,10 @@ namespace xaml
 
         XAMLC_API std::ostream& write_set_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_set_property(std::ostream& stream, reflection_info const* type, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_set_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_set_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, guid const& prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_property(std::ostream& stream, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_property(std::ostream& stream, reflection_info const* type, std::string_view name, std::string_view prop, std::string_view value);
-        XAMLC_API std::ostream& write_add_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, std::type_index prop_type, std::string_view name, std::string_view prop, std::string_view value);
+        XAMLC_API std::ostream& write_add_property(std::ostream& stream, reflection_info const* node_type, reflection_info const* host_type, guid const& prop_type, std::string_view name, std::string_view prop, std::string_view value);
         XAMLC_API std::ostream& write_add_event(std::ostream& stream, xaml_node& this_node, std::string_view name, xaml_event& ev);
 
         XAMLC_API std::ostream& write_bind(std::ostream& stream, std::string_view target_name, std::string_view target_prop, std::string_view source_name, std::string_view source_prop);
