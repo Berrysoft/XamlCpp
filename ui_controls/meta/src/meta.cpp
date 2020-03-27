@@ -41,13 +41,13 @@ extern "C"
         REGISTER_ENUM(xaml, orientation, "xaml/ui/controls/layout_base.hpp");
     }
 
-    XAML_UI_CONTROLS_META_API int can_compile(void* t) noexcept
+    XAML_UI_CONTROLS_META_API int can_compile(void const* t) noexcept
     {
-        type_index& type = *(type_index*)t;
-        return (type == type_index(typeid(array_view<grid_length>))) ? 1 : 0;
+        guid const& type = *(guid const*)t;
+        return (type == type_guid_v<meta_box<array_view<grid_length>>>) ? 1 : 0;
     }
 
-    XAML_UI_CONTROLS_META_API void compile(void* t, const char* code, size_t code_len, void* res) noexcept
+    XAML_UI_CONTROLS_META_API void compile(void const* t, const char* code, size_t code_len, void* res) noexcept
     {
         if (can_compile(t))
         {

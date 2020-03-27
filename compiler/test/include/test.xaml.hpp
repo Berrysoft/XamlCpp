@@ -12,10 +12,27 @@
 #define INIT_COMPONENTS_ARGS
 #endif // XAML_TEST_GEN_FAKE
 
+namespace xaml
+{
+    namespace test
+    {
+        class test_window;
+    }
+
+    template <>
+    struct type_guid<test::test_window>
+    {
+        static constexpr guid value{ 0xc609d8d6, 0x466c, 0x4920, 0x8f, 0x88, 0x55, 0x99, 0x5d, 0xa5, 0xe6, 0x35 };
+    };
+} // namespace xaml
+
 namespace xaml::test
 {
     class test_window : public window
     {
+    public:
+        META_CLASS_IMPL(window)
+
     private:
         timer tmr;
         int count{ 0 };
@@ -29,9 +46,9 @@ namespace xaml::test
 
         void on_timer_tick(std::reference_wrapper<timer>);
 
-        void on_button_click(std::reference_wrapper<button> btn);
+        void on_button_click(std::shared_ptr<button> btn);
 
-        void on_canvas_redraw(std::reference_wrapper<canvas> cv, std::reference_wrapper<drawing_context> dc);
+        void on_canvas_redraw(std::shared_ptr<canvas> cv, std::shared_ptr<drawing_context> dc);
 
         REGISTER_CLASS_DECL_FILE(xaml::test, test_window, "test.xaml.hpp")
         {

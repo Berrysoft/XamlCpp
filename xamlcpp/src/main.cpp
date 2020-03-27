@@ -104,7 +104,7 @@ optional<version> is_later(map<path, tuple<path, version>> const& modules, path 
 {
     try
     {
-        module m{ new_module.native() };
+        module m{ new_module };
         auto pxaml_version = (void (*)(version*) noexcept)m.get_method("xaml_version");
         if (pxaml_version)
         {

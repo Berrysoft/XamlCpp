@@ -83,7 +83,7 @@ namespace xaml
 #endif // WIN32 || __MINGW32__
         result.push_back(P("."));
         result.push_back(P("../lib"));
-        auto location = program_location();
+        auto location = program_location().parent_path();
         if (!location.empty())
         {
             result.push_back(location);
