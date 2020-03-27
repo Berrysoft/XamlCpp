@@ -72,16 +72,17 @@ elseif(MINGW)
     list(APPEND XAML_COMPILE_OPTIONS "-Wa,-mbig-obj")
 endif()
 
-# Set warnings.
-if(MSVC)
-    if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
-        string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+# Disable RTTI by default.
+option(XAML_NO_RTTI "Disable RTTI." ON)
+
+if(${XAML_NO_RTTI})
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+        string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        list(APPEND XAML_COMPILE_OPTIONS "/GR-")
     else()
-        list(APPEND XAML_COMPILE_OPTIONS "/W4")
+        string(REGEX REPLACE "-frtti" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+        list(APPEND XAML_COMPILE_OPTIONS "-fno-rtti")
     endif()
-    list(APPEND XAML_COMPILE_OPTIONS "/wd4100")
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    list(APPEND XAML_COMPILE_OPTIONS "-Wall")
 endif()
 
 # LTO and work around for MinGW.
@@ -133,7 +134,14 @@ endif()
 option(BUILD_WEBVIEW "Build webview." ON)
 option(USE_SYS_PUGIXML "Use system pugixml" OFF)
 
-set(_XAML_TARGETS xaml_global xaml_meta xaml_ui xaml_ui_meta xaml_ui_controls xaml_ui_controls_meta xaml_ui_canvas xaml_ui_canvas_meta xaml_parser xaml_compiler xaml_cmdline)
+set(_XAML_TARGETS
+    xaml_global
+    xaml_meta xaml_parser xaml_compiler
+    xaml_ui xaml_ui_meta
+    xaml_ui_controls xaml_ui_controls_meta
+    xaml_ui_canvas xaml_ui_canvas_meta
+    xaml_cmdline
+)
 
 # It's OK to use pugixml in the system.
 if(${USE_SYS_PUGIXML})
