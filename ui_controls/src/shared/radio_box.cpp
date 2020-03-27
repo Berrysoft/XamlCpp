@@ -28,11 +28,11 @@ namespace xaml
         {
             if (get_is_checked())
             {
-                if (auto multic = dynamic_pointer_cast<multicontainer>(sparent))
+                if (auto multic = sparent->query<multicontainer>())
                 {
                     for (auto& c : multic->get_children())
                     {
-                        if (auto rc = dynamic_pointer_cast<radio_box>(c))
+                        if (auto rc = c->query<radio_box>())
                         {
                             if (c != shared_from_this() && rc->get_group() == get_group())
                             {

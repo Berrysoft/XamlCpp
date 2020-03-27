@@ -31,11 +31,11 @@ namespace xaml
     {
         auto sparent = get_parent().lock();
         HMENU hpmenu = nullptr;
-        if (auto ppmenu = dynamic_pointer_cast<popup_menu_item>(sparent))
+        if (auto ppmenu = sparent->query<popup_menu_item>())
         {
             hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu.get();
         }
-        else if (auto pmenu = dynamic_pointer_cast<menu_bar>(sparent))
+        else if (auto pmenu = sparent->query<menu_bar>())
         {
             hpmenu = pmenu->get_menu()->handle.get();
         }

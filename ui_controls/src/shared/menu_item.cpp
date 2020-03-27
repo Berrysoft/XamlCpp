@@ -65,11 +65,11 @@ namespace xaml
         {
             if (get_is_checked())
             {
-                if (auto multic = dynamic_pointer_cast<menu_bar>(sparent))
+                if (auto multic = sparent->query<menu_bar>())
                 {
                     for (auto& c : multic->get_children())
                     {
-                        if (auto rc = dynamic_pointer_cast<radio_menu_item>(c))
+                        if (auto rc = c->query<radio_menu_item>())
                         {
                             if (c != shared_from_this() && rc->get_group() == get_group())
                             {
