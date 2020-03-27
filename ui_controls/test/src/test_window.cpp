@@ -144,14 +144,14 @@ namespace xaml::test
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
                 btn->set_text(U("Push"));
-                btn->add_click([this](button&) { combo_source.push_back(U("DDDD")); });
+                btn->add_click([this](shared_ptr<button>) { combo_source.push_back(U("DDDD")); });
                 panel->add_child(btn);
             }
             {
                 auto btn = make_shared<button>();
                 btn->set_margin({ 5, 5, 5, 5 });
                 btn->set_text(U("Pop"));
-                btn->add_click([this](button&) { combo_source.pop_back(); });
+                btn->add_click([this](shared_ptr<button>) { combo_source.pop_back(); });
                 panel->add_child(btn);
             }
             {
@@ -177,7 +177,7 @@ namespace xaml::test
                 {
                     auto mquit = make_shared<menu_item>();
                     mquit->set_text(U("Close"));
-                    mquit->add_click([this](menu_item&) { close(); });
+                    mquit->add_click([this](shared_ptr<menu_item>) { close(); });
                     mfile->add_submenu(mquit);
                 }
                 mbar->add_child(mfile);
@@ -203,21 +203,21 @@ namespace xaml::test
         }
     }
 
-    void test_window::on_button_click(button& btn)
+    void test_window::on_button_click(shared_ptr<button> btn)
     {
-        btn.set_text(U("Hello world!"));
+        btn->set_text(U("Hello world!"));
         count = 0;
         tmr.start();
     }
 
-    void test_window::on_canvas_redraw(canvas& cv, drawing_context& dc)
+    void test_window::on_canvas_redraw(shared_ptr<canvas> cv, shared_ptr<drawing_context> dc)
     {
-        auto cx = cv.get_width() / 2;
-        auto cy = cv.get_height() / 2;
+        auto cx = cv->get_width() / 2;
+        auto cy = cv->get_height() / 2;
         auto r = (min)(cx, cy) - 2;
-        dc.draw_arc({ colors::black }, { cx - r, cy - r, r * 2, r * 2 }, M_PI, 2 * M_PI);
-        dc.draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
-        dc.draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 });
-        dc.draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, halignment_t::center, valignment_t::bottom }, { cx, cy }, U("Hello world!"));
+        dc->draw_arc({ colors::black }, { cx - r, cy - r, r * 2, r * 2 }, M_PI, 2 * M_PI);
+        dc->draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
+        dc->draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 });
+        dc->draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, halignment_t::center, valignment_t::bottom }, { cx, cy }, U("Hello world!"));
     }
 } // namespace xaml::test

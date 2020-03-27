@@ -1,8 +1,8 @@
 #include <stdexcept>
 #include <win/canvas_gdiplus.hpp>
-#include <xaml/ui/win/dpi.h>
 #include <windowsx.h>
 #include <xaml/ui/native_control.hpp>
+#include <xaml/ui/win/dpi.h>
 
 using namespace std;
 using namespace Gdiplus;
@@ -230,7 +230,7 @@ namespace xaml
         return true;
     }
 
-    void canvas_gdiplus::begin_paint(HWND wnd, size real, function<void(drawing_context&)> paint_func)
+    void canvas_gdiplus::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
         Graphics g{ wnd };
@@ -238,7 +238,7 @@ namespace xaml
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;
         ctx.dpi = (double)dpi;
-        drawing_context dc{ &ctx };
+        auto dc = make_shared<drawing_context>(&ctx);
         paint_func(dc);
     }
 } // namespace xaml

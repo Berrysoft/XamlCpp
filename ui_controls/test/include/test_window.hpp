@@ -25,9 +25,9 @@ namespace xaml::test
 
         void on_timer_tick(timer&);
 
-        void on_button_click(button& btn);
+        void on_button_click(std::shared_ptr<button> btn);
 
-        void on_canvas_redraw(canvas& cv, drawing_context& dc);
+        void on_canvas_redraw(std::shared_ptr<canvas> cv, std::shared_ptr<drawing_context> dc);
     };
 } // namespace xaml::test
 

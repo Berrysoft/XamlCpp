@@ -3,9 +3,9 @@
 #include <tuple>
 #include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>
-#include <xaml/ui/win/dpi.h>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
+#include <xaml/ui/win/dpi.h>
 
 using namespace std;
 
@@ -209,7 +209,7 @@ namespace xaml
         return false;
     }
 
-    void canvas_d2d::begin_paint(HWND wnd, size real, function<void(drawing_context&)> paint_func)
+    void canvas_d2d::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
         size region = real * dpi / 96.0;
@@ -222,7 +222,7 @@ namespace xaml
         ctx.d2d = d2d.copy<ID2D1Factory>();
         ctx.target = target.query<ID2D1RenderTarget>();
         ctx.dwrite = dwrite.copy<IDWriteFactory>();
-        drawing_context dc{ &ctx };
+        auto dc = make_shared<drawing_context>(&ctx);
         paint_func(dc);
         THROW_IF_FAILED(target->EndDraw());
     }

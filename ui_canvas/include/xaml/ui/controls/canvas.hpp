@@ -28,9 +28,19 @@ namespace xaml
     };
 
     struct native_drawing_context;
+    class drawing_context;
 
-    class drawing_context
+    template <>
+    struct type_guid<drawing_context>
     {
+        static constexpr guid value{ 0xf8b2a81c, 0x11ea, 0x4f0a, 0x94, 0x97, 0x30, 0x4c, 0x90, 0x65, 0xa4, 0xe4 };
+    };
+
+    class drawing_context : public meta_class
+    {
+    public:
+        META_CLASS_IMPL(meta_class)
+
     public:
         using native_handle_type = native_drawing_context*;
 
@@ -73,9 +83,19 @@ namespace xaml
     };
 
     struct native_canvas;
+    class canvas;
+
+    template <>
+    struct type_guid<canvas>
+    {
+        static constexpr guid value{ 0x111d5785, 0x4e7e, 0x48c6, 0x8d, 0xd6, 0x39, 0xab, 0x4a, 0x9c, 0x19, 0x97 };
+    };
 
     class canvas : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_CANVAS_API canvas();
         XAML_UI_CANVAS_API ~canvas() override;
@@ -108,7 +128,7 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     public:
-        EVENT(redraw, std::reference_wrapper<canvas>, std::reference_wrapper<drawing_context>)
+        EVENT(redraw, std::shared_ptr<canvas>, std::shared_ptr<drawing_context>)
 
         XAML_UI_CANVAS_API void __draw(rectangle const& region) override;
 
