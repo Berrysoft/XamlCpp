@@ -27,7 +27,7 @@ namespace xaml
                     int count = ComboBox_GetTextLength(get_handle()->handle);
                     string_t text(count, U('\0'));
                     ComboBox_GetText(get_handle()->handle, text.data(), count + 1);
-                    set_text(text);
+                    set_text(box_value(text));
                     break;
                 }
                 }
@@ -53,7 +53,7 @@ namespace xaml
     {
         if (m_text)
         {
-            ComboBox_SetText(get_handle()->handle, m_text->c_str());
+            ComboBox_SetText(get_handle()->handle, m_text->get().data());
         }
         else
         {

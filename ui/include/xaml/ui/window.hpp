@@ -9,6 +9,13 @@
 namespace xaml
 {
     struct native_window;
+    class window;
+
+    template <>
+    struct type_guid<window>
+    {
+        static constexpr guid value{ 0xf65be476, 0xbef3, 0x4d90, 0xa6, 0xcd, 0x89, 0x33, 0x38, 0x9c, 0x2c, 0x53 };
+    };
 
     class window : public container
     {
@@ -71,12 +78,12 @@ namespace xaml
         XAML_UI_API void hide();
 
         PROP_EVENT(resizable, bool)
-        EVENT(resizable_changed, std::reference_wrapper<window>, bool)
+        EVENT(resizable_changed, std::shared_ptr<window>, bool)
 
     private:
         std::atomic_bool m_resizing{ false };
 
-        EVENT(location_changed, std::reference_wrapper<window>, point)
+        EVENT(location_changed, std::shared_ptr<window>, point)
 
         PROP_CONSTEXPR_EVENT(location, point)
 
@@ -88,7 +95,7 @@ namespace xaml
             if (m_location.x != value)
             {
                 m_location.x = value;
-                m_location_changed(*this, get_location());
+                m_location_changed(std::static_pointer_cast<window>(shared_from_this()), get_location());
             }
         }
         void set_y(double value)
@@ -96,7 +103,7 @@ namespace xaml
             if (m_location.y != value)
             {
                 m_location.y = value;
-                m_location_changed(*this, get_location());
+                m_location_changed(std::static_pointer_cast<window>(shared_from_this()), get_location());
             }
         }
 
@@ -111,9 +118,9 @@ namespace xaml
         XAML_UI_API rectangle __get_real_client_region() const;
 #endif // XAML_UI_WINDOWS
 
-        EVENT(closing, std::reference_wrapper<window>, std::reference_wrapper<bool>)
+        EVENT(closing, std::shared_ptr<window>, std::shared_ptr<meta_box<bool>>)
 
-        EVENT(title_changed, std::reference_wrapper<window>, string_view_t)
+        EVENT(title_changed, std::shared_ptr<window>, string_view_t)
         PROP_STRING_EVENT(title)
 
     private:

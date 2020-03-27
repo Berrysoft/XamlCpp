@@ -7,8 +7,19 @@
 
 namespace xaml
 {
+    class button;
+
+    template <>
+    struct type_guid<button>
+    {
+        static constexpr guid value{ 0xe35d0bbe, 0xbec8, 0x4376, 0xaa, 0xb6, 0xa9, 0x01, 0xed, 0xb4, 0x3d, 0x9f };
+    };
+
     class button : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_CONTROLS_API button();
         XAML_UI_CONTROLS_API virtual ~button() override;
@@ -40,13 +51,13 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_default();
 
     public:
-        EVENT(text_changed, std::reference_wrapper<button>, string_view_t)
+        EVENT(text_changed, std::shared_ptr<button>, string_view_t)
         PROP_STRING_EVENT(text)
 
         PROP_EVENT(is_default, bool)
-        EVENT(is_default_changed, std::reference_wrapper<button>, bool)
+        EVENT(is_default_changed, std::shared_ptr<button>, bool)
 
-        EVENT(click, std::reference_wrapper<button>)
+        EVENT(click, std::shared_ptr<button>)
 
     public:
 #define ADD_BUTTON_MEMBERS()    \

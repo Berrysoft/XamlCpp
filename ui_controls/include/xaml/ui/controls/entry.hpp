@@ -6,6 +6,14 @@
 
 namespace xaml
 {
+    class entry;
+
+    template <>
+    struct type_guid<entry>
+    {
+        static constexpr guid value{ 0x483715fa, 0x1124, 0x4d4f, 0x9e, 0x34, 0x36, 0xeb, 0xc4, 0x78, 0x0b, 0x24 };
+    };
+
     class entry : public control
     {
     public:
@@ -40,7 +48,7 @@ namespace xaml
 
         PROP(text_halignment, halignment_t)
 
-        EVENT(text_changed, std::reference_wrapper<entry>, string_view_t)
+        EVENT(text_changed, std::shared_ptr<entry>, string_view_t)
         PROP_STRING_EVENT(text)
 
     public:

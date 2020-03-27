@@ -5,8 +5,19 @@
 
 namespace xaml
 {
+    class uniform_grid;
+
+    template <>
+    struct type_guid<uniform_grid>
+    {
+        static constexpr guid value{ 0x1963c67d, 0xdc81, 0x40dd, 0x91, 0x2e, 0xa6, 0xa9, 0x44, 0x48, 0xf2, 0x37 };
+    };
+
     class uniform_grid : public layout_base
     {
+    public:
+        META_CLASS_IMPL(layout_base)
+
     public:
         XAML_UI_CONTROLS_API uniform_grid();
         XAML_UI_CONTROLS_API ~uniform_grid() override;

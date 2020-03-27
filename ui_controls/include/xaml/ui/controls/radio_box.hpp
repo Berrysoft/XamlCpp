@@ -5,8 +5,19 @@
 
 namespace xaml
 {
+    class radio_box;
+
+    template <>
+    struct type_guid<radio_box>
+    {
+        static constexpr guid value{ 0x90dbaa0c, 0x93fe, 0x4934, 0x88, 0x58, 0xb7, 0xe2, 0xfb, 0x54, 0xa6, 0x53 };
+    };
+
     class radio_box : public button
     {
+    public:
+        META_CLASS_IMPL(button)
+
     public:
         XAML_UI_CONTROLS_API radio_box();
         XAML_UI_CONTROLS_API ~radio_box() override;
@@ -39,7 +50,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, std::reference_wrapper<radio_box>, bool)
+        EVENT(is_checked_changed, std::shared_ptr<radio_box>, bool)
 
         PROP_STRING(group)
 

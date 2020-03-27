@@ -21,7 +21,7 @@ namespace xaml
                 switch (HIWORD(msg.wParam))
                 {
                 case BN_CLICKED:
-                    m_click(*this);
+                    m_click(static_pointer_cast<button>(shared_from_this()));
                     break;
                 }
             }

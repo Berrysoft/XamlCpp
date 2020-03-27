@@ -40,14 +40,14 @@ namespace xaml
 
     check_menu_item::check_menu_item() : menu_item()
     {
-        add_is_checked_changed([this](check_menu_item&, bool) { if(get_handle()) draw_checked(); });
+        add_is_checked_changed([this](shared_ptr<check_menu_item>, bool) { if(get_handle()) draw_checked(); });
     }
 
     check_menu_item::~check_menu_item() {}
 
     radio_menu_item::radio_menu_item() : menu_item()
     {
-        add_is_checked_changed([this](radio_menu_item&, bool) {
+        add_is_checked_changed([this](shared_ptr<radio_menu_item>, bool) {
             if (get_handle())
             {
                 draw_checked();

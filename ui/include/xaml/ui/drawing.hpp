@@ -28,35 +28,15 @@ namespace xaml
     template <typename T, typename TTuple, TTuple (*func)(std::string_view), TTuple (*wfunc)(std::wstring_view)>
     struct __tuple___value_converter_traits_helper
     {
-        static TTuple __convert(std::any value)
+        static TTuple __convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(TTuple))
+            if (auto str = value->query<meta_box<std::string>>())
             {
-                return std::any_cast<TTuple>(value);
+                return func(str->get());
             }
-            else if (value.type() == typeid(std::string))
+            else if (auto wstr = value->query<meta_box<std::wstring>>())
             {
-                return func(std::any_cast<std::string>(value));
-            }
-            else if (value.type() == typeid(std::string_view))
-            {
-                return func(std::any_cast<std::string_view>(value));
-            }
-            else if (value.type() == typeid(char*) || value.type() == typeid(const char*))
-            {
-                return func(std::any_cast<const char*>(value));
-            }
-            else if (value.type() == typeid(std::wstring))
-            {
-                return wfunc(std::any_cast<std::wstring>(value));
-            }
-            else if (value.type() == typeid(std::wstring_view))
-            {
-                return wfunc(std::any_cast<std::wstring_view>(value));
-            }
-            else if (value.type() == typeid(wchar_t*) || value.type() == typeid(const wchar_t*))
-            {
-                return wfunc(std::any_cast<const wchar_t*>(value));
+                return wfunc(wstr->get());
             }
             else
             {
@@ -64,17 +44,21 @@ namespace xaml
             }
         }
 
-        static T convert(std::any value)
+        static T convert(std::shared_ptr<meta_class> value)
         {
-            if (value.type() == typeid(T))
+            if (value)
             {
-                return std::any_cast<T>(value);
+                if (auto box = value->query<meta_box<T>>())
+                {
+                    return *box;
+                }
+                else
+                {
+                    auto t = __convert(std::move(value));
+                    return __initialize_from_tuple<T>(std::move(t));
+                }
             }
-            else
-            {
-                auto t = __convert(std::move(value));
-                return __initialize_from_tuple<T>(std::move(t));
-            }
+            return {};
         }
     };
 
@@ -96,6 +80,12 @@ namespace xaml
     constexpr size operator*(double lhs, size rhs) { return rhs * lhs; }
     constexpr size operator/(size lhs, double rhs) { return lhs * (1 / rhs); }
 
+    template <>
+    struct type_guid<meta_box<size>>
+    {
+        static constexpr guid value{ 0xf7af7a73, 0xaee4, 0x4a8d, 0x99, 0xff, 0x17, 0x7f, 0xf6, 0xb2, 0xbb, 0xcf };
+    };
+
     struct point
     {
         double x;
@@ -111,6 +101,12 @@ namespace xaml
     constexpr point operator*(point lhs, double rhs) { return { lhs.x * rhs, lhs.y * rhs }; }
     constexpr point operator*(double lhs, point rhs) { return rhs * lhs; }
     constexpr point operator/(point lhs, double rhs) { return lhs * (1 / rhs); }
+
+    template <>
+    struct type_guid<meta_box<point>>
+    {
+        static constexpr guid value{ 0xd529263c, 0x9ea7, 0x4be9, 0xa0, 0x81, 0x9a, 0xc1, 0x1e, 0x39, 0x38, 0x9f };
+    };
 
     template <typename TChar>
     inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str)
@@ -181,6 +177,12 @@ namespace xaml
     constexpr rectangle operator*(double lhs, rectangle const& rhs) { return rhs * lhs; }
     constexpr rectangle operator/(rectangle const& lhs, double rhs) { return lhs * (1 / rhs); }
 
+    template <>
+    struct type_guid<meta_box<rectangle>>
+    {
+        static constexpr guid value{ 0xf54e02a0, 0xfb1e, 0x4081, 0xa0, 0xd6, 0xae, 0x72, 0xbc, 0x8c, 0x78, 0x00 };
+    };
+
     struct margin
     {
         double left;
@@ -198,6 +200,12 @@ namespace xaml
     constexpr margin operator*(margin const& lhs, double rhs) { return { lhs.left * rhs, lhs.top * rhs, lhs.right * rhs, lhs.bottom * rhs }; }
     constexpr margin operator*(double lhs, margin const& rhs) { return rhs * lhs; }
     constexpr margin operator/(margin const& lhs, double rhs) { return lhs * (1 / rhs); }
+
+    template <>
+    struct type_guid<meta_box<margin>>
+    {
+        static constexpr guid value{ 0xb31a5b36, 0x30c3, 0x408f, 0xae, 0x44, 0xaf, 0xc2, 0xb6, 0x65, 0xc7, 0x3e };
+    };
 
     template <typename TChar>
     inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str)

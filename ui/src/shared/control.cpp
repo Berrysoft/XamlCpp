@@ -7,14 +7,14 @@ namespace xaml
 {
     control::control() : meta_class(), m_is_visible(true)
     {
-        add_size_changed([this](control const&, size) {
+        add_size_changed([this](shared_ptr<control>, size) {
             if (get_handle())
             {
                 draw_size();
                 __parent_redraw();
             }
         });
-        add_is_visible_changed([this](control const&, bool) { if (get_handle()) draw_visible(); });
+        add_is_visible_changed([this](shared_ptr<control>, bool) { if (get_handle()) draw_visible(); });
     }
 
     control::~control() {}

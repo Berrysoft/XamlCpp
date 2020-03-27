@@ -5,8 +5,19 @@
 
 namespace xaml
 {
+    class progress;
+
+    template <>
+    struct type_guid<progress>
+    {
+        static constexpr guid value{ 0x505267df, 0x2287, 0x4c64, 0xab, 0xf2, 0xb2, 0xea, 0xcf, 0xde, 0x8a, 0xe1 };
+    };
+
     class progress : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_CONTROLS_API progress();
         XAML_UI_CONTROLS_API ~progress();
@@ -23,7 +34,7 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_progress();
 
     public:
-        EVENT(value_changed, std::reference_wrapper<progress>, std::size_t)
+        EVENT(value_changed, std::shared_ptr<progress>, std::size_t)
         PROP_CONSTEXPR_EVENT(value, std::size_t)
 
         PROP_CONSTEXPR(minimum, std::size_t)

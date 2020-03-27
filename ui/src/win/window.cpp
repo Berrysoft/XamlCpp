@@ -195,9 +195,9 @@ namespace xaml
             }
             case WM_CLOSE:
             {
-                bool handled = false;
-                m_closing(*this, handled);
-                if (handled)
+                auto handled = box_value(false);
+                m_closing(static_pointer_cast<window>(shared_from_this()), handled);
+                if ((bool)*handled)
                 {
                     return 0;
                 }
@@ -206,17 +206,17 @@ namespace xaml
             case WM_LBUTTONDOWN:
             case WM_RBUTTONDOWN:
             case WM_MBUTTONDOWN:
-                m_mouse_down(*this, (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
+                m_mouse_down(static_pointer_cast<window>(shared_from_this()), (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
                 break;
             case WM_LBUTTONUP:
             case WM_RBUTTONUP:
             case WM_MBUTTONUP:
-                m_mouse_up(*this, (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
+                m_mouse_up(static_pointer_cast<window>(shared_from_this()), (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
                 break;
             case WM_MOUSEMOVE:
             {
                 auto real_loc = from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
-                m_mouse_move(*this, real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
+                m_mouse_move(static_pointer_cast<window>(shared_from_this()), real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
                 break;
             }
             case WM_DESTROY:

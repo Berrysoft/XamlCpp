@@ -8,9 +8,19 @@ namespace xaml
     struct native_menu_bar;
 
     class window;
+    class menu_bar;
+
+    template <>
+    struct type_guid<menu_bar>
+    {
+        static constexpr guid value{ 0x6e6a5fba, 0x5a9c, 0x4771, 0xb5, 0x2a, 0x83, 0xe7, 0x61, 0xa0, 0x67, 0x46 };
+    };
 
     class menu_bar : public multicontainer
     {
+    public:
+        META_CLASS_IMPL(multicontainer)
+
     public:
         XAML_UI_API menu_bar();
         XAML_UI_API ~menu_bar();

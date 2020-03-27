@@ -6,8 +6,19 @@
 
 namespace xaml
 {
+    class combo_box;
+
+    template <>
+    struct type_guid<combo_box>
+    {
+        static constexpr guid value{ 0x804bf4c0, 0xff2b, 0x445d, 0x99, 0x83, 0x4b, 0xb2, 0x0d, 0x85, 0xa4, 0x09 };
+    };
+
     class combo_box : public items_base<string_t>
     {
+    public:
+        META_CLASS_IMPL(items_base<string_t>)
+
     public:
         XAML_UI_CONTROLS_API combo_box();
         XAML_UI_CONTROLS_API ~combo_box() override;
@@ -43,10 +54,10 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_sel();
         XAML_UI_CONTROLS_API virtual void draw_editable();
 
-        EVENT(text_changed, std::reference_wrapper<combo_box>, std::optional<string_view_t>)
-        PROP_EVENT(text, std::optional<string_t>)
+        EVENT(text_changed, std::shared_ptr<combo_box>, std::shared_ptr<meta_box<string_t>>)
+        PROP_EVENT(text, std::shared_ptr<meta_box<string_t>>)
 
-        EVENT(is_editable_changed, std::reference_wrapper<combo_box>, bool)
+        EVENT(is_editable_changed, std::shared_ptr<combo_box>, bool)
         PROP_CONSTEXPR_EVENT(is_editable, bool)
 
     public:

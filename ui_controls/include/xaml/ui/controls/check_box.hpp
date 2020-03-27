@@ -5,8 +5,19 @@
 
 namespace xaml
 {
+    class check_box;
+
+    template <>
+    struct type_guid<check_box>
+    {
+        static constexpr guid value{ 0x4d5724c2, 0x77c5, 0x4935, 0xbd, 0x12, 0x86, 0x86, 0x0d, 0xf6, 0x16, 0xdd };
+    };
+
     class check_box : public button
     {
+    public:
+        META_CLASS_IMPL(button)
+
     public:
         XAML_UI_CONTROLS_API check_box();
         XAML_UI_CONTROLS_API ~check_box() override;
@@ -38,7 +49,7 @@ namespace xaml
 
     public:
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, std::reference_wrapper<check_box>, bool)
+        EVENT(is_checked_changed, std::shared_ptr<check_box>, bool)
 
     public:
 #define ADD_CHECK_BOX_MEMBERS() \

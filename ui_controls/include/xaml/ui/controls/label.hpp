@@ -7,8 +7,19 @@
 
 namespace xaml
 {
+    class label;
+
+    template <>
+    struct type_guid<label>
+    {
+        static constexpr guid value{ 0xa859441c, 0x825c, 0x4682, 0x8e, 0x04, 0xe2, 0x4d, 0x62, 0x59, 0xe0, 0x87 };
+    };
+
     class label : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_CONTROLS_API label();
         XAML_UI_CONTROLS_API ~label() override;
@@ -27,7 +38,7 @@ namespace xaml
 
         PROP(text_halignment, halignment_t)
 
-        EVENT(text_changed, std::reference_wrapper<label>, string_view_t)
+        EVENT(text_changed, std::shared_ptr<label>, string_view_t)
         PROP_STRING_EVENT(text)
 
     public:

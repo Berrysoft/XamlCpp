@@ -7,8 +7,19 @@
 
 namespace xaml
 {
+    class password_entry;
+
+    template <>
+    struct type_guid<password_entry>
+    {
+        static constexpr guid value{ 0x78f0bbc1, 0x9817, 0x4613, 0xbd, 0x70, 0xbc, 0x0f, 0x2f, 0x2e, 0x30, 0x64 };
+    };
+
     class password_entry : public entry
     {
+    public:
+        META_CLASS_IMPL(entry)
+
     public:
         XAML_UI_CONTROLS_API password_entry();
         XAML_UI_CONTROLS_API ~password_entry() override;
@@ -20,7 +31,7 @@ namespace xaml
         XAML_UI_CONTROLS_API void draw_password_char();
 
     public:
-        EVENT(password_char_changed, std::reference_wrapper<password_entry>, char_t)
+        EVENT(password_char_changed, std::shared_ptr<password_entry>, char_t)
         PROP_CONSTEXPR_EVENT(password_char, char_t)
 
     public:

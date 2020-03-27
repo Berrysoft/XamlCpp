@@ -593,6 +593,42 @@ namespace xaml
         friend constexpr bool operator==(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return lhs.m_vec == rhs.m_vec; }
         friend constexpr bool operator!=(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return !(lhs == rhs); }
     };
+
+    template <typename T>
+    class meta_box<observable_vector_view<T>> : public meta_class
+    {
+    public:
+        META_CLASS_IMPL(meta_class)
+
+    private:
+        observable_vector_view<T> m_value{};
+
+    public:
+        meta_box() {}
+        meta_box(observable_vector_view<T> value) : m_value(value) {}
+        ~meta_box() override {}
+
+        meta_box& operator=(observable_vector_view<T> value)
+        {
+            m_value = value;
+            return *this;
+        }
+
+        operator observable_vector_view<T>() const noexcept { return m_value; }
+
+        observable_vector_view<T> get() const noexcept { return m_value; }
+    };
+
+    template <typename T>
+    struct __box_helper<observable_vector<T>, void>
+    {
+        using type = meta_box<observable_vector_view<T>>;
+
+        std::shared_ptr<type> operator()(observable_vector<T> const& view)
+        {
+            return std::make_shared<meta_box<observable_vector_view<T>>>(view);
+        }
+    };
 } // namespace xaml
 
 #endif // !XAML_OBSERVABLE_VECTOR_HPP

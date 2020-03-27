@@ -6,9 +6,33 @@
 
 namespace xaml
 {
+    template <>
+    struct type_guid<meta_box<observable_vector<string_t>>>
+    {
+        static constexpr guid value{ 0x0283120a, 0xec35, 0x42c4, 0x92, 0x4f, 0xc4, 0xf7, 0x1d, 0x1f, 0xef, 0x0e };
+    };
+
+    template <>
+    struct type_guid<meta_box<observable_vector_view<string_t>>>
+    {
+        static constexpr guid value{ 0x7465007d, 0x3b69, 0x49ec, 0xa5, 0x28, 0x8d, 0xdd, 0xa9, 0xc3, 0x87, 0xa9 };
+    };
+
+    template <typename T>
+    class items_base;
+
+    template <>
+    struct type_guid<items_base<string_t>>
+    {
+        static constexpr guid value{ 0xfad67a33, 0x4a5f, 0x4915, 0xa1, 0x77, 0xe6, 0x1e, 0x89, 0xc7, 0x5e, 0x26 };
+    };
+
     template <typename T>
     class items_base : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         items_base() : control() {}
         ~items_base() override {}
@@ -52,7 +76,7 @@ namespace xaml
         }
 
     public:
-        EVENT(items_changed, std::reference_wrapper<items_base>, observable_vector_view<T>)
+        EVENT(items_changed, std::shared_ptr<items_base>, observable_vector_view<T>)
         PROP_RD(items, observable_vector_view<T>)
         void set_items(observable_vector_view<T> value)
         {
@@ -61,11 +85,11 @@ namespace xaml
                 if (m_items && on_items_changed_token) m_items.remove_vector_changed(on_items_changed_token);
                 m_items = value;
                 on_items_changed_token = m_items.add_vector_changed(mem_fn_bind(&items_base::on_items_changed, this));
-                m_items_changed(*this, m_items);
+                m_items_changed(std::static_pointer_cast<items_base>(shared_from_this()), m_items);
             }
         }
 
-        EVENT(sel_id_changed, std::reference_wrapper<items_base>, std::size_t)
+        EVENT(sel_id_changed, std::shared_ptr<items_base>, std::size_t)
         PROP_CONSTEXPR_EVENT(sel_id, std::size_t)
 
     public:

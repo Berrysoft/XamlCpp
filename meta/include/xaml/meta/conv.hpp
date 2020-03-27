@@ -435,7 +435,7 @@ namespace xaml
         {
             if (value)
             {
-                if (auto box = value.query<meta_box<T>>())
+                if (auto box = value->query<meta_box<T>>())
                 {
                     return *box;
                 }

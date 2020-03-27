@@ -53,6 +53,12 @@ namespace xaml
     {
     };
 
+    template <>
+    struct type_guid<meta_box<grid_layout>>
+    {
+        static constexpr guid value{ 0x61521be2, 0x02fd, 0x40b8, 0xb2, 0xa2, 0x5f, 0x60, 0xd9, 0x6b, 0x5c, 0x39 };
+    };
+
     template <typename TChar>
     inline std::vector<grid_length> __stogls(std::basic_string_view<TChar> str)
     {
@@ -89,13 +95,36 @@ namespace xaml
     {
     };
 
+    template <>
+    struct type_guid<meta_box<std::vector<grid_length>>>
+    {
+        static constexpr guid value{ 0xfed37e9d, 0x1f3b, 0x4247, 0x82, 0x69, 0x95, 0x56, 0x09, 0x93, 0xf3, 0x84 };
+    };
+
+    template <>
+    struct type_guid<meta_box<array_view<grid_length>>>
+    {
+        static constexpr guid value{ 0x51081ffe, 0xb917, 0x4e79, 0x98, 0xb0, 0x9c, 0xee, 0x29, 0x40, 0x70, 0xe3 };
+    };
+
+    class grid;
+
+    template <>
+    struct type_guid<grid>
+    {
+        static constexpr guid value{ 0x72737dd1, 0x7c10, 0x46e6, 0x82, 0x38, 0x06, 0x2f, 0x43, 0x6b, 0xb0, 0x24 };
+    };
+
     class grid : public layout_base
     {
+    public:
+        META_CLASS_IMPL(layout_base)
+
     public:
         XAML_UI_CONTROLS_API grid();
         XAML_UI_CONTROLS_API ~grid() override;
 
-    private:
+    protected:
         XAML_UI_CONTROLS_API void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {}) override;
 
     private:

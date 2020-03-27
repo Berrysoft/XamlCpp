@@ -8,8 +8,19 @@
 
 namespace xaml
 {
+    class container;
+
+    template <>
+    struct type_guid<container>
+    {
+        static constexpr guid value{ 0x211a9bce, 0xc31a, 0x42ab, 0x8f, 0x4e, 0x2d, 0x45, 0x0f, 0xb2, 0xc3, 0xa9 };
+    };
+
     class container : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     private:
         std::shared_ptr<control> m_child{ nullptr };
 
@@ -17,7 +28,7 @@ namespace xaml
         container() : control() {}
         virtual ~container() override {}
 
-        EVENT(child_changed, std::reference_wrapper<container>, std::shared_ptr<control>)
+        EVENT(child_changed, std::shared_ptr<container>, std::shared_ptr<control>)
 
     public:
         std::shared_ptr<control> get_child() const noexcept { return m_child; }
@@ -27,7 +38,7 @@ namespace xaml
             {
                 m_child = value;
                 m_child->set_parent(std::static_pointer_cast<control>(shared_from_this()));
-                m_child_changed(*this, value);
+                m_child_changed(std::static_pointer_cast<container>(shared_from_this()), value);
             }
         }
 
@@ -45,8 +56,19 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class multicontainer;
+
+    template <>
+    struct type_guid<multicontainer>
+    {
+        static constexpr guid value{ 0xc9a53763, 0x404b, 0x4531, 0xba, 0x56, 0x56, 0x01, 0xc9, 0x49, 0x05, 0x8d };
+    };
+
     class multicontainer : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     protected:
         std::vector<std::shared_ptr<control>> m_children{};
 

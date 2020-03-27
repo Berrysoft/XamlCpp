@@ -7,9 +7,19 @@
 namespace xaml
 {
     struct native_menu_item;
+    class menu_item;
+
+    template <>
+    struct type_guid<menu_item>
+    {
+        static constexpr guid value{ 0xbaa16b2b, 0x1cca, 0x4a7c, 0x8b, 0xbe, 0x96, 0x2b, 0x56, 0x95, 0x67, 0x7f };
+    };
 
     class menu_item : public control
     {
+    public:
+        META_CLASS_IMPL(control)
+
     public:
         XAML_UI_CONTROLS_API menu_item();
         XAML_UI_CONTROLS_API ~menu_item();
@@ -55,7 +65,7 @@ namespace xaml
     public:
         PROP_STRING(text)
 
-        EVENT(click, std::reference_wrapper<menu_item>)
+        EVENT(click, std::shared_ptr<menu_item>)
 
     public:
 #define ADD_MENU_ITEM_MEMBERS() \
@@ -72,8 +82,19 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class popup_menu_item;
+
+    template <>
+    struct type_guid<popup_menu_item>
+    {
+        static constexpr guid value{ 0xc1445529, 0x6932, 0x46a0, 0xb9, 0x47, 0x2f, 0xe0, 0x04, 0x63, 0xa1, 0x27 };
+    };
+
     class popup_menu_item : public menu_item
     {
+    public:
+        META_CLASS_IMPL(menu_item)
+
     public:
         XAML_UI_CONTROLS_API popup_menu_item();
         XAML_UI_CONTROLS_API ~popup_menu_item();
@@ -118,8 +139,19 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class check_menu_item;
+
+    template <>
+    struct type_guid<check_menu_item>
+    {
+        static constexpr guid value{ 0xba31cca6, 0x5bb1, 0x4b90, 0xab, 0x1a, 0x39, 0xcf, 0x13, 0x27, 0x6b, 0x2e };
+    };
+
     class check_menu_item : public menu_item
     {
+    public:
+        META_CLASS_IMPL(menu_item)
+
     public:
         XAML_UI_CONTROLS_API check_menu_item();
         XAML_UI_CONTROLS_API ~check_menu_item();
@@ -131,8 +163,8 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_checked();
 
     public:
+        EVENT(is_checked_changed, std::shared_ptr<check_menu_item>, bool)
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, std::reference_wrapper<check_menu_item>, bool)
 
     public:
 #define ADD_CHECK_MENU_ITEM_MEMBERS() \
@@ -147,8 +179,19 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class radio_menu_item;
+
+    template <>
+    struct type_guid<radio_menu_item>
+    {
+        static constexpr guid value{ 0x49494137, 0x05e4, 0x477f, 0xa5, 0x2a, 0xef, 0x07, 0x4e, 0xca, 0x9c, 0x20 };
+    };
+
     class radio_menu_item : public menu_item
     {
+    public:
+        META_CLASS_IMPL(menu_item)
+
     public:
         XAML_UI_CONTROLS_API radio_menu_item();
         XAML_UI_CONTROLS_API ~radio_menu_item();
@@ -161,8 +204,8 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_group();
 
     public:
+        EVENT(is_checked_changed, std::shared_ptr<radio_menu_item>, bool)
         PROP_CONSTEXPR_EVENT(is_checked, bool)
-        EVENT(is_checked_changed, std::reference_wrapper<radio_menu_item>, bool)
 
         PROP_STRING(group)
 
@@ -180,8 +223,19 @@ namespace xaml
         REGISTER_CLASS_END()
     };
 
+    class separator_menu_item;
+
+    template <>
+    struct type_guid<separator_menu_item>
+    {
+        static constexpr guid value{ 0xecc1f5ab, 0x5420, 0x45bb, 0x8f, 0xb0, 0x2f, 0xa1, 0xea, 0xbb, 0xec, 0x24 };
+    };
+
     class separator_menu_item : public menu_item
     {
+    public:
+        META_CLASS_IMPL(menu_item)
+
     public:
         XAML_UI_CONTROLS_API separator_menu_item();
         XAML_UI_CONTROLS_API ~separator_menu_item();

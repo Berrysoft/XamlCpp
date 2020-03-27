@@ -286,6 +286,17 @@ namespace xaml
     };
 
     template <typename T>
+    struct __box_helper<std::vector<T>, void>
+    {
+        using type = meta_box<array_view<T>>;
+
+        std::shared_ptr<type> operator()(array_view<T> view)
+        {
+            return std::make_shared<meta_box<array_view<T>>>(view);
+        }
+    };
+
+    template <typename T>
     decltype(auto) box_value(T&& value)
     {
         return __box_helper<std::decay_t<T>>{}(std::forward<T>(value));

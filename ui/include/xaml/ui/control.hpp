@@ -51,6 +51,12 @@ namespace xaml
     {
     };
 
+    template <>
+    struct type_guid<meta_box<halignment_t>>
+    {
+        static constexpr guid value{ 0x65614483, 0x6bb3, 0x407d, 0x89, 0xda, 0x41, 0x2f, 0xfd, 0x99, 0xcf, 0xa8 };
+    };
+
     enum class valignment_t
     {
         stretch,
@@ -81,6 +87,12 @@ namespace xaml
     {
     };
 
+    template <>
+    struct type_guid<meta_box<valignment_t>>
+    {
+        static constexpr guid value{ 0x71173440, 0xcbf1, 0x4fe9, 0xbd, 0x93, 0x27, 0x0b, 0x73, 0x8b, 0x44, 0x65 };
+    };
+
     enum class mouse_button
     {
         left,
@@ -90,8 +102,19 @@ namespace xaml
 
     struct native_control;
 
+    class control;
+
+    template <>
+    struct type_guid<control>
+    {
+        static constexpr guid value{ 0x389f559a, 0x48bb, 0x49a7, 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 };
+    };
+
     class control : public meta_class
     {
+    public:
+        META_CLASS_IMPL(meta_class)
+
     public:
         using native_handle_type = std::shared_ptr<native_control>;
 
@@ -140,7 +163,7 @@ namespace xaml
         XAML_UI_API virtual void __parent_redraw();
 
     private:
-        EVENT(size_changed, std::reference_wrapper<control>, size)
+        EVENT(size_changed, std::shared_ptr<control>, size)
         PROP_CONSTEXPR_EVENT(size, size)
 
 #ifdef XAML_UI_WINDOWS
@@ -156,7 +179,7 @@ namespace xaml
             if (m_size.width != value)
             {
                 m_size.width = value;
-                m_size_changed(*this, get_size());
+                m_size_changed(std::static_pointer_cast<control>(shared_from_this()), get_size());
             }
         }
 
@@ -166,14 +189,14 @@ namespace xaml
             if (m_size.height != value)
             {
                 m_size.height = value;
-                m_size_changed(*this, get_size());
+                m_size_changed(std::static_pointer_cast<control>(shared_from_this()), get_size());
             }
         }
 
     protected:
         void __set_size_noevent(size value) { m_size = value; }
 
-        EVENT(margin_changed, std::reference_wrapper<control>, margin)
+        EVENT(margin_changed, std::shared_ptr<control>, margin)
         PROP_CONSTEXPR_EVENT(margin, margin)
 
 #ifdef XAML_UI_WINDOWS
@@ -182,13 +205,13 @@ namespace xaml
         XAML_UI_API void __set_real_margin(margin const& value);
 #endif // XAML_UI_WINDOWS
 
-        EVENT(halignment_changed, std::reference_wrapper<control>, halignment_t)
+        EVENT(halignment_changed, std::shared_ptr<control>, halignment_t)
         PROP_CONSTEXPR_EVENT(halignment, halignment_t)
 
-        EVENT(valignment_changed, std::reference_wrapper<control>, valignment_t)
+        EVENT(valignment_changed, std::shared_ptr<control>, valignment_t)
         PROP_CONSTEXPR_EVENT(valignment, valignment_t)
 
-        EVENT(is_visible_changed, std::reference_wrapper<control>, bool)
+        EVENT(is_visible_changed, std::shared_ptr<control>, bool)
         PROP_CONSTEXPR_EVENT(is_visible, bool)
 
     protected:
@@ -196,9 +219,9 @@ namespace xaml
         XAML_UI_API virtual void draw_visible();
 
     public:
-        EVENT(mouse_down, std::reference_wrapper<control>, mouse_button)
-        EVENT(mouse_up, std::reference_wrapper<control>, mouse_button)
-        EVENT(mouse_move, std::reference_wrapper<control>, point)
+        EVENT(mouse_down, std::shared_ptr<control>, mouse_button)
+        EVENT(mouse_up, std::shared_ptr<control>, mouse_button)
+        EVENT(mouse_move, std::shared_ptr<control>, point)
 
     public:
 #define ADD_CONTROL_MEMBERS()   \

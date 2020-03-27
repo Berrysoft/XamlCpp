@@ -17,7 +17,7 @@ namespace xaml
         {
             if (get_menu() && LOWORD(msg.wParam) == get_menu()->handle)
             {
-                m_click(*this);
+                m_click(static_pointer_cast<menu_item>(shared_from_this()));
             }
             break;
         }
