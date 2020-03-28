@@ -7,32 +7,14 @@
 #include <vector>
 #include <xaml/utility.hpp>
 
-#ifndef P
-#if defined(WIN32) || defined(__MINGW32__)
-#define P(x) L##x
-#else
-#define P(x) x
-#endif // WIN32 || __MINGW32__
-#endif // !P
-
 namespace xaml
 {
 #if defined(WIN32) || defined(__MINGW32__)
-    using path_char_t = wchar_t;
-    using path_string_t = std::wstring;
-    using path_string_view_t = std::wstring_view;
-#else
-    using path_char_t = char;
-    using path_string_t = std::string;
-    using path_string_view_t = std::string_view;
-#endif // WIN32 || __MINGW32__
-
-#if defined(WIN32) || defined(__MINGW32__)
-    inline constexpr path_string_view_t module_extension{ P(".dll") };
+    inline std::filesystem::path module_extension{ ".dll" };
 #elif defined(__APPLE__)
-    inline constexpr path_string_view_t module_extension{ P(".dylib") };
+    inline std::filesystem::path module_extension{ ".dylib" };
 #else
-    inline constexpr path_string_view_t module_extension{ P(".so") };
+    inline std::filesystem::path module_extension{ ".so" };
 #endif // WIN32 || __MINGW32__
 
     class module

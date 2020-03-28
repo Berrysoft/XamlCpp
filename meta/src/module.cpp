@@ -1,4 +1,3 @@
-#include <filesystem>
 #include <string>
 #include <vector>
 #include <xaml/meta/module.hpp>
@@ -15,9 +14,9 @@
 #endif // WIN32 || __MINGW32__
 
 #if defined(WIN32) && !defined(__MINGW32__)
-constexpr xaml::path_string_view_t module_prefix{};
+static inline std::filesystem::path module_prefix{};
 #else
-constexpr xaml::path_string_view_t module_prefix{ P("lib") };
+static inline std::filesystem::path module_prefix{ "lib" };
 #endif // WIN32 && !__MINGW32__
 
 using namespace std;
@@ -25,6 +24,10 @@ using namespace std::filesystem;
 
 namespace xaml
 {
+    using path_char_t = typename path::string_type::value_type;
+    using path_string_t = typename path::string_type;
+    using path_string_view_t = basic_string_view<path_char_t>;
+
     static vector<path> split(path_string_view_t str, path_char_t separater)
     {
         if (str.empty()) return {};
@@ -68,10 +71,10 @@ namespace xaml
     static vector<path> get_module_search_path()
     {
 #if defined(WIN32) || defined(__MINGW32__)
-        wstring buffer(32767, P('\0'));
+        wstring buffer(32767, L'\0');
         DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
         buffer.resize(count);
-        vector<path> result = split(buffer, P(';'));
+        vector<path> result = split(buffer, ';');
 #else
 #ifdef __APPLE__
         constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
@@ -81,13 +84,13 @@ namespace xaml
         char* ldp = getenv(ld_library_path.data());
         vector<path> result = split(ldp ? ldp : "", ':');
 #endif // WIN32 || __MINGW32__
-        result.push_back(P("."));
-        result.push_back(P("../lib"));
+        result.push_back(".");
+        result.push_back("../lib");
         auto location = program_location().parent_path();
         if (!location.empty())
         {
             result.push_back(location);
-            result.push_back(location / P("..") / P("lib"));
+            result.push_back(location / ".." / "lib");
         }
         return result;
     }
@@ -100,7 +103,7 @@ namespace xaml
         search_dirs.insert(search_dirs.end(), sds.begin(), sds.end());
         for (auto& dir : search_dirs)
         {
-            path fullname{ module_prefix };
+            path fullname = module_prefix;
             fullname += pname;
             fullname += module_extension;
             path p = path{ dir } / fullname;

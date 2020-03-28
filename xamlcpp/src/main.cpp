@@ -20,15 +20,17 @@
 #define _tmain wmain
 #endif // !_tmain
 
+#ifndef _tcout
 #define _tcout wcout
-#define _tvalue wvalue
+#endif // !_tcout
 #else
 #ifndef _tmain
 #define _tmain main
 #endif // !_tmain
 
+#ifndef _tcout
 #define _tcout cout
-#define _tvalue value
+#endif // !_tcout
 #endif // UNICODE
 
 using namespace std;
@@ -171,9 +173,9 @@ int _tmain(int argc, char_t const* const* argv)
                 {
                     if (en.is_regular_file())
                     {
-                        auto p = en.path();
+                        auto& p = en.path();
                         if (verbose) _tcout << U("Determining ") << p << U("...") << endl;
-                        if (p.has_extension() && p.extension().native() == module_extension)
+                        if (p.has_extension() && p.extension() == module_extension)
                         {
                             if (auto pver = is_later(modules, p))
                             {
@@ -195,11 +197,11 @@ int _tmain(int argc, char_t const* const* argv)
                 _tcout << U("Registered types:") << endl;
                 for (auto& pair : ctx.get_types())
                 {
-                    auto& ns = pair.first;
+                    auto ns = value_converter_traits<string_view_t>::convert(box_value(pair.first));
                     for (auto& p : pair.second)
                     {
-                        auto& name = p.first;
-                        cout << ns << "::" << name << endl;
+                        auto name = value_converter_traits<string_view_t>::convert(box_value(p.first));
+                        _tcout << ns << U("::") << name << endl;
                     }
                 }
             }
@@ -233,7 +235,7 @@ int _tmain(int argc, char_t const* const* argv)
     }
     catch (exception const& e)
     {
-        cout << e.what() << endl;
+        _tcout << value_converter_traits<string_view_t>::convert(box_value(e.what())) << endl;
         return 1;
     }
     return 0;

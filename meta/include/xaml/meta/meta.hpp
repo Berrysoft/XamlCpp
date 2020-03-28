@@ -2,6 +2,7 @@
 #define XAML_META_HPP
 
 #include <algorithm>
+#include <filesystem>
 #include <functional>
 #include <initializer_list>
 #include <memory>
@@ -824,10 +825,15 @@ namespace xaml
 
     class __binding_guard;
 
+    struct __hash_path
+    {
+        std::size_t operator()(std::filesystem::path const& p) const noexcept { return std::filesystem::hash_value(p); }
+    };
+
     class meta_context
     {
     private:
-        std::unordered_map<path_string_t, std::unique_ptr<module>> modules_map;
+        std::unordered_map<std::filesystem::path, std::unique_ptr<module>, __hash_path> modules_map;
 
         std::unordered_map<std::string, std::string> namespace_map;
         std::unordered_map<std::string, std::unordered_map<std::string, guid>> type_map;
@@ -838,7 +844,7 @@ namespace xaml
 
     public:
         XAML_META_API module* add_module(std::filesystem::path const& path);
-        std::unordered_map<path_string_t, std::unique_ptr<module>> const& get_modules() const noexcept { return modules_map; }
+        std::unordered_map<std::filesystem::path, std::unique_ptr<module>, __hash_path> const& get_modules() const noexcept { return modules_map; }
 
         XAML_META_API std::string get_real_namespace(std::string_view ns) const;
 

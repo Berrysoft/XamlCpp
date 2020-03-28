@@ -20,9 +20,9 @@ XAML_APP_MAIN_START()
 #ifdef XAML_TEST_GEN_FAKE
     init_parser(g_ctx);
     register_class<test_window>(g_ctx);
-    g_ctx.add_module(P("xaml_ui_meta"));
-    g_ctx.add_module(P("xaml_ui_controls_meta"));
-    g_ctx.add_module(P("xaml_ui_canvas_meta"));
+    g_ctx.add_module("xaml_ui_meta");
+    g_ctx.add_module("xaml_ui_controls_meta");
+    g_ctx.add_module("xaml_ui_canvas_meta");
     wnd->init_components(g_ctx);
 #else
     wnd->init_components();
