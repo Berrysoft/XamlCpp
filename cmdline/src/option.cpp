@@ -67,6 +67,11 @@ namespace xaml::cmdline
                     stream << ", ";
                     count += 2;
                 }
+                else
+                {
+                    stream << string_t(4, U(' '));
+                    count += 4;
+                }
                 stream << "--" << entry.long_arg;
                 count += 2 + entry.long_arg.length();
             }
