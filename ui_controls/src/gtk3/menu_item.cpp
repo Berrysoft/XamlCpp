@@ -87,16 +87,19 @@ namespace xaml
     {
         if (auto sparent = get_parent().lock())
         {
-            if (auto multic = dynamic_pointer_cast<popup_menu_item>(sparent))
+            if (auto multic = sparent->query<popup_menu_item>())
             {
                 for (auto& c : multic->get_submenu())
                 {
-                    if (auto rc = dynamic_pointer_cast<radio_menu_item>(c))
+                    if (c)
                     {
-                        if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                        if (auto rc = c->query<radio_menu_item>())
                         {
-                            gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(get_handle()->handle), GTK_RADIO_MENU_ITEM(c->get_handle()->handle));
-                            break;
+                            if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                            {
+                                gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(get_handle()->handle), GTK_RADIO_MENU_ITEM(c->get_handle()->handle));
+                                break;
+                            }
                         }
                     }
                 }

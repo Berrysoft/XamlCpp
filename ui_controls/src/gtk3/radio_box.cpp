@@ -31,16 +31,19 @@ namespace xaml
     {
         if (auto sparent = get_parent().lock())
         {
-            if (auto multic = dynamic_pointer_cast<multicontainer>(sparent))
+            if (auto multic = sparent->query<multicontainer>())
             {
                 for (auto& c : multic->get_children())
                 {
-                    if (auto rc = dynamic_pointer_cast<radio_box>(c))
+                    if (c)
                     {
-                        if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                        if (auto rc = c->query<radio_box>())
                         {
-                            gtk_radio_button_join_group(GTK_RADIO_BUTTON(get_handle()->handle), GTK_RADIO_BUTTON(c->get_handle()->handle));
-                            break;
+                            if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                            {
+                                gtk_radio_button_join_group(GTK_RADIO_BUTTON(get_handle()->handle), GTK_RADIO_BUTTON(c->get_handle()->handle));
+                                break;
+                            }
                         }
                     }
                 }
