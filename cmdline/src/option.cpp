@@ -30,18 +30,58 @@ namespace xaml::cmdline
         }
     }
 
-    void option::add_arg(optional<char_t> short_name, optional<string_view_t> long_name, string_view prop_name)
+    void option::add_arg(char_t short_name, string_view_t long_name, string_view prop_name, string_view_t help_text)
     {
-        if (short_name || long_name)
+        if (short_name || !long_name.empty())
         {
             auto key = hash<string_view>{}(prop_name);
             m_properties.emplace(key, prop_name);
-            if (short_name) m_short_args.emplace(*short_name, key);
-            if (long_name) m_long_args.emplace(*long_name, key);
+            m_entries.emplace(prop_name, option_entry{ short_name, (string_t)long_name, (string_t)help_text });
+            if (short_name) m_short_args.emplace(short_name, key);
+            if (!long_name.empty()) m_long_args.emplace(long_name, key);
         }
         else
         {
             m_default_property = prop_name;
         }
+    }
+
+    basic_ostream<char_t>& option::print_help(basic_ostream<char_t>& stream) const
+    {
+        constexpr size_t offset = 2;
+        constexpr size_t spacing = 24;
+        for (auto& prop : m_entries)
+        {
+            size_t count = offset;
+            stream << string_t(offset, U(' '));
+            auto& entry = prop.second;
+            if (entry.short_arg)
+            {
+                stream << '-' << entry.short_arg;
+                count += 2;
+            }
+            if (!entry.long_arg.empty())
+            {
+                if (entry.short_arg)
+                {
+                    stream << ", ";
+                    count += 2;
+                }
+                stream << "--" << entry.long_arg;
+                count += 2 + entry.long_arg.length();
+            }
+            if (!entry.short_arg && entry.long_arg.empty())
+            {
+                stream << "[default]";
+                count += 9;
+            }
+            if (count < spacing)
+            {
+                stream << string_t(spacing - count, U(' '));
+            }
+            stream << entry.help_text;
+            stream << endl;
+        }
+        return stream;
     }
 } // namespace xaml::cmdline

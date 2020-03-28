@@ -138,20 +138,21 @@ namespace xaml::cmdline
             }
             else
             {
-                if (auto pdef_prop = popt->get_default_property())
+                auto pdef_prop = popt->get_default_property();
+                if (!pdef_prop.empty())
                 {
-                    auto prop = refl->get_property(*pdef_prop);
+                    auto prop = refl->get_property(pdef_prop);
                     if (prop)
                     {
                         result.properties.push_back({ prop, (string_t)arg });
                     }
                     else
                     {
-                        auto cprop = refl->get_collection_property(*pdef_prop);
+                        auto cprop = refl->get_collection_property(pdef_prop);
                         if (cprop)
                         {
-                            result.collection_properties[(string)*pdef_prop].info = cprop;
-                            result.collection_properties[(string)*pdef_prop].values.emplace_back(arg);
+                            result.collection_properties[(string)pdef_prop].info = cprop;
+                            result.collection_properties[(string)pdef_prop].values.emplace_back(arg);
                         }
                     }
                 }

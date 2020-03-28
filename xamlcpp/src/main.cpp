@@ -86,14 +86,14 @@ namespace xamlcpp
             ADD_COLLECTION_PROP(lib_path, string_view_t);
 
             auto attr = make_unique<cmdline::option>();
-            attr->add_arg(U('h'), U("help"), "help");
-            attr->add_arg(U('f'), U("fake"), "fake");
-            attr->add_arg(U('v'), U("verbose"), "verbose");
-            attr->add_arg(nullopt, U("no-logo"), "no_logo");
-            attr->add_arg(U('i'), U("input-file"), "input");
-            attr->add_arg(nullopt, nullopt, "input");
-            attr->add_arg(U('o'), U("output-file"), "output");
-            attr->add_arg(U('L'), U("library-path"), "lib_path");
+            attr->add_arg(U('h'), U("help"), "help", U("Print help message"));
+            attr->add_arg(U('f'), U("fake"), "fake", U("Generate deserialize code"));
+            attr->add_arg(U('v'), U("verbose"), "verbose", U("Show detailed output"));
+            attr->add_arg(0, U("no-logo"), "no_logo", U("Cancellation to show copyright infomation"));
+            attr->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"));
+            attr->add_arg(0, {}, "input");
+            attr->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"));
+            attr->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path"));
             ref->set_attribute(move(attr));
         }
         REGISTER_CLASS_END()
@@ -138,7 +138,7 @@ int _tmain(int argc, char_t const* const* argv)
         register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
         auto refl = cmdline_ctx.get_type(type_guid_v<xamlcpp::xamlcpp_options>);
         auto nodes = cmdline::parse(refl, argc, argv);
-        auto opts = static_pointer_cast<xamlcpp::xamlcpp_options>(cmdline::deserialize(refl, nodes));
+        auto opts = cmdline::deserialize(refl, nodes)->query<xamlcpp::xamlcpp_options>();
 
         path exe{ argv[0] };
         if (!opts->get_no_logo())
@@ -148,8 +148,10 @@ int _tmain(int argc, char_t const* const* argv)
                    << endl;
         }
 
-        if (opts->get_help())
+        if (opts->get_help() || argc <= 1)
         {
+            cmdline::option const* popt = refl->get_attribute<cmdline::option>();
+            popt->print_help(_tcout);
             return 1;
         }
 

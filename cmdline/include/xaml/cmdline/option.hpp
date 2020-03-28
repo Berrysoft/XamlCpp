@@ -23,6 +23,13 @@ namespace xaml
 
 namespace xaml::cmdline
 {
+    struct option_entry
+    {
+        char_t short_arg;
+        string_t long_arg;
+        string_t help_text;
+    };
+
     class option : public meta_class
     {
     public:
@@ -32,7 +39,8 @@ namespace xaml::cmdline
         std::map<char_t, size_t> m_short_args{};
         std::map<string_t, size_t> m_long_args{};
         std::map<size_t, std::string> m_properties{};
-        std::optional<std::string> m_default_property{};
+        std::multimap<std::string, option_entry> m_entries{};
+        std::string m_default_property{};
 
     public:
         option() : meta_class() {}
@@ -40,9 +48,11 @@ namespace xaml::cmdline
 
         XAML_CMDLINE_API std::optional<std::string_view> find_short_arg(char_t name) const noexcept;
         XAML_CMDLINE_API std::optional<std::string_view> find_long_arg(string_view_t name) const noexcept;
-        std::optional<std::string_view> get_default_property() const noexcept { return m_default_property ? std::make_optional<std::string_view>(*m_default_property) : std::nullopt; }
+        std::string_view get_default_property() const noexcept { return m_default_property; }
 
-        XAML_CMDLINE_API void add_arg(std::optional<char_t> short_name, std::optional<string_view_t> long_name, std::string_view prop_name);
+        XAML_CMDLINE_API void add_arg(char_t short_name, string_view_t long_name, std::string_view prop_name, string_view_t help_text = {});
+
+        XAML_CMDLINE_API std::basic_ostream<char_t>& print_help(std::basic_ostream<char_t>& stream) const;
 
         REGISTER_CLASS_DECL(xaml::cmdline, option, "xaml/cmdline")
         {
