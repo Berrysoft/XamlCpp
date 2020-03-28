@@ -71,7 +71,7 @@ namespace xaml
         case WM_DRAWITEM:
         {
             DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
-            if (ds->hwndItem == get_handle()->handle)
+            if (m_canvas && ds->hwndItem == get_handle()->handle)
             {
                 m_canvas->begin_paint(ds->hwndItem, get_size(), [this](shared_ptr<drawing_context> dc) { m_redraw(static_pointer_cast<canvas>(shared_from_this()), dc); });
             }
@@ -106,13 +106,13 @@ namespace xaml
                 set_canvas(make_shared<canvas_d2d>());
                 if (!get_canvas()->create(get_handle()->handle))
                 {
+#endif // XAML_UI_CANVAS_DIRECT2D
                     set_canvas(make_shared<canvas_gdiplus>());
+                    get_canvas()->create(get_handle()->handle);
+#ifdef XAML_UI_CANVAS_DIRECT2D
                 }
-#else
-                set_canvas(make_shared<canvas_gdiplus>());
 #endif // XAML_UI_CANVAS_DIRECT2D
             }
-            get_canvas()->create(get_handle()->handle);
         }
     }
 } // namespace xaml

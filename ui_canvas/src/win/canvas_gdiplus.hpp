@@ -2,6 +2,7 @@
 #define XAML_UI_CANVAS_GDIPLUS_HPP
 
 #include <Windows.h>
+#include <optional>
 #include <wil/resource.h>
 #include <xaml/ui/controls/native_canvas.hpp>
 #include <xaml/ui/native_drawing.hpp>
@@ -32,7 +33,7 @@ namespace xaml
     class canvas_gdiplus : public native_canvas
     {
     private:
-        ULONG_PTR token{};
+        std::optional<ULONG_PTR> m_token{};
 
     public:
         canvas_gdiplus();

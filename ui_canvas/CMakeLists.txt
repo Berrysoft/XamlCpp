@@ -25,7 +25,7 @@ target_include_directories(xaml_ui_canvas
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_API=__XAML_EXPORT" "-DGDIPVER=0x0110")
 endif()
 
 target_link_libraries(xaml_ui_canvas xaml_ui)
@@ -34,6 +34,14 @@ if(${BUILD_WINDOWS})
         target_compile_definitions(xaml_ui_canvas PUBLIC "-DXAML_UI_CANVAS_DIRECT2D")
     endif()
     target_link_libraries(xaml_ui_canvas gdiplus)
+
+    # Use GDI+ 1.1
+    set(USE_GDIP11_OPTIONS "/manifestdependency:type='Win32' name='Microsoft.Windows.GdiPlus' version='1.1.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
+    if(CMAKE_VERSION VERSION_LESS 3.14)
+        target_link_libraries(xaml_global INTERFACE ${USE_GDIP11_OPTIONS})
+    else()
+        target_link_options(xaml_global PUBLIC ${USE_GDIP11_OPTIONS})
+    endif()
 endif()
 target_compile_definitions(xaml_ui_canvas PRIVATE "-D_USE_MATH_DEFINES")
 

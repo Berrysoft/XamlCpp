@@ -50,7 +50,7 @@ namespace xaml
         }
     }
 
-    constexpr REAL get_WIDTH(double width, double dpi)
+    static constexpr REAL get_WIDTH(double width, double dpi)
     {
         return (REAL)(width * dpi / 96.0);
     }
@@ -132,53 +132,47 @@ namespace xaml
         check_status(handle->FillRectangle(&b, get_RectF(rect, dpi)));
     }
 
-    static unique_ptr<GraphicsPath> RoundedRect(RectF bounds, SizeF size)
+    static void rounded_rect(GraphicsPath& path, RectF bounds, SizeF size)
     {
         PointF ori_loc;
         bounds.GetLocation(&ori_loc);
         RectF arc{ ori_loc, { size.Width * 2, size.Height * 2 } };
-        auto path = make_unique<GraphicsPath>();
-
         if (size.Width == 0 && size.Height == 0)
         {
-            path->AddRectangle(bounds);
-            return path;
+            check_status(path.AddRectangle(bounds));
+            return;
         }
-
         // top left arc
-        path->AddArc(arc, 180, 90);
-
+        check_status(path.AddArc(arc, 180, 90));
         // top right arc
         arc.X = bounds.Width + bounds.X - size.Width * 2;
-        path->AddArc(arc, 270, 90);
-
+        check_status(path.AddArc(arc, 270, 90));
         // bottom right arc
         arc.Y = bounds.Height + bounds.Y - size.Height * 2;
-        path->AddArc(arc, 0, 90);
-
+        check_status(path.AddArc(arc, 0, 90));
         // bottom left arc
         arc.X = bounds.X;
-        path->AddArc(arc, 90, 90);
-
-        path->CloseFigure();
-        return path;
+        check_status(path.AddArc(arc, 90, 90));
+        check_status(path.CloseFigure());
     }
 
     void drawing_context_gdiplus::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
     {
         auto p = get_Pen(pen, dpi);
-        auto path = RoundedRect(get_RectF(rect, dpi), get_SizeF(round, dpi));
-        check_status(handle->DrawPath(&p, path.get()));
+        GraphicsPath path{};
+        rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
+        check_status(handle->DrawPath(&p, &path));
     }
 
     void drawing_context_gdiplus::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
     {
         auto b = get_Brush(brush);
-        auto path = RoundedRect(get_RectF(rect, dpi), get_SizeF(round, dpi));
-        check_status(handle->FillPath(&b, path.get()));
+        GraphicsPath path{};
+        rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
+        check_status(handle->FillPath(&b, &path));
     }
 
-    static StringAlignment get_Align(halignment_t align)
+    static constexpr StringAlignment get_Align(halignment_t align)
     {
         switch (align)
         {
@@ -214,20 +208,23 @@ namespace xaml
         check_status(handle->DrawString(str.data(), (INT)str.length(), &f, pf, &fmt, &b));
     }
 
-    canvas_gdiplus::canvas_gdiplus()
-    {
-        GdiplusStartupInput gdiplusStartupInput{};
-        check_status(GdiplusStartup(&token, &gdiplusStartupInput, NULL));
-    }
+    canvas_gdiplus::canvas_gdiplus() {}
 
     canvas_gdiplus::~canvas_gdiplus()
     {
-        GdiplusShutdown(token);
+        if (m_token) GdiplusShutdown(*m_token);
     }
 
     bool canvas_gdiplus::create(HWND wnd)
     {
-        return true;
+        GdiplusStartupInput gdiplusStartupInput{};
+        UINT_PTR token;
+        if (GdiplusStartup(&token, &gdiplusStartupInput, NULL) == Status::Ok)
+        {
+            m_token = token;
+            return true;
+        }
+        return false;
     }
 
     void canvas_gdiplus::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)

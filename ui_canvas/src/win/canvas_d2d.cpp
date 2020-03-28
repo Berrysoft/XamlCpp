@@ -170,7 +170,10 @@ namespace xaml
         target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
     }
 
-    canvas_d2d::canvas_d2d() { XamlInitializeD2DFunc(); }
+    canvas_d2d::canvas_d2d()
+    {
+        XamlInitializeD2DFunc();
+    }
 
     canvas_d2d::~canvas_d2d() {}
 
