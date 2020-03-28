@@ -9,21 +9,22 @@ using namespace std;
 using namespace xaml;
 using namespace xaml::test;
 
+XAML_APP_MAIN_START()
+
 #ifdef XAML_TEST_GEN_FAKE
-meta_context g_ctx{};
+meta_context ctx{};
 #endif // XAML_TEST_GEN_FAKE
 
-XAML_APP_MAIN_START()
 {
     auto wnd = make_shared<test_window>();
 
 #ifdef XAML_TEST_GEN_FAKE
-    init_parser(g_ctx);
-    register_class<test_window>(g_ctx);
-    g_ctx.add_module("xaml_ui_meta");
-    g_ctx.add_module("xaml_ui_controls_meta");
-    g_ctx.add_module("xaml_ui_canvas_meta");
-    wnd->init_components(g_ctx);
+    init_parser(ctx);
+    register_class<test_window>(ctx);
+    ctx.add_module("xaml_ui_meta");
+    ctx.add_module("xaml_ui_controls_meta");
+    ctx.add_module("xaml_ui_canvas_meta");
+    wnd->init_components(ctx);
 #else
     wnd->init_components();
 #endif // XAML_TEST_GEN_FAKE
