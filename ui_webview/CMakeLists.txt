@@ -24,7 +24,7 @@ target_include_directories(xaml_ui_webview
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_API=__XAML_EXPORT")
 endif()
 
 target_link_libraries(xaml_ui_webview xaml_ui)
@@ -35,7 +35,7 @@ if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui_webview ShLwApi)
 
     if(${BUILD_WEBVIEW2})
-        target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_WEBVIEW2")
+        target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_WEBVIEW2")
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
             message(STATUS "Download WebView2...")
@@ -59,7 +59,7 @@ if(${BUILD_WINDOWS})
     endif()
 
     if(${BUILD_EDGE})
-        target_compile_definitions(xaml_ui_webview PRIVATE "-DXAML_UI_WEBVIEW_EDGE")
+        target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_EDGE")
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
             message(STATUS "Downloading CppWinRT...")

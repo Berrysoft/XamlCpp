@@ -31,6 +31,21 @@ namespace xaml
     {
         static constexpr guid value{ 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
     };
+
+    constexpr std::size_t hash_value(guid const& g) noexcept
+    {
+        std::size_t* ptr = (std::size_t*)&g;
+#if SIZE_MAX == UINT64_MAX
+        static_assert(sizeof(std::size_t) == sizeof(std::uint64_t));
+        return ptr[0] ^ ptr[1];
+#elif SIZE_MAX == UINT32_MAX
+        static_assert(sizeof(std::size_t) == sizeof(std::uint32_t));
+        return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
+#else
+#error Cannot determine platform architecture
+        return ptr[0];
+#endif
+    }
 } // namespace xaml
 
 namespace std
@@ -40,17 +55,7 @@ namespace std
     {
         constexpr std::size_t operator()(xaml::guid const& g) const noexcept
         {
-            if constexpr (sizeof(std::size_t) == sizeof(std::uint32_t))
-            {
-                std::size_t* ptr = (std::size_t*)&g;
-                return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
-            }
-            else
-            {
-                static_assert(sizeof(std::size_t) == sizeof(std::uint64_t));
-                std::size_t* ptr = (std::size_t*)&g;
-                return ptr[0] ^ ptr[1];
-            }
+            return xaml::hash_value(g);
         }
     };
 } // namespace std

@@ -21,7 +21,7 @@ target_include_directories(xaml_meta
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_meta PRIVATE "-DXAML_META_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_meta PRIVATE "XAML_META_API=__XAML_EXPORT")
 endif()
 
 install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)

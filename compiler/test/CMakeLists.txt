@@ -29,7 +29,7 @@ endif()
 target_link_libraries(xaml_test xaml_ui_controls xaml_ui_canvas)
 target_link_libraries(xaml_test_fake xaml_ui_controls xaml_ui_canvas xaml_parser)
 
-target_compile_definitions(xaml_test_fake PRIVATE "-DXAML_TEST_GEN_FAKE")
+target_compile_definitions(xaml_test_fake PRIVATE "XAML_TEST_GEN_FAKE")
 
 target_include_directories(xaml_test
     PUBLIC include

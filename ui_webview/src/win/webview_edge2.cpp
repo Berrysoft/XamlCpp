@@ -58,7 +58,7 @@ namespace xaml
                                             if (stream)
                                             {
                                                 auto count = wil::stream_size(stream.get());
-                                                vector<std::byte> data(count);
+                                                vector<std::byte> data((size_t)count);
                                                 RETURN_IF_FAILED(stream->Read(data.data(), (ULONG)count, NULL));
                                                 args->request.data = data;
                                             }

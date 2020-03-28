@@ -25,13 +25,13 @@ target_include_directories(xaml_ui_canvas
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_ui_canvas PRIVATE "-DXAML_UI_CANVAS_API=__XAML_EXPORT" "-DGDIPVER=0x0110")
+    target_compile_definitions(xaml_ui_canvas PRIVATE "XAML_UI_CANVAS_API=__XAML_EXPORT" "GDIPVER=0x0110")
 endif()
 
 target_link_libraries(xaml_ui_canvas xaml_ui)
 if(${BUILD_WINDOWS})
     if(${BUILD_DIRECT2D})
-        target_compile_definitions(xaml_ui_canvas PUBLIC "-DXAML_UI_CANVAS_DIRECT2D")
+        target_compile_definitions(xaml_ui_canvas PUBLIC "XAML_UI_CANVAS_DIRECT2D")
     endif()
     target_link_libraries(xaml_ui_canvas gdiplus)
 
@@ -43,7 +43,7 @@ if(${BUILD_WINDOWS})
         target_link_options(xaml_global PUBLIC ${USE_GDIP11_OPTIONS})
     endif()
 endif()
-target_compile_definitions(xaml_ui_canvas PRIVATE "-D_USE_MATH_DEFINES")
+target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
 

@@ -15,7 +15,7 @@ target_include_directories(xaml_cmdline
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_cmdline PRIVATE "-DXAML_CMDLINE_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_cmdline PRIVATE "XAML_CMDLINE_API=__XAML_EXPORT")
 endif()
 
 install(FILES ${CMDLINE_HEADERS} DESTINATION include/xaml/cmdline)

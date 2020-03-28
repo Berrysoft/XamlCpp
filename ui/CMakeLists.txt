@@ -27,7 +27,7 @@ target_include_directories(xaml_ui
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_ui PRIVATE "-DXAML_UI_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_ui PRIVATE "XAML_UI_API=__XAML_EXPORT")
 endif()
 
 target_link_libraries(xaml_ui xaml_meta)

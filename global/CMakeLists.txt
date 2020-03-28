@@ -20,7 +20,7 @@ else()
 endif()
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_global PRIVATE "-DXAML_GLOBAL_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_global PRIVATE "XAML_GLOBAL_API=__XAML_EXPORT")
 endif()
 
 target_include_directories(xaml_global

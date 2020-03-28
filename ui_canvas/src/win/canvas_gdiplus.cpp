@@ -218,7 +218,7 @@ namespace xaml
     bool canvas_gdiplus::create(HWND wnd)
     {
         GdiplusStartupInput gdiplusStartupInput{};
-        UINT_PTR token;
+        ULONG_PTR token;
         if (GdiplusStartup(&token, &gdiplusStartupInput, NULL) == Status::Ok)
         {
             m_token = token;
