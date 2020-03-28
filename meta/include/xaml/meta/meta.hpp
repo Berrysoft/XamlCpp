@@ -38,7 +38,7 @@ namespace xaml
         template <typename T>
         std::shared_ptr<T> query() noexcept
         {
-            if (this && query_type(type_guid_v<T>))
+            if (query_type(type_guid_v<T>))
                 return std::static_pointer_cast<T>(shared_from_this());
             else
                 return nullptr;
@@ -47,7 +47,7 @@ namespace xaml
         template <typename T>
         std::shared_ptr<T const> query() const noexcept
         {
-            if (this && query_type(type_guid_v<T>))
+            if (query_type(type_guid_v<T>))
                 return std::static_pointer_cast<T const>(shared_from_this());
             else
                 return nullptr;

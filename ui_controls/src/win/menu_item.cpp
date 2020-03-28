@@ -31,13 +31,16 @@ namespace xaml
     {
         auto sparent = get_parent().lock();
         HMENU hpmenu = nullptr;
-        if (auto ppmenu = sparent->query<popup_menu_item>())
+        if (sparent)
         {
-            hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu.get();
-        }
-        else if (auto pmenu = sparent->query<menu_bar>())
-        {
-            hpmenu = pmenu->get_menu()->handle.get();
+            if (auto ppmenu = sparent->query<popup_menu_item>())
+            {
+                hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu.get();
+            }
+            else if (auto pmenu = sparent->query<menu_bar>())
+            {
+                hpmenu = pmenu->get_menu()->handle.get();
+            }
         }
         if (hpmenu)
         {

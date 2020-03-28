@@ -25,21 +25,27 @@ namespace xaml
         auto svalue = value.lock();
         if (sparent != svalue)
         {
-            if (auto multic = sparent->query<multicontainer>())
+            if (sparent)
             {
-                multic->remove_child(static_pointer_cast<control>(shared_from_this()));
+                if (auto multic = sparent->query<multicontainer>())
+                {
+                    multic->remove_child(static_pointer_cast<control>(shared_from_this()));
+                }
+                else if (auto c = sparent->query<container>())
+                {
+                    c->set_child(nullptr);
+                }
             }
-            else if (auto c = sparent->query<container>())
+            if (svalue)
             {
-                c->set_child(nullptr);
-            }
-            if (auto multic = svalue->query<multicontainer>())
-            {
-                multic->add_child(static_pointer_cast<control>(shared_from_this()));
-            }
-            else if (auto c = svalue->query<container>())
-            {
-                c->set_child(static_pointer_cast<control>(shared_from_this()));
+                if (auto multic = svalue->query<multicontainer>())
+                {
+                    multic->add_child(static_pointer_cast<control>(shared_from_this()));
+                }
+                else if (auto c = svalue->query<container>())
+                {
+                    c->set_child(static_pointer_cast<control>(shared_from_this()));
+                }
             }
             m_parent = svalue;
             m_parent_changed(*this, *svalue.get());

@@ -32,11 +32,14 @@ namespace xaml
                 {
                     for (auto& c : multic->get_children())
                     {
-                        if (auto rc = c->query<radio_box>())
+                        if (c)
                         {
-                            if (c != shared_from_this() && rc->get_group() == get_group())
+                            if (auto rc = c->query<radio_box>())
                             {
-                                rc->set_is_checked(false);
+                                if (c != shared_from_this() && rc->get_group() == get_group())
+                                {
+                                    rc->set_is_checked(false);
+                                }
                             }
                         }
                     }
