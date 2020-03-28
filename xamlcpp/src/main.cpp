@@ -197,10 +197,10 @@ int _tmain(int argc, char_t const* const* argv)
                 _tcout << U("Registered types:") << endl;
                 for (auto& pair : ctx.get_types())
                 {
-                    auto ns = value_converter_traits<string_view_t>::convert(box_value(pair.first));
+                    auto ns = to_string_t(pair.first);
                     for (auto& p : pair.second)
                     {
-                        auto name = value_converter_traits<string_view_t>::convert(box_value(p.first));
+                        auto name = to_string_t(p.first);
                         _tcout << ns << U("::") << name << endl;
                     }
                 }
@@ -235,7 +235,7 @@ int _tmain(int argc, char_t const* const* argv)
     }
     catch (exception const& e)
     {
-        _tcout << value_converter_traits<string_view_t>::convert(box_value(e.what())) << endl;
+        _tcout << to_string_t(e.what()) << endl;
         return 1;
     }
     return 0;

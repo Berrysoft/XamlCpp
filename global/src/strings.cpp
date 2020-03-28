@@ -6,7 +6,7 @@ using namespace std;
 namespace xaml
 {
 #ifdef _MSC_VER
-    string __wtomb(wstring_view str)
+    string to_string(wstring_view str)
     {
         size_t count{ 0 };
         errno_t err = wcstombs_s(&count, nullptr, 0, str.data(), str.size());
@@ -16,7 +16,7 @@ namespace xaml
         return result;
     }
 
-    wstring __mbtow(string_view str)
+    wstring to_wstring(string_view str)
     {
         size_t count{ 0 };
         errno_t err = mbstowcs_s(&count, nullptr, 0, str.data(), str.size());
@@ -26,7 +26,7 @@ namespace xaml
         return result;
     }
 #else
-    string __wtomb(wstring_view str)
+    string to_string(wstring_view str)
     {
         size_t count = wcstombs(nullptr, str.data(), str.size());
         if (count <= 0) return {};
@@ -35,7 +35,7 @@ namespace xaml
         return result;
     }
 
-    wstring __mbtow(string_view str)
+    wstring to_wstring(string_view str)
     {
         size_t count = mbstowcs(nullptr, str.data(), str.size());
         if (count <= 0) return {};

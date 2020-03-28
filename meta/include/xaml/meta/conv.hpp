@@ -407,7 +407,7 @@ namespace xaml
                 }
                 else if (auto wstr = value->query<meta_box<std::wstring>>())
                 {
-                    return __wtomb(wstr->get());
+                    return to_string(wstr->get());
                 }
             }
             return {};
@@ -423,7 +423,7 @@ namespace xaml
             {
                 if (auto str = value->query<meta_box<std::string>>())
                 {
-                    return __mbtow(str->get());
+                    return to_wstring(str->get());
                 }
                 else if (auto wstr = value->query<meta_box<std::wstring>>())
                 {

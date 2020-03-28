@@ -16,7 +16,7 @@ namespace xaml::cmdline
     static string get_invalid_option_message(string_view_t opt)
     {
         ostringstream stream;
-        stream << "Invalid option: " << quoted(value_converter_traits<string_view>::convert(box_value(opt)));
+        stream << "Invalid option: " << quoted(to_string(opt));
         return stream.str();
     }
 

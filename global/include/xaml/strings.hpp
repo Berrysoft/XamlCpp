@@ -33,16 +33,26 @@ namespace xaml
 {
 #ifdef UNICODE
     using char_t = wchar_t;
+
+#ifndef to_string_t
+#define to_string_t to_wstring
+#endif // !to_string_t
 #else
     using char_t = char;
+
+#ifndef to_string_t
+#define to_string_t to_string
+#endif // !to_string_t
 #endif // UNICODE
 
     using string_t = std::basic_string<char_t>;
     using string_view_t = std::basic_string_view<char_t>;
 
-    XAML_GLOBAL_API std::string __wtomb(std::wstring_view str);
+    XAML_GLOBAL_API std::string to_string(std::wstring_view str);
+    inline std::string to_string(std::string_view str) { return (std::string)str; }
 
-    XAML_GLOBAL_API std::wstring __mbtow(std::string_view str);
+    XAML_GLOBAL_API std::wstring to_wstring(std::string_view str);
+    inline std::wstring to_wstring(std::wstring_view str) { return (std::wstring)str; }
 } // namespace xaml
 
 #endif // !XAML_UI_STRINGS_HPP
