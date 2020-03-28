@@ -4,6 +4,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+if(NOT DEFINED CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
 
 # Options for target platforms.
@@ -46,21 +50,19 @@ elseif(${BUILD_GTK3})
 endif()
 
 set(XAML_BUILD_DEFINITIONS "")
+set(XAML_BUILD_INTERNAL_DEFINITIONS "")
 set(XAML_COMPILE_OPTIONS "")
 set(XAML_LINK_OPTIONS "")
 
 # Universal definitions, independent of compilers.
 if(${BUILD_WINDOWS})
-    list(APPEND XAML_BUILD_DEFINITIONS "-DUNICODE" "-D_UNICODE" "-DXAML_UI_WINDOWS")
-
-    if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
-        list(APPEND XAML_BUILD_DEFINITIONS "-D_WIN32_WINNT=_WIN32_WINNT_WIN7")
-    endif()
+    list(APPEND XAML_BUILD_DEFINITIONS "UNICODE" "_UNICODE" "XAML_UI_WINDOWS")
+    list(APPEND XAML_BUILD_INTERNAL_DEFINITIONS "_WIN32_WINNT=_WIN32_WINNT_WIN7")
 elseif(${BUILD_COCOA})
-    list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_UI_COCOA")
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_UI_COCOA")
     list(APPEND XAML_COMPILE_OPTIONS "-fobjc-arc")
 elseif(${BUILD_GTK3})
-    list(APPEND XAML_BUILD_DEFINITIONS "-DXAML_UI_GTK3")
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_UI_GTK3")
 endif()
 
 # Versions.
@@ -92,25 +94,10 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
-# LTO and work around for MinGW.
+# Work around for MinGW.
 if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     if(MINGW)
         list(APPEND XAML_COMPILE_OPTIONS "-O1")
-    endif()
-elseif(NOT MINGW)
-    if(MSVC)
-        string(REGEX REPLACE "/INCREMENTAL" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-        string(REGEX REPLACE "/INCREMENTAL" "" CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
-        list(APPEND XAML_COMPILE_OPTIONS "/GL")
-        list(APPEND XAML_LINK_OPTIONS "/LTCG")
-    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU")
-        list(APPEND XAML_COMPILE_OPTIONS "-flto")
-    elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-        list(APPEND XAML_COMPILE_OPTIONS "-flto")
-        list(APPEND XAML_LINK_OPTIONS "-flto")
-        if(UNIX AND NOT APPLE)
-            list(APPEND XAML_LINK_OPTIONS "-fuse-ld=gold")
-        endif()
     endif()
 endif()
 

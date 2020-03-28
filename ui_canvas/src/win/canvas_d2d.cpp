@@ -5,6 +5,7 @@
 #include <win/canvas_d2d.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
+#include <xaml/ui/win/d2d.h>
 #include <xaml/ui/win/dpi.h>
 
 using namespace std;
@@ -169,22 +170,7 @@ namespace xaml
         target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
     }
 
-    static ID2D1Factory* try_create_factory()
-    {
-        ID2D1Factory* factory = nullptr;
-        __try
-        {
-            HRESULT hr = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory);
-            if (FAILED(hr)) factory = nullptr;
-        }
-        __except (EXCEPTION_EXECUTE_HANDLER)
-        {
-            factory = nullptr;
-        }
-        return factory;
-    }
-
-    canvas_d2d::canvas_d2d() {}
+    canvas_d2d::canvas_d2d() { XamlInitializeD2DFunc(); }
 
     canvas_d2d::~canvas_d2d() {}
 
@@ -192,18 +178,16 @@ namespace xaml
     {
         if (!d2d)
         {
-            if (d2d = try_create_factory())
+            try
             {
-                try
-                {
-                    THROW_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(wnd), &target));
-                    THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), dwrite.put_unknown()));
-                    return true;
-                }
-                catch (wil::ResultException const&)
-                {
-                    return false;
-                }
+                THROW_IF_FAILED(XamlD2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
+                THROW_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(wnd), &target));
+                THROW_IF_FAILED(XamlDWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
+                return true;
+            }
+            catch (wil::ResultException const&)
+            {
+                return false;
             }
         }
         return false;

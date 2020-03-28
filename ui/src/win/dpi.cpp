@@ -35,22 +35,26 @@ static wil::unique_hmodule shcore = nullptr;
 void WINAPI XamlInitializeDpiFunc()
 {
     if (!user32)
-        user32.reset(LoadLibraryEx(L"User32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
-    if (user32)
     {
-        pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32.get(), "SetProcessDPIAware");
-        pSetProcessDpiAwarenessContext = (pfSetProcessDpiAwarenessContext)GetProcAddress(user32.get(), "SetProcessDpiAwarenessContext");
-        pEnableNonClientDpiScaling = (pfEnableNonClientDpiScaling)GetProcAddress(user32.get(), "EnableNonClientDpiScaling");
-        pSystemParametersInfoForDpi = (pfSystemParametersInfoForDpi)GetProcAddress(user32.get(), "SystemParametersInfoForDpi");
-        pGetSystemMetricsForDpi = (pfGetSystemMetricsForDpi)GetProcAddress(user32.get(), "GetSystemMetricsForDpi");
-        pGetDpiForSystem = (pfGetDpiForSystem)GetProcAddress(user32.get(), "GetDpiForSystem");
-        pGetDpiForWindow = (pfGetDpiForWindow)GetProcAddress(user32.get(), "GetDpiForWindow");
+        user32.reset(LoadLibraryEx(L"User32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
+        if (user32)
+        {
+            pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32.get(), "SetProcessDPIAware");
+            pSetProcessDpiAwarenessContext = (pfSetProcessDpiAwarenessContext)GetProcAddress(user32.get(), "SetProcessDpiAwarenessContext");
+            pEnableNonClientDpiScaling = (pfEnableNonClientDpiScaling)GetProcAddress(user32.get(), "EnableNonClientDpiScaling");
+            pSystemParametersInfoForDpi = (pfSystemParametersInfoForDpi)GetProcAddress(user32.get(), "SystemParametersInfoForDpi");
+            pGetSystemMetricsForDpi = (pfGetSystemMetricsForDpi)GetProcAddress(user32.get(), "GetSystemMetricsForDpi");
+            pGetDpiForSystem = (pfGetDpiForSystem)GetProcAddress(user32.get(), "GetDpiForSystem");
+            pGetDpiForWindow = (pfGetDpiForWindow)GetProcAddress(user32.get(), "GetDpiForWindow");
+        }
     }
     if (!shcore)
-        shcore.reset(LoadLibraryEx(L"Shcore.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
-    if (shcore)
     {
-        pSetProcessDpiAwareness = (pfSetProcessDpiAwareness)GetProcAddress(shcore.get(), "SetProcessDpiAwareness");
+        shcore.reset(LoadLibraryEx(L"Shcore.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
+        if (shcore)
+        {
+            pSetProcessDpiAwareness = (pfSetProcessDpiAwareness)GetProcAddress(shcore.get(), "SetProcessDpiAwareness");
+        }
     }
 }
 

@@ -5,7 +5,12 @@ file(GLOB GLOBAL_SOURCE "src/*.cpp")
 
 add_library(xaml_global ${GLOBAL_SOURCE})
 
-target_compile_definitions(xaml_global PUBLIC ${XAML_BUILD_DEFINITIONS})
+target_compile_definitions(xaml_global
+    PUBLIC
+        ${XAML_BUILD_DEFINITIONS}
+        $<BUILD_INTERFACE:${XAML_BUILD_INTERNAL_DEFINITIONS}>
+)
+
 target_compile_options(xaml_global PUBLIC ${XAML_COMPILE_OPTIONS})
 
 if(CMAKE_VERSION VERSION_LESS 3.14)
