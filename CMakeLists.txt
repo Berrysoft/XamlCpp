@@ -4,7 +4,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+if(NOT DEFINED CMAKE_BUILD_TYPE OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
@@ -85,7 +85,7 @@ endif()
 option(XAML_NO_RTTI "Disable RTTI." ON)
 
 if(${XAML_NO_RTTI})
-    if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         list(APPEND XAML_COMPILE_OPTIONS "/GR-")
     else()
@@ -99,6 +99,10 @@ if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
     if(MINGW)
         list(APPEND XAML_COMPILE_OPTIONS "-O1")
     endif()
+endif()
+
+if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND XAML_COMPILE_OPTIONS "-Wno-incompatible-ms-struct")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)

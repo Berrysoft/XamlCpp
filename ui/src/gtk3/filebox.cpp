@@ -50,7 +50,7 @@ namespace xaml
     bool open_filebox::show(shared_ptr<window> owner)
     {
         auto h = make_shared<native_filebox>();
-        h->handle = gtk_file_chooser_dialog_new(get_title().data(), owner ? GTK_WINDOW(owner->get_window()->window) : NULL, GTK_FILE_CHOOSER_ACTION_OPEN, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Open"), GTK_RESPONSE_ACCEPT, NULL);
+        h->handle = gtk_file_chooser_dialog_new(get_title().data(), owner ? GTK_WINDOW(owner->get_window()->window) : NULL, GTK_FILE_CHOOSER_ACTION_OPEN, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Open"), GTK_RESPONSE_ACCEPT, nullptr);
         set_handle(h);
         return filebox::show(owner);
     }
@@ -58,7 +58,7 @@ namespace xaml
     bool save_filebox::show(shared_ptr<window> owner)
     {
         auto h = make_shared<native_filebox>();
-        h->handle = gtk_file_chooser_dialog_new(get_title().data(), owner ? GTK_WINDOW(owner->get_window()->window) : NULL, GTK_FILE_CHOOSER_ACTION_SAVE, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Save"), GTK_RESPONSE_ACCEPT, NULL);
+        h->handle = gtk_file_chooser_dialog_new(get_title().data(), owner ? GTK_WINDOW(owner->get_window()->window) : NULL, GTK_FILE_CHOOSER_ACTION_SAVE, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Save"), GTK_RESPONSE_ACCEPT, nullptr);
         set_handle(h);
         return filebox::show(owner);
     }
