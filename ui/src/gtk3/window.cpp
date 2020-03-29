@@ -35,6 +35,7 @@ namespace xaml
             gtk_box_pack_end(GTK_BOX(get_window()->vbox), h->handle, TRUE, TRUE, 0);
             application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
             g_signal_connect(G_OBJECT(get_window()->window), "destroy", G_CALLBACK(window::on_destroy), this);
+            g_signal_connect(G_OBJECT(get_window()->window), "delete-event", G_CALLBACK(window::on_delete_event), this);
             g_signal_connect(G_OBJECT(get_window()->window), "configure-event", G_CALLBACK(window::on_configure_event), this);
             draw_title();
             draw_resizable();
@@ -122,11 +123,19 @@ namespace xaml
         return { 0, 0, (double)width, (double)height };
     }
 
-    void window::on_destroy(void* w, void* arg)
+    void window::on_destroy(void* widget, void* data)
     {
-        window* self = (window*)arg;
+        window* self = (window*)data;
         application::current()->window_removed(static_pointer_cast<window>(self->shared_from_this()));
         self->set_handle(nullptr);
+    }
+
+    int window::on_delete_event(void* widget, void* event, void* data)
+    {
+        window* self = (window*)data;
+        auto handled = box_value(false);
+        self->m_closing(static_pointer_cast<window>(self->shared_from_this()), handled);
+        return !*handled;
     }
 
     int window::on_configure_event(void* widget, void* event, void* data)

@@ -23,6 +23,7 @@ namespace xaml::test
     test_window::test_window() : window(), tmr(2s), combo_source({ U("A"), U("BBB"), U("C") })
     {
         tmr.add_tick(mem_fn_bind(&test_window::on_timer_tick, this));
+        add_closing(mem_fn_bind(&test_window::on_window_closing, this));
     }
 
     void test_window::init_components()
@@ -219,5 +220,10 @@ namespace xaml::test
         dc->draw_line({ colors::black }, { cx - r, cy }, { cx + r, cy });
         dc->draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 });
         dc->draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, halignment_t::center, valignment_t::bottom }, { cx, cy }, U("Hello world!"));
+    }
+
+    void test_window::on_window_closing(shared_ptr<window> win, shared_ptr<meta_box<bool>> handled)
+    {
+        *handled = msgbox(win, U("Do you want to close this window?"), U("Close window"), msgbox_style::question, msgbox_buttons::yes_no) == msgbox_result::yes;
     }
 } // namespace xaml::test

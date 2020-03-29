@@ -38,7 +38,8 @@ namespace xaml
 
 #ifdef XAML_UI_GTK3
     private:
-        static void on_destroy(void* w, void* arg);
+        static void on_destroy(void* widget, void* data);
+        static int on_delete_event(void* widget, void* event, void* data);
         static int on_configure_event(void* widget, void* event, void* data);
 #endif // XAML_UI_GTK3
 
