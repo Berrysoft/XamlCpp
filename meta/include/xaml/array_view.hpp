@@ -79,7 +79,7 @@ namespace xaml
         constexpr const_reference operator[](size_type index) const noexcept { return m_start[index]; }
 
         constexpr size_type size() const noexcept { return m_count; }
-        constexpr bool empty() const noexcept { return !m_count; }
+        [[nodiscard]] constexpr bool empty() const noexcept { return !m_count; }
 
         constexpr const_pointer data() const noexcept { return m_start; }
 

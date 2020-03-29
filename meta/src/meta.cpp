@@ -5,21 +5,21 @@ using namespace std::filesystem;
 
 namespace xaml
 {
-    meta_class const* reflection_info::__get_attribute(guid attr_type) const noexcept
+    shared_ptr<meta_class> reflection_info::__get_attribute(guid attr_type) const noexcept
     {
         auto it = m_attribute_map.find(attr_type);
         if (it != m_attribute_map.end())
         {
-            return it->second.get();
+            return it->second;
         }
         return nullptr;
     }
 
-    void reflection_info::set_attribute(unique_ptr<meta_class>&& attr) noexcept
+    void reflection_info::set_attribute(shared_ptr<meta_class> attr) noexcept
     {
         if (attr)
         {
-            m_attribute_map[attr->get_type()] = move(attr);
+            m_attribute_map[attr->get_type()] = attr;
         }
     }
 

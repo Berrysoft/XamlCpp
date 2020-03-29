@@ -24,7 +24,7 @@ namespace xaml::cmdline
 
     options parse(reflection_info const* refl, array_view<string_t> args)
     {
-        option const* popt = refl->get_attribute<option>();
+        auto popt = refl->get_attribute<option>();
         if (!popt) throw no_registered_option{};
         options result;
         for (size_t i = 0; i < args.size(); i++)

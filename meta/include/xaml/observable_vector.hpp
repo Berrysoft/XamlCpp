@@ -408,7 +408,7 @@ namespace xaml
         const_reverse_iterator crend() const noexcept { return std::reverse_iterator(cbegin()); }
         const_reverse_iterator rend() const noexcept { return crend(); }
 
-        bool empty() const noexcept { return m_vec.empty(); }
+        [[nodiscard]] bool empty() const noexcept { return m_vec.empty(); }
         size_type size() const noexcept { return m_vec.size(); }
         size_type max_size() const noexcept { return m_vec.max_size(); }
         void reserve(size_type new_cap) { m_vec.reserve(new_cap); }
@@ -587,7 +587,7 @@ namespace xaml
         reverse_iterator rbegin() const noexcept { return crbegin(); }
         reverse_iterator rend() const noexcept { return crend(); }
 
-        bool empty() const noexcept { return m_vec->empty(); }
+        [[nodiscard]] bool empty() const noexcept { return m_vec->empty(); }
         size_type size() const noexcept { return m_vec->size(); }
 
         friend constexpr bool operator==(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return lhs.m_vec == rhs.m_vec; }

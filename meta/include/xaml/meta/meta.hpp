@@ -602,7 +602,7 @@ namespace xaml
     class reflection_info : public reflection_info_base
     {
     private:
-        std::unordered_map<guid, std::unique_ptr<meta_class>> m_attribute_map;
+        std::unordered_map<guid, std::shared_ptr<meta_class>> m_attribute_map;
         std::vector<std::unique_ptr<type_erased_function>> m_ctors;
         std::unordered_multimap<std::string, std::unique_ptr<type_erased_this_function>> m_method_map;
         std::unordered_multimap<std::string, std::unique_ptr<type_erased_function>> m_static_method_map;
@@ -615,19 +615,19 @@ namespace xaml
         ~reflection_info() override {}
 
     public:
-        std::unordered_map<guid, std::unique_ptr<meta_class>> const& get_attributes() const noexcept { return m_attribute_map; }
+        std::unordered_map<guid, std::shared_ptr<meta_class>> const& get_attributes() const noexcept { return m_attribute_map; }
 
     protected:
-        XAML_META_API meta_class const* __get_attribute(guid attr_type) const noexcept;
+        XAML_META_API std::shared_ptr<meta_class> __get_attribute(guid attr_type) const noexcept;
 
     public:
         template <typename TAttr>
-        TAttr const* get_attribute() const noexcept
+        std::shared_ptr<TAttr> get_attribute() const noexcept
         {
-            return static_cast<TAttr const*>(__get_attribute(type_guid_v<TAttr>));
+            return std::static_pointer_cast<TAttr>(__get_attribute(type_guid_v<TAttr>));
         }
 
-        XAML_META_API void set_attribute(std::unique_ptr<meta_class>&& attr) noexcept;
+        XAML_META_API void set_attribute(std::shared_ptr<meta_class> attr) noexcept;
 
     public:
         auto const& get_static_methods() const noexcept { return m_static_method_map; }

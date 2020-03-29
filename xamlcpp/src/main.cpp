@@ -87,16 +87,16 @@ namespace xamlcpp
             ADD_PROP(output);
             ADD_COLLECTION_PROP(lib_path, string_view_t);
 
-            auto attr = make_unique<cmdline::option>();
-            attr->add_arg(U('h'), U("help"), "help", U("Print help message"));
-            attr->add_arg(U('f'), U("fake"), "fake", U("Generate deserialize code"));
-            attr->add_arg(U('v'), U("verbose"), "verbose", U("Show detailed output"));
-            attr->add_arg(0, U("no-logo"), "no_logo", U("Cancellation to show copyright infomation"));
-            attr->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"));
-            attr->add_arg(0, {}, "input");
-            attr->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"));
-            attr->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path"));
-            ref->set_attribute(move(attr));
+            ADD_ATTR(
+                make_shared<cmdline::option>()
+                    ->add_arg(U('h'), U("help"), "help", U("Print help message"))
+                    ->add_arg(U('f'), U("fake"), "fake", U("Generate deserialize code"))
+                    ->add_arg(U('v'), U("verbose"), "verbose", U("Show detailed output"))
+                    ->add_arg(0, U("no-logo"), "no_logo", U("Cancellation to show copyright infomation"))
+                    ->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"))
+                    ->add_arg(0, {}, "input")
+                    ->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"))
+                    ->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path")));
         }
         REGISTER_CLASS_END()
     };
@@ -152,7 +152,7 @@ int _tmain(int argc, char_t const* const* argv)
 
         if (opts->get_help() || argc <= 1)
         {
-            cmdline::option const* popt = refl->get_attribute<cmdline::option>();
+            auto popt = refl->get_attribute<cmdline::option>();
             popt->print_help(_tcout);
             return 1;
         }

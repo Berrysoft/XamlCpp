@@ -175,6 +175,8 @@ public:                                                                         
     ADD_PROP(name);          \
     ADD_EVENT(name##_changed)
 
-#define ADD_DEF_PROP(name) ref->set_attribute(::std::make_unique<::xaml::default_property>(#name))
+#define ADD_ATTR(expr) ref->set_attribute((expr))
+
+#define ADD_DEF_PROP(name) ADD_ATTR(::std::make_shared<::xaml::default_property>(#name))
 
 #endif // !XAML_META_MACRO_HPP

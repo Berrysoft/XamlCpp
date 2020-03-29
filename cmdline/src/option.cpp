@@ -30,7 +30,7 @@ namespace xaml::cmdline
         }
     }
 
-    void option::add_arg(char_t short_name, string_view_t long_name, string_view prop_name, string_view_t help_text)
+    shared_ptr<option> option::add_arg(char_t short_name, string_view_t long_name, string_view prop_name, string_view_t help_text)
     {
         if (short_name || !long_name.empty())
         {
@@ -44,6 +44,7 @@ namespace xaml::cmdline
         {
             m_default_property = prop_name;
         }
+        return static_pointer_cast<option>(shared_from_this());
     }
 
     basic_ostream<char_t>& option::print_help(basic_ostream<char_t>& stream) const
