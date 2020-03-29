@@ -36,19 +36,14 @@ namespace xaml
     STRING_CONST(__halignment_right, "right")
 
     template <typename TChar>
-    struct __halignment_enum_meta_helper
+    struct enum_meta<halignment_t, TChar> : __enum_meta_helper<enum_meta<halignment_t, TChar>>
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, halignment_t> enum_map{
+        typename __enum_meta_helper<enum_meta<halignment_t, TChar>>::map_type enum_map{
             { __halignment_stretch<TChar>, halignment_t::stretch },
             { __halignment_left<TChar>, halignment_t::left },
             { __halignment_center<TChar>, halignment_t::center },
             { __halignment_right<TChar>, halignment_t::right }
         };
-    };
-
-    template <typename TChar>
-    struct enum_meta<halignment_t, TChar> : __enum_meta_helper<halignment_t, TChar, &__halignment_enum_meta_helper<TChar>::enum_map>
-    {
     };
 
     template <>
@@ -71,20 +66,14 @@ namespace xaml
     STRING_CONST(__valignment_bottom, "bottom")
 
     template <typename TChar>
-    struct __valignment_enum_meta_helper
+    struct enum_meta<valignment_t, TChar> : __enum_meta_helper<enum_meta<valignment_t, TChar>>
     {
-    public:
-        inline static __unordered_bimap<std::basic_string_view<TChar>, valignment_t> enum_map{
+        typename __enum_meta_helper<enum_meta<valignment_t, TChar>>::map_type enum_map{
             { __valignment_stretch<TChar>, valignment_t::stretch },
             { __valignment_top<TChar>, valignment_t::top },
             { __valignment_center<TChar>, valignment_t::center },
             { __valignment_bottom<TChar>, valignment_t::bottom }
         };
-    };
-
-    template <typename TChar>
-    struct enum_meta<valignment_t, TChar> : __enum_meta_helper<valignment_t, TChar, &__valignment_enum_meta_helper<TChar>::enum_map>
-    {
     };
 
     template <>

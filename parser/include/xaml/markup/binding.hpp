@@ -14,19 +14,14 @@ namespace xaml
     STRING_CONST(__binding_mode_two_way, "two_way")
 
     template <typename TChar>
-    struct __binding_mode_enum_meta_helper
+    struct enum_meta<binding_mode, TChar> : __enum_meta_helper<enum_meta<binding_mode, TChar>>
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, binding_mode> enum_map{
+        typename __enum_meta_helper<enum_meta<binding_mode, TChar>>::map_type enum_map{
             { __binding_mode_one_time<TChar>, binding_mode::one_time },
             { __binding_mode_one_way<TChar>, binding_mode::one_way },
             { __binding_mode_one_way_to_source<TChar>, binding_mode::one_way_to_source },
             { __binding_mode_two_way<TChar>, binding_mode::two_way }
         };
-    };
-
-    template <typename TChar>
-    struct enum_meta<binding_mode, TChar> : __enum_meta_helper<binding_mode, TChar, &__binding_mode_enum_meta_helper<TChar>::enum_map>
-    {
     };
 
     template <>

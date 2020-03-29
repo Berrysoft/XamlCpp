@@ -15,17 +15,12 @@ namespace xaml
     STRING_CONST(__orientation_vertical, "vertical")
 
     template <typename TChar>
-    struct __orientation_enum_meta_helper
+    struct enum_meta<orientation, TChar> : __enum_meta_helper<enum_meta<orientation, TChar>>
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, orientation> enum_map{
+        typename __enum_meta_helper<enum_meta<orientation, TChar>>::map_type enum_map{
             { __orientation_horizontal<TChar>, orientation::horizontal },
             { __orientation_vertical<TChar>, orientation::vertical }
         };
-    };
-
-    template <typename TChar>
-    struct enum_meta<orientation, TChar> : __enum_meta_helper<orientation, TChar, &__orientation_enum_meta_helper<TChar>::enum_map>
-    {
     };
 
     template <>

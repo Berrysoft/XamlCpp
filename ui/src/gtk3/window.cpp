@@ -135,7 +135,7 @@ namespace xaml
         window* self = (window*)data;
         auto handled = box_value(false);
         self->m_closing(static_pointer_cast<window>(self->shared_from_this()), handled);
-        return !*handled;
+        return *handled;
     }
 
     int window::on_configure_event(void* widget, void* event, void* data)

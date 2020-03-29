@@ -39,18 +39,13 @@ namespace xaml
     STRING_CONST(__grid_layout_compact, "compact")
 
     template <typename TChar>
-    struct __grid_layout_enum_meta_helper
+    struct enum_meta<grid_layout, TChar> : __enum_meta_helper<enum_meta<grid_layout, TChar>>
     {
-        inline static __unordered_bimap<std::basic_string_view<TChar>, grid_layout> enum_map{
+        typename __enum_meta_helper<enum_meta<grid_layout, TChar>>::map_type enum_map{
             { __grid_layout_abs<TChar>, grid_layout::abs },
             { __grid_layout_star<TChar>, grid_layout::star },
             { __grid_layout_compact<TChar>, grid_layout::compact }
         };
-    };
-
-    template <typename TChar>
-    struct enum_meta<grid_layout, TChar> : __enum_meta_helper<grid_layout, TChar, &__grid_layout_enum_meta_helper<TChar>::enum_map>
-    {
     };
 
     template <>

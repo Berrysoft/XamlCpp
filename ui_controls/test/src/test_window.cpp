@@ -224,6 +224,6 @@ namespace xaml::test
 
     void test_window::on_window_closing(shared_ptr<window> win, shared_ptr<meta_box<bool>> handled)
     {
-        *handled = msgbox(win, U("Do you want to close this window?"), U("Close window"), msgbox_style::question, msgbox_buttons::yes_no) == msgbox_result::yes;
+        handled->get() = msgbox(win, U("Do you want to close this window?"), U("Close window"), msgbox_style::question, msgbox_buttons::yes_no) != msgbox_result::yes;
     }
 } // namespace xaml::test

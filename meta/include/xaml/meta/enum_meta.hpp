@@ -41,21 +41,43 @@ namespace xaml
             m_map2[m_hasher1(pair.first)] = pair.second;
         }
 
-        TKey2& at1(TKey1 const& key) noexcept { return m_map2[m_hasher1(key)]; }
-        TKey1& at2(TKey2 const& key) noexcept { return m_map1[m_hasher2(key)]; }
+        TKey2 at1(TKey1 const& key) const noexcept
+        {
+            auto hash = m_hasher1(key);
+            auto it = m_map2.find(hash);
+            if (it != m_map2.end())
+                return it->second;
+            else
+                return {};
+        }
+
+        TKey1 at2(TKey2 const& key) const noexcept
+        {
+            auto hash = m_hasher2(key);
+            auto it = m_map1.find(hash);
+            if (it != m_map1.end())
+                return it->second;
+            else
+                return {};
+        }
     };
 
-    template <typename TEnum, typename TChar, __unordered_bimap<std::basic_string_view<TChar>, TEnum>* pmap>
-    struct __enum_meta_helper
+    template <typename TChild>
+    struct __enum_meta_helper;
+
+    template <typename TEnum, typename TChar>
+    struct __enum_meta_helper<enum_meta<TEnum, TChar>>
     {
+        using map_type = __unordered_bimap<std::basic_string_view<TChar>, TEnum>;
+
         inline TEnum operator()(std::basic_string_view<TChar> str) const noexcept
         {
-            return pmap->at1(str);
+            return static_cast<enum_meta<TEnum, TChar> const*>(this)->enum_map.at1(str);
         }
 
         inline std::basic_string_view<TChar> operator()(TEnum e) const noexcept
         {
-            return pmap->at2(e);
+            return static_cast<enum_meta<TEnum, TChar> const*>(this)->enum_map.at2(e);
         }
     };
 

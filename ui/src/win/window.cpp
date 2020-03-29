@@ -197,7 +197,7 @@ namespace xaml
             {
                 auto handled = box_value(false);
                 m_closing(static_pointer_cast<window>(shared_from_this()), handled);
-                if ((bool)!*handled)
+                if ((bool)*handled)
                 {
                     return 0;
                 }
