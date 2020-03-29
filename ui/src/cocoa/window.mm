@@ -182,7 +182,7 @@ namespace xaml
     {
         auto handled = box_value(false);
         m_closing(static_pointer_cast<window>(shared_from_this()), handled);
-        return !handled;
+        return !*handled;
     }
 
     double window::get_dpi() const

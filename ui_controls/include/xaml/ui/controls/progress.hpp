@@ -22,10 +22,10 @@ namespace xaml
         XAML_UI_CONTROLS_API progress();
         XAML_UI_CONTROLS_API ~progress();
 
-#ifdef XAML_UI_WINDOWS
+#ifndef XAML_UI_GTK3
     public:
         XAML_UI_CONTROLS_API void __size_to_fit() override;
-#endif // XAML_UI_WINDOWS
+#endif // !XAML_UI_GTK3
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
