@@ -22,7 +22,7 @@ namespace xaml
 
     void menu_bar::draw_submenu()
     {
-        for (auto& c : m_children)
+        for (auto& c : get_children())
         {
             c->__draw({});
             gtk_menu_shell_append(GTK_MENU_SHELL(get_handle()->handle), c->get_handle()->handle);
