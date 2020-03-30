@@ -212,12 +212,12 @@ int _tmain(int argc, char_t const* const* argv)
                 ofstream stream{ ouf_path };
                 if (opts->get_fake())
                 {
-                    if (verbose) _tcout << U("Compiling fake to ") << inf << U("...") << endl;
+                    if (verbose) _tcout << U("Compiling fake to ") << ouf_path << U("...") << endl;
                     c.compile_fake(stream, node, inf);
                 }
                 else
                 {
-                    if (verbose) _tcout << U("Compiling to ") << inf << U("...") << endl;
+                    if (verbose) _tcout << U("Compiling to ") << ouf_path << U("...") << endl;
                     c.compile(stream, node, inf, headers);
                 }
             }

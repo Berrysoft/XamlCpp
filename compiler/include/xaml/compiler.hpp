@@ -42,6 +42,8 @@ namespace xaml
         XAMLC_API std::ostream& write_begin_block(std::ostream& stream);
         XAMLC_API std::ostream& write_end_block(std::ostream& stream);
 
+        XAMLC_API std::ostream& write_static_file_content(std::ostream& stream, std::filesystem::path const& p);
+
         XAMLC_API std::ostream& write_init_decl(std::ostream& stream, std::string_view ns, std::string_view name);
         XAMLC_API std::ostream& write_init_decl_with_meta(std::ostream& stream, std::string_view ns, std::string_view name);
 

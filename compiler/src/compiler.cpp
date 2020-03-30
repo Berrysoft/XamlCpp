@@ -1,7 +1,9 @@
 #include <algorithm>
 #include <array>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
+#include <iostream>
 #include <iterator>
 #include <ostream>
 #include <sstream>
@@ -131,6 +133,21 @@ namespace xaml
         return write_indent(stream) << '}' << endl;
     }
 
+    ostream& compiler::write_static_file_content(ostream& stream, path const& p)
+    {
+        write_indent(stream) << "static constexpr ::std::string_view __view_file = R\"<<<<<<<<<<<<<<<<(";
+        ifstream file{ p };
+        char buffer[2048];
+        while (file)
+        {
+            file.read(buffer, sizeof(buffer));
+            auto count = file.gcount();
+            if (!count) break;
+            stream.write(buffer, count);
+        }
+        return stream << ")<<<<<<<<<<<<<<<<\";" << endl;
+    }
+
     ostream& compiler::write_init_decl(ostream& stream, string_view ns, string_view name)
     {
         return write_type(write_indent(stream) << "void ", ns, name) << "::init_components()" << endl;
@@ -236,7 +253,7 @@ namespace xaml
     ostream& compiler::write_add_event(ostream& stream, xaml_node& this_node, string_view name, xaml_event& ev)
     {
         ostringstream s;
-        auto [ns, n] = *this_node.map_class;
+        auto& [ns, n] = *this_node.map_class;
         s << "::xaml::mem_fn_bind(&::" << ns << "::" << n << "::" << ev.value << ", this)";
         string arg = s.str();
         return write_call(stream, name, "add_", ev.info->name(), { arg });
@@ -279,7 +296,7 @@ namespace xaml
 
     ostream& compiler::write_deserialize(ostream& stream, filesystem::path const& path)
     {
-        write_indent(stream) << "auto [__opened, __node, __headers] = ::xaml::parse_file(ctx, " << path << ");" << endl;
+        write_indent(stream) << "auto [__opened, __node, __headers] = ::xaml::parse_string(ctx, __view_file);" << endl;
         write_indent(stream) << "::xaml::deserializer __des{ ctx };" << endl;
         return stream;
     }
@@ -375,7 +392,7 @@ namespace xaml
                 }
                 all_headers.emplace(get_path_associated_header_path(path));
                 write_includes(stream, all_headers);
-                auto [ns, name] = *node.map_class;
+                auto& [ns, name] = *node.map_class;
                 write_init_decl(stream, ns, name);
                 write_begin_block(stream);
                 compile_impl(stream, node, node, true);
@@ -397,25 +414,26 @@ namespace xaml
         "xaml/parser.hpp"
     };
 
-    ostream& compiler::compile_fake(ostream& stream, xaml_node& node, filesystem::path const& path)
+    ostream& compiler::compile_fake(ostream& stream, xaml_node& node, path const& p)
     {
         if (stream)
         {
             if (node.map_class)
             {
                 write_includes(stream, fake_headers);
-                write_include(stream, get_path_associated_header_path(path));
-                auto [ns, name] = *node.map_class;
+                write_include(stream, get_path_associated_header_path(p));
+                write_static_file_content(stream, p);
+                auto& [ns, name] = *node.map_class;
                 write_init_decl_with_meta(stream, ns, name);
                 write_begin_block(stream);
-                write_deserialize(stream, path);
+                write_deserialize(stream, p);
                 write_type(write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<", ns, name) << ">(shared_from_this()));" << endl;
                 write_end_block(stream);
             }
             else
             {
-                write_construct(stream, node.name, node.type);
-                write_deserialize(stream, path);
+                write_static_file_content(stream, p);
+                write_deserialize(stream, p);
                 write_indent(stream) << "auto wnd = __des.deserialize(__node);" << endl;
             }
         }
