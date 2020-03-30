@@ -1,21 +1,19 @@
 project(XamlTest CXX)
 
-configure_file(view/test.xaml ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test.xaml COPYONLY)
-
 set(XAMLC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/compiler/test)
 
 add_custom_command(
     OUTPUT ${XAMLC_OUTPUT_DIR}/test.xaml.g.cpp
     DEPENDS xaml_ui_meta xaml_ui_controls_meta xaml_ui_canvas_meta xamlcpp
-    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test.xaml -o ${XAMLC_OUTPUT_DIR}/test.xaml.g.cpp --no-logo -L ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -L ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp view/test.xaml -o ${XAMLC_OUTPUT_DIR}/test.xaml.g.cpp --no-logo -L ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -L ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
 add_custom_command(
     OUTPUT ${XAMLC_OUTPUT_DIR}/test.xaml.g.fake.cpp
     DEPENDS xaml_ui_meta xaml_ui_controls_meta xaml_ui_canvas_meta xamlcpp
-    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/test.xaml -o ${XAMLC_OUTPUT_DIR}/test.xaml.g.fake.cpp --no-logo -f -L ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -L ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
-    WORKING_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}
+    COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp view/test.xaml -o ${XAMLC_OUTPUT_DIR}/test.xaml.g.fake.cpp --no-logo -f -L ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} -L ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
 file(GLOB TEST_SOURCE "src/*.cpp")
