@@ -29,13 +29,6 @@ if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
 endif()
 
 # Enable other languages.
-if(WIN32)
-    enable_language(RC)
-    if(MINGW)
-        set(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> -O coff -DGCC_WINDRES <DEFINES> <INCLUDES> <SOURCE> <OBJECT>")
-    endif()
-endif()
-
 if(${BUILD_COCOA})
     enable_language(OBJC OBJCXX)
     set(CMAKE_OBJC_STANDARD 11)
@@ -148,7 +141,6 @@ if(${USE_SYS_PUGIXML})
     find_package(pugixml REQUIRED)
 else()
     add_subdirectory(pugixml)
-    list(APPEND _XAML_TARGETS xaml_pugixml)
 endif()
 
 add_subdirectory(global)
