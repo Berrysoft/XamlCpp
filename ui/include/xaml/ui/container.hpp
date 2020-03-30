@@ -37,8 +37,8 @@ namespace xaml
             if (m_child != value)
             {
                 m_child = value;
-                m_child->set_parent(std::static_pointer_cast<control>(shared_from_this()));
-                m_child_changed(std::static_pointer_cast<container>(shared_from_this()), value);
+                m_child->set_parent(shared_from_this<control>());
+                m_child_changed(shared_from_this<container>(), value);
             }
         }
 

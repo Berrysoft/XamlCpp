@@ -37,10 +37,22 @@ namespace xaml
         virtual bool query_type(guid const& t) const noexcept { return t == type_guid_v<meta_class>; }
 
         template <typename T>
+        std::shared_ptr<T> shared_from_this()
+        {
+            return std::static_pointer_cast<T>(std::enable_shared_from_this<meta_class>::shared_from_this());
+        }
+
+        template <typename T>
+        std::shared_ptr<T const> shared_from_this() const
+        {
+            return std::static_pointer_cast<T const>(std::enable_shared_from_this<meta_class>::shared_from_this());
+        }
+
+        template <typename T>
         std::shared_ptr<T> query() noexcept
         {
             if (query_type(type_guid_v<T>))
-                return std::static_pointer_cast<T>(shared_from_this());
+                return shared_from_this<T>();
             else
                 return nullptr;
         }
@@ -49,7 +61,7 @@ namespace xaml
         std::shared_ptr<T const> query() const noexcept
         {
             if (query_type(type_guid_v<T>))
-                return std::static_pointer_cast<T const>(shared_from_this());
+                return shared_from_this<T>();
             else
                 return nullptr;
         }

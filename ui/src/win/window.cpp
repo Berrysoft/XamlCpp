@@ -62,7 +62,7 @@ namespace xaml
             params.width = CW_USEDEFAULT;
             params.height = CW_USEDEFAULT;
             this->__create(params);
-            auto shared_this = static_pointer_cast<window>(shared_from_this());
+            auto shared_this = shared_from_this<window>();
             application::current()->window_added(shared_this);
             window_map[get_handle()->handle] = weak_ptr{ shared_this };
             draw_resizable();
@@ -115,7 +115,7 @@ namespace xaml
     {
         if (get_menu_bar())
         {
-            get_menu_bar()->set_parent_window(static_pointer_cast<window>(shared_from_this()));
+            get_menu_bar()->set_parent_window(shared_from_this<window>());
             get_menu_bar()->__draw({});
         }
     }
@@ -196,7 +196,7 @@ namespace xaml
             case WM_CLOSE:
             {
                 auto handled = box_value(false);
-                m_closing(static_pointer_cast<window>(shared_from_this()), handled);
+                m_closing(shared_from_this<window>(), handled);
                 if ((bool)*handled)
                 {
                     return 0;
@@ -206,21 +206,21 @@ namespace xaml
             case WM_LBUTTONDOWN:
             case WM_RBUTTONDOWN:
             case WM_MBUTTONDOWN:
-                m_mouse_down(static_pointer_cast<window>(shared_from_this()), (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
+                m_mouse_down(shared_from_this<window>(), (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
                 break;
             case WM_LBUTTONUP:
             case WM_RBUTTONUP:
             case WM_MBUTTONUP:
-                m_mouse_up(static_pointer_cast<window>(shared_from_this()), (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
+                m_mouse_up(shared_from_this<window>(), (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
                 break;
             case WM_MOUSEMOVE:
             {
                 auto real_loc = from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
-                m_mouse_move(static_pointer_cast<window>(shared_from_this()), real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
+                m_mouse_move(shared_from_this<window>(), real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
                 break;
             }
             case WM_DESTROY:
-                application::current()->window_removed(static_pointer_cast<window>(shared_from_this()));
+                application::current()->window_removed(shared_from_this<window>());
                 break;
             }
             auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;

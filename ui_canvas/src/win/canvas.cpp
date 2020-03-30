@@ -73,7 +73,7 @@ namespace xaml
             DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
             if (m_canvas && ds->hwndItem == get_handle()->handle)
             {
-                m_canvas->begin_paint(ds->hwndItem, get_size(), [this](shared_ptr<drawing_context> dc) { m_redraw(static_pointer_cast<canvas>(shared_from_this()), dc); });
+                m_canvas->begin_paint(ds->hwndItem, get_size(), [this](shared_ptr<drawing_context> dc) { m_redraw(shared_from_this<canvas>(), dc); });
             }
             return TRUE;
         }

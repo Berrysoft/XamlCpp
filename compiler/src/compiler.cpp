@@ -427,7 +427,7 @@ namespace xaml
                 write_init_decl_with_meta(stream, ns, name);
                 write_begin_block(stream);
                 write_deserialize(stream, p);
-                write_type(write_indent(stream) << "__des.deserialize(__node, ::std::static_pointer_cast<", ns, name) << ">(shared_from_this()));" << endl;
+                write_type(write_indent(stream) << "__des.deserialize(__node, shared_from_this<", ns, name) << ">());" << endl;
                 write_end_block(stream);
             }
             else

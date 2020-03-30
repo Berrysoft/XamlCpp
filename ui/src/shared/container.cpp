@@ -12,7 +12,7 @@ namespace xaml
             if (it == m_children.end())
             {
                 m_children.push_back(child);
-                child->set_parent(static_pointer_cast<control>(shared_from_this()));
+                child->set_parent(shared_from_this<control>());
                 if (get_handle())
                     __parent_redraw();
             }

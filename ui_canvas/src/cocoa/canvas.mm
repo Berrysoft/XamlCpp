@@ -216,6 +216,6 @@ namespace xaml
     {
         auto dc = make_shared<drawing_context>(nullptr);
         dc->__set_size(get_size());
-        m_redraw(static_pointer_cast<canvas>(shared_from_this()), dc);
+        m_redraw(shared_from_this<canvas>(), dc);
     }
 }

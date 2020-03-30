@@ -85,7 +85,7 @@ namespace xaml
                 if (m_items && on_items_changed_token) m_items.remove_vector_changed(on_items_changed_token);
                 m_items = value;
                 on_items_changed_token = m_items.add_vector_changed(mem_fn_bind(&items_base::on_items_changed, this));
-                m_items_changed(std::static_pointer_cast<items_base>(shared_from_this()), m_items);
+                m_items_changed(shared_from_this<items_base>(), m_items);
             }
         }
 

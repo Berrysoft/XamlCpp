@@ -26,7 +26,7 @@
     BOOL close = window->__on_should_close() ? YES : NO;
     if (close)
     {
-        xaml::application::current()->window_removed(std::static_pointer_cast<xaml::window>(window->shared_from_this()));
+        xaml::application::current()->window_removed(window->shared_from_this<xaml::window>());
     }
     return close;
 }
@@ -59,7 +59,7 @@ namespace xaml
             h->handle = window.contentView;
             set_window(w);
             set_handle(h);
-            application::current()->window_added(static_pointer_cast<xaml::window>(shared_from_this()));
+            application::current()->window_added(shared_from_this<xaml::window>());
             draw_title();
             draw_resizable();
         }
@@ -123,7 +123,7 @@ namespace xaml
     {
         if (get_menu_bar())
         {
-            get_menu_bar()->set_parent_window(static_pointer_cast<window>(shared_from_this()));
+            get_menu_bar()->set_parent_window(shared_from_this<window>());
             get_menu_bar()->__draw({});
         }
     }
@@ -181,7 +181,7 @@ namespace xaml
     bool window::__on_should_close()
     {
         auto handled = box_value(false);
-        m_closing(static_pointer_cast<window>(shared_from_this()), handled);
+        m_closing(shared_from_this<window>(), handled);
         return !*handled;
     }
 

@@ -29,7 +29,7 @@ namespace xaml
             {
                 if (auto multic = sparent->query<multicontainer>())
                 {
-                    multic->remove_child(static_pointer_cast<control>(shared_from_this()));
+                    multic->remove_child(shared_from_this<control>());
                 }
                 else if (auto c = sparent->query<container>())
                 {
@@ -40,11 +40,11 @@ namespace xaml
             {
                 if (auto multic = svalue->query<multicontainer>())
                 {
-                    multic->add_child(static_pointer_cast<control>(shared_from_this()));
+                    multic->add_child(shared_from_this<control>());
                 }
                 else if (auto c = svalue->query<container>())
                 {
-                    c->set_child(static_pointer_cast<control>(shared_from_this()));
+                    c->set_child(shared_from_this<control>());
                 }
             }
             m_parent = svalue;

@@ -44,7 +44,7 @@ namespace xaml::cmdline
         {
             m_default_property = prop_name;
         }
-        return static_pointer_cast<option>(shared_from_this());
+        return shared_from_this<option>();
     }
 
     basic_ostream<char_t>& option::print_help(basic_ostream<char_t>& stream) const

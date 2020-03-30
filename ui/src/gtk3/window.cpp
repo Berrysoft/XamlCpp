@@ -33,7 +33,7 @@ namespace xaml
             set_handle(h);
             gtk_container_add(GTK_CONTAINER(get_window()->window), get_window()->vbox);
             gtk_box_pack_end(GTK_BOX(get_window()->vbox), h->handle, TRUE, TRUE, 0);
-            application::current()->window_added(static_pointer_cast<window>(shared_from_this()));
+            application::current()->window_added(shared_from_this<window>());
             g_signal_connect(G_OBJECT(get_window()->window), "destroy", G_CALLBACK(window::on_destroy), this);
             g_signal_connect(G_OBJECT(get_window()->window), "delete-event", G_CALLBACK(window::on_delete_event), this);
             g_signal_connect(G_OBJECT(get_window()->window), "configure-event", G_CALLBACK(window::on_configure_event), this);
@@ -83,7 +83,7 @@ namespace xaml
     {
         if (m_menu_bar)
         {
-            m_menu_bar->set_parent_window(static_pointer_cast<window>(shared_from_this()));
+            m_menu_bar->set_parent_window(shared_from_this<window>());
             m_menu_bar->__draw({});
             g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
             if (!g_list_find(list.get(), m_menu_bar->get_handle()->handle))
@@ -126,7 +126,7 @@ namespace xaml
     void window::on_destroy(void* widget, void* data)
     {
         window* self = (window*)data;
-        application::current()->window_removed(static_pointer_cast<window>(self->shared_from_this()));
+        application::current()->window_removed(self->shared_from_this<window>());
         self->set_handle(nullptr);
     }
 
@@ -134,7 +134,7 @@ namespace xaml
     {
         window* self = (window*)data;
         auto handled = box_value(false);
-        self->m_closing(static_pointer_cast<window>(self->shared_from_this()), handled);
+        self->m_closing(self->shared_from_this<window>(), handled);
         return *handled;
     }
 

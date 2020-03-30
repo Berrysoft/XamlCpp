@@ -72,7 +72,7 @@ namespace xaml
         XAML_UI_API virtual ~window() override;
 
     public:
-        std::shared_ptr<control> get_root_window() override { return std::static_pointer_cast<control>(shared_from_this()); }
+        std::shared_ptr<control> get_root_window() override { return shared_from_this<control>(); }
 
         XAML_UI_API void show();
         XAML_UI_API void close();
@@ -96,7 +96,7 @@ namespace xaml
             if (m_location.x != value)
             {
                 m_location.x = value;
-                m_location_changed(std::static_pointer_cast<window>(shared_from_this()), get_location());
+                m_location_changed(shared_from_this<window>(), get_location());
             }
         }
         void set_y(double value)
@@ -104,7 +104,7 @@ namespace xaml
             if (m_location.y != value)
             {
                 m_location.y = value;
-                m_location_changed(std::static_pointer_cast<window>(shared_from_this()), get_location());
+                m_location_changed(shared_from_this<window>(), get_location());
             }
         }
 

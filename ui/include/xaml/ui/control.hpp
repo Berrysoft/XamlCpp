@@ -168,7 +168,7 @@ namespace xaml
             if (m_size.width != value)
             {
                 m_size.width = value;
-                m_size_changed(std::static_pointer_cast<control>(shared_from_this()), get_size());
+                m_size_changed(shared_from_this<control>(), get_size());
             }
         }
 
@@ -178,7 +178,7 @@ namespace xaml
             if (m_size.height != value)
             {
                 m_size.height = value;
-                m_size_changed(std::static_pointer_cast<control>(shared_from_this()), get_size());
+                m_size_changed(shared_from_this<control>(), get_size());
             }
         }
 

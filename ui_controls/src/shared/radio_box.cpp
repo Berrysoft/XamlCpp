@@ -36,7 +36,7 @@ namespace xaml
                         {
                             if (auto rc = c->query<radio_box>())
                             {
-                                if (c != shared_from_this() && rc->get_group() == get_group())
+                                if (c != shared_from_this<radio_box>() && rc->get_group() == get_group())
                                 {
                                     rc->set_is_checked(false);
                                 }

@@ -97,7 +97,7 @@ namespace xaml
             }
         });
         m_webview->set_resource_requested([this](shared_ptr<resource_requested_args> args) {
-            m_resource_requested(static_pointer_cast<webview>(shared_from_this()), args);
+            m_resource_requested(shared_from_this<webview>(), args);
         });
         m_created.store(true);
         draw_visible();

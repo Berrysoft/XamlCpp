@@ -139,11 +139,11 @@ public:                                                                         
         },                                                                                            \
         &self_type::m_##name)
 
-#define __DETERMINE_NEQ_AND_RAISE_EVENT(name)                                                                       \
-    if (m_##name != value)                                                                                          \
-    {                                                                                                               \
-        m_##name = value;                                                                                           \
-        m_##name##_changed(::std::static_pointer_cast<::std::decay_t<decltype(*this)>>(shared_from_this()), value); \
+#define __DETERMINE_NEQ_AND_RAISE_EVENT(name)                                           \
+    if (m_##name != value)                                                              \
+    {                                                                                   \
+        m_##name = value;                                                               \
+        m_##name##_changed(shared_from_this<::std::decay_t<decltype(*this)>>(), value); \
     }
 
 #define PROP_EVENT(name, type)                \

@@ -21,7 +21,7 @@ namespace xaml
             if (it == m_submenu.end())
             {
                 m_submenu.push_back(child);
-                child->set_parent(static_pointer_cast<control>(shared_from_this()));
+                child->set_parent(shared_from_this<control>());
                 __parent_redraw();
             }
         }
@@ -73,7 +73,7 @@ namespace xaml
                         {
                             if (auto rc = c->query<radio_menu_item>())
                             {
-                                if (c != shared_from_this() && rc->get_group() == get_group())
+                                if (c != shared_from_this<radio_menu_item>() && rc->get_group() == get_group())
                                 {
                                     rc->set_is_checked(false);
                                 }

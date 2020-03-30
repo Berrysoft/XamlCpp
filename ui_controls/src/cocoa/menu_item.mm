@@ -71,7 +71,7 @@ namespace xaml
 
     void menu_item::__on_action()
     {
-        m_click(static_pointer_cast<menu_item>(shared_from_this()));
+        m_click(shared_from_this<menu_item>());
     }
 
     void popup_menu_item::__draw(rectangle const& region)

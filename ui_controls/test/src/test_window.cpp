@@ -169,7 +169,7 @@ namespace xaml::test
                 btn->add_click([this, box](shared_ptr<button>) {
                     size_t sel = box->get_sel_id();
                     if (sel >= 0 && sel < combo_source.size())
-                        msgbox(static_pointer_cast<window>(shared_from_this()), combo_source[sel].get(), U("Show selected item"));
+                        msgbox(shared_from_this<window>(), combo_source[sel].get(), U("Show selected item"));
                 });
                 panel->add_child(btn);
             }
@@ -196,17 +196,17 @@ namespace xaml::test
 
     void test_window::on_timer_tick(timer&)
     {
-        msgbox(static_pointer_cast<window>(shared_from_this()), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok);
+        msgbox(shared_from_this<window>(), U("Hello world!"), U("Hello"), msgbox_style::info, msgbox_buttons::ok);
         if (++count >= 3)
         {
             tmr.stop();
             open_filebox openbox{};
             openbox.set_title(U("Open file"));
             openbox.set_filters({ { U("XAML file"), U("*.xaml") } });
-            bool res = openbox.show(static_pointer_cast<window>(shared_from_this()));
+            bool res = openbox.show(shared_from_this<window>());
             if (res)
             {
-                msgbox(static_pointer_cast<window>(shared_from_this()), openbox.get_result(), U("Open file"));
+                msgbox(shared_from_this<window>(), openbox.get_result(), U("Open file"));
             }
         }
     }
