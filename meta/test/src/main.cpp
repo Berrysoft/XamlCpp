@@ -56,7 +56,7 @@ namespace xaml::test
         REGISTER_CLASS_DECL_NOFILE(xaml::test, calculator)
         {
             // Add default constructor.
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             // Add methods `plus` and `minus`.
             ADD_METHOD(plus);
             ADD_METHOD(minus);

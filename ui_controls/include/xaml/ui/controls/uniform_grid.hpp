@@ -42,7 +42,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, uniform_grid, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_UNIFORM_GRID_MEMBERS();
         }
         REGISTER_CLASS_END()

@@ -62,7 +62,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, radio_box, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_RADIO_BOX_MEMBERS();
         }
         REGISTER_CLASS_END()

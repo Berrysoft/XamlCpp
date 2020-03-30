@@ -1,3 +1,4 @@
+#include <numbers>
 #include <stdexcept>
 #include <win/canvas_gdiplus.hpp>
 #include <windowsx.h>
@@ -5,6 +6,7 @@
 #include <xaml/ui/win/dpi.h>
 
 using namespace std;
+using std::numbers::pi;
 using namespace Gdiplus;
 
 namespace xaml
@@ -93,13 +95,13 @@ namespace xaml
     void drawing_context_gdiplus::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
         auto p = get_Pen(pen, dpi);
-        check_status(handle->DrawArc(&p, get_RectF(region, dpi), (REAL)(start_angle / M_PI * 180), (REAL)((end_angle - start_angle) / M_PI * 180)));
+        check_status(handle->DrawArc(&p, get_RectF(region, dpi), (REAL)(start_angle / pi * 180), (REAL)((end_angle - start_angle) / pi * 180)));
     }
 
     void drawing_context_gdiplus::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
         auto b = get_Brush(brush);
-        check_status(handle->FillPie(&b, get_RectF(region, dpi), (REAL)(start_angle / M_PI * 180), (REAL)((end_angle - start_angle) / M_PI * 180)));
+        check_status(handle->FillPie(&b, get_RectF(region, dpi), (REAL)(start_angle / pi * 180), (REAL)((end_angle - start_angle) / pi * 180)));
     }
 
     void drawing_context_gdiplus::draw_ellipse(drawing_pen const& pen, rectangle const& region)

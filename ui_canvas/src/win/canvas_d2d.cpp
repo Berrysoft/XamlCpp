@@ -1,5 +1,6 @@
 #ifdef XAML_UI_CANVAS_DIRECT2D
 
+#include <numbers>
 #include <tuple>
 #include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>
@@ -9,6 +10,7 @@
 #include <xaml/ui/win/dpi.h>
 
 using namespace std;
+using std::numbers::pi;
 
 namespace xaml
 {
@@ -52,7 +54,7 @@ namespace xaml
         THROW_IF_FAILED(geo->Open(&sink));
         auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
         sink->BeginFigure(to_native<D2D1_POINT_2F>(startp), D2D1_FIGURE_BEGIN_HOLLOW);
-        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > M_PI) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
         sink->EndFigure(D2D1_FIGURE_END_OPEN);
         THROW_IF_FAILED(sink->Close());
         auto b = get_Brush(target.get(), pen.stroke);
@@ -69,7 +71,7 @@ namespace xaml
         auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
         sink->BeginFigure(to_native<D2D1_POINT_2F>(centerp), D2D1_FIGURE_BEGIN_FILLED);
         sink->AddLine(to_native<D2D1_POINT_2F>(startp));
-        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > M_PI) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
         sink->EndFigure(D2D1_FIGURE_END_CLOSED);
         THROW_IF_FAILED(sink->Close());
         auto b = get_Brush(target.get(), brush.fill);

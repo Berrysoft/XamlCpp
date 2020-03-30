@@ -4,6 +4,13 @@
 #include <xaml/ui/controls/native_canvas.hpp>
 #include <xaml/ui/native_control.hpp>
 
+#if __has_include(<numbers>)
+#include <numbers>
+using std::numbers::pi;
+#else
+inline constexpr double pi = M_PI;
+#endif // __has_include(<numbers>)
+
 using namespace std;
 
 namespace xaml
@@ -45,12 +52,12 @@ namespace xaml
 
     void drawing_context::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
-        draw_arc(pen, region, 0, 2 * M_PI);
+        draw_arc(pen, region, 0, 2 * pi);
     }
 
     void drawing_context::fill_ellipse(drawing_brush const& brush, const rectangle& region)
     {
-        fill_pie(brush, region, 0, 2 * M_PI);
+        fill_pie(brush, region, 0, 2 * pi);
     }
 
     void drawing_context::draw_line(drawing_pen const& pen, point startp, point endp)
@@ -88,10 +95,10 @@ namespace xaml
         cairo_get_matrix(m_handle->handle, &save_matrix);
         cairo_scale(m_handle->handle, 1, round.height / round.width);
         cairo_new_sub_path(m_handle->handle);
-        cairo_arc(m_handle->handle, rect.x + rect.width - round.width / 2, rect.y + round.height / 2, round.width / 2, -M_PI / 2, 0);
-        cairo_arc(m_handle->handle, rect.x + rect.width - round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, 0, M_PI / 2);
-        cairo_arc(m_handle->handle, rect.x + round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, M_PI / 2, M_PI);
-        cairo_arc(m_handle->handle, rect.x + round.width / 2, rect.y + round.height / 2, round.width / 2, M_PI, M_PI / 2 * 3);
+        cairo_arc(m_handle->handle, rect.x + rect.width - round.width / 2, rect.y + round.height / 2, round.width / 2, -pi / 2, 0);
+        cairo_arc(m_handle->handle, rect.x + rect.width - round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, 0, pi / 2);
+        cairo_arc(m_handle->handle, rect.x + round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, pi / 2, pi);
+        cairo_arc(m_handle->handle, rect.x + round.width / 2, rect.y + round.height / 2, round.width / 2, pi, pi / 2 * 3);
         cairo_close_path(m_handle->handle);
         cairo_set_matrix(m_handle->handle, &save_matrix);
     }

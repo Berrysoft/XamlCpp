@@ -49,7 +49,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, progress, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_PROGRESS_MEMBERS();
         }
         REGISTER_CLASS_END()

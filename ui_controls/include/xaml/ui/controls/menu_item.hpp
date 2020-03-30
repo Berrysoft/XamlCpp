@@ -76,7 +76,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, menu_item, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_MENU_ITEM_MEMBERS();
         }
         REGISTER_CLASS_END()
@@ -133,7 +133,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL_FILE(xaml, popup_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_POPUP_MENU_ITEM_MEMBERS();
         }
         REGISTER_CLASS_END()
@@ -173,7 +173,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL_FILE(xaml, check_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_CHECK_MENU_ITEM_MEMBERS();
         }
         REGISTER_CLASS_END()
@@ -217,7 +217,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL_FILE(xaml, radio_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_RADIO_MENU_ITEM_MEMBERS();
         }
         REGISTER_CLASS_END()
@@ -253,7 +253,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL_FILE(xaml, separator_menu_item, "xaml/ui/controls/menu_item.hpp")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_SEPARATOR_MENU_ITEM_MEMBERS();
         }
         REGISTER_CLASS_END()

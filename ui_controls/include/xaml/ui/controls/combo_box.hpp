@@ -69,7 +69,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, combo_box, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_COMBO_BOX_MEMBERS();
         }
         REGISTER_CLASS_END()

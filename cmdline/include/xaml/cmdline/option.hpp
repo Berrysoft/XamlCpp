@@ -56,7 +56,7 @@ namespace xaml::cmdline
 
         REGISTER_CLASS_DECL(xaml::cmdline, option, "xaml/cmdline")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
         }
         REGISTER_CLASS_END()
     };

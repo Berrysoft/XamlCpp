@@ -125,7 +125,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, webview, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_WEBVIEW_MEMBERS();
         }
         REGISTER_CLASS_END()

@@ -38,7 +38,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, stack_panel, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_STACK_PANEL_MEMBERS();
         }
         REGISTER_CLASS_END()

@@ -77,7 +77,7 @@ namespace xamlcpp
 
         REGISTER_CLASS_DECL_NOFILE(xamlcpp, xamlcpp_options)
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
 
             ADD_PROP(help);
             ADD_PROP(fake);

@@ -69,7 +69,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, button, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_BUTTON_MEMBERS();
         }
         REGISTER_CLASS_END()

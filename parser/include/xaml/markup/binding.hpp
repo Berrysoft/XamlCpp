@@ -76,7 +76,7 @@ namespace xaml
     public:
         REGISTER_CLASS_DECL_NOFILE(xaml, binding)
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_BINDING_EXTENSION_MEMBERS();
         }
         REGISTER_CLASS_END()

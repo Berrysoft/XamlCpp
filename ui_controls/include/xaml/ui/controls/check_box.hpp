@@ -58,7 +58,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, check_box, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_CHECK_BOX_MEMBERS();
         }
         REGISTER_CLASS_END()

@@ -59,7 +59,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, menu_bar, "xaml/ui")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_MENU_BAR_MEMBERS();
         }
         REGISTER_CLASS_END()

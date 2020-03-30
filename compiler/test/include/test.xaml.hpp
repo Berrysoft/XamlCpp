@@ -52,7 +52,7 @@ namespace xaml::test
 
         REGISTER_CLASS_DECL_FILE(xaml::test, test_window, "test.xaml.hpp")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_WINDOW_MEMBERS();
             ADD_METHOD(on_button_click);
             ADD_METHOD(on_canvas_redraw);

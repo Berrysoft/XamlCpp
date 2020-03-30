@@ -31,7 +31,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, default_property, "xaml/meta")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_CTOR(std::string_view);
             ADD_PROP(property_name);
         }

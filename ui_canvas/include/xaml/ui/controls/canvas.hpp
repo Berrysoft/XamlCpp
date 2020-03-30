@@ -139,7 +139,7 @@ namespace xaml
 
         REGISTER_CLASS_DECL(xaml, canvas, "xaml/ui/controls")
         {
-            ADD_CTOR_DEF();
+            ADD_CTOR();
             ADD_CANVAS_MEMBERS();
         }
         REGISTER_CLASS_END()
