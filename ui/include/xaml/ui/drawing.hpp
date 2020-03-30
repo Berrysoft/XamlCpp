@@ -11,6 +11,14 @@
 #include <xaml/meta/conv.hpp>
 #include <xaml/strings.hpp>
 
+#if __has_include(<version>)
+#include <version>
+#endif // __has_include(<version>)
+
+#if __has_include(<compare>)
+#include <compare>
+#endif // __has_include(<compare>)
+
 namespace xaml
 {
     template <typename T, typename TTuple, std::size_t... Indicies>
@@ -72,12 +80,24 @@ namespace xaml
     {
         double width;
         double height;
+
+#ifdef __cpp_impl_three_way_comparison
+        auto operator<=>(size const&) const = default;
+#endif // __cpp_impl_three_way_comparison
     };
 
-    constexpr bool operator==(size lhs, size rhs) { return lhs.width == rhs.width && lhs.height == rhs.height; }
+#ifndef __cpp_impl_three_way_comparison
+    constexpr bool operator==(size lhs, size rhs)
+    {
+        return lhs.width == rhs.width && lhs.height == rhs.height;
+    }
     constexpr bool operator!=(size lhs, size rhs) { return !(lhs == rhs); }
+#endif // !__cpp_impl_three_way_comparison
 
-    constexpr size operator+(size lhs, size rhs) { return { lhs.width + rhs.width, lhs.height + rhs.height }; }
+    constexpr size operator+(size lhs, size rhs)
+    {
+        return { lhs.width + rhs.width, lhs.height + rhs.height };
+    }
     constexpr size operator-(size lhs, size rhs) { return { lhs.width - rhs.width, lhs.height - rhs.height }; }
 
     constexpr size operator*(size lhs, double rhs) { return { lhs.width * rhs, lhs.height * rhs }; }
@@ -94,12 +114,24 @@ namespace xaml
     {
         double x;
         double y;
+
+#ifdef __cpp_impl_three_way_comparison
+        auto operator<=>(point const&) const = default;
+#endif // __cpp_impl_three_way_comparison
     };
 
-    constexpr bool operator==(point lhs, point rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; }
+#ifndef __cpp_impl_three_way_comparison
+    constexpr bool operator==(point lhs, point rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    }
     constexpr bool operator!=(point lhs, point rhs) { return !(lhs == rhs); }
+#endif // !__cpp_impl_three_way_comparison
 
-    constexpr point operator+(point lhs, point rhs) { return { lhs.x + rhs.x, lhs.y + rhs.y }; }
+    constexpr point operator+(point lhs, point rhs)
+    {
+        return { lhs.x + rhs.x, lhs.y + rhs.y };
+    }
     constexpr point operator-(point lhs, point rhs) { return { lhs.x - rhs.x, lhs.y - rhs.y }; }
 
     constexpr point operator*(point lhs, double rhs) { return { lhs.x * rhs, lhs.y * rhs }; }
@@ -176,12 +208,24 @@ namespace xaml
     {
         double x, y;
         double width, height;
+
+#ifdef __cpp_impl_three_way_comparison
+        auto operator<=>(rectangle const&) const = default;
+#endif // __cpp_impl_three_way_comparison
     };
 
-    constexpr bool operator==(rectangle const& lhs, rectangle const& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height; }
+#ifndef __cpp_impl_three_way_comparison
+    constexpr bool operator==(rectangle const& lhs, rectangle const& rhs)
+    {
+        return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
+    }
     constexpr bool operator!=(rectangle const& lhs, rectangle const& rhs) { return !(lhs == rhs); }
+#endif // !__cpp_impl_three_way_comparison
 
-    constexpr rectangle operator+(point lhs, size rhs) { return { lhs.x, lhs.y, rhs.width, rhs.height }; }
+    constexpr rectangle operator+(point lhs, size rhs)
+    {
+        return { lhs.x, lhs.y, rhs.width, rhs.height };
+    }
 
     constexpr rectangle operator*(rectangle const& lhs, double rhs) { return { lhs.x * rhs, lhs.y * rhs, lhs.width * rhs, lhs.height * rhs }; }
     constexpr rectangle operator*(double lhs, rectangle const& rhs) { return rhs * lhs; }
@@ -199,12 +243,24 @@ namespace xaml
         double top;
         double right;
         double bottom;
+
+#ifdef __cpp_impl_three_way_comparison
+        auto operator<=>(margin const&) const = default;
+#endif // __cpp_impl_three_way_comparison
     };
 
-    constexpr bool operator==(margin const& lhs, margin const& rhs) { return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom; }
+#ifndef __cpp_impl_three_way_comparison
+    constexpr bool operator==(margin const& lhs, margin const& rhs)
+    {
+        return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom;
+    }
     constexpr bool operator!=(margin const& lhs, margin const& rhs) { return !(lhs == rhs); }
+#endif // !__cpp_impl_three_way_comparison
 
-    constexpr rectangle operator+(rectangle const& lhs, margin const& rhs) { return { lhs.x - rhs.left, lhs.y - rhs.top, lhs.width + rhs.left + rhs.right, lhs.height + rhs.top + rhs.bottom }; }
+    constexpr rectangle operator+(rectangle const& lhs, margin const& rhs)
+    {
+        return { lhs.x - rhs.left, lhs.y - rhs.top, lhs.width + rhs.left + rhs.right, lhs.height + rhs.top + rhs.bottom };
+    }
     constexpr rectangle operator-(rectangle const& lhs, margin const& rhs) { return { lhs.x + rhs.left, lhs.y + rhs.top, lhs.width - rhs.left - rhs.right, lhs.height - rhs.top - rhs.bottom }; }
 
     constexpr margin operator*(margin const& lhs, double rhs) { return { lhs.left * rhs, lhs.top * rhs, lhs.right * rhs, lhs.bottom * rhs }; }
@@ -285,11 +341,22 @@ namespace xaml
     struct alignas(1) color
     {
         std::uint8_t a, r, g, b;
+
         constexpr operator std::uint32_t() const noexcept { return ((std::uint32_t)a << 24) + ((std::uint32_t)r << 16) + ((std::uint32_t)g << 8) + (std::uint32_t)b; }
         static constexpr color from_argb(std::uint32_t v) noexcept { return { (std::uint8_t)((v >> 24) & 0xFF), (std::uint8_t)((v >> 16) & 0xFF), (std::uint8_t)((v >> 8) & 0xFF), (std::uint8_t)(v & 0xFF) }; }
+
+#ifdef __cpp_impl_three_way_comparison
+        auto operator<=>(color const&) const = default;
+#endif // __cpp_impl_three_way_comparison
     };
 
-    constexpr bool operator==(color lhs, color rhs) { return (std::uint32_t)lhs == (std::uint32_t)rhs; }
+#ifndef __cpp_impl_three_way_comparison
+    constexpr bool operator==(color lhs, color rhs)
+    {
+        return (std::uint32_t)lhs == (std::uint32_t)rhs;
+    }
     constexpr bool operator!=(color lhs, color rhs) { return !(lhs == rhs); }
+#endif // !__cpp_impl_three_way_comparison
+
 } // namespace xaml
 #endif // !XAML_UI_DRAWING_HPP

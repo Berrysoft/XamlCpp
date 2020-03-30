@@ -14,10 +14,11 @@
 #endif // WIN32 || __MINGW32__
 
 #if defined(WIN32) && !defined(__MINGW32__)
-static inline std::filesystem::path module_prefix{};
+static constexpr bool has_prefix = false;
 #else
-static inline std::filesystem::path module_prefix{ "lib" };
+static constexpr bool has_prefix = true;
 #endif // WIN32 && !__MINGW32__
+static inline std::filesystem::path module_prefix{ "lib" };
 
 using namespace std;
 using namespace std::filesystem;
@@ -99,12 +100,26 @@ namespace xaml
     {
         if (name.is_absolute()) return name;
         path pname = name;
+        if constexpr (has_prefix)
+        {
+            if (!pname.native().starts_with(module_prefix.native()))
+            {
+                pname = module_prefix;
+                pname += name;
+            }
+        }
+        else
+        {
+            if (pname.native().starts_with(module_prefix.native()))
+            {
+                pname = pname.native().substr(3);
+            }
+        }
         auto search_dirs = get_module_search_path();
         search_dirs.insert(search_dirs.end(), sds.begin(), sds.end());
         for (auto& dir : search_dirs)
         {
-            path fullname = module_prefix;
-            fullname += pname;
+            path fullname = pname;
             fullname += module_extension;
             path p = path{ dir } / fullname;
             if (exists(p)) return p;
