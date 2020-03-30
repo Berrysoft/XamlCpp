@@ -1,28 +1,30 @@
 #include <cstdlib>
 #include <xaml/strings.hpp>
 
+#if defined(WIN32) || defined(__MINGW32__)
+#include <Windows.h>
+#endif // WIN32 || __MINGW32__
+
 using namespace std;
 
 namespace xaml
 {
-#ifdef _MSC_VER
+#if defined(WIN32) || defined(__MINGW32__)
     string to_string(wstring_view str)
     {
-        size_t count{ 0 };
-        errno_t err = wcstombs_s(&count, nullptr, 0, str.data(), str.size());
-        if (err || count <= 1) return {};
-        string result(count - 1, '\0');
-        wcstombs_s(nullptr, result.data(), _TRUNCATE, str.data(), str.size());
+        int count = WideCharToMultiByte(CP_UTF8, MB_ERR_INVALID_CHARS, str.data(), (int)str.size(), nullptr, 0, nullptr, nullptr);
+        if (!count) return {};
+        string result(count, '\0');
+        WideCharToMultiByte(CP_UTF8, 0, str.data(), (int)str.size(), result.data(), count, nullptr, nullptr);
         return result;
     }
 
     wstring to_wstring(string_view str)
     {
-        size_t count{ 0 };
-        errno_t err = mbstowcs_s(&count, nullptr, 0, str.data(), str.size());
-        if (err || count <= 1) return {};
-        wstring result(count - 1, L'\0');
-        mbstowcs_s(nullptr, result.data(), _TRUNCATE, str.data(), str.size());
+        int count = MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED | MB_ERR_INVALID_CHARS, str.data(), (int)str.size(), nullptr, 0);
+        if (!count) return {};
+        wstring result(count, L'\0');
+        MultiByteToWideChar(CP_UTF8, MB_PRECOMPOSED, str.data(), (int)str.size(), result.data(), count);
         return result;
     }
 #else
@@ -43,5 +45,5 @@ namespace xaml
         mbstowcs(result.data(), str.data(), str.size());
         return result;
     }
-#endif // _MSC_VER
+#endif // WIN32 || __MINGW32__
 } // namespace xaml

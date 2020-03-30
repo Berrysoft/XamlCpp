@@ -21,7 +21,7 @@
 // #define PUGIXML_COMPACT
 
 // Uncomment this to disable XPath
-// #define PUGIXML_NO_XPATH
+#define PUGIXML_NO_XPATH
 
 // Uncomment this to disable STL
 // #define PUGIXML_NO_STL
@@ -44,7 +44,7 @@
 // #define PUGIXML_HEADER_ONLY
 
 // Uncomment this to enable long long support
-// #define PUGIXML_HAS_LONG_LONG
+#define PUGIXML_HAS_LONG_LONG
 
 #endif
 
