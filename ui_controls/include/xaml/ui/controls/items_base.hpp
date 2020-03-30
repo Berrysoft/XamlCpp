@@ -7,12 +7,6 @@
 namespace xaml
 {
     template <>
-    struct type_guid<meta_box<observable_vector<string_t>>>
-    {
-        static constexpr guid value{ 0x0283120a, 0xec35, 0x42c4, { 0x92, 0x4f, 0xc4, 0xf7, 0x1d, 0x1f, 0xef, 0x0e } };
-    };
-
-    template <>
     struct type_guid<meta_box<observable_vector_view<string_t>>>
     {
         static constexpr guid value{ 0x7465007d, 0x3b69, 0x49ec, { 0xa5, 0x28, 0x8d, 0xdd, 0xa9, 0xc3, 0x87, 0xa9 } };

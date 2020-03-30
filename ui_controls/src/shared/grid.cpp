@@ -122,7 +122,7 @@ namespace xaml
         rectangle real = region - get_margin();
         vector<tuple<double, double>> columns = get_real_length(m_columns, get_children(), real.width, false);
         vector<tuple<double, double>> rows = get_real_length(m_rows, get_children(), real.height, true);
-        for (auto& c : m_children)
+        for (auto& c : get_children())
         {
             auto index = m_indecies[c.get()];
             double subx = get<1>(columns[(min)(index.column, columns.size() - 1)]) + real.x;

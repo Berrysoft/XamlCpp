@@ -66,6 +66,18 @@ public:                          \
     PROP_STRING_RD(name)  \
     void set_##name(::xaml::string_view_t value) noexcept { m_##name = (::xaml::string_t)value; }
 
+#define PROP_VECTOR_RD(name, type)  \
+private:                            \
+    ::std::vector<type> m_##name{}; \
+                                    \
+public:                             \
+    ::xaml::array_view<type> get_##name() const noexcept { return m_##name; }
+
+#define PROP_VECTOR(name, type)                                                                         \
+    PROP_VECTOR_RD(name, type)                                                                          \
+    void set_##name(::xaml::array_view<type> value) noexcept { m_##name = (::std::vector<type>)value; } \
+    void set_##name(::std::initializer_list<type> value) noexcept { m_##name = value; }
+
 #define ADD_PROP_TYPE(name, type) ref->add_property<type>(                                                                 \
     #name,                                                                                                                 \
     ::std::function<::std::shared_ptr<::xaml::meta_class>(::std::shared_ptr<::xaml::meta_class>)>(                         \

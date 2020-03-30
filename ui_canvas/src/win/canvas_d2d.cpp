@@ -1,6 +1,5 @@
 #ifdef XAML_UI_CANVAS_DIRECT2D
 
-#include <numbers>
 #include <tuple>
 #include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>

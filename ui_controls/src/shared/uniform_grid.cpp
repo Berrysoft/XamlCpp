@@ -11,13 +11,13 @@ namespace xaml
 
     void uniform_grid::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
     {
-        if (!m_children.empty())
+        if (!get_children().empty())
         {
             layout_base::__draw_impl(region, func);
             rectangle real = region - get_margin();
             size_t cs = get_columns();
             size_t rs = get_rows();
-            size_t n = m_children.size();
+            size_t n = get_children().size();
             if (cs > 0 && rs > 0)
             {
                 if (get_orientation() == orientation::vertical)
@@ -58,7 +58,7 @@ namespace xaml
             size_t x = 0, y = 0;
             if (get_orientation() == orientation::vertical)
             {
-                for (auto& c : m_children)
+                for (auto& c : get_children())
                 {
                     rectangle subrect = { real.x + x * w, real.y + y * h, w, h };
                     c->__draw(subrect);
@@ -73,7 +73,7 @@ namespace xaml
             }
             else
             {
-                for (auto& c : m_children)
+                for (auto& c : get_children())
                 {
                     rectangle subrect = { real.x + x * w, real.y + y * h, w, h };
                     c->__draw(subrect);
@@ -92,7 +92,7 @@ namespace xaml
     void uniform_grid::__size_to_fit()
     {
         size_t cs, rs;
-        size_t n = m_children.size();
+        size_t n = get_children().size();
         if (get_orientation() == orientation::vertical)
         {
             cs = (size_t)sqrt(n);
@@ -104,7 +104,7 @@ namespace xaml
             cs = (n + rs - 1) / rs;
         }
         double mw = 0, mh = 0;
-        for (auto& c : m_children)
+        for (auto& c : get_children())
         {
             if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
             c->__size_to_fit();

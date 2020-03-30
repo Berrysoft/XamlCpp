@@ -26,15 +26,9 @@ namespace xaml
     private:
         pointer m_start{ nullptr };
         size_type m_count{ 0 };
-        std::vector<T> m_layer{};
 
     public:
         constexpr array_view() noexcept {}
-        constexpr array_view(std::initializer_list<T> list) : m_layer(std::vector<T>(list.begin(), list.end()))
-        {
-            m_start = std::addressof(m_layer.front());
-            m_count = m_layer.size();
-        }
         template <typename Container, typename = decltype(std::declval<Container>().begin()), typename = decltype(std::declval<Container>().size())>
         constexpr array_view(Container&& list) noexcept : array_view()
         {
@@ -52,19 +46,11 @@ namespace xaml
         {
         }
 
-        constexpr array_view& operator=(std::initializer_list<T> list) noexcept
-        {
-            m_layer.assign(list.begin(), list.end());
-            m_start = std::addressof(m_layer.front());
-            m_count = m_layer.size();
-            return *this;
-        }
         template <typename Container, typename = decltype(std::declval<Container>().begin()), typename = decltype(std::declval<Container>().size())>
         constexpr array_view& operator=(Container&& list) noexcept
         {
             m_start = std::addressof(*list.begin());
             m_count = list.size();
-            m_layer.clear();
             return *this;
         }
         template <size_type N>
@@ -72,11 +58,15 @@ namespace xaml
         {
             m_start = arr;
             m_count = N;
-            m_layer.clear();
             return *this;
         }
 
         constexpr const_reference operator[](size_type index) const noexcept { return m_start[index]; }
+        constexpr const_reference at(size_type pos) const
+        {
+            if (pos >= m_count) throw std::out_of_range{ "invalid array_view position" };
+            return m_start[pos];
+        }
 
         constexpr size_type size() const noexcept { return m_count; }
         [[nodiscard]] constexpr bool empty() const noexcept { return !m_count; }

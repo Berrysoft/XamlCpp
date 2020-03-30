@@ -43,12 +43,7 @@ namespace xaml
         PROP_STRING(title)
         PROP_STRING(filename)
 
-    private:
-        std::vector<filebox_filter> m_filters{};
-
-    public:
-        array_view<filebox_filter> get_filters() const noexcept { return m_filters; }
-        void set_filters(array_view<filebox_filter> value) { m_filters = value; }
+        PROP_VECTOR(filters, filebox_filter)
 
         string_view_t get_result() const { return m_results[0]; }
 

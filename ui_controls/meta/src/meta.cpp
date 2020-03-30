@@ -44,7 +44,7 @@ extern "C"
     XAML_UI_CONTROLS_META_API int can_compile(void const* t) noexcept
     {
         guid const& type = *(guid const*)t;
-        return (type == type_guid_v<meta_box<array_view<grid_length>>>) ? 1 : 0;
+        return (type == type_guid_v<meta_box<vector<grid_length>>>) ? 1 : 0;
     }
 
     XAML_UI_CONTROLS_META_API void compile(void const* t, const char* code, size_t code_len, void* res) noexcept

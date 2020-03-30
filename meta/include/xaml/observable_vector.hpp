@@ -53,8 +53,9 @@ namespace xaml
             {
                 auto old_item = std::move(*m_ptr);
                 *m_ptr = ref;
-                auto id = m_ptr - m_vec->data().operator->();
-                vector_changed_args<T> args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
+                auto id = m_ptr - m_vec->data().get();
+                std::vector<T> old_items{ old_item };
+                vector_changed_args<T> args{ vector_changed_action::replace, array_view<T>{ m_ptr, 1 }, (std::size_t)id, old_items, (std::size_t)id };
                 m_vec->m_vector_changed(*m_vec, args);
                 return *this;
             }
@@ -62,8 +63,9 @@ namespace xaml
             {
                 auto old_item = std::move(*m_ptr);
                 *m_ptr = std::move(ref);
-                auto id = m_ptr - m_vec->data().operator->();
-                vector_changed_args<T> args{ vector_changed_action::replace, array_view(m_ptr, 1), (std::size_t)id, { old_item }, (std::size_t)id };
+                auto id = m_ptr - m_vec->data().get();
+                std::vector<T> old_items{ old_item };
+                vector_changed_args<T> args{ vector_changed_action::replace, array_view<T>{ m_ptr, 1 }, (std::size_t)id, old_items, (std::size_t)id };
                 m_vec->m_vector_changed(*m_vec, args);
                 return *this;
             }
@@ -114,6 +116,9 @@ namespace xaml
             friend constexpr pointer operator-(pointer const& p, std::ptrdiff_t diff) noexcept { return { p.m_ptr - diff, p.m_vec }; }
 
             friend constexpr std::ptrdiff_t operator-(pointer const& lp, pointer const& rp) noexcept { return lp.m_ptr - rp.m_ptr; }
+
+            constexpr value_type* get() noexcept { return m_ptr; }
+            constexpr value_type const* get() const noexcept { return m_ptr; }
 
             constexpr operator value_type*() noexcept { return m_ptr; }
             constexpr operator value_type const*() const noexcept { return m_ptr; }
@@ -505,7 +510,8 @@ namespace xaml
             auto old_id = m_vec.size() - 1;
             auto old_item = std::move(m_vec.back());
             m_vec.pop_back();
-            vector_changed_args<T> args{ vector_changed_action::erase, {}, old_id, { old_item }, old_id };
+            std::vector<T> old_items{ old_item };
+            vector_changed_args<T> args{ vector_changed_action::erase, {}, old_id, old_items, old_id };
             m_vector_changed(*this, args);
         }
 
@@ -592,42 +598,6 @@ namespace xaml
 
         friend constexpr bool operator==(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return lhs.m_vec == rhs.m_vec; }
         friend constexpr bool operator!=(observable_vector_view<T> const& lhs, observable_vector_view<T> const& rhs) { return !(lhs == rhs); }
-    };
-
-    template <typename T>
-    class meta_box<observable_vector_view<T>> : public meta_class
-    {
-    public:
-        META_CLASS_IMPL(meta_class)
-
-    private:
-        observable_vector_view<T> m_value{};
-
-    public:
-        meta_box() {}
-        meta_box(observable_vector_view<T> value) : m_value(value) {}
-        ~meta_box() override {}
-
-        meta_box& operator=(observable_vector_view<T> value)
-        {
-            m_value = value;
-            return *this;
-        }
-
-        operator observable_vector_view<T>() const noexcept { return m_value; }
-
-        observable_vector_view<T> get() const noexcept { return m_value; }
-    };
-
-    template <typename T>
-    struct __box_helper<observable_vector<T>, void>
-    {
-        using type = meta_box<observable_vector_view<T>>;
-
-        std::shared_ptr<type> operator()(observable_vector<T> const& view)
-        {
-            return std::make_shared<meta_box<observable_vector_view<T>>>(view);
-        }
     };
 } // namespace xaml
 

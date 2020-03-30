@@ -17,7 +17,7 @@ namespace xaml
         if (get_orientation() == orientation::vertical)
         {
             double suby = real.y;
-            for (auto& c : m_children)
+            for (auto& c : get_children())
             {
                 margin cm = c->get_margin();
                 double subh = c->get_height() + cm.top + cm.bottom;
@@ -30,7 +30,7 @@ namespace xaml
         else
         {
             double subx = real.x;
-            for (auto& c : m_children)
+            for (auto& c : get_children())
             {
                 margin cm = c->get_margin();
                 double subw = c->get_width() + cm.left + cm.right;
@@ -44,13 +44,14 @@ namespace xaml
 
     void stack_panel::__size_to_fit()
     {
+        auto children = get_children();
         if (get_orientation() == orientation::vertical)
         {
-            __set_size_noevent({ get_width(), accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_height() + rhs->get_margin().top + rhs->get_margin().bottom; }) });
+            __set_size_noevent({ get_width(), accumulate(children.begin(), children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_height() + rhs->get_margin().top + rhs->get_margin().bottom; }) });
         }
         else
         {
-            __set_size_noevent({ accumulate(m_children.begin(), m_children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_width() + rhs->get_margin().left + rhs->get_margin().right; }), get_height() });
+            __set_size_noevent({ accumulate(children.begin(), children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_width() + rhs->get_margin().left + rhs->get_margin().right; }), get_height() });
         }
     }
 } // namespace xaml

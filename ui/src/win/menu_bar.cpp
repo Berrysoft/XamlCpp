@@ -24,7 +24,7 @@ namespace xaml
 
     void menu_bar::draw_submenu()
     {
-        for (auto& child : m_children)
+        for (auto& child : get_children())
         {
             child->__draw({});
         }

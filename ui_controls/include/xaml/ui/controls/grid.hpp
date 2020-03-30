@@ -96,12 +96,6 @@ namespace xaml
         static constexpr guid value{ 0xfed37e9d, 0x1f3b, 0x4247, { 0x82, 0x69, 0x95, 0x56, 0x09, 0x93, 0xf3, 0x84 } };
     };
 
-    template <>
-    struct type_guid<meta_box<array_view<grid_length>>>
-    {
-        static constexpr guid value{ 0x51081ffe, 0xb917, 0x4e79, { 0x98, 0xb0, 0x9c, 0xee, 0x29, 0x40, 0x70, 0xe3 } };
-    };
-
     class grid;
 
     template <>
@@ -122,19 +116,13 @@ namespace xaml
     protected:
         XAML_UI_CONTROLS_API void __draw_impl(rectangle const& region, std::function<void(std::shared_ptr<control>, rectangle const&)> func = {}) override;
 
-    private:
-        std::vector<grid_length> m_columns;
-        std::vector<grid_length> m_rows;
+    public:
+        PROP_VECTOR(columns, grid_length)
+        PROP_VECTOR(rows, grid_length)
 
     public:
         void add_column(grid_length length) { m_columns.push_back(std::move(length)); }
         void add_row(grid_length length) { m_rows.push_back(std::move(length)); }
-
-        array_view<grid_length> get_columns() const noexcept { return m_columns; }
-        void set_columns(array_view<grid_length> value) { m_columns = value; }
-
-        array_view<grid_length> get_rows() const noexcept { return m_rows; }
-        void set_rows(array_view<grid_length> value) { m_rows = value; }
 
     private:
         XAML_UI_CONTROLS_API static std::unordered_map<control*, grid_index> m_indecies;

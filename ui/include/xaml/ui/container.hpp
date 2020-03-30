@@ -69,16 +69,15 @@ namespace xaml
     public:
         META_CLASS_IMPL(control)
 
-    protected:
-        std::vector<std::shared_ptr<control>> m_children{};
-
     public:
         multicontainer() : control() {}
         virtual ~multicontainer() override {}
 
+        PROP_VECTOR_RD(children, std::shared_ptr<control>)
+
+    public:
         XAML_UI_API void add_child(std::shared_ptr<control> const& child);
         XAML_UI_API void remove_child(std::shared_ptr<control> const& child);
-        array_view<std::shared_ptr<control>> get_children() const noexcept { return m_children; }
 
 #ifdef XAML_UI_WINDOWS
     public:

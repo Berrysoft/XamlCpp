@@ -1,4 +1,3 @@
-#include <numbers>
 #include <stdexcept>
 #include <win/canvas_gdiplus.hpp>
 #include <windowsx.h>

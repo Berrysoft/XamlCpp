@@ -240,6 +240,31 @@ namespace xaml
         std::basic_string_view<Char, Traits> get() const noexcept { return m_value; }
     };
 
+    template <typename T, typename Allocator>
+    struct meta_box<std::vector<T, Allocator>> : public meta_class
+    {
+    public:
+        META_CLASS_IMPL(meta_class)
+
+    private:
+        std::vector<T, Allocator> m_value{};
+
+    public:
+        meta_box() {}
+        meta_box(array_view<T> value) : m_value(value) {}
+        ~meta_box() override {}
+
+        meta_box& operator=(array_view<T> value)
+        {
+            m_value = value;
+            return *this;
+        }
+
+        operator std::vector<T, Allocator>() const noexcept { return m_value; }
+
+        array_view<T> get() const noexcept { return m_value; }
+    };
+
     template <typename T, typename = void>
     struct __box_helper
     {
@@ -311,13 +336,13 @@ namespace xaml
     };
 
     template <typename T>
-    struct __box_helper<std::vector<T>, void>
+    struct __box_helper<array_view<T>, void>
     {
-        using type = meta_box<array_view<T>>;
+        using type = meta_box<std::vector<T>>;
 
         std::shared_ptr<type> operator()(array_view<T> view)
         {
-            return std::make_shared<meta_box<array_view<T>>>(view);
+            return std::make_shared<meta_box<std::vector<T>>>(view);
         }
     };
 
@@ -360,6 +385,11 @@ namespace xaml
         operator bool() const { return (bool)func; }
 
         std::shared_ptr<meta_class> operator()(array_view<std::shared_ptr<meta_class>> args) const { return func(args); }
+        std::shared_ptr<meta_class> operator()(std::initializer_list<std::shared_ptr<meta_class>> args) const
+        {
+            std::vector<std::shared_ptr<meta_class>> args_vec{ args };
+            return func(args_vec);
+        }
     };
 
     struct type_erased_this_function
@@ -389,6 +419,11 @@ namespace xaml
         operator bool() const { return (bool)func; }
 
         std::shared_ptr<meta_class> operator()(std::shared_ptr<meta_class> self, array_view<std::shared_ptr<meta_class>> args) const { return func(self, args); }
+        std::shared_ptr<meta_class> operator()(std::shared_ptr<meta_class> self, std::initializer_list<std::shared_ptr<meta_class>> args) const
+        {
+            std::vector<std::shared_ptr<meta_class>> args_vec{ args };
+            return func(self, args_vec);
+        }
     };
 
     template <typename Return, typename... Args, typename F, std::size_t... Indicies>
