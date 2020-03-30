@@ -87,15 +87,12 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
-# Work around for MinGW.
-if("${CMAKE_BUILD_TYPE}" MATCHES "Debug")
-    if(MINGW)
-        list(APPEND XAML_COMPILE_OPTIONS "-O1")
-    endif()
-endif()
-
 if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-incompatible-ms-struct")
+endif()
+
+if(MSVC)
+    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)

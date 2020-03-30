@@ -573,7 +573,7 @@ namespace xaml
 
         constexpr operator bool() const noexcept { return m_vec; }
 
-        std::size_t add_vector_changed(std::function<void(observable_vector<T>&, vector_changed_args<T>&)>&& f) { return m_vec->add_vector_changed(std::move(f)); }
+        std::size_t add_vector_changed(std::function<void(std::reference_wrapper<observable_vector<T>>, std::reference_wrapper<vector_changed_args<T>>)>&& f) { return m_vec->add_vector_changed(std::move(f)); }
         void remove_vector_changed(std::size_t t) { m_vec->remove_vector_changed(t); }
 
         const_reference operator[](size_type pos) const { return m_vec->operator[](pos); }

@@ -19,11 +19,7 @@
 
 #define REGISTER_ENUM(ns, name, file) ctx.register_type(::std::make_unique<::xaml::enum_reflection_info>(::xaml::type_guid_v<::xaml::box_value_t<::ns::name>>, #ns, #name, file))
 
-#ifdef _MSC_VER
-#define ADD_CTOR(...) ref->add_constructor<self_type, ##__VA_ARGS__>()
-#else
 #define ADD_CTOR(...) ref->add_constructor<self_type __VA_OPT__(, ) __VA_ARGS__>()
-#endif // _MSC_VER
 
 #define ADD_METHOD(name) ref->add_method(#name, ::xaml::make_type_erased_this_function(&self_type::name))
 

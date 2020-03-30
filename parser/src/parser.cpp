@@ -334,6 +334,8 @@ namespace xaml
             }
             break;
         }
+        default:
+            break;
         }
         for (auto& c : node.children())
         {
