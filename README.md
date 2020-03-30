@@ -1,15 +1,18 @@
 # XamlCpp
 An implementation of XAML cross-platform framework for C++.
 
-This project is not complete, and still needs a lot of work. Welcome issues and pull requests!
+This project is NOT complete, and still needs a lot of work. Welcome issues and pull requests!
 
 [![Azure DevOps builds](https://strawberry-vs.visualstudio.com/XamlCpp/_apis/build/status/Berrysoft.XamlCpp?branch=master)](https://strawberry-vs.visualstudio.com/XamlCpp/_build?definitionId=12)
+## Goal
+The goal of XamlCpp is to write a cross-platfrom GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies, compared to Qt or so.
+
 ## Reflection
 XamlCpp supports optional-reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
 
 A simple example is [here](./meta/test/src/main.cpp).
 
-Reflection is heavily used by XAML parser, but it is optional if you don't want dynamic feature.
+It doesn't use the RTTI feature of C++, instead, it ownes an stable implementation, because the constraints of the standard are too loose to implement reflection. All GUI libraries are shipped with another "meta" library, which contains functions used by the XAML parser, but is optional for the final application. Meta library is large, for it contains many instances of template classes and functions.
 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
@@ -76,7 +79,7 @@ Here's an XAML example:
 ```
 The `xmlns` should be `https://github.com/Berrysoft/XamlCpp/` to use default controls. The xml attributes decribes the properties, events and attach properties of a control.
 
-The XAML parser uses libxml2 on non-WinRT platforms. For Windows developers, you can install it with `vcpkg`.
+The XAML parser uses [pugixml](https://github.com/zeux/pugixml/). This repo contains a latest copy of the pugixml source, but you could compile target libpugixml in your own system instead of it.
 
 ## XAML Compiler
 The reflection component is a little heavy and slow, compared to static-compiled code. XAML Compiler solves the problem by compiling XAML to native C++ code. The XAML code above may be compiled to:
@@ -118,12 +121,14 @@ void ::xaml::test::test_window::init_components()
 ## Build
 A C++17-compliant compiler is required.
 
-This project assumes it is built by GCC 9+ when using GNU toolchains. If building with previous versions, you should manully link it with `libstdc++fs`.
+This project assumes it is built by GCC 9.1+ or Clang 9.0+ when using GNU or LLVM toolchains. If building with previous versions, you should manully link it with `libstdc++fs` or `libc++fs`.
 ### Build on Windows
 #### MSVC
 `wil` is required. `vcpkg` is recommanded. Other packages will be downloaded from NuGet when configuring.
 #### MinGW
 `gtk` and `pkgconfig` are required. MSYS2 is recommanded for installing and building.
+
+It is not possible now to build target Windows API with MinGW toolchain, because `wil` isn't supported by GCC and Clang/MinGW.
 ### Build on Linux
 `gtk`, `webkit2gtk` and `pkgconfig` are required.
 ### Build on Mac
