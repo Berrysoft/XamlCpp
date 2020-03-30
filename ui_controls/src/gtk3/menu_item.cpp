@@ -21,7 +21,7 @@ namespace xaml
     void menu_item::on_activate(void* m, void* data)
     {
         menu_item* self = (menu_item*)data;
-        self->m_click(static_pointer_cast<menu_item>(self->shared_from_this()));
+        self->m_click(self->shared_from_this<menu_item>());
     }
 
     void popup_menu_item::__draw(rectangle const& region)
@@ -95,7 +95,7 @@ namespace xaml
                     {
                         if (auto rc = c->query<radio_menu_item>())
                         {
-                            if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                            if (c != shared_from_this<radio_menu_item>() && c->get_handle() && rc->get_group() == get_group())
                             {
                                 gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(get_handle()->handle), GTK_RADIO_MENU_ITEM(c->get_handle()->handle));
                                 break;

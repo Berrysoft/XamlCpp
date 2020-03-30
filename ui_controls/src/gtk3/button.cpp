@@ -29,6 +29,6 @@ namespace xaml
     void button::on_clicked(void*, void* data)
     {
         button* s = (button*)data;
-        s->m_click(static_pointer_cast<button>(s->shared_from_this()));
+        s->m_click(s->shared_from_this<button>());
     }
 } // namespace xaml

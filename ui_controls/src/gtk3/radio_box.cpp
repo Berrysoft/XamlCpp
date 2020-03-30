@@ -39,7 +39,7 @@ namespace xaml
                     {
                         if (auto rc = c->query<radio_box>())
                         {
-                            if (c != shared_from_this() && c->get_handle() && rc->get_group() == get_group())
+                            if (c != shared_from_this<radio_box>() && c->get_handle() && rc->get_group() == get_group())
                             {
                                 gtk_radio_button_join_group(GTK_RADIO_BUTTON(get_handle()->handle), GTK_RADIO_BUTTON(c->get_handle()->handle));
                                 break;

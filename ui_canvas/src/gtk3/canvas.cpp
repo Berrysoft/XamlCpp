@@ -169,7 +169,7 @@ namespace xaml
         native_drawing_context ctx{};
         ctx.handle = (cairo_t*)cr;
         auto dc = make_shared<drawing_context>(&ctx);
-        self->m_redraw(static_pointer_cast<canvas>(self->shared_from_this()), dc);
+        self->m_redraw(self->shared_from_this<canvas>(), dc);
         return FALSE;
     }
 } // namespace xaml
