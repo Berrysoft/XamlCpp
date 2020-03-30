@@ -40,12 +40,23 @@ namespace xaml::cmdline
                 {
                     if (arg.size() == 2) throw invalid_option{ arg };
                     string_view_t long_arg = arg.substr(2);
+                    size_t index = long_arg.find_first_of('=');
+                    string_view_t maybe_value = {};
+                    if (index != string_view_t::npos)
+                    {
+                        maybe_value = long_arg.substr(index + 1);
+                        long_arg = long_arg.substr(0, index);
+                    }
                     if (auto pprop = popt->find_long_arg(long_arg))
                     {
                         auto prop = refl->get_property(*pprop);
                         if (prop)
                         {
-                            if (prop->type() == type_guid_v<meta_box<bool>>)
+                            if (!maybe_value.empty())
+                            {
+                                result.properties.push_back({ prop, (string_t)maybe_value });
+                            }
+                            else if (prop->type() == type_guid_v<meta_box<bool>>)
                             {
                                 result.properties.push_back({ prop, U("true") });
                             }
@@ -61,8 +72,15 @@ namespace xaml::cmdline
                             if (cprop)
                             {
                                 result.collection_properties[(string)*pprop].info = cprop;
-                                i++;
-                                result.collection_properties[(string)*pprop].values.push_back(args[i]);
+                                if (!maybe_value.empty())
+                                {
+                                    result.collection_properties[(string)*pprop].values.emplace_back(maybe_value);
+                                }
+                                else
+                                {
+                                    i++;
+                                    result.collection_properties[(string)*pprop].values.push_back(args[i]);
+                                }
                             }
                         }
                     }
