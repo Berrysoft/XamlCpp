@@ -42,11 +42,11 @@ namespace xaml
         auto t = node.type;
         if (node.map_class)
         {
-            auto [ns, name] = *node.map_class;
+            auto& [ns, name] = *node.map_class;
             auto map_type = m_ctx->get_type(ns, name);
             if (map_type) t = map_type;
         }
-        shared_ptr<meta_class> c{ t->construct() };
+        shared_ptr<meta_class> c = t->construct();
         if (c)
         {
             deserialize_impl(c, node, root ? root : c);
@@ -112,7 +112,7 @@ namespace xaml
                 auto& n = get<markup_node>(value);
                 deserializer_markup_context context{ mc, prop.info->name(), symbols };
                 auto ex = deserialize(n);
-                static_pointer_cast<markup_extension>(ex)->provide(*m_ctx, context);
+                ex->query<markup_extension>()->provide(*m_ctx, context);
                 break;
             }
             case 2: // xaml_node
@@ -147,7 +147,7 @@ namespace xaml
 
     shared_ptr<meta_class> deserializer::deserialize(markup_node& node)
     {
-        shared_ptr<meta_class> ex{ node.type->construct() };
+        shared_ptr<meta_class> ex = node.type->construct();
         for (auto& p : node.properties)
         {
             auto& value = p.value;
