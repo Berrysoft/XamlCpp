@@ -3,7 +3,6 @@
 
 #include <xaml/ui/controls/button.hpp>
 #include <xaml/ui/controls/canvas.hpp>
-#include <xaml/ui/timer.hpp>
 #include <xaml/ui/window.hpp>
 
 #ifdef XAML_TEST_GEN_FAKE
@@ -33,18 +32,12 @@ namespace xaml::test
     public:
         META_CLASS_IMPL(window)
 
-    private:
-        timer tmr;
-        int count{ 0 };
-
     public:
         test_window();
 
         ~test_window() override {}
 
         void init_components(INIT_COMPONENTS_ARGS);
-
-        void on_timer_tick(std::reference_wrapper<timer>);
 
         void on_button_click(std::shared_ptr<button> btn);
 

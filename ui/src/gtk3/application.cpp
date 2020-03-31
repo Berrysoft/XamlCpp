@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <gtk/gtk.h>
 #include <gtk3/resources.hpp>
 #include <xaml/ui/application.hpp>
@@ -26,12 +27,15 @@ namespace xaml
 
     application_theme application::get_theme() const
     {
-        GtkSettings* settings = gtk_settings_get_default();
-        gchar* str;
-        g_object_get(G_OBJECT(settings), "gtk-theme-name", &str);
-        g_free_unique_ptr<gchar> unique_str{ str };
-        string_view_t theme{ unique_str.get() };
-        if (theme.ends_with("dark")) return application_theme::dark;
-        return application_theme::light;
+#ifdef _MSC_VER
+        char ptheme[1024];
+        errno_t err = getenv_s(nullptr, ptheme, "GTK_THEME");
+        string_view theme = err ? string_view{} : ptheme;
+#else
+        char* ptheme = getenv("GTK_THEME");
+        string_view theme = ptheme ? ptheme : string_view{};
+#endif // _MSC_VER
+
+        return theme.ends_with(":dark") ? application_theme::dark : application_theme::light;
     }
 } // namespace xaml
