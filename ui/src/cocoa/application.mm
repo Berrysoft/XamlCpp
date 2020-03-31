@@ -39,11 +39,11 @@ namespace xaml
 
     application_theme application::get_theme() const
     {
-        NSString *osxMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+        NSString* osxMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
         if (osxMode && [osxMode isEqualToString:@"Dark"])
         {
             return application_theme::dark;
-		}
+        }
         return application_theme::light;
     }
 }
