@@ -40,7 +40,7 @@ namespace xaml
     application_theme application::get_theme() const
     {
         NSString *osxMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
-        if ([osxMode isEqualToSttring:@"Dark"])
+        if ([osxMode isEqualToString:@"Dark"])
         {
             return application_theme::dark;
 		}

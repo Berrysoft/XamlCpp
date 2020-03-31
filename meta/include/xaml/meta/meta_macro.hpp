@@ -73,9 +73,9 @@ private:                            \
 public:                             \
     ::xaml::array_view<type> get_##name() const noexcept { return m_##name; }
 
-#define PROP_VECTOR(name, type)                                                                         \
-    PROP_VECTOR_RD(name, type)                                                                          \
-    void set_##name(::xaml::array_view<type> value) noexcept { m_##name = (::std::vector<type>)value; } \
+#define PROP_VECTOR(name, type)                                                                                              \
+    PROP_VECTOR_RD(name, type)                                                                                               \
+    void set_##name(::xaml::array_view<type> value) noexcept { m_##name = ::std::vector<type>(value.begin(), value.end()); } \
     void set_##name(::std::initializer_list<type> value) noexcept { m_##name = value; }
 
 #define ADD_PROP_TYPE(name, type) ref->add_property<type>(                                                                 \
