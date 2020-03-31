@@ -36,4 +36,14 @@ namespace xaml
         m_quit_value = value;
         [NSApp terminate:nil];
     }
+
+    application_theme application::get_theme() const
+    {
+        NSString *osxMode = [[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"];
+        if ([osxMode isEqualToSttring:@"Dark"])
+        {
+            return application_theme::dark;
+		}
+        return application_theme::light;
+    }
 }

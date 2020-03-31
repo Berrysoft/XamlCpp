@@ -14,6 +14,12 @@ namespace xaml
 {
     class window;
 
+    enum class application_theme
+    {
+        light,
+        dark
+    };
+
     class application
     {
     private:
@@ -62,6 +68,8 @@ namespace xaml
         XAML_UI_API static std::shared_ptr<application> init(int argc, char_t const* const* argv);
         XAML_UI_API static std::shared_ptr<application> init();
         XAML_UI_API static std::shared_ptr<application> current();
+
+        XAML_UI_API application_theme get_theme() const;
 
 #ifdef XAML_UI_WINDOWS
         XAML_UI_API void* __default_font(unsigned int udpi) const;

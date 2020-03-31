@@ -79,4 +79,9 @@ namespace xaml
         m_quit_value = value;
         if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle()->handle);
     }
+
+    application_theme application::get_theme() const
+    {
+        return application_theme::light;
+    }
 } // namespace xaml
