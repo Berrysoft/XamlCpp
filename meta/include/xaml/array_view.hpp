@@ -1,7 +1,8 @@
 #ifndef XAML_ARRAY_VIEW_HPP
 #define XAML_ARRAY_VIEW_HPP
 
-#include <initializer_list>
+#include <algorithm>
+#include <array>
 #include <iterator>
 #include <vector>
 
@@ -27,16 +28,19 @@ namespace xaml
         pointer m_start{ nullptr };
         size_type m_count{ 0 };
 
+        [[noreturn]] static void throw_out_of_range()
+        {
+            throw std::out_of_range{ "invalid array_view position" };
+        }
+
     public:
         constexpr array_view() noexcept {}
-        template <typename Container, typename = decltype(std::declval<Container>().begin()), typename = decltype(std::declval<Container>().size())>
-        constexpr array_view(Container&& list) noexcept : array_view()
+        constexpr array_view(std::vector<T> const& list) noexcept : m_start(list.data()), m_count(list.size())
         {
-            if (list.size())
-            {
-                m_start = std::addressof(*list.begin());
-                m_count = list.size();
-            }
+        }
+        template <size_type N>
+        constexpr array_view(std::array<T, N> const& arr) noexcept : m_start(arr.data()), m_count(arr.size())
+        {
         }
         template <size_type N>
         constexpr array_view(value_type const (&arr)[N]) noexcept : m_start(arr), m_count(N)
@@ -46,11 +50,17 @@ namespace xaml
         {
         }
 
-        template <typename Container, typename = decltype(std::declval<Container>().begin()), typename = decltype(std::declval<Container>().size())>
-        constexpr array_view& operator=(Container&& list) noexcept
+        constexpr array_view& operator=(std::vector<T> const& list) noexcept
         {
-            m_start = std::addressof(*list.begin());
+            m_start = list.data();
             m_count = list.size();
+            return *this;
+        }
+        template <size_type N>
+        constexpr array_view& operator=(std::array<T, N> const& arr) noexcept
+        {
+            m_start = arr.data();
+            m_count = arr.size();
             return *this;
         }
         template <size_type N>
@@ -64,7 +74,7 @@ namespace xaml
         constexpr const_reference operator[](size_type index) const noexcept { return m_start[index]; }
         constexpr const_reference at(size_type pos) const
         {
-            if (pos >= m_count) throw std::out_of_range{ "invalid array_view position" };
+            if (m_count <= pos) throw_out_of_range();
             return m_start[pos];
         }
 
@@ -85,6 +95,14 @@ namespace xaml
 
         constexpr const_reference front() const { return *m_start; }
         constexpr const_reference back() const { return m_start[m_count - 1]; }
+
+        static constexpr size_type npos = size_type(-1);
+
+        constexpr array_view subarr(size_type pos = 0, size_type count = npos) const
+        {
+            if (pos > m_count) throw_out_of_range();
+            return array_view<T>(m_start + pos, (std::min)(count, m_count - pos));
+        }
 
         operator std::vector<T>() const { return std::vector<T>(m_start, m_start + m_count); }
     };

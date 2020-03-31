@@ -92,7 +92,7 @@ if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if(MSVC)
-    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor")
+    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
