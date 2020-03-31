@@ -1,7 +1,7 @@
 #include <xaml/meta/meta.hpp>
 
 using namespace std;
-using namespace std::filesystem;
+using namespace filesystem;
 
 namespace xaml
 {
@@ -39,7 +39,7 @@ namespace xaml
         return s_empty_erased_function;
     }
 
-    void reflection_info::add_static_method(string_view name, std::unique_ptr<type_erased_function>&& func) noexcept
+    void reflection_info::add_static_method(string_view name, unique_ptr<type_erased_function>&& func) noexcept
     {
         m_static_method_map.emplace((string)name, move(func));
     }
@@ -56,7 +56,7 @@ namespace xaml
         return s_empty_erased_function;
     }
 
-    void reflection_info::add_constructor(std::unique_ptr<type_erased_function>&& ctor) noexcept
+    void reflection_info::add_constructor(unique_ptr<type_erased_function>&& ctor) noexcept
     {
         m_ctors.push_back(move(ctor));
     }
@@ -74,7 +74,7 @@ namespace xaml
         return s_empty_erased_this_function;
     }
 
-    void reflection_info::add_method(string_view name, std::unique_ptr<type_erased_this_function>&& func) noexcept
+    void reflection_info::add_method(string_view name, unique_ptr<type_erased_this_function>&& func) noexcept
     {
         m_method_map.emplace((string)name, move(func));
     }
@@ -89,7 +89,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_property(string_view name, guid type, function<shared_ptr<meta_class>(std::shared_ptr<meta_class>)>&& getter, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& setter, bool attach)
+    void reflection_info::__add_property(string_view name, guid type, function<shared_ptr<meta_class>(shared_ptr<meta_class>)>&& getter, function<void(shared_ptr<meta_class>, shared_ptr<meta_class>)>&& setter, bool attach)
     {
         auto prop = make_unique<property_info>();
         prop->m_name = name;
@@ -109,7 +109,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_collection_property(string_view name, guid type, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& adder, function<void(std::shared_ptr<meta_class>, shared_ptr<meta_class>)>&& remover, bool attach)
+    void reflection_info::__add_collection_property(string_view name, guid type, function<void(shared_ptr<meta_class>, shared_ptr<meta_class>)>&& adder, function<void(shared_ptr<meta_class>, shared_ptr<meta_class>)>&& remover, bool attach)
     {
         auto prop = make_unique<collection_property_info>();
         prop->m_name = name;
@@ -129,7 +129,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_event(string_view name, function<size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, function<void(std::shared_ptr<meta_class>, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
+    void reflection_info::__add_event(string_view name, function<size_t(shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<size_t(shared_ptr<meta_class>, shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, function<void(shared_ptr<meta_class>, size_t)>&& remover, unique_ptr<type_erased_this_function>&& invoker)
     {
         auto ev = make_unique<event_info>();
         ev->m_name = name;
@@ -138,6 +138,19 @@ namespace xaml
         ev->remover = move(remover);
         ev->invoker = move(invoker);
         m_event_map[ev->m_name] = move(ev);
+    }
+
+    void reflection_info::add_event(string_view name, function<size_t(shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<void(shared_ptr<meta_class>, size_t)>&& remover, unique_ptr<type_erased_this_function>&& invoker)
+    {
+        if (invoker)
+        {
+            __add_event(
+                name, move(adder),
+                [adder](shared_ptr<meta_class> self, shared_ptr<meta_class> target, type_erased_this_function const& func) -> size_t {
+                    return adder(self, *make_type_erased_function<void>([target, &func](auto... args) { func(target, { box_value(forward<Args>(args))... }); }));
+                },
+                move(remover), move(invoker));
+        }
     }
 
     module* meta_context::add_module(path const& path)

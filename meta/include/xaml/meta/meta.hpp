@@ -821,19 +821,7 @@ namespace xaml
         XAML_META_API void __add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<std::size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker);
 
     public:
-        template <typename... Args>
-        void add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
-        {
-            if (invoker)
-            {
-                __add_event(
-                    name, std::move(adder),
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, type_erased_this_function const& func) -> std::size_t {
-                        return adder(self, *make_type_erased_function<void, Args...>([target, &func](Args... args) { func(target, { box_value(std::forward<Args>(args))... }); }));
-                    },
-                    std::move(remover), std::move(invoker));
-            }
-        }
+        XAML_META_API void add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker);
     };
 
     template <typename T, typename TEvent>
@@ -844,7 +832,7 @@ namespace xaml
     {
         void operator()(reflection_info& ref, std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, std::function<void(Args...)>)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, event<Args...> T::*getter) const
         {
-            ref.add_event<Args...>(
+            ref.add_event(
                 name,
                 std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>([adder](std::shared_ptr<meta_class> self, type_erased_function const& f) -> std::size_t { return adder(self, [f](Args... args) { f({ box_value(std::forward<Args>(args))... }); }); }),
                 std::move(remover),
