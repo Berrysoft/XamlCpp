@@ -83,7 +83,7 @@ namespace xaml
         constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
 #endif // __APPLE__
         char* ldp = getenv(ld_library_path.data());
-        vector<path> result = split(ldp ? ldp : "", ':');
+        vector<path> result = split(ldp ? ldp : path_string_view_t{}, ':');
 #endif // WIN32 || __MINGW32__
         result.push_back(".");
         result.push_back("../lib");

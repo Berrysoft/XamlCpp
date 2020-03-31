@@ -37,13 +37,13 @@ using namespace std;
 using namespace std::filesystem;
 using namespace xaml;
 
-namespace xamlcpp
-{
-    struct xamlcpp_options;
-}
-
 namespace xaml
 {
+    namespace xamlcpp
+    {
+        struct xamlcpp_options;
+    }
+
     template <>
     struct type_guid<xamlcpp::xamlcpp_options>
     {
@@ -51,7 +51,7 @@ namespace xaml
     };
 } // namespace xaml
 
-namespace xamlcpp
+namespace xaml::xamlcpp
 {
     struct xamlcpp_options : public meta_class
     {
@@ -75,7 +75,7 @@ namespace xamlcpp
         void remove_lib_path(string_view_t p) {}
         array_view<string_t> get_lib_paths() const noexcept { return m_lib_paths; }
 
-        REGISTER_CLASS_DECL_NOFILE(xamlcpp, xamlcpp_options)
+        REGISTER_CLASS_DECL_NOFILE(xaml::xamlcpp, xamlcpp_options)
         {
             ADD_CTOR();
 
@@ -100,7 +100,7 @@ namespace xamlcpp
         }
         REGISTER_CLASS_END()
     };
-} // namespace xamlcpp
+} // namespace xaml::xamlcpp
 
 optional<version> is_later(map<path, tuple<path, version>> const& modules, path const& new_module)
 {
@@ -131,6 +131,8 @@ optional<version> is_later(map<path, tuple<path, version>> const& modules, path 
     }
 }
 
+using namespace xaml::xamlcpp;
+
 int _tmain(int argc, char_t const* const* argv)
 {
     try
@@ -138,9 +140,9 @@ int _tmain(int argc, char_t const* const* argv)
         meta_context cmdline_ctx{};
         cmdline::init_parser(cmdline_ctx);
         register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
-        auto refl = cmdline_ctx.get_type(type_guid_v<xamlcpp::xamlcpp_options>);
+        auto refl = cmdline_ctx.get_type(type_guid_v<xamlcpp_options>);
         auto nodes = cmdline::parse(refl, argc, argv);
-        auto opts = cmdline::deserialize(refl, nodes)->query<xamlcpp::xamlcpp_options>();
+        auto opts = cmdline::deserialize(refl, nodes)->query<xamlcpp_options>();
 
         path exe{ argv[0] };
         if (!opts->get_no_logo())
