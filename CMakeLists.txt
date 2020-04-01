@@ -125,7 +125,7 @@ option(BUILD_WEBVIEW "Build webview." ON)
 option(USE_SYS_PUGIXML "Use system pugixml" OFF)
 
 set(_XAML_TARGETS
-    xaml_global
+    xaml_global xaml_rapidxml
     xaml_meta xaml_parser xaml_compiler
     xaml_ui xaml_ui_meta
     xaml_ui_controls xaml_ui_controls_meta

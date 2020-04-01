@@ -1,29 +1,8 @@
 #ifndef RAPID_XML_MEMORY_POOL_HPP
 #define RAPID_XML_MEMORY_POOL_HPP
 
+#include <rapidxml/utility.hpp>
 #include <rapidxml/xml_node.hpp>
-
-#ifndef RAPIDXML_STATIC_POOL_SIZE
-// Size of static memory block of memory_pool.
-// Define RAPIDXML_STATIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
-// No dynamic memory allocations are performed by memory_pool until static memory is exhausted.
-#define RAPIDXML_STATIC_POOL_SIZE (64 * 1024)
-#endif
-
-#ifndef RAPIDXML_DYNAMIC_POOL_SIZE
-// Size of dynamic memory block of memory_pool.
-// Define RAPIDXML_DYNAMIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
-// After the static block is exhausted, dynamic blocks with approximately this size are allocated by memory_pool.
-#define RAPIDXML_DYNAMIC_POOL_SIZE (64 * 1024)
-#endif
-
-#ifndef RAPIDXML_ALIGNMENT
-// Memory allocation alignment.
-// Define RAPIDXML_ALIGNMENT before including rapidxml_ns.hpp if you want to override the default value, which is the size of pointer.
-// All memory allocations for nodes, attributes and strings will be aligned to this value.
-// This must be a power of 2 and at least 1, otherwise memory_pool will not work.
-#define RAPIDXML_ALIGNMENT alignof(void*)
-#endif
 
 namespace rapidxml
 {
@@ -63,6 +42,16 @@ namespace rapidxml
     //! \param char chararacter type of created nodes.
     class memory_pool
     {
+    public:
+        // Size of static memory block of memory_pool.
+        // Define RAPIDXML_STATIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
+        // No dynamic memory allocations are performed by memory_pool until static memory is exhausted.
+        static constexpr size_t static_pool_size = 64 * 1024;
+
+        // Size of dynamic memory block of memory_pool.
+        // Define RAPIDXML_DYNAMIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
+        // After the static block is exhausted, dynamic blocks with approximately this size are allocated by memory_pool.
+        static constexpr size_t dynamic_pool_size = 64 * 1024;
 
     public:
         //! Constructs empty pool with default allocator functions.
@@ -89,9 +78,9 @@ namespace rapidxml
         //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
         //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated node. This pointer will never be NULL.
-        xml_node* allocate_node(node_type type,
-                                std::optional<std::string_view> name = std::nullopt,
-                                std::optional<std::string_view> value = std::nullopt);
+        RAPIDXML_API xml_node* allocate_node(node_type type,
+                                             std::optional<std::string_view> name = std::nullopt,
+                                             std::optional<std::string_view> value = std::nullopt);
 
         //! Allocates a new attribute from the pool, and optionally assigns name and value to it.
         //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
@@ -102,8 +91,8 @@ namespace rapidxml
         //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
         //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated attribute. This pointer will never be NULL.
-        xml_attribute* allocate_attribute(std::optional<std::string_view> name = std::nullopt,
-                                          std::optional<std::string_view> value = std::nullopt);
+        RAPIDXML_API xml_attribute* allocate_attribute(std::optional<std::string_view> name = std::nullopt,
+                                                       std::optional<std::string_view> value = std::nullopt);
 
         //! Allocates a char array of given size from the pool, and optionally copies a given string to it.
         //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
@@ -112,7 +101,7 @@ namespace rapidxml
         //! \param source String to initialize the allocated memory with, or 0 to not initialize it.
         //! \param size Number of characters to allocate, or zero to calculate it automatically from source string length; if size is 0, source string must be specified and null terminated.
         //! \return Pointer to allocated char array. This pointer will never be NULL.
-        char* allocate_string(std::optional<std::string_view> source = std::nullopt, std::size_t size = 0);
+        RAPIDXML_API char* allocate_string(std::optional<std::string_view> source = std::nullopt, std::size_t size = 0);
 
         //! Clones an xml_node and its hierarchy of child nodes and attributes.
         //! Nodes and attributes are allocated from this memory pool.
@@ -123,15 +112,15 @@ namespace rapidxml
         //! \param source Node to clone.
         //! \param result Node to put results in, or 0 to automatically allocate result node
         //! \return Pointer to cloned node. This pointer will never be NULL.
-        xml_node* clone_node(const xml_node* source, xml_node* result = nullptr);
+        RAPIDXML_API xml_node* clone_node(const xml_node* source, xml_node* result = nullptr);
 
         //! Clears the pool.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
         //! Any nodes or strings allocated from the pool will no longer be valid.
-        void clear();
+        RAPIDXML_API void clear();
 
     private:
-        struct alignas(RAPIDXML_ALIGNMENT) header
+        struct alignas(alignof(void*)) header
         {
             void* previous_begin;
         };
@@ -143,7 +132,7 @@ namespace rapidxml
         void* m_begin{ nullptr }; // Start of raw memory making up current pool
         void* m_ptr{ nullptr }; // First free byte in current pool
         std::size_t m_size{ 0 };
-        char m_static_memory[RAPIDXML_STATIC_POOL_SIZE]{}; // Static raw memory
+        char m_static_memory[static_pool_size]{}; // Static raw memory
     };
 } // namespace rapidxml
 

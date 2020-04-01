@@ -31,6 +31,8 @@ namespace rapidxml
         {
         }
 
+        ~xml_node() override {}
+
         ///////////////////////////////////////////////////////////////////////////
         // Node data access
 

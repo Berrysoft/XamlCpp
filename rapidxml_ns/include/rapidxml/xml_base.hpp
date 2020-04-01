@@ -68,6 +68,8 @@ namespace rapidxml
     class xml_base
     {
     public:
+        virtual ~xml_base() {}
+
         ///////////////////////////////////////////////////////////////////////////
         // Node data access
 

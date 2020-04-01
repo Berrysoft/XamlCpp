@@ -222,7 +222,7 @@ namespace rapidxml
     //! which are inherited from memory_pool.
     //! To access root node of the document, use the document itself, as if it was an xml_node.
     //! \param char chararacter type to use.
-    class xml_document : public xml_node, public memory_pool
+    class xml_document : public xml_node
     {
 
     public:
@@ -231,6 +231,8 @@ namespace rapidxml
             : xml_node(node_type::document)
         {
         }
+
+        ~xml_document() override {}
 
         //! Parses zero-terminated XML string according to given flags.
         //! Passed string will be modified by the parser, unless rapidxml_ns::parse_non_destructive flag is used.
@@ -281,6 +283,8 @@ namespace rapidxml
 
         // Parse XML attributes of the node
         void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
+
+        memory_pool pool{};
     };
 } // namespace rapidxml
 

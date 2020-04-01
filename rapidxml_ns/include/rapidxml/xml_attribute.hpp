@@ -19,6 +19,8 @@ namespace rapidxml
         friend class xml_node;
 
     public:
+        ~xml_attribute() override {}
+
         ///////////////////////////////////////////////////////////////////////////
         // Related nodes access
 
