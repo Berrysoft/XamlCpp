@@ -19,7 +19,6 @@ namespace rapidxml
 
 #define aligned_free(ptr) _aligned_free(ptr)
 #else
-    using std::aligned_alloc;
 
 #define aligned_free(ptr) free(ptr)
 #endif // WIN32 || __MINGW32__
