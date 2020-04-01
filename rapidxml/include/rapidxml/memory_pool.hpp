@@ -120,9 +120,9 @@ namespace rapidxml
         RAPIDXML_API void clear();
 
     private:
-        struct alignas(alignof(void*)) header
+        struct header
         {
-            void* previous_begin;
+            alignas(alignment) void* previous_begin;
         };
 
         RAPIDXML_API void init();

@@ -338,9 +338,12 @@ namespace xaml
     {
     };
 
-    struct alignas(1) color
+    struct color
     {
-        std::uint8_t a, r, g, b;
+        std::uint8_t a;
+        std::uint8_t r;
+        std::uint8_t g;
+        std::uint8_t b;
 
         constexpr operator std::uint32_t() const noexcept { return ((std::uint32_t)a << 24) + ((std::uint32_t)r << 16) + ((std::uint32_t)g << 8) + (std::uint32_t)b; }
         static constexpr color from_argb(std::uint32_t v) noexcept { return { (std::uint8_t)((v >> 24) & 0xFF), (std::uint8_t)((v >> 16) & 0xFF), (std::uint8_t)((v >> 8) & 0xFF), (std::uint8_t)(v & 0xFF) }; }
