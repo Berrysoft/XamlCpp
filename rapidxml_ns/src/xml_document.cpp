@@ -187,52 +187,42 @@ namespace rapidxml
     // Insert coded character, using UTF8 or 8-bit ASCII
     static void insert_coded_character(char*& text, unsigned long code, parse_flag flags)
     {
-        if (flags & parse_flag::no_utf8)
+        // Insert UTF8 sequence
+        if (code < 0x80) // 1 byte sequence
         {
-            // Insert 8-bit ASCII character
-            // Todo: possibly verify that code is less than 256 and use replacement char otherwise?
             text[0] = static_cast<unsigned char>(code);
             text += 1;
         }
-        else
+        else if (code < 0x800) // 2 byte sequence
         {
-            // Insert UTF8 sequence
-            if (code < 0x80) // 1 byte sequence
-            {
-                text[0] = static_cast<unsigned char>(code);
-                text += 1;
-            }
-            else if (code < 0x800) // 2 byte sequence
-            {
-                text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[0] = static_cast<unsigned char>(code | 0xC0);
-                text += 2;
-            }
-            else if (code < 0x10000) // 3 byte sequence
-            {
-                text[2] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[0] = static_cast<unsigned char>(code | 0xE0);
-                text += 3;
-            }
-            else if (code < 0x110000) // 4 byte sequence
-            {
-                text[3] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[2] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
-                code >>= 6;
-                text[0] = static_cast<unsigned char>(code | 0xF0);
-                text += 4;
-            }
-            else // Invalid, only codes up to 0x10FFFF are allowed in Unicode
-            {
-                throw parse_error("invalid numeric character entity", text);
-            }
+            text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[0] = static_cast<unsigned char>(code | 0xC0);
+            text += 2;
+        }
+        else if (code < 0x10000) // 3 byte sequence
+        {
+            text[2] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[0] = static_cast<unsigned char>(code | 0xE0);
+            text += 3;
+        }
+        else if (code < 0x110000) // 4 byte sequence
+        {
+            text[3] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[2] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[1] = static_cast<unsigned char>((code | 0x80) & 0xBF);
+            code >>= 6;
+            text[0] = static_cast<unsigned char>(code | 0xF0);
+            text += 4;
+        }
+        else // Invalid, only codes up to 0x10FFFF are allowed in Unicode
+        {
+            throw parse_error("invalid numeric character entity", text);
         }
     }
 
@@ -341,9 +331,9 @@ namespace rapidxml
                             src += 2; // Skip &#
                             while (1)
                             {
-                                if (!isxdigit(*src))
+                                if (!isdigit(*src))
                                     break;
-                                unsigned long digit = isdigit(*src) ? ((*src) - '0') : (isupper(*src) ? ((*src) - 'A' + 10) : ((*src) - 'a' + 10));
+                                unsigned long digit = ((*src) - '0');
                                 code = code * 10 + digit;
                                 ++src;
                             }

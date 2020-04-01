@@ -112,7 +112,7 @@ namespace rapidxml
         //! Can be combined with other flags by use of | operator.
         //! <br><br>
         //! See xml_document::parse() function.
-        no_utf8 = 0x10,
+        no_utf8 [[deprecated]] = 0x10,
 
         //! Parse flag instructing the parser to create XML declaration node.
         //! By default, declaration node is not created.

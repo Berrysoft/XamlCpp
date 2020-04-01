@@ -11,8 +11,6 @@ namespace rapidxml
     //! Use what() function to get human-readable error message.
     //! Use where() function to get a pointer to position within source text where error was detected.
     //! <br><br>
-    //! If throwing exceptions by the parser is undesirable,
-    //! it can be disabled by defining RAPIDXML_NO_EXCEPTIONS macro before rapidxml_ns.hpp is included.
     //! This will cause the parser to call rapidxml_ns::parse_error_handler() function instead of throwing an exception.
     //! This function must be defined by the user.
     //! <br><br>
