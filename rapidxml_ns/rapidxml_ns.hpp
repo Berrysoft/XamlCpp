@@ -633,92 +633,9 @@ namespace rapidxml_ns
                     ns_storage.set_node_namespace_uri_by_prefix(first_prefixed_attribute);
         }
 
-        class xml_namespace_processor
-        {
-        public:
-            class scope
-            {
-            public:
-                scope(xml_namespace_processor& processor)
-                    : m_processor(processor), m_stack_position(processor.m_namespace_prefixes.size()), m_default_namespace(0)
-                {
-                }
+        class xml_namespace_processor;
 
-                scope(scope const& parent_scope)
-                    : m_processor(parent_scope.m_processor), m_stack_position(m_processor.m_namespace_prefixes.size()), m_default_namespace(parent_scope.m_default_namespace)
-                {
-                }
-
-                ~scope()
-                {
-                    m_processor.m_namespace_prefixes.resize(m_stack_position);
-                }
-
-                void process_element(xml_node* element)
-                {
-                    assign_element_namespace_uris(element, *this);
-                }
-
-                void set_default_namespace(xml_attribute* ns_attr)
-                {
-                    m_default_namespace = ns_attr;
-                }
-
-                void add_namespace_prefix(xml_attribute* ns_attr)
-                {
-                    m_processor.m_namespace_prefixes.push_back(ns_attr);
-                }
-
-                void set_element_default_namespace_uri(xml_node* element) const
-                {
-                    if (m_default_namespace)
-                        element->namespace_uri(m_default_namespace->value());
-                }
-
-                void set_node_namespace_uri_by_prefix(xml_base* node) const
-                {
-                    std::string_view prefix = node->prefix();
-                    for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
-                             it = m_processor.m_namespace_prefixes.rbegin();
-                         it != m_processor.m_namespace_prefixes.rend(); ++it)
-                        if (compare((*it)->local_name(), prefix))
-                        {
-                            node->namespace_uri((*it)->value());
-                            return;
-                        }
-                    RAPIDXML_PARSE_ERROR("No namespace definition found", 0);
-                }
-
-            private:
-                xml_namespace_processor& m_processor;
-                size_t const m_stack_position;
-                xml_attribute* m_default_namespace;
-            };
-
-        private:
-            typedef std::vector<xml_attribute*> xmlns_attributes_t;
-            xmlns_attributes_t m_namespace_prefixes;
-        };
-
-        class xml_namespace_processor_stub
-        {
-        public:
-            class scope
-            {
-            public:
-                scope(xml_namespace_processor_stub&)
-                {
-                }
-
-                scope(scope const&)
-                {
-                }
-
-                void process_element(xml_node*) const
-                {
-                }
-            };
-        };
+        class xml_namespace_processor_stub;
     } // namespace internal
     //! \endcond
 
@@ -2767,6 +2684,96 @@ namespace rapidxml_ns
             }
         }
     };
+
+    namespace internal
+    {
+        class xml_namespace_processor
+        {
+        public:
+            class scope
+            {
+            public:
+                scope(xml_namespace_processor& processor)
+                    : m_processor(processor), m_stack_position(processor.m_namespace_prefixes.size()), m_default_namespace(0)
+                {
+                }
+
+                scope(scope const& parent_scope)
+                    : m_processor(parent_scope.m_processor), m_stack_position(m_processor.m_namespace_prefixes.size()), m_default_namespace(parent_scope.m_default_namespace)
+                {
+                }
+
+                ~scope()
+                {
+                    m_processor.m_namespace_prefixes.resize(m_stack_position);
+                }
+
+                void process_element(xml_node* element)
+                {
+                    assign_element_namespace_uris(element, *this);
+                }
+
+                void set_default_namespace(xml_attribute* ns_attr)
+                {
+                    m_default_namespace = ns_attr;
+                }
+
+                void add_namespace_prefix(xml_attribute* ns_attr)
+                {
+                    m_processor.m_namespace_prefixes.push_back(ns_attr);
+                }
+
+                void set_element_default_namespace_uri(xml_node* element) const
+                {
+                    if (m_default_namespace)
+                        element->namespace_uri(m_default_namespace->value());
+                }
+
+                void set_node_namespace_uri_by_prefix(xml_base* node) const
+                {
+                    std::string_view prefix = node->prefix();
+                    for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
+                             it = m_processor.m_namespace_prefixes.rbegin();
+                         it != m_processor.m_namespace_prefixes.rend(); ++it)
+                        if (compare((*it)->local_name(), prefix))
+                        {
+                            node->namespace_uri((*it)->value());
+                            return;
+                        }
+                    RAPIDXML_PARSE_ERROR("No namespace definition found", 0);
+                }
+
+            private:
+                xml_namespace_processor& m_processor;
+                size_t const m_stack_position;
+                xml_attribute* m_default_namespace;
+            };
+
+        private:
+            typedef std::vector<xml_attribute*> xmlns_attributes_t;
+            xmlns_attributes_t m_namespace_prefixes;
+        };
+
+        class xml_namespace_processor_stub
+        {
+        public:
+            class scope
+            {
+            public:
+                scope(xml_namespace_processor_stub&)
+                {
+                }
+
+                scope(scope const&)
+                {
+                }
+
+                void process_element(xml_node*) const
+                {
+                }
+            };
+        };
+    } // namespace internal
 } // namespace rapidxml_ns
 
 // Undefine internal macros

@@ -1,0 +1,152 @@
+#ifndef RAPID_XML_BASE_HPP
+#define RAPID_XML_BASE_HPP
+
+#include <string_view>
+
+namespace rapidxml
+{
+    //! Enumeration listing all node types produced by the parser.
+    //! Use xml_node::type() function to query node type.
+    enum class node_type
+    {
+        document, //!< A document node. Name and value are empty.
+        element, //!< An element node. Name contains element name. Value contains text of first data node.
+        data, //!< A data node. Name is empty. Value contains data text.
+        cdata, //!< A CDATA node. Name is empty. Value contains data text.
+        comment, //!< A comment node. Name is empty. Value contains comment text.
+        declaration, //!< A declaration node. Name and value are empty. Declaration parameters (version, encoding and standalone) are in node attributes.
+        doctype, //!< A DOCTYPE node. Name is empty. Value contains DOCTYPE text.
+        pi //!< A PI node. Name contains target. Value contains instructions.
+    };
+
+    class xml_node;
+
+    //! Base class for xml_node and xml_attribute implementing common functions:
+    //! name(), name_size(), value(), value_size() and parent().
+    //! \param char chararacter type to use
+    class xml_base
+    {
+    public:
+        ///////////////////////////////////////////////////////////////////////////
+        // Node data access
+
+        constexpr std::string_view local_name() const { return m_name.substr(m_local_name); }
+
+        constexpr std::size_t local_offset() const { return m_local_name; }
+
+        //! Gets namespace prefix.
+        //! Returned string is never zero-terminated, regardless of parse_no_string_terminators. Use prefix_size()
+        //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
+        //! SHOULD use the namespace name, not the prefix, in constructing names whose scope extends beyond the containing
+        //! document" Namespaces in XML 1.0 (Third Edition)
+        constexpr std::string_view prefix() const { return m_name.substr(0, m_local_name); }
+
+        //! Gets QName of the node.
+        //! Interpretation of name depends on type of node.
+        //! Note that name will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
+        //! <br><br>
+        //! Use name_size() function to determine length of the name.
+        //! \return Name of node, or empty string if node has no name.
+        constexpr std::string_view name() const { return m_name; }
+
+        //! Gets value of node.
+        //! Interpretation of value depends on type of node.
+        //! Note that value will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
+        //! <br><br>
+        //! Use value_size() function to determine length of the value.
+        //! \return Value of node, or empty string if node has no value.
+        constexpr std::string_view value() const { return m_value; }
+
+        //! Gets namespace URI of the node.
+        //! Note that URI will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
+        //! Namespace URI is not assigned if rapidxml_ns::parse_no_namespace option was selected during parse.
+        //! <br><br>
+        //! Use namespace_uri_size() function to determine length of the name.
+        //! \return Namespace URI of node, or empty string if node has no namespace assigned.
+        constexpr std::string_view namespace_uri() const { return m_namespace_uri; }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Node modification
+
+        //! Sets QName of node to a non zero-terminated string.
+        //! See \ref ownership_of_strings.
+        //! <br><br>
+        //! Note that node does not own its name or value, it only stores a pointer to it.
+        //! It will not delete or otherwise free the pointer on destruction.
+        //! It is reponsibility of the user to properly manage lifetime of the string.
+        //! The easiest way to achieve it is to use memory_pool of the document to allocate the string -
+        //! on destruction of the document the string will be automatically freed.
+        //! <br><br>
+        //! Note that passed string will not be automatically divided to prefix and local_name,
+        //! it seems useless for manual node creation. qname() may be used instead
+        //! local_name() will be set to be equal to name()
+        //! <br><br>
+        //! Size of name must be specified separately, because name does not have to be zero terminated.
+        //! Use name(const char *) function to have the length automatically calculated (string must be zero terminated).
+        //! \param name QName of node to set. Does not have to be zero terminated.
+        //! \param size Size of name, in characters. This does not include zero terminator, if one is present.
+        void name(std::string_view name)
+        {
+            qname(name);
+        }
+
+        //! Sets QName as PrefixedName or UnprefixedName where local_part points in QName string
+        void qname(std::string_view qname, std::size_t local_part)
+        {
+            m_name = qname;
+            m_local_name = local_part;
+        }
+
+        //! Sets QName as UnprefixedName
+        void qname(std::string_view qname)
+        {
+            m_name = qname;
+            m_local_name = 0;
+        }
+
+        void namespace_uri(std::string_view uri)
+        {
+            m_namespace_uri = uri;
+        }
+
+        //! Sets value of node to a non zero-terminated string.
+        //! See \ref ownership_of_strings.
+        //! <br><br>
+        //! Note that node does not own its name or value, it only stores a pointer to it.
+        //! It will not delete or otherwise free the pointer on destruction.
+        //! It is responsibility of the user to properly manage lifetime of the string.
+        //! The easiest way to achieve it is to use memory_pool of the document to allocate the string -
+        //! on destruction of the document the string will be automatically freed.
+        //! <br><br>
+        //! Size of value must be specified separately, because it does not have to be zero terminated.
+        //! Use value(const char *) function to have the length automatically calculated (string must be zero terminated).
+        //! <br><br>
+        //! If an element has a child node of type node_data, it will take precedence over element value when printing.
+        //! If you want to manipulate data of elements using values, use parser flag rapidxml_ns::parse_no_data_nodes to prevent creation of data nodes by the parser.
+        //! \param value value of node to set. Does not have to be zero terminated.
+        //! \param size Size of value, in characters. This does not include zero terminator, if one is present.
+        void value(std::string_view value)
+        {
+            m_value = value;
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Related nodes access
+
+        //! Gets node parent.
+        //! \return Pointer to parent node, or 0 if there is no parent.
+        xml_node* parent() const
+        {
+            return m_parent;
+        }
+
+    protected:
+        std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
+        std::string_view m_name{}; // Name of node, or 0 if no name
+        std::string_view m_value{}; // Value of node, or 0 if no value
+        std::string_view m_namespace_uri{};
+        xml_node* m_parent{ nullptr }; // Pointer to parent node, or 0 if none
+    };
+} // namespace rapidxml
+
+#endif // !RAPID_XML_BASE_HPP

@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 #include <rapidxml_ns.hpp>
 #include <sstream>
@@ -83,12 +84,15 @@ namespace xaml
 
         void load_file(path const& p)
         {
+            ifstream stream{ p };
+
             //auto result = doc.load_file(p.c_str());
             //loaded = result.status == status_ok;
         }
 
         void load_string(string_view s)
         {
+            doc.parse<0>(s.data());
             //auto result = doc.load_string(s.data());
             //loaded = result.status == status_ok;
         }
