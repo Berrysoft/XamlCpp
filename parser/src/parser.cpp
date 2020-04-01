@@ -1,6 +1,7 @@
 #include <fstream>
 #include <iostream>
-#include <rapidxml_ns.hpp>
+#include <rapidxml/xml_attribute.hpp>
+#include <rapidxml/xml_document.hpp>
 #include <sstream>
 #include <vector>
 #include <xaml/markup/binding.hpp>
@@ -9,7 +10,7 @@
 
 using namespace std;
 using namespace std::filesystem;
-using namespace rapidxml_ns;
+using namespace rapidxml;
 
 namespace xaml
 {
@@ -78,23 +79,21 @@ namespace xaml
     struct parser_impl
     {
         meta_context* ctx{ nullptr };
+        string buffer;
         set<string> headers{};
         xml_document doc{};
-        bool loaded{ false };
 
         void load_file(path const& p)
         {
             ifstream stream{ p };
-
-            //auto result = doc.load_file(p.c_str());
-            //loaded = result.status == status_ok;
+            buffer.assign(istreambuf_iterator<char>(stream), istreambuf_iterator<char>{});
+            doc.parse(buffer.data());
         }
 
         void load_string(string_view s)
         {
-            doc.parse<0>(s.data());
-            //auto result = doc.load_string(s.data());
-            //loaded = result.status == status_ok;
+            buffer.assign(s);
+            doc.parse(buffer.data());
         }
 
         markup_node parse_markup(string_view value);
@@ -179,7 +178,7 @@ namespace xaml
     {
         switch (node.type())
         {
-        case node_element:
+        case node_type::element:
         {
             auto ns = node.namespace_uri();
             auto name = node.name();
@@ -188,9 +187,9 @@ namespace xaml
                 auto& attr = *pattr;
                 auto attr_ns = attr.namespace_uri();
                 auto attr_name = attr.local_name();
-                if (attr_ns.empty() && attr_name == "xmlns")
+                if (attr_ns == xmlns_namespace::uri && attr_name == "xmlns")
                     continue;
-                else if (attr_ns == "xmlns")
+                else if (attr_ns == xmlns_namespace::uri)
                     continue;
                 else if (attr_ns.empty())
                     attr_ns = ns;
@@ -276,8 +275,8 @@ namespace xaml
             }
             break;
         }
-        case node_data:
-        case node_cdata:
+        case node_type::data:
+        case node_type::cdata:
         {
             auto def_attr = mc.type->get_attribute<default_property>();
             if (def_attr)
@@ -301,7 +300,7 @@ namespace xaml
         for (auto pc = node.first_node(); pc; pc = pc->next_sibling())
         {
             auto& c = *pc;
-            if (c.type() == node_element)
+            if (c.type() == node_type::element)
             {
                 auto ns = c.namespace_uri();
                 auto name = c.local_name();
@@ -406,22 +405,21 @@ namespace xaml
         }
     }
 
-    static tuple<bool, xaml_node, set<string>> parse_impl(meta_context& ctx, parser_impl& impl)
+    static tuple<xaml_node, set<string>> parse_impl(meta_context& ctx, parser_impl& impl)
     {
-        if (!impl.loaded) return make_tuple<bool, xaml_node, set<string>>(false, { nullptr }, {});
         impl.ctx = &ctx;
         xaml_node result = impl.parse();
-        return make_tuple(true, move(result), move(impl.headers));
+        return make_tuple(move(result), move(impl.headers));
     }
 
-    tuple<bool, xaml_node, set<string>> parse_file(meta_context& ctx, path const& file)
+    tuple<xaml_node, set<string>> parse_file(meta_context& ctx, path const& file)
     {
         parser_impl impl{};
         impl.load_file(file);
         return parse_impl(ctx, impl);
     }
 
-    tuple<bool, xaml_node, set<string>> parse_string(meta_context& ctx, string_view xml)
+    tuple<xaml_node, set<string>> parse_string(meta_context& ctx, string_view xml)
     {
         parser_impl impl{};
         impl.load_string(xml);

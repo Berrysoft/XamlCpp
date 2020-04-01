@@ -5,6 +5,47 @@
 
 namespace rapidxml
 {
+    //! Parse error exception.
+    //! This exception is thrown by the parser when an error occurs.
+    //! Use what() function to get human-readable error message.
+    //! Use where() function to get a pointer to position within source text where error was detected.
+    //! <br><br>
+    //! If throwing exceptions by the parser is undesirable,
+    //! it can be disabled by defining RAPIDXML_NO_EXCEPTIONS macro before rapidxml_ns.hpp is included.
+    //! This will cause the parser to call rapidxml_ns::parse_error_handler() function instead of throwing an exception.
+    //! This function must be defined by the user.
+    //! <br><br>
+    //! This class derives from <code>std::exception</code> class.
+    class parse_error : public std::exception
+    {
+
+    public:
+        //! Constructs parse error
+        parse_error(const char* what, const char* where)
+            : m_what(what), m_where(where)
+        {
+        }
+
+        //! Gets human readable description of error.
+        //! \return Pointer to null terminated description of the error.
+        virtual const char* what() const throw()
+        {
+            return m_what;
+        }
+
+        //! Gets pointer to character data where error happened.
+        //! char should be the same as char type of xml_document that produced the error.
+        //! \return Pointer to location within the parsed string where error occured.
+        const char* where() const
+        {
+            return m_where;
+        }
+
+    private:
+        const char* m_what;
+        const char* m_where;
+    };
+
     //! Enumeration listing all node types produced by the parser.
     //! Use xml_node::type() function to query node type.
     enum class node_type
@@ -39,7 +80,7 @@ namespace rapidxml
         //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
         //! SHOULD use the namespace name, not the prefix, in constructing names whose scope extends beyond the containing
         //! document" Namespaces in XML 1.0 (Third Edition)
-        constexpr std::string_view prefix() const { return m_name.substr(0, m_local_name); }
+        constexpr std::string_view prefix() const { return m_local_name > 1 ? m_name.substr(0, m_local_name - 1) : std::string_view{}; }
 
         //! Gets QName of the node.
         //! Interpretation of name depends on type of node.

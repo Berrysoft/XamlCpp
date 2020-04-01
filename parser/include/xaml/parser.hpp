@@ -37,8 +37,8 @@ namespace xaml
         ~xaml_no_member() override {}
     };
 
-    XAML_API std::tuple<bool, xaml_node, std::set<std::string>> parse_file(meta_context& ctx, std::filesystem::path const& file);
-    XAML_API std::tuple<bool, xaml_node, std::set<std::string>> parse_string(meta_context& ctx, std::string_view xml);
+    XAML_API std::tuple<xaml_node, std::set<std::string>> parse_file(meta_context& ctx, std::filesystem::path const& file);
+    XAML_API std::tuple<xaml_node, std::set<std::string>> parse_string(meta_context& ctx, std::string_view xml);
 } // namespace xaml
 
 #endif // !XAML_PARSER_HPP
