@@ -232,15 +232,6 @@ namespace rapidxml
     template <class StopPred, class StopPredPure>
     static char* skip_and_expand_character_refs(char*& text, parse_flag flags)
     {
-        // If entity translation, whitespace condense and whitespace trimming is disabled, use plain skip
-        if (flags & parse_flag::no_entity_translation &&
-            !(flags & parse_flag::normalize_whitespace) &&
-            !(flags & parse_flag::trim_whitespace))
-        {
-            skip<StopPred>(text);
-            return text;
-        }
-
         // Use simple skip until first modification is detected
         skip<StopPredPure>(text);
 
@@ -249,107 +240,103 @@ namespace rapidxml
         char* dest = src;
         while (StopPred::test(*src))
         {
-            // If entity translation is enabled
-            if (!(flags & parse_flag::no_entity_translation))
+            // Test if replacement is needed
+            if (src[0] == '&')
             {
-                // Test if replacement is needed
-                if (src[0] == '&')
+                switch (src[1])
                 {
-                    switch (src[1])
+
+                // &amp; &apos;
+                case 'a':
+                    if (src[2] == 'm' && src[3] == 'p' && src[4] == ';')
                     {
-
-                    // &amp; &apos;
-                    case 'a':
-                        if (src[2] == 'm' && src[3] == 'p' && src[4] == ';')
-                        {
-                            *dest = '&';
-                            ++dest;
-                            src += 5;
-                            continue;
-                        }
-                        if (src[2] == 'p' && src[3] == 'o' && src[4] == 's' && src[5] == ';')
-                        {
-                            *dest = char('\'');
-                            ++dest;
-                            src += 6;
-                            continue;
-                        }
-                        break;
-
-                    // &quot;
-                    case 'q':
-                        if (src[2] == 'u' && src[3] == 'o' && src[4] == 't' && src[5] == ';')
-                        {
-                            *dest = '"';
-                            ++dest;
-                            src += 6;
-                            continue;
-                        }
-                        break;
-
-                    // &gt;
-                    case 'g':
-                        if (src[2] == 't' && src[3] == ';')
-                        {
-                            *dest = '>';
-                            ++dest;
-                            src += 4;
-                            continue;
-                        }
-                        break;
-
-                    // &lt;
-                    case 'l':
-                        if (src[2] == 't' && src[3] == ';')
-                        {
-                            *dest = '<';
-                            ++dest;
-                            src += 4;
-                            continue;
-                        }
-                        break;
-
-                    // &#...; - assumes ASCII
-                    case '#':
-                        if (src[2] == 'x')
-                        {
-                            unsigned long code = 0;
-                            src += 3; // Skip &#x
-                            while (1)
-                            {
-                                if (!isxdigit(*src))
-                                    break;
-                                unsigned long digit = isdigit(*src) ? ((*src) - '0') : (isupper(*src) ? ((*src) - 'A' + 10) : ((*src) - 'a' + 10));
-                                code = code * 16 + digit;
-                                ++src;
-                            }
-                            insert_coded_character(dest, code, flags); // Put character in output
-                        }
-                        else
-                        {
-                            unsigned long code = 0;
-                            src += 2; // Skip &#
-                            while (1)
-                            {
-                                if (!isdigit(*src))
-                                    break;
-                                unsigned long digit = ((*src) - '0');
-                                code = code * 10 + digit;
-                                ++src;
-                            }
-                            insert_coded_character(dest, code, flags); // Put character in output
-                        }
-                        if (*src == ';')
-                            ++src;
-                        else
-                            throw parse_error("expected ;", src);
+                        *dest = '&';
+                        ++dest;
+                        src += 5;
                         continue;
-
-                    // Something else
-                    default:
-                        // Ignore, just copy '&' verbatim
-                        break;
                     }
+                    if (src[2] == 'p' && src[3] == 'o' && src[4] == 's' && src[5] == ';')
+                    {
+                        *dest = char('\'');
+                        ++dest;
+                        src += 6;
+                        continue;
+                    }
+                    break;
+
+                // &quot;
+                case 'q':
+                    if (src[2] == 'u' && src[3] == 'o' && src[4] == 't' && src[5] == ';')
+                    {
+                        *dest = '"';
+                        ++dest;
+                        src += 6;
+                        continue;
+                    }
+                    break;
+
+                // &gt;
+                case 'g':
+                    if (src[2] == 't' && src[3] == ';')
+                    {
+                        *dest = '>';
+                        ++dest;
+                        src += 4;
+                        continue;
+                    }
+                    break;
+
+                // &lt;
+                case 'l':
+                    if (src[2] == 't' && src[3] == ';')
+                    {
+                        *dest = '<';
+                        ++dest;
+                        src += 4;
+                        continue;
+                    }
+                    break;
+
+                // &#...; - assumes ASCII
+                case '#':
+                    if (src[2] == 'x')
+                    {
+                        unsigned long code = 0;
+                        src += 3; // Skip &#x
+                        while (1)
+                        {
+                            if (!isxdigit(*src))
+                                break;
+                            unsigned long digit = isdigit(*src) ? ((*src) - '0') : (isupper(*src) ? ((*src) - 'A' + 10) : ((*src) - 'a' + 10));
+                            code = code * 16 + digit;
+                            ++src;
+                        }
+                        insert_coded_character(dest, code, flags); // Put character in output
+                    }
+                    else
+                    {
+                        unsigned long code = 0;
+                        src += 2; // Skip &#
+                        while (1)
+                        {
+                            if (!isdigit(*src))
+                                break;
+                            unsigned long digit = ((*src) - '0');
+                            code = code * 10 + digit;
+                            ++src;
+                        }
+                        insert_coded_character(dest, code, flags); // Put character in output
+                    }
+                    if (*src == ';')
+                        ++src;
+                    else
+                        throw parse_error("expected ;", src);
+                    continue;
+
+                // Something else
+                default:
+                    // Ignore, just copy '&' verbatim
+                    break;
                 }
             }
 

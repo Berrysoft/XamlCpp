@@ -93,27 +93,6 @@ namespace rapidxml
         //! See xml_document::parse() function.
         no_element_values = 0x2,
 
-        //! Parse flag instructing the parser to not place zero terminators after strings in the source text.
-        //! By default zero terminators are placed, modifying source text.
-        //! Can be combined with other flags by use of | operator.
-        //! <br><br>
-        //! See xml_document::parse() function.
-        no_string_terminators [[deprecated]] = 0x4,
-
-        //! Parse flag instructing the parser to not translate entities in the source text.
-        //! By default entities are translated, modifying source text.
-        //! Can be combined with other flags by use of | operator.
-        //! <br><br>
-        //! See xml_document::parse() function.
-        no_entity_translation = 0x8,
-
-        //! Parse flag instructing the parser to disable UTF-8 handling and assume plain 8 bit characters.
-        //! By default, UTF-8 handling is enabled.
-        //! Can be combined with other flags by use of | operator.
-        //! <br><br>
-        //! See xml_document::parse() function.
-        no_utf8 [[deprecated]] = 0x10,
-
         //! Parse flag instructing the parser to create XML declaration node.
         //! By default, declaration node is not created.
         //! Can be combined with other flags by use of | operator.
@@ -168,15 +147,6 @@ namespace rapidxml
         //! See xml_document::parse() function.
         normalize_whitespace = 0x800,
 
-        //! Parse flag instructing the parser to skip assigning XML namespace URI to elements and attributes.
-        //! I.e. to behave like original RapidXML parser.
-        //! By default, namespaces are set.
-        //! This flag does not cause the parser to modify source text.
-        //! Can be combined with other flags by use of | operator.
-        //! <br><br>
-        //! See xml_document::parse() function.
-        no_namespace [[deprecated]] = 0x1000,
-
         // Compound flags
 
         //! Parse flags which represent default behaviour of the parser.
@@ -189,20 +159,10 @@ namespace rapidxml
         //! See xml_document::parse() function.
         default_flag = 0,
 
-        //! A combination of parse flags that forbids any modifications of the source text.
-        //! This also results in faster parsing. However, note that the following will occur:
-        //! <ul>
-        //! <li>names and values of nodes will not be zero terminated, you have to use xml_base::name_size() and xml_base::value_size() functions to determine where name and value ends</li>
-        //! <li>entities will not be translated</li>
-        //! <li>whitespace will not be normalized</li>
-        //! </ul>
-        //! See xml_document::parse() function.
-        non_destructive = no_string_terminators | no_entity_translation,
-
         //! A combination of parse flags resulting in fastest possible parsing, without sacrificing important data.
         //! <br><br>
         //! See xml_document::parse() function.
-        fastest = non_destructive | no_data_nodes,
+        fastest = no_data_nodes,
 
         //! A combination of parse flags resulting in largest amount of data being extracted.
         //! This usually results in slowest parsing.

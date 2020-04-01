@@ -10,24 +10,19 @@ using namespace std;
 
 namespace rapidxml
 {
-#ifdef _MSC_VER
-    static void* aligned_alloc(size_t alignment, size_t size)
-    {
-        return _aligned_malloc(size, alignment);
-    }
+#ifdef WIN32
+#define aligned_alloc(alignment, size) _aligned_malloc_dbg((size), (alignment), __FILE__, __LINE__)
 
-    static void aligned_free(void* ptr)
-    {
-        _aligned_free(ptr);
-    }
+#define aligned_free(ptr) _aligned_free_dbg(ptr)
+#elif defined(__MINGW32__)
+#define aligned_alloc(alignment, size) _aligned_malloc((size), (alignment))
+
+#define aligned_free(ptr) _aligned_free(ptr)
 #else
     using std::aligned_alloc;
 
-    static void aligned_free(void* ptr)
-    {
-        free(ptr);
-    }
-#endif // _MSC_VER
+#define aligned_free(ptr) free(ptr)
+#endif // WIN32 || __MINGW32__
 
     xml_node* memory_pool::allocate_node(node_type type, std::optional<std::string_view> name, std::optional<std::string_view> value)
     {
@@ -111,7 +106,8 @@ namespace rapidxml
         m_begin = m_static_memory;
         m_size = sizeof(m_static_memory);
         m_ptr = m_begin;
-        align(alignment, 0, m_ptr, m_size);
+        void* result = align(alignment, 0, m_ptr, m_size);
+        assert(result);
     }
 
     void* memory_pool::allocate_aligned(size_t size)
@@ -134,10 +130,10 @@ namespace rapidxml
             m_begin = pool;
             m_ptr = (char*)pool + sizeof(header);
             m_size = pool_size - sizeof(header);
-            align(alignment, 0, m_ptr, m_size);
 
             // Calculate aligned pointer again using new pool
-            result = m_ptr;
+            result = align(alignment, 0, m_ptr, m_size);
+            assert(result);
         }
 
         // Update pool and return aligned pointer
