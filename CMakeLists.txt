@@ -133,15 +133,9 @@ set(_XAML_TARGETS
     xaml_cmdline
 )
 
-# It's OK to use pugixml in the system.
-if(${USE_SYS_PUGIXML})
-    find_package(pugixml REQUIRED)
-else()
-    add_subdirectory(pugixml)
-endif()
-
 add_subdirectory(global)
 add_subdirectory(meta)
+add_subdirectory(rapidxml_ns)
 add_subdirectory(parser)
 add_subdirectory(compiler)
 add_subdirectory(ui)

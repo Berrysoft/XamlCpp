@@ -1,5 +1,5 @@
 #include <iostream>
-#include <pugixml.hpp>
+#include <rapidxml_ns.hpp>
 #include <sstream>
 #include <vector>
 #include <xaml/markup/binding.hpp>
@@ -8,7 +8,7 @@
 
 using namespace std;
 using namespace std::filesystem;
-using namespace pugi;
+using namespace rapidxml_ns;
 
 namespace xaml
 {

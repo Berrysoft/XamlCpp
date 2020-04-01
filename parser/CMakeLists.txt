@@ -5,11 +5,11 @@ file(GLOB XAML_MARKUP_HEADERS "include/xaml/markup/*.hpp")
 file(GLOB XAML_SOURCES "src/*.cpp")
 
 add_library(xaml_parser ${XAML_SOURCES})
-target_link_libraries(xaml_parser PUBLIC xaml_meta PRIVATE pugixml)
+target_link_libraries(xaml_parser PUBLIC xaml_meta PRIVATE rapidxml_ns)
 
 target_include_directories(xaml_parser
     PUBLIC 
-        $<INSTALL_INTERFACE:include>    
+        $<INSTALL_INTERFACE:include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
