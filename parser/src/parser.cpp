@@ -74,68 +74,24 @@ namespace xaml
         return oss.str();
     }
 
-    static tuple<string_view, string_view> split_ns_name(string_view name)
-    {
-        size_t index = name.find_first_of(':');
-        if (index == string_view::npos)
-        {
-            return make_tuple(string_view{}, name);
-        }
-        else
-        {
-            return make_tuple(name.substr(0, index), name.substr(index + 1));
-        }
-    }
-
     struct parser_impl
     {
         meta_context* ctx{ nullptr };
         set<string> headers{};
-        vector<map<string, string>> nss{};
         xml_document doc{};
         bool loaded{ false };
 
         void load_file(path const& p)
         {
-            auto result = doc.load_file(p.c_str());
-            loaded = result.status == status_ok;
+            //auto result = doc.load_file(p.c_str());
+            //loaded = result.status == status_ok;
         }
 
         void load_string(string_view s)
         {
-            auto result = doc.load_string(s.data());
-            loaded = result.status == status_ok;
+            //auto result = doc.load_string(s.data());
+            //loaded = result.status == status_ok;
         }
-
-        string_view find_namespace(string const& xns)
-        {
-            for (auto it = nss.rbegin(); it != nss.rend(); ++it)
-            {
-                auto mit = it->find(xns);
-                if (mit != it->end()) return mit->second;
-            }
-            return {};
-        }
-
-        void push_namespace(xml_node& node)
-        {
-            map<string, string> m;
-            for (auto& attr : node.attributes())
-            {
-                auto [ns, name] = split_ns_name(attr.name());
-                if (ns.empty() && name == "xmlns")
-                {
-                    m.emplace(string{}, attr.value());
-                }
-                else if (ns == "xmlns")
-                {
-                    m.emplace(name, attr.value());
-                }
-            }
-            nss.push_back(move(m));
-        }
-
-        void pop_namespace() { nss.pop_back(); }
 
         markup_node parse_markup(string_view value);
         void parse_members(xaml_node& mc, xml_node& node);
@@ -221,17 +177,18 @@ namespace xaml
         {
         case node_element:
         {
-            auto [xns, name] = split_ns_name(node.name());
-            string_view ns = find_namespace((string)xns);
-            for (auto& attr : node.attributes())
+            auto ns = node.namespace_uri();
+            auto name = node.name();
+            for (auto pattr = node.first_attribute(); pattr; pattr = pattr->next_attribute())
             {
-                auto [attr_xns, attr_name] = split_ns_name(attr.name());
-                string_view attr_ns = find_namespace((string)attr_xns);
-                if (attr_xns.empty() && attr_name == "xmlns")
+                auto& attr = *pattr;
+                auto attr_ns = attr.namespace_uri();
+                auto attr_name = attr.local_name();
+                if (attr_ns.empty() && attr_name == "xmlns")
                     continue;
-                else if (attr_xns == "xmlns")
+                else if (attr_ns == "xmlns")
                     continue;
-                else if (attr_xns.empty())
+                else if (attr_ns.empty())
                     attr_ns = ns;
                 if (attr_ns == x_ns)
                 {
@@ -315,7 +272,7 @@ namespace xaml
             }
             break;
         }
-        case node_pcdata:
+        case node_data:
         case node_cdata:
         {
             auto def_attr = mc.type->get_attribute<default_property>();
@@ -325,7 +282,7 @@ namespace xaml
                 auto prop = mc.type->get_property(prop_name);
                 if (prop && prop->can_write())
                 {
-                    mc.properties.push_back({ mc.type, prop, node.value() });
+                    mc.properties.push_back({ mc.type, prop, (string)node.value() });
                 }
                 else
                 {
@@ -337,13 +294,13 @@ namespace xaml
         default:
             break;
         }
-        for (auto& c : node.children())
+        for (auto pc = node.first_node(); pc; pc = pc->next_sibling())
         {
+            auto& c = *pc;
             if (c.type() == node_element)
             {
-                push_namespace(c);
-                auto [xns, name] = split_ns_name(c.name());
-                string_view ns = find_namespace((string)xns);
+                auto ns = c.namespace_uri();
+                auto name = c.local_name();
                 size_t dm_index = name.find_first_of('.');
                 if (dm_index != string_view::npos)
                 {
@@ -409,7 +366,6 @@ namespace xaml
                         throw xaml_bad_type(ns, name);
                     }
                 }
-                pop_namespace();
             }
             else
             {
@@ -432,10 +388,9 @@ namespace xaml
 
     xaml_node parser_impl::parse()
     {
-        xml_node root_node = *doc.children().begin();
-        push_namespace(root_node);
-        auto [xns, name] = split_ns_name(root_node.name());
-        string_view ns = find_namespace((string)xns);
+        xml_node& root_node = *doc.first_node();
+        auto ns = root_node.namespace_uri();
+        auto name = root_node.local_name();
         auto t = ctx->get_type(ns, name);
         if (t)
         {
