@@ -83,6 +83,8 @@ namespace xaml
         set<string> headers{};
         xml_document doc{};
 
+        ~parser_impl() { doc.clear(); }
+
         void load_file(path const& p)
         {
             ifstream stream{ p };

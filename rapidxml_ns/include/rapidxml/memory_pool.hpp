@@ -131,22 +131,18 @@ namespace rapidxml
         void clear();
 
     private:
-        struct header
+        struct alignas(RAPIDXML_ALIGNMENT) header
         {
-            char* previous_begin;
+            void* previous_begin;
         };
 
         void init();
 
-        char* align(char* ptr);
-
-        char* allocate_raw(std::size_t size);
-
         void* allocate_aligned(std::size_t size);
 
-        char* m_begin{ nullptr }; // Start of raw memory making up current pool
-        char* m_ptr{ nullptr }; // First free byte in current pool
-        char* m_end{ nullptr }; // One past last available byte in current pool
+        void* m_begin{ nullptr }; // Start of raw memory making up current pool
+        void* m_ptr{ nullptr }; // First free byte in current pool
+        std::size_t m_size{ 0 };
         char m_static_memory[RAPIDXML_STATIC_POOL_SIZE]{}; // Static raw memory
     };
 } // namespace rapidxml
