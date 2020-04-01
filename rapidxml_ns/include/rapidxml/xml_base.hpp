@@ -1,6 +1,7 @@
 #ifndef RAPID_XML_BASE_HPP
 #define RAPID_XML_BASE_HPP
 
+#include <rapidxml/utility.hpp>
 #include <string_view>
 
 namespace rapidxml

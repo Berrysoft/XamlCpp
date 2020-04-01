@@ -53,6 +53,12 @@ namespace rapidxml
         // After the static block is exhausted, dynamic blocks with approximately this size are allocated by memory_pool.
         static constexpr size_t dynamic_pool_size = 64 * 1024;
 
+        // Memory allocation alignment.
+        // Define RAPIDXML_ALIGNMENT before including rapidxml_ns.hpp if you want to override the default value, which is the size of pointer.
+        // All memory allocations for nodes, attributes and strings will be aligned to this value.
+        // This must be a power of 2 and at least 1, otherwise memory_pool will not work.
+        static constexpr size_t alignment = alignof(void*);
+
     public:
         //! Constructs empty pool with default allocator functions.
         memory_pool()
@@ -125,7 +131,7 @@ namespace rapidxml
             void* previous_begin;
         };
 
-        void init();
+        RAPIDXML_API void init();
 
         void* allocate_aligned(std::size_t size);
 

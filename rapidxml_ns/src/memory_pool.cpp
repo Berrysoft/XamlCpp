@@ -111,13 +111,13 @@ namespace rapidxml
         m_begin = m_static_memory;
         m_size = sizeof(m_static_memory);
         m_ptr = m_begin;
-        align(RAPIDXML_ALIGNMENT, 0, m_ptr, m_size);
+        align(alignment, 0, m_ptr, m_size);
     }
 
     void* memory_pool::allocate_aligned(size_t size)
     {
         // Calculate aligned pointer
-        void* result = align(alignof(void*), size, m_ptr, m_size);
+        void* result = align(alignment, size, m_ptr, m_size);
 
         // If not enough memory left in current pool, allocate a new pool
         if (!result)
@@ -126,7 +126,7 @@ namespace rapidxml
             size_t pool_size = (max<size_t>)(dynamic_pool_size, size + sizeof(header));
 
             // Allocate
-            void* pool = aligned_alloc(alignof(void*), pool_size);
+            void* pool = aligned_alloc(alignment, pool_size);
 
             // Setup new pool in allocated memory
             header* new_header = reinterpret_cast<header*>(pool);
@@ -134,7 +134,7 @@ namespace rapidxml
             m_begin = pool;
             m_ptr = (char*)pool + sizeof(header);
             m_size = pool_size - sizeof(header);
-            align(alignof(void*), 0, m_ptr, m_size);
+            align(alignment, 0, m_ptr, m_size);
 
             // Calculate aligned pointer again using new pool
             result = m_ptr;

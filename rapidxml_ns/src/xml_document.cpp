@@ -439,7 +439,7 @@ namespace rapidxml
     {
         this->remove_all_nodes();
         this->remove_all_attributes();
-        memory_pool::clear();
+        pool.clear();
     }
 
     xml_node* xml_document::parse_xml_declaration(char*& text, parse_flag flags)
@@ -459,7 +459,7 @@ namespace rapidxml
         }
 
         // Create declaration
-        xml_node* declaration = this->allocate_node(node_type::declaration);
+        xml_node* declaration = pool.allocate_node(node_type::declaration);
 
         // Skip whitespace before attributes or ?>
         skip<whitespace_pred>(text);
@@ -503,12 +503,8 @@ namespace rapidxml
         }
 
         // Create comment node
-        xml_node* comment = this->allocate_node(node_type::comment);
+        xml_node* comment = pool.allocate_node(node_type::comment);
         comment->value(string_view(value, text - value));
-
-        // Place zero terminator after comment value
-        if (!(flags & parse_flag::no_string_terminators))
-            *text = '\0';
 
         text += 3; // Skip '-->'
         return comment;
@@ -564,12 +560,8 @@ namespace rapidxml
         if (flags & parse_flag::doctype_node)
         {
             // Create a new doctype node
-            xml_node* doctype = this->allocate_node(node_type::doctype);
+            xml_node* doctype = pool.allocate_node(node_type::doctype);
             doctype->value(string_view(value, text - value));
-
-            // Place zero terminator after value
-            if (!(flags & parse_flag::no_string_terminators))
-                *text = '\0';
 
             text += 1; // skip '>'
             return doctype;
@@ -587,7 +579,7 @@ namespace rapidxml
         if (flags & parse_flag::pi_nodes)
         {
             // Create pi node
-            xml_node* pi = this->allocate_node(node_type::pi);
+            xml_node* pi = pool.allocate_node(node_type::pi);
 
             // Extract PI target name
             char* name = text;
@@ -664,7 +656,7 @@ namespace rapidxml
         // Create new data node
         if (!(flags & parse_flag::no_data_nodes))
         {
-            xml_node* data = this->allocate_node(node_type::data);
+            xml_node* data = pool.allocate_node(node_type::data);
             data->value(string_view(value, end - value));
             node->append_node(data);
         }
@@ -704,7 +696,7 @@ namespace rapidxml
         }
 
         // Create new cdata node
-        xml_node* cdata = this->allocate_node(node_type::cdata);
+        xml_node* cdata = pool.allocate_node(node_type::cdata);
         cdata->value(string_view(value, text - value));
 
         text += 3; // Skip ]]>
@@ -714,7 +706,7 @@ namespace rapidxml
     xml_node* xml_document::parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags)
     {
         // Create element node
-        xml_node* element = this->allocate_node(node_type::element);
+        xml_node* element = pool.allocate_node(node_type::element);
 
         // Extract element name
         char* name = text;
@@ -928,7 +920,7 @@ namespace rapidxml
             if (text == name)
                 throw parse_error("expected attribute name", name);
             // Create new attribute
-            xml_attribute* attribute = this->allocate_attribute();
+            xml_attribute* attribute = pool.allocate_attribute();
             if (*text == ':')
             {
                 // Namespace prefix found

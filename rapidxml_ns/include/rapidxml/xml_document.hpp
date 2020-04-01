@@ -44,7 +44,7 @@ namespace rapidxml
                     m_processor.m_namespace_prefixes.resize(m_stack_position);
                 }
 
-                void process_element(xml_node* element);
+                RAPIDXML_API void process_element(xml_node* element);
 
                 void set_default_namespace(xml_attribute* ns_attr)
                 {
@@ -56,9 +56,9 @@ namespace rapidxml
                     m_processor.m_namespace_prefixes.push_back(ns_attr);
                 }
 
-                void set_element_default_namespace_uri(xml_node* element) const;
+                RAPIDXML_API void set_element_default_namespace_uri(xml_node* element) const;
 
-                void set_node_namespace_uri_by_prefix(xml_base* node) const;
+                RAPIDXML_API void set_node_namespace_uri_by_prefix(xml_base* node) const;
 
             private:
                 xml_namespace_processor& m_processor;
@@ -227,10 +227,7 @@ namespace rapidxml
 
     public:
         //! Constructs empty XML document
-        xml_document()
-            : xml_node(node_type::document)
-        {
-        }
+        xml_document() : xml_node(node_type::document) {}
 
         ~xml_document() override {}
 
@@ -245,44 +242,44 @@ namespace rapidxml
         //! Document can be parsed into multiple times.
         //! Each new call to parse removes previous nodes and attributes (if any), but does not clear memory pool.
         //! \param text XML data to parse; pointer is non-const to denote fact that this data may be modified by the parser.
-        void parse(char* text, parse_flag flags = parse_flag::default_flag);
+        RAPIDXML_API void parse(char* text, parse_flag flags = parse_flag::default_flag);
 
         //! Clears the document by deleting all nodes and clearing the memory pool.
         //! All nodes owned by document pool are destroyed.
-        void clear();
+        RAPIDXML_API void clear();
 
     private:
         // Parse XML declaration (<?xml...)
-        xml_node* parse_xml_declaration(char*& text, parse_flag flags);
+        RAPIDXML_API xml_node* parse_xml_declaration(char*& text, parse_flag flags);
 
         // Parse XML comment (<!--...)
-        xml_node* parse_comment(char*& text, parse_flag flags);
+        RAPIDXML_API xml_node* parse_comment(char*& text, parse_flag flags);
 
         // Parse DOCTYPE
-        xml_node* parse_doctype(char*& text, parse_flag flags);
+        RAPIDXML_API xml_node* parse_doctype(char*& text, parse_flag flags);
 
         // Parse PI
-        xml_node* parse_pi(char*& text, parse_flag flags);
+        RAPIDXML_API xml_node* parse_pi(char*& text, parse_flag flags);
 
         // Parse and append data
         // Return character that ends data.
         // This is necessary because this character might have been overwritten by a terminating 0
-        char parse_and_append_data(xml_node* node, char*& text, char* contents_start, parse_flag flags);
+        RAPIDXML_API char parse_and_append_data(xml_node* node, char*& text, char* contents_start, parse_flag flags);
 
         // Parse CDATA
-        xml_node* parse_cdata(char*& text, parse_flag flags);
+        RAPIDXML_API xml_node* parse_cdata(char*& text, parse_flag flags);
 
         // Parse element node
-        xml_node* parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags);
+        RAPIDXML_API xml_node* parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags);
 
         // Determine node type, and parse it
-        xml_node* parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
+        RAPIDXML_API xml_node* parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
 
         // Parse contents of the node - children, data etc.
-        void parse_node_contents(char*& text, xml_node* node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
+        RAPIDXML_API void parse_node_contents(char*& text, xml_node* node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
 
         // Parse XML attributes of the node
-        void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
+        RAPIDXML_API void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
 
         memory_pool pool{};
     };

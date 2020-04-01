@@ -27,9 +27,7 @@ namespace rapidxml
         //! Constructs an empty node with the specified type.
         //! Consider using memory_pool of appropriate document to allocate nodes manually.
         //! \param type Type of node to construct.
-        xml_node(node_type type) : m_type(type)
-        {
-        }
+        xml_node(node_type type) : m_type(type) {}
 
         ~xml_node() override {}
 
@@ -48,23 +46,23 @@ namespace rapidxml
 
         //! Gets document of which node is a child.
         //! \return Pointer to document that contains this node, or 0 if there is no parent document.
-        xml_document* document() const;
+        RAPIDXML_API xml_document* document() const;
 
         //! Gets first child node, optionally matching node name.
         //! \param name Name of child to find, or 0 to return first child regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        xml_node* first_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* first_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
         //! Gets first child node, matching node local name and namespace URI.
         //! \param namespace_uri Namespace URI of child to find; this string have to be zero-terminated
         //! \param local_name Local name of child to find; this string have to be zero-terminated
         //! \param local_name_case_sensitive Should local name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        xml_node* first_node_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_node* first_node_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
 
-        xml_node* first_node_ns(std::string_view namespace_uri) const;
+        RAPIDXML_API xml_node* first_node_ns(std::string_view namespace_uri) const;
 
         //! Gets last child node, optionally matching node name.
         //! Behaviour is undefined if node has no children.
@@ -73,7 +71,7 @@ namespace rapidxml
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        xml_node* last_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* last_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
         //! Gets previous sibling node, optionally matching node name.
         //! Behaviour is undefined if node has no parent.
@@ -82,7 +80,7 @@ namespace rapidxml
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found sibling, or 0 if not found.
-        xml_node* previous_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* previous_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
         //! Gets next sibling node, optionally matching node name.
         //! Behaviour is undefined if node has no parent.
@@ -91,32 +89,32 @@ namespace rapidxml
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found sibling, or 0 if not found.
-        xml_node* next_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* next_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
-        xml_node* next_sibling_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_node* next_sibling_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
 
-        xml_node* next_sibling_ns(std::string_view namespace_uri) const;
+        RAPIDXML_API xml_node* next_sibling_ns(std::string_view namespace_uri) const;
 
         //! Gets first attribute of node, optionally matching attribute name.
         //! \param name Name of attribute to find, or 0 to return first attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        xml_attribute* first_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* first_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
         //! Gets first attribute of node, matching attribute namespace URI and local name.
         //! \param namespace_uri Namespace URI of attribute to find; this string have to be zero-terminated
         //! \param local_name Local name of attribute to find; this string have to be zero-terminated
         //! \param local_name_case_sensitive Should local name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        xml_attribute* first_attribute_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* first_attribute_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
 
         //! Gets last attribute of node, optionally matching attribute name.
         //! \param name Name of attribute to find, or 0 to return last attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        xml_attribute* last_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* last_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
 
         ///////////////////////////////////////////////////////////////////////////
         // Node modification
@@ -134,66 +132,66 @@ namespace rapidxml
         //! Prepends a new child node.
         //! The prepended child becomes the first child, and all existing children are moved one position back.
         //! \param child Node to prepend.
-        void prepend_node(xml_node* child);
+        RAPIDXML_API void prepend_node(xml_node* child);
 
         //! Appends a new child node.
         //! The appended child becomes the last child.
         //! \param child Node to append.
-        void append_node(xml_node* child);
+        RAPIDXML_API void append_node(xml_node* child);
 
         //! Inserts a new child node at specified place inside the node.
         //! All children after and including the specified node are moved one position back.
         //! \param where Place where to insert the child, or 0 to insert at the back.
         //! \param child Node to insert.
-        void insert_node(xml_node* where, xml_node* child);
+        RAPIDXML_API void insert_node(xml_node* where, xml_node* child);
 
         //! Removes first child node.
         //! If node has no children, behaviour is undefined.
         //! Use first_node() to test if node has children.
-        void remove_first_node();
+        RAPIDXML_API void remove_first_node();
 
         //! Removes last child of the node.
         //! If node has no children, behaviour is undefined.
         //! Use first_node() to test if node has children.
-        void remove_last_node();
+        RAPIDXML_API void remove_last_node();
 
         //! Removes specified child from the node
         // \param where Pointer to child to be removed.
-        void remove_node(xml_node* where);
+        RAPIDXML_API void remove_node(xml_node* where);
 
         //! Removes all child nodes (but not attributes).
-        void remove_all_nodes();
+        RAPIDXML_API void remove_all_nodes();
 
         //! Prepends a new attribute to the node.
         //! \param attribute Attribute to prepend.
-        void prepend_attribute(xml_attribute* attribute);
+        RAPIDXML_API void prepend_attribute(xml_attribute* attribute);
 
         //! Appends a new attribute to the node.
         //! \param attribute Attribute to append.
-        void append_attribute(xml_attribute* attribute);
+        RAPIDXML_API void append_attribute(xml_attribute* attribute);
 
         //! Inserts a new attribute at specified place inside the node.
         //! All attributes after and including the specified attribute are moved one position back.
         //! \param where Place where to insert the attribute, or 0 to insert at the back.
         //! \param attribute Attribute to insert.
-        void insert_attribute(xml_attribute* where, xml_attribute* attribute);
+        RAPIDXML_API void insert_attribute(xml_attribute* where, xml_attribute* attribute);
 
         //! Removes first attribute of the node.
         //! If node has no attributes, behaviour is undefined.
         //! Use first_attribute() to test if node has attributes.
-        void remove_first_attribute();
+        RAPIDXML_API void remove_first_attribute();
 
         //! Removes last attribute of the node.
         //! If node has no attributes, behaviour is undefined.
         //! Use first_attribute() to test if node has attributes.
-        void remove_last_attribute();
+        RAPIDXML_API void remove_last_attribute();
 
         //! Removes specified attribute from node.
         //! \param where Pointer to attribute to be removed.
-        void remove_attribute(xml_attribute* where);
+        RAPIDXML_API void remove_attribute(xml_attribute* where);
 
         //! Removes all attributes of node.
-        void remove_all_attributes();
+        RAPIDXML_API void remove_all_attributes();
 
         ///////////////////////////////////////////////////////////////////////////
         // Restrictions
