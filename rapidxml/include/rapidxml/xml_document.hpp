@@ -1,6 +1,7 @@
 #ifndef RAPID_XML_DOCUMENT_HPP
 #define RAPID_XML_DOCUMENT_HPP
 
+#include <memory_resource>
 #include <rapidxml/memory_pool.hpp>
 #include <rapidxml/xml_node.hpp>
 #include <vector>
@@ -241,7 +242,9 @@ namespace rapidxml
         // Parse XML attributes of the node
         RAPIDXML_API void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
 
-        memory_pool pool{};
+        memory_pool m_pool{};
+        std::pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
+        std::pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
     };
 } // namespace rapidxml
 

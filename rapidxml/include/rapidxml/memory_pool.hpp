@@ -1,6 +1,7 @@
 #ifndef RAPID_XML_MEMORY_POOL_HPP
 #define RAPID_XML_MEMORY_POOL_HPP
 
+#include <memory_resource>
 #include <rapidxml/utility.hpp>
 #include <rapidxml/xml_node.hpp>
 
@@ -23,7 +24,7 @@ namespace rapidxml
     //! It is also possible to create a standalone memory_pool, and use it
     //! to allocate nodes, whose lifetime will not be tied to any document.
     //! <br><br>
-    class memory_pool
+    class memory_pool : public std::pmr::memory_resource
     {
     public:
         // Size of static memory block of memory_pool.
@@ -34,51 +35,37 @@ namespace rapidxml
         // After the static block is exhausted, dynamic blocks with approximately this size are allocated by memory_pool.
         static constexpr size_t dynamic_pool_size = 64 * 1024;
 
-        // Memory allocation alignment.
-        // All memory allocations for nodes, attributes and strings will be aligned to this value.
-        static constexpr size_t alignment = alignof(void*);
-
     public:
         //! Constructs empty pool with default allocator functions.
-        memory_pool()
-        {
-            init();
-        }
+        memory_pool() : memory_resource() { init(); }
+
+        memory_pool(memory_pool const&) = delete;
+        memory_pool& operator=(memory_pool const&) = delete;
 
         //! Destroys pool and frees all the memory.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
         //! Nodes allocated from the pool are no longer valid.
-        ~memory_pool()
-        {
-            clear();
-        }
-
-        //! Allocates a new node from the pool, and optionally assigns name and value to it.
-        //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
-        //! \param type Type of node to create.
-        //! \return Pointer to allocated node. This pointer will never be NULL.
-        RAPIDXML_API xml_node* allocate_node(node_type type);
-
-        //! Allocates a new attribute from the pool, and optionally assigns name and value to it.
-        //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
-        //! \param name Name to assign to the attribute, or 0 to assign no name.
-        //! \return Pointer to allocated attribute. This pointer will never be NULL.
-        RAPIDXML_API xml_attribute* allocate_attribute();
+        ~memory_pool() override { clear(); }
 
         //! Clears the pool.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
         //! Any nodes or strings allocated from the pool will no longer be valid.
         RAPIDXML_API void clear();
 
+    protected:
+        RAPIDXML_API void* do_allocate(std::size_t bytes, std::size_t alignment) override;
+
+        void do_deallocate(void* p, std::size_t bytes, std::size_t alignment) override {}
+
+        bool do_is_equal(const std::pmr::memory_resource& other) const noexcept override { return false; }
+
     private:
         struct header
         {
-            alignas(alignment) void* previous_begin;
+            void* previous_begin;
         };
 
         RAPIDXML_API void init();
-
-        RAPIDXML_API void* allocate_aligned(std::size_t size);
 
         void* m_begin{ nullptr }; // Start of raw memory making up current pool
         void* m_ptr{ nullptr }; // First free byte in current pool

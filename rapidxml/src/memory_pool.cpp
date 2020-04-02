@@ -23,20 +23,6 @@ namespace rapidxml
 #define aligned_free(ptr) free(ptr)
 #endif // WIN32 || __MINGW32__
 
-    xml_node* memory_pool::allocate_node(node_type type)
-    {
-        void* memory = allocate_aligned(sizeof(xml_node));
-        xml_node* node = new (memory) xml_node(type);
-        return node;
-    }
-
-    xml_attribute* memory_pool::allocate_attribute()
-    {
-        void* memory = allocate_aligned(sizeof(xml_attribute));
-        xml_attribute* attribute = new (memory) xml_attribute;
-        return attribute;
-    }
-
     void memory_pool::clear()
     {
         while (m_begin != m_static_memory)
@@ -53,11 +39,21 @@ namespace rapidxml
         m_begin = m_static_memory;
         m_size = sizeof(m_static_memory);
         m_ptr = m_begin;
-        void* result = align(alignment, 0, m_ptr, m_size);
-        assert(result);
     }
 
-    void* memory_pool::allocate_aligned(size_t size)
+    constexpr size_t offset(size_t size, size_t alignment)
+    {
+        if (size <= alignment)
+            return alignment;
+        else
+        {
+            size_t n = size / alignment;
+            size_t mod = size % alignment;
+            return mod ? n + 1 : n;
+        }
+    }
+
+    void* memory_pool::do_allocate(size_t size, size_t alignment)
     {
         // Calculate aligned pointer
         void* result = align(alignment, size, m_ptr, m_size);
@@ -65,11 +61,12 @@ namespace rapidxml
         // If not enough memory left in current pool, allocate a new pool
         if (!result)
         {
-            // Calculate required pool size (may be bigger than RAPIDXML_DYNAMIC_POOL_SIZE)
-            size_t pool_size = (max<size_t>)(dynamic_pool_size, size + sizeof(header));
+            // Calculate required pool size
+            size_t pool_size = (max<size_t>)(dynamic_pool_size, size + offset(sizeof(header), alignment));
 
             // Allocate
             void* pool = aligned_alloc(alignment, pool_size);
+            if (!pool) throw bad_alloc{};
 
             // Setup new pool in allocated memory
             header* new_header = reinterpret_cast<header*>(pool);
