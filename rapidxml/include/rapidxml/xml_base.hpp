@@ -72,40 +72,33 @@ namespace rapidxml
         ///////////////////////////////////////////////////////////////////////////
         // Node data access
 
-        constexpr std::string_view local_name() const { return m_name.substr(m_local_name); }
+        constexpr std::string_view local_name() const noexcept { return m_name.substr(m_local_name); }
 
-        constexpr std::size_t local_offset() const { return m_local_name; }
+        constexpr std::size_t local_offset() const noexcept { return m_local_name; }
 
         //! Gets namespace prefix.
         //! Returned string is never zero-terminated, regardless of parse_no_string_terminators. Use prefix_size()
         //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
         //! SHOULD use the namespace name, not the prefix, in constructing names whose scope extends beyond the containing
         //! document" Namespaces in XML 1.0 (Third Edition)
-        constexpr std::string_view prefix() const { return m_local_name > 1 ? m_name.substr(0, m_local_name - 1) : std::string_view{}; }
+        constexpr std::string_view prefix() const noexcept { return m_local_name > 1 ? m_name.substr(0, m_local_name - 1) : std::string_view{}; }
 
         //! Gets QName of the node.
         //! Interpretation of name depends on type of node.
-        //! Note that name will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
         //! <br><br>
-        //! Use name_size() function to determine length of the name.
         //! \return Name of node, or empty string if node has no name.
-        constexpr std::string_view name() const { return m_name; }
+        constexpr std::string_view name() const noexcept { return m_name; }
 
         //! Gets value of node.
         //! Interpretation of value depends on type of node.
-        //! Note that value will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
         //! <br><br>
-        //! Use value_size() function to determine length of the value.
         //! \return Value of node, or empty string if node has no value.
-        constexpr std::string_view value() const { return m_value; }
+        constexpr std::string_view value() const noexcept { return m_value; }
 
         //! Gets namespace URI of the node.
-        //! Note that URI will not be zero-terminated if rapidxml_ns::parse_no_string_terminators option was selected during parse.
-        //! Namespace URI is not assigned if rapidxml_ns::parse_no_namespace option was selected during parse.
         //! <br><br>
-        //! Use namespace_uri_size() function to determine length of the name.
         //! \return Namespace URI of node, or empty string if node has no namespace assigned.
-        constexpr std::string_view namespace_uri() const { return m_namespace_uri; }
+        constexpr std::string_view namespace_uri() const noexcept { return m_namespace_uri; }
 
         ///////////////////////////////////////////////////////////////////////////
         // Node modification
@@ -123,30 +116,27 @@ namespace rapidxml
         //! it seems useless for manual node creation. qname() may be used instead
         //! local_name() will be set to be equal to name()
         //! <br><br>
-        //! Size of name must be specified separately, because name does not have to be zero terminated.
-        //! Use name(const char *) function to have the length automatically calculated (string must be zero terminated).
         //! \param name QName of node to set. Does not have to be zero terminated.
-        //! \param size Size of name, in characters. This does not include zero terminator, if one is present.
-        void name(std::string_view name)
+        void name(std::string_view name) noexcept
         {
             qname(name);
         }
 
         //! Sets QName as PrefixedName or UnprefixedName where local_part points in QName string
-        void qname(std::string_view qname, std::size_t local_part)
+        void qname(std::string_view qname, std::size_t local_part) noexcept
         {
             m_name = qname;
             m_local_name = local_part;
         }
 
         //! Sets QName as UnprefixedName
-        void qname(std::string_view qname)
+        void qname(std::string_view qname) noexcept
         {
             m_name = qname;
             m_local_name = 0;
         }
 
-        void namespace_uri(std::string_view uri)
+        void namespace_uri(std::string_view uri) noexcept
         {
             m_namespace_uri = uri;
         }
@@ -160,14 +150,10 @@ namespace rapidxml
         //! The easiest way to achieve it is to use memory_pool of the document to allocate the string -
         //! on destruction of the document the string will be automatically freed.
         //! <br><br>
-        //! Size of value must be specified separately, because it does not have to be zero terminated.
-        //! Use value(const char *) function to have the length automatically calculated (string must be zero terminated).
-        //! <br><br>
         //! If an element has a child node of type node_data, it will take precedence over element value when printing.
         //! If you want to manipulate data of elements using values, use parser flag rapidxml_ns::parse_no_data_nodes to prevent creation of data nodes by the parser.
         //! \param value value of node to set. Does not have to be zero terminated.
-        //! \param size Size of value, in characters. This does not include zero terminator, if one is present.
-        void value(std::string_view value)
+        void value(std::string_view value) noexcept
         {
             m_value = value;
         }
@@ -177,7 +163,7 @@ namespace rapidxml
 
         //! Gets node parent.
         //! \return Pointer to parent node, or 0 if there is no parent.
-        xml_node* parent() const
+        constexpr xml_node* parent() const noexcept
         {
             return m_parent;
         }

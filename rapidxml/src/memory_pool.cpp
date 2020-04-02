@@ -1,3 +1,7 @@
+#if defined(WIN32) || defined(__MINGW32__)
+#define _CRTDBG_MAP_ALLOC
+#endif // WIN32 || __MINGW32__
+
 #include <algorithm>
 #include <cassert>
 #include <cstdlib>
@@ -10,11 +14,7 @@ using namespace std;
 
 namespace rapidxml
 {
-#ifdef WIN32
-#define aligned_alloc(alignment, size) _aligned_malloc_dbg((size), (alignment), __FILE__, __LINE__)
-
-#define aligned_free(ptr) _aligned_free_dbg(ptr)
-#elif defined(__MINGW32__)
+#if defined(WIN32) || defined(__MINGW32__)
 #define aligned_alloc(alignment, size) _aligned_malloc((size), (alignment))
 
 #define aligned_free(ptr) _aligned_free(ptr)

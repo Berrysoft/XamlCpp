@@ -23,40 +23,19 @@ namespace rapidxml
     //! It is also possible to create a standalone memory_pool, and use it
     //! to allocate nodes, whose lifetime will not be tied to any document.
     //! <br><br>
-    //! Pool maintains <code>RAPIDXML_STATIC_POOL_SIZE</code> bytes of statically allocated memory.
-    //! Until static memory is exhausted, no dynamic memory allocations are done.
-    //! When static memory is exhausted, pool allocates additional blocks of memory of size <code>RAPIDXML_DYNAMIC_POOL_SIZE</code> each,
-    //! by using global <code>new[]</code> and <code>delete[]</code> operators.
-    //! This behaviour can be changed by setting custom allocation routines.
-    //! Use set_allocator() function to set them.
-    //! <br><br>
-    //! Allocations for nodes, attributes and strings are aligned at <code>RAPIDXML_ALIGNMENT</code> bytes.
-    //! This value defaults to the size of pointer on target architecture.
-    //! <br><br>
-    //! To obtain absolutely top performance from the parser,
-    //! it is important that all nodes are allocated from a single, contiguous block of memory.
-    //! Otherwise, cache misses when jumping between two (or more) disjoint blocks of memory can slow down parsing quite considerably.
-    //! If required, you can tweak <code>RAPIDXML_STATIC_POOL_SIZE</code>, <code>RAPIDXML_DYNAMIC_POOL_SIZE</code> and <code>RAPIDXML_ALIGNMENT</code>
-    //! to obtain best wasted memory to performance compromise.
-    //! To do it, define their values before rapidxml_ns.hpp file is included.
-    //! \param char chararacter type of created nodes.
     class memory_pool
     {
     public:
         // Size of static memory block of memory_pool.
-        // Define RAPIDXML_STATIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
         // No dynamic memory allocations are performed by memory_pool until static memory is exhausted.
         static constexpr size_t static_pool_size = 64 * 1024;
 
         // Size of dynamic memory block of memory_pool.
-        // Define RAPIDXML_DYNAMIC_POOL_SIZE before including rapidxml_ns.hpp if you want to override the default value.
         // After the static block is exhausted, dynamic blocks with approximately this size are allocated by memory_pool.
         static constexpr size_t dynamic_pool_size = 64 * 1024;
 
         // Memory allocation alignment.
-        // Define RAPIDXML_ALIGNMENT before including rapidxml_ns.hpp if you want to override the default value, which is the size of pointer.
         // All memory allocations for nodes, attributes and strings will be aligned to this value.
-        // This must be a power of 2 and at least 1, otherwise memory_pool will not work.
         static constexpr size_t alignment = alignof(void*);
 
     public:
@@ -77,19 +56,12 @@ namespace rapidxml
         //! Allocates a new node from the pool, and optionally assigns name and value to it.
         //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
         //! \param type Type of node to create.
-        //! \param name Name to assign to the node, or 0 to assign no name.
-        //! \param value Value to assign to the node, or 0 to assign no value.
-        //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
-        //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated node. This pointer will never be NULL.
         RAPIDXML_API xml_node* allocate_node(node_type type);
 
         //! Allocates a new attribute from the pool, and optionally assigns name and value to it.
         //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
         //! \param name Name to assign to the attribute, or 0 to assign no name.
-        //! \param value Value to assign to the attribute, or 0 to assign no value.
-        //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
-        //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated attribute. This pointer will never be NULL.
         RAPIDXML_API xml_attribute* allocate_attribute();
 
