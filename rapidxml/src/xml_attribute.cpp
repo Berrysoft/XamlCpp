@@ -12,7 +12,7 @@ namespace rapidxml
         {
             while (node->parent())
                 node = node->parent();
-            return node->type() == node_type::document ? static_cast<xml_document*>(node) : 0;
+            return node->type() == node_type::document ? static_cast<xml_document*>(node) : nullptr;
         }
         else
             return nullptr;

@@ -13,7 +13,7 @@ namespace rapidxml
         xml_node* node = const_cast<xml_node*>(this);
         while (node->parent())
             node = node->parent();
-        return node->type() == node_type::document ? static_cast<xml_document*>(node) : 0;
+        return node->type() == node_type::document ? static_cast<xml_document*>(node) : nullptr;
     }
 
     xml_node* xml_node::first_node(optional<string_view> name, bool case_sensitive) const

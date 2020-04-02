@@ -82,9 +82,7 @@ namespace rapidxml
         //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
         //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated node. This pointer will never be NULL.
-        RAPIDXML_API xml_node* allocate_node(node_type type,
-                                             std::optional<std::string_view> name = std::nullopt,
-                                             std::optional<std::string_view> value = std::nullopt);
+        RAPIDXML_API xml_node* allocate_node(node_type type);
 
         //! Allocates a new attribute from the pool, and optionally assigns name and value to it.
         //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
@@ -93,26 +91,7 @@ namespace rapidxml
         //! \param name_size Size of name to assign, or 0 to automatically calculate size from name string.
         //! \param value_size Size of value to assign, or 0 to automatically calculate size from value string.
         //! \return Pointer to allocated attribute. This pointer will never be NULL.
-        RAPIDXML_API xml_attribute* allocate_attribute(std::optional<std::string_view> name = std::nullopt,
-                                                       std::optional<std::string_view> value = std::nullopt);
-
-        //! Allocates a char array of given size from the pool, and optionally copies a given string to it.
-        //! If the allocation request cannot be accomodated, this function will throw <code>std::bad_alloc</code>.
-        //! \param source String to initialize the allocated memory with, or 0 to not initialize it.
-        //! \param size Number of characters to allocate, or zero to calculate it automatically from source string length; if size is 0, source string must be specified and null terminated.
-        //! \return Pointer to allocated char array. This pointer will never be NULL.
-        RAPIDXML_API char* allocate_string(std::optional<std::string_view> source = std::nullopt, std::size_t size = 0);
-
-        //! Clones an xml_node and its hierarchy of child nodes and attributes.
-        //! Nodes and attributes are allocated from this memory pool.
-        //! Names and values are not cloned, they are shared between the clone and the source.
-        //! Result node can be optionally specified as a second parameter,
-        //! in which case its contents will be replaced with cloned source node.
-        //! This is useful when you want to clone entire document.
-        //! \param source Node to clone.
-        //! \param result Node to put results in, or 0 to automatically allocate result node
-        //! \return Pointer to cloned node. This pointer will never be NULL.
-        RAPIDXML_API xml_node* clone_node(const xml_node* source, xml_node* result = nullptr);
+        RAPIDXML_API xml_attribute* allocate_attribute();
 
         //! Clears the pool.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
