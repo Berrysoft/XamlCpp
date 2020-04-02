@@ -415,7 +415,7 @@ namespace rapidxml
     {
         this->remove_all_nodes();
         this->remove_all_attributes();
-        m_pool.clear();
+        m_pool.release();
     }
 
     xml_node* xml_document::parse_xml_declaration(char*& text, parse_flag flags)
