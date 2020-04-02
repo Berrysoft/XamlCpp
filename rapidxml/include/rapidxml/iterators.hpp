@@ -12,9 +12,9 @@ namespace rapidxml
     class node_iterator
     {
     public:
-        typedef typename xml_node value_type;
-        typedef typename xml_node& reference;
-        typedef typename xml_node* pointer;
+        typedef xml_node value_type;
+        typedef xml_node& reference;
+        typedef xml_node* pointer;
         typedef std::ptrdiff_t difference_type;
         typedef std::bidirectional_iterator_tag iterator_category;
 
@@ -76,9 +76,9 @@ namespace rapidxml
     class attribute_iterator
     {
     public:
-        typedef typename xml_attribute value_type;
-        typedef typename xml_attribute& reference;
-        typedef typename xml_attribute* pointer;
+        typedef xml_attribute value_type;
+        typedef xml_attribute& reference;
+        typedef xml_attribute* pointer;
         typedef std::ptrdiff_t difference_type;
         typedef std::bidirectional_iterator_tag iterator_category;
 
