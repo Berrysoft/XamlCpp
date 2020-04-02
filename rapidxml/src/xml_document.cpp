@@ -62,7 +62,7 @@ namespace rapidxml
 
         void xml_namespace_processor::scope::set_node_namespace_uri_by_prefix(xml_base* node) const
         {
-            std::string_view prefix = node->prefix();
+            string_view prefix = node->prefix();
             for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
                      it = m_processor.m_namespace_prefixes.rbegin();
                  it != m_processor.m_namespace_prefixes.rend(); ++it)
@@ -432,7 +432,7 @@ namespace rapidxml
                 ++text;
             }
             text += 2; // Skip '?>'
-            return 0;
+            return nullptr;
         }
 
         // Create declaration
@@ -465,7 +465,7 @@ namespace rapidxml
                 ++text;
             }
             text += 3; // Skip '-->'
-            return 0; // Do not produce comment node
+            return nullptr; // Do not produce comment node
         }
 
         // Remember value start
@@ -546,7 +546,7 @@ namespace rapidxml
         else
         {
             text += 1; // skip '>'
-            return 0;
+            return nullptr;
         }
     }
 
@@ -595,7 +595,7 @@ namespace rapidxml
                 ++text;
             }
             text += 2; // Skip '?>'
-            return 0;
+            return nullptr;
         }
     }
 
@@ -660,7 +660,7 @@ namespace rapidxml
                 ++text;
             }
             text += 3; // Skip ]]>
-            return 0; // Do not produce CDATA node
+            return nullptr; // Do not produce CDATA node
         }
 
         // Skip until end of cdata
@@ -814,7 +814,7 @@ namespace rapidxml
                 ++text;
             }
             ++text; // Skip '>'
-            return 0; // No node recognized
+            return nullptr; // No node recognized
         }
     }
 

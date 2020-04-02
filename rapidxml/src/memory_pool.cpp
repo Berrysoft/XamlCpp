@@ -23,7 +23,7 @@ namespace rapidxml
 #define aligned_free(ptr) free(ptr)
 #endif // WIN32 || __MINGW32__
 
-    xml_node* memory_pool::allocate_node(node_type type, std::optional<std::string_view> name, std::optional<std::string_view> value)
+    xml_node* memory_pool::allocate_node(node_type type, optional<string_view> name, optional<string_view> value)
     {
         void* memory = allocate_aligned(sizeof(xml_node));
         xml_node* node = new (memory) xml_node(type);
