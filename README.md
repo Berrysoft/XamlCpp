@@ -79,7 +79,7 @@ Here's an XAML example:
 ```
 The `xmlns` should be `https://github.com/Berrysoft/XamlCpp/` to use default controls. The xml attributes decribes the properties, events and attach properties of a control.
 
-The XAML parser uses a modified version of [rapidxml_ns](https://github.com/svgpp/rapidxml_ns). It is modified to use features of C++ 17 and simplified to support UTF-8 only.
+The XAML parser uses a modified version of [rapidxml_ns](https://github.com/svgpp/rapidxml_ns). It is modified to use features of C++ 17 and simplified to support UTF-8 only for convenience.
 
 ## XAML Compiler
 The reflection component is a little heavy and slow, compared to static-compiled code. XAML Compiler solves the problem by compiling XAML to native C++ code. The XAML code above may be compiled to:
