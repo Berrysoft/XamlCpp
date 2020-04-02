@@ -1,5 +1,4 @@
 #include <cassert>
-#include <internal.hpp>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <rapidxml/xml_node.hpp>
@@ -16,12 +15,12 @@ namespace rapidxml
         return node->type() == node_type::document ? static_cast<xml_document*>(node) : nullptr;
     }
 
-    xml_node* xml_node::first_node(optional<string_view> name, bool case_sensitive) const
+    xml_node* xml_node::first_node(optional<string_view> name) const
     {
         if (name)
         {
             for (xml_node* child = m_first_node; child; child = child->next_sibling())
-                if (internal::compare(child->name(), *name, case_sensitive))
+                if (child->name() == *name)
                     return child;
             return nullptr;
         }
@@ -29,13 +28,10 @@ namespace rapidxml
             return m_first_node;
     }
 
-    xml_node* xml_node::first_node_ns(string_view namespace_uri, string_view local_name, bool local_name_case_sensitive) const
+    xml_node* xml_node::first_node_ns(string_view namespace_uri, string_view local_name) const
     {
         for (xml_node* child = m_first_node; child; child = child->next_sibling())
-            if (internal::compare(child->local_name(),
-                                  local_name, local_name_case_sensitive) &&
-                internal::compare(child->namespace_uri(),
-                                  namespace_uri))
+            if (child->local_name() == local_name && child->namespace_uri() == namespace_uri)
                 return child;
         return nullptr;
     }
@@ -43,18 +39,18 @@ namespace rapidxml
     xml_node* xml_node::first_node_ns(string_view namespace_uri) const
     {
         for (xml_node* child = m_first_node; child; child = child->next_sibling())
-            if (internal::compare(child->namespace_uri(), namespace_uri))
+            if (child->namespace_uri() == namespace_uri)
                 return child;
         return nullptr;
     }
 
-    xml_node* xml_node::last_node(optional<string_view> name, bool case_sensitive) const
+    xml_node* xml_node::last_node(optional<string_view> name) const
     {
         assert(m_first_node); // Cannot query for last child if node has no children
         if (name)
         {
             for (xml_node* child = m_last_node; child; child = child->previous_sibling())
-                if (internal::compare(child->name(), *name, case_sensitive))
+                if (child->name() == *name)
                     return child;
             return nullptr;
         }
@@ -62,13 +58,13 @@ namespace rapidxml
             return m_last_node;
     }
 
-    xml_node* xml_node::previous_sibling(optional<string_view> name, bool case_sensitive) const
+    xml_node* xml_node::previous_sibling(optional<string_view> name) const
     {
         assert(this->m_parent); // Cannot query for siblings if node has no parent
         if (name)
         {
             for (xml_node* sibling = m_prev_sibling; sibling; sibling = sibling->m_prev_sibling)
-                if (internal::compare(sibling->name(), *name, case_sensitive))
+                if (sibling->name() == *name)
                     return sibling;
             return nullptr;
         }
@@ -76,13 +72,13 @@ namespace rapidxml
             return m_prev_sibling;
     }
 
-    xml_node* xml_node::next_sibling(optional<string_view> name, bool case_sensitive) const
+    xml_node* xml_node::next_sibling(optional<string_view> name) const
     {
         assert(this->m_parent); // Cannot query for siblings if node has no parent
         if (name)
         {
             for (xml_node* sibling = m_next_sibling; sibling; sibling = sibling->m_next_sibling)
-                if (internal::compare(sibling->name(), *name, case_sensitive))
+                if (sibling->name() == *name)
                     return sibling;
             return nullptr;
         }
@@ -90,13 +86,10 @@ namespace rapidxml
             return m_next_sibling;
     }
 
-    xml_node* xml_node::next_sibling_ns(string_view namespace_uri, string_view local_name, bool local_name_case_sensitive) const
+    xml_node* xml_node::next_sibling_ns(string_view namespace_uri, string_view local_name) const
     {
         for (xml_node* sibling = m_next_sibling; sibling; sibling = sibling->m_next_sibling)
-            if (internal::compare(sibling->local_name(),
-                                  local_name, local_name_case_sensitive) &&
-                internal::compare(sibling->namespace_uri(),
-                                  namespace_uri))
+            if (sibling->local_name() == local_name && sibling->namespace_uri() == namespace_uri)
                 return sibling;
         return nullptr;
     }
@@ -104,17 +97,17 @@ namespace rapidxml
     xml_node* xml_node::next_sibling_ns(string_view namespace_uri) const
     {
         for (xml_node* sibling = m_next_sibling; sibling; sibling = sibling->m_next_sibling)
-            if (internal::compare(sibling->namespace_uri(), namespace_uri))
+            if (sibling->namespace_uri() == namespace_uri)
                 return sibling;
         return nullptr;
     }
 
-    xml_attribute* xml_node::first_attribute(optional<string_view> name, bool case_sensitive) const
+    xml_attribute* xml_node::first_attribute(optional<string_view> name) const
     {
         if (name)
         {
             for (xml_attribute* attribute = m_first_attribute; attribute; attribute = attribute->m_next_attribute)
-                if (internal::compare(attribute->name(), *name, case_sensitive))
+                if (attribute->name() == *name)
                     return attribute;
             return nullptr;
         }
@@ -122,23 +115,20 @@ namespace rapidxml
             return m_first_attribute;
     }
 
-    xml_attribute* xml_node::first_attribute_ns(string_view namespace_uri, string_view local_name, bool local_name_case_sensitive) const
+    xml_attribute* xml_node::first_attribute_ns(string_view namespace_uri, string_view local_name) const
     {
         for (xml_attribute* attribute = m_first_attribute; attribute; attribute = attribute->m_next_attribute)
-            if (internal::compare(attribute->local_name(),
-                                  local_name, local_name_case_sensitive) &&
-                internal::compare(attribute->namespace_uri(),
-                                  namespace_uri))
+            if (attribute->local_name() == local_name && attribute->namespace_uri() == namespace_uri)
                 return attribute;
         return nullptr;
     }
 
-    xml_attribute* xml_node::last_attribute(optional<string_view> name, bool case_sensitive) const
+    xml_attribute* xml_node::last_attribute(optional<string_view> name) const
     {
         if (name)
         {
             for (xml_attribute* attribute = m_last_attribute; attribute; attribute = attribute->m_prev_attribute)
-                if (internal::compare(attribute->name(), *name, case_sensitive))
+                if (attribute->name() == *name)
                     return attribute;
             return nullptr;
         }

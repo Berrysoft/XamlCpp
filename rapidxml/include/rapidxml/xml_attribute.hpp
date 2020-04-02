@@ -33,21 +33,21 @@ namespace rapidxml
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* previous_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* previous_attribute(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets next attribute, optionally matching attribute name.
         //! \param name Name of attribute to find, or 0 to return next attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
         //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* next_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* next_attribute(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets next attribute, matching attribute local name and attribute namespace URI .
         //! \param namespace_uri Namespace URI of attribute to find; this string have to be zero-terminated
         //! \param local_name Local name of attribute to find; this string have to be zero-terminated
         //! \param local_name_case_sensitive Should local name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* next_attribute_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* next_attribute_ns(std::string_view namespace_uri, std::string_view local_name) const;
 
     private:
         xml_attribute* m_prev_attribute{ nullptr }; // Pointer to previous sibling of attribute, or 0 if none; only valid if parent is non-zero

@@ -1,6 +1,5 @@
 #include <cassert>
 #include <cctype>
-#include <internal.hpp>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <vector>
@@ -19,21 +18,21 @@ namespace rapidxml
                 switch (attr->prefix().size())
                 {
                 case 0:
-                    if (compare(attr->name(), xmlns_namespace::prefix))
+                    if (attr->name() == xmlns_namespace::prefix)
                     {
                         attr->namespace_uri(xmlns_namespace::uri);
                         set_default_namespace(attr);
                     }
                     continue;
                 case xml_namespace::prefix.size():
-                    if (compare(attr->prefix(), xml_namespace::prefix))
+                    if (attr->prefix() == xml_namespace::prefix)
                     {
                         attr->namespace_uri(xml_namespace::uri);
                         continue;
                     }
                     break;
                 case xmlns_namespace::prefix.size():
-                    if (compare(attr->prefix(), xmlns_namespace::prefix))
+                    if (attr->prefix() == xmlns_namespace::prefix)
                     {
                         attr->namespace_uri(xmlns_namespace::uri);
                         add_namespace_prefix(attr);
@@ -66,7 +65,7 @@ namespace rapidxml
             for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
                      it = m_processor.m_namespace_prefixes.rbegin();
                  it != m_processor.m_namespace_prefixes.rend(); ++it)
-                if (compare((*it)->local_name(), prefix))
+                if ((*it)->local_name() == prefix)
                 {
                     node->namespace_uri((*it)->value());
                     return;
@@ -849,7 +848,7 @@ namespace rapidxml
                         // Skip and validate closing tag name
                         char* closing_name = text;
                         skip<node_name_pred>(text);
-                        if (!internal::compare(node->name(), string_view(closing_name, text - closing_name), true))
+                        if (node->name() != string_view(closing_name, text - closing_name))
                             throw parse_error("invalid closing tag name", text);
                     }
                     else

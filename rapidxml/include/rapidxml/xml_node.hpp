@@ -51,16 +51,14 @@ namespace rapidxml
         //! Gets first child node, optionally matching node name.
         //! \param name Name of child to find, or 0 to return first child regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        RAPIDXML_API xml_node* first_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* first_node(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets first child node, matching node local name and namespace URI.
         //! \param namespace_uri Namespace URI of child to find; this string have to be zero-terminated
         //! \param local_name Local name of child to find; this string have to be zero-terminated
-        //! \param local_name_case_sensitive Should local name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        RAPIDXML_API xml_node* first_node_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_node* first_node_ns(std::string_view namespace_uri, std::string_view local_name) const;
 
         RAPIDXML_API xml_node* first_node_ns(std::string_view namespace_uri) const;
 
@@ -69,52 +67,46 @@ namespace rapidxml
         //! Use first_node() to test if node has children.
         //! \param name Name of child to find, or 0 to return last child regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found child, or 0 if not found.
-        RAPIDXML_API xml_node* last_node(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* last_node(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets previous sibling node, optionally matching node name.
         //! Behaviour is undefined if node has no parent.
         //! Use parent() to test if node has a parent.
         //! \param name Name of sibling to find, or 0 to return previous sibling regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found sibling, or 0 if not found.
-        RAPIDXML_API xml_node* previous_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* previous_sibling(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets next sibling node, optionally matching node name.
         //! Behaviour is undefined if node has no parent.
         //! Use parent() to test if node has a parent.
         //! \param name Name of sibling to find, or 0 to return next sibling regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found sibling, or 0 if not found.
-        RAPIDXML_API xml_node* next_sibling(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_node* next_sibling(std::optional<std::string_view> name = std::nullopt) const;
 
-        RAPIDXML_API xml_node* next_sibling_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_node* next_sibling_ns(std::string_view namespace_uri, std::string_view local_name) const;
 
         RAPIDXML_API xml_node* next_sibling_ns(std::string_view namespace_uri) const;
 
         //! Gets first attribute of node, optionally matching attribute name.
         //! \param name Name of attribute to find, or 0 to return first attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* first_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* first_attribute(std::optional<std::string_view> name = std::nullopt) const;
 
         //! Gets first attribute of node, matching attribute namespace URI and local name.
         //! \param namespace_uri Namespace URI of attribute to find; this string have to be zero-terminated
         //! \param local_name Local name of attribute to find; this string have to be zero-terminated
-        //! \param local_name_case_sensitive Should local name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* first_attribute_ns(std::string_view namespace_uri, std::string_view local_name, bool local_name_case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* first_attribute_ns(std::string_view namespace_uri, std::string_view local_name) const;
 
         //! Gets last attribute of node, optionally matching attribute name.
         //! \param name Name of attribute to find, or 0 to return last attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
         //! \param name_size Size of name, in characters, or 0 to have size calculated automatically from string
-        //! \param case_sensitive Should name comparison be case-sensitive; non case-sensitive comparison works properly only for ASCII characters
         //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* last_attribute(std::optional<std::string_view> name = std::nullopt, bool case_sensitive = true) const;
+        RAPIDXML_API xml_attribute* last_attribute(std::optional<std::string_view> name = std::nullopt) const;
 
         ///////////////////////////////////////////////////////////////////////////
         // Node modification
