@@ -78,12 +78,12 @@ namespace rapidxml
 
         RAPIDXML_API void init();
 
-        void* allocate_aligned(std::size_t size);
+        RAPIDXML_API void* allocate_aligned(std::size_t size);
 
         void* m_begin{ nullptr }; // Start of raw memory making up current pool
         void* m_ptr{ nullptr }; // First free byte in current pool
         std::size_t m_size{ 0 };
-        char m_static_memory[static_pool_size]{}; // Static raw memory
+        char m_static_memory[static_pool_size]; // Static raw memory
     };
 } // namespace rapidxml
 
