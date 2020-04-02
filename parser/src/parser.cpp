@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <rapidxml/iterators.hpp>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <sstream>
@@ -184,9 +185,8 @@ namespace xaml
         {
             auto ns = node.namespace_uri();
             auto name = node.name();
-            for (auto pattr = node.first_attribute(); pattr; pattr = pattr->next_attribute())
+            for (auto& attr : attribute_iterator{ &node })
             {
-                auto& attr = *pattr;
                 auto attr_ns = attr.namespace_uri();
                 auto attr_name = attr.local_name();
                 if (attr_ns == xmlns_namespace::uri && attr_name == "xmlns")
@@ -299,9 +299,8 @@ namespace xaml
         default:
             break;
         }
-        for (auto pc = node.first_node(); pc; pc = pc->next_sibling())
+        for (auto& c : node_iterator{ &node })
         {
-            auto& c = *pc;
             if (c.type() == node_type::element)
             {
                 auto ns = c.namespace_uri();

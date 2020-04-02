@@ -146,12 +146,12 @@ namespace rapidxml
         }
         else
         {
-            child->m_next_sibling = 0;
+            child->m_next_sibling = nullptr;
             m_last_node = child;
         }
         m_first_node = child;
         child->m_parent = this;
-        child->m_prev_sibling = 0;
+        child->m_prev_sibling = nullptr;
     }
 
     void xml_node::append_node(xml_node* child)
@@ -164,12 +164,12 @@ namespace rapidxml
         }
         else
         {
-            child->m_prev_sibling = 0;
+            child->m_prev_sibling = nullptr;
             m_first_node = child;
         }
         m_last_node = child;
         child->m_parent = this;
-        child->m_next_sibling = 0;
+        child->m_next_sibling = nullptr;
     }
 
     void xml_node::insert_node(xml_node* where, xml_node* child)
@@ -178,7 +178,7 @@ namespace rapidxml
         assert(child && !child->parent() && child->type() != node_type::document);
         if (where == m_first_node)
             prepend_node(child);
-        else if (where == 0)
+        else if (where == nullptr)
             append_node(child);
         else
         {
@@ -196,10 +196,10 @@ namespace rapidxml
         xml_node* child = m_first_node;
         m_first_node = child->m_next_sibling;
         if (child->m_next_sibling)
-            child->m_next_sibling->m_prev_sibling = 0;
+            child->m_next_sibling->m_prev_sibling = nullptr;
         else
-            m_last_node = 0;
-        child->m_parent = 0;
+            m_last_node = nullptr;
+        child->m_parent = nullptr;
     }
 
     void xml_node::remove_last_node()
@@ -209,11 +209,11 @@ namespace rapidxml
         if (child->m_prev_sibling)
         {
             m_last_node = child->m_prev_sibling;
-            child->m_prev_sibling->m_next_sibling = 0;
+            child->m_prev_sibling->m_next_sibling = nullptr;
         }
         else
-            m_first_node = 0;
-        child->m_parent = 0;
+            m_first_node = nullptr;
+        child->m_parent = nullptr;
     }
 
     void xml_node::remove_node(xml_node* where)
@@ -228,15 +228,15 @@ namespace rapidxml
         {
             where->m_prev_sibling->m_next_sibling = where->m_next_sibling;
             where->m_next_sibling->m_prev_sibling = where->m_prev_sibling;
-            where->m_parent = 0;
+            where->m_parent = nullptr;
         }
     }
 
     void xml_node::remove_all_nodes()
     {
         for (xml_node* node = first_node(); node; node = node->m_next_sibling)
-            node->m_parent = 0;
-        m_first_node = 0;
+            node->m_parent = nullptr;
+        m_first_node = nullptr;
     }
 
     void xml_node::prepend_attribute(xml_attribute* attribute)
@@ -249,12 +249,12 @@ namespace rapidxml
         }
         else
         {
-            attribute->m_next_attribute = 0;
+            attribute->m_next_attribute = nullptr;
             m_last_attribute = attribute;
         }
         m_first_attribute = attribute;
         attribute->m_parent = this;
-        attribute->m_prev_attribute = 0;
+        attribute->m_prev_attribute = nullptr;
     }
 
     void xml_node::append_attribute(xml_attribute* attribute)
@@ -267,12 +267,12 @@ namespace rapidxml
         }
         else
         {
-            attribute->m_prev_attribute = 0;
+            attribute->m_prev_attribute = nullptr;
             m_first_attribute = attribute;
         }
         m_last_attribute = attribute;
         attribute->m_parent = this;
-        attribute->m_next_attribute = 0;
+        attribute->m_next_attribute = nullptr;
     }
 
     void xml_node::insert_attribute(xml_attribute* where, xml_attribute* attribute)
@@ -281,7 +281,7 @@ namespace rapidxml
         assert(attribute && !attribute->parent());
         if (where == m_first_attribute)
             prepend_attribute(attribute);
-        else if (where == 0)
+        else if (where == nullptr)
             append_attribute(attribute);
         else
         {
@@ -299,11 +299,11 @@ namespace rapidxml
         xml_attribute* attribute = m_first_attribute;
         if (attribute->m_next_attribute)
         {
-            attribute->m_next_attribute->m_prev_attribute = 0;
+            attribute->m_next_attribute->m_prev_attribute = nullptr;
         }
         else
-            m_last_attribute = 0;
-        attribute->m_parent = 0;
+            m_last_attribute = nullptr;
+        attribute->m_parent = nullptr;
         m_first_attribute = attribute->m_next_attribute;
     }
 
@@ -313,12 +313,12 @@ namespace rapidxml
         xml_attribute* attribute = m_last_attribute;
         if (attribute->m_prev_attribute)
         {
-            attribute->m_prev_attribute->m_next_attribute = 0;
+            attribute->m_prev_attribute->m_next_attribute = nullptr;
             m_last_attribute = attribute->m_prev_attribute;
         }
         else
-            m_first_attribute = 0;
-        attribute->m_parent = 0;
+            m_first_attribute = nullptr;
+        attribute->m_parent = nullptr;
     }
 
     void xml_node::remove_attribute(xml_attribute* where)
@@ -332,14 +332,14 @@ namespace rapidxml
         {
             where->m_prev_attribute->m_next_attribute = where->m_next_attribute;
             where->m_next_attribute->m_prev_attribute = where->m_prev_attribute;
-            where->m_parent = 0;
+            where->m_parent = nullptr;
         }
     }
 
     void xml_node::remove_all_attributes()
     {
         for (xml_attribute* attribute = first_attribute(); attribute; attribute = attribute->m_next_attribute)
-            attribute->m_parent = 0;
-        m_first_attribute = 0;
+            attribute->m_parent = nullptr;
+        m_first_attribute = nullptr;
     }
 } // namespace rapidxml

@@ -122,7 +122,6 @@ elseif(${BUILD_GTK3})
 endif()
 
 option(BUILD_WEBVIEW "Build webview." ON)
-option(USE_SYS_PUGIXML "Use system pugixml" OFF)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
