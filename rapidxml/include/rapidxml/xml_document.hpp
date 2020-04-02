@@ -1,9 +1,18 @@
 #ifndef RAPID_XML_DOCUMENT_HPP
 #define RAPID_XML_DOCUMENT_HPP
 
-#include <memory_resource>
 #include <rapidxml/xml_node.hpp>
 #include <vector>
+#include <version>
+
+#ifdef __cpp_lib_memory_resource
+#include <memory_resource>
+#elif __has_include(<experimental/memory_resource>)
+#include <experimental/memory_resource>
+#include <rapidxml/memory_pool.hpp>
+#else
+#error Cannot find <memory_resource>
+#endif // __cpp_lib_memory_resource
 
 namespace rapidxml
 {
@@ -241,12 +250,18 @@ namespace rapidxml
         // Parse XML attributes of the node
         RAPIDXML_API void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
 
+#ifdef __cpp_lib_memory_resource
         // Size of static memory block.
         static constexpr size_t static_pool_size = 64 * 1024;
 
         std::pmr::monotonic_buffer_resource m_pool{ static_pool_size };
         std::pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
         std::pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
+#else
+        memory_pool m_pool{};
+        std::experimental::pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
+        std::experimental::pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
+#endif // __cpp_lib_memory_resource
     };
 } // namespace rapidxml
 
