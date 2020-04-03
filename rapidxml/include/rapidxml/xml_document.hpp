@@ -5,6 +5,10 @@
 #include <rapidxml/xml_node.hpp>
 #include <vector>
 
+#ifndef __cpp_lib_memory_resource
+#include <rapidxml/memory_pool.hpp>
+#endif // !__cpp_lib_memory_resource
+
 namespace rapidxml
 {
     struct xml_namespace
@@ -182,7 +186,7 @@ namespace rapidxml
     //! which are inherited from memory_pool.
     //! To access root node of the document, use the document itself, as if it was an xml_node.
     //! \param char chararacter type to use.
-    class xml_document : public xml_node
+    class xml_document
     {
     private:
 #ifdef __cpp_lib_memory_resource
@@ -197,15 +201,16 @@ namespace rapidxml
         pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
         pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
 
+        xml_node m_root_node{ node_type::document, m_node_allocator, m_attribute_allocator };
+
     public:
         //! Constructs empty XML document
-        xml_document() : xml_node(node_type::document)
-        {
-            nodes() = pmr::list<xml_node>(m_node_allocator);
-            attributes() = pmr::list<xml_attribute>(m_attribute_allocator);
-        }
+        xml_document() {}
 
-        ~xml_document() override {}
+        ~xml_document() { clear(); }
+
+        xml_node& node() { return m_root_node; }
+        xml_node const& node() const { return m_root_node; }
 
         //! Parses zero-terminated XML string according to given flags.
         //! Passed string will be modified by the parser, unless rapidxml_ns::parse_non_destructive flag is used.

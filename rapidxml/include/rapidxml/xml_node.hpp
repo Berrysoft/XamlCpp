@@ -20,6 +20,19 @@ namespace rapidxml
     //! \param char chararacter type to use.
     class xml_node : public xml_base
     {
+    private:
+        ///////////////////////////////////////////////////////////////////////////
+        // Data members
+
+        // Note that some of the pointers below have UNDEFINED values if certain other pointers are 0.
+        // This is required for maximum performance, as it allows the parser to omit initialization of
+        // unneded/redundant values.
+
+        node_type m_type; // Type of node; always valid
+
+        pmr::list<xml_node> m_nodes;
+        pmr::list<xml_attribute> m_attributes;
+
     public:
         ///////////////////////////////////////////////////////////////////////////
         // Construction & destruction
@@ -27,8 +40,6 @@ namespace rapidxml
         //! Constructs an empty node with the specified type.
         //! Consider using memory_pool of appropriate document to allocate nodes manually.
         //! \param type Type of node to construct.
-        xml_node(node_type type) : xml_base(), m_type(type) {}
-
         xml_node(node_type type, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator) noexcept
             : xml_base(), m_type(type), m_nodes(node_allocator), m_attributes(attr_allocator) {}
 
@@ -57,10 +68,6 @@ namespace rapidxml
         ///////////////////////////////////////////////////////////////////////////
         // Related nodes access
 
-        //! Gets document of which node is a child.
-        //! \return Pointer to document that contains this node, or 0 if there is no parent document.
-        RAPIDXML_API xml_document* document() const;
-
         pmr::list<xml_node>& nodes() { return m_nodes; }
         pmr::list<xml_node> const& nodes() const { return m_nodes; }
 
@@ -76,19 +83,6 @@ namespace rapidxml
         {
             m_type = type;
         }
-
-    private:
-        ///////////////////////////////////////////////////////////////////////////
-        // Data members
-
-        // Note that some of the pointers below have UNDEFINED values if certain other pointers are 0.
-        // This is required for maximum performance, as it allows the parser to omit initialization of
-        // unneded/redundant values.
-
-        node_type m_type; // Type of node; always valid
-
-        pmr::list<xml_node> m_nodes{};
-        pmr::list<xml_attribute> m_attributes{};
     };
 } // namespace rapidxml
 

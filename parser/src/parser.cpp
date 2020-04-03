@@ -83,7 +83,7 @@ namespace xaml
         set<string> headers{};
         xml_document doc{};
 
-        ~parser_impl() { doc.clear(); }
+        ~parser_impl() {}
 
         void load_file(path const& p)
         {
@@ -391,7 +391,7 @@ namespace xaml
 
     xaml_node parser_impl::parse()
     {
-        xml_node& root_node = doc.nodes().front();
+        xml_node& root_node = doc.node().nodes().front();
         auto ns = root_node.namespace_uri();
         auto name = root_node.local_name();
         auto t = ctx->get_type(ns, name);

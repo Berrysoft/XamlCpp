@@ -10,7 +10,6 @@
 #include <memory_resource>
 #elif __has_include(<experimental/memory_resource>)
 #include <experimental/memory_resource>
-#include <rapidxml/memory_pool.hpp>
 #else
 #error Cannot find <memory_resource>
 #endif // __cpp_lib_memory_resource
@@ -20,13 +19,13 @@ namespace rapidxml
 #ifdef __cpp_lib_memory_resource
     namespace pmr = std::pmr;
 #else
-    namespace pmr = std::experimental::pmr;
-
     namespace pmr
     {
-        template <T>
+        using namespace std::experimental::pmr;
+
+        template <typename T>
         using list = std::list<T, polymorphic_allocator<T>>;
-    }
+    } // namespace pmr
 #endif // __cpp_lib_memory_resource
 
     //! Parse error exception.
@@ -213,6 +212,11 @@ namespace rapidxml
         {
             return m_parent;
         }
+
+        
+        //! Gets root node.
+        //! \return Pointer to document that contains this node, or 0 if there is no parent document.
+        RAPIDXML_API xml_node* document() const;
     };
 } // namespace rapidxml
 

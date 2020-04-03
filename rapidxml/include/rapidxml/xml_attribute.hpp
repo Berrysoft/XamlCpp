@@ -25,13 +25,6 @@ namespace rapidxml
         }
 
         ~xml_attribute() override {}
-
-        ///////////////////////////////////////////////////////////////////////////
-        // Related nodes access
-
-        //! Gets document of which attribute is a child.
-        //! \return Pointer to document that contains this attribute, or 0 if there is no parent document.
-        RAPIDXML_API xml_document* document() const;
     };
 } // namespace rapidxml
 

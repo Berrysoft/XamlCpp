@@ -2,7 +2,7 @@
 #define RAPID_XML_MEMORY_POOL_HPP
 
 #include <rapidxml/utility.hpp>
-#include <rapidxml/xml_node.hpp>
+#include <rapidxml/xml_base.hpp>
 #include <version>
 
 namespace rapidxml

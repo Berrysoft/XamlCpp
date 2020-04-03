@@ -385,8 +385,7 @@ namespace rapidxml
         assert(text);
 
         // Remove current contents
-        nodes().clear();
-        attributes().clear();
+        clear();
 
         internal::xml_namespace_processor namespace_processor;
         // Creating topmost namespace scope that actually won't be used
@@ -400,7 +399,7 @@ namespace rapidxml
         {
             // Skip whitespace before node
             skip<whitespace_pred>(text);
-            if (*text == 0)
+            if (!*text)
                 break;
 
             // Parse and append new child
@@ -408,7 +407,7 @@ namespace rapidxml
             {
                 ++text; // Skip '<'
                 if (auto node = parse_node(text, namespace_scope, flags))
-                    this->nodes().emplace_back(move(*node));
+                    m_root_node.nodes().emplace_back(move(*node));
             }
             else
                 throw parse_error("expected <", text);
@@ -417,9 +416,8 @@ namespace rapidxml
 
     void xml_document::clear()
     {
-        nodes().clear();
-        attributes().clear();
-        m_pool.release();
+        node().nodes().clear();
+        node().attributes().clear();
     }
 
     optional<xml_node> xml_document::parse_xml_declaration(char*& text, parse_flag flags)
