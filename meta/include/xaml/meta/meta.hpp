@@ -182,6 +182,12 @@ namespace xaml
         static constexpr guid value{ 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } };
     };
 
+    template <>
+    struct type_guid<meta_box<std::u16string>>
+    {
+        static constexpr guid value{ 0x442a5395, 0x24b7, 0x4365, { 0xa8, 0x6d, 0x30, 0x11, 0x89, 0x3a, 0x77, 0x66 } };
+    };
+
     template <typename T>
     struct meta_box : public meta_class
     {

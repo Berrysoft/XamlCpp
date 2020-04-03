@@ -409,6 +409,10 @@ namespace xaml
                 {
                     return to_string(wstr->get());
                 }
+                else if (auto u16str = value->query<meta_box<std::u16string>>())
+                {
+                    return to_string(u16str->get());
+                }
             }
             return {};
         }
@@ -426,6 +430,26 @@ namespace xaml
                     return to_wstring(str->get());
                 }
                 else if (auto wstr = value->query<meta_box<std::wstring>>())
+                {
+                    return *wstr;
+                }
+            }
+            return {};
+        }
+    };
+
+    template <>
+    struct value_converter_traits<std::u16string_view, void>
+    {
+        static std::u16string convert(std::shared_ptr<meta_class> value)
+        {
+            if (value)
+            {
+                if (auto str = value->query<meta_box<std::string>>())
+                {
+                    return to_u16string(str->get());
+                }
+                else if (auto wstr = value->query<meta_box<std::u16string>>())
                 {
                     return *wstr;
                 }

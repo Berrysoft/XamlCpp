@@ -37,6 +37,12 @@ namespace xaml
 #ifndef to_string_t
 #define to_string_t to_wstring
 #endif // !to_string_t
+#elif UTF16UNIX
+    using char_t = char16_t;
+
+#ifndef to_string_t
+#define to_string_t to_string
+#endif // !to_string_t
 #else
     using char_t = char;
 
@@ -49,10 +55,14 @@ namespace xaml
     using string_view_t = std::basic_string_view<char_t>;
 
     XAML_GLOBAL_API std::string to_string(std::wstring_view str);
+    XAML_GLOBAL_API std::string to_string(std::u16string_view str);
     inline std::string to_string(std::string_view str) { return (std::string)str; }
 
     XAML_GLOBAL_API std::wstring to_wstring(std::string_view str);
     inline std::wstring to_wstring(std::wstring_view str) { return (std::wstring)str; }
+
+    XAML_GLOBAL_API std::u16string to_u16string(std::string_view str);
+    inline std::u16string to_u16string(std::u16string_view str) { return (std::u16string)str; }
 } // namespace xaml
 
 #endif // !XAML_UI_STRINGS_HPP
