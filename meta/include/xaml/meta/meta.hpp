@@ -353,7 +353,7 @@ namespace xaml
     }
 
     template <typename T>
-    T unbox_value(std::shared_ptr<meta_class> value);
+    decltype(auto) unbox_value(std::shared_ptr<meta_class> value);
 
     template <typename T>
     using box_value_t = typename __box_helper<T>::type;

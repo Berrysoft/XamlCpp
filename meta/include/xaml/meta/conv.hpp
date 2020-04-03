@@ -33,7 +33,7 @@ namespace xaml
     };
 
     template <typename T>
-    T unbox_value(std::shared_ptr<meta_class> value)
+    decltype(auto) unbox_value(std::shared_ptr<meta_class> value)
     {
         return value_converter_traits<T>::convert(value);
     }
