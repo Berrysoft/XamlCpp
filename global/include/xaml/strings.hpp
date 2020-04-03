@@ -14,11 +14,13 @@
 #endif // !U
 
 #ifndef CHAR_CONST
-#define CHAR_CONST(name, value)           \
-    template <typename TChar>             \
-    inline constexpr TChar name{ value }; \
-    template <>                           \
-    inline constexpr wchar_t name<wchar_t>{ L##value };
+#define CHAR_CONST(name, value)                         \
+    template <typename TChar>                           \
+    inline constexpr TChar name{ value };               \
+    template <>                                         \
+    inline constexpr wchar_t name<wchar_t>{ L##value }; \
+    template <>                                         \
+    inline constexpr char16_t name<char16_t>{ u##value };
 #endif // !CHAR_CONST
 
 #ifndef STRING_CONST
@@ -26,7 +28,9 @@
     template <typename TChar>                                     \
     inline constexpr std::basic_string_view<TChar> name{ value }; \
     template <>                                                   \
-    inline constexpr std::wstring_view name<wchar_t>{ L##value };
+    inline constexpr std::wstring_view name<wchar_t>{ L##value }; \
+    template <>                                                   \
+    inline constexpr std::u16string_view name<char16_t>{ u##value };
 #endif // !STRING_CONST
 
 namespace xaml
