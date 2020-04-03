@@ -25,9 +25,9 @@ namespace xaml::cmdline
 {
     struct option_entry
     {
-        char_t short_arg;
-        string_t long_arg;
-        string_t help_text;
+        uchar_t short_arg;
+        ustring_t long_arg;
+        ustring_t help_text;
     };
 
     class option : public meta_class
@@ -36,8 +36,8 @@ namespace xaml::cmdline
         META_CLASS_IMPL(meta_class)
 
     private:
-        std::map<char_t, size_t> m_short_args{};
-        std::map<string_t, size_t> m_long_args{};
+        std::map<uchar_t, size_t> m_short_args{};
+        std::map<ustring_t, size_t> m_long_args{};
         std::map<size_t, std::string> m_properties{};
         std::multimap<std::string, option_entry> m_entries{};
         std::string m_default_property{};
@@ -46,13 +46,13 @@ namespace xaml::cmdline
         option() : meta_class() {}
         ~option() override {}
 
-        XAML_CMDLINE_API std::optional<std::string_view> find_short_arg(char_t name) const noexcept;
-        XAML_CMDLINE_API std::optional<std::string_view> find_long_arg(string_view_t name) const noexcept;
+        XAML_CMDLINE_API std::optional<std::string_view> find_short_arg(uchar_t name) const noexcept;
+        XAML_CMDLINE_API std::optional<std::string_view> find_long_arg(ustring_view_t name) const noexcept;
         std::string_view get_default_property() const noexcept { return m_default_property; }
 
-        XAML_CMDLINE_API std::shared_ptr<option> add_arg(char_t short_name, string_view_t long_name, std::string_view prop_name, string_view_t help_text = {});
+        XAML_CMDLINE_API std::shared_ptr<option> add_arg(uchar_t short_name, ustring_view_t long_name, std::string_view prop_name, ustring_view_t help_text = {});
 
-        XAML_CMDLINE_API std::basic_ostream<char_t>& print_help(std::basic_ostream<char_t>& stream) const;
+        XAML_CMDLINE_API std::basic_ostream<uchar_t>& print_help(std::basic_ostream<uchar_t>& stream) const;
 
         REGISTER_CLASS_DECL(xaml::cmdline, option, "xaml/cmdline")
         {

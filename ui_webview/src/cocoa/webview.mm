@@ -1,4 +1,5 @@
 #import <cocoa/XamlWebViewDelegate.h>
+#include <cocoa/strings.hpp>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/controls/webview.hpp>
 #include <xaml/ui/native_control.hpp>
@@ -40,7 +41,7 @@ namespace xaml
     void webview::draw_uri()
     {
         WKWebView* webview = (WKWebView*)get_handle()->handle;
-        NSString* nsurlstring = [NSString stringWithUTF8String:m_uri.c_str()];
+        NSString* nsurlstring = to_native(m_uri);
         NSURL* nsurl = [NSURL URLWithString:nsurlstring];
         NSURLRequest* nsrequest = [NSURLRequest requestWithURL:nsurl];
         [webview loadRequest:nsrequest];
@@ -52,7 +53,7 @@ namespace xaml
         atomic_guard guard(m_navigating);
         if (!guard.test_and_set())
         {
-            set_uri(webview.URL.absoluteString.UTF8String);
+            set_uri(from_native(webview.URL.absoluteString));
         }
     }
 

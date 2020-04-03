@@ -1,4 +1,5 @@
 #import <cocoa/XamlWindowDelegate.h>
+#include <cocoa/strings.hpp>
 #include <shared/atomic_guard.hpp>
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
@@ -101,7 +102,7 @@ namespace xaml
     void window::draw_title()
     {
         NSWindow* window = get_window()->window;
-        window.title = [NSString stringWithUTF8String:m_title.data()];
+        window.title = to_native(m_title);
     }
 
     void window::draw_child()

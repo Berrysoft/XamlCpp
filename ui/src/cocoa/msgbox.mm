@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#include <cocoa/strings.hpp>
 #include <vector>
 #include <xaml/ui/msgbox.hpp>
 
@@ -24,17 +25,17 @@ namespace xaml
     {
         NSAlert* alert = [NSAlert new];
         if (!title.empty())
-            alert.window.title = [NSString stringWithUTF8String:title.data()];
+            alert.window.title = to_native(title);
         if (instruction.empty())
         {
             if (!message.empty())
-                [alert setMessageText:[NSString stringWithUTF8String:message.data()]];
+                [alert setMessageText:to_native(message)];
         }
         else
         {
-            [alert setMessageText:[NSString stringWithUTF8String:instruction.data()]];
+            [alert setMessageText:to_native(instruction)];
             if (!message.empty())
-                [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
+                [alert setInformativeText:to_native(message)];
         }
         alert.alertStyle = get_style(style);
         vector<msgbox_result> res;
@@ -74,7 +75,7 @@ namespace xaml
             case 1:
             {
                 msgbox_custom_button const& b = get<msgbox_custom_button>(button);
-                [alert addButtonWithTitle:[NSString stringWithUTF8String:b.text.data()]];
+                [alert addButtonWithTitle:to_native(b.text)];
                 res.push_back(b.result);
                 break;
             }

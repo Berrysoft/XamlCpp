@@ -13,23 +13,23 @@ namespace xaml::cmdline
 
     no_registered_option::no_registered_option() : logic_error("There's no xaml::cmdline::option attribute registered in the specified type.") {}
 
-    static string get_invalid_option_message(string_view_t opt)
+    static string get_invalid_option_message(ustring_view_t opt)
     {
         ostringstream stream;
         stream << "Invalid option: " << quoted(to_string(opt));
         return stream.str();
     }
 
-    invalid_option::invalid_option(string_view_t opt) : logic_error(get_invalid_option_message(opt)) {}
+    invalid_option::invalid_option(ustring_view_t opt) : logic_error(get_invalid_option_message(opt)) {}
 
-    options parse(reflection_info const* refl, array_view<string_t> args)
+    options parse(reflection_info const* refl, array_view<ustring_t> args)
     {
         auto popt = refl->get_attribute<option>();
         if (!popt) throw no_registered_option{};
         options result;
         for (size_t i = 0; i < args.size(); i++)
         {
-            string_view_t arg = args[i];
+            ustring_view_t arg = args[i];
             if (arg.empty())
                 continue;
             else if (arg[0] == '-')
@@ -39,10 +39,10 @@ namespace xaml::cmdline
                 else if (arg[1] == '-')
                 {
                     if (arg.size() == 2) throw invalid_option{ arg };
-                    string_view_t long_arg = arg.substr(2);
+                    ustring_view_t long_arg = arg.substr(2);
                     size_t index = long_arg.find_first_of('=');
-                    string_view_t maybe_value = {};
-                    if (index != string_view_t::npos)
+                    ustring_view_t maybe_value = {};
+                    if (index != ustring_view_t::npos)
                     {
                         maybe_value = long_arg.substr(index + 1);
                         long_arg = long_arg.substr(0, index);
@@ -54,11 +54,11 @@ namespace xaml::cmdline
                         {
                             if (!maybe_value.empty())
                             {
-                                result.properties.push_back({ prop, (string_t)maybe_value });
+                                result.properties.push_back({ prop, (ustring_t)maybe_value });
                             }
                             else if (prop->type() == type_guid_v<meta_box<bool>>)
                             {
-                                result.properties.push_back({ prop, U("true") });
+                                result.properties.push_back({ prop, UU("true") });
                             }
                             else
                             {
@@ -91,8 +91,8 @@ namespace xaml::cmdline
                 }
                 else
                 {
-                    char_t short_arg = arg[1];
-                    string_view_t switches_or_value = arg.size() > 2 ? arg.substr(2) : string_view_t{};
+                    uchar_t short_arg = arg[1];
+                    ustring_view_t switches_or_value = arg.size() > 2 ? arg.substr(2) : ustring_view_t{};
                     if (auto pprop = popt->find_short_arg(short_arg))
                     {
                         auto prop = refl->get_property(*pprop);
@@ -100,15 +100,15 @@ namespace xaml::cmdline
                         {
                             if (prop->type() == type_guid_v<meta_box<bool>>)
                             {
-                                result.properties.push_back({ prop, U("true") });
-                                for (char_t other_short_arg : switches_or_value)
+                                result.properties.push_back({ prop, UU("true") });
+                                for (uchar_t other_short_arg : switches_or_value)
                                 {
                                     if (auto pprop = popt->find_short_arg(other_short_arg))
                                     {
                                         auto prop = refl->get_property(*pprop);
                                         if (prop)
                                         {
-                                            result.properties.push_back({ prop, U("true") });
+                                            result.properties.push_back({ prop, UU("true") });
                                         }
                                     }
                                     else
@@ -126,7 +126,7 @@ namespace xaml::cmdline
                                 }
                                 else
                                 {
-                                    result.properties.push_back({ prop, (string_t)switches_or_value });
+                                    result.properties.push_back({ prop, (ustring_t)switches_or_value });
                                 }
                             }
                         }
@@ -162,7 +162,7 @@ namespace xaml::cmdline
                     auto prop = refl->get_property(pdef_prop);
                     if (prop)
                     {
-                        result.properties.push_back({ prop, (string_t)arg });
+                        result.properties.push_back({ prop, (ustring_t)arg });
                     }
                     else
                     {

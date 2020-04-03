@@ -1,4 +1,5 @@
 #import <cocoa/XamlMenuItemDelegate.h>
+#include <cocoa/strings.hpp>
 #include <xaml/ui/controls/menu_item.hpp>
 #include <xaml/ui/controls/native_menu_item.hpp>
 #include <xaml/ui/menu_bar.hpp>
@@ -42,7 +43,7 @@ namespace xaml
                 NSMenuItem* mitem = get_menu()->handle;
                 mitem.target = delegate;
                 mitem.action = @selector(onAction);
-                mitem.title = [NSString stringWithUTF8String:m_text.c_str()];
+                mitem.title = to_native(m_text);
                 auto h = make_shared<native_control>();
                 h->delegate = delegate;
                 set_handle(h);
@@ -94,7 +95,7 @@ namespace xaml
             auto m = make_shared<native_popup_menu_item>();
             m->parent = (__bridge NSMenu*)pmenu;
             m->handle = [NSMenuItem new];
-            m->menu = [[NSMenu alloc] initWithTitle:[NSString stringWithUTF8String:get_text().data()]];
+            m->menu = [[NSMenu alloc] initWithTitle:to_native(get_text())];
             set_menu(m);
             draw_submenu();
             [get_menu()->parent addItem:get_menu()->handle];

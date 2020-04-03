@@ -1,4 +1,5 @@
 #import <cocoa/XamlComboBoxDelegate.h>
+#include <cocoa/strings.hpp>
 #include <xaml/ui/controls/combo_box.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
@@ -40,7 +41,7 @@ namespace xaml
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         if (m_text)
         {
-            combo.stringValue = [NSString stringWithUTF8String:m_text->get().data()];
+            combo.stringValue = to_native(m_text->get());
         }
         else
         {
@@ -50,7 +51,7 @@ namespace xaml
             }
             else
             {
-                combo.stringValue = [NSString stringWithUTF8String:get_items()[get_sel_id()].get().c_str()];
+                combo.stringValue = to_native(get_items()[get_sel_id()].get());
             }
         }
     }
@@ -60,7 +61,7 @@ namespace xaml
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         for (auto item : get_items())
         {
-            [combo addItemWithObjectValue:[NSString stringWithUTF8String:item.get().c_str()]];
+            [combo addItemWithObjectValue:to_native(item.get())];
         }
     }
 
@@ -82,13 +83,13 @@ namespace xaml
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         set_sel_id(combo.indexOfSelectedItem);
-        set_text(box_value(combo.stringValue.UTF8String));
+        set_text(box_value(from_native(combo.stringValue)));
     }
 
     void combo_box::insert_item(size_t index, string_t const& value)
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        [combo insertItemWithObjectValue:[NSString stringWithUTF8String:value.c_str()]
+        [combo insertItemWithObjectValue:to_native(value)
                                  atIndex:(NSInteger)index];
     }
 

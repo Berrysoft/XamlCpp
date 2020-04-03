@@ -20,20 +20,20 @@ namespace xaml::cmdline
 
     struct invalid_option : std::logic_error
     {
-        XAML_CMDLINE_API invalid_option(string_view_t opt);
+        XAML_CMDLINE_API invalid_option(ustring_view_t opt);
         ~invalid_option() override {}
     };
 
     struct option_property
     {
         xaml::property_info const* info;
-        xaml::string_t value;
+        xaml::ustring_t value;
     };
 
     struct option_collection_property
     {
         xaml::collection_property_info const* info;
-        std::vector<xaml::string_t> values;
+        std::vector<xaml::ustring_t> values;
     };
 
     struct options
@@ -42,13 +42,13 @@ namespace xaml::cmdline
         std::map<std::string, option_collection_property> collection_properties;
     };
 
-    XAML_CMDLINE_API options parse(xaml::reflection_info const* refl, xaml::array_view<xaml::string_t> args);
+    XAML_CMDLINE_API options parse(xaml::reflection_info const* refl, xaml::array_view<xaml::ustring_t> args);
 
-    inline options parse(xaml::reflection_info const* refl, int argc, xaml::char_t const* const* argv)
+    inline options parse(xaml::reflection_info const* refl, int argc, xaml::uchar_t const* const* argv)
     {
         if (argc > 1)
         {
-            std::vector<xaml::string_t> args{ argv + 1, argv + argc };
+            std::vector<xaml::ustring_t> args{ argv + 1, argv + argc };
             return parse(refl, args);
         }
         return {};
