@@ -25,10 +25,17 @@ namespace xaml
         NSAlert* alert = [NSAlert new];
         if (!title.empty())
             alert.window.title = [NSString stringWithUTF8String:title.data()];
-        if (!instruction.empty())
+        if (instruction.empty())
+        {
+            if (!message.empty())
+                [alert setMessageText:[NSString stringWithUTF8String:message.data()]];
+        }
+        else
+        {
             [alert setMessageText:[NSString stringWithUTF8String:instruction.data()]];
-        if (!message.empty())
-            [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
+            if (!message.empty())
+                [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
+        }
         alert.alertStyle = get_style(style);
         vector<msgbox_result> res;
         for (auto& button : buttons)
