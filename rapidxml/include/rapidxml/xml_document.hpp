@@ -1,18 +1,9 @@
 #ifndef RAPID_XML_DOCUMENT_HPP
 #define RAPID_XML_DOCUMENT_HPP
 
+#include <optional>
 #include <rapidxml/xml_node.hpp>
 #include <vector>
-#include <version>
-
-#ifdef __cpp_lib_memory_resource
-#include <memory_resource>
-#elif __has_include(<experimental/memory_resource>)
-#include <experimental/memory_resource>
-#include <rapidxml/memory_pool.hpp>
-#else
-#error Cannot find <memory_resource>
-#endif // __cpp_lib_memory_resource
 
 namespace rapidxml
 {
@@ -39,7 +30,7 @@ namespace rapidxml
             {
             public:
                 scope(xml_namespace_processor& processor)
-                    : m_processor(processor), m_stack_position(processor.m_namespace_prefixes.size()), m_default_namespace(0)
+                    : m_processor(processor), m_stack_position(processor.m_namespace_prefixes.size()), m_default_namespace()
                 {
                 }
 
@@ -53,30 +44,30 @@ namespace rapidxml
                     m_processor.m_namespace_prefixes.resize(m_stack_position);
                 }
 
-                RAPIDXML_API void process_element(xml_node* element);
+                RAPIDXML_API void process_element(xml_node& element);
 
-                void set_default_namespace(xml_attribute* ns_attr)
+                void set_default_namespace(pmr::list<xml_attribute>::iterator ns_attr)
                 {
                     m_default_namespace = ns_attr;
                 }
 
-                void add_namespace_prefix(xml_attribute* ns_attr)
+                void add_namespace_prefix(pmr::list<xml_attribute>::iterator ns_attr)
                 {
                     m_processor.m_namespace_prefixes.push_back(ns_attr);
                 }
 
-                RAPIDXML_API void set_element_default_namespace_uri(xml_node* element) const;
+                RAPIDXML_API void set_element_default_namespace_uri(xml_node& element) const;
 
-                RAPIDXML_API void set_node_namespace_uri_by_prefix(xml_base* node) const;
+                RAPIDXML_API void set_node_namespace_uri_by_prefix(xml_base& node) const;
 
             private:
                 xml_namespace_processor& m_processor;
                 size_t const m_stack_position;
-                xml_attribute* m_default_namespace;
+                std::optional<pmr::list<xml_attribute>::iterator> m_default_namespace;
             };
 
         private:
-            using xmlns_attributes_t = std::vector<xml_attribute*>;
+            using xmlns_attributes_t = std::vector<pmr::list<xml_attribute>::iterator>;
             xmlns_attributes_t m_namespace_prefixes;
         };
     } // namespace internal
@@ -193,10 +184,26 @@ namespace rapidxml
     //! \param char chararacter type to use.
     class xml_document : public xml_node
     {
+    private:
+#ifdef __cpp_lib_memory_resource
+        // Size of static memory block.
+        static constexpr size_t static_pool_size = 64 * 1024;
+
+        pmr::monotonic_buffer_resource m_pool{ static_pool_size };
+#else
+        memory_pool m_pool{};
+#endif // __cpp_lib_memory_resource
+
+        pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
+        pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
 
     public:
         //! Constructs empty XML document
-        xml_document() : xml_node(node_type::document) {}
+        xml_document() : xml_node(node_type::document)
+        {
+            nodes() = pmr::list<xml_node>(m_node_allocator);
+            attributes() = pmr::list<xml_attribute>(m_attribute_allocator);
+        }
 
         ~xml_document() override {}
 
@@ -219,49 +226,36 @@ namespace rapidxml
 
     private:
         // Parse XML declaration (<?xml...)
-        RAPIDXML_API xml_node* parse_xml_declaration(char*& text, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags);
 
         // Parse XML comment (<!--...)
-        RAPIDXML_API xml_node* parse_comment(char*& text, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_comment(char*& text, parse_flag flags);
 
         // Parse DOCTYPE
-        RAPIDXML_API xml_node* parse_doctype(char*& text, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_doctype(char*& text, parse_flag flags);
 
         // Parse PI
-        RAPIDXML_API xml_node* parse_pi(char*& text, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_pi(char*& text, parse_flag flags);
 
         // Parse and append data
         // Return character that ends data.
         // This is necessary because this character might have been overwritten by a terminating 0
-        RAPIDXML_API char parse_and_append_data(xml_node* node, char*& text, char* contents_start, parse_flag flags);
+        RAPIDXML_API char parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags);
 
         // Parse CDATA
-        RAPIDXML_API xml_node* parse_cdata(char*& text, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_cdata(char*& text, parse_flag flags);
 
         // Parse element node
-        RAPIDXML_API xml_node* parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags);
 
         // Determine node type, and parse it
-        RAPIDXML_API xml_node* parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
+        RAPIDXML_API std::optional<xml_node> parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
 
         // Parse contents of the node - children, data etc.
-        RAPIDXML_API void parse_node_contents(char*& text, xml_node* node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
+        RAPIDXML_API void parse_node_contents(char*& text, xml_node& node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags);
 
         // Parse XML attributes of the node
-        RAPIDXML_API void parse_node_attributes(char*& text, xml_node* node, parse_flag flags);
-
-#ifdef __cpp_lib_memory_resource
-        // Size of static memory block.
-        static constexpr size_t static_pool_size = 64 * 1024;
-
-        std::pmr::monotonic_buffer_resource m_pool{ static_pool_size };
-        std::pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
-        std::pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
-#else
-        memory_pool m_pool{};
-        std::experimental::pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
-        std::experimental::pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
-#endif // __cpp_lib_memory_resource
+        RAPIDXML_API void parse_node_attributes(char*& text, xml_node& node, parse_flag flags);
     };
 } // namespace rapidxml
 

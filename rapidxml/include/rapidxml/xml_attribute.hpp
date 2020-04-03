@@ -15,10 +15,15 @@ namespace rapidxml
     //! \param char chararacter type to use.
     class xml_attribute : public xml_base
     {
-
-        friend class xml_node;
-
     public:
+        constexpr xml_attribute() : xml_base() {}
+        constexpr xml_attribute(xml_attribute&& b) : xml_base(std::move(b)) {}
+        constexpr xml_attribute& operator=(xml_attribute&& b)
+        {
+            xml_base::operator=(std::move(b));
+            return *this;
+        }
+
         ~xml_attribute() override {}
 
         ///////////////////////////////////////////////////////////////////////////
@@ -27,26 +32,6 @@ namespace rapidxml
         //! Gets document of which attribute is a child.
         //! \return Pointer to document that contains this attribute, or 0 if there is no parent document.
         RAPIDXML_API xml_document* document() const;
-
-        //! Gets previous attribute, optionally matching attribute name.
-        //! \param name Name of attribute to find, or 0 to return previous attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
-        //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* previous_attribute(std::optional<std::string_view> name = std::nullopt) const;
-
-        //! Gets next attribute, optionally matching attribute name.
-        //! \param name Name of attribute to find, or 0 to return next attribute regardless of its name; this string doesn't have to be zero-terminated if name_size is non-zero
-        //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* next_attribute(std::optional<std::string_view> name = std::nullopt) const;
-
-        //! Gets next attribute, matching attribute local name and attribute namespace URI .
-        //! \param namespace_uri Namespace URI of attribute to find; this string have to be zero-terminated
-        //! \param local_name Local name of attribute to find; this string have to be zero-terminated
-        //! \return Pointer to found attribute, or 0 if not found.
-        RAPIDXML_API xml_attribute* next_attribute_ns(std::string_view namespace_uri, std::string_view local_name) const;
-
-    private:
-        xml_attribute* m_prev_attribute{ nullptr }; // Pointer to previous sibling of attribute, or 0 if none; only valid if parent is non-zero
-        xml_attribute* m_next_attribute{ nullptr }; // Pointer to next sibling of attribute, or 0 if none; only valid if parent is non-zero
     };
 } // namespace rapidxml
 

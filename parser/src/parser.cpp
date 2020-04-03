@@ -1,6 +1,5 @@
 #include <fstream>
 #include <iostream>
-#include <rapidxml/iterators.hpp>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <sstream>
@@ -185,7 +184,7 @@ namespace xaml
         {
             auto ns = node.namespace_uri();
             auto name = node.name();
-            for (auto& attr : attribute_iterator{ &node })
+            for (auto& attr : node.attributes())
             {
                 auto attr_ns = attr.namespace_uri();
                 auto attr_name = attr.local_name();
@@ -299,7 +298,7 @@ namespace xaml
         default:
             break;
         }
-        for (auto& c : node_iterator{ &node })
+        for (auto& c : node.nodes())
         {
             if (c.type() == node_type::element)
             {
@@ -392,7 +391,7 @@ namespace xaml
 
     xaml_node parser_impl::parse()
     {
-        xml_node& root_node = *doc.first_node();
+        xml_node& root_node = doc.nodes().front();
         auto ns = root_node.namespace_uri();
         auto name = root_node.local_name();
         auto t = ctx->get_type(ns, name);

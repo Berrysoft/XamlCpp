@@ -10,10 +10,10 @@ namespace rapidxml
 {
     namespace internal
     {
-        void xml_namespace_processor::scope::process_element(xml_node* element)
+        void xml_namespace_processor::scope::process_element(xml_node& element)
         {
-            xml_attribute* first_prefixed_attribute = 0;
-            for (xml_attribute* attr = element->first_attribute(); attr; attr = attr->next_attribute())
+            optional<pmr::list<xml_attribute>::iterator> pfirst_prefixed_attribute{};
+            for (auto attr = element.attributes().begin(); attr != element.attributes().end(); ++attr)
             {
                 switch (attr->prefix().size())
                 {
@@ -40,34 +40,38 @@ namespace rapidxml
                     }
                     break;
                 } // switch
-                if (!first_prefixed_attribute)
-                    first_prefixed_attribute = attr;
+                if (!pfirst_prefixed_attribute)
+                    pfirst_prefixed_attribute = attr;
             } // for
-            if (element->prefix().empty())
+            if (element.prefix().empty())
                 set_element_default_namespace_uri(element);
             else
                 set_node_namespace_uri_by_prefix(element);
 
-            for (; first_prefixed_attribute; first_prefixed_attribute = first_prefixed_attribute->next_attribute())
-                if (first_prefixed_attribute->prefix().size() > 0 && first_prefixed_attribute->namespace_uri().empty())
-                    set_node_namespace_uri_by_prefix(first_prefixed_attribute);
+            if (pfirst_prefixed_attribute)
+            {
+                auto& first_prefixed_attribute = *pfirst_prefixed_attribute;
+                for (; first_prefixed_attribute != element.attributes().end(); ++first_prefixed_attribute)
+                    if (first_prefixed_attribute->prefix().size() > 0 && first_prefixed_attribute->namespace_uri().empty())
+                        set_node_namespace_uri_by_prefix(*first_prefixed_attribute);
+            }
         }
 
-        void xml_namespace_processor::scope::set_element_default_namespace_uri(xml_node* element) const
+        void xml_namespace_processor::scope::set_element_default_namespace_uri(xml_node& element) const
         {
             if (m_default_namespace)
-                element->namespace_uri(m_default_namespace->value());
+                element.namespace_uri((*m_default_namespace)->value());
         }
 
-        void xml_namespace_processor::scope::set_node_namespace_uri_by_prefix(xml_base* node) const
+        void xml_namespace_processor::scope::set_node_namespace_uri_by_prefix(xml_base& node) const
         {
-            string_view prefix = node->prefix();
+            string_view prefix = node.prefix();
             for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
                      it = m_processor.m_namespace_prefixes.rbegin();
                  it != m_processor.m_namespace_prefixes.rend(); ++it)
                 if ((*it)->local_name() == prefix)
                 {
-                    node->namespace_uri((*it)->value());
+                    node.namespace_uri((*it)->value());
                     return;
                 }
             throw parse_error("No namespace definition found", nullptr);
@@ -381,8 +385,8 @@ namespace rapidxml
         assert(text);
 
         // Remove current contents
-        this->remove_all_nodes();
-        this->remove_all_attributes();
+        nodes().clear();
+        attributes().clear();
 
         internal::xml_namespace_processor namespace_processor;
         // Creating topmost namespace scope that actually won't be used
@@ -403,8 +407,8 @@ namespace rapidxml
             if (*text == '<')
             {
                 ++text; // Skip '<'
-                if (xml_node* node = parse_node(text, namespace_scope, flags))
-                    this->append_node(node);
+                if (auto node = parse_node(text, namespace_scope, flags))
+                    this->nodes().emplace_back(move(*node));
             }
             else
                 throw parse_error("expected <", text);
@@ -413,12 +417,12 @@ namespace rapidxml
 
     void xml_document::clear()
     {
-        this->remove_all_nodes();
-        this->remove_all_attributes();
+        nodes().clear();
+        attributes().clear();
         m_pool.release();
     }
 
-    xml_node* xml_document::parse_xml_declaration(char*& text, parse_flag flags)
+    optional<xml_node> xml_document::parse_xml_declaration(char*& text, parse_flag flags)
     {
         // If parsing of declaration is disabled
         if (!(flags & parse_flag::declaration_node))
@@ -431,12 +435,11 @@ namespace rapidxml
                 ++text;
             }
             text += 2; // Skip '?>'
-            return nullptr;
+            return nullopt;
         }
 
         // Create declaration
-        xml_node* declaration = m_node_allocator.allocate(1);
-        m_node_allocator.construct(declaration, node_type::declaration);
+        xml_node declaration{ node_type::declaration, m_node_allocator, m_attribute_allocator };
 
         // Skip whitespace before attributes or ?>
         skip<whitespace_pred>(text);
@@ -449,10 +452,10 @@ namespace rapidxml
             throw parse_error("expected ?>", text);
         text += 2;
 
-        return declaration;
+        return make_optional(move(declaration));
     }
 
-    xml_node* xml_document::parse_comment(char*& text, parse_flag flags)
+    optional<xml_node> xml_document::parse_comment(char*& text, parse_flag flags)
     {
         // If parsing of comments is disabled
         if (!(flags & parse_flag::comment_nodes))
@@ -465,7 +468,7 @@ namespace rapidxml
                 ++text;
             }
             text += 3; // Skip '-->'
-            return nullptr; // Do not produce comment node
+            return nullopt; // Do not produce comment node
         }
 
         // Remember value start
@@ -480,15 +483,14 @@ namespace rapidxml
         }
 
         // Create comment node
-        xml_node* comment = m_node_allocator.allocate(1);
-        m_node_allocator.construct(comment, node_type::comment);
-        comment->value(string_view(value, text - value));
+        xml_node comment{ node_type::comment, m_node_allocator, m_attribute_allocator };
+        comment.value(string_view(value, text - value));
 
         text += 3; // Skip '-->'
-        return comment;
+        return make_optional(move(comment));
     }
 
-    xml_node* xml_document::parse_doctype(char*& text, parse_flag flags)
+    optional<xml_node> xml_document::parse_doctype(char*& text, parse_flag flags)
     {
         // Remember value start
         char* value = text;
@@ -538,35 +540,33 @@ namespace rapidxml
         if (flags & parse_flag::doctype_node)
         {
             // Create a new doctype node
-            xml_node* doctype = m_node_allocator.allocate(1);
-            m_node_allocator.construct(doctype, node_type::doctype);
-            doctype->value(string_view(value, text - value));
+            xml_node doctype{ node_type::doctype, m_node_allocator, m_attribute_allocator };
+            doctype.value(string_view(value, text - value));
 
             text += 1; // skip '>'
-            return doctype;
+            return make_optional(move(doctype));
         }
         else
         {
             text += 1; // skip '>'
-            return nullptr;
+            return nullopt;
         }
     }
 
-    xml_node* xml_document::parse_pi(char*& text, parse_flag flags)
+    optional<xml_node> xml_document::parse_pi(char*& text, parse_flag flags)
     {
         // If creation of PI nodes is enabled
         if (flags & parse_flag::pi_nodes)
         {
             // Create pi node
-            xml_node* pi = m_node_allocator.allocate(1);
-            m_node_allocator.construct(pi, node_type::pi);
+            xml_node pi{ node_type::pi, m_node_allocator, m_attribute_allocator };
 
             // Extract PI target name
             char* name = text;
             skip<node_name_pred>(text);
             if (text == name)
                 throw parse_error("expected PI target", text);
-            pi->name(string_view(name, text - name));
+            pi.name(string_view(name, text - name));
 
             // Skip whitespace between pi target and pi
             skip<whitespace_pred>(text);
@@ -583,10 +583,10 @@ namespace rapidxml
             }
 
             // Set pi value (verbatim, no entity expansion or whitespace normalization)
-            pi->value(string_view(value, text - value));
+            pi.value(string_view(value, text - value));
 
             text += 2; // Skip '?>'
-            return pi;
+            return make_optional(move(pi));
         }
         else
         {
@@ -598,11 +598,11 @@ namespace rapidxml
                 ++text;
             }
             text += 2; // Skip '?>'
-            return nullptr;
+            return nullopt;
         }
     }
 
-    char xml_document::parse_and_append_data(xml_node* node, char*& text, char* contents_start, parse_flag flags)
+    char xml_document::parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags)
     {
         // Backup to contents start if whitespace trimming is disabled
         if (!(flags & parse_flag::trim_whitespace))
@@ -636,22 +636,21 @@ namespace rapidxml
         // Create new data node
         if (!(flags & parse_flag::no_data_nodes))
         {
-            xml_node* data = m_node_allocator.allocate(1);
-            m_node_allocator.construct(data, node_type::data);
-            data->value(string_view(value, end - value));
-            node->append_node(data);
+            xml_node data{ node_type::data, m_node_allocator, m_attribute_allocator };
+            data.value(string_view(value, end - value));
+            node.nodes().emplace_back(move(data));
         }
 
         // Add data to parent node if no data exists yet
         if (!(flags & parse_flag::no_element_values))
-            if (node->value().empty())
-                node->value(string_view(value, end - value));
+            if (node.value().empty())
+                node.value(string_view(value, end - value));
 
         // Return character that ends data
         return *text;
     }
 
-    xml_node* xml_document::parse_cdata(char*& text, parse_flag flags)
+    optional<xml_node> xml_document::parse_cdata(char*& text, parse_flag flags)
     {
         // If CDATA is disabled
         if (flags & parse_flag::no_data_nodes)
@@ -664,7 +663,7 @@ namespace rapidxml
                 ++text;
             }
             text += 3; // Skip ]]>
-            return nullptr; // Do not produce CDATA node
+            return nullopt; // Do not produce CDATA node
         }
 
         // Skip until end of cdata
@@ -677,19 +676,17 @@ namespace rapidxml
         }
 
         // Create new cdata node
-        xml_node* cdata = m_node_allocator.allocate(1);
-        m_node_allocator.construct(cdata, node_type::cdata);
-        cdata->value(string_view(value, text - value));
+        xml_node cdata{ node_type::cdata, m_node_allocator, m_attribute_allocator };
+        cdata.value(string_view(value, text - value));
 
         text += 3; // Skip ]]>
-        return cdata;
+        return make_optional(move(cdata));
     }
 
-    xml_node* xml_document::parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags)
+    optional<xml_node> xml_document::parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags)
     {
         // Create element node
-        xml_node* element = m_node_allocator.allocate(1);
-        m_node_allocator.construct(element, node_type::element);
+        xml_node element{ node_type::element, m_node_allocator, m_attribute_allocator };
 
         // Extract element name
         char* name = text;
@@ -706,10 +703,10 @@ namespace rapidxml
                 throw parse_error("second colon in element name", text);
             if (text == local_name)
                 throw parse_error("expected local part of element name", text);
-            element->qname(string_view(name, text - name), local_name - name);
+            element.qname(string_view(name, text - name), local_name - name);
         }
         else
-            element->qname(string_view(name, text - name));
+            element.qname(string_view(name, text - name));
 
         // Skip whitespace between element name and attributes or >
         skip<whitespace_pred>(text);
@@ -738,10 +735,10 @@ namespace rapidxml
             throw parse_error("expected >", text);
 
         // Return parsed element
-        return element;
+        return make_optional(move(element));
     }
 
-    xml_node* xml_document::parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
+    optional<xml_node> xml_document::parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
     {
         // Parse proper node type
         switch (text[0])
@@ -820,11 +817,11 @@ namespace rapidxml
                 ++text;
             }
             ++text; // Skip '>'
-            return nullptr; // No node recognized
+            return nullopt; // No node recognized
         }
     }
 
-    void xml_document::parse_node_contents(char*& text, xml_node* node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
+    void xml_document::parse_node_contents(char*& text, xml_node& node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
     {
         // For all children and text
         while (1)
@@ -855,7 +852,7 @@ namespace rapidxml
                         // Skip and validate closing tag name
                         char* closing_name = text;
                         skip<node_name_pred>(text);
-                        if (node->name() != string_view(closing_name, text - closing_name))
+                        if (node.name() != string_view(closing_name, text - closing_name))
                             throw parse_error("invalid closing tag name", text);
                     }
                     else
@@ -874,8 +871,8 @@ namespace rapidxml
                 {
                     // charild node
                     ++text; // Skip '<'
-                    if (xml_node* child = parse_node(text, namespace_scope, flags))
-                        node->append_node(child);
+                    if (auto child = parse_node(text, namespace_scope, flags))
+                        node.nodes().emplace_back(move(*child));
                 }
                 break;
 
@@ -891,7 +888,7 @@ namespace rapidxml
         }
     }
 
-    void xml_document::parse_node_attributes(char*& text, xml_node* node, parse_flag flags)
+    void xml_document::parse_node_attributes(char*& text, xml_node& node, parse_flag flags)
     {
         // For all attributes
         while (attribute_ncname_pred::test(*text))
@@ -903,8 +900,7 @@ namespace rapidxml
             if (text == name)
                 throw parse_error("expected attribute name", name);
             // Create new attribute
-            xml_attribute* attribute = m_attribute_allocator.allocate(1);
-            m_attribute_allocator.construct(attribute);
+            xml_attribute attribute{};
             if (*text == ':')
             {
                 // Namespace prefix found
@@ -913,12 +909,10 @@ namespace rapidxml
                 skip<attribute_ncname_pred>(text);
                 if (text == local_name)
                     throw parse_error("expected local part of attribute name", local_name);
-                attribute->qname(string_view(name, text - name), local_name - name);
+                attribute.qname(string_view(name, text - name), local_name - name);
             }
             else
-                attribute->qname(string_view(name, text - name));
-
-            node->append_attribute(attribute);
+                attribute.qname(string_view(name, text - name));
 
             // Skip whitespace after attribute name
             skip<whitespace_pred>(text);
@@ -946,7 +940,7 @@ namespace rapidxml
                 end = skip_and_expand_character_refs<attribute_value_pred<'"'>, attribute_value_pure_pred<'"'>>(text, AttFlags);
 
             // Set attribute value
-            attribute->value(string_view(value, end - value));
+            attribute.value(string_view(value, end - value));
 
             // Make sure that end quote is present
             if (*text != quote)
@@ -955,6 +949,8 @@ namespace rapidxml
 
             // Skip whitespace after attribute value
             skip<whitespace_pred>(text);
+
+            node.attributes().emplace_back(move(attribute));
         }
     }
 } // namespace rapidxml

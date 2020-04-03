@@ -5,15 +5,6 @@
 #include <rapidxml/xml_node.hpp>
 #include <version>
 
-#ifdef __cpp_lib_memory_resource
-#include <memory_resource>
-#elif __has_include(<experimental/memory_resource>)
-#include <experimental/memory_resource>
-#include <rapidxml/memory_pool.hpp>
-#else
-#error Cannot find <memory_resource>
-#endif // __cpp_lib_memory_resource
-
 namespace rapidxml
 {
     //! This class is used by the parser to create new nodes and attributes, without overheads of dynamic memory allocation.

@@ -1,11 +1,34 @@
 #ifndef RAPID_XML_BASE_HPP
 #define RAPID_XML_BASE_HPP
 
+#include <list>
 #include <rapidxml/utility.hpp>
 #include <string_view>
+#include <version>
+
+#ifdef __cpp_lib_memory_resource
+#include <memory_resource>
+#elif __has_include(<experimental/memory_resource>)
+#include <experimental/memory_resource>
+#include <rapidxml/memory_pool.hpp>
+#else
+#error Cannot find <memory_resource>
+#endif // __cpp_lib_memory_resource
 
 namespace rapidxml
 {
+#ifdef __cpp_lib_memory_resource
+    namespace pmr = std::pmr;
+#else
+    namespace pmr = std::experimental::pmr;
+
+    namespace pmr
+    {
+        template <T>
+        using list = std::list<T, polymorphic_allocator<T>>;
+    }
+#endif // __cpp_lib_memory_resource
+
     //! Parse error exception.
     //! This exception is thrown by the parser when an error occurs.
     //! Use what() function to get human-readable error message.
@@ -66,7 +89,30 @@ namespace rapidxml
     //! \param char chararacter type to use
     class xml_base
     {
+    protected:
+        std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
+        std::string_view m_name{}; // Name of node, or 0 if no name
+        std::string_view m_value{}; // Value of node, or 0 if no value
+        std::string_view m_namespace_uri{};
+        xml_node* m_parent{ nullptr }; // Pointer to parent node, or 0 if none
+
     public:
+        constexpr xml_base() noexcept {}
+        xml_base(xml_base const&) = delete;
+        xml_base& operator=(xml_base const&) = delete;
+
+        constexpr xml_base(xml_base&& b)
+            : m_local_name(b.m_local_name), m_name(b.m_name), m_value(b.m_value), m_namespace_uri(b.m_namespace_uri), m_parent(b.m_parent) {}
+        constexpr xml_base& operator=(xml_base&& b)
+        {
+            m_local_name = b.m_local_name;
+            m_name = b.m_name;
+            m_value = b.m_value;
+            m_namespace_uri = b.m_namespace_uri;
+            m_parent = b.m_parent;
+            return *this;
+        }
+
         virtual ~xml_base() {}
 
         ///////////////////////////////////////////////////////////////////////////
@@ -167,13 +213,6 @@ namespace rapidxml
         {
             return m_parent;
         }
-
-    protected:
-        std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
-        std::string_view m_name{}; // Name of node, or 0 if no name
-        std::string_view m_value{}; // Value of node, or 0 if no value
-        std::string_view m_namespace_uri{};
-        xml_node* m_parent{ nullptr }; // Pointer to parent node, or 0 if none
     };
 } // namespace rapidxml
 
