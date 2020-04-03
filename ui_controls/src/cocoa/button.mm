@@ -1,5 +1,4 @@
 #import <cocoa/XamlButtonDelegate.h>
-#include <cocoa/strings.hpp>
 #include <xaml/ui/controls/button.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
@@ -48,7 +47,7 @@ namespace xaml
     {
         NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
         NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
-        NSString* ns_title = to_native(m_text);
+        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         button.title = ns_title;
     }
 

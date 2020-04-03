@@ -1,4 +1,3 @@
-#include <cocoa/strings.hpp>
 #include <xaml/ui/filebox.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_filebox.hpp>
@@ -18,12 +17,12 @@ namespace xaml
             m_handle->handle.canSelectHiddenExtension = NO;
             m_handle->handle.treatsFilePackagesAsDirectories = YES;
             if (owner && owner->get_window()) m_handle->handle.parentWindow = owner->get_window()->window;
-            m_handle->handle.title = to_native(m_title);
-            m_handle->handle.nameFieldStringValue = to_native(m_filename);
+            m_handle->handle.title = [NSString stringWithUTF8String:m_title.c_str()];
+            m_handle->handle.nameFieldStringValue = [NSString stringWithUTF8String:m_filename.c_str()];
             NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
             for (auto& f : m_filters)
             {
-                [filters addObject:to_native(f.pattern)];
+                [filters addObject:[NSString stringWithUTF8String:f.pattern.c_str()]];
             }
             m_handle->handle.allowedFileTypes = filters;
             if (m_multiple) ((NSOpenPanel*)m_handle->handle).allowsMultipleSelection = YES;
@@ -35,12 +34,12 @@ namespace xaml
                     m_results.clear();
                     for (NSURL* url in [(NSOpenPanel*)m_handle->handle URLs])
                     {
-                        m_results.push_back(from_native(url.path));
+                        m_results.push_back([url.path UTF8String]);
                     }
                 }
                 else
                 {
-                    m_results = { from_native(m_handle->handle.URL.path) };
+                    m_results = { [m_handle->handle.URL.path UTF8String] };
                 }
                 return true;
             }

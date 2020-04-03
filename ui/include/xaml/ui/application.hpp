@@ -26,16 +26,16 @@ namespace xaml
         friend class window;
 
     protected:
-        XAML_UI_API application(int argc, uchar_t const* const* argv);
+        XAML_UI_API application(int argc, char_t const* const* argv);
 
     public:
         XAML_UI_API virtual ~application();
 
     private:
-        std::vector<ustring_t> m_cmd_lines{};
+        std::vector<string_t> m_cmd_lines{};
 
     public:
-        array_view<ustring_t> get_cmd_lines() const noexcept { return m_cmd_lines; }
+        array_view<string_t> get_cmd_lines() const noexcept { return m_cmd_lines; }
 
     private:
         std::shared_ptr<xaml::window> m_main_wnd{ nullptr };
@@ -65,9 +65,8 @@ namespace xaml
         XAML_UI_API int run();
         XAML_UI_API void quit(int value = 0);
 
+        XAML_UI_API static std::shared_ptr<application> init(int argc, char_t const* const* argv);
         XAML_UI_API static std::shared_ptr<application> init();
-        XAML_UI_API static std::shared_ptr<application> init(int argc, uchar_t const* const* argv);
-
         XAML_UI_API static std::shared_ptr<application> current();
 
         XAML_UI_API application_theme get_theme() const;

@@ -16,21 +16,21 @@
 #include <xaml/version.hpp>
 
 #ifdef UNICODE
-#ifndef umain
-#define umain wmain
-#endif // !umain
+#ifndef _tmain
+#define _tmain wmain
+#endif // !_tmain
 
-#ifndef ucout
-#define ucout wcout
-#endif // !ucout
+#ifndef _tcout
+#define _tcout wcout
+#endif // !_tcout
 #else
-#ifndef umain
-#define umain main
-#endif // !umain
+#ifndef _tmain
+#define _tmain main
+#endif // !_tmain
 
-#ifndef ucout
-#define ucout cout
-#endif // !ucout
+#ifndef _tcout
+#define _tcout cout
+#endif // !_tcout
 #endif // UNICODE
 
 using namespace std;
@@ -89,14 +89,14 @@ namespace xaml::xamlcpp
 
             ADD_ATTR(
                 make_shared<cmdline::option>()
-                    ->add_arg(UU('h'), UU("help"), "help", UU("Print help message"))
-                    ->add_arg(UU('f'), UU("fake"), "fake", UU("Generate deserialize code"))
-                    ->add_arg(UU('v'), UU("verbose"), "verbose", UU("Show detailed output"))
-                    ->add_arg(0, UU("no-logo"), "no_logo", UU("Cancellation to show copyright infomation"))
-                    ->add_arg(UU('i'), UU("input-file"), "input", UU("Input XAML file"))
+                    ->add_arg(U('h'), U("help"), "help", U("Print help message"))
+                    ->add_arg(U('f'), U("fake"), "fake", U("Generate deserialize code"))
+                    ->add_arg(U('v'), U("verbose"), "verbose", U("Show detailed output"))
+                    ->add_arg(0, U("no-logo"), "no_logo", U("Cancellation to show copyright infomation"))
+                    ->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"))
                     ->add_arg(0, {}, "input")
-                    ->add_arg(UU('o'), UU("output-file"), "output", UU("Output C++ file"))
-                    ->add_arg(UU('L'), UU("library-path"), "lib_path", UU("Search library path")));
+                    ->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"))
+                    ->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path")));
         }
         REGISTER_CLASS_END()
     };
@@ -133,7 +133,7 @@ optional<version> is_later(map<path, tuple<path, version>> const& modules, path 
 
 using namespace xaml::xamlcpp;
 
-int umain(int argc, uchar_t const* const* argv)
+int _tmain(int argc, char_t const* const* argv)
 {
     try
     {
@@ -147,15 +147,15 @@ int umain(int argc, uchar_t const* const* argv)
         path exe{ argv[0] };
         if (!opts->get_no_logo())
         {
-            ucout << exe.filename().string<uchar_t>() << UU(" ") XAML_VERSION << UU('\n')
-                   << UU("Copyright (c) 2019-2020 Berrysoft") << UU('\n')
+            _tcout << exe.filename().string<char_t>() << U(" ") XAML_VERSION << U('\n')
+                   << U("Copyright (c) 2019-2020 Berrysoft") << U('\n')
                    << endl;
         }
 
         if (opts->get_help() || argc <= 1)
         {
             auto popt = refl->get_attribute<cmdline::option>();
-            popt->print_help(ucout);
+            popt->print_help(_tcout);
             return 1;
         }
 
@@ -165,23 +165,23 @@ int umain(int argc, uchar_t const* const* argv)
         if (!inf.empty())
         {
             path ouf_path = opts->get_output();
-            if (ouf_path.empty()) ouf_path = inf.string<uchar_t>() + UU(".g.cpp");
+            if (ouf_path.empty()) ouf_path = inf.string<char_t>() + U(".g.cpp");
             map<path, tuple<path, version>> modules;
             vector<string_t> lib_dirs = opts->get_lib_paths();
             for (path dir : lib_dirs)
             {
-                if (verbose) ucout << UU("Searching ") << dir << UU("...") << endl;
+                if (verbose) _tcout << U("Searching ") << dir << U("...") << endl;
                 for (auto& en : directory_iterator{ dir })
                 {
                     if (en.is_regular_file())
                     {
                         auto& p = en.path();
-                        if (verbose) ucout << UU("Determining ") << p << UU("...") << endl;
+                        if (verbose) _tcout << U("Determining ") << p << U("...") << endl;
                         if (p.has_extension() && p.extension() == module_extension)
                         {
                             if (auto pver = is_later(modules, p))
                             {
-                                if (verbose) ucout << UU("Select ") << p.filename() << UU('(') << *pver << UU(") at ") << p << endl;
+                                if (verbose) _tcout << U("Select ") << p.filename() << U('(') << *pver << U(") at ") << p << endl;
                                 modules.emplace(p.filename(), make_tuple(p, *pver));
                             }
                         }
@@ -196,14 +196,14 @@ int umain(int argc, uchar_t const* const* argv)
             init_parser(ctx);
             if (verbose)
             {
-                ucout << UU("Registered types:") << endl;
+                _tcout << U("Registered types:") << endl;
                 for (auto& pair : ctx.get_types())
                 {
-                    auto ns = to_ustring_t(pair.first);
+                    auto ns = to_string_t(pair.first);
                     for (auto& p : pair.second)
                     {
-                        auto name = to_ustring_t(p.first);
-                        ucout << ns << UU("::") << name << endl;
+                        auto name = to_string_t(p.first);
+                        _tcout << ns << U("::") << name << endl;
                     }
                 }
             }
@@ -212,24 +212,24 @@ int umain(int argc, uchar_t const* const* argv)
             ofstream stream{ ouf_path };
             if (opts->get_fake())
             {
-                if (verbose) ucout << UU("Compiling fake to ") << ouf_path << UU("...") << endl;
+                if (verbose) _tcout << U("Compiling fake to ") << ouf_path << U("...") << endl;
                 c.compile_fake(stream, node, inf);
             }
             else
             {
-                if (verbose) ucout << UU("Compiling to ") << ouf_path << UU("...") << endl;
+                if (verbose) _tcout << U("Compiling to ") << ouf_path << U("...") << endl;
                 c.compile(stream, node, inf, headers);
             }
         }
         else
         {
-            ucout << UU("Input file must be specified") << endl;
+            _tcout << U("Input file must be specified") << endl;
             return 1;
         }
     }
     catch (exception const& e)
     {
-        ucout << to_ustring_t(e.what()) << endl;
+        _tcout << to_string_t(e.what()) << endl;
         return 1;
     }
     return 0;

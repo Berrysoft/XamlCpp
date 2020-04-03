@@ -1,6 +1,5 @@
 #include <cmath>
 #import <cocoa/XamlCanvasView.h>
-#include <cocoa/strings.hpp>
 #include <functional>
 #include <xaml/ui/controls/canvas.hpp>
 #include <xaml/ui/controls/native_canvas.hpp>
@@ -155,7 +154,7 @@ namespace xaml
 
     void drawing_context::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
     {
-        NSFontDescriptor* fontdes = [NSFontDescriptor fontDescriptorWithName:to_native(font.font_family)
+        NSFontDescriptor* fontdes = [NSFontDescriptor fontDescriptorWithName:[NSString stringWithUTF8String:font.font_family.c_str()]
                                                                         size:font.size];
         NSFontDescriptorSymbolicTraits traits = 0;
         if (font.italic) traits |= NSFontDescriptorTraitItalic;
@@ -169,7 +168,7 @@ namespace xaml
             NSFontAttributeName : nfont,
             NSForegroundColorAttributeName : get_NSColor(brush.fill)
         };
-        NSAttributedString* astr = [[NSAttributedString alloc] initWithString:to_native(str)
+        NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:str.data()]
                                                                    attributes:attrs];
         NSSize str_size = astr.size;
         NSPoint location = NSMakePoint(p.x, m_size.height - p.y - str_size.height);

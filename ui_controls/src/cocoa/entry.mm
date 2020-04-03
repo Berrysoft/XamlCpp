@@ -1,5 +1,4 @@
 #import <cocoa/XamlEntryDelegate.h>
-#include <cocoa/strings.hpp>
 #include <xaml/ui/controls/entry.hpp>
 #include <xaml/ui/native_control.hpp>
 
@@ -40,7 +39,7 @@ namespace xaml
     void entry::draw_text()
     {
         NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSString* ns_title = to_native(m_text);
+        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
         textField.stringValue = ns_title;
     }
 
@@ -69,6 +68,6 @@ namespace xaml
     void entry::__on_changed()
     {
         NSTextField* textField = (NSTextField*)get_handle()->handle;
-        set_text(from_native(textField.stringValue));
+        set_text([textField.stringValue UTF8String]);
     }
 }

@@ -5,6 +5,14 @@
 #include <string_view>
 #include <xaml/utility.hpp>
 
+#ifndef U
+#ifdef UNICODE
+#define U(x) L##x
+#else
+#define U(x) x
+#endif // UNICODE
+#endif // !U
+
 #ifndef CHAR_CONST
 #define CHAR_CONST(name, value)                         \
     template <typename TChar>                           \
@@ -29,68 +37,26 @@ namespace xaml
 {
 #ifdef UNICODE
     using char_t = wchar_t;
-    using uchar_t = wchar_t;
-
-#ifndef U
-#define U(x) L##x
-#endif // !U
-
-#ifndef UU
-#define UU(x) L##x
-#endif // !UU
 
 #ifndef to_string_t
 #define to_string_t to_wstring
 #endif // !to_string_t
-
-#ifndef to_ustring_t
-#define to_ustring_t to_wstring
-#endif // !to_ustring_t
-#elif defined(UTF16UNIX)
+#elif UTF16UNIX
     using char_t = char16_t;
-    using uchar_t = char;
-
-#ifndef U
-#define U(x) u##x
-#endif // !U
-
-#ifndef UU
-#define UU(x) x
-#endif // !UU
-
-#ifndef to_string_t
-#define to_string_t to_u16string
-#endif // !to_string_t
-
-#ifndef to_ustring_t
-#define to_ustring_t to_string
-#endif // !to_ustring_t
-#else
-    using char_t = char;
-    using uchar_t = char;
-
-#ifndef U
-#define U(x) x
-#endif // !U
-
-#ifndef UU
-#define UU(x) x
-#endif // !UU
 
 #ifndef to_string_t
 #define to_string_t to_string
 #endif // !to_string_t
+#else
+    using char_t = char;
 
-#ifndef to_ustring_t
-#define to_ustring_t to_string
-#endif // !to_ustring_t
+#ifndef to_string_t
+#define to_string_t to_string
+#endif // !to_string_t
 #endif // UNICODE
 
     using string_t = std::basic_string<char_t>;
     using string_view_t = std::basic_string_view<char_t>;
-
-    using ustring_t = std::basic_string<uchar_t>;
-    using ustring_view_t = std::basic_string_view<uchar_t>;
 
     XAML_GLOBAL_API std::string to_string(std::wstring_view str);
     XAML_GLOBAL_API std::string to_string(std::u16string_view str);

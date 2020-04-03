@@ -13,7 +13,7 @@ namespace xaml
 {
     static shared_ptr<application> s_current;
 
-    shared_ptr<application> application::init(int argc, uchar_t const* const* argv)
+    shared_ptr<application> application::init(int argc, char_t const* const* argv)
     {
         return s_current = shared_ptr<application>(new application(argc, argv));
     }

@@ -29,7 +29,7 @@ namespace xaml::test
         auto view = make_shared<webview>();
         auto argv = application::current()->get_cmd_lines();
         if (argv.size() > 1)
-            view->set_uri(to_string_t(argv[1]));
+            view->set_uri(argv[1]);
         else
             view->set_uri(U("https://www.bing.com/"));
         g->add_child(view);
