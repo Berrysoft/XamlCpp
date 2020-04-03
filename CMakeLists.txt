@@ -95,6 +95,11 @@ if(MSVC)
     list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
 endif()
 
+# Warnings
+if(WIN32)
+    list(APPEND XAML_BUILD_DEFINITIONS "_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING")
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 
 if(NOT ${BUILD_SHARED_LIBS})

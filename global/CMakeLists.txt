@@ -1,34 +1,27 @@
 project(XamlGlobal CXX)
 
 file(GLOB GLOBAL_HEADERS "include/xaml/*.hpp")
-file(GLOB GLOBAL_SOURCE "src/*.cpp")
 
-add_library(xaml_global ${GLOBAL_SOURCE})
+add_library(xaml_global INTERFACE)
 
 target_compile_definitions(xaml_global
-    PUBLIC
+    INTERFACE
         ${XAML_BUILD_DEFINITIONS}
         $<BUILD_INTERFACE:${XAML_BUILD_INTERNAL_DEFINITIONS}>
 )
 
-target_compile_options(xaml_global PUBLIC ${XAML_COMPILE_OPTIONS})
+target_compile_options(xaml_global INTERFACE ${XAML_COMPILE_OPTIONS})
 
 if(CMAKE_VERSION VERSION_LESS 3.14)
     target_link_libraries(xaml_global INTERFACE ${XAML_LINK_OPTIONS})
 else()
-    target_link_options(xaml_global PUBLIC ${XAML_LINK_OPTIONS})
-endif()
-
-if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_global PRIVATE "XAML_GLOBAL_API=__XAML_EXPORT")
+    target_link_options(xaml_global INTERFACE ${XAML_LINK_OPTIONS})
 endif()
 
 target_include_directories(xaml_global
-    PUBLIC 
+    INTERFACE 
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 install(FILES ${GLOBAL_HEADERS} DESTINATION include/xaml)

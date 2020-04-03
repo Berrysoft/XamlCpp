@@ -42,10 +42,6 @@
 #define __XAML_META_IMPORT __IMPORT_IMPL
 #endif // !__XAML_META_IMPORT
 
-#ifndef XAML_GLOBAL_API
-#define XAML_GLOBAL_API __XAML_IMPORT
-#endif // !XAML_GLOBAL_API
-
 #ifndef XAML_META_API
 #define XAML_META_API __XAML_IMPORT
 #endif // !XAML_META_API
