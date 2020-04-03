@@ -213,7 +213,6 @@ namespace rapidxml
             return m_parent;
         }
 
-        
         //! Gets root node.
         //! \return Pointer to document that contains this node, or 0 if there is no parent document.
         RAPIDXML_API xml_node* document() const;
