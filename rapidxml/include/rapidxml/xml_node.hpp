@@ -68,18 +68,18 @@ namespace rapidxml
         ///////////////////////////////////////////////////////////////////////////
         // Related nodes access
 
-        pmr::list<xml_node>& nodes() { return m_nodes; }
-        pmr::list<xml_node> const& nodes() const { return m_nodes; }
+        pmr::list<xml_node>& nodes() noexcept { return m_nodes; }
+        pmr::list<xml_node> const& nodes() const noexcept { return m_nodes; }
 
-        pmr::list<xml_attribute>& attributes() { return m_attributes; }
-        pmr::list<xml_attribute> const& attributes() const { return m_attributes; }
+        pmr::list<xml_attribute>& attributes() noexcept { return m_attributes; }
+        pmr::list<xml_attribute> const& attributes() const noexcept { return m_attributes; }
 
         ///////////////////////////////////////////////////////////////////////////
         // Node modification
 
         //! Sets type of node.
         //! \param type Type of node to set.
-        void type(node_type type)
+        void type(node_type type) noexcept
         {
             m_type = type;
         }

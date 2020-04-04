@@ -24,11 +24,7 @@ namespace rapidxml
     //! It is also possible to create a standalone memory_pool, and use it
     //! to allocate nodes, whose lifetime will not be tied to any document.
     //! <br><br>
-#ifdef __cpp_lib_memory_resource
-    class memory_pool : public std::pmr::memory_resource
-#else
-    class memory_pool : public std::experimental::pmr::memory_resource
-#endif // __cpp_lib_memory_resource
+    class memory_pool : public pmr::memory_resource
     {
     public:
         // Size of static memory block of memory_pool.
@@ -61,17 +57,7 @@ namespace rapidxml
 
         void do_deallocate(void* p, std::size_t bytes, std::size_t alignment) override {}
 
-#ifdef __cpp_lib_memory_resource
-        bool do_is_equal(const std::pmr::memory_resource& other) const noexcept override
-        {
-            return false;
-        }
-#else
-        bool do_is_equal(const std::experimental::pmr::memory_resource& other) const noexcept override
-        {
-            return false;
-        }
-#endif // __cpp_lib_memory_resource
+        bool do_is_equal(const pmr::memory_resource& other) const noexcept override { return false; }
 
     private:
         struct header

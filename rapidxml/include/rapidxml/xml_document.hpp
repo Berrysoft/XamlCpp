@@ -209,8 +209,8 @@ namespace rapidxml
 
         ~xml_document() { clear(); }
 
-        xml_node& node() { return m_root_node; }
-        xml_node const& node() const { return m_root_node; }
+        xml_node& node() noexcept { return m_root_node; }
+        xml_node const& node() const noexcept { return m_root_node; }
 
         //! Parses zero-terminated XML string according to given flags.
         //! Passed string will be modified by the parser, unless rapidxml_ns::parse_non_destructive flag is used.
