@@ -4,6 +4,7 @@
 #include <list>
 #include <rapidxml/utility.hpp>
 #include <string_view>
+#include <vector>
 #include <version>
 
 #ifdef __cpp_lib_memory_resource
@@ -22,6 +23,11 @@ namespace rapidxml
     namespace pmr
     {
         using namespace std::experimental::pmr;
+
+        template <class CharT, class Traits = std::char_traits<CharT>>
+        using basic_string = std::basic_string<CharT, Traits, polymorphic_allocator<CharT>>;
+
+        using string = basic_string<char>;
 
         template <typename T>
         using list = std::list<T, polymorphic_allocator<T>>;

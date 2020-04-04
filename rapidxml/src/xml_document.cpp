@@ -1,10 +1,13 @@
 #include <cassert>
 #include <cctype>
+#include <fstream>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
+#include <sstream>
 #include <vector>
 
 using namespace std;
+using std::filesystem::path;
 
 namespace rapidxml
 {
@@ -77,6 +80,19 @@ namespace rapidxml
             throw parse_error("No namespace definition found", nullptr);
         }
     } // namespace internal
+
+    void xml_document::load_file(path const& file, parse_flag flags)
+    {
+        ifstream stream{ file };
+        m_buffer.assign(istreambuf_iterator<char>(stream), istreambuf_iterator<char>{});
+        parse(m_buffer.data(), flags);
+    }
+
+    void xml_document::load_string(string_view str, parse_flag flags)
+    {
+        m_buffer.assign(str.begin(), str.end());
+        parse(m_buffer.data(), flags);
+    }
 
     ///////////////////////////////////////////////////////////////////////
     // Internal character utility functions

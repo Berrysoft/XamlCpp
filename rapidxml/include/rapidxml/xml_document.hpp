@@ -1,6 +1,7 @@
 #ifndef RAPID_XML_DOCUMENT_HPP
 #define RAPID_XML_DOCUMENT_HPP
 
+#include <filesystem>
 #include <optional>
 #include <rapidxml/xml_node.hpp>
 #include <vector>
@@ -198,6 +199,10 @@ namespace rapidxml
         memory_pool m_pool{};
 #endif // __cpp_lib_memory_resource
 
+        pmr::polymorphic_allocator<char> m_buffer_allocator{ &m_pool };
+
+        pmr::string m_buffer{ m_buffer_allocator };
+
         pmr::polymorphic_allocator<xml_node> m_node_allocator{ &m_pool };
         pmr::polymorphic_allocator<xml_attribute> m_attribute_allocator{ &m_pool };
 
@@ -212,6 +217,15 @@ namespace rapidxml
         xml_node& node() noexcept { return m_root_node; }
         xml_node const& node() const noexcept { return m_root_node; }
 
+        RAPIDXML_API void load_file(std::filesystem::path const& file, parse_flag flags = parse_flag::default_flag);
+
+        RAPIDXML_API void load_string(std::string_view str, parse_flag flags = parse_flag::default_flag);
+
+        //! Clears the document by deleting all nodes and clearing the memory pool.
+        //! All nodes owned by document pool are destroyed.
+        RAPIDXML_API void clear();
+
+    private:
         //! Parses zero-terminated XML string according to given flags.
         //! Passed string will be modified by the parser, unless rapidxml_ns::parse_non_destructive flag is used.
         //! The string must persist for the lifetime of the document.
@@ -223,13 +237,8 @@ namespace rapidxml
         //! Document can be parsed into multiple times.
         //! Each new call to parse removes previous nodes and attributes (if any), but does not clear memory pool.
         //! \param text XML data to parse; pointer is non-const to denote fact that this data may be modified by the parser.
-        RAPIDXML_API void parse(char* text, parse_flag flags = parse_flag::default_flag);
+        RAPIDXML_API void parse(char* text, parse_flag flags);
 
-        //! Clears the document by deleting all nodes and clearing the memory pool.
-        //! All nodes owned by document pool are destroyed.
-        RAPIDXML_API void clear();
-
-    private:
         // Parse XML declaration (<?xml...)
         RAPIDXML_API std::optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags);
 

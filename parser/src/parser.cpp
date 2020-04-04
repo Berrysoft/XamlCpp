@@ -79,24 +79,14 @@ namespace xaml
     struct parser_impl
     {
         meta_context* ctx{ nullptr };
-        string buffer;
         set<string> headers{};
         xml_document doc{};
 
         ~parser_impl() {}
 
-        void load_file(path const& p)
-        {
-            ifstream stream{ p };
-            buffer.assign(istreambuf_iterator<char>(stream), istreambuf_iterator<char>{});
-            doc.parse(buffer.data());
-        }
+        void load_file(path const& p) { doc.load_file(p); }
 
-        void load_string(string_view s)
-        {
-            buffer.assign(s);
-            doc.parse(buffer.data());
-        }
+        void load_string(string_view s) { doc.load_string(s); }
 
         markup_node parse_markup(string_view value);
         void parse_members(xaml_node& mc, xml_node& node);
