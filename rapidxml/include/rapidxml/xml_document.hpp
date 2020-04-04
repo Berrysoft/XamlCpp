@@ -49,7 +49,7 @@ namespace rapidxml
                     m_processor.m_namespace_prefixes.resize(m_stack_position);
                 }
 
-                RAPIDXML_API void process_element(xml_node& element);
+                void process_element(xml_node& element);
 
                 void set_default_namespace(pmr::list<xml_attribute>::iterator ns_attr)
                 {
@@ -61,9 +61,9 @@ namespace rapidxml
                     m_processor.m_namespace_prefixes.push_back(ns_attr);
                 }
 
-                RAPIDXML_API void set_element_default_namespace_uri(xml_node& element) const;
+                void set_element_default_namespace_uri(xml_node& element) const;
 
-                RAPIDXML_API void set_node_namespace_uri_by_prefix(xml_base& node) const;
+                void set_node_namespace_uri_by_prefix(xml_base& node) const;
 
             private:
                 xml_namespace_processor& m_processor;

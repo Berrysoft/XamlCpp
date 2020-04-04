@@ -5,7 +5,11 @@
 #ifdef _MSC_VER
 #define __EXPORT_IMPL __declspec(dllexport)
 #elif defined(__GNUC__)
+#ifdef __MINGW32__
+#define __EXPORT_IMPL __attribute__((dllexport))
+#else
 #define __EXPORT_IMPL __attribute__((visibility("default")))
+#endif // __MINGW__
 #else
 #define __EXPORT_IMPL
 #endif // !__EXPORT_IMPL
@@ -13,6 +17,8 @@
 #ifndef __IMPORT_IMPL
 #ifdef _MSC_VER
 #define __IMPORT_IMPL __declspec(dllimport)
+#elif defined(__GNUC__) && defined(__MINGW32__)
+#define __IMPORT_IMPL __attribute__((dllimport))
 #else
 #define __IMPORT_IMPL
 #endif

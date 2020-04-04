@@ -29,10 +29,10 @@ namespace xaml
     protected:
         native_handle_type m_handle{ OBJC_NIL };
 
-        filebox() {}
+        XAML_UI_API filebox();
 
     public:
-        virtual ~filebox() {}
+        XAML_UI_API virtual ~filebox();
 
         inline native_handle_type get_handle() const noexcept { return m_handle; }
 
@@ -59,8 +59,8 @@ namespace xaml
     class open_filebox : public filebox
     {
     public:
-        open_filebox() : filebox() {}
-        ~open_filebox() override {}
+        XAML_UI_API open_filebox();
+        XAML_UI_API ~open_filebox() override;
 
         XAML_UI_API bool show(std::shared_ptr<window> owner = nullptr) override;
     };
@@ -68,8 +68,8 @@ namespace xaml
     class save_filebox : public filebox
     {
     public:
-        save_filebox() : filebox() {}
-        ~save_filebox() override {}
+        XAML_UI_API save_filebox();
+        XAML_UI_API ~save_filebox() override;
 
         XAML_UI_API bool show(std::shared_ptr<window> owner = nullptr) override;
     };
