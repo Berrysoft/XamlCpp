@@ -92,11 +92,7 @@ if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if(MSVC)
-    if(MSVC_VERSION LESS 1926)
-        list(APPEND XAML_COMPILE_OPTIONS "/experimental:preprocessor")
-    else()
-        list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
-    endif()
+    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
     list(APPEND XAML_BUILD_DEFINITIONS "_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING")
 endif()
 
