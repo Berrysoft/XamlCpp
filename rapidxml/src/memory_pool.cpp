@@ -27,6 +27,13 @@ namespace rapidxml
 #define aligned_free(ptr) free(ptr)
 #endif // WIN32 || __MINGW32__
 
+    memory_pool::memory_pool() : memory_resource()
+    {
+        init();
+    }
+
+    memory_pool::~memory_pool() { release(); }
+
     void memory_pool::release()
     {
         while (m_begin != m_static_memory)

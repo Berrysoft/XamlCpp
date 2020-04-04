@@ -37,7 +37,7 @@ namespace rapidxml
 
     public:
         //! Constructs empty pool with default allocator functions.
-        memory_pool() : memory_resource() { init(); }
+        RAPIDXML_API memory_pool();
 
         memory_pool(memory_pool const&) = delete;
         memory_pool& operator=(memory_pool const&) = delete;
@@ -45,7 +45,7 @@ namespace rapidxml
         //! Destroys pool and frees all the memory.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
         //! Nodes allocated from the pool are no longer valid.
-        ~memory_pool() override { release(); }
+        RAPIDXML_API ~memory_pool() override;
 
         //! Clears the pool.
         //! This causes memory occupied by nodes allocated by the pool to be freed.
