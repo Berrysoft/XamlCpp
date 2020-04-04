@@ -15,7 +15,7 @@
       <radio_box margin="5, 0" group="b">Radio 5 in another group</radio_box>
     </stack_panel>
     <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
-    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click">🤣</button>
+    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click">&#x1f923;</button>
     <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
     <uniform_grid grid.column="1" grid.row="3" margin="5" valignment="top">
       <check_box margin="5">Check 1</check_box>
