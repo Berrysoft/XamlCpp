@@ -50,24 +50,30 @@ namespace xaml
     using string_t = std::basic_string<char_t>;
     using string_view_t = std::basic_string_view<char_t>;
 
-#if defined(WIN32) || defined(__MINGW32__)
-    using __codecvt_utf8_wchar = std::codecvt_utf8_utf16<wchar_t>;
-#else
-    using __codecvt_utf8_wchar = std::codecvt_utf8<wchar_t>;
-#endif // WIN32 || __MINGW32__
-
     inline std::string to_string(std::wstring_view str)
     {
-        std::wstring_convert<__codecvt_utf8_wchar, wchar_t> wconv;
-        return wconv.to_bytes(str.data(), str.data() + str.size());
+        if constexpr (sizeof(wchar_t) == sizeof(char16_t))
+        {
+            return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.to_bytes(str.data(), str.data() + str.size());
+        }
+        else
+        {
+            return std::wstring_convert<std::codecvt_utf8<wchar_t>>{}.to_bytes(str.data(), str.data() + str.size());
+        }
     }
 
     inline std::string to_string(std::string_view str) { return (std::string)str; }
 
     inline std::wstring to_wstring(std::string_view str)
     {
-        std::wstring_convert<__codecvt_utf8_wchar, wchar_t> wconv;
-        return wconv.from_bytes(str.data(), str.data() + str.size());
+        if constexpr (sizeof(wchar_t) == sizeof(char16_t))
+        {
+            return std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>{}.from_bytes(str.data(), str.data() + str.size());
+        }
+        else
+        {
+            return std::wstring_convert<std::codecvt_utf8<wchar_t>>{}.from_bytes(str.data(), str.data() + str.size());
+        }
     }
 
     inline std::wstring to_wstring(std::wstring_view str) { return (std::wstring)str; }
