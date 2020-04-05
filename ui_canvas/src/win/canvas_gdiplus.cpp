@@ -2,6 +2,7 @@
 #include <win/canvas_gdiplus.hpp>
 #include <windowsx.h>
 #include <xaml/ui/native_control.hpp>
+#include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
 #if __has_include(<numbers>)
@@ -238,7 +239,8 @@ namespace xaml
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
         Graphics g{ wnd };
-        check_status(g.Clear(Color::White));
+        Color background_color = XamlIsDarkModeEnabledForApp() ? Color::Black : Color::White;
+        check_status(g.Clear(background_color));
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;
         ctx.dpi = (double)dpi;

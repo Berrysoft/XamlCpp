@@ -7,6 +7,7 @@
 #include <xaml/ui/control.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
 using namespace std;
@@ -23,6 +24,7 @@ namespace xaml
             nullptr, GetModuleHandle(nullptr), nullptr));
         set_handle(h);
         SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle)), TRUE);
+        if (XamlIsDarkModeEnabledForApp()) XamlControlUseDarkMode(get_handle()->handle);
     }
 
     void control::__set_rect(rectangle const& region)

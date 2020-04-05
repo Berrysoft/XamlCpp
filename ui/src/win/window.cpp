@@ -6,6 +6,7 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/window.hpp>
 
@@ -14,8 +15,6 @@ using namespace std;
 namespace xaml
 {
     static unordered_map<HWND, weak_ptr<control>> window_map;
-
-    static wil::unique_hbrush white_brush{ CreateSolidBrush(RGB(255, 255, 255)) };
 
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
@@ -29,7 +28,7 @@ namespace xaml
             break;
         case WM_CTLCOLORSTATIC:
             if (!result)
-                result = (intptr_t)white_brush.get();
+                result = (intptr_t)(XamlIsDarkModeEnabledForApp() ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
             break;
         }
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);
@@ -156,6 +155,9 @@ namespace xaml
         {
             switch (msg.Msg)
             {
+            case WM_ACTIVATE:
+                if (XamlIsDarkModeEnabledForApp()) XamlWindowUseDarkMode(msg.hWnd);
+                break;
             case WM_SIZE:
             {
                 atomic_guard guard(m_resizing);

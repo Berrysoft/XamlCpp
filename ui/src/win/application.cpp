@@ -6,6 +6,7 @@
 #include <xaml/ui/application.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
+#include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/window.hpp>
 
@@ -33,7 +34,7 @@ namespace xaml
         cls.cbClsExtra = 0;
         cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
         cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        cls.hbrBackground = GetStockBrush(WHITE_BRUSH);
+        cls.hbrBackground = XamlIsDarkModeEnabledForApp() ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH);
         cls.lpszClassName = U("XamlWindow");
         cls.hInstance = GetModuleHandle(NULL);
         return RegisterClassEx(&cls);
@@ -44,8 +45,10 @@ namespace xaml
 
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
-        THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         XamlInitializeDpiFunc();
+        XamlInitializeDarkModeFunc();
+        XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
+        THROW_IF_WIN32_BOOL_FALSE(register_window_class());
         THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
         THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, 96));
     }
@@ -82,6 +85,6 @@ namespace xaml
 
     application_theme application::get_theme() const
     {
-        return application_theme::light;
+        return XamlIsDarkModeEnabledForApp() ? application_theme::dark : application_theme::light;
     }
 } // namespace xaml
