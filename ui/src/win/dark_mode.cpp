@@ -98,6 +98,18 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
     return pIsDarkModeAllowedForApp && pIsDarkModeAllowedForApp();
 }
 
+HRESULT WINAPI XamlSetWindowTheme(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList)
+{
+    if (pSetWindowTheme)
+    {
+        return pSetWindowTheme(hwnd, pszSubAppName, pszSubIdList);
+    }
+    else
+    {
+        return HRESULT_FROM_WIN32(ERROR_DLL_NOT_FOUND);
+    }
+}
+
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
     if (pDwmSetWindowAttribute)
@@ -116,12 +128,5 @@ HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 
 HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd)
 {
-    if (pSetWindowTheme)
-    {
-        return pSetWindowTheme(hWnd, L"DarkMode_Explorer", nullptr);
-    }
-    else
-    {
-        return HRESULT_FROM_WIN32(ERROR_DLL_NOT_FOUND);
-    }
+    return XamlSetWindowTheme(hWnd, L"DarkMode_Explorer", nullptr);
 }

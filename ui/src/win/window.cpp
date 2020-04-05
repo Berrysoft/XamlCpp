@@ -16,6 +16,8 @@ namespace xaml
 {
     static unordered_map<HWND, weak_ptr<control>> window_map;
 
+    static wil::unique_hbrush edit_normal_back{ CreateSolidBrush(RGB(33, 33, 33)) };
+
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
         window_message msg = { hWnd, Msg, wParam, lParam };
@@ -28,7 +30,28 @@ namespace xaml
             break;
         case WM_CTLCOLORSTATIC:
             if (!result)
-                result = (intptr_t)(XamlIsDarkModeEnabledForApp() ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+            {
+                bool dark = XamlIsDarkModeEnabledForApp();
+                HDC hDC = (HDC)wParam;
+                HWND hStatic = (HWND)lParam;
+                SetBkMode(hDC, TRANSPARENT);
+                if (dark) SetTextColor(hDC, RGB(255, 255, 255));
+                result = (intptr_t)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+            }
+            break;
+        case WM_CTLCOLOREDIT:
+            if (XamlIsDarkModeEnabledForApp())
+            {
+                HDC hDC = (HDC)wParam;
+                HWND hEdit = (HWND)lParam;
+                SetTextColor(hDC, RGB(255, 255, 255));
+                SetBkColor(hDC, RGB(0, 0, 0));
+                POINT p;
+                THROW_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
+                THROW_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
+                bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
+                result = (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
+            }
             break;
         }
         return result ? *result : DefWindowProc(msg.hWnd, msg.Msg, msg.wParam, msg.lParam);

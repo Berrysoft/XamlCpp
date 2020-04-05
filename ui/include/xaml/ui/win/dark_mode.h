@@ -27,6 +27,8 @@ extern "C"
 
     XAML_UI_API BOOL WINAPI XamlIsDarkModeAllowedForApp();
 
+    XAML_UI_API HRESULT WINAPI XamlSetWindowTheme(HWND hwnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
+
     XAML_UI_API HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd);
 
     XAML_UI_API HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd);
