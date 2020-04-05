@@ -4,8 +4,7 @@
 
 using namespace std;
 
-using pfRtlGetNtVersionNumbers = void(WINAPI*)(LPDWORD, LPDWORD, LPDWORD);
-static pfRtlGetNtVersionNumbers pRtlGetNtVersionNumbers;
+extern "C" void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
 using pfShouldUseDarkMode = BOOL(WINAPI*)();
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
@@ -29,20 +28,11 @@ static pfSetWindowTheme pSetWindowTheme;
 using pfDwmSetWindowAttribute = HRESULT(WINAPI*)(HWND, DWORD, LPCVOID, DWORD);
 static pfDwmSetWindowAttribute pDwmSetWindowAttribute;
 
-static wil::unique_hmodule ntdll = nullptr;
 static wil::unique_hmodule uxtheme = nullptr;
 static wil::unique_hmodule dwmapi = nullptr;
 
 void WINAPI XamlInitializeDarkModeFunc()
 {
-    if (!ntdll)
-    {
-        ntdll.reset(LoadLibraryEx(L"ntdll.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
-        if (ntdll)
-        {
-            pRtlGetNtVersionNumbers = (pfRtlGetNtVersionNumbers)GetProcAddress(ntdll.get(), "RtlGetNtVersionNumbers");
-        }
-    }
     if (!dwmapi)
     {
         dwmapi.reset(LoadLibraryEx(L"Dwmapi.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
@@ -56,17 +46,9 @@ void WINAPI XamlInitializeDarkModeFunc()
         uxtheme.reset(LoadLibraryEx(L"Uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
         if (uxtheme)
         {
-            DWORD build;
-            if (pRtlGetNtVersionNumbers)
-            {
-                DWORD major, minor;
-                pRtlGetNtVersionNumbers(&major, &minor, &build);
-                build &= ~0xF0000000;
-            }
-            else
-            {
-                build = 2600;
-            }
+            DWORD major, minor, build;
+            RtlGetNtVersionNumbers(&major, &minor, &build);
+            build &= ~0xF0000000;
             pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(138));
             pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(132));
             if (build < 18362)
