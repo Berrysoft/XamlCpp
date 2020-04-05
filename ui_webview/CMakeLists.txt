@@ -76,7 +76,7 @@ if(${BUILD_WINDOWS})
         target_include_directories(xaml_ui_webview PRIVATE ${CMAKE_BINARY_DIR}/cppwinrt/gen)
     endif()
 elseif(${BUILD_COCOA})
-    target_link_libraries(xaml_ui_webview PRIVATE "-framework WebKit")
+    target_link_libraries(xaml_ui_webview PUBLIC "-framework WebKit")
 elseif(${BUILD_GTK3})
     find_package(WEBKIT4 REQUIRED)
 
