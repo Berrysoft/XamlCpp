@@ -27,4 +27,6 @@ endif()
 install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)
 install(FILES ${META_HEADERS} DESTINATION include/xaml/meta)
 
-add_subdirectory(test)
+if(${BUILD_TESTS})
+    add_subdirectory(test)
+endif()

@@ -122,6 +122,7 @@ elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
 
+option(BUILD_TESTS "Build tests." ON)
 option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
