@@ -4,7 +4,8 @@ file(GLOB TEST_SOURCE "src/*.cpp")
 add_executable(xaml_test ${TEST_SOURCE})
 add_executable(xaml_test_fake ${TEST_SOURCE})
 
-set(XAMLCPP_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp)
+set(XAMLCPP_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlcpp CACHE STRING "Path of xamlcpp executable")
+set(XAMLCPP_SEARCH_PATHS "${CMAKE_RUNTIME_OUTPUT_DIRECTORY};${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" CACHE STRING "Path of xamlcpp search paths")
 
 include(XamlViewHelper)
 
@@ -14,14 +15,14 @@ target_add_view(xaml_test
     DESTINATION ${XAMLC_OUTPUT_DIR}
     VIEWS ${PROJECT_SOURCE_DIR}/view/test.xaml
     DEPENDS xaml_ui_meta xaml_ui_controls_meta xaml_ui_canvas_meta xamlcpp
-    SEARCH_PATHS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    SEARCH_PATHS ${XAMLCPP_SEARCH_PATHS}
 )
 
 target_add_view(xaml_test_fake FAKE
     DESTINATION ${XAMLC_OUTPUT_DIR}
     VIEWS ${PROJECT_SOURCE_DIR}/view/test.xaml
     DEPENDS xaml_ui_meta xaml_ui_controls_meta xaml_ui_canvas_meta xamlcpp
-    SEARCH_PATHS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
+    SEARCH_PATHS ${XAMLCPP_SEARCH_PATHS}
 )
 
 if(WIN32)

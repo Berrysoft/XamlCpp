@@ -1,3 +1,4 @@
+# target_add_view(target [FAKE] DESTINATION <path> VIEWS <view1> [view2 ...] [DEPENDS <depend1> [depend2 ...]] [SEARCH_PATHS <path1> [path2 ...]])
 function(target_add_view target)
     set(TARGET_ADD_VIEW_OPTIONS FAKE)
     set(TARGET_ADD_VIEW_ONE_VALUE_ARGS DESTINATION)
