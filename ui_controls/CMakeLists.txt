@@ -19,7 +19,6 @@ target_include_directories(xaml_ui_controls
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
-        ${XAML_PRIVATE_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
@@ -27,7 +26,12 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_ui_controls PRIVATE "XAML_UI_CONTROLS_API=__XAML_EXPORT")
 endif()
 
-target_link_libraries(xaml_ui_controls xaml_ui)
+target_link_libraries(xaml_ui_controls PUBLIC xaml_ui)
+if(${BUILD_WINDOWS})
+    target_link_libraries(xaml_ui_controls PRIVATE wil)
+elseif(${BUILD_GTK3})
+    target_link_libraries(xaml_ui_controls PRIVATE gtk3)
+endif()
 
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)
 

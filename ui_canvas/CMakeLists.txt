@@ -20,7 +20,6 @@ target_include_directories(xaml_ui_canvas
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     PRIVATE
-        ${XAML_PRIVATE_INCLUDE_DIRS}
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
@@ -28,12 +27,12 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_ui_canvas PRIVATE "XAML_UI_CANVAS_API=__XAML_EXPORT" "GDIPVER=0x0110")
 endif()
 
-target_link_libraries(xaml_ui_canvas xaml_ui)
+target_link_libraries(xaml_ui_canvas PUBLIC xaml_ui)
 if(${BUILD_WINDOWS})
     if(${BUILD_DIRECT2D})
         target_compile_definitions(xaml_ui_canvas PUBLIC "XAML_UI_CANVAS_DIRECT2D")
     endif()
-    target_link_libraries(xaml_ui_canvas gdiplus)
+    target_link_libraries(xaml_ui_canvas PUBLIC gdiplus PRIVATE wil)
 
     # Use GDI+ 1.1
     set(USE_GDIP11_OPTIONS "/manifestdependency:type='Win32' name='Microsoft.Windows.GdiPlus' version='1.1.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
@@ -42,7 +41,10 @@ if(${BUILD_WINDOWS})
     else()
         target_link_options(xaml_ui_canvas PUBLIC ${USE_GDIP11_OPTIONS})
     endif()
+elseif(${BUILD_GTK3})
+    target_link_libraries(xaml_ui_canvas PRIVATE gtk3)
 endif()
+
 target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
