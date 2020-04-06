@@ -38,7 +38,7 @@ namespace xaml
             [prog startAnimation:nil];
         else
             [prog stopAnimation:nil];
-	}
+    }
 
     void progress::__size_to_fit()
     {
