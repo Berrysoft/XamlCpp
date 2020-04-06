@@ -23,13 +23,6 @@ namespace xaml
 #endif // XAML_UI_WINDOWS
 
         native_handle_type handle{ OBJC_NIL };
-
-#ifdef XAML_UI_COCOA
-        using native_item_type = OBJC_OBJECT(NSMenuItem);
-
-        native_item_type default_item{ OBJC_NIL };
-        native_handle_type default_item_menu{ OBJC_NIL };
-#endif // XAML_UI_COCOA
     };
 } // namespace xaml
 

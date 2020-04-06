@@ -23,6 +23,13 @@ namespace xaml
         using native_window_type = OBJC_OBJECT(NSWindow);
 
         native_window_type window;
+
+        using native_menu_type = OBJC_OBJECT(NSMenu);
+        using native_menu_item_type = OBJC_OBJECT(NSMenuItem);
+
+        native_menu_type menu_bar{ OBJC_NIL };
+        native_menu_item_type default_menu_item{ OBJC_NIL };
+        native_menu_type default_menu_item_menu{ OBJC_NIL };
 #endif // XAML_UI_COCOA
     };
 

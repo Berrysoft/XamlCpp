@@ -30,6 +30,11 @@
     }
     return close;
 }
+
+- (void)onQuitAction
+{
+    xaml::application::current()->quit(0);
+}
 @end
 
 using namespace std;
@@ -40,6 +45,22 @@ namespace xaml
     {
         NSWindow* window = get_window()->window;
         [window close];
+    }
+
+    static NSMenuItem* create_menu_item(NSString* text, id delegate, SEL action, NSEventModifierFlags modifier = 0, NSString* key = @"")
+    {
+        NSMenuItem* mitem = [NSMenuItem new];
+        mitem.target = delegate;
+        mitem.action = action;
+        mitem.title = text;
+        mitem.keyEquivalent = key;
+        mitem.keyEquivalentModifierMask = modifier;
+        return mitem;
+    }
+
+    static void add_system_menu_items(NSMenu* menu, XamlWindowDelegate* delegate)
+    {
+        [menu addItem:create_menu_item(@"Quit", delegate, @selector(onQuitAction), NSEventModifierFlagCommand, @"q")];
     }
 
     void window::__draw(rectangle const& region)
@@ -56,6 +77,12 @@ namespace xaml
             auto h = make_shared<native_control>();
             auto w = make_shared<native_window>();
             w->window = window;
+            w->menu_bar = [NSMenu new];
+            w->default_menu_item = [NSMenuItem new];
+            [w->menu_bar addItem:w->default_menu_item];
+            w->default_menu_item_menu = [NSMenu new];
+            w->default_menu_item.submenu = w->default_menu_item_menu;
+            add_system_menu_items(w->default_menu_item_menu, delegate);
             h->handle = window.contentView;
             set_window(w);
             set_handle(h);
