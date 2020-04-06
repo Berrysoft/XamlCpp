@@ -17,6 +17,7 @@ namespace xaml
             set_handle(h);
             draw_visible();
             draw_progress();
+            draw_indeterminate();
         }
         __set_rect(region);
     }
@@ -28,6 +29,16 @@ namespace xaml
         prog.maxValue = (double)m_maximum;
         prog.doubleValue = (double)m_value;
     }
+
+    void progress::draw_indeterminate()
+    {
+        NSProgressIndicator* prog = (NSProgressIndicator*)get_handle()->handle;
+        prog.indeterminate = m_is_indeterminate;
+        if (m_is_indeterminate)
+            [prog startAnimation:nil];
+        else
+            [prog stopAnimation:nil];
+	}
 
     void progress::__size_to_fit()
     {
