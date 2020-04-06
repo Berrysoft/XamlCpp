@@ -2,6 +2,7 @@
 #define XAML_UI_CONTROLS_PROGRESS_HPP
 
 #include <xaml/ui/control.hpp>
+#include <xaml/ui/timer.hpp>
 
 namespace xaml
 {
@@ -12,6 +13,8 @@ namespace xaml
     {
         static constexpr guid value{ 0x505267df, 0x2287, 0x4c64, { 0xab, 0xf2, 0xb2, 0xea, 0xcf, 0xde, 0x8a, 0xe1 } };
     };
+
+    struct native_progress;
 
     class progress : public control
     {
@@ -26,6 +29,14 @@ namespace xaml
     public:
         XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // !XAML_UI_GTK3
+
+#ifdef XAML_UI_GTK3
+    private:
+        timer m_pulse_timer{};
+
+    protected:
+        XAML_UI_CONTROLS_API void on_pulse(timer&);
+#endif // XAML_UI_GTK3
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
