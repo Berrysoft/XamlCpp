@@ -2,6 +2,9 @@
 #include <xaml/ui/controls/radio_box.hpp>
 #include <xaml/ui/native_control.hpp>
 
+#include <CommCtrl.h>
+#include <Uxtheme.h>
+
 using namespace std;
 
 namespace xaml
@@ -22,6 +25,7 @@ namespace xaml
                     break;
                 }
             }
+            break;
         }
         }
         return nullopt;
@@ -29,14 +33,26 @@ namespace xaml
 
     void radio_box::__draw(rectangle const& region)
     {
-        bool new_draw = !get_handle();
-        button::__draw(region);
-        if (new_draw)
+        if (auto sparent = get_parent().lock())
         {
-            LONG_PTR style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
-            style |= BS_RADIOBUTTON;
-            SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
-            draw_checked();
+            if (!get_handle())
+            {
+                window_create_params params = {};
+                params.class_name = WC_BUTTON;
+                params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON;
+                params.x = 0;
+                params.y = 0;
+                params.width = 50;
+                params.height = 14;
+                params.parent = sparent.get();
+                this->__create(params);
+                draw_visible();
+                draw_text();
+                draw_default();
+                draw_checked();
+                SetParent(get_handle()->handle, sparent->get_handle()->handle);
+            }
+            __set_rect(region);
         }
     }
 

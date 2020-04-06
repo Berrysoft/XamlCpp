@@ -30,7 +30,7 @@ endif()
 
 target_link_libraries(xaml_ui PUBLIC xaml_meta)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui PUBLIC Comctl32 ntdll PRIVATE wil)
+    target_link_libraries(xaml_ui PUBLIC Comctl32 ntdll UxTheme PRIVATE wil)
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui PUBLIC "-framework Cocoa")
 elseif(${BUILD_GTK3})

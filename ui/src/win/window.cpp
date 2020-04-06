@@ -10,6 +10,10 @@
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/window.hpp>
 
+#include <CommCtrl.h>
+#include <Uxtheme.h>
+#include <vsstyle.h>
+
 using namespace std;
 
 namespace xaml
@@ -17,6 +21,8 @@ namespace xaml
     static unordered_map<HWND, weak_ptr<control>> window_map;
 
     static wil::unique_hbrush edit_normal_back{ CreateSolidBrush(RGB(33, 33, 33)) };
+    constexpr COLORREF black_color{ RGB(0, 0, 0) };
+    constexpr COLORREF white_color{ RGB(255, 255, 255) };
 
     LRESULT CALLBACK __wnd_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
     {
@@ -35,17 +41,21 @@ namespace xaml
                 HDC hDC = (HDC)wParam;
                 HWND hStatic = (HWND)lParam;
                 SetBkMode(hDC, TRANSPARENT);
-                if (dark) SetTextColor(hDC, RGB(255, 255, 255));
+                if (dark)
+                {
+                    SetTextColor(hDC, white_color);
+                    SetBkColor(hDC, black_color);
+                }
                 result = (intptr_t)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
             }
             break;
         case WM_CTLCOLOREDIT:
-            if (XamlIsDarkModeEnabledForApp())
+            if (!result && XamlIsDarkModeEnabledForApp())
             {
                 HDC hDC = (HDC)wParam;
                 HWND hEdit = (HWND)lParam;
-                SetTextColor(hDC, RGB(255, 255, 255));
-                SetBkColor(hDC, RGB(0, 0, 0));
+                SetTextColor(hDC, white_color);
+                SetBkColor(hDC, black_color);
                 POINT p;
                 THROW_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
                 THROW_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
