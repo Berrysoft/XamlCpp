@@ -16,7 +16,7 @@ namespace xaml
             {
                 window_create_params params = {};
                 params.class_name = PROGRESS_CLASS;
-                params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD;
+                params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | PBS_SMOOTH;
                 params.x = 0;
                 params.y = 0;
                 params.width = 100;
@@ -24,7 +24,7 @@ namespace xaml
                 params.parent = sparent.get();
                 this->__create(params);
                 draw_visible();
-                draw_progress();
+                draw_indeterminate();
                 SetParent(get_handle()->handle, sparent->get_handle()->handle);
             }
             __set_rect(region);
@@ -35,6 +35,18 @@ namespace xaml
     {
         SendMessage(get_handle()->handle, PBM_SETRANGE32, m_minimum, m_maximum);
         SendMessage(get_handle()->handle, PBM_SETPOS, m_value, 0);
+    }
+
+    void progress::draw_indeterminate()
+    {
+        auto style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
+        if (m_is_indeterminate)
+            style |= PBS_MARQUEE;
+        else
+            style &= ~PBS_MARQUEE;
+        SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
+        SendMessage(get_handle()->handle, PBM_SETMARQUEE, m_is_indeterminate, 0);
+        draw_progress();
     }
 
     void progress::__size_to_fit()

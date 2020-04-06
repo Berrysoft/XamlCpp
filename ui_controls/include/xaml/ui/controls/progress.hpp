@@ -32,6 +32,7 @@ namespace xaml
 
     protected:
         XAML_UI_CONTROLS_API virtual void draw_progress();
+        XAML_UI_CONTROLS_API virtual void draw_indeterminate();
 
     public:
         EVENT(value_changed, std::shared_ptr<progress>, std::size_t)
@@ -39,6 +40,9 @@ namespace xaml
 
         PROP_CONSTEXPR(minimum, std::size_t)
         PROP_CONSTEXPR(maximum, std::size_t)
+
+        EVENT(is_indeterminate_changed, std::shared_ptr<progress>, bool)
+        PROP_CONSTEXPR_EVENT(is_indeterminate, bool)
 
     public:
 #define ADD_PROGRESS_MEMBERS() \

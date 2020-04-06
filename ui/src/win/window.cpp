@@ -189,7 +189,8 @@ namespace xaml
             switch (msg.Msg)
             {
             case WM_ACTIVATE:
-                if (XamlIsDarkModeEnabledForApp()) XamlWindowUseDarkMode(msg.hWnd);
+                if (XamlIsDarkModeEnabledForApp())
+                    XamlWindowUseDarkMode(msg.hWnd);
                 break;
             case WM_SIZE:
             {

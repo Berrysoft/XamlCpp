@@ -53,12 +53,23 @@ namespace xaml::test
         // Set g as child of the window.
         set_child(g);
         {
+            auto prog = make_shared<progress>();
+            prog->set_margin({ 10, 10, 10, 10 });
+            prog->set_valignment(valignment_t::center);
+            prog->set_minimum(0);
+            prog->set_maximum(100);
+            prog->set_value(30);
+            prog->set_is_indeterminate(true);
+            g->add_child(prog);
+            grid::set_column(*prog, 2);
+            grid::set_row(*prog, 2);
             // Construct a button.
             auto btn = make_shared<button>();
             // Set margin and text.
             btn->set_margin({ 10, 10, 10, 10 });
             btn->set_text(U("Hello"));
             // Add a handler for button.
+            btn->add_click([prog](shared_ptr<button>) { prog->set_is_indeterminate(false); });
             btn->add_click(mem_fn_bind(&test_window::on_button_click, this));
             // Set the button to be placed in the center vertically.
             btn->set_valignment(valignment_t::center);
@@ -122,17 +133,6 @@ namespace xaml::test
             g->add_child(cv);
             grid::set_column(*cv, 0);
             grid::set_row(*cv, 3);
-        }
-        {
-            auto prog = make_shared<progress>();
-            prog->set_margin({ 10, 10, 10, 10 });
-            prog->set_valignment(valignment_t::center);
-            prog->set_minimum(0);
-            prog->set_maximum(100);
-            prog->set_value(30);
-            g->add_child(prog);
-            grid::set_column(*prog, 2);
-            grid::set_row(*prog, 2);
         }
         {
             auto box = make_shared<combo_box>();
