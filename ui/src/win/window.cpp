@@ -192,6 +192,21 @@ namespace xaml
                 if (XamlIsDarkModeEnabledForApp())
                     XamlWindowUseDarkMode(msg.hWnd);
                 break;
+            case WM_ERASEBKGND:
+            {
+                bool dark = XamlIsDarkModeEnabledForApp();
+                HDC hDC = (HDC)msg.wParam;
+                HBRUSH brush = dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH);
+                HPEN pen = dark ? GetStockPen(BLACK_PEN) : GetStockPen(WHITE_PEN);
+                HBRUSH orib = SelectBrush(hDC, brush);
+                HPEN orip = SelectPen(hDC, pen);
+                RECT r;
+                THROW_IF_WIN32_BOOL_FALSE(GetClientRect(msg.hWnd, &r));
+                THROW_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left, r.top, r.right, r.bottom));
+                SelectBrush(hDC, orib);
+                SelectPen(hDC, orip);
+                return 1;
+            }
             case WM_SIZE:
             {
                 atomic_guard guard(m_resizing);

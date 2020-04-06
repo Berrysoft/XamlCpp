@@ -34,7 +34,7 @@ namespace xaml
         cls.cbClsExtra = 0;
         cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
         cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        cls.hbrBackground = XamlIsDarkModeEnabledForApp() ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH);
+        cls.hbrBackground = nullptr;
         cls.lpszClassName = U("XamlWindow");
         cls.hInstance = GetModuleHandle(NULL);
         return RegisterClassEx(&cls);
