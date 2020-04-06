@@ -153,6 +153,7 @@ namespace xaml
             get_menu_bar()->set_parent_window(shared_from_this<window>());
             get_menu_bar()->__draw({});
         }
+        [NSApp setMainMenu:get_window()->menu_bar];
     }
 
     void window::show()
