@@ -3,6 +3,7 @@
 #include <xaml/ui/win/dark_mode.h>
 
 #include <Uxtheme.h>
+#include <dwmapi.h>
 
 using namespace std;
 
@@ -24,22 +25,10 @@ static pfIsDarkModeAllowedForApp pIsDarkModeAllowedForApp;
 using pfFlushMenuThemes = void(WINAPI*)();
 static pfFlushMenuThemes pFlushMenuThemes;
 
-using pfDwmSetWindowAttribute = HRESULT(WINAPI*)(HWND, DWORD, LPCVOID, DWORD);
-static pfDwmSetWindowAttribute pDwmSetWindowAttribute;
-
 static wil::unique_hmodule uxtheme = nullptr;
-static wil::unique_hmodule dwmapi = nullptr;
 
 void WINAPI XamlInitializeDarkModeFunc()
 {
-    if (!dwmapi)
-    {
-        dwmapi.reset(LoadLibraryEx(L"Dwmapi.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
-        if (dwmapi)
-        {
-            pDwmSetWindowAttribute = (pfDwmSetWindowAttribute)GetProcAddress(dwmapi.get(), "DwmSetWindowAttribute");
-        }
-    }
     if (!uxtheme)
     {
         uxtheme.reset(LoadLibraryEx(L"Uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
@@ -98,18 +87,11 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
 
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
-    if (pDwmSetWindowAttribute)
-    {
-        BOOL set_dark_mode = TRUE;
-        RETURN_IF_FAILED(pDwmSetWindowAttribute(hWnd, 0x14, &set_dark_mode, sizeof(BOOL)));
-        SendMessage(hWnd, WM_THEMECHANGED, 0, 0);
-        if (pFlushMenuThemes) pFlushMenuThemes();
-        return S_OK;
-    }
-    else
-    {
-        return HRESULT_FROM_WIN32(ERROR_DLL_NOT_FOUND);
-    }
+    BOOL set_dark_mode = TRUE;
+    RETURN_IF_FAILED(DwmSetWindowAttribute(hWnd, 0x14, &set_dark_mode, sizeof(BOOL)));
+    SendMessage(hWnd, WM_THEMECHANGED, 0, 0);
+    if (pFlushMenuThemes) pFlushMenuThemes();
+    return S_OK;
 }
 
 HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd)
