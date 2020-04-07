@@ -2,9 +2,9 @@
 
 #ifndef __cpp_lib_memory_resource
 
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
 #define _CRTDBG_MAP_ALLOC
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
 
 #include <algorithm>
 #include <cstdlib>
@@ -17,14 +17,14 @@ using namespace std;
 
 namespace rapidxml
 {
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
 #define aligned_alloc(alignment, size) _aligned_malloc((size), (alignment))
 
 #define aligned_free(ptr) _aligned_free(ptr)
 #else
 
 #define aligned_free(ptr) free(ptr)
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
 
     memory_pool::memory_pool() : memory_resource()
     {

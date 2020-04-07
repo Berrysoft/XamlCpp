@@ -3,9 +3,9 @@
 #include <gtk3/resources.hpp>
 #include <xaml/ui/application.hpp>
 
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
 #include <Windows.h>
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
 
 using namespace std;
 

@@ -9,13 +9,13 @@
 
 namespace xaml
 {
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
     inline std::filesystem::path module_extension{ ".dll" };
-#elif defined(__APPLE__)
+#elif defined(XAML_APPLE)
     inline std::filesystem::path module_extension{ ".dylib" };
 #else
     inline std::filesystem::path module_extension{ ".so" };
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
 
     class module
     {

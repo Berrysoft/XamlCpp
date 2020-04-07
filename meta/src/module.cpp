@@ -3,21 +3,21 @@
 #include <xaml/meta/module.hpp>
 #include <xaml/strings.hpp>
 
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
 #include <Windows.h>
 #include <system_error>
 #else
 #include <dlfcn.h>
-#ifdef __APPLE__
+#ifdef XAML_APPLE
 #include <mach-o/dyld.h>
-#endif // __APPLE__
-#endif // WIN32 || __MINGW32__
+#endif // XAML_APPLE
+#endif // XAML_WIN32
 
-#if defined(WIN32) && !defined(__MINGW32__)
+#if defined(XAML_WIN32) && !defined(XAML_MINGW)
 static constexpr bool has_prefix = false;
 #else
 static constexpr bool has_prefix = true;
-#endif // WIN32 && !__MINGW32__
+#endif // XAML_WIN32 && !XAML_MINGW
 static inline std::filesystem::path module_prefix{ "lib" };
 
 using namespace std;
@@ -51,11 +51,11 @@ namespace xaml
 
     static path program_location()
     {
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
         wstring path(1024, L'\0');
         if (GetModuleFileNameW(nullptr, path.data(), (DWORD)path.size()) == 0) return {};
         return path;
-#elif defined(__APPLE__)
+#elif defined(XAML_APPLE)
         string path(1024, '\0');
         uint32_t size = (uint32_t)path.size();
         if (_NSGetExecutablePath(path.data(), &size) == 0)
@@ -66,25 +66,25 @@ namespace xaml
         return path;
 #else
         return read_symlink("/proc/self/exe");
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
     }
 
     static vector<path> get_module_search_path()
     {
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
         wstring buffer(32767, L'\0');
         DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
         buffer.resize(count);
         vector<path> result = split(buffer, ';');
 #else
-#ifdef __APPLE__
+#ifdef XAML_APPLE
         constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
 #else
         constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
-#endif // __APPLE__
+#endif // XAML_APPLE
         char* ldp = getenv(ld_library_path.data());
         vector<path> result = split(ldp ? ldp : path_string_view_t{}, ':');
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
         result.push_back(".");
         result.push_back("../lib");
         auto location = program_location().parent_path();
@@ -127,7 +127,7 @@ namespace xaml
         return name;
     }
 
-#if defined(WIN32) || defined(__MINGW32__)
+#ifdef XAML_WIN32
     void module::open(path const& name)
     {
         close();
@@ -179,5 +179,5 @@ namespace xaml
             set_handle(nullptr);
         }
     }
-#endif // WIN32 || __MINGW32__
+#endif // XAML_WIN32
 } // namespace xaml

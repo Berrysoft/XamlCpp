@@ -52,6 +52,18 @@ set(XAML_BUILD_INTERNAL_DEFINITIONS "")
 set(XAML_COMPILE_OPTIONS "")
 set(XAML_LINK_OPTIONS "")
 
+if(WIN32)
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_WIN32")
+    if(MINGW)
+        list(APPEND XAML_BUILD_DEFINITIONS "XAML_MINGW")
+    endif()
+elseif(UNIX)
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_UNIX")
+    if(APPLE)
+        list(APPEND XAML_BUILD_DEFINITIONS "XAML_APPLE")
+    endif()
+endif()
+
 # Universal definitions, independent of compilers.
 if(${BUILD_WINDOWS})
     list(APPEND XAML_BUILD_DEFINITIONS "UNICODE" "_UNICODE" "XAML_UI_WINDOWS")
