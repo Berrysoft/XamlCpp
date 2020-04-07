@@ -45,6 +45,9 @@ namespace rapidxml
     //! This class derives from <code>std::exception</code> class.
     class parse_error : public std::exception
     {
+    private:
+        const char* m_what;
+        const char* m_where;
 
     public:
         //! Constructs parse error
@@ -67,10 +70,6 @@ namespace rapidxml
         {
             return m_where;
         }
-
-    private:
-        const char* m_what;
-        const char* m_where;
     };
 
     //! Enumeration listing all node types produced by the parser.

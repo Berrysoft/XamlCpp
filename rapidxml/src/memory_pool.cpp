@@ -7,7 +7,6 @@
 #endif // WIN32 || __MINGW32__
 
 #include <algorithm>
-#include <cassert>
 #include <cstdlib>
 #include <memory>
 #include <rapidxml/memory_pool.hpp>
@@ -88,7 +87,7 @@ namespace rapidxml
 
             // Calculate aligned pointer again using new pool
             result = align(alignment, 0, m_ptr, m_size);
-            assert(result);
+            if (!result) throw bad_alloc{};
         }
 
         // Update pool and return aligned pointer

@@ -1,5 +1,3 @@
-#include <cassert>
-#include <cctype>
 #include <fstream>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
@@ -11,75 +9,114 @@ using std::filesystem::path;
 
 namespace rapidxml
 {
-    namespace internal
+    class xml_namespace_processor
     {
-        void xml_namespace_processor::scope::process_element(xml_node& element)
-        {
-            optional<pmr::list<xml_attribute>::iterator> pfirst_prefixed_attribute{};
-            for (auto attr = element.attributes().begin(); attr != element.attributes().end(); ++attr)
-            {
-                switch (attr->prefix().size())
-                {
-                case 0:
-                    if (attr->name() == xmlns_namespace::prefix)
-                    {
-                        attr->namespace_uri(xmlns_namespace::uri);
-                        set_default_namespace(attr);
-                    }
-                    continue;
-                case xml_namespace::prefix.size():
-                    if (attr->prefix() == xml_namespace::prefix)
-                    {
-                        attr->namespace_uri(xml_namespace::uri);
-                        continue;
-                    }
-                    break;
-                case xmlns_namespace::prefix.size():
-                    if (attr->prefix() == xmlns_namespace::prefix)
-                    {
-                        attr->namespace_uri(xmlns_namespace::uri);
-                        add_namespace_prefix(attr);
-                        continue;
-                    }
-                    break;
-                } // switch
-                if (!pfirst_prefixed_attribute)
-                    pfirst_prefixed_attribute = attr;
-            } // for
-            if (element.prefix().empty())
-                set_element_default_namespace_uri(element);
-            else
-                set_node_namespace_uri_by_prefix(element);
+    private:
+        using xmlns_attributes_t = vector<pmr::list<xml_attribute>::iterator>;
+        xmlns_attributes_t m_namespace_prefixes;
 
-            if (pfirst_prefixed_attribute)
+    public:
+        class scope
+        {
+        private:
+            xml_namespace_processor& m_processor;
+            size_t const m_stack_position;
+            optional<pmr::list<xml_attribute>::iterator> m_default_namespace;
+
+        public:
+            scope(xml_namespace_processor& processor)
+                : m_processor(processor), m_stack_position(processor.m_namespace_prefixes.size()), m_default_namespace()
             {
-                auto& first_prefixed_attribute = *pfirst_prefixed_attribute;
-                for (; first_prefixed_attribute != element.attributes().end(); ++first_prefixed_attribute)
-                    if (first_prefixed_attribute->prefix().size() > 0 && first_prefixed_attribute->namespace_uri().empty())
-                        set_node_namespace_uri_by_prefix(*first_prefixed_attribute);
             }
-        }
 
-        void xml_namespace_processor::scope::set_element_default_namespace_uri(xml_node& element) const
-        {
-            if (m_default_namespace)
-                element.namespace_uri((*m_default_namespace)->value());
-        }
+            scope(scope const& parent_scope)
+                : m_processor(parent_scope.m_processor), m_stack_position(m_processor.m_namespace_prefixes.size()), m_default_namespace(parent_scope.m_default_namespace)
+            {
+            }
 
-        void xml_namespace_processor::scope::set_node_namespace_uri_by_prefix(xml_base& node) const
-        {
-            string_view prefix = node.prefix();
-            for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
-                     it = m_processor.m_namespace_prefixes.rbegin();
-                 it != m_processor.m_namespace_prefixes.rend(); ++it)
-                if ((*it)->local_name() == prefix)
+            ~scope()
+            {
+                m_processor.m_namespace_prefixes.resize(m_stack_position);
+            }
+
+            void process_element(xml_node& element)
+            {
+                optional<pmr::list<xml_attribute>::iterator> pfirst_prefixed_attribute{};
+                for (auto attr = element.attributes().begin(); attr != element.attributes().end(); ++attr)
                 {
-                    node.namespace_uri((*it)->value());
-                    return;
+                    switch (attr->prefix().size())
+                    {
+                    case 0:
+                        if (attr->name() == xmlns_namespace::prefix)
+                        {
+                            attr->namespace_uri(xmlns_namespace::uri);
+                            set_default_namespace(attr);
+                        }
+                        continue;
+                    case xml_namespace::prefix.size():
+                        if (attr->prefix() == xml_namespace::prefix)
+                        {
+                            attr->namespace_uri(xml_namespace::uri);
+                            continue;
+                        }
+                        break;
+                    case xmlns_namespace::prefix.size():
+                        if (attr->prefix() == xmlns_namespace::prefix)
+                        {
+                            attr->namespace_uri(xmlns_namespace::uri);
+                            add_namespace_prefix(attr);
+                            continue;
+                        }
+                        break;
+                    } // switch
+                    if (!pfirst_prefixed_attribute)
+                        pfirst_prefixed_attribute = attr;
+                } // for
+                if (element.prefix().empty())
+                    set_element_default_namespace_uri(element);
+                else
+                    set_node_namespace_uri_by_prefix(element);
+
+                if (pfirst_prefixed_attribute)
+                {
+                    auto& first_prefixed_attribute = *pfirst_prefixed_attribute;
+                    for (; first_prefixed_attribute != element.attributes().end(); ++first_prefixed_attribute)
+                        if (first_prefixed_attribute->prefix().size() > 0 && first_prefixed_attribute->namespace_uri().empty())
+                            set_node_namespace_uri_by_prefix(*first_prefixed_attribute);
                 }
-            throw parse_error("No namespace definition found", nullptr);
-        }
-    } // namespace internal
+            }
+
+            void set_default_namespace(pmr::list<xml_attribute>::iterator ns_attr)
+            {
+                m_default_namespace = ns_attr;
+            }
+
+            void add_namespace_prefix(pmr::list<xml_attribute>::iterator ns_attr)
+            {
+                m_processor.m_namespace_prefixes.push_back(ns_attr);
+            }
+
+            void set_element_default_namespace_uri(xml_node& element) const
+            {
+                if (m_default_namespace)
+                    element.namespace_uri((*m_default_namespace)->value());
+            }
+
+            void set_node_namespace_uri_by_prefix(xml_base& node) const
+            {
+                string_view prefix = node.prefix();
+                for (typename xml_namespace_processor::xmlns_attributes_t::const_reverse_iterator
+                         it = m_processor.m_namespace_prefixes.rbegin();
+                     it != m_processor.m_namespace_prefixes.rend(); ++it)
+                    if ((*it)->local_name() == prefix)
+                    {
+                        node.namespace_uri((*it)->value());
+                        return;
+                    }
+                throw parse_error("No namespace definition found", nullptr);
+            }
+        };
+    };
 
     void xml_document::load_file(path const& file, parse_flag flags)
     {
@@ -396,47 +433,71 @@ namespace rapidxml
         }
     }
 
+    // Parse XML declaration (<?xml...)
+    static std::optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse XML comment (<!--...)
+    static std::optional<xml_node> parse_comment(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse DOCTYPE
+    static std::optional<xml_node> parse_doctype(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse PI
+    static std::optional<xml_node> parse_pi(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse and append data
+    // Return character that ends data.
+    // This is necessary because this character might have been overwritten by a terminating 0
+    static char parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse CDATA
+    static std::optional<xml_node> parse_cdata(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse element node
+    static std::optional<xml_node> parse_element(char*& text, typename xml_namespace_processor::scope namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Determine node type, and parse it
+    static std::optional<xml_node> parse_node(char*& text, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse contents of the node - children, data etc.
+    static void parse_node_contents(char*& text, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
+    // Parse XML attributes of the node
+    static void parse_node_attributes(char*& text, xml_node& node, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+
     void xml_document::parse(char* text, parse_flag flags)
     {
-        assert(text);
-
-        // Remove current contents
-        clear();
-
-        internal::xml_namespace_processor namespace_processor;
-        // Creating topmost namespace scope that actually won't be used
-        typename internal::xml_namespace_processor::scope const namespace_scope(namespace_processor);
-
-        // Parse BOM, if any
-        parse_bom(text);
-
-        // Parse children
-        while (1)
+        if (text)
         {
-            // Skip whitespace before node
-            skip<whitespace_pred>(text);
-            if (!*text)
-                break;
+            xml_namespace_processor namespace_processor;
+            // Creating topmost namespace scope that actually won't be used
+            typename xml_namespace_processor::scope const namespace_scope(namespace_processor);
 
-            // Parse and append new child
-            if (*text == '<')
+            // Parse BOM, if any
+            parse_bom(text);
+
+            // Parse children
+            while (1)
             {
-                ++text; // Skip '<'
-                if (auto node = parse_node(text, namespace_scope, flags))
-                    m_root_node.nodes().emplace_back(move(*node));
+                // Skip whitespace before node
+                skip<whitespace_pred>(text);
+                if (!*text)
+                    break;
+
+                // Parse and append new child
+                if (*text == '<')
+                {
+                    ++text; // Skip '<'
+                    if (auto node = parse_node(text, namespace_scope, flags, m_node_allocator, m_attribute_allocator))
+                        m_root_node.nodes().emplace_back(move(*node));
+                }
+                else
+                    throw parse_error("expected <", text);
             }
-            else
-                throw parse_error("expected <", text);
         }
     }
 
-    void xml_document::clear()
-    {
-        node().nodes().clear();
-        node().attributes().clear();
-    }
-
-    optional<xml_node> xml_document::parse_xml_declaration(char*& text, parse_flag flags)
+    optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // If parsing of declaration is disabled
         if (!(flags & parse_flag::declaration_node))
@@ -453,13 +514,13 @@ namespace rapidxml
         }
 
         // Create declaration
-        xml_node declaration{ node_type::declaration, m_node_allocator, m_attribute_allocator };
+        xml_node declaration{ node_type::declaration, node_allocator, attr_allocator };
 
         // Skip whitespace before attributes or ?>
         skip<whitespace_pred>(text);
 
         // Parse declaration attributes
-        parse_node_attributes(text, declaration, flags);
+        parse_node_attributes(text, declaration, flags, node_allocator, attr_allocator);
 
         // Skip ?>
         if (text[0] != '?' || text[1] != '>')
@@ -469,7 +530,7 @@ namespace rapidxml
         return make_optional(move(declaration));
     }
 
-    optional<xml_node> xml_document::parse_comment(char*& text, parse_flag flags)
+    optional<xml_node> parse_comment(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // If parsing of comments is disabled
         if (!(flags & parse_flag::comment_nodes))
@@ -497,14 +558,14 @@ namespace rapidxml
         }
 
         // Create comment node
-        xml_node comment{ node_type::comment, m_node_allocator, m_attribute_allocator };
+        xml_node comment{ node_type::comment, node_allocator, attr_allocator };
         comment.value(string_view(value, text - value));
 
         text += 3; // Skip '-->'
         return make_optional(move(comment));
     }
 
-    optional<xml_node> xml_document::parse_doctype(char*& text, parse_flag flags)
+    optional<xml_node> parse_doctype(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // Remember value start
         char* value = text;
@@ -554,7 +615,7 @@ namespace rapidxml
         if (flags & parse_flag::doctype_node)
         {
             // Create a new doctype node
-            xml_node doctype{ node_type::doctype, m_node_allocator, m_attribute_allocator };
+            xml_node doctype{ node_type::doctype, node_allocator, attr_allocator };
             doctype.value(string_view(value, text - value));
 
             text += 1; // skip '>'
@@ -567,13 +628,13 @@ namespace rapidxml
         }
     }
 
-    optional<xml_node> xml_document::parse_pi(char*& text, parse_flag flags)
+    optional<xml_node> parse_pi(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // If creation of PI nodes is enabled
         if (flags & parse_flag::pi_nodes)
         {
             // Create pi node
-            xml_node pi{ node_type::pi, m_node_allocator, m_attribute_allocator };
+            xml_node pi{ node_type::pi, node_allocator, attr_allocator };
 
             // Extract PI target name
             char* name = text;
@@ -616,7 +677,7 @@ namespace rapidxml
         }
     }
 
-    char xml_document::parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags)
+    char parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // Backup to contents start if whitespace trimming is disabled
         if (!(flags & parse_flag::trim_whitespace))
@@ -650,7 +711,7 @@ namespace rapidxml
         // Create new data node
         if (!(flags & parse_flag::no_data_nodes))
         {
-            xml_node data{ node_type::data, m_node_allocator, m_attribute_allocator };
+            xml_node data{ node_type::data, node_allocator, attr_allocator };
             data.value(string_view(value, end - value));
             node.nodes().emplace_back(move(data));
         }
@@ -664,7 +725,7 @@ namespace rapidxml
         return *text;
     }
 
-    optional<xml_node> xml_document::parse_cdata(char*& text, parse_flag flags)
+    optional<xml_node> parse_cdata(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // If CDATA is disabled
         if (flags & parse_flag::no_data_nodes)
@@ -690,17 +751,17 @@ namespace rapidxml
         }
 
         // Create new cdata node
-        xml_node cdata{ node_type::cdata, m_node_allocator, m_attribute_allocator };
+        xml_node cdata{ node_type::cdata, node_allocator, attr_allocator };
         cdata.value(string_view(value, text - value));
 
         text += 3; // Skip ]]>
         return make_optional(move(cdata));
     }
 
-    optional<xml_node> xml_document::parse_element(char*& text, typename internal::xml_namespace_processor::scope namespace_scope, parse_flag flags)
+    optional<xml_node> parse_element(char*& text, typename xml_namespace_processor::scope namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // Create element node
-        xml_node element{ node_type::element, m_node_allocator, m_attribute_allocator };
+        xml_node element{ node_type::element, node_allocator, attr_allocator };
 
         // Extract element name
         char* name = text;
@@ -726,7 +787,7 @@ namespace rapidxml
         skip<whitespace_pred>(text);
 
         // Parse attributes, if any
-        parse_node_attributes(text, element, flags);
+        parse_node_attributes(text, element, flags, node_allocator, attr_allocator);
 
         // Setting attributes and element own namespace_uri, adding declared
         // namespace prefixes and probably setting default namespace
@@ -736,7 +797,7 @@ namespace rapidxml
         if (*text == '>')
         {
             ++text;
-            parse_node_contents(text, element, namespace_scope, flags);
+            parse_node_contents(text, element, namespace_scope, flags, node_allocator, attr_allocator);
         }
         else if (*text == '/')
         {
@@ -752,7 +813,7 @@ namespace rapidxml
         return make_optional(move(element));
     }
 
-    optional<xml_node> xml_document::parse_node(char*& text, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
+    optional<xml_node> parse_node(char*& text, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // Parse proper node type
         switch (text[0])
@@ -761,7 +822,7 @@ namespace rapidxml
         // <...
         default:
             // Parse and append element node
-            return parse_element(text, namespace_scope, flags);
+            return parse_element(text, namespace_scope, flags, node_allocator, attr_allocator);
 
         // <?...
         case '?':
@@ -773,12 +834,12 @@ namespace rapidxml
             {
                 // '<?xml ' - xml declaration
                 text += 4; // Skip 'xml '
-                return parse_xml_declaration(text, flags);
+                return parse_xml_declaration(text, flags, node_allocator, attr_allocator);
             }
             else
             {
                 // Parse PI
-                return parse_pi(text, flags);
+                return parse_pi(text, flags, node_allocator, attr_allocator);
             }
 
         // <!...
@@ -794,7 +855,7 @@ namespace rapidxml
                 {
                     // '<!--' - xml comment
                     text += 3; // Skip '!--'
-                    return parse_comment(text, flags);
+                    return parse_comment(text, flags, node_allocator, attr_allocator);
                 }
                 break;
 
@@ -805,7 +866,7 @@ namespace rapidxml
                 {
                     // '<![CDATA[' - cdata
                     text += 8; // Skip '![CDATA['
-                    return parse_cdata(text, flags);
+                    return parse_cdata(text, flags, node_allocator, attr_allocator);
                 }
                 break;
 
@@ -817,7 +878,7 @@ namespace rapidxml
                 {
                     // '<!DOCTYPE ' - doctype
                     text += 9; // skip '!DOCTYPE '
-                    return parse_doctype(text, flags);
+                    return parse_doctype(text, flags, node_allocator, attr_allocator);
                 }
 
             } // switch
@@ -835,7 +896,7 @@ namespace rapidxml
         }
     }
 
-    void xml_document::parse_node_contents(char*& text, xml_node& node, typename internal::xml_namespace_processor::scope const& namespace_scope, parse_flag flags)
+    void parse_node_contents(char*& text, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // For all children and text
         while (1)
@@ -885,7 +946,7 @@ namespace rapidxml
                 {
                     // charild node
                     ++text; // Skip '<'
-                    if (auto child = parse_node(text, namespace_scope, flags))
+                    if (auto child = parse_node(text, namespace_scope, flags, node_allocator, attr_allocator))
                         node.nodes().emplace_back(move(*child));
                 }
                 break;
@@ -896,13 +957,13 @@ namespace rapidxml
 
             // Data node
             default:
-                next_char = parse_and_append_data(node, text, contents_start, flags);
+                next_char = parse_and_append_data(node, text, contents_start, flags, node_allocator, attr_allocator);
                 goto after_data_node; // Bypass regular processing after data nodes
             }
         }
     }
 
-    void xml_document::parse_node_attributes(char*& text, xml_node& node, parse_flag flags)
+    void parse_node_attributes(char*& text, xml_node& node, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
     {
         // For all attributes
         while (attribute_ncname_pred::test(*text))
