@@ -98,26 +98,33 @@ namespace xaml
         return to_native<SizeF>(s * dpi / 96.0);
     }
 
+#define CHECK_SIZE(r) \
+    if ((r).width < 1 || (r).height < 1) return
+
     void drawing_context_gdiplus::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
     {
+        CHECK_SIZE(region);
         auto p = get_Pen(pen, dpi);
         check_status(handle->DrawArc(&p, get_RectF(region, dpi), (REAL)(start_angle / pi * 180), (REAL)((end_angle - start_angle) / pi * 180)));
     }
 
     void drawing_context_gdiplus::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
+        CHECK_SIZE(region);
         auto b = get_Brush(brush);
         check_status(handle->FillPie(&b, get_RectF(region, dpi), (REAL)(start_angle / pi * 180), (REAL)((end_angle - start_angle) / pi * 180)));
     }
 
     void drawing_context_gdiplus::draw_ellipse(drawing_pen const& pen, rectangle const& region)
     {
+        CHECK_SIZE(region);
         auto p = get_Pen(pen, dpi);
         check_status(handle->DrawEllipse(&p, get_RectF(region, dpi)));
     }
 
     void drawing_context_gdiplus::fill_ellipse(drawing_brush const& brush, rectangle const& region)
     {
+        CHECK_SIZE(region);
         auto b = get_Brush(brush);
         check_status(handle->FillEllipse(&b, get_RectF(region, dpi)));
     }
@@ -130,12 +137,14 @@ namespace xaml
 
     void drawing_context_gdiplus::draw_rect(drawing_pen const& pen, rectangle const& rect)
     {
+        CHECK_SIZE(rect);
         auto p = get_Pen(pen, dpi);
         check_status(handle->DrawRectangle(&p, get_RectF(rect, dpi)));
     }
 
     void drawing_context_gdiplus::fill_rect(drawing_brush const& brush, rectangle const& rect)
     {
+        CHECK_SIZE(rect);
         auto b = get_Brush(brush);
         check_status(handle->FillRectangle(&b, get_RectF(rect, dpi)));
     }
@@ -166,6 +175,8 @@ namespace xaml
 
     void drawing_context_gdiplus::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
     {
+        CHECK_SIZE(rect);
+        CHECK_SIZE(round);
         auto p = get_Pen(pen, dpi);
         GraphicsPath path{};
         rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
@@ -174,6 +185,8 @@ namespace xaml
 
     void drawing_context_gdiplus::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
     {
+        CHECK_SIZE(rect);
+        CHECK_SIZE(round);
         auto b = get_Brush(brush);
         GraphicsPath path{};
         rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
@@ -197,6 +210,7 @@ namespace xaml
     {
         auto b = get_Brush(brush);
         auto f = get_Font(font, dpi);
+        if (f.GetSize() <= 0) return;
         StringFormat fmt{};
         auto a = get_Align(font.halign);
         check_status(fmt.SetAlignment(a));

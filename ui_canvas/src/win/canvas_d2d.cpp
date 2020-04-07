@@ -125,6 +125,7 @@ namespace xaml
     void drawing_context_d2d::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
     {
         CHECK_SIZE(rect);
+        CHECK_SIZE(round);
         auto r = to_native<D2D1_RECT_F>(rect);
         auto s = to_native<D2D1_SIZE_F>(round);
         auto b = get_Brush(target.get(), pen.stroke);
@@ -134,6 +135,7 @@ namespace xaml
     void drawing_context_d2d::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
     {
         CHECK_SIZE(rect);
+        CHECK_SIZE(round);
         auto r = to_native<D2D1_RECT_F>(rect);
         auto s = to_native<D2D1_SIZE_F>(round);
         auto b = get_Brush(target.get(), brush.fill);
