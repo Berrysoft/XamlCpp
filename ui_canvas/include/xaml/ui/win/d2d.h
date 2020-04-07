@@ -5,19 +5,17 @@
 #include <dwrite.h>
 #include <xaml/utility.hpp>
 
+EXTERN_C_START
+
+XAML_UI_CANVAS_API void WINAPI XamlInitializeD2DFunc();
+
+XAML_UI_CANVAS_API HRESULT WINAPI XamlD2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, CONST D2D1_FACTORY_OPTIONS* pFactoryOptions, void** ppIFactory);
+
+XAML_UI_CANVAS_API HRESULT WINAPI XamlDWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, REFIID iid, IUnknown** factory);
+
+EXTERN_C_END
+
 #ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
-    XAML_UI_CANVAS_API void WINAPI XamlInitializeD2DFunc();
-
-    XAML_UI_CANVAS_API HRESULT WINAPI XamlD2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, CONST D2D1_FACTORY_OPTIONS* pFactoryOptions, void** ppIFactory);
-
-    XAML_UI_CANVAS_API HRESULT WINAPI XamlDWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, REFIID iid, IUnknown** factory);
-
-#ifdef __cplusplus
-}
 
 inline HRESULT XamlD2D1CreateFactory(D2D1_FACTORY_TYPE factoryType, REFIID riid, void** factory) noexcept
 {

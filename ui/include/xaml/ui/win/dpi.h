@@ -4,25 +4,20 @@
 #include <Windows.h>
 #include <xaml/utility.hpp>
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
+EXTERN_C_START
 
-    XAML_UI_API void WINAPI XamlInitializeDpiFunc();
+XAML_UI_API void WINAPI XamlInitializeDpiFunc();
 
-    XAML_UI_API BOOL WINAPI XamlSetProcessBestDpiAwareness();
+XAML_UI_API BOOL WINAPI XamlSetProcessBestDpiAwareness();
 
-    XAML_UI_API BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd);
+XAML_UI_API BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd);
 
-    XAML_UI_API BOOL WINAPI XamlSystemDefaultFontForDpi(LPLOGFONT lfFont, UINT dpi);
+XAML_UI_API BOOL WINAPI XamlSystemDefaultFontForDpi(LPLOGFONT lfFont, UINT dpi);
 
-    XAML_UI_API int WINAPI XamlGetSystemMetricsForDpi(int nIndex, UINT dpi);
+XAML_UI_API int WINAPI XamlGetSystemMetricsForDpi(int nIndex, UINT dpi);
 
-    XAML_UI_API UINT WINAPI XamlGetDpiForWindow(HWND hWnd);
+XAML_UI_API UINT WINAPI XamlGetDpiForWindow(HWND hWnd);
 
-#ifdef __cplusplus
-}
-#endif // __cplusplus
+EXTERN_C_END
 
 #endif // !XAML_UI_NATIVE_PINVOKE_HPP

@@ -7,7 +7,7 @@
 
 using namespace std;
 
-extern "C" void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
+EXTERN_C void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
 using pfShouldUseDarkMode = BOOL(WINAPI*)();
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
