@@ -51,18 +51,25 @@ namespace xaml
         return make_tuple(radius, centerp, startp, endp);
     }
 
-    void drawing_context_d2d::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
+    static wil::com_ptr<ID2D1PathGeometry> get_arc_geo(wil::com_ptr<ID2D1Factory> const& d2d, rectangle const& region, double start_angle, double end_angle, bool close)
     {
-        CHECK_SIZE(region);
         wil::com_ptr<ID2D1PathGeometry> geo;
         THROW_IF_FAILED(d2d->CreatePathGeometry(&geo));
         wil::com_ptr<ID2D1GeometrySink> sink;
         THROW_IF_FAILED(geo->Open(&sink));
         auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
         sink->BeginFigure(to_native<D2D1_POINT_2F>(startp), D2D1_FIGURE_BEGIN_HOLLOW);
+        if (close) sink->AddLine(to_native<D2D1_POINT_2F>(startp));
         sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
-        sink->EndFigure(D2D1_FIGURE_END_OPEN);
+        sink->EndFigure(close ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
         THROW_IF_FAILED(sink->Close());
+        return geo;
+    }
+
+    void drawing_context_d2d::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
+    {
+        CHECK_SIZE(region);
+        wil::com_ptr<ID2D1PathGeometry> geo = get_arc_geo(d2d, region, start_angle, end_angle, false);
         auto b = get_Brush(target.get(), pen.stroke);
         target->DrawGeometry(geo.get(), b.get(), (FLOAT)pen.width);
     }
@@ -70,16 +77,7 @@ namespace xaml
     void drawing_context_d2d::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
     {
         CHECK_SIZE(region);
-        wil::com_ptr<ID2D1PathGeometry> geo;
-        THROW_IF_FAILED(d2d->CreatePathGeometry(&geo));
-        wil::com_ptr<ID2D1GeometrySink> sink;
-        THROW_IF_FAILED(geo->Open(&sink));
-        auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
-        sink->BeginFigure(to_native<D2D1_POINT_2F>(centerp), D2D1_FIGURE_BEGIN_FILLED);
-        sink->AddLine(to_native<D2D1_POINT_2F>(startp));
-        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
-        sink->EndFigure(D2D1_FIGURE_END_CLOSED);
-        THROW_IF_FAILED(sink->Close());
+        wil::com_ptr<ID2D1PathGeometry> geo = get_arc_geo(d2d, region, start_angle, end_angle, true);
         auto b = get_Brush(target.get(), brush.fill);
         target->FillGeometry(geo.get(), b.get());
     }
