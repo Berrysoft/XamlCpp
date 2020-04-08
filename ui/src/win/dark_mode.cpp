@@ -27,6 +27,13 @@ static pfFlushMenuThemes pFlushMenuThemes;
 
 static wil::unique_hmodule uxtheme = nullptr;
 
+static DWORD get_build_version()
+{
+    DWORD build;
+    RtlGetNtVersionNumbers(nullptr, nullptr, &build);
+    return build & ~0xF0000000;
+}
+
 void WINAPI XamlInitializeDarkModeFunc()
 {
     if (!uxtheme)
@@ -34,9 +41,7 @@ void WINAPI XamlInitializeDarkModeFunc()
         uxtheme.reset(LoadLibraryEx(L"Uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
         if (uxtheme)
         {
-            DWORD major, minor, build;
-            RtlGetNtVersionNumbers(&major, &minor, &build);
-            build &= ~0xF0000000;
+            DWORD build = get_build_version();
             pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(138));
             pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(132));
             if (build < 18362)
@@ -87,9 +92,7 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
 
 BOOL WINAPI XamlIsDarkModeEnabledForApp()
 {
-    DWORD major, minor, build;
-    RtlGetNtVersionNumbers(&major, &minor, &build);
-    build &= ~0xF0000000;
+    DWORD build = get_build_version();
     return (build < 18362 ? XamlShouldAppUseDarkMode() : XamlShouldSystemUseDarkMode()) && XamlIsDarkModeAllowedForApp();
 }
 
