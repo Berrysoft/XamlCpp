@@ -9,7 +9,7 @@
 #define __EXPORT_IMPL __attribute__((dllexport))
 #else
 #define __EXPORT_IMPL __attribute__((visibility("default")))
-#endif // __MINGW__
+#endif // __MINGW32__
 #else
 #define __EXPORT_IMPL
 #endif // !__EXPORT_IMPL

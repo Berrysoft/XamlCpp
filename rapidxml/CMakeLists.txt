@@ -1,4 +1,4 @@
-project(RapidXmlNs CXX)
+project(RapidXmlNs VERSION 1.13 LANGUAGES CXX)
 
 file(GLOB RAPIDXML_SOURCE "src/*.cpp")
 add_library(xaml_rapidxml ${RAPIDXML_SOURCE})
