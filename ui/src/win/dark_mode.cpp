@@ -85,6 +85,14 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
     return pIsDarkModeAllowedForApp && pIsDarkModeAllowedForApp();
 }
 
+BOOL WINAPI XamlIsDarkModeEnabledForApp()
+{
+    DWORD major, minor, build;
+    RtlGetNtVersionNumbers(&major, &minor, &build);
+    build &= ~0xF0000000;
+    return (build < 18362 ? XamlShouldAppUseDarkMode() : XamlShouldSystemUseDarkMode()) && XamlIsDarkModeAllowedForApp();
+}
+
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
     BOOL set_dark_mode = TRUE;

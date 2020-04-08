@@ -24,14 +24,11 @@ XAML_UI_API XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRE
 
 XAML_UI_API BOOL WINAPI XamlIsDarkModeAllowedForApp();
 
+XAML_UI_API BOOL WINAPI XamlIsDarkModeEnabledForApp();
+
 XAML_UI_API HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd);
 
 XAML_UI_API HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd);
-
-inline BOOL XamlIsDarkModeEnabledForApp()
-{
-    return XamlShouldAppUseDarkMode() && XamlIsDarkModeAllowedForApp();
-}
 
 EXTERN_C_END
 
