@@ -1,34 +1,31 @@
 #include <Windows.h>
-#include <wil/resource.h>
 #include <xaml/ui/win/d2d.h>
 
-using namespace std;
+typedef HRESULT(WINAPI* pfD2D1CreateFactory)(D2D1_FACTORY_TYPE, REFIID, CONST D2D1_FACTORY_OPTIONS*, void**);
+static pfD2D1CreateFactory pD2D1CreateFactory = NULL;
 
-using pfD2D1CreateFactory = HRESULT(WINAPI*)(D2D1_FACTORY_TYPE, REFIID, CONST D2D1_FACTORY_OPTIONS*, void**);
-static pfD2D1CreateFactory pD2D1CreateFactory = nullptr;
+typedef HRESULT(WINAPI* pfDWriteCreateFactory)(DWRITE_FACTORY_TYPE, REFIID, IUnknown**);
+static pfDWriteCreateFactory pDWriteCreateFactory = NULL;
 
-using pfDWriteCreateFactory = HRESULT(WINAPI*)(DWRITE_FACTORY_TYPE, REFIID, IUnknown**);
-static pfDWriteCreateFactory pDWriteCreateFactory = nullptr;
-
-static wil::unique_hmodule d2d1 = nullptr;
-static wil::unique_hmodule dwrite = nullptr;
+static HMODULE d2d1 = NULL;
+static HMODULE dwrite = NULL;
 
 void WINAPI XamlInitializeD2DFunc()
 {
     if (!d2d1)
     {
-        d2d1.reset(LoadLibraryEx(L"d2d1.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
+        d2d1 = LoadLibraryEx(L"d2d1.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (d2d1)
         {
-            pD2D1CreateFactory = (pfD2D1CreateFactory)GetProcAddress(d2d1.get(), "D2D1CreateFactory");
+            pD2D1CreateFactory = (pfD2D1CreateFactory)GetProcAddress(d2d1, "D2D1CreateFactory");
         }
     }
     if (!dwrite)
     {
-        dwrite.reset(LoadLibraryEx(L"DWrite.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
+        dwrite = LoadLibraryEx(L"DWrite.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (dwrite)
         {
-            pDWriteCreateFactory = (pfDWriteCreateFactory)GetProcAddress(dwrite.get(), "DWriteCreateFactory");
+            pDWriteCreateFactory = (pfDWriteCreateFactory)GetProcAddress(dwrite, "DWriteCreateFactory");
         }
     }
 }

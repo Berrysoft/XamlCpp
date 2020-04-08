@@ -6,7 +6,7 @@ file(GLOB UI_COCOA_HEADERS "include/xaml/ui/cocoa/*.h")
 file(GLOB UI_GTK3_HEADERS "include/xaml/ui/gtk3/*.h")
 
 if(${BUILD_WINDOWS})
-    file(GLOB UI_SOURCE "src/win/*.cpp")
+    file(GLOB UI_SOURCE "src/win/*.c" "src/win/*.cpp")
 elseif(${BUILD_COCOA})
     file(GLOB UI_SOURCE "src/cocoa/*.m" "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})

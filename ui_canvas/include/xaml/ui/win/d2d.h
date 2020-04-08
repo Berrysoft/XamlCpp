@@ -2,8 +2,17 @@
 #define XAML_UI_CANVAS_WIN_D2D_H
 
 #include <d2d1.h>
-#include <dwrite.h>
 #include <xaml/utility.hpp>
+
+#ifdef __cplusplus
+#include <dwrite.h>
+#else
+typedef enum DWRITE_FACTORY_TYPE
+{
+    DWRITE_FACTORY_TYPE_SHARED,
+    DWRITE_FACTORY_TYPE_ISOLATED
+} DWRITE_FACTORY_TYPE;
+#endif // __cplusplus
 
 EXTERN_C_START
 

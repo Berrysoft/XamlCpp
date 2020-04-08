@@ -1,36 +1,33 @@
-#include <wil/resource.h>
-#include <wil/result_macros.h>
+#include <win/result_macros.h>
 #include <xaml/ui/win/dark_mode.h>
 
 #include <Uxtheme.h>
 #include <dwmapi.h>
 
-using namespace std;
+void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
-EXTERN_C void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
-
-using pfShouldUseDarkMode = BOOL(WINAPI*)();
+typedef BOOL(WINAPI* pfShouldUseDarkMode)();
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
 static pfShouldUseDarkMode pShouldAppUseDarkMode;
 
-using pfAllowDarkModeForApp = BOOL(WINAPI*)(BOOL);
+typedef BOOL(WINAPI* pfAllowDarkModeForApp)(BOOL);
 static pfAllowDarkModeForApp pAllowDarkModeForApp;
 
-using pfSetPreferredAppMode = XAML_PREFERRED_APP_MODE(WINAPI*)(XAML_PREFERRED_APP_MODE);
+typedef XAML_PREFERRED_APP_MODE(WINAPI* pfSetPreferredAppMode)(XAML_PREFERRED_APP_MODE);
 static pfSetPreferredAppMode pSetPreferredAppMode;
 
-using pfIsDarkModeAllowedForApp = BOOL(WINAPI*)();
+typedef BOOL(WINAPI* pfIsDarkModeAllowedForApp)();
 static pfIsDarkModeAllowedForApp pIsDarkModeAllowedForApp;
 
-using pfFlushMenuThemes = void(WINAPI*)();
+typedef void(WINAPI* pfFlushMenuThemes)();
 static pfFlushMenuThemes pFlushMenuThemes;
 
-static wil::unique_hmodule uxtheme = nullptr;
+static HMODULE uxtheme = NULL;
 
 static DWORD get_build_version()
 {
     DWORD build;
-    RtlGetNtVersionNumbers(nullptr, nullptr, &build);
+    RtlGetNtVersionNumbers(NULL, NULL, &build);
     return build & ~0xF0000000;
 }
 
@@ -38,18 +35,18 @@ void WINAPI XamlInitializeDarkModeFunc()
 {
     if (!uxtheme)
     {
-        uxtheme.reset(LoadLibraryEx(L"Uxtheme.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32));
+        uxtheme = LoadLibraryEx(L"Uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (uxtheme)
         {
             DWORD build = get_build_version();
-            pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(138));
-            pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(132));
+            pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(138));
+            pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
             if (build < 18362)
-                pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(135));
+                pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
             else
-                pSetPreferredAppMode = (pfSetPreferredAppMode)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(135));
-            pIsDarkModeAllowedForApp = (pfIsDarkModeAllowedForApp)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(139));
-            pFlushMenuThemes = (pfFlushMenuThemes)GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(136));
+                pSetPreferredAppMode = (pfSetPreferredAppMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
+            pIsDarkModeAllowedForApp = (pfIsDarkModeAllowedForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(139));
+            pFlushMenuThemes = (pfFlushMenuThemes)GetProcAddress(uxtheme, MAKEINTRESOURCEA(136));
         }
     }
 }
@@ -92,7 +89,7 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
 
 BOOL WINAPI XamlIsDarkModeEnabledForApp()
 {
-    HIGHCONTRAST hc{};
+    HIGHCONTRAST hc = { 0 };
     hc.cbSize = sizeof(hc);
     RETURN_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0));
     if (hc.dwFlags & HCF_HIGHCONTRASTON) return FALSE;
@@ -122,5 +119,5 @@ HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 
 HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd)
 {
-    return SetWindowTheme(hWnd, L"DarkMode_Explorer", nullptr);
+    return SetWindowTheme(hWnd, L"DarkMode_Explorer", NULL);
 }
