@@ -8,6 +8,12 @@
 #include <xaml/ui/controls/native_canvas.hpp>
 #include <xaml/ui/native_drawing.hpp>
 
+template <typename Factory>
+HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) noexcept
+{
+    return DWriteCreateFactory(factoryType, __uuidof(Factory), reinterpret_cast<IUnknown**>(factory));
+}
+
 namespace xaml
 {
     struct drawing_context_d2d : native_drawing_context

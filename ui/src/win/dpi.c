@@ -1,6 +1,5 @@
 #include <ShellScalingApi.h>
 #include <assert.h>
-#include <win/result_macros.h>
 #include <xaml/ui/win/dpi.h>
 
 typedef BOOL(WINAPI* pfSetProcessDPIAware)();
@@ -95,12 +94,12 @@ BOOL WINAPI XamlSystemDefaultFontForDpi(LPLOGFONT lfFont, UINT dpi)
     ncm.cbSize = sizeof(ncm);
     if (pSystemParametersInfoForDpi)
     {
-        RETURN_IF_WIN32_BOOL_FALSE(pSystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0, dpi));
+        if (!pSystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0, dpi)) return FALSE;
         *lfFont = ncm.lfMessageFont;
     }
     else
     {
-        RETURN_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0));
+        if (!SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0)) return FALSE;
         int sys_dpi = (int)XamlGetDpiForWindow(NULL);
         *lfFont = ncm.lfMessageFont;
         lfFont->lfHeight = MulDiv(lfFont->lfHeight, (int)dpi, sys_dpi);

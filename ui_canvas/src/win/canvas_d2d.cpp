@@ -5,7 +5,6 @@
 #include <win/canvas_d2d.hpp>
 #include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_window.hpp>
-#include <xaml/ui/win/d2d.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
@@ -178,10 +177,7 @@ namespace xaml
         target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
     }
 
-    canvas_d2d::canvas_d2d()
-    {
-        XamlInitializeD2DFunc();
-    }
+    canvas_d2d::canvas_d2d() {}
 
     canvas_d2d::~canvas_d2d() {}
 
@@ -191,9 +187,9 @@ namespace xaml
         {
             try
             {
-                THROW_IF_FAILED(XamlD2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
+                THROW_IF_FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
                 THROW_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(wnd), &target));
-                THROW_IF_FAILED(XamlDWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
+                THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
                 return true;
             }
             catch (wil::ResultException const&)
