@@ -22,6 +22,14 @@ An example is [here](./ui_controls/test/src/main.cpp)
 GUI is divided into several parts.
 The basic UI project is responsible for the main loop, windows and system dialogs. It is necessary to run a GUI application.
 
+### Screenshots
+|Platform|Win32|GTK+3|Cocoa|
+|-|-|-|-|
+|Light|![Win32 Light](./assets/win.light.png)|![Gtk Light](./assets/gtk.light.png)|![Cocoa Light](./assets/cocoa.light.png)|
+|Dark|![Win32 Dark](./assets/win.dark.png)|![Gtk Dark](./assets/gtk.dark.png)|![Cocoa Dark](./assets/cocoa.dark.png)|
+
+\* Due to API limitation, dark mode for Win32 is not completed.
+
 ### UI
 It supports desktop environment with concepts of "window" and "screen", and many dialogs like "message box" and "file box".
 It also supports high DPI settings even on Windows.
