@@ -92,14 +92,29 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp()
 
 BOOL WINAPI XamlIsDarkModeEnabledForApp()
 {
+    HIGHCONTRAST hc{};
+    hc.cbSize = sizeof(hc);
+    RETURN_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0));
+    if (hc.dwFlags & HCF_HIGHCONTRASTON) return FALSE;
     DWORD build = get_build_version();
     return (build < 18362 ? XamlShouldAppUseDarkMode() : XamlShouldSystemUseDarkMode()) && XamlIsDarkModeAllowedForApp();
 }
 
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
+#define DWMWA_USE_IMMERSIVE_DARK_MODE 0x13
+#endif // !DWMWA_USE_IMMERSIVE_DARK_MODE
+
+#ifndef DWMWA_USE_IMMERSIVE_DARK_MODE_V2
+#define DWMWA_USE_IMMERSIVE_DARK_MODE_V2 0x14
+#endif // !DWMWA_USE_IMMERSIVE_DARK_MODE_V2
+
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
     BOOL set_dark_mode = TRUE;
-    RETURN_IF_FAILED(DwmSetWindowAttribute(hWnd, 0x14, &set_dark_mode, sizeof(BOOL)));
+    if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &set_dark_mode, sizeof(BOOL))))
+    {
+        RETURN_IF_FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE_V2, &set_dark_mode, sizeof(BOOL)));
+    }
     SendMessage(hWnd, WM_THEMECHANGED, 0, 0);
     if (pFlushMenuThemes) pFlushMenuThemes();
     return S_OK;
