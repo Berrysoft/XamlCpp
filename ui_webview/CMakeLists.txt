@@ -47,7 +47,7 @@ if(${BUILD_WINDOWS})
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/webview2
         )
 
-        if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
             set(XAML_NATIVE_PLATFORM "x86")
         else()
             set(XAML_NATIVE_PLATFORM "x64")
