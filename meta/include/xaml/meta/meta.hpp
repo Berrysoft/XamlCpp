@@ -33,7 +33,7 @@ namespace xaml
     struct meta_class : std::enable_shared_from_this<meta_class>
     {
         virtual ~meta_class() {}
-        virtual guid get_type() const noexcept = 0;
+        virtual guid const& get_type() const noexcept = 0;
         virtual bool query_type(guid const& t) const noexcept { return t == type_guid_v<meta_class>; }
 
         template <typename T>
@@ -67,9 +67,15 @@ namespace xaml
         }
     };
 
-#define META_CLASS_IMPL(base)                                                                                        \
-    ::xaml::guid get_type() const noexcept override { return ::xaml::type_guid_v<::std::decay_t<decltype(*this)>>; } \
-    bool query_type(::xaml::guid const& t) const noexcept override { return t == ::xaml::type_guid_v<::std::decay_t<decltype(*this)>> || base::query_type(t); }
+#define META_CLASS_IMPL(base)                                                                    \
+    ::xaml::guid const& get_type() const noexcept override                                       \
+    {                                                                                            \
+        return ::xaml::type_guid_v<::std::decay_t<decltype(*this)>>;                             \
+    }                                                                                            \
+    bool query_type(::xaml::guid const& t) const noexcept override                               \
+    {                                                                                            \
+        return t == ::xaml::type_guid_v<::std::decay_t<decltype(*this)>> || base::query_type(t); \
+    }
 
     template <typename T>
     struct meta_box;
