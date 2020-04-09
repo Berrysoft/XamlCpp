@@ -37,11 +37,7 @@ if(${BUILD_WINDOWS})
 
     # Use GDI+ 1.1
     set(USE_GDIP11_OPTIONS "/manifestdependency:type='Win32' name='Microsoft.Windows.GdiPlus' version='1.1.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
-    if(CMAKE_VERSION VERSION_LESS 3.14)
-        target_link_libraries(xaml_ui_canvas INTERFACE ${USE_GDIP11_OPTIONS})
-    else()
-        target_link_options(xaml_ui_canvas PUBLIC ${USE_GDIP11_OPTIONS})
-    endif()
+    target_link_options(xaml_ui_canvas PUBLIC ${USE_GDIP11_OPTIONS})
 elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui_canvas PRIVATE gtk3)
 endif()

@@ -12,11 +12,7 @@ target_compile_definitions(xaml_global
 
 target_compile_options(xaml_global INTERFACE ${XAML_COMPILE_OPTIONS})
 
-if(CMAKE_VERSION VERSION_LESS 3.14)
-    target_link_libraries(xaml_global INTERFACE ${XAML_LINK_OPTIONS})
-else()
-    target_link_options(xaml_global INTERFACE ${XAML_LINK_OPTIONS})
-endif()
+target_link_options(xaml_global INTERFACE ${XAML_LINK_OPTIONS})
 
 target_include_directories(xaml_global
     INTERFACE 
