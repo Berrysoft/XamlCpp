@@ -156,7 +156,7 @@ static void xaml_fixed_init(XamlFixed* fixed)
     priv->children = g_hash_table_new_full(g_direct_hash, g_direct_equal, NULL, g_free);
 }
 
-GtkWidget* xaml_fixed_new()
+GtkWidget* xaml_fixed_new(void)
 {
     return GTK_WIDGET(g_object_new(xaml_fixed_get_type(), NULL));
 }

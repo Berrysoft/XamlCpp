@@ -5,7 +5,7 @@
 
 void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
-typedef BOOL(WINAPI* pfShouldUseDarkMode)();
+typedef BOOL(WINAPI* pfShouldUseDarkMode)(void);
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
 static pfShouldUseDarkMode pShouldAppUseDarkMode;
 
@@ -15,22 +15,22 @@ static pfAllowDarkModeForApp pAllowDarkModeForApp;
 typedef XAML_PREFERRED_APP_MODE(WINAPI* pfSetPreferredAppMode)(XAML_PREFERRED_APP_MODE);
 static pfSetPreferredAppMode pSetPreferredAppMode;
 
-typedef BOOL(WINAPI* pfIsDarkModeAllowedForApp)();
+typedef BOOL(WINAPI* pfIsDarkModeAllowedForApp)(void);
 static pfIsDarkModeAllowedForApp pIsDarkModeAllowedForApp;
 
-typedef void(WINAPI* pfFlushMenuThemes)();
+typedef void(WINAPI* pfFlushMenuThemes)(void);
 static pfFlushMenuThemes pFlushMenuThemes;
 
 static HMODULE uxtheme = NULL;
 
-static DWORD get_build_version()
+static DWORD get_build_version(void)
 {
     DWORD build;
     RtlGetNtVersionNumbers(NULL, NULL, &build);
     return build & ~0xF0000000;
 }
 
-void WINAPI XamlInitializeDarkModeFunc()
+void WINAPI XamlInitializeDarkModeFunc(void)
 {
     if (!uxtheme)
     {
@@ -64,7 +64,7 @@ XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE v
     return XAML_PREFERRED_APP_MODE_DEFAULT;
 }
 
-static BOOL WINAPI XamlShouldAppUseDarkMode()
+static BOOL WINAPI XamlShouldAppUseDarkMode(void)
 {
     if (pShouldSystemUseDarkMode)
     {
@@ -76,7 +76,7 @@ static BOOL WINAPI XamlShouldAppUseDarkMode()
     }
 }
 
-BOOL WINAPI XamlIsDarkModeAllowedForApp()
+BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
 {
     HIGHCONTRAST hc = { 0 };
     hc.cbSize = sizeof(hc);

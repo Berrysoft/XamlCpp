@@ -2,9 +2,6 @@
 #include <assert.h>
 #include <xaml/ui/win/dpi.h>
 
-typedef BOOL(WINAPI* pfSetProcessDPIAware)();
-static pfSetProcessDPIAware pSetProcessDPIAware = NULL;
-
 typedef HRESULT(WINAPI* pfSetProcessDpiAwareness)(PROCESS_DPI_AWARENESS);
 static pfSetProcessDpiAwareness pSetProcessDpiAwareness = NULL;
 
@@ -20,7 +17,7 @@ static pfSystemParametersInfoForDpi pSystemParametersInfoForDpi = NULL;
 typedef int(WINAPI* pfGetSystemMetricsForDpi)(int, UINT);
 static pfGetSystemMetricsForDpi pGetSystemMetricsForDpi = NULL;
 
-typedef UINT(WINAPI* pfGetDpiForSystem)();
+typedef UINT(WINAPI* pfGetDpiForSystem)(void);
 static pfGetDpiForSystem pGetDpiForSystem = NULL;
 
 typedef UINT(WINAPI* pfGetDpiForWindow)(HWND);
@@ -29,14 +26,13 @@ static pfGetDpiForWindow pGetDpiForWindow = NULL;
 static HMODULE user32 = NULL;
 static HMODULE shcore = NULL;
 
-void WINAPI XamlInitializeDpiFunc()
+void WINAPI XamlInitializeDpiFunc(void)
 {
     if (!user32)
     {
         user32 = LoadLibraryEx(L"User32.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (user32)
         {
-            pSetProcessDPIAware = (pfSetProcessDPIAware)GetProcAddress(user32, "SetProcessDPIAware");
             pSetProcessDpiAwarenessContext = (pfSetProcessDpiAwarenessContext)GetProcAddress(user32, "SetProcessDpiAwarenessContext");
             pEnableNonClientDpiScaling = (pfEnableNonClientDpiScaling)GetProcAddress(user32, "EnableNonClientDpiScaling");
             pSystemParametersInfoForDpi = (pfSystemParametersInfoForDpi)GetProcAddress(user32, "SystemParametersInfoForDpi");
@@ -55,7 +51,7 @@ void WINAPI XamlInitializeDpiFunc()
     }
 }
 
-BOOL WINAPI XamlSetProcessBestDpiAwareness()
+BOOL WINAPI XamlSetProcessBestDpiAwareness(void)
 {
     if (pSetProcessDpiAwarenessContext)
     {
@@ -66,13 +62,9 @@ BOOL WINAPI XamlSetProcessBestDpiAwareness()
         HRESULT hr = pSetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE);
         return SUCCEEDED(hr) || hr == E_ACCESSDENIED;
     }
-    else if (pSetProcessDPIAware)
-    {
-        return pSetProcessDPIAware();
-    }
     else
     {
-        return TRUE;
+        return SetProcessDPIAware();
     }
 }
 

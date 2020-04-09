@@ -6,9 +6,9 @@
 
 EXTERN_C_START
 
-XAML_UI_API void WINAPI XamlInitializeDpiFunc();
+XAML_UI_API void WINAPI XamlInitializeDpiFunc(void);
 
-XAML_UI_API BOOL WINAPI XamlSetProcessBestDpiAwareness();
+XAML_UI_API BOOL WINAPI XamlSetProcessBestDpiAwareness(void);
 
 XAML_UI_API BOOL WINAPI XamlEnableNonClientDpiScaling(HWND hwnd);
 
