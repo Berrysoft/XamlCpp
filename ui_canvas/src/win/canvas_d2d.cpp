@@ -208,7 +208,7 @@ namespace xaml
         target->Resize(D2D1::SizeU((UINT32)region.width, (UINT32)region.height));
         target->BeginDraw();
         target->SetDpi((FLOAT)dpi, (FLOAT)dpi);
-        D2D1_COLOR_F background_color = XamlIsDarkModeEnabledForApp() ? D2D1::ColorF(D2D1::ColorF::Black) : D2D1::ColorF(D2D1::ColorF::White);
+        D2D1_COLOR_F background_color = XamlIsDarkModeAllowedForApp() ? D2D1::ColorF(D2D1::ColorF::Black) : D2D1::ColorF(D2D1::ColorF::White);
         target->Clear(background_color);
         drawing_context_d2d ctx{};
         ctx.d2d = d2d.copy<ID2D1Factory>();

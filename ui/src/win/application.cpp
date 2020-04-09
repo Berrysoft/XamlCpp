@@ -85,6 +85,6 @@ namespace xaml
 
     application_theme application::get_theme() const
     {
-        return XamlIsDarkModeEnabledForApp() ? application_theme::dark : application_theme::light;
+        return XamlIsDarkModeAllowedForApp() ? application_theme::dark : application_theme::light;
     }
 } // namespace xaml

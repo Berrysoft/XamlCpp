@@ -50,23 +50,6 @@ void WINAPI XamlInitializeDarkModeFunc()
     }
 }
 
-BOOL WINAPI XamlShouldSystemUseDarkMode()
-{
-    if (pShouldSystemUseDarkMode)
-    {
-        return pShouldSystemUseDarkMode();
-    }
-    else
-    {
-        return XamlShouldAppUseDarkMode();
-    }
-}
-
-BOOL WINAPI XamlShouldAppUseDarkMode()
-{
-    return pShouldAppUseDarkMode && pShouldAppUseDarkMode();
-}
-
 XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE value)
 {
     if (pSetPreferredAppMode)
@@ -81,19 +64,24 @@ XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE v
     return XAML_PREFERRED_APP_MODE_DEFAULT;
 }
 
-BOOL WINAPI XamlIsDarkModeAllowedForApp()
+static BOOL WINAPI XamlShouldAppUseDarkMode()
 {
-    return pIsDarkModeAllowedForApp && pIsDarkModeAllowedForApp();
+    if (pShouldSystemUseDarkMode)
+    {
+        return pShouldSystemUseDarkMode();
+    }
+    else
+    {
+        return pShouldAppUseDarkMode && pShouldAppUseDarkMode();
+    }
 }
 
-BOOL WINAPI XamlIsDarkModeEnabledForApp()
+BOOL WINAPI XamlIsDarkModeAllowedForApp()
 {
     HIGHCONTRAST hc = { 0 };
     hc.cbSize = sizeof(hc);
     if (!SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0)) return FALSE;
-    if (hc.dwFlags & HCF_HIGHCONTRASTON) return FALSE;
-    DWORD build = get_build_version();
-    return (build < 18362 ? XamlShouldAppUseDarkMode() : XamlShouldSystemUseDarkMode()) && XamlIsDarkModeAllowedForApp();
+    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && XamlShouldAppUseDarkMode() && (pIsDarkModeAllowedForApp && pIsDarkModeAllowedForApp());
 }
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
@@ -107,12 +95,11 @@ BOOL WINAPI XamlIsDarkModeEnabledForApp()
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
     BOOL set_dark_mode = TRUE;
-    if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &set_dark_mode, sizeof(BOOL))))
+    if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE_V2, &set_dark_mode, sizeof(BOOL))))
     {
-        HRESULT hr = DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE_V2, &set_dark_mode, sizeof(BOOL));
+        HRESULT hr = DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &set_dark_mode, sizeof(BOOL));
         if (FAILED(hr)) return hr;
     }
-    SendMessage(hWnd, WM_THEMECHANGED, 0, 0);
     if (pFlushMenuThemes) pFlushMenuThemes();
     return S_OK;
 }

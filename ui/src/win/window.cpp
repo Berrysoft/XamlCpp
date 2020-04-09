@@ -37,7 +37,7 @@ namespace xaml
         case WM_CTLCOLORSTATIC:
             if (!result)
             {
-                bool dark = XamlIsDarkModeEnabledForApp();
+                bool dark = XamlIsDarkModeAllowedForApp();
                 HDC hDC = (HDC)wParam;
                 HWND hStatic = (HWND)lParam;
                 SetBkMode(hDC, TRANSPARENT);
@@ -50,7 +50,7 @@ namespace xaml
             }
             break;
         case WM_CTLCOLOREDIT:
-            if (!result && XamlIsDarkModeEnabledForApp())
+            if (!result && XamlIsDarkModeAllowedForApp())
             {
                 HDC hDC = (HDC)wParam;
                 HWND hEdit = (HWND)lParam;
@@ -189,22 +189,19 @@ namespace xaml
             switch (msg.Msg)
             {
             case WM_ACTIVATE:
-                if (XamlIsDarkModeEnabledForApp())
+                if (XamlIsDarkModeAllowedForApp())
                     XamlWindowUseDarkMode(msg.hWnd);
                 break;
             case WM_ERASEBKGND:
             {
-                bool dark = XamlIsDarkModeEnabledForApp();
+                bool dark = XamlIsDarkModeAllowedForApp();
                 HDC hDC = (HDC)msg.wParam;
                 HBRUSH brush = dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH);
-                HPEN pen = dark ? GetStockPen(BLACK_PEN) : GetStockPen(WHITE_PEN);
                 HBRUSH orib = SelectBrush(hDC, brush);
-                HPEN orip = SelectPen(hDC, pen);
                 RECT r;
                 THROW_IF_WIN32_BOOL_FALSE(GetClientRect(msg.hWnd, &r));
-                THROW_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left, r.top, r.right, r.bottom));
+                THROW_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left - 1, r.top - 1, r.right + 1, r.bottom + 1));
                 SelectBrush(hDC, orib);
-                SelectPen(hDC, orip);
                 return 1;
             }
             case WM_SIZE:

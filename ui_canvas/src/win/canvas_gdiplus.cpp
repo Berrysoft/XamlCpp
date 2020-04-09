@@ -253,7 +253,7 @@ namespace xaml
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
         Graphics g{ wnd };
-        Color background_color = XamlIsDarkModeEnabledForApp() ? Color::Black : Color::White;
+        Color background_color = XamlIsDarkModeAllowedForApp() ? Color::Black : Color::White;
         check_status(g.Clear(background_color));
         drawing_context_gdiplus ctx{};
         ctx.handle = &g;
