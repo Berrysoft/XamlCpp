@@ -148,11 +148,10 @@ int _tmain(int argc, char_t const* const* argv)
         if (!opts->get_no_logo())
         {
             _tcout << exe.filename().string<char_t>() << U(" ") XAML_VERSION;
+#ifdef XAML_COMMIT_HASH
             constexpr string_view_t hash{ U("") XAML_COMMIT_HASH };
-            if (!hash.empty())
-            {
-                _tcout << U('.') << hash.substr(0, 8) << U("-git");
-            }
+            _tcout << U('.') << hash.substr(0, 8) << U("-git");
+#endif // XAML_COMMIT_HASH
             _tcout << U('\n')
                    << U("Copyright (c) 2019-2020 Berrysoft") << U('\n')
                    << endl;
