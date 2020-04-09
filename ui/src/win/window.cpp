@@ -172,7 +172,7 @@ namespace xaml
 
     rectangle window::get_client_region() const
     {
-        return __get_real_client_region() * 96.0 / get_dpi();
+        return __get_real_client_region() * USER_DEFAULT_SCREEN_DPI / get_dpi();
     }
 
     rectangle window::__get_real_client_region() const
@@ -280,12 +280,12 @@ namespace xaml
 
     point window::__get_real_location() const
     {
-        return get_location() * get_dpi() / 96.0;
+        return get_location() * get_dpi() / USER_DEFAULT_SCREEN_DPI;
     }
 
     void window::__set_real_location(point value)
     {
-        set_location(value * 96.0 / get_dpi());
+        set_location(value * USER_DEFAULT_SCREEN_DPI / get_dpi());
     }
 
     double window::get_dpi() const

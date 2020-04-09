@@ -77,7 +77,7 @@ namespace xaml
             set_handle(sparent->get_handle());
             rectangle real = region - get_margin();
             UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-            rectangle real_real = real * udpi / 96.0;
+            rectangle real_real = real * udpi / USER_DEFAULT_SCREEN_DPI;
             if (!get_webview())
             {
                 create_edge2(real_real);

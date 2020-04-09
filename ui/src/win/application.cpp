@@ -46,11 +46,11 @@ namespace xaml
     application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
     {
         XamlInitializeDpiFunc();
+        THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
         XamlInitializeDarkModeFunc();
         XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
+        THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
         THROW_IF_WIN32_BOOL_FALSE(register_window_class());
-        THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
-        THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, 96));
     }
 
     void* application::__default_font(unsigned int udpi) const
@@ -61,8 +61,8 @@ namespace xaml
             return it->second.get();
         }
         LOGFONT f = s_default_font;
-        f.lfHeight = (LONG)(f.lfHeight * (double)udpi / 96.0);
-        f.lfWidth = (LONG)(f.lfWidth * (double)udpi / 96.0);
+        f.lfHeight = MulDiv(f.lfHeight, (int)udpi, USER_DEFAULT_SCREEN_DPI);
+        f.lfWidth = MulDiv(f.lfWidth, (int)udpi, USER_DEFAULT_SCREEN_DPI);
         auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
         return p.second ? p.first->second.get() : NULL;
     }

@@ -60,7 +60,7 @@ namespace xaml
 
     static constexpr REAL get_WIDTH(double width, double dpi)
     {
-        return (REAL)(width * dpi / 96.0);
+        return (REAL)(width * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
     static inline Pen get_Pen(drawing_pen const& pen, double dpi)
@@ -85,17 +85,17 @@ namespace xaml
 
     static inline RectF get_RectF(rectangle const& rect, double dpi)
     {
-        return to_native<RectF>(rect * dpi / 96.0);
+        return to_native<RectF>(rect * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
     static inline PointF get_PointF(point p, double dpi)
     {
-        return to_native<PointF>(p * dpi / 96.0);
+        return to_native<PointF>(p * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
     static inline SizeF get_SizeF(size s, double dpi)
     {
-        return to_native<SizeF>(s * dpi / 96.0);
+        return to_native<SizeF>(s * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
 #define CHECK_SIZE(r) \

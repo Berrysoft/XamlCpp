@@ -203,7 +203,7 @@ namespace xaml
     void canvas_d2d::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)
     {
         UINT dpi = XamlGetDpiForWindow(wnd);
-        size region = real * dpi / 96.0;
+        size region = real * dpi / USER_DEFAULT_SCREEN_DPI;
         CHECK_SIZE(region);
         target->Resize(D2D1::SizeU((UINT32)region.width, (UINT32)region.height));
         target->BeginDraw();

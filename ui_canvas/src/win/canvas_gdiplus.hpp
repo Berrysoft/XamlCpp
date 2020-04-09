@@ -13,7 +13,7 @@ namespace xaml
 {
     struct drawing_context_gdiplus : native_drawing_context
     {
-        double dpi{ 96.0 };
+        double dpi{ USER_DEFAULT_SCREEN_DPI };
         Gdiplus::Graphics* handle{ nullptr };
 
         ~drawing_context_gdiplus() override;
