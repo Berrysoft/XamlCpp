@@ -9,7 +9,7 @@
 @implementation XamlCanvasView : NSView
 @synthesize classPointer;
 
-- (id)initWithClassPointer:(void*)ptr
+- (instancetype)initWithClassPointer:(void*)ptr
 {
     if ([self init])
     {

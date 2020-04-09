@@ -5,5 +5,5 @@
     void* classPointer;
 }
 @property void* classPointer;
-- (id)initWithClassPointer:(void*)ptr;
+- (instancetype)initWithClassPointer:(void*)ptr;
 @end

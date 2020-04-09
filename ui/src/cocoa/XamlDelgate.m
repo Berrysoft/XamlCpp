@@ -3,7 +3,7 @@
 @implementation XamlDelegate : NSObject
 @synthesize classPointer;
 
-- (id)initWithClassPointer:(void*)ptr
+- (instancetype)initWithClassPointer:(void*)ptr
 {
     if ([self init])
     {
