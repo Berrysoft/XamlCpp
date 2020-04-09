@@ -3,7 +3,7 @@
 #include <Uxtheme.h>
 #include <dwmapi.h>
 
-void WINAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
+NTSYSAPI void NTAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
 typedef BOOL(WINAPI* pfShouldUseDarkMode)(void);
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
@@ -23,13 +23,6 @@ static pfFlushMenuThemes pFlushMenuThemes;
 
 static HMODULE uxtheme = NULL;
 
-static DWORD get_build_version(void)
-{
-    DWORD build;
-    RtlGetNtVersionNumbers(NULL, NULL, &build);
-    return build & ~0xF0000000;
-}
-
 void WINAPI XamlInitializeDarkModeFunc(void)
 {
     if (!uxtheme)
@@ -37,7 +30,9 @@ void WINAPI XamlInitializeDarkModeFunc(void)
         uxtheme = LoadLibraryEx(L"Uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
         if (uxtheme)
         {
-            DWORD build = get_build_version();
+            DWORD build;
+            RtlGetNtVersionNumbers(NULL, NULL, &build);
+            build &= ~0xF0000000;
             pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(138));
             pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
             if (build < 18362)
