@@ -7,7 +7,7 @@ NTSYSAPI void NTAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
 typedef BOOL(WINAPI* pfShouldUseDarkMode)(void);
 static pfShouldUseDarkMode pShouldSystemUseDarkMode;
-static pfShouldUseDarkMode pShouldAppUseDarkMode;
+static pfShouldUseDarkMode pShouldAppsUseDarkMode;
 
 typedef BOOL(WINAPI* pfAllowDarkModeForApp)(BOOL);
 static pfAllowDarkModeForApp pAllowDarkModeForApp;
@@ -34,7 +34,7 @@ void WINAPI XamlInitializeDarkModeFunc(void)
             RtlGetNtVersionNumbers(NULL, NULL, &build);
             build &= ~0xF0000000;
             pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(138));
-            pShouldAppUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
+            pShouldAppsUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
             if (build < 18362)
                 pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
             else
@@ -59,7 +59,7 @@ XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE v
     return XAML_PREFERRED_APP_MODE_DEFAULT;
 }
 
-static BOOL WINAPI XamlShouldAppUseDarkMode(void)
+static BOOL WINAPI XamlShouldAppsUseDarkMode(void)
 {
     if (pShouldSystemUseDarkMode)
     {
@@ -67,7 +67,7 @@ static BOOL WINAPI XamlShouldAppUseDarkMode(void)
     }
     else
     {
-        return pShouldAppUseDarkMode && pShouldAppUseDarkMode();
+        return pShouldAppsUseDarkMode && pShouldAppsUseDarkMode();
     }
 }
 
@@ -94,7 +94,7 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
     HIGHCONTRAST hc = { 0 };
     hc.cbSize = sizeof(hc);
     if (!SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0)) return FALSE;
-    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && XamlGetPreferredAppMode() != XAML_PREFERRED_APP_MODE_FORCE_LIGHT && XamlShouldAppUseDarkMode();
+    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && XamlGetPreferredAppMode() != XAML_PREFERRED_APP_MODE_FORCE_LIGHT && XamlShouldAppsUseDarkMode();
 }
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
