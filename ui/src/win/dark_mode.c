@@ -5,11 +5,10 @@
 
 NTSYSAPI void NTAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
-typedef BOOLEAN(WINAPI* pfShouldUseDarkMode)(void);
-static pfShouldUseDarkMode pShouldSystemUseDarkMode;
-static pfShouldUseDarkMode pShouldAppsUseDarkMode;
+typedef BOOLEAN(WINAPI* pfShouldAppsUseDarkMode)(void);
+static pfShouldAppsUseDarkMode pShouldAppsUseDarkMode;
 
-typedef BOOL(WINAPI* pfAllowDarkModeForApp)(BOOL);
+typedef BOOLEAN(WINAPI* pfAllowDarkModeForApp)(BOOLEAN);
 static pfAllowDarkModeForApp pAllowDarkModeForApp;
 
 typedef XAML_PREFERRED_APP_MODE(WINAPI* pfSetPreferredAppMode)(XAML_PREFERRED_APP_MODE);
@@ -33,8 +32,7 @@ void WINAPI XamlInitializeDarkModeFunc(void)
             DWORD build;
             RtlGetNtVersionNumbers(NULL, NULL, &build);
             build &= ~0xF0000000;
-            pShouldSystemUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(138));
-            pShouldAppsUseDarkMode = (pfShouldUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
+            pShouldAppsUseDarkMode = (pfShouldAppsUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
             pAllowDarkModeForWindow = (pfAllowDarkModeForWindow)GetProcAddress(uxtheme, MAKEINTRESOURCEA(133));
             if (build < 18362)
                 pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
@@ -61,10 +59,14 @@ XAML_PREFERRED_APP_MODE WINAPI XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE v
 
 BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
 {
-    HIGHCONTRAST hc = { 0 };
-    hc.cbSize = sizeof(hc);
-    if (!SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0)) return FALSE;
-    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && pShouldAppsUseDarkMode && pShouldAppsUseDarkMode();
+    if (pShouldAppsUseDarkMode)
+    {
+        HIGHCONTRAST hc = { 0 };
+        hc.cbSize = sizeof(hc);
+        if (!SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0)) return FALSE;
+        return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && pShouldAppsUseDarkMode();
+    }
+    return FALSE;
 }
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
