@@ -164,6 +164,8 @@ namespace xaml
         case halignment_t::right:
             region.left -= metrics.width;
             break;
+        default:
+            break;
         }
         switch (font.valign)
         {
@@ -172,6 +174,8 @@ namespace xaml
             break;
         case valignment_t::bottom:
             region.top -= metrics.height;
+            break;
+        default:
             break;
         }
         target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());

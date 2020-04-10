@@ -173,7 +173,6 @@ namespace xaml
         case node_type::element:
         {
             auto ns = node.namespace_uri();
-            auto name = node.name();
             for (auto& attr : node.attributes())
             {
                 auto attr_ns = attr.namespace_uri();

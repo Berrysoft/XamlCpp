@@ -50,6 +50,9 @@ namespace xaml
         case msgbox_style::error:
             config.pszMainIcon = TD_ERROR_ICON;
             break;
+        default:
+            config.pszMainIcon = nullptr;
+            break;
         }
         int result;
         THROW_IF_FAILED(TaskDialogIndirect(&config, &result, nullptr, nullptr));

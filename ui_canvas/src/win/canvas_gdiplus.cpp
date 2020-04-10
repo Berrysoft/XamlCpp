@@ -226,6 +226,8 @@ namespace xaml
         case valignment_t::bottom:
             pf.Y -= r.Height;
             break;
+        default:
+            break;
         }
         check_status(handle->DrawString(str.data(), (INT)str.length(), &f, pf, &fmt, &b));
     }

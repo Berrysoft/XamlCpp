@@ -13,7 +13,7 @@ namespace xaml
         {
             set_handle(sparent->get_handle());
             HFONT def_font = (HFONT)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle));
-            __draw_impl(region, [this, def_font](shared_ptr<control> c, rectangle const& region) {
+            __draw_impl(region, [def_font](shared_ptr<control> c, rectangle const& region) {
                 SendMessage(c->get_handle()->handle, WM_SETFONT, (WPARAM)def_font, FALSE);
             });
         }

@@ -39,7 +39,6 @@ namespace xaml
             {
                 bool dark = XamlIsDarkModeAllowedForApp();
                 HDC hDC = (HDC)wParam;
-                HWND hStatic = (HWND)lParam;
                 SetBkMode(hDC, TRANSPARENT);
                 if (dark)
                 {
