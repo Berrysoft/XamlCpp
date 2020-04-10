@@ -105,9 +105,9 @@ namespace rapidxml
         xml_base(xml_base const&) = delete;
         xml_base& operator=(xml_base const&) = delete;
 
-        constexpr xml_base(xml_base&& b)
+        constexpr xml_base(xml_base&& b) noexcept
             : m_local_name(b.m_local_name), m_name(b.m_name), m_value(b.m_value), m_namespace_uri(b.m_namespace_uri), m_parent(b.m_parent) {}
-        constexpr xml_base& operator=(xml_base&& b)
+        constexpr xml_base& operator=(xml_base&& b) noexcept
         {
             m_local_name = b.m_local_name;
             m_name = b.m_name;

@@ -43,8 +43,8 @@ namespace rapidxml
         xml_node(node_type type, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator) noexcept
             : xml_base(), m_type(type), m_nodes(node_allocator), m_attributes(attr_allocator) {}
 
-        xml_node(xml_node&& n) : xml_base(std::move(n)), m_type(n.m_type), m_nodes(std::move(n.m_nodes)), m_attributes(std::move(n.m_attributes)) {}
-        xml_node& operator=(xml_node&& n)
+        xml_node(xml_node&& n) noexcept : xml_base(std::move(n)), m_type(n.m_type), m_nodes(std::move(n.m_nodes)), m_attributes(std::move(n.m_attributes)) {}
+        xml_node& operator=(xml_node&& n) noexcept
         {
             xml_base::operator=(std::move(n));
             m_type = n.m_type;

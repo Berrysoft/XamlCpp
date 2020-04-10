@@ -16,9 +16,9 @@ namespace rapidxml
     class xml_attribute : public xml_base
     {
     public:
-        constexpr xml_attribute() : xml_base() {}
-        constexpr xml_attribute(xml_attribute&& b) : xml_base(std::move(b)) {}
-        constexpr xml_attribute& operator=(xml_attribute&& b)
+        constexpr xml_attribute() noexcept : xml_base() {}
+        constexpr xml_attribute(xml_attribute&& b) noexcept : xml_base(std::move(b)) {}
+        constexpr xml_attribute& operator=(xml_attribute&& b) noexcept
         {
             xml_base::operator=(std::move(b));
             return *this;

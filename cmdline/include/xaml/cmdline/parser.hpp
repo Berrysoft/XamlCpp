@@ -26,20 +26,20 @@ namespace xaml::cmdline
 
     struct option_property
     {
-        xaml::property_info const* info;
-        xaml::string_t value;
+        xaml::property_info const* info{ nullptr };
+        xaml::string_t value{};
     };
 
     struct option_collection_property
     {
-        xaml::collection_property_info const* info;
-        std::vector<xaml::string_t> values;
+        xaml::collection_property_info const* info{ nullptr };
+        std::vector<xaml::string_t> values{};
     };
 
     struct options
     {
-        std::vector<option_property> properties;
-        std::map<std::string, option_collection_property> collection_properties;
+        std::vector<option_property> properties{};
+        std::map<std::string, option_collection_property> collection_properties{};
     };
 
     XAML_CMDLINE_API options parse(xaml::reflection_info const* refl, xaml::array_view<xaml::string_t> args);
