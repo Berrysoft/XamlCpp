@@ -188,8 +188,7 @@ namespace xaml
             switch (msg.Msg)
             {
             case WM_ACTIVATE:
-                if (XamlIsDarkModeAllowedForApp())
-                    XamlWindowUseDarkMode(msg.hWnd);
+                XamlWindowUseDarkMode(msg.hWnd);
                 break;
             case WM_ERASEBKGND:
             {

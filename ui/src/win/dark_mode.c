@@ -6,19 +6,19 @@
 NTSYSAPI void NTAPI RtlGetNtVersionNumbers(LPDWORD, LPDWORD, LPDWORD);
 
 typedef BOOLEAN(WINAPI* pfShouldAppsUseDarkMode)(void);
-static pfShouldAppsUseDarkMode pShouldAppsUseDarkMode;
+static pfShouldAppsUseDarkMode pShouldAppsUseDarkMode = NULL;
 
 typedef BOOLEAN(WINAPI* pfAllowDarkModeForApp)(BOOLEAN);
-static pfAllowDarkModeForApp pAllowDarkModeForApp;
+static pfAllowDarkModeForApp pAllowDarkModeForApp = NULL;
 
 typedef XAML_PREFERRED_APP_MODE(WINAPI* pfSetPreferredAppMode)(XAML_PREFERRED_APP_MODE);
-static pfSetPreferredAppMode pSetPreferredAppMode;
+static pfSetPreferredAppMode pSetPreferredAppMode = NULL;
 
 typedef BOOLEAN(WINAPI* pfAllowDarkModeForWindow)(HWND, BOOLEAN);
-static pfAllowDarkModeForWindow pAllowDarkModeForWindow;
+static pfAllowDarkModeForWindow pAllowDarkModeForWindow = NULL;
 
 typedef void(WINAPI* pfFlushMenuThemes)(void);
-static pfFlushMenuThemes pFlushMenuThemes;
+static pfFlushMenuThemes pFlushMenuThemes = NULL;
 
 static HMODULE uxtheme = NULL;
 
@@ -79,8 +79,8 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
 
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
-    if (pAllowDarkModeForWindow) pAllowDarkModeForWindow(hWnd, TRUE);
-    BOOL set_dark_mode = TRUE;
+    BOOL set_dark_mode = XamlIsDarkModeAllowedForApp();
+    if (pAllowDarkModeForWindow) pAllowDarkModeForWindow(hWnd, set_dark_mode);
     if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE_V2, &set_dark_mode, sizeof(BOOL))))
     {
         HRESULT hr = DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &set_dark_mode, sizeof(BOOL));
@@ -92,5 +92,9 @@ HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 
 HRESULT WINAPI XamlControlUseDarkMode(HWND hWnd)
 {
-    return SetWindowTheme(hWnd, L"DarkMode_Explorer", NULL);
+    if (XamlIsDarkModeAllowedForApp())
+    {
+        return SetWindowTheme(hWnd, L"DarkMode_Explorer", NULL);
+    }
+    return S_OK;
 }
