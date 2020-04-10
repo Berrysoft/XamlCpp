@@ -71,12 +71,30 @@ static BOOL WINAPI XamlShouldAppUseDarkMode(void)
     }
 }
 
+static XAML_PREFERRED_APP_MODE WINAPI XamlGetPreferredAppMode()
+{
+    if (pIsDarkModeAllowedForApp)
+    {
+        BOOL res = pIsDarkModeAllowedForApp();
+        if (res < 0)
+            return XAML_PREFERRED_APP_MODE_DEFAULT;
+        else if (res == 0)
+            return XAML_PREFERRED_APP_MODE_FORCE_LIGHT;
+        else
+            return XAML_PREFERRED_APP_MODE_ALLOW_DARK;
+    }
+    else
+    {
+        return XAML_PREFERRED_APP_MODE_DEFAULT;
+    }
+}
+
 BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
 {
     HIGHCONTRAST hc = { 0 };
     hc.cbSize = sizeof(hc);
     if (!SystemParametersInfo(SPI_GETHIGHCONTRAST, sizeof(hc), &hc, 0)) return FALSE;
-    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && XamlShouldAppUseDarkMode() && (pIsDarkModeAllowedForApp && pIsDarkModeAllowedForApp());
+    return (!(hc.dwFlags & HCF_HIGHCONTRASTON)) && XamlGetPreferredAppMode() != XAML_PREFERRED_APP_MODE_FORCE_LIGHT && XamlShouldAppUseDarkMode();
 }
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
