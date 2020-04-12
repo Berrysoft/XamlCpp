@@ -257,8 +257,6 @@ namespace rapidxml
             return *this;
         }
 
-        constexpr operator char*() noexcept { return current; }
-        constexpr operator char const *() const noexcept { return current; }
         constexpr operator size_t() const noexcept { return current - begin; }
 
         constexpr tuple<size_t, size_t> get_row_col() const noexcept
@@ -290,7 +288,7 @@ namespace rapidxml
     template <class StopPred>
     static constexpr void skip(parse_buffer& buffer) noexcept
     {
-        char* tmp = buffer;
+        char* tmp = buffer.current;
         while (StopPred::test(*tmp))
             ++tmp;
         buffer.current = tmp;
@@ -350,7 +348,7 @@ namespace rapidxml
         // Use translation skip
         parse_buffer src = buffer;
         parse_buffer dest = src;
-        while (StopPred::test(*src))
+        while (StopPred::test(src[0]))
         {
             // Test if replacement is needed
             if (src[0] == '&')
@@ -362,14 +360,14 @@ namespace rapidxml
                 case 'a':
                     if (src[2] == 'm' && src[3] == 'p' && src[4] == ';')
                     {
-                        *dest = '&';
+                        dest[0] = '&';
                         ++dest;
                         src += 5;
                         continue;
                     }
                     if (src[2] == 'p' && src[3] == 'o' && src[4] == 's' && src[5] == ';')
                     {
-                        *dest = '\'';
+                        dest[0] = '\'';
                         ++dest;
                         src += 6;
                         continue;
@@ -380,7 +378,7 @@ namespace rapidxml
                 case 'q':
                     if (src[2] == 'u' && src[3] == 'o' && src[4] == 't' && src[5] == ';')
                     {
-                        *dest = '"';
+                        dest[0] = '"';
                         ++dest;
                         src += 6;
                         continue;
@@ -391,7 +389,7 @@ namespace rapidxml
                 case 'g':
                     if (src[2] == 't' && src[3] == ';')
                     {
-                        *dest = '>';
+                        dest[0] = '>';
                         ++dest;
                         src += 4;
                         continue;
@@ -402,7 +400,7 @@ namespace rapidxml
                 case 'l':
                     if (src[2] == 't' && src[3] == ';')
                     {
-                        *dest = '<';
+                        dest[0] = '<';
                         ++dest;
                         src += 4;
                         continue;
@@ -417,9 +415,9 @@ namespace rapidxml
                         src += 3; // Skip &#x
                         while (1)
                         {
-                            if (!isxdigit(*src))
+                            if (!isxdigit(src[0]))
                                 break;
-                            int32_t digit = isdigit(*src) ? ((*src) - '0') : (isupper(*src) ? ((*src) - 'A' + 10) : ((*src) - 'a' + 10));
+                            int32_t digit = isdigit(src[0]) ? ((src[0]) - '0') : (isupper(src[0]) ? ((src[0]) - 'A' + 10) : ((src[0]) - 'a' + 10));
                             code = code * 16 + digit;
                             ++src;
                         }
@@ -431,15 +429,15 @@ namespace rapidxml
                         src += 2; // Skip &#
                         while (1)
                         {
-                            if (!isdigit(*src))
+                            if (!isdigit(src[0]))
                                 break;
-                            int32_t digit = ((*src) - '0');
+                            int32_t digit = ((src[0]) - '0');
                             code = code * 10 + digit;
                             ++src;
                         }
                         insert_coded_character(dest, code); // Put character in output
                     }
-                    if (*src == ';')
+                    if (src[0] == ';')
                         ++src;
                     else
                         throw src.construct_error("expected ;");
@@ -456,25 +454,25 @@ namespace rapidxml
             if (flags & parse_flag::normalize_whitespace)
             {
                 // Test if condensing is needed
-                if (whitespace_pred::test(*src))
+                if (whitespace_pred::test(src[0]))
                 {
-                    *dest = ' ';
+                    dest[0] = ' ';
                     ++dest; // Put single space in dest
                     ++src; // Skip first whitespace char
                     // Skip remaining whitespace chars
-                    while (whitespace_pred::test(*src))
+                    while (whitespace_pred::test(src[0]))
                         ++src;
                     continue;
                 }
             }
 
             // No replacement, only copy character
-            *dest++ = *src++;
+            (dest++)[0] = (src++)[0];
         }
 
         // Return new end
         buffer.current = src.current;
-        return dest;
+        return dest.current;
     }
 
     // Parse BOM, if any
@@ -546,11 +544,11 @@ namespace rapidxml
             {
                 // Skip whitespace before node
                 skip<whitespace_pred>(buffer);
-                if (!*buffer)
+                if (!buffer[0])
                     break;
 
                 // Parse and append new child
-                if (*buffer == '<')
+                if (buffer[0] == '<')
                 {
                     ++buffer; // Skip '<'
                     if (auto node = parse_node(buffer, namespace_scope, { flags, m_node_allocator, m_attribute_allocator }))
@@ -612,7 +610,7 @@ namespace rapidxml
         }
 
         // Remember value start
-        char* value = buffer;
+        char* value = buffer.current;
 
         // Skip until end of comment
         while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
@@ -624,7 +622,7 @@ namespace rapidxml
 
         // Create comment node
         xml_node comment{ node_type::comment, context.node_allocator, context.attr_allocator };
-        comment.value(string_view(value, buffer - value));
+        comment.value(string_view(value, buffer.current - value));
 
         buffer += 3; // Skip '-->'
         return make_optional(move(comment));
@@ -633,13 +631,13 @@ namespace rapidxml
     optional<xml_node> parse_doctype(parse_buffer& buffer, parse_context const& context)
     {
         // Remember value start
-        char* value = buffer;
+        char* value = buffer.current;
 
         // Skip to >
-        while (*buffer != '>')
+        while (buffer[0] != '>')
         {
             // Determine character type
-            switch (*buffer)
+            switch (buffer[0])
             {
 
             // If '[' encountered, scan for matching ending ']' using naive algorithm with depth
@@ -650,7 +648,7 @@ namespace rapidxml
                 int depth = 1;
                 while (depth > 0)
                 {
-                    switch (*buffer)
+                    switch (buffer[0])
                     {
                     case '[':
                         ++depth;
@@ -681,7 +679,7 @@ namespace rapidxml
         {
             // Create a new doctype node
             xml_node doctype{ node_type::doctype, context.node_allocator, context.attr_allocator };
-            doctype.value(string_view(value, buffer - value));
+            doctype.value(string_view(value, buffer.current - value));
 
             buffer += 1; // skip '>'
             return make_optional(move(doctype));
@@ -702,28 +700,28 @@ namespace rapidxml
             xml_node pi{ node_type::pi, context.node_allocator, context.attr_allocator };
 
             // Extract PI target name
-            char* name = buffer;
+            char* name = buffer.current;
             skip<node_name_pred>(buffer);
             if (buffer.current == name)
                 throw buffer.construct_error("expected PI target");
-            pi.name(string_view(name, buffer - name));
+            pi.name(string_view(name, buffer.current - name));
 
             // Skip whitespace between pi target and pi
             skip<whitespace_pred>(buffer);
 
             // Remember start of pi
-            char* value = buffer;
+            char* value = buffer.current;
 
             // Skip to '?>'
             while (buffer[0] != '?' || buffer[1] != '>')
             {
-                if (*buffer == '\0')
+                if (buffer[0] == '\0')
                     throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
 
             // Set pi value (verbatim, no entity expansion or whitespace normalization)
-            pi.value(string_view(value, buffer - value));
+            pi.value(string_view(value, buffer.current - value));
 
             buffer += 2; // Skip '?>'
             return make_optional(move(pi));
@@ -733,7 +731,7 @@ namespace rapidxml
             // Skip to '?>'
             while (buffer[0] != '?' || buffer[1] != '>')
             {
-                if (*buffer == '\0')
+                if (buffer[0] == '\0')
                     throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
@@ -749,7 +747,7 @@ namespace rapidxml
             buffer.current = contents_start;
 
         // Skip until end of data
-        char *value = buffer, *end;
+        char *value = buffer.current, *end;
         if (context.flags & parse_flag::normalize_whitespace)
             end = skip_and_expand_character_refs<text_pred, text_pure_with_ws_pred>(buffer, context.flags);
         else
@@ -787,7 +785,7 @@ namespace rapidxml
                 node.value(string_view(value, end - value));
 
         // Return character that ends data
-        return *buffer;
+        return buffer[0];
     }
 
     optional<xml_node> parse_cdata(parse_buffer& buffer, parse_context const& context)
@@ -807,7 +805,7 @@ namespace rapidxml
         }
 
         // Skip until end of cdata
-        char* value = buffer;
+        char* value = buffer.current;
         while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
         {
             if (!buffer[0])
@@ -817,7 +815,7 @@ namespace rapidxml
 
         // Create new cdata node
         xml_node cdata{ node_type::cdata, context.node_allocator, context.attr_allocator };
-        cdata.value(string_view(value, buffer - value));
+        cdata.value(string_view(value, buffer.current - value));
 
         buffer += 3; // Skip ]]>
         return make_optional(move(cdata));
@@ -829,24 +827,24 @@ namespace rapidxml
         xml_node element{ node_type::element, context.node_allocator, context.attr_allocator };
 
         // Extract element name
-        char* name = buffer;
+        char* name = buffer.current;
         skip<node_ncname_pred>(buffer);
         if (buffer.current == name)
             throw buffer.construct_error("expected element name");
-        if (*buffer == ':')
+        if (buffer[0] == ':')
         {
             // Namespace prefix found
             ++buffer;
-            char* local_name = buffer;
+            char* local_name = buffer.current;
             skip<node_ncname_pred>(buffer);
-            if (*buffer == ':')
+            if (buffer[0] == ':')
                 throw buffer.construct_error("second colon in element name");
             if (buffer.current == local_name)
                 throw buffer.construct_error("expected local part of element name");
-            element.qname(string_view(name, buffer - name), local_name - name);
+            element.qname(string_view(name, buffer.current - name), local_name - name);
         }
         else
-            element.qname(string_view(name, buffer - name));
+            element.qname(string_view(name, buffer.current - name));
 
         // Skip whitespace between element name and attributes or >
         skip<whitespace_pred>(buffer);
@@ -859,15 +857,15 @@ namespace rapidxml
         namespace_scope.process_element(element);
 
         // Determine ending type
-        if (*buffer == '>')
+        if (buffer[0] == '>')
         {
             ++buffer;
             parse_node_contents(buffer, element, namespace_scope, context);
         }
-        else if (*buffer == '/')
+        else if (buffer[0] == '/')
         {
             ++buffer;
-            if (*buffer != '>')
+            if (buffer[0] != '>')
                 throw buffer.construct_error("expected >");
             ++buffer;
         }
@@ -950,9 +948,9 @@ namespace rapidxml
 
             // Attempt to skip other, unrecognized node types starting with <!
             ++buffer; // Skip !
-            while (*buffer != '>')
+            while (buffer[0] != '>')
             {
-                if (*buffer == 0)
+                if (buffer[0] == 0)
                     throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
@@ -967,9 +965,9 @@ namespace rapidxml
         while (1)
         {
             // Skip whitespace between > and node contents
-            char* contents_start = buffer; // Store start of node contents before whitespace is skipped
+            char* contents_start = buffer.current; // Store start of node contents before whitespace is skipped
             skip<whitespace_pred>(buffer);
-            char next_char = *buffer;
+            char next_char = buffer[0];
 
         // After data nodes, instead of continuing the loop, control jumps here.
         // This is because zero termination inside parse_and_append_data() function
@@ -990,9 +988,9 @@ namespace rapidxml
                     if (context.flags & parse_flag::validate_closing_tags)
                     {
                         // Skip and validate closing tag name
-                        char* closing_name = buffer;
+                        char* closing_name = buffer.current;
                         skip<node_name_pred>(buffer);
-                        if (node.name() != string_view(closing_name, buffer - closing_name))
+                        if (node.name() != string_view(closing_name, buffer.current - closing_name))
                             throw buffer.construct_error("invalid closing tag name");
                     }
                     else
@@ -1002,7 +1000,7 @@ namespace rapidxml
                     }
                     // Skip remaining whitespace after node name
                     skip<whitespace_pred>(buffer);
-                    if (*buffer != '>')
+                    if (buffer[0] != '>')
                         throw buffer.construct_error("expected >");
                     ++buffer; // Skip '>'
                     return; // Node closed, finished parsing contents
@@ -1031,34 +1029,34 @@ namespace rapidxml
     void parse_node_attributes(parse_buffer& buffer, xml_node& node, parse_context const& context)
     {
         // For all attributes
-        while (attribute_ncname_pred::test(*buffer))
+        while (attribute_ncname_pred::test(buffer[0]))
         {
             // Extract attribute name
             parse_buffer name = buffer;
             ++buffer; // Skip first character of attribute name
             skip<attribute_ncname_pred>(buffer);
-            if (buffer.current == name)
+            if (buffer.current == name.current)
                 throw name.construct_error("expected attribute name");
             // Create new attribute
             xml_attribute attribute{};
-            if (*buffer == ':')
+            if (buffer[0] == ':')
             {
                 // Namespace prefix found
                 ++buffer;
                 parse_buffer local_name = buffer;
                 skip<attribute_ncname_pred>(buffer);
-                if (buffer.current == local_name)
+                if (buffer.current == local_name.current)
                     throw local_name.construct_error("expected local part of attribute name");
-                attribute.qname(string_view(name, buffer.current - name), local_name.current - name);
+                attribute.qname(string_view(name.current, buffer.current - name.current), local_name.current - name.current);
             }
             else
-                attribute.qname(string_view(name, buffer.current - name));
+                attribute.qname(string_view(name.current, buffer.current - name.current));
 
             // Skip whitespace after attribute name
             skip<whitespace_pred>(buffer);
 
             // Skip =
-            if (*buffer != '=')
+            if (buffer[0] != '=')
                 throw buffer.construct_error("expected =");
             ++buffer;
 
@@ -1066,13 +1064,13 @@ namespace rapidxml
             skip<whitespace_pred>(buffer);
 
             // Skip quote and remember if it was ' or "
-            char quote = *buffer;
+            char quote = buffer[0];
             if (quote != '\'' && quote != '"')
                 throw buffer.construct_error("expected ' or \"");
             ++buffer;
 
             // Extract attribute value and expand char refs in it
-            char *value = buffer, *end;
+            char *value = buffer.current, *end;
             parse_flag AttFlags{ context.flags & ~parse_flag::normalize_whitespace }; // No whitespace normalization in attributes
             if (quote == '\'')
                 end = skip_and_expand_character_refs<attribute_value_pred<'\''>, attribute_value_pure_pred<'\''>>(buffer, AttFlags);
@@ -1083,7 +1081,7 @@ namespace rapidxml
             attribute.value(string_view(value, end - value));
 
             // Make sure that end quote is present
-            if (*buffer != quote)
+            if (buffer[0] != quote)
                 throw buffer.construct_error("expected ' or \"");
             ++buffer; // Skip quote
 
