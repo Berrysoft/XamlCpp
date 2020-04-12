@@ -141,6 +141,7 @@ elseif(${BUILD_GTK3})
 endif()
 
 option(BUILD_TESTS "Build tests." ON)
+option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" ON)
 option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS

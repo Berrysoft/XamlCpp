@@ -25,12 +25,6 @@ namespace xaml
         ~xaml_bad_type() override {}
     };
 
-    struct xaml_parse_error : std::logic_error
-    {
-        xaml_parse_error() : logic_error("Failed to parse XAML file.") {}
-        ~xaml_parse_error() override {}
-    };
-
     struct xaml_no_member : std::logic_error
     {
         XAML_API xaml_no_member(reflection_info const* type, std::string_view name);

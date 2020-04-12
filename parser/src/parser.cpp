@@ -82,10 +82,7 @@ namespace xaml
         set<string> headers{};
         xml_document doc{};
 
-        ~parser_impl() {}
-
         void load_file(path const& p) { doc.load_file(p); }
-
         void load_string(string_view s) { doc.load_string(s); }
 
         markup_node parse_markup(string_view value);

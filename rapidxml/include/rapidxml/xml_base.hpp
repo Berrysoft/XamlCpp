@@ -93,10 +93,10 @@ namespace rapidxml
     {
     protected:
         std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
-        std::string_view m_name{}; // Name of node, or 0 if no name
-        std::string_view m_value{}; // Value of node, or 0 if no value
+        std::string_view m_name{}; // Name of node
+        std::string_view m_value{}; // Value of node
         std::string_view m_namespace_uri{};
-        xml_node* m_parent{ nullptr }; // Pointer to parent node, or 0 if none
+        xml_node* m_parent{ nullptr }; // Pointer to parent node
 
     public:
         constexpr xml_base() noexcept {}

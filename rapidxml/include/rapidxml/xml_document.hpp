@@ -158,11 +158,6 @@ namespace rapidxml
         xml_node m_root_node{ node_type::document, m_node_allocator, m_attribute_allocator };
 
     public:
-        //! Constructs empty XML document
-        xml_document() {}
-
-        ~xml_document() {}
-
         xml_node& node() noexcept { return m_root_node; }
         xml_node const& node() const noexcept { return m_root_node; }
 
@@ -172,9 +167,8 @@ namespace rapidxml
 
     private:
         //! Parses zero-terminated XML string according to given flags.
-        //! Passed string will be modified by the parser, unless rapidxml_ns::parse_non_destructive flag is used.
         //! The string must persist for the lifetime of the document.
-        //! In case of error, rapidxml_ns::parse_error exception will be thrown.
+        //! In case of error, rapidxml::parse_error exception will be thrown.
         //! <br><br>
         //! If you want to parse contents of a file, you must first load the file into the memory, and pass pointer to its beginning.
         //! Make sure that data is zero-terminated.
