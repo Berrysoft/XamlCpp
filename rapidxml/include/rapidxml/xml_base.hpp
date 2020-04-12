@@ -10,10 +10,8 @@
 
 #ifdef __cpp_lib_memory_resource
 #include <memory_resource>
-#elif __has_include(<experimental/memory_resource>)
-#include <experimental/memory_resource>
 #else
-#error Cannot find <memory_resource>
+#include <boost/container/pmr/polymorphic_allocator.hpp>
 #endif // __cpp_lib_memory_resource
 
 namespace rapidxml
@@ -23,7 +21,7 @@ namespace rapidxml
 #else
     namespace pmr
     {
-        using namespace std::experimental::pmr;
+        using namespace boost::container::pmr;
 
         template <class CharT, class Traits = std::char_traits<CharT>>
         using basic_string = std::basic_string<CharT, Traits, polymorphic_allocator<CharT>>;

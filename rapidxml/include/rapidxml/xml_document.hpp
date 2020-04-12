@@ -7,7 +7,7 @@
 #include <vector>
 
 #ifndef __cpp_lib_memory_resource
-#include <rapidxml/memory_pool.hpp>
+#include <boost/container/pmr/monotonic_buffer_resource.hpp>
 #endif // !__cpp_lib_memory_resource
 
 namespace rapidxml
@@ -139,14 +139,10 @@ namespace rapidxml
     class xml_document
     {
     private:
-#ifdef __cpp_lib_memory_resource
         // Size of static memory block.
         static constexpr size_t static_pool_size = 64 * 1024;
 
         pmr::monotonic_buffer_resource m_pool{ static_pool_size };
-#else
-        memory_pool m_pool{};
-#endif // __cpp_lib_memory_resource
 
         pmr::polymorphic_allocator<char> m_buffer_allocator{ &m_pool };
 

@@ -55,8 +55,8 @@ jobs:
     condition: eq(variables.rid, 'linux')
 
   - script: |
-      brew install ninja
-    displayName: 'Install ninja'
+      brew install ninja boost
+    displayName: 'Install ninja & boost'
     condition: eq(variables.plat, 'mac')
 
   - script: |

@@ -4,10 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <ostream>
-
-#if __has_include(<version>)
 #include <version>
-#endif // __has_include(<version>)
 
 #if __has_include(<compare>)
 #include <compare>

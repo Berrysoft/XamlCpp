@@ -13,7 +13,12 @@ target_include_directories(xaml_rapidxml
         ${PROJECT_SOURCE_DIR}/src
 )
 
-target_link_libraries(xaml_rapidxml xaml_global)
+target_link_libraries(xaml_rapidxml PUBLIC xaml_global)
+
+if(APPLE)
+    find_package(Boost REQUIRED container)
+    target_link_libraries(xaml_rapidxml PUBLIC Boost::container)
+endif()
 
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_rapidxml PRIVATE "RAPIDXML_API=__XAML_EXPORT")

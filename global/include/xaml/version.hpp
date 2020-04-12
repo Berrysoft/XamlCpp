@@ -3,10 +3,7 @@
 
 #include <ostream>
 #include <utility>
-
-#if __has_include(<version>)
 #include <version>
-#endif // __has_include(<version>)
 
 #if __has_include(<compare>)
 #include <compare>

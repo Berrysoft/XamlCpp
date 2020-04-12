@@ -8,12 +8,9 @@
 #include <sstream>
 #include <tuple>
 #include <utility>
+#include <version>
 #include <xaml/meta/conv.hpp>
 #include <xaml/strings.hpp>
-
-#if __has_include(<version>)
-#include <version>
-#endif // __has_include(<version>)
 
 #if __has_include(<compare>)
 #include <compare>
