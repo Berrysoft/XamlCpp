@@ -140,16 +140,8 @@ public:                                                                         
     ::std::size_t add_##name(::std::function<void(__VA_ARGS__)>&& f) { return m_##name += f; } \
     void remove_##name(::std::size_t token) { m_##name -= token; }
 
-#define ADD_EVENT(name)                                                                               \
-    ::xaml::__add_event_deduce_helper<self_type, decltype(::std::declval<self_type*>()->m_##name)>{}( \
-        *ref, #name,                                                                                  \
-        [](::std::shared_ptr<::xaml::meta_class> self, auto f) -> ::std::size_t {                     \
-            return ::std::static_pointer_cast<self_type>(self)->add_##name(::std::move(f));           \
-        },                                                                                            \
-        [](::std::shared_ptr<::xaml::meta_class> self, std::size_t token) -> void {                   \
-            ::std::static_pointer_cast<self_type>(self)->remove_##name(token);                        \
-        },                                                                                            \
-        &self_type::m_##name)
+#define ADD_EVENT(name) \
+    ::xaml::__add_event_deduce_helper<self_type, decltype(::std::declval<self_type*>()->m_##name)>{}(*ref, #name, &self_type::m_##name)
 
 #define __DETERMINE_NEQ_AND_RAISE_EVENT(name)                                           \
     if (m_##name != value)                                                              \

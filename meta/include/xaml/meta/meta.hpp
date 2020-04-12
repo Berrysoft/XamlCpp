@@ -370,20 +370,23 @@ namespace xaml
         std::vector<guid> args_type;
         std::function<std::shared_ptr<meta_class>(array_view<std::shared_ptr<meta_class>>)> func;
 
-        bool is_same_return_type(guid t) const noexcept { return return_type == t; }
-        bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        constexpr guid const& get_return_type() const noexcept { return return_type; }
+        constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
+
+        constexpr bool is_same_return_type(guid t) const noexcept { return return_type == t; }
+        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
         {
             return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
 
         template <typename Return>
-        bool is_same_return_type() const noexcept
+        constexpr bool is_same_return_type() const noexcept
         {
             return is_same_return_type(type_guid_v<Return>);
         }
 
         template <typename... Args>
-        bool is_same_arg_type() const noexcept
+        constexpr bool is_same_arg_type() const noexcept
         {
             return is_same_arg_type({ type_guid_v<Args>... });
         }
@@ -404,20 +407,23 @@ namespace xaml
         std::vector<guid> args_type;
         std::function<std::shared_ptr<meta_class>(std::shared_ptr<meta_class>, array_view<std::shared_ptr<meta_class>>)> func;
 
-        bool is_same_return_type(guid const& t) const noexcept { return return_type == t; }
-        bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        constexpr guid const& get_return_type() const noexcept { return return_type; }
+        constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
+
+        constexpr bool is_same_return_type(guid const& t) const noexcept { return return_type == t; }
+        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
         {
             return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
 
         template <typename Return>
-        bool is_same_return_type() const noexcept
+        constexpr bool is_same_return_type() const noexcept
         {
             return is_same_return_type(type_guid_v<Return>);
         }
 
         template <typename... Args>
-        bool is_same_arg_type() const noexcept
+        constexpr bool is_same_arg_type() const noexcept
         {
             return is_same_arg_type({ type_guid_v<Args>... });
         }
@@ -587,6 +593,7 @@ namespace xaml
 
     private:
         std::string m_name;
+        std::vector<guid> args_type;
         std::function<token_type(std::shared_ptr<meta_class>, type_erased_function const&)> adder;
         std::function<token_type(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)> adder_this;
         std::function<void(std::shared_ptr<meta_class>, token_type)> remover;
@@ -597,6 +604,19 @@ namespace xaml
         bool can_add() const noexcept { return (bool)adder; }
         bool can_remove() const noexcept { return (bool)remover; }
         bool can_invoke() const noexcept { return (bool)invoker; }
+
+        constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
+
+        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        {
+            return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
+        }
+
+        template <typename... Args>
+        constexpr bool is_same_arg_type() const noexcept
+        {
+            return is_same_arg_type({ type_guid_v<Args>... });
+        }
 
         token_type add(std::shared_ptr<meta_class> self, type_erased_function const& handler) const
         {
@@ -627,7 +647,7 @@ namespace xaml
         template <typename... Args>
         void invoke(std::shared_ptr<meta_class> self, Args... args) const
         {
-            invoker(self, { std::forward<Args>(args)... });
+            invoker(self, { box_value(std::forward<Args>(args))... });
         }
 
         friend class reflection_info;
@@ -823,23 +843,7 @@ namespace xaml
     public:
         XAML_META_API event_info const* get_event(std::string_view name) const noexcept;
 
-    protected:
-        XAML_META_API void __add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<std::size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker);
-
-    public:
-        template <typename... Args>
-        void add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
-        {
-            if (invoker)
-            {
-                __add_event(
-                    name, std::move(adder),
-                    [adder](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, type_erased_this_function const& func) -> std::size_t {
-                        return adder(self, *make_type_erased_function<void, Args...>([target, &func](Args... args) { func(target, { box_value(std::forward<Args>(args))... }); }));
-                    },
-                    std::move(remover), std::move(invoker));
-            }
-        }
+        XAML_META_API void add_event(std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, std::function<std::size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker);
     };
 
     template <typename T, typename TEvent>
@@ -848,13 +852,30 @@ namespace xaml
     template <typename T, typename... Args>
     struct __add_event_deduce_helper<T, event<Args...>>
     {
-        void operator()(reflection_info& ref, std::string_view name, std::function<std::size_t(std::shared_ptr<meta_class>, std::function<void(Args...)>)>&& adder, std::function<void(std::shared_ptr<meta_class>, std::size_t)>&& remover, event<Args...> T::*getter) const
+        void operator()(reflection_info& ref, std::string_view name, event<Args...> T::*getter) const
         {
-            ref.add_event<Args...>(
+            ref.add_event(
                 name,
-                std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>([adder](std::shared_ptr<meta_class> self, type_erased_function const& f) -> std::size_t { return adder(self, [f](Args... args) { f({ box_value(std::forward<Args>(args))... }); }); }),
-                std::move(remover),
-                make_type_erased_this_function<T, void, Args...>([getter](std::shared_ptr<T> self, Args... args) { (self.get()->*getter)(std::forward<Args>(args)...); }));
+                std::function<std::size_t(std::shared_ptr<meta_class>, type_erased_function const&)>(
+                    [getter](std::shared_ptr<meta_class> self, type_erased_function const& f) -> std::size_t {
+                        return (self->shared_from_this<T>().get()->*getter) += [f](Args... args) {
+                            f({ box_value(std::forward<Args>(args))... });
+                        };
+                    }),
+                std::function<std::size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>(
+                    [getter](std::shared_ptr<meta_class> self, std::shared_ptr<meta_class> target, type_erased_this_function const& f) -> std::size_t {
+                        return (self->shared_from_this<T>().get()->*getter) += [target, f](Args... args) {
+                            f(target, { box_value(std::forward<Args>(args))... });
+                        };
+                    }),
+                std::function<void(std::shared_ptr<meta_class>, std::size_t)>(
+                    [getter](std::shared_ptr<meta_class> self, std::size_t token) -> void {
+                        (self->shared_from_this<T>().get()->*getter) -= token;
+                    }),
+                make_type_erased_this_function<T, void, Args...>(
+                    [getter](std::shared_ptr<T> self, Args... args) {
+                        (self.get()->*getter)(std::forward<Args>(args)...);
+                    }));
         }
     };
 
