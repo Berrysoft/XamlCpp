@@ -3,6 +3,7 @@
 
 #include <list>
 #include <rapidxml/utility.hpp>
+#include <stdexcept>
 #include <string_view>
 #include <vector>
 #include <version>
@@ -43,30 +44,24 @@ namespace rapidxml
     //! This function must be defined by the user.
     //! <br><br>
     //! This class derives from <code>std::exception</code> class.
-    class parse_error : public std::exception
+    class parse_error : public std::logic_error
     {
     private:
-        const char* m_what;
-        const char* m_where;
+        std::size_t m_where;
 
     public:
         //! Constructs parse error
-        parse_error(const char* what, const char* where)
-            : m_what(what), m_where(where)
+        parse_error(const char* what, std::size_t where) noexcept
+            : logic_error(what), m_where(where)
         {
         }
 
-        //! Gets human readable description of error.
-        //! \return Pointer to null terminated description of the error.
-        virtual const char* what() const throw()
-        {
-            return m_what;
-        }
+        ~parse_error() override {}
 
         //! Gets pointer to character data where error happened.
         //! char should be the same as char type of xml_document that produced the error.
         //! \return Pointer to location within the parsed string where error occured.
-        const char* where() const
+        constexpr std::size_t where() const noexcept
         {
             return m_where;
         }

@@ -113,7 +113,7 @@ namespace rapidxml
                         node.namespace_uri((*it)->value());
                         return;
                     }
-                throw parse_error("No namespace definition found", nullptr);
+                throw parse_error("No namespace definition found", 0);
             }
         };
     };
@@ -137,7 +137,7 @@ namespace rapidxml
     // Detect whitespace character
     struct whitespace_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return ch == ' ' || ch == '\n' || ch == '\r' || ch == '\t';
         }
@@ -146,7 +146,7 @@ namespace rapidxml
     // Detect node name character
     struct node_name_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return ch && !whitespace_pred::test(ch) && ch != '/' && ch != '>' && ch != '?';
         }
@@ -155,7 +155,7 @@ namespace rapidxml
     // Detect node name character without ':' (NCName) - namespace prefix or local name
     struct node_ncname_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return node_name_pred::test(ch) && ch != ':';
         }
@@ -164,7 +164,7 @@ namespace rapidxml
     // Detect attribute name character
     struct attribute_name_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return node_name_pred::test(ch) && ch != '<' && ch != '!' && ch != '=';
         }
@@ -173,34 +173,34 @@ namespace rapidxml
     // Detect attribute name character without ':' (NCName) - namespace prefix or local name
     struct attribute_ncname_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return attribute_name_pred::test(ch) && ch != ':';
         }
     };
 
-    // Detect text character (PCDATA)
+    // Detectbuffercharacter (PCDATA)
     struct text_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return ch && ch != '<';
         }
     };
 
-    // Detect text character (PCDATA) that does not require processing
+    // Detectbuffercharacter (PCDATA) that does not require processing
     struct text_pure_no_ws_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return text_pred::test(ch) && ch != '&';
         }
     };
 
-    // Detect text character (PCDATA) that does not require processing
+    // Detectbuffercharacter (PCDATA) that does not require processing
     struct text_pure_with_ws_pred
     {
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return text_pure_no_ws_pred::test(ch) && whitespace_pred::test(ch);
         }
@@ -212,7 +212,7 @@ namespace rapidxml
     {
         static_assert(Quote == '\"' || Quote == '\'');
 
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return ch && ch != Quote;
         }
@@ -224,61 +224,93 @@ namespace rapidxml
     {
         static_assert(Quote == '\"' || Quote == '\'');
 
-        static constexpr bool test(char ch)
+        static constexpr bool test(char ch) noexcept
         {
             return attribute_value_pred<Quote>::test(ch) && ch != '&';
         }
     };
 
+    struct parse_buffer
+    {
+        char* const begin;
+        char* current;
+
+        constexpr char& operator[](intptr_t index) noexcept { return current[index]; }
+        constexpr char const& operator[](intptr_t index) const noexcept { return current[index]; }
+
+        constexpr parse_buffer& operator++()
+        {
+            current++;
+            return *this;
+        }
+
+        constexpr parse_buffer operator++(int)
+        {
+            parse_buffer result = *this;
+            operator++();
+            return result;
+        }
+
+        constexpr parse_buffer& operator+=(intptr_t offset)
+        {
+            current += offset;
+            return *this;
+        }
+
+        constexpr operator char*() noexcept { return current; }
+        constexpr operator char const *() const noexcept { return current; }
+        constexpr operator size_t() const noexcept { return current - begin; }
+    };
+
     // Skip characters until predicate evaluates to true
     template <class StopPred>
-    static constexpr void skip(char*& text)
+    static constexpr void skip(parse_buffer& buffer) noexcept
     {
-        char* tmp = text;
+        char* tmp = buffer;
         while (StopPred::test(*tmp))
             ++tmp;
-        text = tmp;
+        buffer.current = tmp;
     }
 
     // Insert coded character, using UTF8
-    static void insert_coded_character(char*& text, int32_t code)
+    static constexpr void insert_coded_character(parse_buffer& buffer, int32_t code)
     {
         // Insert UTF8 sequence
         if (code < 0x80) // 1 byte sequence
         {
-            text[0] = static_cast<char>(code);
-            text += 1;
+            buffer[0] = static_cast<char>(code);
+            buffer += 1;
         }
         else if (code < 0x800) // 2 byte sequence
         {
-            text[1] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[1] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[0] = static_cast<char>(code | 0xC0);
-            text += 2;
+            buffer[0] = static_cast<char>(code | 0xC0);
+            buffer += 2;
         }
         else if (code < 0x10000) // 3 byte sequence
         {
-            text[2] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[2] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[1] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[1] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[0] = static_cast<char>(code | 0xE0);
-            text += 3;
+            buffer[0] = static_cast<char>(code | 0xE0);
+            buffer += 3;
         }
         else if (code < 0x110000) // 4 byte sequence
         {
-            text[3] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[3] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[2] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[2] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[1] = static_cast<char>((code | 0x80) & 0xBF);
+            buffer[1] = static_cast<char>((code | 0x80) & 0xBF);
             code >>= 6;
-            text[0] = static_cast<char>(code | 0xF0);
-            text += 4;
+            buffer[0] = static_cast<char>(code | 0xF0);
+            buffer += 4;
         }
         else // Invalid, only codes up to 0x10FFFF are allowed in Unicode
         {
-            throw parse_error("invalid numeric character entity", text);
+            throw parse_error("invalid numeric character entity", buffer);
         }
     }
 
@@ -286,14 +318,14 @@ namespace rapidxml
     // - replacing XML character entity references with proper characters (&apos; &amp; &quot; &lt; &gt; &#...;)
     // - condensing whitespace sequences to single space character
     template <class StopPred, class StopPredPure>
-    static char* skip_and_expand_character_refs(char*& text, parse_flag flags)
+    static char* skip_and_expand_character_refs(parse_buffer& buffer, parse_flag flags)
     {
         // Use simple skip until first modification is detected
-        skip<StopPredPure>(text);
+        skip<StopPredPure>(buffer);
 
         // Use translation skip
-        char* src = text;
-        char* dest = src;
+        parse_buffer src = buffer;
+        parse_buffer dest = src;
         while (StopPred::test(*src))
         {
             // Test if replacement is needed
@@ -313,7 +345,7 @@ namespace rapidxml
                     }
                     if (src[2] == 'p' && src[3] == 'o' && src[4] == 's' && src[5] == ';')
                     {
-                        *dest = char('\'');
+                        *dest = '\'';
                         ++dest;
                         src += 6;
                         continue;
@@ -417,175 +449,184 @@ namespace rapidxml
         }
 
         // Return new end
-        text = src;
+        buffer.current = src.current;
         return dest;
     }
 
     // Parse BOM, if any
-    static void parse_bom(char*& text)
+    static void parse_bom(parse_buffer& buffer)
     {
         // UTF-8?
-        if (static_cast<unsigned char>(text[0]) == 0xEF &&
-            static_cast<unsigned char>(text[1]) == 0xBB &&
-            static_cast<unsigned char>(text[2]) == 0xBF)
+        if (static_cast<unsigned char>(buffer[0]) == 0xEF &&
+            static_cast<unsigned char>(buffer[1]) == 0xBB &&
+            static_cast<unsigned char>(buffer[2]) == 0xBF)
         {
-            text += 3; // Skup utf-8 bom
+            buffer += 3; // Skup utf-8 bom
         }
     }
 
+    struct parse_context
+    {
+        parse_flag flags;
+        pmr::polymorphic_allocator<xml_node> const& node_allocator;
+        pmr::polymorphic_allocator<xml_attribute> const& attr_allocator;
+    };
+
     // Parse XML declaration (<?xml...)
-    static std::optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_xml_declaration(parse_buffer& buffer, parse_context const& context);
 
     // Parse XML comment (<!--...)
-    static std::optional<xml_node> parse_comment(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_comment(parse_buffer& buffer, parse_context const& context);
 
     // Parse DOCTYPE
-    static std::optional<xml_node> parse_doctype(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_doctype(parse_buffer& buffer, parse_context const& context);
 
     // Parse PI
-    static std::optional<xml_node> parse_pi(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_pi(parse_buffer& buffer, parse_context const& context);
 
     // Parse and append data
     // Return character that ends data.
     // This is necessary because this character might have been overwritten by a terminating 0
-    static char parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static char parse_and_append_data(xml_node& node, parse_buffer& buffer, char* contents_start, parse_context const& context);
 
     // Parse CDATA
-    static std::optional<xml_node> parse_cdata(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_cdata(parse_buffer& buffer, parse_context const& context);
 
     // Parse element node
-    static std::optional<xml_node> parse_element(char*& text, typename xml_namespace_processor::scope namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_element(parse_buffer& buffer, typename xml_namespace_processor::scope namespace_scope, parse_context const& context);
 
     // Determine node type, and parse it
-    static std::optional<xml_node> parse_node(char*& text, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static std::optional<xml_node> parse_node(parse_buffer& buffer, typename xml_namespace_processor::scope const& namespace_scope, parse_context const& context);
 
     // Parse contents of the node - children, data etc.
-    static void parse_node_contents(char*& text, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static void parse_node_contents(parse_buffer& buffer, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_context const& context);
 
     // Parse XML attributes of the node
-    static void parse_node_attributes(char*& text, xml_node& node, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator);
+    static void parse_node_attributes(parse_buffer& buffer, xml_node& node, parse_context const& context);
 
     void xml_document::parse(char* text, parse_flag flags)
     {
         if (text)
         {
+            parse_buffer buffer{ text, text };
+
             xml_namespace_processor namespace_processor;
             // Creating topmost namespace scope that actually won't be used
             typename xml_namespace_processor::scope const namespace_scope(namespace_processor);
 
             // Parse BOM, if any
-            parse_bom(text);
+            parse_bom(buffer);
 
             // Parse children
             while (1)
             {
                 // Skip whitespace before node
-                skip<whitespace_pred>(text);
-                if (!*text)
+                skip<whitespace_pred>(buffer);
+                if (!*buffer)
                     break;
 
                 // Parse and append new child
-                if (*text == '<')
+                if (*buffer == '<')
                 {
-                    ++text; // Skip '<'
-                    if (auto node = parse_node(text, namespace_scope, flags, m_node_allocator, m_attribute_allocator))
+                    ++buffer; // Skip '<'
+                    if (auto node = parse_node(buffer, namespace_scope, { flags, m_node_allocator, m_attribute_allocator }))
                         m_root_node.nodes().emplace_back(move(*node));
                 }
                 else
-                    throw parse_error("expected <", text);
+                    throw parse_error("expected <", buffer);
             }
         }
     }
 
-    optional<xml_node> parse_xml_declaration(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_xml_declaration(parse_buffer& buffer, parse_context const& context)
     {
         // If parsing of declaration is disabled
-        if (!(flags & parse_flag::declaration_node))
+        if (!(context.flags & parse_flag::declaration_node))
         {
             // Skip until end of declaration
-            while (text[0] != '?' || text[1] != '>')
+            while (buffer[0] != '?' || buffer[1] != '>')
             {
-                if (!text[0])
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (!buffer[0])
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
-            text += 2; // Skip '?>'
+            buffer += 2; // Skip '?>'
             return nullopt;
         }
 
         // Create declaration
-        xml_node declaration{ node_type::declaration, node_allocator, attr_allocator };
+        xml_node declaration{ node_type::declaration, context.node_allocator, context.attr_allocator };
 
         // Skip whitespace before attributes or ?>
-        skip<whitespace_pred>(text);
+        skip<whitespace_pred>(buffer);
 
         // Parse declaration attributes
-        parse_node_attributes(text, declaration, flags, node_allocator, attr_allocator);
+        parse_node_attributes(buffer, declaration, context);
 
         // Skip ?>
-        if (text[0] != '?' || text[1] != '>')
-            throw parse_error("expected ?>", text);
-        text += 2;
+        if (buffer[0] != '?' || buffer[1] != '>')
+            throw parse_error("expected ?>", buffer);
+        buffer += 2;
 
         return make_optional(move(declaration));
     }
 
-    optional<xml_node> parse_comment(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_comment(parse_buffer& buffer, parse_context const& context)
     {
         // If parsing of comments is disabled
-        if (!(flags & parse_flag::comment_nodes))
+        if (!(context.flags & parse_flag::comment_nodes))
         {
             // Skip until end of comment
-            while (text[0] != '-' || text[1] != '-' || text[2] != '>')
+            while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
             {
-                if (!text[0])
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (!buffer[0])
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
-            text += 3; // Skip '-->'
+            buffer += 3; // Skip '-->'
             return nullopt; // Do not produce comment node
         }
 
         // Remember value start
-        char* value = text;
+        char* value = buffer;
 
         // Skip until end of comment
-        while (text[0] != '-' || text[1] != '-' || text[2] != '>')
+        while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
         {
-            if (!text[0])
-                throw parse_error("unexpected end of data", text);
-            ++text;
+            if (!buffer[0])
+                throw parse_error("unexpected end of data", buffer);
+            ++buffer;
         }
 
         // Create comment node
-        xml_node comment{ node_type::comment, node_allocator, attr_allocator };
-        comment.value(string_view(value, text - value));
+        xml_node comment{ node_type::comment, context.node_allocator, context.attr_allocator };
+        comment.value(string_view(value, buffer - value));
 
-        text += 3; // Skip '-->'
+        buffer += 3; // Skip '-->'
         return make_optional(move(comment));
     }
 
-    optional<xml_node> parse_doctype(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_doctype(parse_buffer& buffer, parse_context const& context)
     {
         // Remember value start
-        char* value = text;
+        char* value = buffer;
 
         // Skip to >
-        while (*text != '>')
+        while (*buffer != '>')
         {
             // Determine character type
-            switch (*text)
+            switch (*buffer)
             {
 
             // If '[' encountered, scan for matching ending ']' using naive algorithm with depth
             // This works for all W3C test files except for 2 most wicked
             case '[':
             {
-                ++text; // Skip '['
+                ++buffer; // Skip '['
                 int depth = 1;
                 while (depth > 0)
                 {
-                    switch (*text)
+                    switch (*buffer)
                     {
                     case '[':
                         ++depth;
@@ -594,106 +635,106 @@ namespace rapidxml
                         --depth;
                         break;
                     case 0:
-                        throw parse_error("unexpected end of data", text);
+                        throw parse_error("unexpected end of data", buffer);
                     }
-                    ++text;
+                    ++buffer;
                 }
                 break;
             }
 
             // Error on end of text
             case '\0':
-                throw parse_error("unexpected end of data", text);
+                throw parse_error("unexpected end of data", buffer);
 
             // Other character, skip it
             default:
-                ++text;
+                ++buffer;
             }
         }
 
         // If DOCTYPE nodes enabled
-        if (flags & parse_flag::doctype_node)
+        if (context.flags & parse_flag::doctype_node)
         {
             // Create a new doctype node
-            xml_node doctype{ node_type::doctype, node_allocator, attr_allocator };
-            doctype.value(string_view(value, text - value));
+            xml_node doctype{ node_type::doctype, context.node_allocator, context.attr_allocator };
+            doctype.value(string_view(value, buffer - value));
 
-            text += 1; // skip '>'
+            buffer += 1; // skip '>'
             return make_optional(move(doctype));
         }
         else
         {
-            text += 1; // skip '>'
+            buffer += 1; // skip '>'
             return nullopt;
         }
     }
 
-    optional<xml_node> parse_pi(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_pi(parse_buffer& buffer, parse_context const& context)
     {
         // If creation of PI nodes is enabled
-        if (flags & parse_flag::pi_nodes)
+        if (context.flags & parse_flag::pi_nodes)
         {
             // Create pi node
-            xml_node pi{ node_type::pi, node_allocator, attr_allocator };
+            xml_node pi{ node_type::pi, context.node_allocator, context.attr_allocator };
 
             // Extract PI target name
-            char* name = text;
-            skip<node_name_pred>(text);
-            if (text == name)
-                throw parse_error("expected PI target", text);
-            pi.name(string_view(name, text - name));
+            char* name = buffer;
+            skip<node_name_pred>(buffer);
+            if (buffer.current == name)
+                throw parse_error("expected PI target", buffer);
+            pi.name(string_view(name, buffer - name));
 
             // Skip whitespace between pi target and pi
-            skip<whitespace_pred>(text);
+            skip<whitespace_pred>(buffer);
 
             // Remember start of pi
-            char* value = text;
+            char* value = buffer;
 
             // Skip to '?>'
-            while (text[0] != '?' || text[1] != '>')
+            while (buffer[0] != '?' || buffer[1] != '>')
             {
-                if (*text == '\0')
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (*buffer == '\0')
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
 
             // Set pi value (verbatim, no entity expansion or whitespace normalization)
-            pi.value(string_view(value, text - value));
+            pi.value(string_view(value, buffer - value));
 
-            text += 2; // Skip '?>'
+            buffer += 2; // Skip '?>'
             return make_optional(move(pi));
         }
         else
         {
             // Skip to '?>'
-            while (text[0] != '?' || text[1] != '>')
+            while (buffer[0] != '?' || buffer[1] != '>')
             {
-                if (*text == '\0')
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (*buffer == '\0')
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
-            text += 2; // Skip '?>'
+            buffer += 2; // Skip '?>'
             return nullopt;
         }
     }
 
-    char parse_and_append_data(xml_node& node, char*& text, char* contents_start, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    char parse_and_append_data(xml_node& node, parse_buffer& buffer, char* contents_start, parse_context const& context)
     {
         // Backup to contents start if whitespace trimming is disabled
-        if (!(flags & parse_flag::trim_whitespace))
-            text = contents_start;
+        if (!(context.flags & parse_flag::trim_whitespace))
+            buffer.current = contents_start;
 
         // Skip until end of data
-        char *value = text, *end;
-        if (flags & parse_flag::normalize_whitespace)
-            end = skip_and_expand_character_refs<text_pred, text_pure_with_ws_pred>(text, flags);
+        char *value = buffer, *end;
+        if (context.flags & parse_flag::normalize_whitespace)
+            end = skip_and_expand_character_refs<text_pred, text_pure_with_ws_pred>(buffer, context.flags);
         else
-            end = skip_and_expand_character_refs<text_pred, text_pure_no_ws_pred>(text, flags);
+            end = skip_and_expand_character_refs<text_pred, text_pure_no_ws_pred>(buffer, context.flags);
 
         // Trim trailing whitespace if flag is set; leading was already trimmed by whitespace skip after >
-        if (flags & parse_flag::trim_whitespace)
+        if (context.flags & parse_flag::trim_whitespace)
         {
-            if (flags & parse_flag::normalize_whitespace)
+            if (context.flags & parse_flag::normalize_whitespace)
             {
                 // Whitespace is already condensed to single space characters by skipping function, so just trim 1 char off the end
                 if (*(end - 1) == ' ')
@@ -709,202 +750,202 @@ namespace rapidxml
 
         // If characters are still left between end and value (this test is only necessary if normalization is enabled)
         // Create new data node
-        if (!(flags & parse_flag::no_data_nodes))
+        if (!(context.flags & parse_flag::no_data_nodes))
         {
-            xml_node data{ node_type::data, node_allocator, attr_allocator };
+            xml_node data{ node_type::data, context.node_allocator, context.attr_allocator };
             data.value(string_view(value, end - value));
             node.nodes().emplace_back(move(data));
         }
 
         // Add data to parent node if no data exists yet
-        if (!(flags & parse_flag::no_element_values))
+        if (!(context.flags & parse_flag::no_element_values))
             if (node.value().empty())
                 node.value(string_view(value, end - value));
 
         // Return character that ends data
-        return *text;
+        return *buffer;
     }
 
-    optional<xml_node> parse_cdata(char*& text, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_cdata(parse_buffer& buffer, parse_context const& context)
     {
         // If CDATA is disabled
-        if (flags & parse_flag::no_data_nodes)
+        if (context.flags & parse_flag::no_data_nodes)
         {
             // Skip until end of cdata
-            while (text[0] != ']' || text[1] != ']' || text[2] != '>')
+            while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
             {
-                if (!text[0])
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (!buffer[0])
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
-            text += 3; // Skip ]]>
+            buffer += 3; // Skip ]]>
             return nullopt; // Do not produce CDATA node
         }
 
         // Skip until end of cdata
-        char* value = text;
-        while (text[0] != ']' || text[1] != ']' || text[2] != '>')
+        char* value = buffer;
+        while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
         {
-            if (!text[0])
-                throw parse_error("unexpected end of data", text);
-            ++text;
+            if (!buffer[0])
+                throw parse_error("unexpected end of data", buffer);
+            ++buffer;
         }
 
         // Create new cdata node
-        xml_node cdata{ node_type::cdata, node_allocator, attr_allocator };
-        cdata.value(string_view(value, text - value));
+        xml_node cdata{ node_type::cdata, context.node_allocator, context.attr_allocator };
+        cdata.value(string_view(value, buffer - value));
 
-        text += 3; // Skip ]]>
+        buffer += 3; // Skip ]]>
         return make_optional(move(cdata));
     }
 
-    optional<xml_node> parse_element(char*& text, typename xml_namespace_processor::scope namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_element(parse_buffer& buffer, typename xml_namespace_processor::scope namespace_scope, parse_context const& context)
     {
         // Create element node
-        xml_node element{ node_type::element, node_allocator, attr_allocator };
+        xml_node element{ node_type::element, context.node_allocator, context.attr_allocator };
 
         // Extract element name
-        char* name = text;
-        skip<node_ncname_pred>(text);
-        if (text == name)
-            throw parse_error("expected element name", text);
-        if (*text == ':')
+        char* name = buffer;
+        skip<node_ncname_pred>(buffer);
+        if (buffer.current == name)
+            throw parse_error("expected element name", buffer);
+        if (*buffer == ':')
         {
             // Namespace prefix found
-            ++text;
-            char* local_name = text;
-            skip<node_ncname_pred>(text);
-            if (*text == ':')
-                throw parse_error("second colon in element name", text);
-            if (text == local_name)
-                throw parse_error("expected local part of element name", text);
-            element.qname(string_view(name, text - name), local_name - name);
+            ++buffer;
+            char* local_name = buffer;
+            skip<node_ncname_pred>(buffer);
+            if (*buffer == ':')
+                throw parse_error("second colon in element name", buffer);
+            if (buffer.current == local_name)
+                throw parse_error("expected local part of element name", buffer);
+            element.qname(string_view(name, buffer - name), local_name - name);
         }
         else
-            element.qname(string_view(name, text - name));
+            element.qname(string_view(name, buffer - name));
 
         // Skip whitespace between element name and attributes or >
-        skip<whitespace_pred>(text);
+        skip<whitespace_pred>(buffer);
 
         // Parse attributes, if any
-        parse_node_attributes(text, element, flags, node_allocator, attr_allocator);
+        parse_node_attributes(buffer, element, context);
 
         // Setting attributes and element own namespace_uri, adding declared
         // namespace prefixes and probably setting default namespace
         namespace_scope.process_element(element);
 
         // Determine ending type
-        if (*text == '>')
+        if (*buffer == '>')
         {
-            ++text;
-            parse_node_contents(text, element, namespace_scope, flags, node_allocator, attr_allocator);
+            ++buffer;
+            parse_node_contents(buffer, element, namespace_scope, context);
         }
-        else if (*text == '/')
+        else if (*buffer == '/')
         {
-            ++text;
-            if (*text != '>')
-                throw parse_error("expected >", text);
-            ++text;
+            ++buffer;
+            if (*buffer != '>')
+                throw parse_error("expected >", buffer);
+            ++buffer;
         }
         else
-            throw parse_error("expected >", text);
+            throw parse_error("expected >", buffer);
 
         // Return parsed element
         return make_optional(move(element));
     }
 
-    optional<xml_node> parse_node(char*& text, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    optional<xml_node> parse_node(parse_buffer& buffer, typename xml_namespace_processor::scope const& namespace_scope, parse_context const& context)
     {
         // Parse proper node type
-        switch (text[0])
+        switch (buffer[0])
         {
 
         // <...
         default:
             // Parse and append element node
-            return parse_element(text, namespace_scope, flags, node_allocator, attr_allocator);
+            return parse_element(buffer, namespace_scope, context);
 
         // <?...
         case '?':
-            ++text; // Skip ?
-            if ((text[0] == 'x' || text[0] == 'X') &&
-                (text[1] == 'm' || text[1] == 'M') &&
-                (text[2] == 'l' || text[2] == 'L') &&
-                whitespace_pred::test(text[3]))
+            ++buffer; // Skip ?
+            if ((buffer[0] == 'x' || buffer[0] == 'X') &&
+                (buffer[1] == 'm' || buffer[1] == 'M') &&
+                (buffer[2] == 'l' || buffer[2] == 'L') &&
+                whitespace_pred::test(buffer[3]))
             {
                 // '<?xml ' - xml declaration
-                text += 4; // Skip 'xml '
-                return parse_xml_declaration(text, flags, node_allocator, attr_allocator);
+                buffer += 4; // Skip 'xml '
+                return parse_xml_declaration(buffer, context);
             }
             else
             {
                 // Parse PI
-                return parse_pi(text, flags, node_allocator, attr_allocator);
+                return parse_pi(buffer, context);
             }
 
         // <!...
         case '!':
 
             // Parse proper subset of <! node
-            switch (text[1])
+            switch (buffer[1])
             {
 
             // <!-
             case '-':
-                if (text[2] == '-')
+                if (buffer[2] == '-')
                 {
                     // '<!--' - xml comment
-                    text += 3; // Skip '!--'
-                    return parse_comment(text, flags, node_allocator, attr_allocator);
+                    buffer += 3; // Skip '!--'
+                    return parse_comment(buffer, context);
                 }
                 break;
 
             // <![
             case '[':
-                if (text[2] == 'C' && text[3] == 'D' && text[4] == 'A' &&
-                    text[5] == 'T' && text[6] == 'A' && text[7] == '[')
+                if (buffer[2] == 'C' && buffer[3] == 'D' && buffer[4] == 'A' &&
+                    buffer[5] == 'T' && buffer[6] == 'A' && buffer[7] == '[')
                 {
                     // '<![CDATA[' - cdata
-                    text += 8; // Skip '![CDATA['
-                    return parse_cdata(text, flags, node_allocator, attr_allocator);
+                    buffer += 8; // Skip '![CDATA['
+                    return parse_cdata(buffer, context);
                 }
                 break;
 
             // <!D
             case 'D':
-                if (text[2] == 'O' && text[3] == 'C' && text[4] == 'T' &&
-                    text[5] == 'Y' && text[6] == 'P' && text[7] == 'E' &&
-                    whitespace_pred::test(text[8]))
+                if (buffer[2] == 'O' && buffer[3] == 'C' && buffer[4] == 'T' &&
+                    buffer[5] == 'Y' && buffer[6] == 'P' && buffer[7] == 'E' &&
+                    whitespace_pred::test(buffer[8]))
                 {
                     // '<!DOCTYPE ' - doctype
-                    text += 9; // skip '!DOCTYPE '
-                    return parse_doctype(text, flags, node_allocator, attr_allocator);
+                    buffer += 9; // skip '!DOCTYPE '
+                    return parse_doctype(buffer, context);
                 }
 
             } // switch
 
             // Attempt to skip other, unrecognized node types starting with <!
-            ++text; // Skip !
-            while (*text != '>')
+            ++buffer; // Skip !
+            while (*buffer != '>')
             {
-                if (*text == 0)
-                    throw parse_error("unexpected end of data", text);
-                ++text;
+                if (*buffer == 0)
+                    throw parse_error("unexpected end of data", buffer);
+                ++buffer;
             }
-            ++text; // Skip '>'
+            ++buffer; // Skip '>'
             return nullopt; // No node recognized
         }
     }
 
-    void parse_node_contents(char*& text, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    void parse_node_contents(parse_buffer& buffer, xml_node& node, typename xml_namespace_processor::scope const& namespace_scope, parse_context const& context)
     {
         // For all children and text
         while (1)
         {
             // Skip whitespace between > and node contents
-            char* contents_start = text; // Store start of node contents before whitespace is skipped
-            skip<whitespace_pred>(text);
-            char next_char = *text;
+            char* contents_start = buffer; // Store start of node contents before whitespace is skipped
+            skip<whitespace_pred>(buffer);
+            char next_char = *buffer;
 
         // After data nodes, instead of continuing the loop, control jumps here.
         // This is because zero termination inside parse_and_append_data() function
@@ -918,112 +959,112 @@ namespace rapidxml
 
             // Node closing or child node
             case '<':
-                if (text[1] == '/')
+                if (buffer[1] == '/')
                 {
                     // Node closing
-                    text += 2; // Skip '</'
-                    if (flags & parse_flag::validate_closing_tags)
+                    buffer += 2; // Skip '</'
+                    if (context.flags & parse_flag::validate_closing_tags)
                     {
                         // Skip and validate closing tag name
-                        char* closing_name = text;
-                        skip<node_name_pred>(text);
-                        if (node.name() != string_view(closing_name, text - closing_name))
-                            throw parse_error("invalid closing tag name", text);
+                        char* closing_name = buffer;
+                        skip<node_name_pred>(buffer);
+                        if (node.name() != string_view(closing_name, buffer - closing_name))
+                            throw parse_error("invalid closing tag name", buffer);
                     }
                     else
                     {
                         // No validation, just skip name
-                        skip<node_name_pred>(text);
+                        skip<node_name_pred>(buffer);
                     }
                     // Skip remaining whitespace after node name
-                    skip<whitespace_pred>(text);
-                    if (*text != '>')
-                        throw parse_error("expected >", text);
-                    ++text; // Skip '>'
+                    skip<whitespace_pred>(buffer);
+                    if (*buffer != '>')
+                        throw parse_error("expected >", buffer);
+                    ++buffer; // Skip '>'
                     return; // Node closed, finished parsing contents
                 }
                 else
                 {
                     // charild node
-                    ++text; // Skip '<'
-                    if (auto child = parse_node(text, namespace_scope, flags, node_allocator, attr_allocator))
+                    ++buffer; // Skip '<'
+                    if (auto child = parse_node(buffer, namespace_scope, context))
                         node.nodes().emplace_back(move(*child));
                 }
                 break;
 
             // End of data - error
             case '\0':
-                throw parse_error("unexpected end of data", text);
+                throw parse_error("unexpected end of data", buffer);
 
             // Data node
             default:
-                next_char = parse_and_append_data(node, text, contents_start, flags, node_allocator, attr_allocator);
+                next_char = parse_and_append_data(node, buffer, contents_start, context);
                 goto after_data_node; // Bypass regular processing after data nodes
             }
         }
     }
 
-    void parse_node_attributes(char*& text, xml_node& node, parse_flag flags, pmr::polymorphic_allocator<xml_node> const& node_allocator, pmr::polymorphic_allocator<xml_attribute> const& attr_allocator)
+    void parse_node_attributes(parse_buffer& buffer, xml_node& node, parse_context const& context)
     {
         // For all attributes
-        while (attribute_ncname_pred::test(*text))
+        while (attribute_ncname_pred::test(*buffer))
         {
             // Extract attribute name
-            char* name = text;
-            ++text; // Skip first character of attribute name
-            skip<attribute_ncname_pred>(text);
-            if (text == name)
+            parse_buffer name = buffer;
+            ++buffer; // Skip first character of attribute name
+            skip<attribute_ncname_pred>(buffer);
+            if (buffer.current == name)
                 throw parse_error("expected attribute name", name);
             // Create new attribute
             xml_attribute attribute{};
-            if (*text == ':')
+            if (*buffer == ':')
             {
                 // Namespace prefix found
-                ++text;
-                char* local_name = text;
-                skip<attribute_ncname_pred>(text);
-                if (text == local_name)
+                ++buffer;
+                parse_buffer local_name = buffer;
+                skip<attribute_ncname_pred>(buffer);
+                if (buffer.current == local_name)
                     throw parse_error("expected local part of attribute name", local_name);
-                attribute.qname(string_view(name, text - name), local_name - name);
+                attribute.qname(string_view(name, buffer.current - name), local_name.current - name);
             }
             else
-                attribute.qname(string_view(name, text - name));
+                attribute.qname(string_view(name, buffer.current - name));
 
             // Skip whitespace after attribute name
-            skip<whitespace_pred>(text);
+            skip<whitespace_pred>(buffer);
 
             // Skip =
-            if (*text != '=')
-                throw parse_error("expected =", text);
-            ++text;
+            if (*buffer != '=')
+                throw parse_error("expected =", buffer);
+            ++buffer;
 
             // Skip whitespace after =
-            skip<whitespace_pred>(text);
+            skip<whitespace_pred>(buffer);
 
             // Skip quote and remember if it was ' or "
-            char quote = *text;
-            if (quote != char('\'') && quote != '"')
-                throw parse_error("expected ' or \"", text);
-            ++text;
+            char quote = *buffer;
+            if (quote != '\'' && quote != '"')
+                throw parse_error("expected ' or \"", buffer);
+            ++buffer;
 
             // Extract attribute value and expand char refs in it
-            char *value = text, *end;
-            parse_flag AttFlags{ flags & ~parse_flag::normalize_whitespace }; // No whitespace normalization in attributes
-            if (quote == char('\''))
-                end = skip_and_expand_character_refs<attribute_value_pred<char('\'')>, attribute_value_pure_pred<char('\'')>>(text, AttFlags);
+            char *value = buffer, *end;
+            parse_flag AttFlags{ context.flags & ~parse_flag::normalize_whitespace }; // No whitespace normalization in attributes
+            if (quote == '\'')
+                end = skip_and_expand_character_refs<attribute_value_pred<'\''>, attribute_value_pure_pred<'\''>>(buffer, AttFlags);
             else
-                end = skip_and_expand_character_refs<attribute_value_pred<'"'>, attribute_value_pure_pred<'"'>>(text, AttFlags);
+                end = skip_and_expand_character_refs<attribute_value_pred<'"'>, attribute_value_pure_pred<'"'>>(buffer, AttFlags);
 
             // Set attribute value
             attribute.value(string_view(value, end - value));
 
             // Make sure that end quote is present
-            if (*text != quote)
-                throw parse_error("expected ' or \"", text);
-            ++text; // Skip quote
+            if (*buffer != quote)
+                throw parse_error("expected ' or \"", buffer);
+            ++buffer; // Skip quote
 
             // Skip whitespace after attribute value
-            skip<whitespace_pred>(text);
+            skip<whitespace_pred>(buffer);
 
             node.attributes().emplace_back(move(attribute));
         }
