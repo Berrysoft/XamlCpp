@@ -113,7 +113,7 @@ namespace rapidxml
                         node.namespace_uri((*it)->value());
                         return;
                     }
-                throw parse_error("No namespace definition found", 0);
+                throw parse_error("No namespace definition found", 0, 0, 0);
             }
         };
     };
@@ -260,6 +260,30 @@ namespace rapidxml
         constexpr operator char*() noexcept { return current; }
         constexpr operator char const *() const noexcept { return current; }
         constexpr operator size_t() const noexcept { return current - begin; }
+
+        constexpr tuple<size_t, size_t> get_row_col() const noexcept
+        {
+            size_t row = 0, col = current - begin;
+            size_t line = 0;
+            char* tmp = begin;
+            while (tmp < current)
+            {
+                line++;
+                if (*tmp == '\n')
+                {
+                    row++;
+                    col -= line;
+                    line = 0;
+                }
+            }
+            return make_tuple(row, col);
+        }
+
+        parse_error construct_error(char const* message) const noexcept
+        {
+            auto [row, col] = get_row_col();
+            return parse_error(message, current - begin, col, row);
+        }
     };
 
     // Skip characters until predicate evaluates to true
@@ -310,7 +334,7 @@ namespace rapidxml
         }
         else // Invalid, only codes up to 0x10FFFF are allowed in Unicode
         {
-            throw parse_error("invalid numeric character entity", buffer);
+            throw buffer.construct_error("invalid numeric character entity");
         }
     }
 
@@ -418,7 +442,7 @@ namespace rapidxml
                     if (*src == ';')
                         ++src;
                     else
-                        throw parse_error("expected ;", src);
+                        throw src.construct_error("expected ;");
                     continue;
 
                 // Something else
@@ -533,7 +557,7 @@ namespace rapidxml
                         m_root_node.nodes().emplace_back(move(*node));
                 }
                 else
-                    throw parse_error("expected <", buffer);
+                    throw buffer.construct_error("expected <");
             }
         }
     }
@@ -547,7 +571,7 @@ namespace rapidxml
             while (buffer[0] != '?' || buffer[1] != '>')
             {
                 if (!buffer[0])
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
             buffer += 2; // Skip '?>'
@@ -565,7 +589,7 @@ namespace rapidxml
 
         // Skip ?>
         if (buffer[0] != '?' || buffer[1] != '>')
-            throw parse_error("expected ?>", buffer);
+            throw buffer.construct_error("expected ?>");
         buffer += 2;
 
         return make_optional(move(declaration));
@@ -580,7 +604,7 @@ namespace rapidxml
             while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
             {
                 if (!buffer[0])
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
             buffer += 3; // Skip '-->'
@@ -594,7 +618,7 @@ namespace rapidxml
         while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
         {
             if (!buffer[0])
-                throw parse_error("unexpected end of data", buffer);
+                throw buffer.construct_error("unexpected end of data");
             ++buffer;
         }
 
@@ -635,7 +659,7 @@ namespace rapidxml
                         --depth;
                         break;
                     case 0:
-                        throw parse_error("unexpected end of data", buffer);
+                        throw buffer.construct_error("unexpected end of data");
                     }
                     ++buffer;
                 }
@@ -644,7 +668,7 @@ namespace rapidxml
 
             // Error on end of text
             case '\0':
-                throw parse_error("unexpected end of data", buffer);
+                throw buffer.construct_error("unexpected end of data");
 
             // Other character, skip it
             default:
@@ -681,7 +705,7 @@ namespace rapidxml
             char* name = buffer;
             skip<node_name_pred>(buffer);
             if (buffer.current == name)
-                throw parse_error("expected PI target", buffer);
+                throw buffer.construct_error("expected PI target");
             pi.name(string_view(name, buffer - name));
 
             // Skip whitespace between pi target and pi
@@ -694,7 +718,7 @@ namespace rapidxml
             while (buffer[0] != '?' || buffer[1] != '>')
             {
                 if (*buffer == '\0')
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
 
@@ -710,7 +734,7 @@ namespace rapidxml
             while (buffer[0] != '?' || buffer[1] != '>')
             {
                 if (*buffer == '\0')
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
             buffer += 2; // Skip '?>'
@@ -775,7 +799,7 @@ namespace rapidxml
             while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
             {
                 if (!buffer[0])
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
             buffer += 3; // Skip ]]>
@@ -787,7 +811,7 @@ namespace rapidxml
         while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
         {
             if (!buffer[0])
-                throw parse_error("unexpected end of data", buffer);
+                throw buffer.construct_error("unexpected end of data");
             ++buffer;
         }
 
@@ -808,7 +832,7 @@ namespace rapidxml
         char* name = buffer;
         skip<node_ncname_pred>(buffer);
         if (buffer.current == name)
-            throw parse_error("expected element name", buffer);
+            throw buffer.construct_error("expected element name");
         if (*buffer == ':')
         {
             // Namespace prefix found
@@ -816,9 +840,9 @@ namespace rapidxml
             char* local_name = buffer;
             skip<node_ncname_pred>(buffer);
             if (*buffer == ':')
-                throw parse_error("second colon in element name", buffer);
+                throw buffer.construct_error("second colon in element name");
             if (buffer.current == local_name)
-                throw parse_error("expected local part of element name", buffer);
+                throw buffer.construct_error("expected local part of element name");
             element.qname(string_view(name, buffer - name), local_name - name);
         }
         else
@@ -844,11 +868,11 @@ namespace rapidxml
         {
             ++buffer;
             if (*buffer != '>')
-                throw parse_error("expected >", buffer);
+                throw buffer.construct_error("expected >");
             ++buffer;
         }
         else
-            throw parse_error("expected >", buffer);
+            throw buffer.construct_error("expected >");
 
         // Return parsed element
         return make_optional(move(element));
@@ -929,7 +953,7 @@ namespace rapidxml
             while (*buffer != '>')
             {
                 if (*buffer == 0)
-                    throw parse_error("unexpected end of data", buffer);
+                    throw buffer.construct_error("unexpected end of data");
                 ++buffer;
             }
             ++buffer; // Skip '>'
@@ -969,7 +993,7 @@ namespace rapidxml
                         char* closing_name = buffer;
                         skip<node_name_pred>(buffer);
                         if (node.name() != string_view(closing_name, buffer - closing_name))
-                            throw parse_error("invalid closing tag name", buffer);
+                            throw buffer.construct_error("invalid closing tag name");
                     }
                     else
                     {
@@ -979,7 +1003,7 @@ namespace rapidxml
                     // Skip remaining whitespace after node name
                     skip<whitespace_pred>(buffer);
                     if (*buffer != '>')
-                        throw parse_error("expected >", buffer);
+                        throw buffer.construct_error("expected >");
                     ++buffer; // Skip '>'
                     return; // Node closed, finished parsing contents
                 }
@@ -994,7 +1018,7 @@ namespace rapidxml
 
             // End of data - error
             case '\0':
-                throw parse_error("unexpected end of data", buffer);
+                throw buffer.construct_error("unexpected end of data");
 
             // Data node
             default:
@@ -1014,7 +1038,7 @@ namespace rapidxml
             ++buffer; // Skip first character of attribute name
             skip<attribute_ncname_pred>(buffer);
             if (buffer.current == name)
-                throw parse_error("expected attribute name", name);
+                throw name.construct_error("expected attribute name");
             // Create new attribute
             xml_attribute attribute{};
             if (*buffer == ':')
@@ -1024,7 +1048,7 @@ namespace rapidxml
                 parse_buffer local_name = buffer;
                 skip<attribute_ncname_pred>(buffer);
                 if (buffer.current == local_name)
-                    throw parse_error("expected local part of attribute name", local_name);
+                    throw local_name.construct_error("expected local part of attribute name");
                 attribute.qname(string_view(name, buffer.current - name), local_name.current - name);
             }
             else
@@ -1035,7 +1059,7 @@ namespace rapidxml
 
             // Skip =
             if (*buffer != '=')
-                throw parse_error("expected =", buffer);
+                throw buffer.construct_error("expected =");
             ++buffer;
 
             // Skip whitespace after =
@@ -1044,7 +1068,7 @@ namespace rapidxml
             // Skip quote and remember if it was ' or "
             char quote = *buffer;
             if (quote != '\'' && quote != '"')
-                throw parse_error("expected ' or \"", buffer);
+                throw buffer.construct_error("expected ' or \"");
             ++buffer;
 
             // Extract attribute value and expand char refs in it
@@ -1060,7 +1084,7 @@ namespace rapidxml
 
             // Make sure that end quote is present
             if (*buffer != quote)
-                throw parse_error("expected ' or \"", buffer);
+                throw buffer.construct_error("expected ' or \"");
             ++buffer; // Skip quote
 
             // Skip whitespace after attribute value
