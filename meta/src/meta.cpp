@@ -129,7 +129,7 @@ namespace xaml
         return nullptr;
     }
 
-    void reflection_info::__add_event(string_view name, function<size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, function<void(std::shared_ptr<meta_class>, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
+    void reflection_info::add_event(string_view name, function<size_t(std::shared_ptr<meta_class>, type_erased_function const&)>&& adder, function<size_t(std::shared_ptr<meta_class>, std::shared_ptr<meta_class>, type_erased_this_function const&)>&& adder_erased_this, function<void(std::shared_ptr<meta_class>, size_t)>&& remover, std::unique_ptr<type_erased_this_function>&& invoker)
     {
         auto ev = make_unique<event_info>();
         ev->m_name = name;

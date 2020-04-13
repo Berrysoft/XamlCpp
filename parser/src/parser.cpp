@@ -84,6 +84,7 @@ namespace xaml
 
         void load_file(path const& p) { doc.load_file(p); }
         void load_string(string_view s) { doc.load_string(s); }
+        void load_stream(istream& stream) { doc.load_stream(stream); }
 
         markup_node parse_markup(string_view value);
         void parse_members(xaml_node& mc, xml_node& node);
@@ -113,7 +114,8 @@ namespace xaml
         auto t = ctx->get_type(ns, name);
         if (t)
         {
-            headers.emplace(t->get_include_file());
+            if (!t->get_include_file().empty())
+                headers.emplace(t->get_include_file());
             markup_node node{ t, get_random_name(t) };
             while (i < value.length())
             {
@@ -215,7 +217,8 @@ namespace xaml
                         auto t = ctx->get_type(attr_ns, class_name);
                         if (t)
                         {
-                            headers.emplace(t->get_include_file());
+                            if (!t->get_include_file().empty())
+                                headers.emplace(t->get_include_file());
                             auto prop = t->get_property(attach_prop_name);
                             if (prop && prop->can_write())
                             {
@@ -298,7 +301,8 @@ namespace xaml
                     auto t = ctx->get_type(ns, class_name);
                     if (t)
                     {
-                        headers.emplace(t->get_include_file());
+                        if (!t->get_include_file().empty())
+                            headers.emplace(t->get_include_file());
                         auto child = parse_impl(c, t);
                         if (mc.type->get_type() == t->get_type())
                         {
@@ -369,7 +373,8 @@ namespace xaml
 
     xaml_node parser_impl::parse_impl(xml_node& node, reflection_info const* t)
     {
-        headers.emplace(t->get_include_file());
+        if (!t->get_include_file().empty())
+            headers.emplace(t->get_include_file());
         xaml_node mc{ t };
         parse_members(mc, node);
         return mc;
@@ -409,6 +414,13 @@ namespace xaml
     {
         parser_impl impl{};
         impl.load_string(xml);
+        return parse_impl(ctx, impl);
+    }
+
+    tuple<xaml_node, set<string>> parse_stream(meta_context& ctx, istream& stream)
+    {
+        parser_impl impl{};
+        impl.load_stream(stream);
         return parse_impl(ctx, impl);
     }
 } // namespace xaml
