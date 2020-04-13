@@ -3,6 +3,7 @@
 #include <iostream>
 #include <map>
 #include <optional>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -66,6 +67,8 @@ namespace xaml::xamlcpp
         PROP_CONSTEXPR(no_logo, bool)
         PROP_STRING(input)
         PROP_STRING(output)
+        PROP_CONSTEXPR(input_stdin, bool)
+        PROP_CONSTEXPR(output_stdout, bool)
 
     private:
         vector<string_t> m_lib_paths{};
@@ -85,6 +88,8 @@ namespace xaml::xamlcpp
             ADD_PROP(no_logo);
             ADD_PROP(input);
             ADD_PROP(output);
+            ADD_PROP(input_stdin);
+            ADD_PROP(output_stdout);
             ADD_COLLECTION_PROP(lib_path, string_view_t);
 
             ADD_ATTR(
@@ -96,6 +101,8 @@ namespace xaml::xamlcpp
                     ->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"))
                     ->add_arg(0, {}, "input")
                     ->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"))
+                    ->add_arg(0, U("stdin"), "input_stdin", U("Input from stdin stream"))
+                    ->add_arg(0, U("stdout"), "output_stdout", U("Output to stdout stream"))
                     ->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path")));
         }
         REGISTER_CLASS_END()
@@ -150,7 +157,7 @@ int _tmain(int argc, char_t const* const* argv)
             _tcout << exe.filename().string<char_t>() << U(" ") XAML_VERSION;
 #ifdef XAML_COMMIT_HASH
             constexpr string_view_t hash{ U("") XAML_COMMIT_HASH };
-            _tcout << U('.') << hash.substr(0, 8) << U("-git");
+            _tcout << U('-') << hash.substr(0, 8);
 #endif // XAML_COMMIT_HASH
             _tcout << U('\n')
                    << U("Copyright (c) 2019-2020 Berrysoft") << U('\n')
@@ -167,10 +174,19 @@ int _tmain(int argc, char_t const* const* argv)
         bool verbose = opts->get_verbose();
 
         path inf = opts->get_input();
-        if (!inf.empty())
+        if (!inf.empty() || opts->get_input_stdin())
         {
             path ouf_path = opts->get_output();
-            if (ouf_path.empty()) ouf_path = inf.string<char_t>() + U(".g.cpp");
+            if (ouf_path.empty())
+            {
+                if (inf.empty() && !opts->get_output_stdout())
+                {
+                    _tcout << U("Output path must be specified when input from stdin.") << endl;
+                    return 1;
+                }
+                if (!inf.empty())
+                    ouf_path = inf.string<char_t>() + U(".g.cpp");
+            }
             map<path, tuple<path, version>> modules;
             array_view<string_t> lib_dirs = opts->get_lib_paths();
             for (path dir : lib_dirs)
@@ -204,26 +220,34 @@ int _tmain(int argc, char_t const* const* argv)
                 _tcout << U("Registered types:") << endl;
                 for (auto& pair : ctx.get_types())
                 {
-                    auto ns = to_string_t(pair.first);
+                    auto ns = pair.first;
                     for (auto& p : pair.second)
                     {
-                        auto name = to_string_t(p.first);
-                        _tcout << ns << U("::") << name << endl;
+                        auto name = p.first;
+                        cout << ns << "::" << name << endl;
                     }
                 }
             }
-            auto [node, headers] = parse_file(ctx, inf);
+            auto [node, headers] = opts->get_input_stdin() ? parse_stream(ctx, cin) : parse_file(ctx, inf);
             compiler c{ ctx };
-            ofstream stream{ ouf_path };
-            if (opts->get_fake())
+            auto compile = [&c, &node, &inf, &headers, fake = opts->get_fake()](ostream& stream) {
+                if (fake)
+                {
+                    c.compile_fake(stream, node, inf);
+                }
+                else
+                {
+                    c.compile(stream, node, inf, headers);
+                }
+            };
+            if (opts->get_output_stdout())
             {
-                if (verbose) _tcout << U("Compiling fake to ") << ouf_path << U("...") << endl;
-                c.compile_fake(stream, node, inf);
+                compile(cout);
             }
             else
             {
-                if (verbose) _tcout << U("Compiling to ") << ouf_path << U("...") << endl;
-                c.compile(stream, node, inf, headers);
+                ofstream stream{ ouf_path };
+                compile(stream);
             }
         }
         else
@@ -234,7 +258,7 @@ int _tmain(int argc, char_t const* const* argv)
     }
     catch (exception const& e)
     {
-        _tcout << to_string_t(e.what()) << endl;
+        cout << e.what() << endl;
         return 1;
     }
     return 0;

@@ -33,6 +33,7 @@ namespace xaml
 
     XAML_API std::tuple<xaml_node, std::set<std::string>> parse_file(meta_context& ctx, std::filesystem::path const& file);
     XAML_API std::tuple<xaml_node, std::set<std::string>> parse_string(meta_context& ctx, std::string_view xml);
+    XAML_API std::tuple<xaml_node, std::set<std::string>> parse_stream(meta_context& ctx, std::istream& stream);
 } // namespace xaml
 
 #endif // !XAML_PARSER_HPP

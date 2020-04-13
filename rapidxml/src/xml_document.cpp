@@ -121,13 +121,18 @@ namespace rapidxml
     void xml_document::load_file(path const& file, parse_flag flags)
     {
         ifstream stream{ file };
-        m_buffer.assign(istreambuf_iterator<char>(stream), istreambuf_iterator<char>{});
-        parse(m_buffer.data(), flags);
+        load_stream(stream);
     }
 
     void xml_document::load_string(string_view str, parse_flag flags)
     {
         m_buffer.assign(str.begin(), str.end());
+        parse(m_buffer.data(), flags);
+    }
+
+    void xml_document::load_stream(istream& stream, parse_flag flags)
+    {
+        m_buffer.assign(istreambuf_iterator<char>(stream), istreambuf_iterator<char>{});
         parse(m_buffer.data(), flags);
     }
 
