@@ -230,7 +230,21 @@ int _tmain(int argc, char_t const* const* argv)
             }
             auto [node, headers] = opts->get_input_stdin() ? parse_stream(ctx, cin) : parse_file(ctx, inf);
             compiler c{ ctx };
-            auto compile = [&c, &inf, &node = node, &headers = headers, fake = opts->get_fake()](ostream& stream) {
+            bool fake = opts->get_fake();
+            if (opts->get_output_stdout())
+            {
+                if (fake)
+                {
+                    c.compile_fake(cout, node, inf);
+                }
+                else
+                {
+                    c.compile(cout, node, inf, headers);
+                }
+            }
+            else
+            {
+                ofstream stream{ ouf_path };
                 if (fake)
                 {
                     c.compile_fake(stream, node, inf);
@@ -239,15 +253,6 @@ int _tmain(int argc, char_t const* const* argv)
                 {
                     c.compile(stream, node, inf, headers);
                 }
-            };
-            if (opts->get_output_stdout())
-            {
-                compile(cout);
-            }
-            else
-            {
-                ofstream stream{ ouf_path };
-                compile(stream);
             }
         }
         else
