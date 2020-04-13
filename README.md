@@ -127,7 +127,7 @@ void ::xaml::test::test_window::init_components()
 ```
 
 ## Build
-A C++17-compliant compiler is required.
+A C++17-compliant compiler is required. Actually it needs C++20, but no compiler is compliant...
 
 This project assumes it is built by GCC 9.1+ or Clang 9.0+ when using GNU or LLVM toolchains. If building with previous versions, you should manully link it with `libstdc++fs` or `libc++fs`.
 ### Build on Windows
@@ -136,12 +136,14 @@ This project assumes it is built by GCC 9.1+ or Clang 9.0+ when using GNU or LLV
 #### MinGW
 `gtk` and `pkgconfig` are required. MSYS2 is recommanded for installing and building.
 
-It is not possible now to build target Windows API with MinGW toolchain, because `wil` isn't supported by GCC and Clang/MinGW.
+It is not possible now to build target Windows API with MinGW toolchain, because `wil` isn't supported by GCC or Clang/MinGW.
 ### Build on Linux
 `gtk`, `webkit2gtk` and `pkgconfig` are required.
 ### Build on Mac
-Mac OS 10.14+ is required for some C++17 features.
+Mac OS 10.15+ is required for some C++17 features (`<any>` and `<filesystem>`)
+
+`boost` is required because of the uncompleted `<memory_resource>` in libcxx.
 #### Cocoa
-No other packages needed.
+No other package is needed.
 #### Gtk
 `gtk` and `pkgconfig` are also required.
