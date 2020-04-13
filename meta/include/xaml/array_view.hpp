@@ -104,7 +104,7 @@ namespace xaml
             return array_view<T>(m_start + pos, (std::min)(count, m_count - pos));
         }
 
-        operator std::vector<T>() const { return std::vector<T>(m_start, m_start + m_count); }
+        explicit operator std::vector<T>() const { return std::vector<T>(m_start, m_start + m_count); }
     };
 } // namespace xaml
 

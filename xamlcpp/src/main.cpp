@@ -172,7 +172,7 @@ int _tmain(int argc, char_t const* const* argv)
             path ouf_path = opts->get_output();
             if (ouf_path.empty()) ouf_path = inf.string<char_t>() + U(".g.cpp");
             map<path, tuple<path, version>> modules;
-            vector<string_t> lib_dirs = opts->get_lib_paths();
+            array_view<string_t> lib_dirs = opts->get_lib_paths();
             for (path dir : lib_dirs)
             {
                 if (verbose) _tcout << U("Searching ") << dir << U("...") << endl;

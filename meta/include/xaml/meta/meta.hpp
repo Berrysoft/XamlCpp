@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <typeindex>
 #include <unordered_map>
 #include <xaml/array_view.hpp>
@@ -198,27 +199,27 @@ namespace xaml
         T m_value{};
 
     public:
-        meta_box() {}
-        meta_box(T const& value) : m_value(value) {}
-        meta_box(T&& value) : m_value(std::move(value)) {}
+        meta_box() noexcept(std::is_nothrow_default_constructible_v<T>) {}
+        meta_box(T const& value) noexcept(std::is_nothrow_copy_constructible_v<T>) : m_value(value) {}
+        meta_box(T&& value) noexcept(std::is_nothrow_move_constructible_v<T>) : m_value(std::move(value)) {}
         ~meta_box() override {}
 
-        meta_box& operator=(T const& value)
+        meta_box& operator=(T const& value) noexcept(std::is_nothrow_copy_assignable_v<T>)
         {
             m_value = value;
             return *this;
         }
 
-        meta_box& operator=(T&& value)
+        meta_box& operator=(T&& value) noexcept(std::is_nothrow_move_assignable_v<T>)
         {
             m_value = std::move(value);
             return *this;
         }
 
-        operator T() const noexcept { return m_value; }
+        operator T() const noexcept(std::is_nothrow_copy_assignable_v<T>) { return m_value; }
 
-        T& get() noexcept { return m_value; }
-        T const& get() const noexcept { return m_value; }
+        constexpr T& get() noexcept { return m_value; }
+        constexpr T const& get() const noexcept { return m_value; }
     };
 
     template <typename Char, typename Traits, typename Allocator>
@@ -231,17 +232,17 @@ namespace xaml
         std::basic_string<Char, Traits, Allocator> m_value{};
 
     public:
-        meta_box() {}
-        meta_box(std::basic_string_view<Char, Traits> value) : m_value(value) {}
+        meta_box() noexcept {}
+        meta_box(std::basic_string_view<Char, Traits> value) noexcept : m_value(value) {}
         ~meta_box() override {}
 
-        meta_box& operator=(std::basic_string_view<Char, Traits> value)
+        meta_box& operator=(std::basic_string_view<Char, Traits> value) noexcept
         {
             m_value = value;
             return *this;
         }
 
-        operator std::basic_string<Char, Traits, Allocator>() const noexcept { return m_value; }
+        operator std::basic_string<Char, Traits, Allocator>() const { return m_value; }
 
         std::basic_string_view<Char, Traits> get() const noexcept { return m_value; }
     };
@@ -256,8 +257,8 @@ namespace xaml
         std::vector<T, Allocator> m_value{};
 
     public:
-        meta_box() {}
-        meta_box(array_view<T> value) : m_value(value) {}
+        meta_box() noexcept {}
+        meta_box(array_view<T> value) noexcept : m_value(value) {}
         ~meta_box() override {}
 
         meta_box& operator=(array_view<T> value)
@@ -266,7 +267,7 @@ namespace xaml
             return *this;
         }
 
-        operator std::vector<T, Allocator>() const noexcept { return m_value; }
+        operator std::vector<T, Allocator>() const { return m_value; }
 
         array_view<T> get() const noexcept { return m_value; }
     };
@@ -276,7 +277,7 @@ namespace xaml
     {
         using type = meta_box<T>;
 
-        std::shared_ptr<type> operator()(T value)
+        std::shared_ptr<type> operator()(T value) const
         {
             return std::make_shared<meta_box<T>>(std::move(value));
         }
@@ -287,7 +288,7 @@ namespace xaml
     {
         using type = void;
 
-        type operator()(void) {}
+        type operator()(void) const noexcept {}
     };
 
     template <typename T>
@@ -295,7 +296,7 @@ namespace xaml
     {
         using type = T;
 
-        std::shared_ptr<type> operator()(std::shared_ptr<T> value)
+        std::shared_ptr<type> operator()(std::shared_ptr<T> value) const noexcept
         {
             return value;
         }
@@ -324,7 +325,7 @@ namespace xaml
     {
         using type = meta_box<std::basic_string<Char>>;
 
-        std::shared_ptr<type> operator()(Char const* str)
+        std::shared_ptr<type> operator()(Char const* str) const
         {
             return std::make_shared<meta_box<std::basic_string<Char>>>(str);
         }
@@ -335,7 +336,7 @@ namespace xaml
     {
         using type = meta_box<std::basic_string<Char, Traits>>;
 
-        std::shared_ptr<type> operator()(std::basic_string_view<Char, Traits> str)
+        std::shared_ptr<type> operator()(std::basic_string_view<Char, Traits> str) const
         {
             return std::make_shared<meta_box<std::basic_string<Char>>>(str);
         }
@@ -346,14 +347,14 @@ namespace xaml
     {
         using type = meta_box<std::vector<T>>;
 
-        std::shared_ptr<type> operator()(array_view<T> view)
+        std::shared_ptr<type> operator()(array_view<T> view) const
         {
             return std::make_shared<meta_box<std::vector<T>>>(view);
         }
     };
 
     template <typename T>
-    decltype(auto) box_value(T&& value)
+    decltype(auto) box_value(T&& value) noexcept(noexcept(__box_helper<std::decay_t<T>>{}(std::forward<T>(value))))
     {
         return __box_helper<std::decay_t<T>>{}(std::forward<T>(value));
     }
@@ -374,7 +375,7 @@ namespace xaml
         constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
 
         constexpr bool is_same_return_type(guid t) const noexcept { return return_type == t; }
-        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
         {
             return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
@@ -386,7 +387,7 @@ namespace xaml
         }
 
         template <typename... Args>
-        constexpr bool is_same_arg_type() const noexcept
+        bool is_same_arg_type() const noexcept
         {
             return is_same_arg_type({ type_guid_v<Args>... });
         }
@@ -411,7 +412,7 @@ namespace xaml
         constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
 
         constexpr bool is_same_return_type(guid const& t) const noexcept { return return_type == t; }
-        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
         {
             return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
@@ -423,7 +424,7 @@ namespace xaml
         }
 
         template <typename... Args>
-        constexpr bool is_same_arg_type() const noexcept
+        bool is_same_arg_type() const noexcept
         {
             return is_same_arg_type({ type_guid_v<Args>... });
         }
@@ -607,13 +608,13 @@ namespace xaml
 
         constexpr array_view<guid> get_args_type() const noexcept { return args_type; }
 
-        constexpr bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
+        bool is_same_arg_type(std::initializer_list<guid> ts) const noexcept
         {
             return std::equal(args_type.begin(), args_type.end(), ts.begin(), ts.end());
         }
 
         template <typename... Args>
-        constexpr bool is_same_arg_type() const noexcept
+        bool is_same_arg_type() const noexcept
         {
             return is_same_arg_type({ type_guid_v<Args>... });
         }
