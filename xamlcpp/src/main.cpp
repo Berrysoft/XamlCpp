@@ -230,7 +230,7 @@ int _tmain(int argc, char_t const* const* argv)
             }
             auto [node, headers] = opts->get_input_stdin() ? parse_stream(ctx, cin) : parse_file(ctx, inf);
             compiler c{ ctx };
-            auto compile = [&c, &node, &inf, &headers, fake = opts->get_fake()](ostream& stream) {
+            auto compile = [&c, &inf, &node = node, &headers = headers, fake = opts->get_fake()](ostream& stream) {
                 if (fake)
                 {
                     c.compile_fake(stream, node, inf);
