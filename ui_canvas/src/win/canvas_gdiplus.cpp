@@ -46,7 +46,7 @@ namespace xaml
 
     struct gdiplus_error : logic_error
     {
-        gdiplus_error(Gdiplus::Status status) : logic_error(gdiplus_error_message[status]) {}
+        gdiplus_error(Gdiplus::Status status) noexcept : logic_error(gdiplus_error_message[status]) {}
         ~gdiplus_error() override {}
     };
 
@@ -58,42 +58,42 @@ namespace xaml
         }
     }
 
-    static constexpr REAL get_WIDTH(double width, double dpi)
+    static constexpr REAL get_WIDTH(double width, double dpi) noexcept
     {
         return (REAL)(width * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
-    static inline Pen get_Pen(drawing_pen const& pen, double dpi)
+    static inline Pen get_Pen(drawing_pen const& pen, double dpi) noexcept
     {
         return Pen(Color((int)pen.stroke), get_WIDTH(pen.width, dpi));
     }
 
-    static inline SolidBrush get_Brush(drawing_brush const& brush)
+    static inline SolidBrush get_Brush(drawing_brush const& brush) noexcept
     {
         return SolidBrush(Color((int)brush.fill));
     }
 
-    static constexpr INT get_font_style(bool italic, bool bold)
+    static constexpr INT get_font_style(bool italic, bool bold) noexcept
     {
         return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
     }
 
-    static inline Font get_Font(drawing_font const& font, double dpi)
+    static inline Font get_Font(drawing_font const& font, double dpi) noexcept
     {
         return Font(font.font_family.c_str(), get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
     }
 
-    static inline RectF get_RectF(rectangle const& rect, double dpi)
+    static inline RectF get_RectF(rectangle const& rect, double dpi) noexcept
     {
         return to_native<RectF>(rect * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
-    static inline PointF get_PointF(point p, double dpi)
+    static inline PointF get_PointF(point p, double dpi) noexcept
     {
         return to_native<PointF>(p * dpi / USER_DEFAULT_SCREEN_DPI);
     }
 
-    static inline SizeF get_SizeF(size s, double dpi)
+    static inline SizeF get_SizeF(size s, double dpi) noexcept
     {
         return to_native<SizeF>(s * dpi / USER_DEFAULT_SCREEN_DPI);
     }
@@ -232,14 +232,14 @@ namespace xaml
         check_status(handle->DrawString(str.data(), (INT)str.length(), &f, pf, &fmt, &b));
     }
 
-    canvas_gdiplus::canvas_gdiplus() {}
+    canvas_gdiplus::canvas_gdiplus() noexcept {}
 
     canvas_gdiplus::~canvas_gdiplus()
     {
         if (m_token) GdiplusShutdown(*m_token);
     }
 
-    bool canvas_gdiplus::create(HWND wnd)
+    bool canvas_gdiplus::create(HWND wnd) noexcept
     {
         GdiplusStartupInput gdiplusStartupInput{};
         ULONG_PTR token;

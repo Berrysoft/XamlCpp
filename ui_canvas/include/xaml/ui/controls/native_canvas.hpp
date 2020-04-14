@@ -38,7 +38,7 @@ namespace xaml
     struct native_canvas
     {
         virtual ~native_canvas() {}
-        virtual bool create(HWND wnd) = 0;
+        virtual bool create(HWND wnd) noexcept = 0;
         virtual void begin_paint(HWND wnd, size real, std::function<void(std::shared_ptr<drawing_context>)> paint_func) = 0;
     };
 #endif // XAML_UI_WINDOWS

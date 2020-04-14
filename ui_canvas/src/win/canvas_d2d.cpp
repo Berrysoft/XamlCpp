@@ -21,7 +21,7 @@ namespace xaml
 {
     drawing_context_d2d::~drawing_context_d2d() {}
 
-    static inline D2D1::ColorF get_COLOR(color c)
+    static inline D2D1::ColorF get_COLOR(color c) noexcept
     {
         return (uint32_t)c;
     }
@@ -29,11 +29,11 @@ namespace xaml
     static wil::com_ptr<ID2D1Brush> get_Brush(ID2D1RenderTarget* target, color c)
     {
         wil::com_ptr<ID2D1SolidColorBrush> brush;
-        target->CreateSolidColorBrush(get_COLOR(c), &brush);
+        THROW_IF_FAILED(target->CreateSolidColorBrush(get_COLOR(c), &brush));
         return brush;
     }
 
-    static D2D1_ELLIPSE get_ELLIPSE(rectangle const& region)
+    static D2D1_ELLIPSE get_ELLIPSE(rectangle const& region) noexcept
     {
         return D2D1::Ellipse(D2D1::Point2F((FLOAT)(region.x + region.width / 2), (FLOAT)(region.y + region.height / 2)), (FLOAT)(region.width / 2), (FLOAT)(region.height / 2));
     }
@@ -41,7 +41,7 @@ namespace xaml
 #define CHECK_SIZE(r) \
     if ((r).width < 1 || (r).height < 1) return
 
-    static constexpr tuple<size, point, point, point> get_arc(rectangle const& region, double start_angle, double end_angle)
+    static constexpr tuple<size, point, point, point> get_arc(rectangle const& region, double start_angle, double end_angle) noexcept
     {
         size radius = { region.width / 2, region.height / 2 };
         point centerp = { region.x + radius.width, region.y + radius.height };
@@ -181,11 +181,11 @@ namespace xaml
         target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
     }
 
-    canvas_d2d::canvas_d2d() {}
+    canvas_d2d::canvas_d2d() noexcept {}
 
     canvas_d2d::~canvas_d2d() {}
 
-    bool canvas_d2d::create(HWND wnd)
+    bool canvas_d2d::create(HWND wnd) noexcept
     {
         if (!d2d)
         {

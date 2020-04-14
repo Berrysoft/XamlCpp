@@ -36,39 +36,39 @@ namespace xaml
         std::optional<ULONG_PTR> m_token{};
 
     public:
-        canvas_gdiplus();
+        canvas_gdiplus() noexcept;
         ~canvas_gdiplus() override;
 
-        bool create(HWND wnd) override;
+        bool create(HWND wnd) noexcept override;
         void begin_paint(HWND wnd, size real, std::function<void(std::shared_ptr<drawing_context>)> paint_func) override;
     };
 
-    inline size from_native(Gdiplus::SizeF s)
+    inline size from_native(Gdiplus::SizeF s) noexcept
     {
         return { (double)s.Width, (double)s.Height };
     }
     template <>
-    inline Gdiplus::SizeF to_native<Gdiplus::SizeF, size>(size s)
+    inline Gdiplus::SizeF to_native<Gdiplus::SizeF, size>(size s) noexcept
     {
         return { (float)s.width, (float)s.height };
     }
 
-    inline point from_native(Gdiplus::PointF p)
+    inline point from_native(Gdiplus::PointF p) noexcept
     {
         return { (double)p.X, (double)p.Y };
     }
     template <>
-    inline Gdiplus::PointF to_native<Gdiplus::PointF, point>(point p)
+    inline Gdiplus::PointF to_native<Gdiplus::PointF, point>(point p) noexcept
     {
         return { (float)p.x, (float)p.y };
     }
 
-    inline rectangle from_native(Gdiplus::RectF r)
+    inline rectangle from_native(Gdiplus::RectF r) noexcept
     {
         return { (double)r.X, (double)r.Y, (double)r.Width, (double)r.Height };
     }
     template <>
-    inline Gdiplus::RectF to_native<Gdiplus::RectF, rectangle>(rectangle r)
+    inline Gdiplus::RectF to_native<Gdiplus::RectF, rectangle>(rectangle r) noexcept
     {
         return { (float)r.x, (float)r.y, (float)r.width, (float)r.height };
     }

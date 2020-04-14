@@ -44,39 +44,39 @@ namespace xaml
         wil::com_ptr<IDWriteFactory> dwrite{ nullptr };
 
     public:
-        canvas_d2d();
+        canvas_d2d() noexcept;
         ~canvas_d2d() override;
 
-        bool create(HWND wnd) override;
+        bool create(HWND wnd) noexcept override;
         void begin_paint(HWND wnd, size real, std::function<void(std::shared_ptr<drawing_context>)> paint_func) override;
     };
 
-    inline size from_native(D2D1_SIZE_F s)
+    inline size from_native(D2D1_SIZE_F s) noexcept
     {
         return { (double)s.width, (double)s.height };
     }
     template <>
-    inline D2D1_SIZE_F to_native<D2D1_SIZE_F, size>(size s)
+    inline D2D1_SIZE_F to_native<D2D1_SIZE_F, size>(size s) noexcept
     {
         return { (float)s.width, (float)s.height };
     }
 
-    inline point from_native(D2D1_POINT_2F p)
+    inline point from_native(D2D1_POINT_2F p) noexcept
     {
         return { (double)p.x, (double)p.y };
     }
     template <>
-    inline D2D1_POINT_2F to_native<D2D1_POINT_2F, point>(point p)
+    inline D2D1_POINT_2F to_native<D2D1_POINT_2F, point>(point p) noexcept
     {
         return { (float)p.x, (float)p.y };
     }
 
-    inline rectangle from_native(D2D1_RECT_F r)
+    inline rectangle from_native(D2D1_RECT_F r) noexcept
     {
         return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) };
     }
     template <>
-    inline D2D1_RECT_F to_native<D2D1_RECT_F, rectangle>(rectangle r)
+    inline D2D1_RECT_F to_native<D2D1_RECT_F, rectangle>(rectangle r) noexcept
     {
         return { (float)r.x, (float)r.y, (float)(r.x + r.width), (float)(r.y + r.height) };
     }
