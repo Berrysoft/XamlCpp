@@ -382,7 +382,10 @@ namespace xaml
 
     xaml_node parser_impl::parse()
     {
-        xml_node& root_node = doc.node().nodes().front();
+        auto& root_nodes = doc.node().nodes();
+        auto it = find_if(root_nodes.begin(), root_nodes.end(), [](xml_node& node) { return node.type() == node_type::element; });
+        if (it == root_nodes.end()) return {};
+        auto& root_node = *it;
         auto ns = root_node.namespace_uri();
         auto name = root_node.local_name();
         auto t = ctx->get_type(ns, name);
