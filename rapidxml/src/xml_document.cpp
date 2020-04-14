@@ -456,7 +456,7 @@ namespace rapidxml
             }
 
             // If whitespace condensing is enabled
-            if (flags & parse_flag::normalize_whitespace)
+            if ((int)(flags & parse_flag::normalize_whitespace))
             {
                 // Test if condensing is needed
                 if (whitespace_pred::test(src[0]))
@@ -568,7 +568,7 @@ namespace rapidxml
     optional<xml_node> parse_xml_declaration(parse_buffer& buffer, parse_context const& context)
     {
         // If parsing of declaration is disabled
-        if (!(context.flags & parse_flag::declaration_node))
+        if (!(int)(context.flags & parse_flag::declaration_node))
         {
             // Skip until end of declaration
             while (buffer[0] != '?' || buffer[1] != '>')
@@ -601,7 +601,7 @@ namespace rapidxml
     optional<xml_node> parse_comment(parse_buffer& buffer, parse_context const& context)
     {
         // If parsing of comments is disabled
-        if (!(context.flags & parse_flag::comment_nodes))
+        if (!(int)(context.flags & parse_flag::comment_nodes))
         {
             // Skip until end of comment
             while (buffer[0] != '-' || buffer[1] != '-' || buffer[2] != '>')
@@ -680,7 +680,7 @@ namespace rapidxml
         }
 
         // If DOCTYPE nodes enabled
-        if (context.flags & parse_flag::doctype_node)
+        if ((int)(context.flags & parse_flag::doctype_node))
         {
             // Create a new doctype node
             xml_node doctype{ node_type::doctype, context.node_allocator, context.attr_allocator };
@@ -699,7 +699,7 @@ namespace rapidxml
     optional<xml_node> parse_pi(parse_buffer& buffer, parse_context const& context)
     {
         // If creation of PI nodes is enabled
-        if (context.flags & parse_flag::pi_nodes)
+        if ((int)(context.flags & parse_flag::pi_nodes))
         {
             // Create pi node
             xml_node pi{ node_type::pi, context.node_allocator, context.attr_allocator };
@@ -748,20 +748,20 @@ namespace rapidxml
     char parse_and_append_data(xml_node& node, parse_buffer& buffer, char* contents_start, parse_context const& context)
     {
         // Backup to contents start if whitespace trimming is disabled
-        if (!(context.flags & parse_flag::trim_whitespace))
+        if (!(int)(context.flags & parse_flag::trim_whitespace))
             buffer.current = contents_start;
 
         // Skip until end of data
         char *value = buffer.current, *end;
-        if (context.flags & parse_flag::normalize_whitespace)
+        if ((int)(context.flags & parse_flag::normalize_whitespace))
             end = skip_and_expand_character_refs<text_pred, text_pure_with_ws_pred>(buffer, context.flags);
         else
             end = skip_and_expand_character_refs<text_pred, text_pure_no_ws_pred>(buffer, context.flags);
 
         // Trim trailing whitespace if flag is set; leading was already trimmed by whitespace skip after >
-        if (context.flags & parse_flag::trim_whitespace)
+        if ((int)(context.flags & parse_flag::trim_whitespace))
         {
-            if (context.flags & parse_flag::normalize_whitespace)
+            if ((int)(context.flags & parse_flag::normalize_whitespace))
             {
                 // Whitespace is already condensed to single space characters by skipping function, so just trim 1 char off the end
                 if (*(end - 1) == ' ')
@@ -777,7 +777,7 @@ namespace rapidxml
 
         // If characters are still left between end and value (this test is only necessary if normalization is enabled)
         // Create new data node
-        if (!(context.flags & parse_flag::no_data_nodes))
+        if (!(int)(context.flags & parse_flag::no_data_nodes))
         {
             xml_node data{ node_type::data, context.node_allocator, context.attr_allocator };
             data.value(string_view(value, end - value));
@@ -785,7 +785,7 @@ namespace rapidxml
         }
 
         // Add data to parent node if no data exists yet
-        if (!(context.flags & parse_flag::no_element_values))
+        if (!(int)(context.flags & parse_flag::no_element_values))
             if (node.value().empty())
                 node.value(string_view(value, end - value));
 
@@ -796,7 +796,7 @@ namespace rapidxml
     optional<xml_node> parse_cdata(parse_buffer& buffer, parse_context const& context)
     {
         // If CDATA is disabled
-        if (context.flags & parse_flag::no_data_nodes)
+        if ((int)(context.flags & parse_flag::no_data_nodes))
         {
             // Skip until end of cdata
             while (buffer[0] != ']' || buffer[1] != ']' || buffer[2] != '>')
@@ -990,7 +990,7 @@ namespace rapidxml
                 {
                     // Node closing
                     buffer += 2; // Skip '</'
-                    if (context.flags & parse_flag::validate_closing_tags)
+                    if ((int)(context.flags & parse_flag::validate_closing_tags))
                     {
                         // Skip and validate closing tag name
                         char* closing_name = buffer.current;

@@ -60,10 +60,7 @@ namespace rapidxml
 
         //! Gets type of node.
         //! \return Type of node.
-        constexpr node_type type() const noexcept
-        {
-            return m_type;
-        }
+        constexpr node_type type() const noexcept { return m_type; }
 
         ///////////////////////////////////////////////////////////////////////////
         // Related nodes access

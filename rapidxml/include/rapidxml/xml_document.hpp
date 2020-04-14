@@ -125,8 +125,12 @@ namespace rapidxml
         full = declaration_node | comment_nodes | doctype_node | pi_nodes | validate_closing_tags
     };
 
-    constexpr int operator&(parse_flag lhs, parse_flag rhs) { return (int)lhs & (int)rhs; }
-    constexpr int operator|(parse_flag lhs, parse_flag rhs) { return (int)lhs | (int)rhs; }
+    constexpr parse_flag operator&(parse_flag lhs, parse_flag rhs) { return (parse_flag)((int)lhs & (int)rhs); }
+    constexpr parse_flag operator|(parse_flag lhs, parse_flag rhs) { return (parse_flag)((int)lhs | (int)rhs); }
+    constexpr parse_flag operator^(parse_flag lhs, parse_flag rhs) { return (parse_flag)((int)lhs ^ (int)rhs); }
+    constexpr parse_flag& operator&=(parse_flag& lhs, parse_flag rhs) { return lhs = lhs & rhs; }
+    constexpr parse_flag& operator|=(parse_flag& lhs, parse_flag rhs) { return lhs = lhs | rhs; }
+    constexpr parse_flag& operator^=(parse_flag& lhs, parse_flag rhs) { return lhs = lhs ^ rhs; }
     constexpr parse_flag operator~(parse_flag f) { return (parse_flag)(~(int)f); }
 
     //! This class represents root of the DOM hierarchy.
@@ -154,8 +158,14 @@ namespace rapidxml
         xml_node m_root_node{ node_type::document, m_node_allocator, m_attribute_allocator };
 
     public:
-        xml_node& node() noexcept { return m_root_node; }
-        xml_node const& node() const noexcept { return m_root_node; }
+        constexpr xml_node& node() noexcept { return m_root_node; }
+        constexpr xml_node const& node() const noexcept { return m_root_node; }
+
+        template <typename T>
+        pmr::polymorphic_allocator<T> get_allocator() const
+        {
+            return pmr::polymorphic_allocator<T>{ &m_pool };
+        }
 
         RAPIDXML_API void load_file(std::filesystem::path const& file, parse_flag flags = parse_flag::default_flag);
 

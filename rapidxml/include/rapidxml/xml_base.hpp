@@ -38,10 +38,7 @@ namespace rapidxml
     //! Use what() function to get human-readable error message.
     //! Use where() function to get a pointer to position within source text where error was detected.
     //! <br><br>
-    //! This will cause the parser to call rapidxml_ns::parse_error_handler() function instead of throwing an exception.
-    //! This function must be defined by the user.
-    //! <br><br>
-    //! This class derives from <code>std::exception</code> class.
+    //! This class derives from <code>std::logic_error</code> class.
     class parse_error : public std::logic_error
     {
     private:
@@ -85,7 +82,7 @@ namespace rapidxml
     class xml_node;
 
     //! Base class for xml_node and xml_attribute implementing common functions:
-    //! name(), name_size(), value(), value_size() and parent().
+    //! name(), value(), and parent().
     //! \param char chararacter type to use
     class xml_base
     {
@@ -123,7 +120,6 @@ namespace rapidxml
         constexpr std::size_t local_offset() const noexcept { return m_local_name; }
 
         //! Gets namespace prefix.
-        //! Returned string is never zero-terminated, regardless of parse_no_string_terminators. Use prefix_size()
         //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
         //! SHOULD use the namespace name, not the prefix, in constructing names whose scope extends beyond the containing
         //! document" Namespaces in XML 1.0 (Third Edition)
@@ -151,12 +147,6 @@ namespace rapidxml
 
         //! Sets QName of node to a non zero-terminated string.
         //! See \ref ownership_of_strings.
-        //! <br><br>
-        //! Note that node does not own its name or value, it only stores a pointer to it.
-        //! It will not delete or otherwise free the pointer on destruction.
-        //! It is reponsibility of the user to properly manage lifetime of the string.
-        //! The easiest way to achieve it is to use memory_pool of the document to allocate the string -
-        //! on destruction of the document the string will be automatically freed.
         //! <br><br>
         //! Note that passed string will not be automatically divided to prefix and local_name,
         //! it seems useless for manual node creation. qname() may be used instead
