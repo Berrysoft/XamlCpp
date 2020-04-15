@@ -96,4 +96,50 @@
 #define XAML_CMDLINE_API __XAML_IMPORT
 #endif // !XAML_CMDLINE_API
 
+#ifndef EXTERN_C
+#ifdef __cplusplus
+#define EXTERN_C extern "C"
+#define EXTERN_C_START \
+    EXTERN_C           \
+    {
+#define EXTERN_C_END }
+#else
+#define EXTERN_C
+#define EXTERN_C_START
+#define EXTERN_C_END
+#endif // __cplusplus
+#endif // !EXTERN_C
+
+#ifndef XAML_CALL
+#ifdef _MSC_VER
+#define XAML_CALL __stdcall
+#else
+#define XAML_CALL
+#endif // _MSC_VER
+#endif // !XAML_CALL
+
+#ifndef XAML_CONST_REF
+#ifdef __cplusplus
+#define XAML_CONST_REF const&
+#else
+#define XAML_CONST_REF const*
+#endif // __cplusplus
+#endif // !XAML_CONST_REF
+
+#ifndef XAML_CONSTEXPR
+#ifdef __cplusplus
+#define XAML_CONSTEXPR constexpr
+#else
+#define XAML_CONSTEXPR inline
+#endif // __cplusplus
+#endif // !XAML_CONSTEXPR
+
+#ifndef XAML_CONSTEXPR_VAR
+#ifdef __cplusplus
+#define XAML_CONSTEXPR_VAR inline constexpr
+#else
+#define XAML_CONSTEXPR_VAR const
+#endif // __cplusplus
+#endif // !XAML_CONSTEXPR_VAR
+
 #endif // !XAML_UTILITY_HPP
