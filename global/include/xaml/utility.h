@@ -142,4 +142,12 @@
 #endif // __cplusplus
 #endif // !XAML_CONSTEXPR_VAR
 
+#ifndef XAML_NOEXCEPT
+#ifdef __cplusplus
+#define XAML_NOEXCEPT noexcept
+#else
+#define XAML_NOEXCEPT
+#endif // __cplusplus
+#endif // !XAML_NOEXCEPT
+
 #endif // !XAML_UTILITY_HPP
