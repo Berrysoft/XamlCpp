@@ -1,6 +1,8 @@
 #include <xaml/delegate.h>
 #include <xaml/object.hpp>
 
+using namespace std;
+
 struct xaml_delegate_impl : xaml_implement<xaml_delegate_impl, xaml_delegate, xaml_delegate, xaml_object>
 {
 private:
@@ -17,6 +19,7 @@ public:
 
 xaml_result xaml_delegate_new(xaml_result (*func)(xaml_vector_view*, xaml_object**), xaml_delegate** ptr) noexcept
 {
+    if (!func) return XAML_E_INVALIDARG;
     xaml_delegate* res = new (nothrow) xaml_delegate_impl(func);
     if (!res) return XAML_E_OUTOFMEMORY;
     *ptr = res;
