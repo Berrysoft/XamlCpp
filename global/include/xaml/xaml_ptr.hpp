@@ -26,12 +26,14 @@ public:
     {
         try_release();
         m_ptr = nullptr;
+        return *this;
     }
 
     xaml_ptr& operator=(T* ptr) noexcept
     {
         try_release();
         m_ptr = ptr;
+        return *this;
     }
 
     xaml_ptr& operator=(xaml_ptr const& p) noexcept
@@ -39,6 +41,7 @@ public:
         try_release();
         m_ptr = p.m_ptr;
         m_ptr->add_ref();
+        return *this;
     }
 
     xaml_ptr& operator=(xaml_ptr&& p) noexcept
@@ -46,6 +49,7 @@ public:
         try_release();
         m_ptr = p.m_ptr;
         p.m_ptr = nullptr;
+        return *this;
     }
 
     constexpr T** operator&() noexcept { return &m_ptr; }

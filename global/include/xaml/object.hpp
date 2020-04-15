@@ -2,6 +2,7 @@
 #define XAML_IMPLEMENT_HPP
 
 #include <atomic>
+#include <xaml/guid.h>
 #include <xaml/object.h>
 
 template <typename T, typename D, typename... Base>
@@ -34,9 +35,9 @@ private:
     template <typename B1, typename... B>
     struct query_many_impl<B1, B...>
     {
-        xaml_result operator()(xaml_implement<T, Base...> const* self, xaml_guid const& type, xaml_object** ptr) const noexcept
+        xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, xaml_object** ptr) const noexcept
         {
-            if (type == xmal_guid_type_v<B1>)
+            if (type == xaml_type_guid_v<B1>)
             {
                 *ptr = static_cast<B1*>(self);
                 self->add_ref();
@@ -52,11 +53,11 @@ private:
     template <>
     struct query_many_impl<>
     {
-        xaml_result operator()(xaml_implement<T, Base...> const*, xaml_guid const&, xaml_object**) const noexcept { return 1; }
+        xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, xaml_object**) const noexcept { return 1; }
     };
 
 public:
-    xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override
     {
         return query_many_impl<D, Base...>{}(this, type, ptr);
     }

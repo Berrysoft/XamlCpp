@@ -4,7 +4,7 @@
 #include <xaml/object.h>
 #include <xaml/vector.h>
 
-typedef struct xaml_delegate xaml_delegate;
+XAML_CLASS(xaml_delegate, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e, 0x00, 0x0c, 0x0f, 0xc3 } })
 
 #ifdef __cplusplus
 struct xaml_delegate : xaml_object
@@ -25,6 +25,6 @@ struct xaml_delegate
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**), xaml_delegate**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**), xaml_delegate**) XAML_NOEXCEPT;
 
 #endif // !XAML_DELEGATE_H

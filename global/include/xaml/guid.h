@@ -7,6 +7,7 @@
 #include <xaml/utility.h>
 
 #ifdef __cplusplus
+#include <functional>
 #include <version>
 #if __has_include(<compare>)
 #include <compare>
@@ -35,14 +36,19 @@ constexpr bool operator==(guid const& lhs, guid const& rhs)
 constexpr bool operator!=(guid const& lhs, guid const& rhs) { return !(lhs == rhs); }
 #endif // __cplusplus && !__cpp_impl_three_way_comparison
 
-XAML_CONSTEXPR size_t hash_value(xaml_guid XAML_CONST_REF g) noexcept
+XAML_CONSTEXPR size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
 {
+#ifdef __cplusplus
     size_t* ptr = (size_t*)&g;
+#else
+    size_t* ptr = (size_t*)g;
+#endif // __cplusplus
+
 #if SIZE_MAX == UINT64_MAX
-    static_assert(sizeof(size_t) == sizeof(uint64_t));
+    static_assert(sizeof(size_t) == sizeof(uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];
 #elif SIZE_MAX == UINT32_MAX
-    static_assert(sizeof(size_t) == sizeof(uint32_t));
+    static_assert(sizeof(size_t) == sizeof(uint32_t), "Unknown 32-bit platform.");
     return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
 #else
 #error Cannot determine platform architecture
@@ -81,5 +87,22 @@ struct xaml_type_guid<void>
 #else
 #define xaml_type_guid_v(type) (type##_guid)
 #endif // __cplusplus
+
+#ifndef XAML_CLASS
+#define __XAML_CLASS_BASE(type, ...) \
+    typedef struct type type;        \
+    XAML_CONSTEXPR_VAR xaml_guid type##_guid = __VA_ARGS__;
+#ifdef __cplusplus
+#define XAML_CLASS(type, ...)                           \
+    __XAML_CLASS_BASE(type, __VA_ARGS__)                \
+    template <>                                         \
+    struct xaml_type_guid<type>                         \
+    {                                                   \
+        static constexpr xaml_guid value = type##_guid; \
+    };
+#else
+#define XAML_CLASS(type, ...) __XAML_CLASS_BASE(type, __VA_ARGS__)
+#endif // __cplusplus
+#endif // !XAML_CLASS
 
 #endif // !XAML_META_GUID_HPP

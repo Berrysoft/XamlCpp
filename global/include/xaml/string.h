@@ -10,7 +10,15 @@ typedef wchar_t xaml_char_t;
 typedef char xaml_char_t;
 #endif // UNICODE
 
-typedef struct xaml_string xaml_string;
+#ifndef U
+#ifdef UNICODE
+#define U(x) L##x
+#else
+#define U(x) x
+#endif // UNICODE
+#endif // !U
+
+XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } })
 
 #ifdef __cplusplus
 struct xaml_string : xaml_object
@@ -35,6 +43,6 @@ struct xaml_string
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_result xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
 
 #endif // !XAML_STRING_H
