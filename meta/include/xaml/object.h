@@ -22,7 +22,7 @@ struct xaml_object
     }
 };
 #else
-#define XAML_OBJECT_VTBL(type)                      \
+#define XAML_OBJECT_VTBL(type)               \
     size_t(XAML_CALL* add_ref)(type* const); \
     size_t(XAML_CALL* release)(type* const); \
     xaml_result(XAML_CALL* query)(type const* const, xaml_guid XAML_CONST_REF, xaml_object**);
@@ -36,6 +36,6 @@ struct xaml_object
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_object* xaml_object_new(void) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_object_new(xaml_object**) XAML_NOEXCEPT;
 
 #endif // !XAML_OBJECT_HPP

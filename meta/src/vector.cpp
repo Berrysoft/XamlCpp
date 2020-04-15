@@ -9,7 +9,7 @@ private:
     vector<xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
 
 public:
-    xaml_vector_enumerator_impl(vector<xaml_ptr<xaml_object>>::const_iterator begin, vector<xaml_ptr<xaml_object>>::const_iterator end)
+    xaml_vector_enumerator_impl(vector<xaml_ptr<xaml_object>>::const_iterator begin, vector<xaml_ptr<xaml_object>>::const_iterator end) noexcept
         : m_begin(begin), m_end(end) {}
 
     xaml_result XAML_CALL move_next() noexcept override
@@ -34,7 +34,7 @@ private:
     vector<xaml_ptr<xaml_object>> m_vec{};
 
 public:
-    xaml_vector_impl(vector<xaml_ptr<xaml_object>>&& vec) : m_vec(move(vec)) {}
+    xaml_vector_impl(vector<xaml_ptr<xaml_object>>&& vec) noexcept : m_vec(move(vec)) {}
 
     xaml_result XAML_CALL get_size(size_t* psize) const noexcept override
     {
@@ -87,7 +87,9 @@ public:
 
     xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) const noexcept override
     {
-        *ptr = new xaml_vector_enumerator_impl(m_vec.begin(), m_vec.end());
+        xaml_enumerator* res = new (nothrow) xaml_vector_enumerator_impl(m_vec.begin(), m_vec.end());
+        if (!res) return XAML_E_OUTOFMEMORY;
+        *ptr = res;
         return XAML_S_OK;
     }
 };
