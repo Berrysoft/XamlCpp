@@ -1,7 +1,6 @@
 #ifndef XAML_ENUMERABLE_HPP
 #define XAML_ENUMERABLE_HPP
 
-#include <stdbool.h>
 #include <xaml/object.h>
 
 typedef struct xaml_enumerator xaml_enumerator;
@@ -9,12 +8,12 @@ typedef struct xaml_enumerator xaml_enumerator;
 #ifdef __cplusplus
 struct xaml_enumerator : xaml_object
 {
-    virtual xaml_result XAML_CALL move_next(bool*) noexcept = 0;
+    virtual xaml_result XAML_CALL move_next() noexcept = 0;
     virtual xaml_result XAML_CALL get_current(xaml_object**) const noexcept = 0;
 };
 #else
-#define XAML_ENUMERATOR_VTBL(type)                         \
-    xaml_result(XAML_CALL* move_next)(type* const, bool*); \
+#define XAML_ENUMERATOR_VTBL(type)                  \
+    xaml_result(XAML_CALL* move_next)(type* const); \
     xaml_result(XAML_CALL* get_current)(type const* const, xaml_object**);
 
 struct xaml_enumerator

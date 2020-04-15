@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_object_impl : xaml_implement<xaml_object_impl, xaml_object>
+struct xaml_object_impl : xaml_implement<xaml_object_impl, xaml_object, xaml_object>
 {
 };
 

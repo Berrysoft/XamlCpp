@@ -4,8 +4,8 @@
 #include <atomic>
 #include <xaml/object.h>
 
-template <typename T, typename... Base>
-struct xaml_implement : Base...
+template <typename T, typename D, typename... Base>
+struct xaml_implement : D
 {
 protected:
     std::atomic<std::size_t> m_ref_count{ 1 };

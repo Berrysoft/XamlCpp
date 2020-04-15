@@ -1,16 +1,19 @@
 #ifndef XAML_RESULT_HPP
 #define XAML_RESULT_HPP
 
-#include <stddef.h>
+#include <stdint.h>
 
-typedef size_t xaml_result;
+typedef uint32_t xaml_result;
 
-#ifndef XAML_SUCCESS
 #define XAML_SUCCESS(expr) (!(expr))
-#endif // !XAML_SUCCESS
 
-#ifndef XAML_FAILED
 #define XAML_FAILED(expr) (expr)
-#endif // !XAML_FAILED
+
+#define XAML_S_OK 0
+
+#define XAML_E_FAIL 0x80004005
+#define XAML_E_INVALIDARG 0x80070057
+#define XAML_E_NOINTERFACE 0x80004002
+#define XAML_E_OUTOFMEMORY 0x8007000E
 
 #endif // !XAML_RESULT_HPP

@@ -9,10 +9,12 @@ typedef struct xaml_vector_view xaml_vector_view;
 struct xaml_vector_view : xaml_enumerable
 {
     virtual xaml_result XAML_CALL get_at(size_t, xaml_object**) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_size(size_t*) const noexcept = 0;
 };
 #else
-#define XAML_VECTOR_VIEW_VTBL(type) \
-    xaml_result(XAML_CALL* get_at)(type const* const, size_t, xaml_object**);
+#define XAML_VECTOR_VIEW_VTBL(type)                                           \
+    xaml_result(XAML_CALL* get_at)(type const* const, size_t, xaml_object**); \
+    xaml_result(XAML_CALL* get_size)(type const* const, size*);
 
 struct xaml_vector_view
 {
