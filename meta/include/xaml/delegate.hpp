@@ -10,7 +10,7 @@ template <typename T>
 struct __xaml_delegate_impl;
 
 template <typename Return, typename... Args>
-struct __xaml_delegate_impl<Return(Args...)> : xaml_implement<__xaml_delegate_impl<Return(Args...)>, xaml_delegate, xaml_delegate, xaml_object>
+struct __xaml_delegate_impl<Return(Args...)> : xaml_implement<__xaml_delegate_impl<Return(Args...)>, xaml_delegate, xaml_object>
 {
 private:
     std::function<Return(Args...)> m_func;
@@ -33,9 +33,10 @@ public:
 };
 
 template <typename T>
-inline xaml_ptr<__xaml_delegate_impl<T>> xaml_delegate_new(std::function<T>&& func)
+inline xaml_result xaml_delegate_new(std::function<T>&& func, xaml_delegate** ptr) noexcept
 {
-    return new __xaml_delegate_impl<T>(std::move(func));
+    if (!func) return XAML_E_INVALIDARG;
+    return xaml_object_new<__xaml_delegate_impl<T>>(ptr, std::move(func));
 }
 
 #endif // !XAML_DELEGATE_HPP

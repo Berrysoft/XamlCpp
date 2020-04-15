@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl, xaml_enumerator, xaml_enumerator, xaml_object>
+struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl, xaml_enumerator, xaml_object>
 {
 private:
     vector<xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
@@ -28,7 +28,7 @@ public:
     }
 };
 
-struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector, xaml_vector_view, xaml_object>
+struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_object>
 {
 private:
     vector<xaml_ptr<xaml_object>> m_vec{};
@@ -94,7 +94,7 @@ public:
     }
 };
 
-xaml_ptr<xaml_vector> xaml_make_vector(vector<xaml_ptr<xaml_object>>&& vec)
+xaml_result xaml_vector_new(vector<xaml_ptr<xaml_object>>&& vec, xaml_vector** ptr)
 {
-    return new xaml_vector_impl(move(vec));
+    return xaml_object_new<xaml_vector_impl>(ptr, move(vec));
 }

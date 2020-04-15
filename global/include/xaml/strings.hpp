@@ -5,7 +5,6 @@
 #include <locale>
 #include <string>
 #include <string_view>
-#include <xaml/utility.hpp>
 
 #ifndef U
 #ifdef UNICODE

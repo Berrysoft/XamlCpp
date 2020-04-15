@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_delegate_impl : xaml_implement<xaml_delegate_impl, xaml_delegate, xaml_delegate, xaml_object>
+struct xaml_delegate_impl : xaml_implement<xaml_delegate_impl, xaml_delegate, xaml_object>
 {
 private:
     xaml_result (*m_func)(xaml_vector_view*, xaml_object**);
@@ -20,8 +20,5 @@ public:
 xaml_result xaml_delegate_new(xaml_result (*func)(xaml_vector_view*, xaml_object**), xaml_delegate** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
-    xaml_delegate* res = new (nothrow) xaml_delegate_impl(func);
-    if (!res) return XAML_E_OUTOFMEMORY;
-    *ptr = res;
-    return XAML_S_OK;
+    return xaml_object_new<xaml_delegate_impl>(ptr, func);
 }

@@ -58,8 +58,17 @@ private:
 public:
     xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) const noexcept override
     {
-        return query_many_impl<Base...>{}(this, type, ptr);
+        return query_many_impl<D, Base...>{}(this, type, ptr);
     }
 };
+
+template <typename D, typename T, typename... Args>
+inline xaml_result xaml_object_new(T** ptr, Args&&... args)
+{
+    T* res = new (std::nothrow) D(std::forward<Args>(args)...);
+    if (!res) return XAML_E_OUTOFMEMORY;
+    *ptr = res;
+    return XAML_S_OK;
+}
 
 #endif // !XAML_IMPLEMENT_HPP
