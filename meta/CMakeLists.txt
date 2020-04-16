@@ -1,6 +1,5 @@
 project(XamlMeta CXX)
 
-file(GLOB UTILITY_HEADERS "include/xaml/*.hpp")
 file(GLOB META_HEADERS "include/xaml/meta/*.hpp")
 file(GLOB META_SOURCES "src/*.cpp")
 
@@ -24,7 +23,6 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_meta PRIVATE "XAML_META_API=__XAML_EXPORT")
 endif()
 
-install(FILES ${UTILITY_HEADERS} DESTINATION include/xaml)
 install(FILES ${META_HEADERS} DESTINATION include/xaml/meta)
 
 if(${BUILD_TESTS})

@@ -26,4 +26,6 @@ endif()
 
 install(FILES ${GLOBAL_HEADERS} DESTINATION include/xaml)
 
-add_subdirectory(test)
+if(${BUILD_TESTS})
+    add_subdirectory(test)
+endif()
