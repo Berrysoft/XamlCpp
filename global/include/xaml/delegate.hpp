@@ -4,7 +4,6 @@
 #include <functional>
 #include <xaml/delegate.h>
 #include <xaml/object.hpp>
-#include <xaml/xaml_ptr.hpp>
 
 template <typename T>
 struct __xaml_delegate_impl;
