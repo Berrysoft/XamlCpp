@@ -19,6 +19,15 @@ inline void check_result(xaml_result res)
     assert(XAML_SUCCESS(res));
 }
 
+void print_string(xaml_string* str)
+{
+    xaml_char_t const* data;
+    check_result(str->vtbl->get_data(str, &data));
+    size_t length;
+    check_result(str->vtbl->get_length(str, &length));
+    _tprintf(U("%*s "), (int)length, data);
+}
+
 xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object* args)
 {
     xaml_vector_changed_args* e;
@@ -31,14 +40,50 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
     {
         size_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Add item at %zu\n"), index);
+        _tprintf(U("Add item at %zu: "), index);
+        xaml_vector_view* new_items;
+        XAML_RETURN_IF_FAILED(e->vtbl->get_new_items(e, &new_items));
+        size_t size;
+        XAML_RETURN_IF_FAILED(new_items->vtbl->get_size(new_items, &size));
+        for (size_t i = 0; i < size; i++)
+        {
+            xaml_object* obj;
+            XAML_RETURN_IF_FAILED(new_items->vtbl->get_at(new_items, i, &obj));
+            xaml_string* str;
+            if (XAML_SUCCESS(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str)))
+            {
+                print_string(str);
+            }
+            str->vtbl->release(str);
+            obj->vtbl->release(obj);
+        }
+        new_items->vtbl->release(new_items);
+        _tprintf(U("\n"));
         break;
     }
     case xaml_vector_changed_erase:
     {
         size_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Erase item at %zu\n"), index);
+        _tprintf(U("Erase item at %zu: "), index);
+        xaml_vector_view* old_items;
+        XAML_RETURN_IF_FAILED(e->vtbl->get_old_items(e, &old_items));
+        size_t size;
+        XAML_RETURN_IF_FAILED(old_items->vtbl->get_size(old_items, &size));
+        for (size_t i = 0; i < size; i++)
+        {
+            xaml_object* obj;
+            XAML_RETURN_IF_FAILED(old_items->vtbl->get_at(old_items, i, &obj));
+            xaml_string* str;
+            if (XAML_SUCCESS(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str)))
+            {
+                print_string(str);
+            }
+            str->vtbl->release(str);
+            obj->vtbl->release(obj);
+        }
+        old_items->vtbl->release(old_items);
+        _tprintf(U("\n"));
         break;
     }
     case xaml_vector_changed_move:
@@ -67,12 +112,6 @@ int main()
 {
     xaml_string* str;
     check_result(xaml_string_new(U("Hello world!"), &str));
-    xaml_char_t const* data;
-    check_result(str->vtbl->get_data(str, &data));
-    size_t length;
-    check_result(str->vtbl->get_length(str, &length));
-    _tprintf(U("%*s\n"), (int)length, data);
-
     xaml_observable_vector* vec;
     check_result(xaml_observable_vector_new(&vec));
     xaml_callback* callback;
