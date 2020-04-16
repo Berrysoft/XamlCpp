@@ -35,12 +35,14 @@ struct xaml_vector : xaml_vector_view
     virtual xaml_result XAML_CALL set_at(size_t, xaml_object*) noexcept = 0;
     virtual xaml_result XAML_CALL append(xaml_object*) noexcept = 0;
     virtual xaml_result XAML_CALL remove_at(size_t) noexcept = 0;
+    virtual xaml_result XAML_CALL clear() noexcept = 0;
 };
 #else
 #define XAML_VECTOR_VTBL(type)                                         \
     xaml_result(XAML_CALL* set_at)(type* const, size_t, xaml_object*); \
     xaml_result(XAML_CALL* append)(type* const, xaml_object*);         \
-    xaml_result(XAML_CALL* remove_at)(type* const, size_t);
+    xaml_result(XAML_CALL* remove_at)(type* const, size_t);            \
+    xaml_result(XAML_CALL* clear)(type* const);
 
 struct xaml_vector
 {

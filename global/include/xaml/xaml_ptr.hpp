@@ -18,8 +18,14 @@ private:
 public:
     constexpr xaml_ptr() noexcept : m_ptr{ nullptr } {}
     constexpr xaml_ptr(std::nullptr_t) noexcept : m_ptr{ nullptr } {}
-    xaml_ptr(T* ptr) noexcept : m_ptr{ ptr } {}
-    xaml_ptr(xaml_ptr const& p) noexcept : m_ptr{ p.m_ptr } { m_ptr->add_ref(); }
+    xaml_ptr(T* ptr) noexcept : m_ptr{ ptr }
+    {
+        if (m_ptr) m_ptr->add_ref();
+    }
+    xaml_ptr(xaml_ptr const& p) noexcept : m_ptr{ p.m_ptr }
+    {
+        if (m_ptr) m_ptr->add_ref();
+    }
     constexpr xaml_ptr(xaml_ptr&& p) noexcept : m_ptr{ p.m_ptr } { p.m_ptr = nullptr; }
 
     xaml_ptr& operator=(std::nullptr_t) noexcept
@@ -33,6 +39,7 @@ public:
     {
         try_release();
         m_ptr = ptr;
+        if (m_ptr) m_ptr->add_ref();
         return *this;
     }
 
@@ -40,7 +47,7 @@ public:
     {
         try_release();
         m_ptr = p.m_ptr;
-        m_ptr->add_ref();
+        if (m_ptr) m_ptr->add_ref();
         return *this;
     }
 

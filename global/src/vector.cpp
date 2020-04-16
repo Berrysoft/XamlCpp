@@ -85,6 +85,12 @@ public:
         return XAML_S_OK;
     }
 
+    xaml_result XAML_CALL clear() noexcept override
+    {
+        m_vec.clear();
+        return XAML_S_OK;
+    }
+
     xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) const noexcept override
     {
         return xaml_object_new<xaml_vector_enumerator_impl>(ptr, m_vec.begin(), m_vec.end());
