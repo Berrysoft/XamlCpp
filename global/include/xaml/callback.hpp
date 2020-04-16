@@ -2,8 +2,10 @@
 #define XAML_CALLBACK_HPP
 
 #include <functional>
+#include <xaml/box.hpp>
 #include <xaml/callback.hpp>
 #include <xaml/object.hpp>
+#include <xaml/result.hpp>
 
 template <typename T>
 struct __xaml_callback_impl;
@@ -21,8 +23,15 @@ public:
     {
         try
         {
-            // TODO
+            T1 arg1, T2 arg2;
+            XAML_RETURN_IF_FAILED(unbox_value(sender, arg1));
+            XAML_RETURN_IF_FAILED(unbox_value(sender, arg2));
+            m_func(arg1, arg2);
             return XAML_S_OK;
+        }
+        catch (xaml_result_error const& e)
+        {
+            return e.get_result();
         }
         catch (...)
         {
