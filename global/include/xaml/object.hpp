@@ -28,40 +28,47 @@ public:
         }
     }
 
-private:
-    template <typename... B>
-    struct query_many_impl;
-
-    template <typename B1, typename... B>
-    struct query_many_impl<B1, B...>
-    {
-        xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, xaml_object** ptr) const noexcept
-        {
-            if (type == xaml_type_guid_v<B1>)
-            {
-                *ptr = static_cast<B1*>(self);
-                self->add_ref();
-                return 0;
-            }
-            else
-            {
-                return query_many_impl<B...>{}(self, type, ptr);
-            }
-        }
-    };
-
-    template <>
-    struct query_many_impl<>
-    {
-        xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, xaml_object**) const noexcept { return 1; }
-    };
-
 public:
-    xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override
+    xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override;
+};
+
+template <typename... B>
+struct __query_impl;
+
+template <typename B1, typename... B>
+struct __query_impl<B1, B...>
+{
+    template <typename T, typename D, typename... Base>
+    xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, xaml_object** ptr) const noexcept
     {
-        return query_many_impl<D, Base...>{}(this, type, ptr);
+        if (type == xaml_type_guid_v<B1>)
+        {
+            *ptr = static_cast<B1*>(self);
+            self->add_ref();
+            return 0;
+        }
+        else
+        {
+            return __query_impl<B...>{}(self, type, ptr);
+        }
     }
 };
+
+template <>
+struct __query_impl<>
+{
+    template <typename T, typename D, typename... Base>
+    xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, xaml_object**) const noexcept
+    {
+        return 1;
+    }
+};
+
+template <typename T, typename D, typename... Base>
+inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, xaml_object** ptr) noexcept
+{
+    return __query_impl<D, Base...>{}(this, type, ptr);
+}
 
 template <typename D, typename T, typename... Args>
 inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
