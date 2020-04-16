@@ -98,3 +98,8 @@ xaml_result xaml_vector_new(vector<xaml_ptr<xaml_object>>&& vec, xaml_vector** p
 {
     return xaml_object_new<xaml_vector_impl>(ptr, move(vec));
 }
+
+xaml_result xaml_vector_new(xaml_vector** ptr) noexcept
+{
+    return xaml_vector_new({}, ptr);
+}

@@ -99,14 +99,8 @@
 #ifndef EXTERN_C
 #ifdef __cplusplus
 #define EXTERN_C extern "C"
-#define EXTERN_C_START \
-    EXTERN_C           \
-    {
-#define EXTERN_C_END }
 #else
 #define EXTERN_C
-#define EXTERN_C_START
-#define EXTERN_C_END
 #endif // __cplusplus
 #endif // !EXTERN_C
 
@@ -126,6 +120,14 @@
 #endif // __cplusplus
 #endif // !XAML_CONST_REF
 
+#ifndef XAML_ADDRESSOF_REF
+#ifdef __cplusplus
+#define XAML_ADDRESSOF_REF(x) (&x)
+#else
+#define XAML_ADDRESSOF_REF(x) (x)
+#endif // __cplusplus
+#endif // !XAML_ADDRESSOF_REF
+
 #ifndef XAML_CONSTEXPR
 #ifdef __cplusplus
 #define XAML_CONSTEXPR constexpr
@@ -136,9 +138,9 @@
 
 #ifndef XAML_CONSTEXPR_VAR
 #ifdef __cplusplus
-#define XAML_CONSTEXPR_VAR inline constexpr
+#define XAML_CONSTEXPR_VAR inline constexpr const
 #else
-#define XAML_CONSTEXPR_VAR const
+#define XAML_CONSTEXPR_VAR static const
 #endif // __cplusplus
 #endif // !XAML_CONSTEXPR_VAR
 

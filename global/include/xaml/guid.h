@@ -29,21 +29,33 @@ struct xaml_guid
 };
 
 #if defined(__cplusplus) && !defined(__cpp_impl_three_way_comparison)
-constexpr bool operator==(guid const& lhs, guid const& rhs)
+constexpr bool operator==(xaml_guid const& lhs, xaml_guid const& rhs)
 {
     return lhs.data1 == rhs.data1 && lhs.data2 == rhs.data2 && lhs.data3 == rhs.data3 && std::equal(std::begin(lhs.data4), std::end(lhs.data4), std::begin(rhs.data4), std::end(rhs.data4));
 }
-constexpr bool operator!=(guid const& lhs, guid const& rhs) { return !(lhs == rhs); }
+constexpr bool operator!=(xaml_guid const& lhs, xaml_guid const& rhs) { return !(lhs == rhs); }
 #endif // __cplusplus && !__cpp_impl_three_way_comparison
+
+#ifndef __cplusplus
+inline bool xaml_is_equal_guid(xaml_guid const* lhs, xaml_guid const* rhs)
+{
+    return lhs->data1 == rhs->data1 &&
+           lhs->data2 == rhs->data2 &&
+           lhs->data3 == rhs->data3 &&
+           lhs->data4[0] == rhs->data4[0] &&
+           lhs->data4[1] == rhs->data4[1] &&
+           lhs->data4[2] == rhs->data4[2] &&
+           lhs->data4[3] == rhs->data4[3] &&
+           lhs->data4[4] == rhs->data4[4] &&
+           lhs->data4[5] == rhs->data4[5] &&
+           lhs->data4[6] == rhs->data4[6] &&
+           lhs->data4[7] == rhs->data4[7];
+}
+#endif // !__cplusplus
 
 XAML_CONSTEXPR size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
 {
-#ifdef __cplusplus
-    size_t* ptr = (size_t*)&g;
-#else
-    size_t* ptr = (size_t*)g;
-#endif // __cplusplus
-
+    size_t* ptr = (size_t*)XAML_ADDRESSOF_REF(g);
 #if SIZE_MAX == UINT64_MAX
     static_assert(sizeof(size_t) == sizeof(uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];

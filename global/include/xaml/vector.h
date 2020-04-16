@@ -54,4 +54,6 @@ struct xaml_vector
 };
 #endif // __cplusplus
 
+EXTERN_C XAML_API xaml_result xaml_vector_new(xaml_vector** ptr) XAML_NOEXCEPT;
+
 #endif // !XAML_VECTOR_H
