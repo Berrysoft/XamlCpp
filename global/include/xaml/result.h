@@ -1,6 +1,7 @@
 #ifndef XAML_RESULT_H
 #define XAML_RESULT_H
 
+#include <assert.h>
 #include <stdint.h>
 
 typedef uint32_t xaml_result;
@@ -13,6 +14,13 @@ typedef uint32_t xaml_result;
     {                                   \
         xaml_result hr = (expr);        \
         if (XAML_FAILED(hr)) return hr; \
+    } while (0)
+
+#define XAML_ASSERT_SUCCESS(expr) \
+    do                            \
+    {                             \
+        xaml_result hr = (expr);  \
+        assert(XAML_SUCCESS(hr)); \
     } while (0)
 
 #define XAML_S_OK 0

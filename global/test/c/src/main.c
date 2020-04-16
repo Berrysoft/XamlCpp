@@ -14,17 +14,12 @@
 #endif // !_tprintf
 #endif // UNICODE
 
-inline void check_result(xaml_result res)
-{
-    assert(XAML_SUCCESS(res));
-}
-
 void print_string(xaml_string* str)
 {
     xaml_char_t const* data;
-    check_result(str->vtbl->get_data(str, &data));
+    XAML_ASSERT_SUCCESS(str->vtbl->get_data(str, &data));
     size_t length;
-    check_result(str->vtbl->get_length(str, &length));
+    XAML_ASSERT_SUCCESS(str->vtbl->get_length(str, &length));
     _tprintf(U("%*s "), (int)length, data);
 }
 
@@ -50,10 +45,8 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(new_items->vtbl->get_at(new_items, i, &obj));
             xaml_string* str;
-            if (XAML_SUCCESS(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str)))
-            {
-                print_string(str);
-            }
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str));
+            print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
         }
@@ -75,10 +68,8 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(old_items->vtbl->get_at(old_items, i, &obj));
             xaml_string* str;
-            if (XAML_SUCCESS(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str)))
-            {
-                print_string(str);
-            }
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str));
+            print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
         }
@@ -111,18 +102,18 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
 int main()
 {
     xaml_string* str;
-    check_result(xaml_string_new(U("Hello world!"), &str));
+    XAML_ASSERT_SUCCESS(xaml_string_new(U("Hello world!"), &str));
     xaml_observable_vector* vec;
-    check_result(xaml_observable_vector_new(&vec));
+    XAML_ASSERT_SUCCESS(xaml_observable_vector_new(&vec));
     xaml_callback* callback;
-    check_result(xaml_callback_new(observable_vector_changed_callback, &callback));
+    XAML_ASSERT_SUCCESS(xaml_callback_new(observable_vector_changed_callback, &callback));
     size_t token;
-    check_result(vec->vtbl->add_vector_changed(vec, callback, &token));
+    XAML_ASSERT_SUCCESS(vec->vtbl->add_vector_changed(vec, callback, &token));
     callback->vtbl->release(callback);
     xaml_object* obj;
-    check_result(str->vtbl->query(str, &xaml_type_guid_v(xaml_object), &obj));
-    check_result(vec->vtbl->append(vec, obj));
-    check_result(vec->vtbl->remove_at(vec, 0));
+    XAML_ASSERT_SUCCESS(str->vtbl->query(str, &xaml_type_guid_v(xaml_object), &obj));
+    XAML_ASSERT_SUCCESS(vec->vtbl->append(vec, obj));
+    XAML_ASSERT_SUCCESS(vec->vtbl->remove_at(vec, 0));
     vec->vtbl->release(vec);
     str->vtbl->release(str);
 }
