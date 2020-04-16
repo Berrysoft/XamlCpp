@@ -15,7 +15,7 @@ private:
     xaml_result on_collection_changed(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index) noexcept
     {
         xaml_ptr<xaml_vector_changed_args> args;
-        XAML_RETURN_IF_FAILED(xaml_vector_changed_args_new(xaml_vector_changed_replace, new_items, new_index, old_items, old_index, &args));
+        XAML_RETURN_IF_FAILED(xaml_vector_changed_args_new(action, new_items, new_index, old_items, old_index, &args));
         return m_collection_changed->invoke(this, args.get());
     }
 
