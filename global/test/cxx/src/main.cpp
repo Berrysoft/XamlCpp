@@ -26,13 +26,14 @@ void print_string(xaml_ptr<xaml_string> const& str)
     XAML_THROW_IF_FAILED(str->get_data(&data));
     size_t length;
     XAML_THROW_IF_FAILED(str->get_length(&length));
-    _tcout << xaml_std_string_view_t(data, length) << ' ';
+    _tcout << xaml_std_string_view_t(data, length) << endl;
 }
 
 int main()
 {
     xaml_ptr<xaml_string> str;
     XAML_THROW_IF_FAILED(xaml_string_new(U("Hello world!"), &str));
+    print_string(str);
     xaml_ptr<xaml_observable_vector> vec;
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
     xaml_ptr<xaml_callback> callback;
@@ -49,11 +50,10 @@ int main()
                 _tcout << U("Add item at ") << index << ": ";
                 xaml_ptr<xaml_vector_view> new_items;
                 XAML_THROW_IF_FAILED(args->get_new_items(&new_items));
-                for (auto& obj : new_items)
+                for (auto obj : new_items)
                 {
-                    xaml_ptr<xaml_string> str;
-                    XAML_THROW_IF_FAILED(obj->query(&str));
-                    print_string(str);
+                    int value = unbox_value<int>(obj);
+                    _tcout << value << ' ';
                 }
                 _tcout << endl;
                 break;
@@ -65,11 +65,10 @@ int main()
                 _tcout << U("Erase item at ") << index << ": ";
                 xaml_ptr<xaml_vector_view> old_items;
                 XAML_THROW_IF_FAILED(args->get_old_items(&old_items));
-                for (auto& obj : old_items)
+                for (auto obj : old_items)
                 {
-                    xaml_ptr<xaml_string> str;
-                    XAML_THROW_IF_FAILED(obj->query(&str));
-                    print_string(str);
+                    int value = unbox_value<int>(obj);
+                    _tcout << value << ' ';
                 }
                 _tcout << endl;
                 break;
@@ -96,6 +95,10 @@ int main()
         &callback));
     size_t token;
     XAML_THROW_IF_FAILED(vec->add_vector_changed(callback.get(), &token));
-    XAML_THROW_IF_FAILED(vec->append(str.get()));
+    XAML_THROW_IF_FAILED(vec->append(box_value(1).get()));
+    XAML_THROW_IF_FAILED(vec->append(box_value(2).get()));
+    XAML_THROW_IF_FAILED(vec->append(box_value(3).get()));
+    XAML_THROW_IF_FAILED(vec->append(box_value(4).get()));
     XAML_THROW_IF_FAILED(vec->remove_at(0));
+    XAML_THROW_IF_FAILED(vec->clear());
 }

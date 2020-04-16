@@ -53,4 +53,6 @@ struct xaml_box
 
 EXTERN_C XAML_API xaml_result xaml_box_new(xaml_guid XAML_CONST_REF, void const*, size_t, xaml_box**) XAML_NOEXCEPT;
 
+XAML_TYPE(int, { 0x0ce68e8c, 0x51a4, 0x3115, { 0xbe, 0x13, 0xdd, 0x1a, 0xce, 0x42, 0xe6, 0x1f } })
+
 #endif // !XAML_BOX_H

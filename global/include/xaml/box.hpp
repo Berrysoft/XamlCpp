@@ -2,6 +2,7 @@
 #define XAML_BOX_HPP
 
 #include <xaml/box.h>
+#include <xaml/result.hpp>
 #include <xaml/xaml_ptr.hpp>
 
 template <typename T>

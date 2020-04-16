@@ -101,21 +101,26 @@ struct xaml_type_guid<void>
 #define xaml_type_guid_v(type) (type##_guid)
 #endif // __cplusplus
 
-#ifndef XAML_CLASS
-#define __XAML_CLASS_BASE(type, ...) \
-    typedef struct type type;        \
+#ifndef XAML_TYPE
+#define __XAML_TYPE_BASE(type, ...) \
     XAML_CONSTEXPR_VAR xaml_guid type##_guid = __VA_ARGS__;
 #ifdef __cplusplus
-#define XAML_CLASS(type, ...)                           \
-    __XAML_CLASS_BASE(type, __VA_ARGS__)                \
+#define XAML_TYPE(type, ...)                            \
+    __XAML_TYPE_BASE(type, __VA_ARGS__)                 \
     template <>                                         \
     struct xaml_type_guid<type>                         \
     {                                                   \
         static constexpr xaml_guid value = type##_guid; \
     };
 #else
-#define XAML_CLASS(type, ...) __XAML_CLASS_BASE(type, __VA_ARGS__)
+#define XAML_TYPE(type, ...) __XAML_TYPE_BASE(type, __VA_ARGS__)
 #endif // __cplusplus
+#endif // !XAML_TYPE
+
+#ifndef XAML_CLASS
+#define XAML_CLASS(type, ...) \
+    typedef struct type type; \
+    XAML_TYPE(type, __VA_ARGS__)
 #endif // !XAML_CLASS
 
 #endif // !XAML_META_GUID_HPP
