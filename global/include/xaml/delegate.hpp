@@ -29,18 +29,10 @@ inline xaml_ptr<xaml_object> __xaml_delegate_impl_invoke_impl_get_at(xaml_vector
     return item;
 }
 
-template <typename T>
-T __xaml_delegate_impl_invoke_impl_unbox_value(xaml_object* obj) noexcept
-{
-    T value;
-    XAML_THROW_IF_FAILED(__box_impl<T>{}.unbox(obj, value));
-    return value;
-}
-
 template <typename Return, typename... Args, size_t... Indicies>
 Return __xaml_delegate_impl_invoke_impl(std::function<Return(Args...)> const& func, xaml_vector_view* args, std::index_sequence<Indicies...>)
 {
-    return func(__xaml_delegate_impl_invoke_impl_unbox_value<Args>(__xaml_delegate_impl_invoke_impl_get_at(args, Indicies))...);
+    return func(unbox_value<Args>(__xaml_delegate_impl_invoke_impl_get_at(args, Indicies))...);
 }
 
 template <typename Return, typename... Args>

@@ -61,9 +61,25 @@ xaml_result box_value(T const& value, xaml_object** ptr) noexcept
 }
 
 template <typename T>
+xaml_ptr<xaml_object> box_value(T const& value)
+{
+    xaml_ptr<xaml_object> obj;
+    XAML_THROW_IF_FAILED(box_value(value, &obj));
+    return obj;
+}
+
+template <typename T>
 xaml_result unbox_value(xaml_object* obj, T& value) noexcept
 {
     return __box_impl<T>{}.unbox(obj, value);
+}
+
+template <typename T>
+T unbox_value(xaml_ptr<xaml_object> const& obj)
+{
+    T value;
+    XAML_THROW_IF_FAILED(unbox_value(obj.get(), value));
+    return value;
 }
 
 #endif // !XAML_BOX_HPP
