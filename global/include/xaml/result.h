@@ -6,8 +6,14 @@
 typedef uint32_t xaml_result;
 
 #define XAML_SUCCESS(expr) (!(expr))
-
 #define XAML_FAILED(expr) (expr)
+
+#define XAML_RETURN_IF_FAILED(expr)     \
+    do                                  \
+    {                                   \
+        xaml_result hr = (expr);        \
+        if (XAML_FAILED(hr)) return hr; \
+    } while (0)
 
 #define XAML_S_OK 0
 

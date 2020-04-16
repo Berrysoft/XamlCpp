@@ -28,7 +28,7 @@ public:
     }
 };
 
-struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_object>
+struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
 {
 private:
     vector<xaml_ptr<xaml_object>> m_vec{};
@@ -87,10 +87,7 @@ public:
 
     xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) const noexcept override
     {
-        xaml_enumerator* res = new (nothrow) xaml_vector_enumerator_impl(m_vec.begin(), m_vec.end());
-        if (!res) return XAML_E_OUTOFMEMORY;
-        *ptr = res;
-        return XAML_S_OK;
+        return xaml_object_new<xaml_vector_enumerator_impl>(ptr, m_vec.begin(), m_vec.end());
     }
 };
 

@@ -64,7 +64,7 @@ public:
 };
 
 template <typename D, typename T, typename... Args>
-inline xaml_result xaml_object_new(T** ptr, Args&&... args)
+inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
 {
     T* res = new (std::nothrow) D(std::forward<Args>(args)...);
     if (!res) return XAML_E_OUTOFMEMORY;
