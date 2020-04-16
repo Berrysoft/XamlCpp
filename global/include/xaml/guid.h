@@ -2,6 +2,7 @@
 #define XAML_META_GUID_HPP
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <xaml/utility.h>

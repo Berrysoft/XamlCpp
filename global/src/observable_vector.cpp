@@ -50,7 +50,7 @@ public:
         XAML_RETURN_IF_FAILED(m_vec->append(obj));
         xaml_ptr<xaml_vector> new_items;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ obj }, &new_items));
-        return on_collection_changed(xaml_vector_changed_replace, new_items.get(), index, nullptr, index);
+        return on_collection_changed(xaml_vector_changed_add, new_items.get(), index, nullptr, index);
     }
 
     xaml_result XAML_CALL remove_at(size_t index) noexcept override
@@ -60,7 +60,7 @@ public:
         XAML_RETURN_IF_FAILED(m_vec->remove_at(index));
         xaml_ptr<xaml_vector> old_items;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ old_item }, &old_items));
-        return on_collection_changed(xaml_vector_changed_replace, nullptr, index, old_items.get(), index);
+        return on_collection_changed(xaml_vector_changed_erase, nullptr, index, old_items.get(), index);
     }
 
     xaml_result XAML_CALL clear() noexcept override
@@ -141,7 +141,7 @@ public:
     }
 };
 
-xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index, xaml_vector_changed_args** ptr)
+xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index, xaml_vector_changed_args** ptr) noexcept
 {
     return xaml_object_new<xaml_vector_changed_args_impl>(ptr, action, new_items, new_index, old_items, old_index);
 }

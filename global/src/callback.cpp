@@ -17,7 +17,7 @@ public:
     }
 };
 
-xaml_result xaml_delegate_new(xaml_result (*func)(xaml_object*, xaml_object*), xaml_callback** ptr) noexcept
+xaml_result xaml_callback_new(xaml_result (*func)(xaml_object*, xaml_object*), xaml_callback** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
     return xaml_object_new<xaml_callback_impl>(ptr, func);
