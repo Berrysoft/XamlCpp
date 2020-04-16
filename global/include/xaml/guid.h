@@ -38,7 +38,7 @@ constexpr bool operator!=(xaml_guid const& lhs, xaml_guid const& rhs) { return !
 #endif // __cplusplus && !__cpp_impl_three_way_comparison
 
 #ifndef __cplusplus
-inline bool xaml_is_equal_guid(xaml_guid const* lhs, xaml_guid const* rhs)
+inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 {
     return lhs->data1 == rhs->data1 &&
            lhs->data2 == rhs->data2 &&
