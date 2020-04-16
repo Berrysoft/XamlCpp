@@ -64,6 +64,24 @@ public:
     constexpr T& operator*() const noexcept { return *m_ptr; }
 
     constexpr T* get() const noexcept { return m_ptr; }
+
+    constexpr operator bool() const noexcept { return m_ptr; }
+
+    template <typename D>
+    constexpr bool operator==(xaml_ptr<D> const& rhs) const noexcept
+    {
+        return m_ptr == rhs.m_ptr;
+    }
+    template <typename D>
+    constexpr bool operator!=(xaml_ptr<D> const& rhs) const noexcept
+    {
+        return !operator==(rhs);
+    }
+
+    friend constexpr bool operator==(xaml_ptr<T> const& lhs, std::nullptr_t) noexcept { return lhs.m_ptr == nullptr; }
+    friend constexpr bool operator==(std::nullptr_t, xaml_ptr<T> const& rhs) noexcept { return rhs == nullptr; }
+    friend constexpr bool operator!=(xaml_ptr<T> const& lhs, std::nullptr_t) noexcept { return !(lhs == nullptr); }
+    friend constexpr bool operator!=(std::nullptr_t, xaml_ptr<T> const& rhs) noexcept { return !(rhs == nullptr); }
 };
 
 #endif // !XAML_PTR_HPP

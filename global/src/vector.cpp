@@ -7,15 +7,23 @@ struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl,
 {
 private:
     vector<xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
+    bool m_init;
 
 public:
     xaml_vector_enumerator_impl(vector<xaml_ptr<xaml_object>>::const_iterator begin, vector<xaml_ptr<xaml_object>>::const_iterator end) noexcept
-        : m_begin(begin), m_end(end) {}
+        : m_begin(begin), m_end(end), m_init(false) {}
 
-    xaml_result XAML_CALL move_next() noexcept override
+    xaml_result XAML_CALL move_next(bool* pb) noexcept override
     {
-        if (m_begin == m_end) return XAML_E_FAIL;
-        ++m_begin;
+        if (!m_init)
+        {
+            m_init = true;
+        }
+        else
+        {
+            ++m_begin;
+        }
+        *pb = m_begin != m_end;
         return XAML_S_OK;
     }
 

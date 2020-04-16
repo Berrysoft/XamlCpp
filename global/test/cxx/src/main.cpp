@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 #include <xaml/callback.hpp>
+#include <xaml/enumerable.hpp>
 #include <xaml/observable_vector.h>
 #include <xaml/result.hpp>
 #include <xaml/string.hpp>
@@ -48,17 +49,11 @@ int main()
                 _tcout << U("Add item at ") << index << ": ";
                 xaml_ptr<xaml_vector_view> new_items;
                 XAML_THROW_IF_FAILED(args->get_new_items(&new_items));
-                size_t size;
-                XAML_THROW_IF_FAILED(new_items->get_size(&size));
-                for (size_t i = 0; i < size; i++)
+                for (auto& obj : new_items)
                 {
-                    xaml_ptr<xaml_object> obj;
-                    XAML_THROW_IF_FAILED(new_items->get_at(i, &obj));
                     xaml_ptr<xaml_string> str;
-                    if (XAML_SUCCESS(obj->query(&str)))
-                    {
-                        print_string(str);
-                    }
+                    XAML_THROW_IF_FAILED(obj->query(&str));
+                    print_string(str);
                 }
                 _tcout << endl;
                 break;
@@ -70,17 +65,11 @@ int main()
                 _tcout << U("Erase item at ") << index << ": ";
                 xaml_ptr<xaml_vector_view> old_items;
                 XAML_THROW_IF_FAILED(args->get_old_items(&old_items));
-                size_t size;
-                XAML_THROW_IF_FAILED(old_items->get_size(&size));
-                for (size_t i = 0; i < size; i++)
+                for (auto& obj : old_items)
                 {
-                    xaml_ptr<xaml_object> obj;
-                    XAML_THROW_IF_FAILED(old_items->get_at(i, &obj));
                     xaml_ptr<xaml_string> str;
-                    if (XAML_SUCCESS(obj->query(&str)))
-                    {
-                        print_string(str);
-                    }
+                    XAML_THROW_IF_FAILED(obj->query(&str));
+                    print_string(str);
                 }
                 _tcout << endl;
                 break;

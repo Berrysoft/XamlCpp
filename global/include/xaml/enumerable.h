@@ -1,6 +1,7 @@
-#ifndef XAML_ENUMERABLE_HPP
-#define XAML_ENUMERABLE_HPP
+#ifndef XAML_ENUMERABLE_H
+#define XAML_ENUMERABLE_H
 
+#include <stdbool.h>
 #include <xaml/object.h>
 
 XAML_CLASS(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x0c, 0x7d, 0x34, 0x9e, 0x11 } })
@@ -8,12 +9,12 @@ XAML_CLASS(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x
 #ifdef __cplusplus
 struct xaml_enumerator : xaml_object
 {
-    virtual xaml_result XAML_CALL move_next() noexcept = 0;
+    virtual xaml_result XAML_CALL move_next(bool*) noexcept = 0;
     virtual xaml_result XAML_CALL get_current(xaml_object**) const noexcept = 0;
 };
 #else
-#define XAML_ENUMERATOR_VTBL(type)                  \
-    xaml_result(XAML_CALL* move_next)(type* const); \
+#define XAML_ENUMERATOR_VTBL(type)                         \
+    xaml_result(XAML_CALL* move_next)(type* const, bool*); \
     xaml_result(XAML_CALL* get_current)(type const* const, xaml_object**);
 
 struct xaml_enumerator
@@ -47,4 +48,4 @@ struct xaml_enumerable
 };
 #endif // __cplusplus
 
-#endif // !XAML_ENUMERABLE_HPP
+#endif // !XAML_ENUMERABLE_H
