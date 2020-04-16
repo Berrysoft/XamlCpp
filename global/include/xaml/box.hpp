@@ -27,7 +27,7 @@ struct __box_impl
 };
 
 template <typename T>
-struct __box_impl<T*, std::enable_if_t<std::is_base_v<xaml_object, T>>>
+struct __box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
     xaml_result box(T* value, xaml_object** ptr) const noexcept
     {
@@ -41,7 +41,7 @@ struct __box_impl<T*, std::enable_if_t<std::is_base_v<xaml_object, T>>>
 };
 
 template <typename T>
-struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_v<xaml_object, T>>>
+struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
     xaml_result box(xaml_ptr<T> const& value, xaml_object** ptr) const noexcept
     {

@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <xaml/box.hpp>
-#include <xaml/callback.hpp>
+#include <xaml/callback.h>
 #include <xaml/object.hpp>
 #include <xaml/result.hpp>
 
@@ -23,9 +23,10 @@ public:
     {
         try
         {
-            T1 arg1, T2 arg2;
+            T1 arg1;
             XAML_RETURN_IF_FAILED(unbox_value(sender, arg1));
-            XAML_RETURN_IF_FAILED(unbox_value(sender, arg2));
+            T2 arg2;
+            XAML_RETURN_IF_FAILED(unbox_value(args, arg2));
             m_func(arg1, arg2);
             return XAML_S_OK;
         }

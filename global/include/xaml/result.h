@@ -1,5 +1,5 @@
-#ifndef XAML_RESULT_HPP
-#define XAML_RESULT_HPP
+#ifndef XAML_RESULT_H
+#define XAML_RESULT_H
 
 #include <stdint.h>
 
@@ -22,4 +22,4 @@ typedef uint32_t xaml_result;
 #define XAML_E_NOINTERFACE 0x80004002
 #define XAML_E_OUTOFMEMORY 0x8007000E
 
-#endif // !XAML_RESULT_HPP
+#endif // !XAML_RESULT_H
