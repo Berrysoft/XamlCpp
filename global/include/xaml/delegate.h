@@ -32,6 +32,7 @@ struct xaml_delegate
 #endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**), xaml_delegate**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_delegate_bind(xaml_delegate*, xaml_vector_view*, xaml_delegate**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T>
