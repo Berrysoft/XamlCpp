@@ -13,13 +13,13 @@ XAML_CLASS(xaml_vector_view, { 0x8960a280, 0xddbb, 0x4b5b, { 0xb4, 0xeb, 0x27, 0
 #ifdef __cplusplus
 struct xaml_vector_view : xaml_enumerable
 {
-    virtual xaml_result XAML_CALL get_at(size_t, xaml_object**) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_size(size_t*) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_at(size_t, xaml_object**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_size(size_t*) noexcept = 0;
 };
 #else
-#define XAML_VECTOR_VIEW_VTBL(type)                                           \
-    xaml_result(XAML_CALL* get_at)(type const* const, size_t, xaml_object**); \
-    xaml_result(XAML_CALL* get_size)(type const* const, size_t*);
+#define XAML_VECTOR_VIEW_VTBL(type)                                     \
+    xaml_result(XAML_CALL* get_at)(type* const, size_t, xaml_object**); \
+    xaml_result(XAML_CALL* get_size)(type* const, size_t*);
 
 struct xaml_vector_view
 {

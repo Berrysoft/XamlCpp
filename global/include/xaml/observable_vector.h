@@ -46,19 +46,19 @@ XAML_CLASS(xaml_vector_changed_args, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7,
 #ifdef __cplusplus
 struct xaml_vector_changed_args : xaml_object
 {
-    virtual xaml_result XAML_CALL get_action(xaml_vector_changed_action*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_new_items(xaml_vector_view**) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_new_index(size_t*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_old_items(xaml_vector_view**) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_old_index(size_t*) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_action(xaml_vector_changed_action*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_new_items(xaml_vector_view**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_new_index(size_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_old_items(xaml_vector_view**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_old_index(size_t*) noexcept = 0;
 };
 #else
-#define XAML_VECTOR_CHANGED_ARGS_VTBL(type)                                             \
-    xaml_result(XAML_CALL* get_action)(type const* const, xaml_vector_changed_action*); \
-    xaml_result(XAML_CALL* get_new_items)(type const* const, xaml_vector_view**);       \
-    xaml_result(XAML_CALL* get_new_index)(type const* const, size_t*);                  \
-    xaml_result(XAML_CALL* get_old_items)(type const* const, xaml_vector_view**);       \
-    xaml_result(XAML_CALL* get_old_index)(type const* const, size_t*);
+#define XAML_VECTOR_CHANGED_ARGS_VTBL(type)                                       \
+    xaml_result(XAML_CALL* get_action)(type* const, xaml_vector_changed_action*); \
+    xaml_result(XAML_CALL* get_new_items)(type* const, xaml_vector_view**);       \
+    xaml_result(XAML_CALL* get_new_index)(type* const, size_t*);                  \
+    xaml_result(XAML_CALL* get_old_items)(type* const, xaml_vector_view**);       \
+    xaml_result(XAML_CALL* get_old_index)(type* const, size_t*);
 
 struct xaml_vector_changed_args
 {

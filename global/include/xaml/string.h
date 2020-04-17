@@ -30,15 +30,15 @@ XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 
 #ifdef __cplusplus
 struct xaml_string : xaml_object
 {
-    virtual xaml_result XAML_CALL get_length(size_t*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_data(xaml_char_t const**) const noexcept = 0;
-    virtual xaml_result XAML_CALL equals(xaml_string*, bool*) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_length(size_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_data(xaml_char_t const**) noexcept = 0;
+    virtual xaml_result XAML_CALL equals(xaml_string*, bool*) noexcept = 0;
 };
 #else
-#define XAML_STRING_VTBL(type)                                                \
-    xaml_result(XAML_CALL* get_length)(type const* const, size_t*);           \
-    xaml_result(XAML_CALL* get_data)(type const* const, xaml_char_t const**); \
-    xaml_result(XAML_CALL* equals)(type const* const, xaml_string*, bool*);
+#define XAML_STRING_VTBL(type)                                          \
+    xaml_result(XAML_CALL* get_length)(type* const, size_t*);           \
+    xaml_result(XAML_CALL* get_data)(type* const, xaml_char_t const**); \
+    xaml_result(XAML_CALL* equals)(type* const, xaml_string*, bool*);
 
 struct xaml_string
 {

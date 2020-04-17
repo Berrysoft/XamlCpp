@@ -14,19 +14,19 @@ public:
     xaml_box_impl(xaml_guid const& type, void* data, size_t size) noexcept : m_type(type), m_data(data), m_size(size) {}
     ~xaml_box_impl() { free(m_data); }
 
-    xaml_result XAML_CALL get_type(xaml_guid* ptype) const noexcept override
+    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
     {
         *ptype = m_type;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_data(void const** pdata) const noexcept override
+    xaml_result XAML_CALL get_data(void const** pdata) noexcept override
     {
         *pdata = m_data;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_size(size_t* psize) const noexcept override
+    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
         *psize = m_size;
         return XAML_S_OK;

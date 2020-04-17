@@ -4,7 +4,7 @@
 #include <utility>
 #include <xaml/object.h>
 
-template <typename T>
+template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 class xaml_ptr
 {
 private:

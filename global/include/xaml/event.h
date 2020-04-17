@@ -10,12 +10,12 @@ XAML_CLASS(xaml_event, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0
 #ifdef __cplusplus
 struct xaml_event : xaml_delegate
 {
-    virtual xaml_result XAML_CALL add(xaml_delegate*, size_t*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove(size_t) noexcept = 0;
+    virtual xaml_result XAML_CALL add(xaml_delegate*, std::size_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL remove(std::size_t) noexcept = 0;
 };
 #else
-#define XAML_EVENT_VTBL(type)                                        \
-    xaml_result(XAML_CALL* add)(type* const, xaml_delegate*, size*); \
+#define XAML_EVENT_VTBL(type)                                          \
+    xaml_result(XAML_CALL* add)(type* const, xaml_delegate*, size_t*); \
     xaml_result(XAML_CALL* remove)(type* const, size_t);
 
 struct xaml_event

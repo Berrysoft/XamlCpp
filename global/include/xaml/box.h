@@ -16,9 +16,9 @@ XAML_CLASS(xaml_box, { 0x8ba3da41, 0x01bc, 0x4c97, { 0x92, 0x5e, 0xb1, 0x71, 0x5
 #ifdef __cplusplus
 struct xaml_box : xaml_object
 {
-    virtual xaml_result XAML_CALL get_type(xaml_guid*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_data(void const**) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_size(size_t*) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_data(void const**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_size(size_t*) noexcept = 0;
     virtual xaml_result XAML_CALL set_data(xaml_guid XAML_CONST_REF, void const*, size_t) noexcept = 0;
 
     template <typename T>
@@ -42,10 +42,10 @@ struct xaml_box : xaml_object
     }
 };
 #else
-#define XAML_BOX_VTBL(type)                                            \
-    xaml_result(XAML_CALL* get_type)(type const* const, xaml_guid*);   \
-    xaml_result(XAML_CALL* get_data)(type const* const, void const**); \
-    xaml_result(XAML_CALL* get_size)(type const* const, size_t*);      \
+#define XAML_BOX_VTBL(type)                                      \
+    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);   \
+    xaml_result(XAML_CALL* get_data)(type* const, void const**); \
+    xaml_result(XAML_CALL* get_size)(type* const, size_t*);      \
     xaml_result(XAML_CALL* set_data)(type* const, xaml_guid XAML_CONST_REF, void const*, size_t);
 
 struct xaml_box

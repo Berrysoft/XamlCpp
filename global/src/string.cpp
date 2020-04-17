@@ -15,13 +15,13 @@ public:
     xaml_string_impl(xaml_std_string_t&& str) : m_str(move(str)) {}
     xaml_string_impl(xaml_std_string_view_t str) : m_str(str) {}
 
-    xaml_result XAML_CALL get_length(size_t* psize) const noexcept override
+    xaml_result XAML_CALL get_length(size_t* psize) noexcept override
     {
         *psize = m_str.size();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_data(xaml_char_t const** ptr) const noexcept override
+    xaml_result XAML_CALL get_data(xaml_char_t const** ptr) noexcept override
     {
         if (m_str.empty())
             *ptr = nullptr;
@@ -30,7 +30,7 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL equals(xaml_string* str, bool* pres) const noexcept override
+    xaml_result XAML_CALL equals(xaml_string* str, bool* pres) noexcept override
     {
         size_t rhs_length;
         xaml_result hr = str->get_length(&rhs_length);

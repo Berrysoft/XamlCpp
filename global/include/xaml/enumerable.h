@@ -15,12 +15,12 @@ XAML_CLASS(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x
 struct xaml_enumerator : xaml_object
 {
     virtual xaml_result XAML_CALL move_next(bool*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_current(xaml_object**) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_current(xaml_object**) noexcept = 0;
 };
 #else
 #define XAML_ENUMERATOR_VTBL(type)                         \
     xaml_result(XAML_CALL* move_next)(type* const, bool*); \
-    xaml_result(XAML_CALL* get_current)(type const* const, xaml_object**);
+    xaml_result(XAML_CALL* get_current)(type* const, xaml_object**);
 
 struct xaml_enumerator
 {
@@ -37,11 +37,11 @@ XAML_CLASS(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4b, 0xab, 0x
 #ifdef __cplusplus
 struct xaml_enumerable : xaml_object
 {
-    virtual xaml_result XAML_CALL get_enumerator(xaml_enumerator**) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_enumerator(xaml_enumerator**) noexcept = 0;
 };
 #else
 #define XAML_ENUMERABLE_VTBL(type) \
-    xaml_result(XAML_CALL* get_enumerator)(type const* const, xaml_enumerator**);
+    xaml_result(XAML_CALL* get_enumerator)(type* const, xaml_enumerator**);
 
 struct xaml_enumerable
 {

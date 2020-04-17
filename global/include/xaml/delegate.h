@@ -15,11 +15,11 @@ XAML_CLASS(xaml_delegate, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e
 #ifdef __cplusplus
 struct xaml_delegate : xaml_object
 {
-    virtual xaml_result XAML_CALL invoke(xaml_vector_view*, xaml_object**) const noexcept = 0;
+    virtual xaml_result XAML_CALL invoke(xaml_vector_view*, xaml_object**) noexcept = 0;
 };
 #else
 #define XAML_DELEGATE_VTBL(type) \
-    xaml_result(XAML_CALL* invoke)(type const* const, xaml_vector_view*, xaml_object**);
+    xaml_result(XAML_CALL* invoke)(type* const, xaml_vector_view*, xaml_object**);
 
 struct xaml_delegate
 {
@@ -47,7 +47,7 @@ private:
 public:
     __xaml_delegate_impl(std::function<Return(Args...)>&& func) noexcept : m_func(std::move(func)) {}
 
-    xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) const noexcept override;
+    xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) noexcept override;
 };
 
 inline xaml_ptr<xaml_object> __xaml_delegate_impl_invoke_impl_get_at(xaml_vector_view* args, size_t index)
@@ -70,7 +70,7 @@ Return __xaml_delegate_impl_invoke(std::function<Return(Args...)> const& func, x
 }
 
 template <typename Return, typename... Args>
-xaml_result __xaml_delegate_impl<Return(Args...)>::invoke(xaml_vector_view* args, xaml_object** ptr) const noexcept
+xaml_result __xaml_delegate_impl<Return(Args...)>::invoke(xaml_vector_view* args, xaml_object** ptr) noexcept
 {
     size_t size;
     XAML_RETURN_IF_FAILED(args->get_size(&size));

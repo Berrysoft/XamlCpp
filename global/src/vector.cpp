@@ -27,7 +27,7 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_current(xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
     {
         if (m_begin == m_end) return XAML_E_FAIL;
         (*m_begin)->add_ref();
@@ -36,7 +36,7 @@ public:
     }
 };
 
-struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
+struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_enumerable, xaml_object>
 {
 private:
     vector<xaml_ptr<xaml_object>> m_vec{};
@@ -44,16 +44,17 @@ private:
 public:
     xaml_vector_impl(vector<xaml_ptr<xaml_object>>&& vec) noexcept : m_vec(move(vec)) {}
 
-    xaml_result XAML_CALL get_size(size_t* psize) const noexcept override
+    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
         *psize = m_vec.size();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_at(size_t index, xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL get_at(size_t index, xaml_object** ptr) noexcept override
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         auto& res = m_vec[index];
+        res->add_ref();
         *ptr = res.get();
         return XAML_S_OK;
     }
@@ -61,7 +62,6 @@ public:
     xaml_result XAML_CALL set_at(size_t index, xaml_object* obj) noexcept override
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
-        obj->add_ref();
         m_vec[index] = obj;
         return XAML_S_OK;
     }
@@ -70,7 +70,6 @@ public:
     {
         try
         {
-            obj->add_ref();
             m_vec.push_back(obj);
             return XAML_S_OK;
         }
@@ -99,7 +98,7 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) const noexcept override
+    xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) noexcept override
     {
         return xaml_object_new<xaml_vector_enumerator_impl>(ptr, m_vec.begin(), m_vec.end());
     }

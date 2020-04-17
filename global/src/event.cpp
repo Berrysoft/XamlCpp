@@ -43,7 +43,7 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) noexcept override
     {
         for (auto& pair : m_callbacks)
         {

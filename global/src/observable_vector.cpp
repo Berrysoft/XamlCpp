@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
+struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_enumerable, xaml_object>
 {
 private:
     xaml_ptr<xaml_vector> m_vec;
@@ -25,12 +25,12 @@ private:
 public:
     xaml_observable_vector_impl(xaml_ptr<xaml_vector>&& vec, xaml_ptr<xaml_event>&& ccevent) noexcept : m_vec(move(vec)), m_collection_changed(move(ccevent)) {}
 
-    xaml_result XAML_CALL get_size(size_t* psize) const noexcept override
+    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
         return m_vec->get_size(psize);
     }
 
-    xaml_result XAML_CALL get_at(size_t index, xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL get_at(size_t index, xaml_object** ptr) noexcept override
     {
         return m_vec->get_at(index, ptr);
     }
@@ -73,7 +73,7 @@ public:
         return on_collection_changed(xaml_vector_changed_erase, nullptr, 0, old_items.get(), 0);
     }
 
-    xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) const noexcept override
+    xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) noexcept override
     {
         return m_vec->get_enumerator(ptr);
     }
@@ -111,33 +111,33 @@ public:
     xaml_vector_changed_args_impl(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index)
         : m_action(action), m_new_items(new_items), m_new_index(new_index), m_old_items(old_items), m_old_index(old_index) {}
 
-    xaml_result XAML_CALL get_action(xaml_vector_changed_action* paction) const noexcept override
+    xaml_result XAML_CALL get_action(xaml_vector_changed_action* paction) noexcept override
     {
         *paction = m_action;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_new_items(xaml_vector_view** ptr) const noexcept override
+    xaml_result XAML_CALL get_new_items(xaml_vector_view** ptr) noexcept override
     {
         m_new_items->add_ref();
         *ptr = m_new_items.get();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_new_index(size_t* pindex) const noexcept override
+    xaml_result XAML_CALL get_new_index(size_t* pindex) noexcept override
     {
         *pindex = m_new_index;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_old_items(xaml_vector_view** ptr) const noexcept override
+    xaml_result XAML_CALL get_old_items(xaml_vector_view** ptr) noexcept override
     {
         m_old_items->add_ref();
         *ptr = m_old_items.get();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_old_index(size_t* pindex) const noexcept override
+    xaml_result XAML_CALL get_old_index(size_t* pindex) noexcept override
     {
         *pindex = m_old_index;
         return XAML_S_OK;
