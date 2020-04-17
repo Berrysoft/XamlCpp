@@ -53,17 +53,17 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (T::*XAML_CALL
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<T>,
-        [getter] XAML_CALL(xaml_object * target, xaml_object * *ptr) -> xaml_result {
+        [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            TValueGet value;
+            std::decay_t<TValueGet> value;
             XAML_RETURN_IF_FAILED(self.get()->*getter(&value));
             return box_value(value, ptr);
         },
-        [setter] XAML_CALL(xaml_object * target, xaml_object * obj) -> xaml_result {
+        [setter](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            TValueSet value;
+            std::decay_t<TValueSet> value;
             XAML_RETURN_IF_FAILED(unbox_value(obj, value));
             return self.get()->*setter(value);
         },

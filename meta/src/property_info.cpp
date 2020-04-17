@@ -19,6 +19,7 @@ public:
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) const noexcept override
     {
+        m_name->add_ref();
         *ptr = m_name.get();
         return XAML_S_OK;
     }
