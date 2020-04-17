@@ -1,11 +1,11 @@
 #include <cassert>
 #include <iostream>
-#include <xaml/callback.hpp>
-#include <xaml/enumerable.hpp>
+#include <xaml/callback.h>
+#include <xaml/enumerable.h>
 #include <xaml/observable_vector.h>
-#include <xaml/result.hpp>
-#include <xaml/string.hpp>
-#include <xaml/vector.hpp>
+#include <xaml/result.h>
+#include <xaml/string.h>
+#include <xaml/vector.h>
 #include <xaml/xaml_ptr.hpp>
 
 #ifdef UNICODE

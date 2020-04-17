@@ -1,5 +1,5 @@
 #include <atomic>
-#include <xaml/object.hpp>
+#include <xaml/object.h>
 
 using namespace std;
 

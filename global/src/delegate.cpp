@@ -1,5 +1,5 @@
 #include <xaml/delegate.h>
-#include <xaml/object.hpp>
+#include <xaml/object.h>
 
 using namespace std;
 

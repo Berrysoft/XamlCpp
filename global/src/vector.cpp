@@ -1,5 +1,5 @@
-#include <xaml/object.hpp>
-#include <xaml/vector.hpp>
+#include <xaml/object.h>
+#include <xaml/vector.h>
 
 using namespace std;
 

@@ -1,28 +1,31 @@
 #ifndef XAML_META_GUID_HPP
 #define XAML_META_GUID_HPP
 
-#include <assert.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
-#include <xaml/utility.h>
-
 #ifdef __cplusplus
+#include <cstddef>
+#include <cstdint>
 #include <functional>
 #include <version>
 #if __has_include(<compare>)
 #include <compare>
 #endif // __has_include(<compare>)
+#else
+#include <assert.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
 #endif // __cplusplus
+
+#include <xaml/utility.h>
 
 typedef struct xaml_guid xaml_guid;
 
 struct xaml_guid
 {
-    uint32_t data1;
-    uint16_t data2;
-    uint16_t data3;
-    uint8_t data4[8];
+    XAML_CSTD uint32_t data1;
+    XAML_CSTD uint16_t data2;
+    XAML_CSTD uint16_t data3;
+    XAML_CSTD uint8_t data4[8];
 
 #ifdef __cpp_impl_three_way_comparison
     auto operator<=>(xaml_guid const&) const = default;
@@ -54,14 +57,14 @@ inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 }
 #endif // !__cplusplus
 
-XAML_CONSTEXPR size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
+XAML_CONSTEXPR XAML_CSTD size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
 {
-    size_t* ptr = (size_t*)XAML_ADDRESSOF_REF(g);
+    XAML_CSTD size_t* ptr = (XAML_CSTD size_t*)XAML_ADDRESSOF_REF(g);
 #if SIZE_MAX == UINT64_MAX
-    static_assert(sizeof(size_t) == sizeof(uint64_t), "Unknown 64-bit platform.");
+    static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];
 #elif SIZE_MAX == UINT32_MAX
-    static_assert(sizeof(size_t) == sizeof(uint32_t), "Unknown 32-bit platform.");
+    static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint32_t), "Unknown 32-bit platform.");
     return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
 #else
 #error Cannot determine platform architecture

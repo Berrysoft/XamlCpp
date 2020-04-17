@@ -1,7 +1,13 @@
 #ifndef XAML_BOX_H
 #define XAML_BOX_H
 
+#ifdef __cplusplus
+#include <cstring>
+#include <xaml/xaml_ptr.hpp>
+#else
 #include <string.h>
+#endif // __cplusplus
+
 #include <xaml/object.h>
 #include <xaml/string.h>
 
@@ -69,5 +75,85 @@ XAML_TYPE_NAME(unsigned long long, ullong, { 0x5f5fc118, 0x3099, 0x32f3, { 0xab,
 XAML_TYPE(float, { 0xa0782160, 0xfcb5, 0x30dc, { 0xb7, 0x5c, 0xb7, 0xc3, 0x04, 0xdf, 0xc3, 0xd3 } })
 XAML_TYPE(double, { 0x9144b7d6, 0x3d5f, 0x3b29, { 0x81, 0x31, 0xff, 0x0d, 0xb5, 0x51, 0xe1, 0x7c } })
 XAML_TYPE_NAME(long double, ldouble, { 0x3b0b7aa1, 0xe4c0, 0x3eab, { 0x8e, 0x85, 0xbc, 0xca, 0x45, 0xb7, 0x3a, 0xaf } })
+
+#ifdef __cplusplus
+template <typename T>
+inline xaml_result xaml_box_new(T const& value, xaml_box** ptr) noexcept
+{
+    return xaml_box_new(xaml_type_guid_v<T>, &value, sizeof(T), ptr);
+}
+
+template <typename T, typename = void>
+struct __box_impl
+{
+    xaml_result box(T const& value, xaml_object** ptr) const noexcept
+    {
+        return xaml_box_new(value, (xaml_box**)ptr);
+    }
+
+    xaml_result unbox(xaml_object* obj, T& value) const noexcept
+    {
+        xaml_box* box;
+        XAML_RETURN_IF_FAILED(obj->query(&box));
+        return box->get_value(value);
+    }
+};
+
+template <typename T>
+struct __box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+{
+    xaml_result box(T* value, xaml_object** ptr) const noexcept
+    {
+        return value->query(ptr);
+    }
+
+    xaml_result unbox(xaml_object* obj, T*& value) const noexcept
+    {
+        return obj->query(&value);
+    }
+};
+
+template <typename T>
+struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+{
+    xaml_result box(xaml_ptr<T> const& value, xaml_object** ptr) const noexcept
+    {
+        return value->query(ptr);
+    }
+
+    xaml_result unbox(xaml_object* obj, xaml_ptr<T>& value) const noexcept
+    {
+        return obj->query(&value);
+    }
+};
+
+template <typename T>
+xaml_result box_value(T const& value, xaml_object** ptr) noexcept
+{
+    return __box_impl<T>{}.box(value, ptr);
+}
+
+template <typename T>
+xaml_ptr<xaml_object> box_value(T const& value)
+{
+    xaml_ptr<xaml_object> obj;
+    XAML_THROW_IF_FAILED(box_value(value, &obj));
+    return obj;
+}
+
+template <typename T>
+xaml_result unbox_value(xaml_object* obj, T& value) noexcept
+{
+    return __box_impl<T>{}.unbox(obj, value);
+}
+
+template <typename T>
+T unbox_value(xaml_ptr<xaml_object> const& obj)
+{
+    T value;
+    XAML_THROW_IF_FAILED(unbox_value(obj.get(), value));
+    return value;
+}
+#endif // __cplusplus
 
 #endif // !XAML_BOX_H

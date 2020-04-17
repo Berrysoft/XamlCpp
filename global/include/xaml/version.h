@@ -1,23 +1,25 @@
 #ifndef XAML_VERSION_HPP
 #define XAML_VERSION_HPP
 
-#include <stddef.h>
-#include <xaml/utility.h>
-
 #ifdef __cplusplus
+#include <cstddef>
 #include <ostream>
 #include <utility>
 #include <version>
 #if __has_include(<compare>)
 #include <compare>
 #endif // __has_include(<compare>)
+#else
+#include <stddef.h>
 #endif // __cplusplus
+
+#include <xaml/utility.h>
 
 struct version
 {
-    size_t major;
-    size_t minor;
-    size_t patch;
+    XAML_CSTD size_t major;
+    XAML_CSTD size_t minor;
+    XAML_CSTD size_t patch;
 
 #ifdef __cpp_impl_three_way_comparison
     auto operator<=>(version const&) const = default;

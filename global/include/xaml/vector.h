@@ -1,6 +1,11 @@
 #ifndef XAML_VECTOR_H
 #define XAML_VECTOR_H
 
+#ifdef __cplusplus
+#include <vector>
+#include <xaml/xaml_ptr.hpp>
+#endif // __cplusplus
+
 #include <xaml/enumerable.h>
 
 XAML_CLASS(xaml_vector_view, { 0x8960a280, 0xddbb, 0x4b5b, { 0xb4, 0xeb, 0x27, 0x6d, 0xd3, 0x90, 0x6e, 0xd6 } })
@@ -57,5 +62,9 @@ struct xaml_vector
 #endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_vector_new(xaml_vector** ptr) XAML_NOEXCEPT;
+
+#ifdef __cplusplus
+XAML_API xaml_result xaml_vector_new(std::vector<xaml_ptr<xaml_object>>&& vec, xaml_vector** ptr) noexcept;
+#endif // __cplusplus
 
 #endif // !XAML_VECTOR_H

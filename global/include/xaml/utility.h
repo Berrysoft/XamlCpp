@@ -104,6 +104,14 @@
 #endif // __cplusplus
 #endif // !EXTERN_C
 
+#ifndef XAML_CSTD
+#ifdef __cplusplus
+#define XAML_CSTD ::std::
+#else
+#define XAML_CSTD
+#endif // __cplusplus
+#endif // !XAML_CSTD
+
 #ifndef XAML_CALL
 #ifdef _MSC_VER
 #define XAML_CALL __stdcall

@@ -1,7 +1,7 @@
 #include <atomic>
 #include <map>
 #include <xaml/event.h>
-#include <xaml/object.hpp>
+#include <xaml/object.h>
 #include <xaml/xaml_ptr.hpp>
 
 using namespace std;

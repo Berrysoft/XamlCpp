@@ -1,7 +1,14 @@
 #ifndef XAML_STRING_H
 #define XAML_STRING_H
 
+#ifdef __cplusplus
+#include <string>
+#include <string_view>
+#include <xaml/xaml_ptr.hpp>
+#else
 #include <stdbool.h>
+#endif // __cplusplus
+
 #include <xaml/object.h>
 
 #ifdef UNICODE
@@ -44,5 +51,27 @@ struct xaml_string
 #endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
+
+#ifdef __cplusplus
+typedef std::basic_string<xaml_char_t> xaml_std_string_t;
+typedef std::basic_string_view<xaml_char_t> xaml_std_string_view_t;
+
+XAML_API xaml_result xaml_string_new(xaml_std_string_t&&, xaml_string**) noexcept;
+XAML_API xaml_result xaml_string_new(xaml_std_string_view_t, xaml_string**) noexcept;
+
+inline xaml_std_string_view_t to_string_view_t(xaml_ptr<xaml_string> const& str)
+{
+    xaml_char_t const* data;
+    XAML_THROW_IF_FAILED(str->get_data(&data));
+    size_t length;
+    XAML_THROW_IF_FAILED(str->get_length(&length));
+    return xaml_std_string_view_t(data, length);
+}
+
+inline xaml_std_string_t to_string_t(xaml_ptr<xaml_string> const& str)
+{
+    return (xaml_std_string_t)to_string_view_t(str);
+}
+#endif // __cplusplus
 
 #endif // !XAML_STRING_H

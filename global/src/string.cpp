@@ -1,7 +1,6 @@
 #include <algorithm>
-#include <xaml/object.hpp>
+#include <xaml/object.h>
 #include <xaml/string.h>
-#include <xaml/string.hpp>
 
 using namespace std;
 
