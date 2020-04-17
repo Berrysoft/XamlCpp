@@ -16,7 +16,10 @@ private:
     {
         xaml_ptr<xaml_vector_changed_args> args;
         XAML_RETURN_IF_FAILED(xaml_vector_changed_args_new(action, new_items, new_index, old_items, old_index, &args));
-        return m_collection_changed->invoke(this, args.get());
+        xaml_ptr<xaml_vector> invoke_args;
+        XAML_RETURN_IF_FAILED(xaml_vector_new(vector<xaml_ptr<xaml_object>>{ this, args.get() }, &invoke_args));
+        xaml_ptr<xaml_object> obj;
+        return m_collection_changed->invoke(invoke_args.get(), &obj);
     }
 
 public:
@@ -75,7 +78,7 @@ public:
         return m_vec->get_enumerator(ptr);
     }
 
-    xaml_result XAML_CALL add_vector_changed(xaml_callback* handler, size_t* ptoken) noexcept override
+    xaml_result XAML_CALL add_vector_changed(xaml_delegate* handler, size_t* ptoken) noexcept override
     {
         return m_collection_changed->add(handler, ptoken);
     }

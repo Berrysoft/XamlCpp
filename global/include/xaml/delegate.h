@@ -3,6 +3,7 @@
 
 #ifdef __cplusplus
 #include <functional>
+#include <xaml/box.h>
 #include <xaml/xaml_ptr.hpp>
 #endif // __cplusplus
 
@@ -64,19 +65,28 @@ Return __xaml_delegate_impl_invoke_impl(std::function<Return(Args...)> const& fu
 template <typename Return, typename... Args>
 Return __xaml_delegate_impl_invoke(std::function<Return(Args...)> const& func, xaml_vector_view* args)
 {
-    return __xaml_delegate_impl_invoke_impl(func, args, std::make_size_sequence<sizeof...(Args)>);
+    return __xaml_delegate_impl_invoke_impl<Return, Args...>(func, args, std::make_index_sequence<sizeof...(Args)>{});
 }
 
 template <typename Return, typename... Args>
 xaml_result __xaml_delegate_impl<Return(Args...)>::invoke(xaml_vector_view* args, xaml_object** ptr) const noexcept
 {
     size_t size;
-    RETURN_IF_FAILED(args->get_size(&size));
+    XAML_RETURN_IF_FAILED(args->get_size(&size));
     if (size != sizeof...(Args)) return XAML_E_INVALIDARG;
     try
     {
-        Return res = __xaml_delegate_impl_invoke(m_func, args);
-        return box_value(res, ptr);
+        if constexpr (std::is_same_v<Return, void>)
+        {
+            __xaml_delegate_impl_invoke<Return, Args...>(m_func, args);
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
+        else
+        {
+            Return res = __xaml_delegate_impl_invoke<Return, Args...>(m_func, args);
+            return box_value(res, ptr);
+        }
     }
     catch (xaml_result_error const& e)
     {

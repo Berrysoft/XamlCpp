@@ -6,14 +6,14 @@
 
 using namespace std;
 
-struct xaml_event_impl : xaml_implement<xaml_event_impl, xaml_event, xaml_callback, xaml_object>
+struct xaml_event_impl : xaml_implement<xaml_event_impl, xaml_event, xaml_delegate, xaml_object>
 {
 private:
     atomic<size_t> index{ 0 };
-    map<size_t, xaml_ptr<xaml_callback>> m_callbacks{};
+    map<size_t, xaml_ptr<xaml_delegate>> m_callbacks{};
 
 public:
-    xaml_result XAML_CALL add(xaml_callback* handler, size_t* ptoken) noexcept override
+    xaml_result XAML_CALL add(xaml_delegate* handler, size_t* ptoken) noexcept override
     {
         size_t token = ++index;
         try
@@ -43,13 +43,15 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL invoke(xaml_object* sender, xaml_object* args) const noexcept override
+    xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) const noexcept override
     {
         for (auto& pair : m_callbacks)
         {
-            xaml_result hr = pair.second->invoke(sender, args);
+            xaml_ptr<xaml_object> obj;
+            xaml_result hr = pair.second->invoke(args, &obj);
             if (XAML_FAILED(hr)) return hr;
         }
+        *ptr = nullptr;
         return XAML_S_OK;
     }
 };

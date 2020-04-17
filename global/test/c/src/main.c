@@ -23,10 +23,10 @@ void print_string(xaml_string* str)
     _tprintf(U("%*s "), (int)length, data);
 }
 
-xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object* args)
+xaml_result observable_vector_changed_callback(xaml_vector_view* args, xaml_object** ptr)
 {
     xaml_vector_changed_args* e;
-    XAML_RETURN_IF_FAILED(args->vtbl->query(args, &xaml_guid_xaml_vector_changed_args, (xaml_object**)&e));
+    XAML_RETURN_IF_FAILED(args->vtbl->get_at(args, 1, (xaml_object**)&e));
     xaml_vector_changed_action action;
     XAML_RETURN_IF_FAILED(e->vtbl->get_action(e, &action));
     switch (action)
@@ -96,6 +96,7 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
         break;
     }
     e->vtbl->release(e);
+    *ptr = NULL;
     return XAML_S_OK;
 }
 
@@ -105,8 +106,8 @@ int main()
     XAML_ASSERT_SUCCESS(xaml_string_new(U("Hello world!"), &str));
     xaml_observable_vector* vec;
     XAML_ASSERT_SUCCESS(xaml_observable_vector_new(&vec));
-    xaml_callback* callback;
-    XAML_ASSERT_SUCCESS(xaml_callback_new(observable_vector_changed_callback, &callback));
+    xaml_delegate* callback;
+    XAML_ASSERT_SUCCESS(xaml_delegate_new(observable_vector_changed_callback, &callback));
     size_t token;
     XAML_ASSERT_SUCCESS(vec->vtbl->add_vector_changed(vec, callback, &token));
     callback->vtbl->release(callback);

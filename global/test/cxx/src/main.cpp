@@ -1,6 +1,6 @@
 #include <cassert>
 #include <iostream>
-#include <xaml/callback.h>
+#include <xaml/delegate.h>
 #include <xaml/enumerable.h>
 #include <xaml/observable_vector.h>
 #include <xaml/result.h>
@@ -27,8 +27,8 @@ int main()
     _tcout << to_string_view_t(str) << endl;
     xaml_ptr<xaml_observable_vector> vec;
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
-    xaml_ptr<xaml_callback> callback;
-    XAML_THROW_IF_FAILED(xaml_callback_new<void(xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>)>(
+    xaml_ptr<xaml_delegate> callback;
+    XAML_THROW_IF_FAILED(xaml_delegate_new<void(xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>)>(
         [](xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args> args) {
             xaml_vector_changed_action action;
             XAML_THROW_IF_FAILED(args->get_action(&action));
