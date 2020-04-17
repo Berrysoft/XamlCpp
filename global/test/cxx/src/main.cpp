@@ -2,6 +2,7 @@
 #include <iostream>
 #include <xaml/delegate.h>
 #include <xaml/enumerable.h>
+#include <xaml/map.h>
 #include <xaml/observable_vector.h>
 #include <xaml/result.h>
 #include <xaml/string.h>
@@ -25,6 +26,7 @@ int main()
     xaml_ptr<xaml_string> str;
     XAML_THROW_IF_FAILED(xaml_string_new(U("Hello world!"), &str));
     _tcout << to_string_view_t(str) << endl;
+
     xaml_ptr<xaml_observable_vector> vec;
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
     xaml_ptr<xaml_delegate> callback;
@@ -112,4 +114,11 @@ int main()
     XAML_THROW_IF_FAILED(vec->remove_at(0));
     XAML_THROW_IF_FAILED(vec->set_at(2, box_value(100).get()));
     XAML_THROW_IF_FAILED(vec->clear());
+
+    xaml_ptr<xaml_map> map;
+    xaml_ptr<xaml_object> key1 = box_value(1);
+    XAML_THROW_IF_FAILED(xaml_map_new({ { key1, box_value(str) }, { box_value(2), box_value(vec) } }, &map));
+    xaml_ptr<xaml_object> obj1;
+    XAML_THROW_IF_FAILED(map->lookup(key1.get(), &obj1));
+    _tcout << to_string_view_t(unbox_value<xaml_ptr<xaml_string>>(obj1)) << endl;
 }

@@ -31,6 +31,40 @@ xaml_result xaml_key_value_pair_new(xaml_object* key, xaml_object* value, xaml_k
     return xaml_object_new<xaml_key_value_pair_impl>(ptr, key, value);
 }
 
+struct xaml_map_enumerator_impl : xaml_implement<xaml_map_enumerator_impl, xaml_enumerator, xaml_object>
+{
+private:
+    unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
+    bool m_init;
+
+public:
+    xaml_map_enumerator_impl(unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator begin, unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator end) noexcept
+        : m_begin(begin), m_end(end), m_init(false) {}
+
+    xaml_result XAML_CALL move_next(bool* pb) noexcept override
+    {
+        if (!m_init)
+        {
+            m_init = true;
+        }
+        else
+        {
+            ++m_begin;
+        }
+        *pb = m_begin != m_end;
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
+    {
+        if (m_begin == m_end) return XAML_E_FAIL;
+        xaml_ptr<xaml_key_value_pair> pair;
+        XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(m_begin->first.get(), m_begin->second.get(), &pair));
+        *ptr = pair.get();
+        return XAML_S_OK;
+    }
+};
+
 struct xaml_map_impl : xaml_implement<xaml_map_impl, xaml_map, xaml_map_view, xaml_enumerable, xaml_object>
 {
 private:
@@ -83,6 +117,11 @@ public:
     {
         m_map.clear();
         return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) noexcept override
+    {
+        return xaml_object_new<xaml_map_enumerator_impl>(ptr, m_map.begin(), m_map.end());
     }
 };
 
