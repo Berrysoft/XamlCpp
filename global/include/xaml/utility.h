@@ -115,6 +115,8 @@
 #ifndef XAML_CALL
 #ifdef _MSC_VER
 #define XAML_CALL __stdcall
+#elif defined(__GNUC__)
+#define XAML_CALL __attribute__((__stdcall__))
 #else
 #define XAML_CALL
 #endif // _MSC_VER

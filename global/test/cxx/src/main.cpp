@@ -30,7 +30,7 @@ int main()
     xaml_ptr<xaml_observable_vector> vec;
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
     xaml_ptr<xaml_delegate> callback;
-    XAML_THROW_IF_FAILED(xaml_delegate_new<void(xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>)>(
+    XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>>(
         [](xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args> args) {
             xaml_vector_changed_action action;
             XAML_THROW_IF_FAILED(args->get_action(&action));
@@ -104,7 +104,7 @@ int main()
             }
             }
         },
-        &callback));
+        &callback)));
     size_t token;
     XAML_THROW_IF_FAILED(vec->add_vector_changed(callback.get(), &token));
     XAML_THROW_IF_FAILED(vec->append(box_value(1).get()));

@@ -24,6 +24,12 @@ xaml_result xaml_delegate_new(xaml_result (*func)(xaml_vector_view*, xaml_object
     return xaml_object_new<xaml_delegate_impl>(ptr, func);
 }
 
+xaml_result xaml_delegate_new(function<xaml_result(xaml_vector_view*, xaml_object**)>&& func, xaml_delegate** ptr) noexcept
+{
+    if (!func) return XAML_E_INVALIDARG;
+    return xaml_object_new<xaml_delegate_impl>(ptr, move(func));
+}
+
 xaml_result xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* args, xaml_delegate** ptr) noexcept
 {
     return xaml_object_new<xaml_delegate_impl>(
