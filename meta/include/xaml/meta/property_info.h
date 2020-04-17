@@ -36,6 +36,6 @@ struct xaml_property_info
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_property_info**, xaml_result(XAML_CALL*)(xaml_object*, xaml_object**), xaml_result(XAML_CALL*)(xaml_object*, xaml_object*)) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object**), xaml_result(XAML_CALL*)(xaml_object*, xaml_object*), xaml_property_info**) XAML_NOEXCEPT;
 
 #endif // !XAML_META_PROPERTY_INFO_H

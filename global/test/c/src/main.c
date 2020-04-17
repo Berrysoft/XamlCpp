@@ -26,7 +26,7 @@ void print_string(xaml_string* str)
 xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object* args)
 {
     xaml_vector_changed_args* e;
-    XAML_RETURN_IF_FAILED(args->vtbl->query(args, &xaml_type_guid_v(xaml_vector_changed_args), (xaml_object**)&e));
+    XAML_RETURN_IF_FAILED(args->vtbl->query(args, &xaml_guid_xaml_vector_changed_args, (xaml_object**)&e));
     xaml_vector_changed_action action;
     XAML_RETURN_IF_FAILED(e->vtbl->get_action(e, &action));
     switch (action)
@@ -45,7 +45,7 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(new_items->vtbl->get_at(new_items, i, &obj));
             xaml_string* str;
-            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str));
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (xaml_object**)&str));
             print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
@@ -68,7 +68,7 @@ xaml_result observable_vector_changed_callback(xaml_object* sender, xaml_object*
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(old_items->vtbl->get_at(old_items, i, &obj));
             xaml_string* str;
-            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_type_guid_v(xaml_string), (xaml_object**)&str));
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (xaml_object**)&str));
             print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
@@ -111,7 +111,7 @@ int main()
     XAML_ASSERT_SUCCESS(vec->vtbl->add_vector_changed(vec, callback, &token));
     callback->vtbl->release(callback);
     xaml_object* obj;
-    XAML_ASSERT_SUCCESS(str->vtbl->query(str, &xaml_type_guid_v(xaml_object), &obj));
+    XAML_ASSERT_SUCCESS(str->vtbl->query(str, &xaml_guid_xaml_object, &obj));
     XAML_ASSERT_SUCCESS(vec->vtbl->append(vec, obj));
     XAML_ASSERT_SUCCESS(vec->vtbl->remove_at(vec, 0));
     vec->vtbl->release(vec);

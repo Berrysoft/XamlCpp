@@ -69,8 +69,6 @@ XAML_CONSTEXPR size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
 #endif
 }
 
-XAML_CONSTEXPR_VAR xaml_guid void_guid = { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } };
-
 #ifdef __cplusplus
 namespace std
 {
@@ -91,30 +89,26 @@ struct xaml_type_guid
 
 template <typename T>
 inline constexpr xaml_guid xaml_type_guid_v = xaml_type_guid<T>::value;
-
-template <>
-struct xaml_type_guid<void>
-{
-    static constexpr xaml_guid value = void_guid;
-};
-#else
-#define xaml_type_guid_v(type) (type##_guid)
 #endif // __cplusplus
 
-#ifndef XAML_TYPE
-#define __XAML_TYPE_BASE(type, ...) \
-    XAML_CONSTEXPR_VAR xaml_guid type##_guid = __VA_ARGS__;
+#ifndef XAML_TYPE_NAME
+#define __XAML_TYPE_NAME_BASE(name, ...) \
+    XAML_CONSTEXPR_VAR xaml_guid xaml_guid_##name = __VA_ARGS__;
 #ifdef __cplusplus
-#define XAML_TYPE(type, ...)                            \
-    __XAML_TYPE_BASE(type, __VA_ARGS__)                 \
-    template <>                                         \
-    struct xaml_type_guid<type>                         \
-    {                                                   \
-        static constexpr xaml_guid value = type##_guid; \
+#define XAML_TYPE_NAME(type, name, ...)                      \
+    __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)                 \
+    template <>                                              \
+    struct xaml_type_guid<type>                              \
+    {                                                        \
+        static constexpr xaml_guid value = xaml_guid_##name; \
     };
 #else
-#define XAML_TYPE(type, ...) __XAML_TYPE_BASE(type, __VA_ARGS__)
+#define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
 #endif // __cplusplus
+#endif // !XAML_TYPE_NAME
+
+#ifndef XAML_TYPE
+#define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
 #endif // !XAML_TYPE
 
 #ifndef XAML_CLASS
@@ -122,5 +116,7 @@ struct xaml_type_guid<void>
     typedef struct type type; \
     XAML_TYPE(type, __VA_ARGS__)
 #endif // !XAML_CLASS
+
+XAML_TYPE(void, { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } })
 
 #endif // !XAML_META_GUID_HPP
