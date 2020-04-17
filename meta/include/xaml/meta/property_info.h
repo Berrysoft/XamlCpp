@@ -5,8 +5,6 @@
 #include <functional>
 #include <xaml/box.h>
 #include <xaml/xaml_ptr.hpp>
-#else
-#include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -28,8 +26,8 @@ struct xaml_property_info : xaml_object
 #define XAML_PROPERTY_INFO_VTBL(type)                                      \
     xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);          \
     xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);             \
-    xaml_result(XAML_CALL* get_can_read)(type* const, bool*);              \
-    xaml_result(XAML_CALL* get_can_write)(type* const, bool*);             \
+    xaml_result(XAML_CALL* get_can_read)(type* const, _Bool*);             \
+    xaml_result(XAML_CALL* get_can_write)(type* const, _Bool*);            \
     xaml_result(XAML_CALL* get)(type* const, xaml_object*, xaml_object**); \
     xaml_result(XAML_CALL* set)(type* const, xaml_object*, xaml_object*);
 

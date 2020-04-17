@@ -1,6 +1,7 @@
 #ifndef XAML_PTR_HPP
 #define XAML_PTR_HPP
 
+#include <functional>
 #include <utility>
 #include <xaml/object.h>
 
@@ -83,5 +84,17 @@ public:
     friend constexpr bool operator!=(xaml_ptr<T> const& lhs, std::nullptr_t) noexcept { return !(lhs == nullptr); }
     friend constexpr bool operator!=(std::nullptr_t, xaml_ptr<T> const& rhs) noexcept { return !(rhs == nullptr); }
 };
+
+namespace std
+{
+    template <typename T>
+    struct hash<xaml_ptr<T>>
+    {
+        size_t operator()(xaml_ptr<T> const& ptr) const noexcept
+        {
+            return hash<intptr_t>{}((intptr_t)ptr.get());
+        }
+    };
+} // namespace std
 
 #endif // !XAML_PTR_HPP

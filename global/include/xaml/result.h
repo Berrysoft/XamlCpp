@@ -38,6 +38,7 @@ typedef XAML_CSTD uint32_t xaml_result;
 #define XAML_E_NOINTERFACE 0x80004002
 #define XAML_E_NOTIMPL 0x80004001
 #define XAML_E_OUTOFMEMORY 0x8007000E
+#define XAML_E_KEYNOTFOUND 0x80131577
 
 #ifdef __cplusplus
 struct xaml_result_error : std::exception

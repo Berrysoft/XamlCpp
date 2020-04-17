@@ -3,8 +3,6 @@
 
 #ifdef __cplusplus
 #include <xaml/xaml_ptr.hpp>
-#else
-#include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -18,8 +16,8 @@ struct xaml_enumerator : xaml_object
     virtual xaml_result XAML_CALL get_current(xaml_object**) noexcept = 0;
 };
 #else
-#define XAML_ENUMERATOR_VTBL(type)                         \
-    xaml_result(XAML_CALL* move_next)(type* const, bool*); \
+#define XAML_ENUMERATOR_VTBL(type)                          \
+    xaml_result(XAML_CALL* move_next)(type* const, _Bool*); \
     xaml_result(XAML_CALL* get_current)(type* const, xaml_object**);
 
 struct xaml_enumerator

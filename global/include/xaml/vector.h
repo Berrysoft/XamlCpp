@@ -13,8 +13,8 @@ XAML_CLASS(xaml_vector_view, { 0x8960a280, 0xddbb, 0x4b5b, { 0xb4, 0xeb, 0x27, 0
 #ifdef __cplusplus
 struct xaml_vector_view : xaml_enumerable
 {
-    virtual xaml_result XAML_CALL get_at(size_t, xaml_object**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_size(size_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_at(std::size_t, xaml_object**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_size(std::size_t*) noexcept = 0;
 };
 #else
 #define XAML_VECTOR_VIEW_VTBL(type)                                     \
@@ -37,9 +37,9 @@ XAML_CLASS(xaml_vector, { 0xad5e7c14, 0x969d, 0x4e76, { 0x97, 0x6e, 0xc3, 0x17, 
 #ifdef __cplusplus
 struct xaml_vector : xaml_vector_view
 {
-    virtual xaml_result XAML_CALL set_at(size_t, xaml_object*) noexcept = 0;
+    virtual xaml_result XAML_CALL set_at(std::size_t, xaml_object*) noexcept = 0;
     virtual xaml_result XAML_CALL append(xaml_object*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove_at(size_t) noexcept = 0;
+    virtual xaml_result XAML_CALL remove_at(std::size_t) noexcept = 0;
     virtual xaml_result XAML_CALL clear() noexcept = 0;
 };
 #else
@@ -61,10 +61,10 @@ struct xaml_vector
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_API xaml_result xaml_vector_new(xaml_vector** ptr) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_vector_new(xaml_vector**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_vector_new(std::vector<xaml_ptr<xaml_object>>&& vec, xaml_vector** ptr) noexcept;
+XAML_API xaml_result xaml_vector_new(std::vector<xaml_ptr<xaml_object>>&&, xaml_vector**) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_VECTOR_H

@@ -5,8 +5,6 @@
 #include <string>
 #include <string_view>
 #include <xaml/xaml_ptr.hpp>
-#else
-#include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -38,7 +36,7 @@ struct xaml_string : xaml_object
 #define XAML_STRING_VTBL(type)                                          \
     xaml_result(XAML_CALL* get_length)(type* const, size_t*);           \
     xaml_result(XAML_CALL* get_data)(type* const, xaml_char_t const**); \
-    xaml_result(XAML_CALL* equals)(type* const, xaml_string*, bool*);
+    xaml_result(XAML_CALL* equals)(type* const, xaml_string*, _Bool*);
 
 struct xaml_string
 {
