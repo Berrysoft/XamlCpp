@@ -14,32 +14,32 @@ public:
     xaml_collection_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& adder, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& remover)
         : m_name(move(name)), m_type(type), m_adder(move(adder)), m_remover(move(remover)) {}
 
-    xaml_result XAML_CALL get_name(xaml_string** ptr) const noexcept override
+    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
         m_name->add_ref();
         *ptr = m_name.get();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_type(xaml_guid* ptype) const noexcept override
+    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
     {
         *ptype = m_type;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_can_add(bool* pb) const noexcept override
+    xaml_result XAML_CALL get_can_add(bool* pb) noexcept override
     {
         *pb = (bool)m_adder;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_can_remove(bool* pb) const noexcept override
+    xaml_result XAML_CALL get_can_remove(bool* pb) noexcept override
     {
         *pb = (bool)m_remover;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL add(xaml_object* target, xaml_object* obj) const noexcept override
+    xaml_result XAML_CALL add(xaml_object* target, xaml_object* obj) noexcept override
     {
         if (m_adder)
         {
@@ -48,7 +48,7 @@ public:
         return XAML_E_NOTIMPL;
     }
 
-    xaml_result XAML_CALL remove(xaml_object* target, xaml_object* obj) const noexcept override
+    xaml_result XAML_CALL remove(xaml_object* target, xaml_object* obj) noexcept override
     {
         if (m_remover)
         {

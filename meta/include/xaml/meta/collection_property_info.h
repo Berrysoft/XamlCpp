@@ -17,21 +17,21 @@ XAML_CLASS(xaml_collection_property_info, { 0xedd279d5, 0x1c51, 0x41c0, { 0x80, 
 #ifdef __cplusplus
 struct xaml_collection_property_info : xaml_object
 {
-    virtual xaml_result XAML_CALL get_name(xaml_string**) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_type(xaml_guid*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_can_add(bool*) const noexcept = 0;
-    virtual xaml_result XAML_CALL get_can_remove(bool*) const noexcept = 0;
-    virtual xaml_result XAML_CALL add(xaml_object*, xaml_object*) const noexcept = 0;
-    virtual xaml_result XAML_CALL remove(xaml_object*, xaml_object*) const noexcept = 0;
+    virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_can_add(bool*) noexcept = 0;
+    virtual xaml_result XAML_CALL get_can_remove(bool*) noexcept = 0;
+    virtual xaml_result XAML_CALL add(xaml_object*, xaml_object*) noexcept = 0;
+    virtual xaml_result XAML_CALL remove(xaml_object*, xaml_object*) noexcept = 0;
 };
 #else
-#define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)             \
-    xaml_result(XAML_CALL* get_name)(xaml_string**);         \
-    xaml_result(XAML_CALL* get_type)(xaml_guid*);            \
-    xaml_result(XAML_CALL* get_can_add)(bool*);              \
-    xaml_result(XAML_CALL* get_can_remove)(bool*);           \
-    xaml_result(XAML_CALL* add)(xaml_object*, xaml_object*); \
-    xaml_result(XAML_CALL* remove)(xaml_object*, xaml_object*);
+#define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)                          \
+    xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);         \
+    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);            \
+    xaml_result(XAML_CALL* get_can_add)(type* const, bool*);              \
+    xaml_result(XAML_CALL* get_can_remove)(type* const, bool*);           \
+    xaml_result(XAML_CALL* add)(type* const, xaml_object*, xaml_object*); \
+    xaml_result(XAML_CALL* remove)(type* const, xaml_object*, xaml_object*);
 
 struct xaml_collection_property_info
 {

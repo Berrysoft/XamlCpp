@@ -17,32 +17,32 @@ public:
     xaml_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result XAML_CALL(xaml_object*, xaml_object**)>&& getter, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& setter)
         : m_name(move(name)), m_type(type), m_getter(move(getter)), m_setter(move(setter)) {}
 
-    xaml_result XAML_CALL get_name(xaml_string** ptr) const noexcept override
+    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
         m_name->add_ref();
         *ptr = m_name.get();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_type(xaml_guid* ptype) const noexcept override
+    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
     {
         *ptype = m_type;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_can_read(bool* pb) const noexcept override
+    xaml_result XAML_CALL get_can_read(bool* pb) noexcept override
     {
         *pb = (bool)m_getter;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_can_write(bool* pb) const noexcept override
+    xaml_result XAML_CALL get_can_write(bool* pb) noexcept override
     {
         *pb = (bool)m_setter;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get(xaml_object* target, xaml_object** ptr) const noexcept override
+    xaml_result XAML_CALL get(xaml_object* target, xaml_object** ptr) noexcept override
     {
         if (m_getter)
         {
@@ -51,7 +51,7 @@ public:
         return XAML_E_NOTIMPL;
     }
 
-    xaml_result XAML_CALL set(xaml_object* target, xaml_object* obj) const noexcept override
+    xaml_result XAML_CALL set(xaml_object* target, xaml_object* obj) noexcept override
     {
         if (m_setter)
         {
