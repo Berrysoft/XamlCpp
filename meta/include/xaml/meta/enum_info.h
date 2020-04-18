@@ -26,10 +26,10 @@ struct XAML_NOVTBL xaml_enum_info : xaml_reflection_info
     }
 };
 #else
-#define XAML_ENUM_INFO_VTBL(type)                        \
-    XAML_REFLECTION_INFO_VTBL(type)                      \
-    xaml_result(XAML_CALL* get_values)(xaml_map_view**); \
-    xaml_result(XAML_CALL* get_value)(xaml_string*, xaml_box**);
+#define XAML_ENUM_INFO_VTBL(type)                                     \
+    XAML_REFLECTION_INFO_VTBL(type)                                   \
+    xaml_result(XAML_CALL* get_values)(type* const, xaml_map_view**); \
+    xaml_result(XAML_CALL* get_value)(type* const, xaml_string*, xaml_box**);
 
 struct xaml_enum_info
 {
@@ -40,6 +40,6 @@ struct xaml_enum_info
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_result xaml_enum_info_new(xaml_map_view*, xaml_enum_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_enum_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_map_view*, xaml_enum_info**) XAML_NOEXCEPT;
 
 #endif // !XAML_META_ENUM_INFO_H

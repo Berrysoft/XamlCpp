@@ -103,6 +103,31 @@ xaml_result xaml_hasher_default(xaml_hasher** ptr) noexcept
     return xaml_hasher_new<xaml_ptr<xaml_object>>(ptr);
 }
 
+xaml_result xaml_hasher_string_default(xaml_hasher** ptr) noexcept
+{
+    return xaml_hasher_new(
+        function<xaml_result(xaml_object*, std::size_t*)>{
+            [](xaml_object* obj, size_t* phash) -> xaml_result {
+                static hash<xaml_std_string_view_t> hasher{};
+                xaml_ptr<xaml_string> value;
+                XAML_RETURN_IF_FAILED(unbox_value(obj, value));
+                xaml_char_t const* data;
+                XAML_RETURN_IF_FAILED(value->get_data(&data));
+                size_t length;
+                XAML_RETURN_IF_FAILED(value->get_length(&length));
+                *phash = hasher(xaml_std_string_view_t(data, length));
+                return XAML_S_OK;
+            } },
+        function<xaml_result(xaml_object*, xaml_object*, bool*)>{
+            [](xaml_object* lhs, xaml_object* rhs, bool* pb) -> xaml_result {
+                xaml_ptr<xaml_string> lvalue, rvalue;
+                XAML_RETURN_IF_FAILED(unbox_value(lhs, lvalue));
+                XAML_RETURN_IF_FAILED(unbox_value(rhs, rvalue));
+                return lvalue->equals(rvalue.get(), pb);
+            } },
+        ptr);
+}
+
 struct xaml_map_impl : xaml_implement<xaml_map_impl, xaml_map, xaml_map_view, xaml_enumerable, xaml_object>
 {
 private:

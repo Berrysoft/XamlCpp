@@ -86,6 +86,7 @@ struct xaml_hasher
 #endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD size_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
