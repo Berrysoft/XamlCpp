@@ -14,6 +14,7 @@ struct XAML_NOVTBL xaml_observable_vector : xaml_vector
 };
 #else
 #define XAML_OBSERVABLE_VECTOR_VTBL(type)                                             \
+    XAML_VECTOR_VTBL(type)                                                            \
     xaml_result(XAML_CALL* add_vector_changed)(type* const, xaml_delegate*, size_t*); \
     xaml_result(XAML_CALL* remove_vector_changed)(type* const, size_t);
 
@@ -21,10 +22,6 @@ struct xaml_observable_vector
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_observable_vector)
-        XAML_ENUMERABLE_VTBL(xaml_observable_vector)
-        XAML_VECTOR_VIEW_VTBL(xaml_observable_vector)
-        XAML_VECTOR_VTBL(xaml_observable_vector)
         XAML_OBSERVABLE_VECTOR_VTBL(xaml_observable_vector)
     } const* vtbl;
 };
@@ -54,6 +51,7 @@ struct XAML_NOVTBL xaml_vector_changed_args : xaml_object
 };
 #else
 #define XAML_VECTOR_CHANGED_ARGS_VTBL(type)                                       \
+    XAML_OBJECT_VTBL(type)                                                        \
     xaml_result(XAML_CALL* get_action)(type* const, xaml_vector_changed_action*); \
     xaml_result(XAML_CALL* get_new_items)(type* const, xaml_vector_view**);       \
     xaml_result(XAML_CALL* get_new_index)(type* const, size_t*);                  \
@@ -64,7 +62,6 @@ struct xaml_vector_changed_args
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_vector_changed_args)
         XAML_VECTOR_CHANGED_ARGS_VTBL(xaml_vector_changed_args)
     } const* vtbl;
 };

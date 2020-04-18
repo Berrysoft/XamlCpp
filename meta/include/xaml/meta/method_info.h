@@ -12,14 +12,13 @@ struct XAML_NOVTBL xaml_method_info : xaml_delegate
 };
 #else
 #define XAML_METHOD_INFO_VTBL(type) \
+    XAML_DELEGATE_VTBL(type)        \
     xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);
 
 struct xaml_method_info
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_method_info)
-        XAML_DELEGATE_VTBL(xaml_method_info)
         XAML_METHOD_INFO_VTBL(xaml_method_info)
     } const* vtbl;
 };

@@ -22,6 +22,7 @@ struct XAML_NOVTBL xaml_key_value_pair : xaml_object
 };
 #else
 #define XAML_KEY_VALUE_PAIR_VTBL(type)                           \
+    XAML_OBJECT_VTBL(type)                                       \
     xaml_result(XAML_CALL* get_key)(type* const, xaml_object**); \
     xaml_result(XAML_CALL* get_value)(type* const, xaml_object**);
 
@@ -29,7 +30,6 @@ struct xaml_key_value_pair
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_key_value_pair)
         XAML_KEY_VALUE_PAIR_VTBL(xaml_key_value_pair)
     } const* vtbl;
 };
@@ -48,6 +48,7 @@ struct XAML_NOVTBL xaml_map_view : xaml_enumerable
 };
 #else
 #define XAML_MAP_VIEW_VTBL(type)                                              \
+    XAML_ENUMERABLE_VTBL(type)                                                \
     xaml_result(XAML_CALL* lookup)(type* const, xaml_object*, xaml_object**); \
     xaml_result(XAML_CALL* has_key)(type* const, xaml_object*, bool*);        \
     xaml_result(XAML_CALL* get_size)(type* const, size_t*);
@@ -56,8 +57,6 @@ struct xaml_map_view
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_map_view)
-        XAML_ENUMERABLE_VTBL(xaml_map_view)
         XAML_MAP_VIEW_VTBL(xaml_map_view)
     } const* vtbl;
 };
@@ -73,6 +72,7 @@ struct XAML_NOVTBL xaml_hasher : xaml_object
 };
 #else
 #define XAML_COMPARER_VTBL(type)                                      \
+    XAML_OBJECT_VTBL(type)                                            \
     xaml_result(XAML_CALL* hash)(type* const, xaml_object*, size_t*); \
     xaml_result(XAML_CALL* equal)(type* const, xaml_object*, xaml_object*, bool*);
 
@@ -80,8 +80,7 @@ struct xaml_hasher
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_hasher)
-        XAML_COMPARER_VTBL(xaml_hasher);
+        XAML_COMPARER_VTBL(xaml_hasher)
     } const* vtbl;
 };
 #endif // __cplusplus
@@ -166,6 +165,7 @@ struct XAML_NOVTBL xaml_map : xaml_map_view
 };
 #else
 #define XAML_MAP_VTBL(type)                                                         \
+    XAML_MAP_VIEW_VTBL(type)                                                        \
     xaml_result(XAML_CALL* insert)(type* const, xaml_object*, xaml_object*, bool*); \
     xaml_result(XAML_CALL* remove)(type* const, xaml_object*);                      \
     xaml_result(XAML_CALL* clear)(type* const);                                     \
@@ -175,9 +175,6 @@ struct xaml_map
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_map)
-        XAML_ENUMERABLE_VTBL(xaml_map)
-        XAML_MAP_VIEW_VTBL(xaml_map)
         XAML_MAP_VTBL(xaml_map)
     } const* vtbl;
 };

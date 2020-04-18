@@ -15,6 +15,7 @@ struct XAML_NOVTBL xaml_reflection_info : xaml_object
 };
 #else
 #define XAML_REFLECTION_INFO_VTBL(type)              \
+    XAML_OBJECT_VTBL(type)                           \
     xaml_result(XAML_CALL* get_type)(xaml_guid*);    \
     xaml_result(XAML_CALL* get_name)(xaml_string**); \
     xaml_result(XAML_CALL* get_include_file)(xaml_string**);
@@ -23,7 +24,6 @@ struct xaml_reflection_info
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_reflection_info)
         XAML_REFLECTION_INFO_VTBL(xaml_reflection_info)
     } const* vtbl;
 };

@@ -19,6 +19,7 @@ struct XAML_NOVTBL xaml_enumerator : xaml_object
 };
 #else
 #define XAML_ENUMERATOR_VTBL(type)                         \
+    XAML_OBJECT_VTBL(type)                                 \
     xaml_result(XAML_CALL* move_next)(type* const, bool*); \
     xaml_result(XAML_CALL* get_current)(type* const, xaml_object**);
 
@@ -26,7 +27,6 @@ struct xaml_enumerator
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_enumerator)
         XAML_ENUMERATOR_VTBL(xaml_enumerator)
     } const* vtbl;
 };
@@ -41,13 +41,13 @@ struct XAML_NOVTBL xaml_enumerable : xaml_object
 };
 #else
 #define XAML_ENUMERABLE_VTBL(type) \
+    XAML_OBJECT_VTBL(type)         \
     xaml_result(XAML_CALL* get_enumerator)(type* const, xaml_enumerator**);
 
 struct xaml_enumerable
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_enumerable)
         XAML_ENUMERABLE_VTBL(xaml_enumerable)
     } const* vtbl;
 };

@@ -18,6 +18,7 @@ struct XAML_NOVTBL xaml_vector_view : xaml_enumerable
 };
 #else
 #define XAML_VECTOR_VIEW_VTBL(type)                                     \
+    XAML_ENUMERABLE_VTBL(type)                                          \
     xaml_result(XAML_CALL* get_at)(type* const, size_t, xaml_object**); \
     xaml_result(XAML_CALL* get_size)(type* const, size_t*);
 
@@ -25,8 +26,6 @@ struct xaml_vector_view
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_vector_view)
-        XAML_ENUMERABLE_VTBL(xaml_vector_view)
         XAML_VECTOR_VIEW_VTBL(xaml_vector_view)
     } const* vtbl;
 };
@@ -44,6 +43,7 @@ struct XAML_NOVTBL xaml_vector : xaml_vector_view
 };
 #else
 #define XAML_VECTOR_VTBL(type)                                         \
+    XAML_VECTOR_VIEW_VTBL(type)                                        \
     xaml_result(XAML_CALL* set_at)(type* const, size_t, xaml_object*); \
     xaml_result(XAML_CALL* append)(type* const, xaml_object*);         \
     xaml_result(XAML_CALL* remove_at)(type* const, size_t);            \
@@ -53,9 +53,6 @@ struct xaml_vector
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_vector)
-        XAML_ENUMERABLE_VTBL(xaml_vector)
-        XAML_VECTOR_VIEW_VTBL(xaml_vector)
         XAML_VECTOR_VTBL(xaml_vector)
     } const* vtbl;
 };

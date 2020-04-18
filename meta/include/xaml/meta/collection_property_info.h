@@ -26,6 +26,7 @@ struct XAML_NOVTBL xaml_collection_property_info : xaml_object
 };
 #else
 #define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)                          \
+    XAML_OBJECT_VTBL(type)                                                \
     xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);         \
     xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);            \
     xaml_result(XAML_CALL* get_can_add)(type* const, bool*);              \
@@ -37,7 +38,6 @@ struct xaml_collection_property_info
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_collection_property_info)
         XAML_COLLECTION_PROPERTY_INFO_VTBL(xaml_collection_property_info)
     } const* vtbl;
 };

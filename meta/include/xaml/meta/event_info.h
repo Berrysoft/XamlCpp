@@ -16,6 +16,7 @@ struct XAML_NOVTBL xaml_event_info : xaml_object
 };
 #else
 #define XAML_EVENT_VTBL(type)                                                        \
+    XAML_OBJECT_VTBL(type)                                                           \
     xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);                    \
     xaml_result(XAML_CALL* add)(type* const, xaml_object*, xaml_delegate*, size_t*); \
     xaml_result(XAML_CALL* remove)(type* const, xaml_object*, size_t);
@@ -24,7 +25,6 @@ struct xaml_event_info
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_event_info)
         XAML_EVENT_VTBL(xaml_Event_info)
     } const* vtbl;
 };

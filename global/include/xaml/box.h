@@ -43,6 +43,7 @@ struct XAML_NOVTBL xaml_box : xaml_object
 };
 #else
 #define XAML_BOX_VTBL(type)                                      \
+    XAML_OBJECT_VTBL(type)                                       \
     xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);   \
     xaml_result(XAML_CALL* get_data)(type* const, void const**); \
     xaml_result(XAML_CALL* get_size)(type* const, size_t*);      \
@@ -52,7 +53,6 @@ struct xaml_box
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_box)
         XAML_BOX_VTBL(xaml_box)
     } const* vtbl;
 };

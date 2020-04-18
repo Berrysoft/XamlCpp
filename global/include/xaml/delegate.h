@@ -19,13 +19,13 @@ struct XAML_NOVTBL xaml_delegate : xaml_object
 };
 #else
 #define XAML_DELEGATE_VTBL(type) \
+    XAML_OBJECT_VTBL(type)       \
     xaml_result(XAML_CALL* invoke)(type* const, xaml_vector_view*, xaml_object**);
 
 struct xaml_delegate
 {
     struct
     {
-        XAML_OBJECT_VTBL(xaml_delegate)
         XAML_DELEGATE_VTBL(xaml_delegate)
     } const* vtbl;
 };
