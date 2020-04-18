@@ -2,6 +2,8 @@
 
 using namespace std;
 
+using inner_map_type = unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>, __std_xaml_hasher, __std_xaml_eq>;
+
 struct xaml_key_value_pair_impl : xaml_implement<xaml_key_value_pair_impl, xaml_key_value_pair, xaml_object>
 {
 private:
@@ -34,11 +36,11 @@ xaml_result xaml_key_value_pair_new(xaml_object* key, xaml_object* value, xaml_k
 struct xaml_map_enumerator_impl : xaml_implement<xaml_map_enumerator_impl, xaml_enumerator, xaml_object>
 {
 private:
-    unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
+    inner_map_type::const_iterator m_begin, m_end;
     bool m_init;
 
 public:
-    xaml_map_enumerator_impl(unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator begin, unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>::const_iterator end) noexcept
+    xaml_map_enumerator_impl(inner_map_type::const_iterator begin, inner_map_type::const_iterator end) noexcept
         : m_begin(begin), m_end(end), m_init(false) {}
 
     xaml_result XAML_CALL move_next(bool* pb) noexcept override
@@ -65,14 +67,50 @@ public:
     }
 };
 
+struct xaml_hasher_impl : xaml_implement<xaml_hasher_impl, xaml_hasher, xaml_object>
+{
+private:
+    function<xaml_result(xaml_object*, size_t*)> m_func;
+    function<xaml_result(xaml_object*, xaml_object*, bool*)> m_eq_func;
+
+public:
+    xaml_hasher_impl(function<xaml_result(xaml_object*, size_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func) noexcept
+        : m_func(move(func)), m_eq_func(move(eq_func)) {}
+
+    xaml_result XAML_CALL hash(xaml_object* obj, size_t* phash) noexcept override
+    {
+        return m_func(obj, phash);
+    }
+
+    xaml_result XAML_CALL equal(xaml_object* lhs, xaml_object* rhs, bool* pb) noexcept override
+    {
+        return m_eq_func(lhs, rhs, pb);
+    }
+};
+
+xaml_result xaml_hasher_new(xaml_result (*func)(xaml_object*, size_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, XAML_BOOL*), xaml_hasher** ptr) noexcept
+{
+    return xaml_object_new<xaml_hasher_impl>(ptr, func, eq_func);
+}
+
+xaml_result xaml_hasher_new(function<xaml_result(xaml_object*, size_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func, xaml_hasher** ptr) noexcept
+{
+    return xaml_object_new<xaml_hasher_impl>(ptr, move(func), move(eq_func));
+}
+
+xaml_result xaml_hasher_default(xaml_hasher** ptr) noexcept
+{
+    return xaml_hasher_new<xaml_ptr<xaml_object>>(ptr);
+}
+
 struct xaml_map_impl : xaml_implement<xaml_map_impl, xaml_map, xaml_map_view, xaml_enumerable, xaml_object>
 {
 private:
-    unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>> m_map{};
+    inner_map_type m_map{};
 
 public:
-    xaml_map_impl() noexcept {}
-    xaml_map_impl(unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>&& map) noexcept : m_map(move(map)) {}
+    xaml_map_impl(xaml_ptr<xaml_hasher> const& hasher) noexcept : m_map(1, __std_xaml_hasher{ hasher }, __std_xaml_eq{ hasher }) {}
+    xaml_map_impl(inner_map_type&& map) noexcept : m_map(move(map)) {}
 
     xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
@@ -119,13 +157,21 @@ public:
         return XAML_S_OK;
     }
 
+    xaml_result XAML_CALL get_hasher(xaml_hasher** ptr) noexcept override
+    {
+        auto hasher = m_map.hash_function().get_hasher();
+        hasher->add_ref();
+        *ptr = hasher.get();
+        return XAML_S_OK;
+    }
+
     xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) noexcept override
     {
         return xaml_object_new<xaml_map_enumerator_impl>(ptr, m_map.begin(), m_map.end());
     }
 };
 
-xaml_result xaml_map_new(unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>>&& map, xaml_map** ptr) noexcept
+xaml_result xaml_map_new(inner_map_type&& map, xaml_map** ptr) noexcept
 {
     return xaml_object_new<xaml_map_impl>(ptr, move(map));
 }
@@ -133,4 +179,9 @@ xaml_result xaml_map_new(unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_obje
 xaml_result xaml_map_new(xaml_map** ptr) noexcept
 {
     return xaml_map_new({}, ptr);
+}
+
+xaml_result xaml_map_new_with_hasher(xaml_hasher* hasher, xaml_map** ptr) noexcept
+{
+    return xaml_object_new<xaml_map_impl>(ptr, hasher);
 }

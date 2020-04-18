@@ -7,11 +7,11 @@ struct xaml_event_info_impl : xaml_implement<xaml_event_info_impl, xaml_event_in
 {
 private:
     xaml_ptr<xaml_string> m_name;
-    function<xaml_result XAML_CALL(xaml_object*, xaml_delegate*, size_t*)> m_adder;
-    function<xaml_result XAML_CALL(xaml_object*, size_t)> m_remover;
+    function<xaml_result(xaml_object*, xaml_delegate*, size_t*)> m_adder;
+    function<xaml_result(xaml_object*, size_t)> m_remover;
 
 public:
-    xaml_event_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result XAML_CALL(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result XAML_CALL(xaml_object*, size_t)>&& remover)
+    xaml_event_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result(xaml_object*, size_t)>&& remover)
         : m_name(move(name)), m_adder(move(adder)), m_remover(move(remover)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
@@ -45,7 +45,7 @@ xaml_result xaml_event_info_new(xaml_string* name, xaml_result(XAML_CALL* adder)
     return xaml_object_new<xaml_event_info_impl>(ptr, name, adder, remover);
 }
 
-xaml_result xaml_event_info_new(xaml_string* name, function<xaml_result XAML_CALL(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result XAML_CALL(xaml_object*, size_t)>&& remover, xaml_event_info** ptr) noexcept
+xaml_result xaml_event_info_new(xaml_string* name, function<xaml_result(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result(xaml_object*, size_t)>&& remover, xaml_event_info** ptr) noexcept
 {
     return xaml_object_new<xaml_event_info_impl>(ptr, name, move(adder), move(remover));
 }

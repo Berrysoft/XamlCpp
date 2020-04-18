@@ -7,11 +7,11 @@ struct xaml_collection_property_info_impl : xaml_implement<xaml_collection_prope
 private:
     xaml_ptr<xaml_string> m_name;
     xaml_guid m_type;
-    function<xaml_result XAML_CALL(xaml_object*, xaml_object*)> m_adder;
-    function<xaml_result XAML_CALL(xaml_object*, xaml_object*)> m_remover;
+    function<xaml_result(xaml_object*, xaml_object*)> m_adder;
+    function<xaml_result(xaml_object*, xaml_object*)> m_remover;
 
 public:
-    xaml_collection_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& adder, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& remover)
+    xaml_collection_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover)
         : m_name(move(name)), m_type(type), m_adder(move(adder)), m_remover(move(remover)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
@@ -63,7 +63,7 @@ xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_guid const
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, adder, remover);
 }
 
-xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& adder, function<xaml_result XAML_CALL(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
+xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, move(adder), move(remover));
 }

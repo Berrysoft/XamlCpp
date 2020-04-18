@@ -115,10 +115,14 @@ int main()
     XAML_THROW_IF_FAILED(vec->set_at(2, box_value(100).get()));
     XAML_THROW_IF_FAILED(vec->clear());
 
+    xaml_ptr<xaml_hasher> hasher;
+    XAML_THROW_IF_FAILED(xaml_hasher_new<int>(&hasher));
     xaml_ptr<xaml_map> map;
-    xaml_ptr<xaml_object> key1 = box_value(1);
-    XAML_THROW_IF_FAILED(xaml_map_new({ { key1, box_value(str) }, { box_value(2), box_value(vec) } }, &map));
+    XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(hasher.get(), &map));
+    bool replaced;
+    XAML_THROW_IF_FAILED(map->insert(box_value(1).get(), str.get(), &replaced));
+    XAML_THROW_IF_FAILED(map->insert(box_value(2).get(), vec.get(), &replaced));
     xaml_ptr<xaml_object> obj1;
-    XAML_THROW_IF_FAILED(map->lookup(key1.get(), &obj1));
+    XAML_THROW_IF_FAILED(map->lookup(box_value(1).get(), &obj1));
     _tcout << to_string_view_t(unbox_value<xaml_ptr<xaml_string>>(obj1)) << endl;
 }

@@ -33,7 +33,7 @@ struct xaml_event_info
 EXTERN_C XAML_META_API xaml_result xaml_event_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_object*, xaml_delegate*, XAML_CSTD size_t*), xaml_result(XAML_CALL*)(xaml_object*, XAML_CSTD size_t), xaml_event_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_META_API xaml_result xaml_event_info_new(xaml_string*, std::function<xaml_result XAML_CALL(xaml_object*, xaml_delegate*, std::size_t*)>&&, std::function<xaml_result XAML_CALL(xaml_object*, std::size_t)>&&, xaml_event_info**) noexcept;
+XAML_META_API xaml_result xaml_event_info_new(xaml_string*, std::function<xaml_result(xaml_object*, xaml_delegate*, std::size_t*)>&&, std::function<xaml_result(xaml_object*, std::size_t)>&&, xaml_event_info**) noexcept;
 
 template <typename T>
 inline xaml_result xaml_event_info_new(xaml_string* name, xaml_result (T::*XAML_CALL adder)(xaml_delegate*, std::size_t*), xaml_result (T::*XAML_CALL remover)(std::size_t), xaml_event_info** ptr) noexcept

@@ -112,10 +112,18 @@
 #endif // __cplusplus
 #endif // !XAML_CSTD
 
+#ifndef XAML_BOOL
+#ifdef __cplusplus
+#define XAML_BOOL bool
+#else
+#define XAML_BOOL _Bool
+#endif // __cplusplus
+#endif // !XAML_BOOL
+
 #ifndef XAML_CALL
 #ifdef _MSC_VER
 #define XAML_CALL __stdcall
-#elif defined(__GNUC__)
+#elif defined(__MINGW32__)
 #define XAML_CALL __attribute__((__stdcall__))
 #else
 #define XAML_CALL

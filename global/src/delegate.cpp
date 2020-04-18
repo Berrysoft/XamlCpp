@@ -9,7 +9,6 @@ private:
     function<xaml_result(xaml_vector_view*, xaml_object**)> m_func;
 
 public:
-    xaml_delegate_impl(xaml_result (*func)(xaml_vector_view*, xaml_object**)) noexcept : m_func{ func } {}
     xaml_delegate_impl(function<xaml_result(xaml_vector_view*, xaml_object**)>&& func) noexcept : m_func(move(func)) {}
 
     xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) noexcept override
