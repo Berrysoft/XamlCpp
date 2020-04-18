@@ -15,7 +15,7 @@
 XAML_CLASS(xaml_collection_property_info, { 0xedd279d5, 0x1c51, 0x41c0, { 0x80, 0x6c, 0x38, 0x62, 0x9c, 0x86, 0xfd, 0x7f } })
 
 #ifdef __cplusplus
-struct xaml_collection_property_info : xaml_object
+struct XAML_NOVTBL xaml_collection_property_info : xaml_object
 {
     virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
     virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;

@@ -7,7 +7,7 @@
 XAML_CLASS(xaml_reflection_info, { 0x5abbe92c, 0x833d, 0x4d24, { 0xa7, 0x06, 0x1d, 0x5c, 0xe5, 0x14, 0x1b, 0x0a } })
 
 #ifdef __cplusplus
-struct xaml_reflection_info : xaml_object
+struct XAML_NOVTBL xaml_reflection_info : xaml_object
 {
     virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
     virtual xaml_result XAML_CALL get_type_name(xaml_string**) noexcept = 0;

@@ -19,7 +19,8 @@ struct XAML_NOVTBL xaml_object
 {
     virtual std::size_t XAML_CALL add_ref() noexcept = 0;
     virtual std::size_t XAML_CALL release() noexcept = 0;
-    virtual xaml_result XAML_CALL query(xaml_guid XAML_CONST_REF, xaml_object**) noexcept = 0;
+    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
+    virtual xaml_result XAML_CALL query(xaml_guid const&, xaml_object**) noexcept = 0;
 
     template <typename T>
     xaml_result query(T** ptr) noexcept
@@ -28,10 +29,11 @@ struct XAML_NOVTBL xaml_object
     }
 };
 #else
-#define XAML_OBJECT_VTBL(type)               \
-    size_t(XAML_CALL* add_ref)(type* const); \
-    size_t(XAML_CALL* release)(type* const); \
-    xaml_result(XAML_CALL* query)(type* const, xaml_guid XAML_CONST_REF, xaml_object**);
+#define XAML_OBJECT_VTBL(type)                                 \
+    size_t(XAML_CALL* add_ref)(type* const);                   \
+    size_t(XAML_CALL* release)(type* const);                   \
+    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*); \
+    xaml_result(XAML_CALL* query)(type* const, xaml_guid const*, xaml_object**);
 
 struct xaml_object
 {
@@ -41,8 +43,6 @@ struct xaml_object
     } const* vtbl;
 };
 #endif // __cplusplus
-
-EXTERN_C XAML_API xaml_result xaml_object_new(xaml_object**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T, typename D, typename... Base>
@@ -68,7 +68,12 @@ public:
         }
     }
 
-public:
+    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
+    {
+        *ptype = xaml_type_guid_v<D>;
+        return XAML_S_OK;
+    }
+
     xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override;
 };
 

@@ -8,7 +8,7 @@
 XAML_CLASS(xaml_event_info, { 0x3e92f836, 0x4337, 0x40c7, { 0x83, 0x99, 0x52, 0x7e, 0x46, 0xd4, 0x30, 0x48 } })
 
 #ifdef __cplusplus
-struct xaml_event_info : xaml_object
+struct XAML_NOVTBL xaml_event_info : xaml_object
 {
     virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
     virtual xaml_result XAML_CALL add(xaml_object*, xaml_delegate*, std::size_t*) noexcept = 0;
