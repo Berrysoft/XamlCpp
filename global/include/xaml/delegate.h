@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 #include <functional>
 #include <xaml/box.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/object.h>

@@ -1,8 +1,8 @@
 #include <xaml/event.h>
 #include <xaml/object.h>
 #include <xaml/observable_vector.h>
+#include <xaml/ptr.hpp>
 #include <xaml/vector.h>
-#include <xaml/xaml_ptr.hpp>
 
 using namespace std;
 

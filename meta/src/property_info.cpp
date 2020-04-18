@@ -1,7 +1,7 @@
 #include <functional>
 #include <xaml/meta/property_info.h>
 #include <xaml/object.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 
 using namespace std;
 

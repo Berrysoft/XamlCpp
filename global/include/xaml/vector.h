@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 #include <vector>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/enumerable.h>

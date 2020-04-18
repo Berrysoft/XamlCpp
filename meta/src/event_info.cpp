@@ -1,5 +1,5 @@
 #include <xaml/meta/event_info.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 
 using namespace std;
 

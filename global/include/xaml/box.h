@@ -3,7 +3,7 @@
 
 #ifdef __cplusplus
 #include <cstring>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #else
 #include <string.h>
 #endif // __cplusplus

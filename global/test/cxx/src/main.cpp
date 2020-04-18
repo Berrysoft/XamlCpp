@@ -4,10 +4,10 @@
 #include <xaml/enumerable.h>
 #include <xaml/map.h>
 #include <xaml/observable_vector.h>
+#include <xaml/ptr.hpp>
 #include <xaml/result.h>
 #include <xaml/string.h>
 #include <xaml/vector.h>
-#include <xaml/xaml_ptr.hpp>
 
 #ifdef UNICODE
 #ifndef _tcout

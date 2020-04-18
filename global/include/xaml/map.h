@@ -5,7 +5,7 @@
 #include <functional>
 #include <unordered_map>
 #include <xaml/box.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #else
 #include <stdbool.h>
 #endif // __cplusplus

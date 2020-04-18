@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 #include <string>
 #include <string_view>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #else
 #include <stdbool.h>
 #endif // __cplusplus

@@ -2,7 +2,7 @@
 #define XAML_ENUMERABLE_H
 
 #ifdef __cplusplus
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 #else
 #include <stdbool.h>
 #endif // __cplusplus

@@ -2,7 +2,7 @@
 #include <map>
 #include <xaml/event.h>
 #include <xaml/object.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 
 using namespace std;
 

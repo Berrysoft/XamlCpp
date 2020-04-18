@@ -4,7 +4,7 @@
 #include <xaml/box.h>
 #include <xaml/map.h>
 #include <xaml/meta/reflection_info.h>
-#include <xaml/xaml_ptr.hpp>
+#include <xaml/ptr.hpp>
 
 XAML_CLASS(xaml_enum_info, { 0x51dcc841, 0xc0d0, 0x4c8b, { 0x9f, 0x9f, 0xed, 0x7b, 0x48, 0xa1, 0xa9, 0xd9 } })
 
