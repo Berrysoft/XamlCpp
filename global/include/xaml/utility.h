@@ -112,14 +112,6 @@
 #endif // __cplusplus
 #endif // !XAML_CSTD
 
-#ifndef XAML_BOOL
-#ifdef __cplusplus
-#define XAML_BOOL bool
-#else
-#define XAML_BOOL _Bool
-#endif // __cplusplus
-#endif // !XAML_BOOL
-
 #ifndef XAML_CALL
 #ifdef _MSC_VER
 #define XAML_CALL __stdcall
@@ -129,6 +121,14 @@
 #define XAML_CALL
 #endif // _MSC_VER
 #endif // !XAML_CALL
+
+#ifndef XAML_NOVTBL
+#ifdef _MSC_VER
+#define XAML_NOVTBL __declspec(novtable)
+#else
+#define XAML_NOVTBL
+#endif // _MSC_VER
+#endif // !XAML_NOVTBL
 
 #ifndef XAML_CONST_REF
 #ifdef __cplusplus

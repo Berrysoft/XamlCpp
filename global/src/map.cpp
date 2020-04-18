@@ -88,7 +88,7 @@ public:
     }
 };
 
-xaml_result xaml_hasher_new(xaml_result (*func)(xaml_object*, size_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, XAML_BOOL*), xaml_hasher** ptr) noexcept
+xaml_result xaml_hasher_new(xaml_result (*func)(xaml_object*, size_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, bool*), xaml_hasher** ptr) noexcept
 {
     return xaml_object_new<xaml_hasher_impl>(ptr, func, eq_func);
 }

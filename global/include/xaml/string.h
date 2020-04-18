@@ -5,6 +5,8 @@
 #include <string>
 #include <string_view>
 #include <xaml/xaml_ptr.hpp>
+#else
+#include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -26,7 +28,7 @@ typedef char xaml_char_t;
 XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } })
 
 #ifdef __cplusplus
-struct xaml_string : xaml_object
+struct XAML_NOVTBL xaml_string : xaml_object
 {
     virtual xaml_result XAML_CALL get_length(size_t*) noexcept = 0;
     virtual xaml_result XAML_CALL get_data(xaml_char_t const**) noexcept = 0;
@@ -36,7 +38,7 @@ struct xaml_string : xaml_object
 #define XAML_STRING_VTBL(type)                                          \
     xaml_result(XAML_CALL* get_length)(type* const, size_t*);           \
     xaml_result(XAML_CALL* get_data)(type* const, xaml_char_t const**); \
-    xaml_result(XAML_CALL* equals)(type* const, xaml_string*, _Bool*);
+    xaml_result(XAML_CALL* equals)(type* const, xaml_string*, bool*);
 
 struct xaml_string
 {

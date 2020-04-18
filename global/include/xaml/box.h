@@ -14,7 +14,7 @@
 XAML_CLASS(xaml_box, { 0x8ba3da41, 0x01bc, 0x4c97, { 0x92, 0x5e, 0xb1, 0x71, 0x57, 0xda, 0x5e, 0x31 } })
 
 #ifdef __cplusplus
-struct xaml_box : xaml_object
+struct XAML_NOVTBL xaml_box : xaml_object
 {
     virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
     virtual xaml_result XAML_CALL get_data(void const**) noexcept = 0;

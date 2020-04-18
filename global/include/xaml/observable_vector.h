@@ -7,7 +7,7 @@
 XAML_CLASS(xaml_observable_vector, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0x2c, 0x43, 0x0b, 0x1b, 0xb6, 0xcf } })
 
 #ifdef __cplusplus
-struct xaml_observable_vector : xaml_vector
+struct XAML_NOVTBL xaml_observable_vector : xaml_vector
 {
     virtual xaml_result XAML_CALL add_vector_changed(xaml_delegate*, size_t*) noexcept = 0;
     virtual xaml_result XAML_CALL remove_vector_changed(size_t) noexcept = 0;
@@ -44,7 +44,7 @@ typedef enum xaml_vector_changed_action
 XAML_CLASS(xaml_vector_changed_args, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7, 0x5d, 0x25, 0x82, 0x2d, 0x3b, 0x0a } })
 
 #ifdef __cplusplus
-struct xaml_vector_changed_args : xaml_object
+struct XAML_NOVTBL xaml_vector_changed_args : xaml_object
 {
     virtual xaml_result XAML_CALL get_action(xaml_vector_changed_action*) noexcept = 0;
     virtual xaml_result XAML_CALL get_new_items(xaml_vector_view**) noexcept = 0;

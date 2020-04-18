@@ -5,6 +5,8 @@
 #include <functional>
 #include <xaml/box.h>
 #include <xaml/xaml_ptr.hpp>
+#else
+#include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -26,8 +28,8 @@ struct xaml_collection_property_info : xaml_object
 #define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)                          \
     xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);         \
     xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);            \
-    xaml_result(XAML_CALL* get_can_add)(type* const, _Bool*);             \
-    xaml_result(XAML_CALL* get_can_remove)(type* const, _Bool*);          \
+    xaml_result(XAML_CALL* get_can_add)(type* const, bool*);              \
+    xaml_result(XAML_CALL* get_can_remove)(type* const, bool*);           \
     xaml_result(XAML_CALL* add)(type* const, xaml_object*, xaml_object*); \
     xaml_result(XAML_CALL* remove)(type* const, xaml_object*, xaml_object*);
 

@@ -11,6 +11,7 @@
 #endif // __has_include(<compare>)
 #else
 #include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #endif // __cplusplus
@@ -40,7 +41,7 @@ constexpr bool operator!=(xaml_guid const& lhs, xaml_guid const& rhs) { return !
 #endif // __cplusplus && !__cpp_impl_three_way_comparison
 
 #ifndef __cplusplus
-inline _Bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
+inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 {
     return lhs->data1 == rhs->data1 &&
            lhs->data2 == rhs->data2 &&
