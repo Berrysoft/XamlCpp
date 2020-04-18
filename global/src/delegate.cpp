@@ -34,16 +34,27 @@ xaml_result xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* args, xaml
     return xaml_object_new<xaml_delegate_impl>(
         ptr,
         [func = xaml_ptr<xaml_delegate>(func), args = xaml_ptr<xaml_vector_view>(args)](xaml_vector_view* remain_args, xaml_object** ptr) -> xaml_result {
-            xaml_ptr<xaml_vector> real_args;
-            XAML_RETURN_IF_FAILED(xaml_vector_new(&real_args));
-            for (auto a : args)
+            try
             {
-                XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                xaml_ptr<xaml_vector> real_args;
+                XAML_RETURN_IF_FAILED(xaml_vector_new(&real_args));
+                for (auto a : args)
+                {
+                    XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                }
+                for (auto a : remain_args)
+                {
+                    XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                }
+                return func->invoke(real_args.get(), ptr);
             }
-            for (auto a : xaml_ptr<xaml_vector_view>(remain_args))
+            catch (xaml_result_error const& e)
             {
-                XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                return e.get_result();
             }
-            return func->invoke(real_args.get(), ptr);
+            catch (...)
+            {
+                return XAML_E_FAIL;
+            }
         });
 }

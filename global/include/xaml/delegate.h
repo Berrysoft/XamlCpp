@@ -62,7 +62,7 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
     if (!func) return XAML_E_INVALIDARG;
     return xaml_delegate_new(
         std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
-            [func = std::function<Return(Args...)>(func)](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+            [func = std::function<Return(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
                 std::size_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_INVALIDARG;

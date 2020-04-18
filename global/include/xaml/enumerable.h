@@ -113,7 +113,19 @@ inline __xaml_enumerator_iterator begin(xaml_ptr<T> const& enumerable)
 }
 
 template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
+inline __xaml_enumerator_iterator begin(T* enumerable)
+{
+    return begin(xaml_ptr<T>(enumerable));
+}
+
+template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
 inline __xaml_enumerator_iterator end(xaml_ptr<T> const&) noexcept
+{
+    return {};
+}
+
+template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
+inline __xaml_enumerator_iterator end(T*) noexcept
 {
     return {};
 }
