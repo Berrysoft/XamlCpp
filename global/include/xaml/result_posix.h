@@ -16,7 +16,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                            \
     {                                             \
         int res = (expr);                         \
-        if (res)                                  \
+        if (res == -1)                            \
             return xaml_result_from_errno(errno); \
     } while (0)
 
@@ -24,7 +24,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                  \
     {                                   \
         int res = (expr);               \
-        assert(res == 0);               \
+        assert(res != -1);              \
     } while (0)
 
 #ifdef __cplusplus
@@ -32,7 +32,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                                                \
     {                                                                 \
         int res = (expr);                                             \
-        if (res)                                                      \
+        if (res == -1)                                                \
             throw xaml_result_error{ xaml_result_from_errno(errno) }; \
     } while (0)
 #else
