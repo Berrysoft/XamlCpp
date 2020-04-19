@@ -22,22 +22,19 @@ public:
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
-        m_name->add_ref();
-        *ptr = m_name.get();
+        m_name.add_ref_to(ptr);
         return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_include_file(xaml_string** ptr) noexcept override
     {
-        m_include_file->add_ref();
-        *ptr = m_include_file.get();
+        m_include_file.add_ref_to(ptr);
         return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_values(xaml_map_view** ptr) noexcept override
     {
-        m_map->add_ref();
-        *ptr = m_map.get();
+        m_map.add_ref_to(ptr);
         return XAML_S_OK;
     }
 

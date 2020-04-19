@@ -13,8 +13,7 @@ public:
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
-        m_name->add_ref();
-        *ptr = m_name.get();
+        m_name.add_ref_to(ptr);
         return XAML_S_OK;
     }
 

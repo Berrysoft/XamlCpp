@@ -88,8 +88,8 @@ struct __query_impl<B1, B...>
     {
         if (type == xaml_type_guid_v<B1>)
         {
-            *ptr = static_cast<B1*>(self);
             self->add_ref();
+            *ptr = static_cast<B1*>(self);
             return 0;
         }
         else
@@ -118,10 +118,24 @@ inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, x
 template <typename D, typename T, typename... Args>
 inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
 {
-    T* res = new (std::nothrow) D(std::forward<Args>(args)...);
-    if (!res) return XAML_E_OUTOFMEMORY;
-    *ptr = res;
-    return XAML_S_OK;
+    try
+    {
+        T* res = new D(std::forward<Args>(args)...);
+        *ptr = res;
+        return XAML_S_OK;
+    }
+    catch (xaml_result_error const& e)
+    {
+        return e.get_result();
+    }
+    catch (std::bad_alloc const&)
+    {
+        return XAML_E_OUTOFMEMORY;
+    }
+    catch (...)
+    {
+        return XAML_E_FAIL;
+    }
 }
 #endif // __cplusplus
 

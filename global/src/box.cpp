@@ -11,7 +11,12 @@ private:
     size_t m_size;
 
 public:
-    xaml_box_impl(xaml_guid const& type, void* data, size_t size) noexcept : m_type(type), m_data(data), m_size(size) {}
+    xaml_box_impl(xaml_guid const& type, void const* data, size_t size) : m_type(type), m_size(size)
+    {
+        m_data = malloc(size);
+        if (!m_data) throw bad_alloc{};
+        memcpy(m_data, data, size);
+    }
     ~xaml_box_impl() { free(m_data); }
 
     xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
@@ -49,8 +54,5 @@ public:
 
 xaml_result xaml_box_new(xaml_guid const& type, void const* data, size_t size, xaml_box** ptr) noexcept
 {
-    void* storage = malloc(size);
-    if (!storage) return XAML_E_OUTOFMEMORY;
-    memcpy(storage, data, size);
-    return xaml_object_new<xaml_box_impl>(ptr, type, storage, size);
+    return xaml_object_new<xaml_box_impl>(ptr, type, data, size);
 }

@@ -4,8 +4,6 @@
 #ifdef __cplusplus
 #include <cstring>
 #include <xaml/ptr.hpp>
-#else
-#include <string.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -37,7 +35,7 @@ struct XAML_NOVTBL xaml_box : xaml_object
         XAML_RETURN_IF_FAILED(get_data(&data));
         size_t size;
         XAML_RETURN_IF_FAILED(get_size(&size));
-        memcpy(&value, data, size);
+        std::memcpy(&value, data, size);
         return XAML_S_OK;
     }
 };
@@ -94,7 +92,7 @@ struct __box_impl
 
     xaml_result unbox(xaml_object* obj, T& value) const noexcept
     {
-        xaml_box* box;
+        xaml_ptr<xaml_box> box;
         XAML_RETURN_IF_FAILED(obj->query(&box));
         return box->get_value(value);
     }

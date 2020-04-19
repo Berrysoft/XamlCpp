@@ -30,8 +30,7 @@ public:
     xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
     {
         if (m_begin == m_end) return XAML_E_FAIL;
-        (*m_begin)->add_ref();
-        *ptr = m_begin->get();
+        m_begin->add_ref_to(ptr);
         return XAML_S_OK;
     }
 };
@@ -54,8 +53,7 @@ public:
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         auto& res = m_vec[index];
-        res->add_ref();
-        *ptr = res.get();
+        res.add_ref_to(ptr);
         return XAML_S_OK;
     }
 

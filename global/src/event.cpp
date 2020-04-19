@@ -18,7 +18,6 @@ public:
         size_t token = ++index;
         try
         {
-            handler->add_ref();
             m_callbacks.emplace(token, handler);
             *ptoken = token;
             return XAML_S_OK;

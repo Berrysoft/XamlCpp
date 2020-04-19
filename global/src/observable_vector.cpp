@@ -9,8 +9,8 @@ using namespace std;
 struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_enumerable, xaml_object>
 {
 private:
-    xaml_ptr<xaml_vector> m_vec;
-    xaml_ptr<xaml_event> m_collection_changed;
+    xaml_ptr<xaml_vector> m_vec{ nullptr };
+    xaml_ptr<xaml_event> m_collection_changed{ nullptr };
 
     xaml_result on_collection_changed(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index) noexcept
     {
@@ -23,7 +23,11 @@ private:
     }
 
 public:
-    xaml_observable_vector_impl(xaml_ptr<xaml_vector>&& vec, xaml_ptr<xaml_event>&& ccevent) noexcept : m_vec(move(vec)), m_collection_changed(move(ccevent)) {}
+    xaml_observable_vector_impl()
+    {
+        XAML_THROW_IF_FAILED(xaml_vector_new(&m_vec));
+        XAML_THROW_IF_FAILED(xaml_event_new(&m_collection_changed));
+    }
 
     xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
@@ -91,11 +95,7 @@ public:
 
 xaml_result xaml_observable_vector_new(xaml_observable_vector** ptr) noexcept
 {
-    xaml_ptr<xaml_vector> vec;
-    XAML_RETURN_IF_FAILED(xaml_vector_new(&vec));
-    xaml_ptr<xaml_event> ccevent;
-    XAML_RETURN_IF_FAILED(xaml_event_new(&ccevent));
-    return xaml_object_new<xaml_observable_vector_impl>(ptr, move(vec), move(ccevent));
+    return xaml_object_new<xaml_observable_vector_impl>(ptr);
 }
 
 struct xaml_vector_changed_args_impl : xaml_implement<xaml_vector_changed_args_impl, xaml_vector_changed_args, xaml_object>
@@ -119,8 +119,7 @@ public:
 
     xaml_result XAML_CALL get_new_items(xaml_vector_view** ptr) noexcept override
     {
-        m_new_items->add_ref();
-        *ptr = m_new_items.get();
+        m_new_items.add_ref_to(ptr);
         return XAML_S_OK;
     }
 
@@ -132,8 +131,7 @@ public:
 
     xaml_result XAML_CALL get_old_items(xaml_vector_view** ptr) noexcept override
     {
-        m_old_items->add_ref();
-        *ptr = m_old_items.get();
+        m_old_items.add_ref_to(ptr);
         return XAML_S_OK;
     }
 

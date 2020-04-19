@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <functional>
 #include <version>
-#if __has_include(<compare>)
+#if __cpp_impl_three_way_comparison
 #include <compare>
 #endif // __has_include(<compare>)
 #else

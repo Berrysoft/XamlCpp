@@ -11,7 +11,7 @@ class xaml_ptr
 private:
     T* m_ptr;
 
-    void try_release()
+    void try_release() noexcept
     {
         if (m_ptr) m_ptr->release();
     }
@@ -28,6 +28,8 @@ public:
         if (m_ptr) m_ptr->add_ref();
     }
     constexpr xaml_ptr(xaml_ptr&& p) noexcept : m_ptr{ p.m_ptr } { p.m_ptr = nullptr; }
+
+    ~xaml_ptr() { try_release(); }
 
     xaml_ptr& operator=(std::nullptr_t) noexcept
     {
@@ -65,6 +67,18 @@ public:
     constexpr T& operator*() const noexcept { return *m_ptr; }
 
     constexpr T* get() const noexcept { return m_ptr; }
+    constexpr T* release() const noexcept
+    {
+        T* res = m_ptr;
+        m_ptr = nullptr;
+        return res;
+    }
+
+    constexpr void add_ref_to(T** ptr) const noexcept
+    {
+        if (m_ptr) m_ptr->add_ref();
+        *ptr = m_ptr;
+    }
 
     constexpr operator bool() const noexcept { return m_ptr; }
 
