@@ -1,4 +1,5 @@
-#include <xaml/ui/application.hpp>
+#include <shared/application.hpp>
+#include <xaml/ptr.hpp>
 
 #ifdef XAML_WIN32
 #include <Windows.h>
@@ -8,25 +9,27 @@
 
 using namespace std;
 
-namespace xaml
+static xaml_ptr<xaml_application> s_current;
+
+xaml_result xaml_application_init(xaml_application** ptr) noexcept
 {
-    static shared_ptr<application> s_current;
-
-    shared_ptr<application> application::init(int argc, char_t const* const* argv)
-    {
-        return s_current = shared_ptr<application>(new application(argc, argv));
-    }
-
-    shared_ptr<application> application::init()
-    {
-#if defined(WIN32) || defined(__MINGW32__)
-        return init(__argc, __targv);
+#ifdef XAML_WIN32
+    return xaml_application_init_with_args(__argc, __targv, ptr);
 #else
-        return init(0, nullptr);
-#endif // WIN32 || __MINGW32__
-    }
+    return xaml_application_init_with_args(0, nullptr, ptr);
+#endif // XAML_WIN32
+}
 
-    shared_ptr<application> application::current() { return s_current; }
+xaml_result xaml_application_init_with_args(int argc, xaml_char_t** argv, xaml_application** ptr) noexcept
+{
+    s_current = nullptr;
+    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_application_impl>(&s_current, argc, argv));
+    s_current.add_ref_to(ptr);
+    return XAML_S_OK;
+}
 
-    application::~application() {}
-} // namespace xaml
+xaml_result xaml_application_current(xaml_application** ptr) noexcept
+{
+    s_current.add_ref_to(ptr);
+    return XAML_S_OK;
+}

@@ -1,90 +1,101 @@
 #include <Windows.h>
 #include <map>
+#include <shared/application.hpp>
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
-#include <xaml/ui/application.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_window.hpp>
+#include <xaml/ui/application.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
-#include <xaml/ui/window.hpp>
 
 using namespace std;
 
-namespace xaml
+static LOGFONT s_default_font;
+static map<UINT, wil::unique_hfont> s_dpi_fonts;
+
+static BOOL take_over_message(MSG& msg)
 {
-    static BOOL take_over_message(MSG& msg)
+    BOOL bRet = GetMessage(&msg, nullptr, 0, 0);
+    THROW_LAST_ERROR_IF(bRet < 0);
+    if (bRet > 0)
     {
-        BOOL bRet = GetMessage(&msg, nullptr, 0, 0);
-        THROW_LAST_ERROR_IF(bRet < 0);
-        if (bRet > 0)
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        return bRet;
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
+    return bRet;
+}
 
-    static BOOL register_window_class()
+static BOOL register_window_class()
+{
+    WNDCLASSEX cls = {};
+    cls.cbSize = sizeof(WNDCLASSEX);
+    cls.lpfnWndProc = __wnd_callback;
+    cls.cbClsExtra = 0;
+    cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    cls.hbrBackground = nullptr;
+    cls.lpszClassName = U("XamlWindow");
+    cls.hInstance = GetModuleHandle(NULL);
+    return RegisterClassEx(&cls);
+}
+
+xaml_application_impl::xaml_application_impl(int argc, xaml_char_t** argv)
+{
+    XAML_THROW_IF_FAILED(xaml_vector_new(&m_cmd_lines));
+    for (int i = 0; i < argc; i++)
     {
-        WNDCLASSEX cls = {};
-        cls.cbSize = sizeof(WNDCLASSEX);
-        cls.lpfnWndProc = __wnd_callback;
-        cls.cbClsExtra = 0;
-        cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
-        cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-        cls.hbrBackground = nullptr;
-        cls.lpszClassName = U("XamlWindow");
-        cls.hInstance = GetModuleHandle(NULL);
-        return RegisterClassEx(&cls);
+        XAML_THROW_IF_FAILED(m_cmd_lines->append(to_xaml_string(argv[i]).get()));
     }
+    XamlInitializeDpiFunc();
+    THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
+    XamlInitializeDarkModeFunc();
+    XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
+    THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
+    THROW_IF_WIN32_BOOL_FALSE(register_window_class());
+}
 
-    static LOGFONT s_default_font;
-    static map<UINT, wil::unique_hfont> s_dpi_fonts;
-
-    application::application(int argc, char_t const* const* argv) : m_cmd_lines(argv, argv + argc)
-    {
-        XamlInitializeDpiFunc();
-        THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
-        XamlInitializeDarkModeFunc();
-        XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
-        THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
-        THROW_IF_WIN32_BOOL_FALSE(register_window_class());
-    }
-
-    void* application::__default_font(unsigned int udpi) const
-    {
-        auto it = s_dpi_fonts.find(udpi);
-        if (it != s_dpi_fonts.end())
-        {
-            return it->second.get();
-        }
-        LOGFONT f = s_default_font;
-        f.lfHeight = MulDiv(f.lfHeight, (int)udpi, USER_DEFAULT_SCREEN_DPI);
-        f.lfWidth = MulDiv(f.lfWidth, (int)udpi, USER_DEFAULT_SCREEN_DPI);
-        auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
-        return p.second ? p.first->second.get() : NULL;
-    }
-
-    int application::run()
+xaml_result xaml_application_impl::run(int* pvalue) noexcept
+{
+    try
     {
         MSG msg;
         while (take_over_message(msg))
         {
             if (!m_main_wnd) PostQuitMessage(m_quit_value);
         }
-        return m_quit_value;
+        *pvalue = m_quit_value;
+        return XAML_S_OK;
     }
-
-    void application::quit(int value)
+    catch (wil::ResultException const& e)
     {
-        m_quit_value = value;
-        if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle()->handle);
+        return e.GetErrorCode();
     }
+    XAML_CATCH_RETURN()
+}
 
-    application_theme application::get_theme() const
+xaml_result xaml_application_impl::quit(int value) noexcept
+{
+    m_quit_value = value;
+    //if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle()->handle);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noexcept
+{
+    *ptheme = XamlIsDarkModeAllowedForApp() ? xaml_application_theme_dark : xaml_application_theme_light;
+    return XAML_S_OK;
+}
+
+HFONT xaml_application_impl::get_default_font(UINT udpi) noexcept
+{
+    auto it = s_dpi_fonts.find(udpi);
+    if (it != s_dpi_fonts.end())
     {
-        return XamlIsDarkModeAllowedForApp() ? application_theme::dark : application_theme::light;
+        return it->second.get();
     }
-} // namespace xaml
+    LOGFONT f = s_default_font;
+    f.lfHeight = MulDiv(f.lfHeight, (int)udpi, USER_DEFAULT_SCREEN_DPI);
+    f.lfWidth = MulDiv(f.lfWidth, (int)udpi, USER_DEFAULT_SCREEN_DPI);
+    auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
+    return p.second ? p.first->second.get() : NULL;
+}
