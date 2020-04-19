@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <vector>
 #include <xaml/meta/module.h>
 
 #ifdef XAML_WIN32
