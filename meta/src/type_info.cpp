@@ -48,23 +48,112 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_attributes(xaml_map_view**) noexcept override;
-    xaml_result XAML_CALL get_attribute(xaml_guid const&, xaml_object**) noexcept override;
-    xaml_result XAML_CALL add_attribute(xaml_guid const&, xaml_object*) noexcept override;
-    xaml_result XAML_CALL get_constructor(xaml_delegate**) noexcept override;
-    xaml_result XAML_CALL set_constructor(xaml_delegate*) noexcept override;
-    xaml_result XAML_CALL get_methods(xaml_map_view**) noexcept override;
-    xaml_result XAML_CALL get_method(xaml_string*, xaml_method_info**) noexcept override;
-    xaml_result XAML_CALL add_method(xaml_method_info*) noexcept override;
-    xaml_result XAML_CALL get_properties(xaml_map_view**) noexcept override;
-    xaml_result XAML_CALL get_property(xaml_string*, xaml_property_info**) noexcept override;
-    xaml_result XAML_CALL add_property(xaml_property_info*) noexcept override;
-    xaml_result XAML_CALL get_collection_properties(xaml_map_view**) noexcept override;
-    xaml_result XAML_CALL get_collection_property(xaml_string*, xaml_collection_property_info**) noexcept override;
-    xaml_result XAML_CALL add_collection_property(xaml_collection_property_info*) noexcept override;
-    xaml_result XAML_CALL get_events(xaml_map_view**) noexcept override;
-    xaml_result XAML_CALL get_event(xaml_string*, xaml_event_info**) noexcept override;
-    xaml_result XAML_CALL add_event(xaml_event_info*) noexcept override;
+    xaml_result XAML_CALL get_attributes(xaml_map_view** ptr) noexcept override
+    {
+        m_attr_map.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_attribute(xaml_guid const& type, xaml_object** ptr) noexcept override
+    {
+        xaml_ptr<xaml_object> key;
+        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        return m_attr_map->lookup(key.get(), ptr);
+    }
+
+    xaml_result XAML_CALL add_attribute(xaml_guid const& type, xaml_object* attr) noexcept override
+    {
+        xaml_ptr<xaml_object> key;
+        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        bool replaced;
+        return m_attr_map->insert(key.get(), attr, &replaced);
+    }
+
+    xaml_result XAML_CALL get_constructor(xaml_delegate** ptr) noexcept override
+    {
+        m_ctor.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+    xaml_result XAML_CALL set_constructor(xaml_delegate* d) noexcept override
+    {
+        m_ctor = d;
+        return XAML_S_OK;
+    }
+    xaml_result XAML_CALL get_methods(xaml_map_view** ptr) noexcept override
+    {
+        m_method_map.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_method(xaml_string* name, xaml_method_info** ptr) noexcept override
+    {
+        return m_method_map->lookup(name, (xaml_object**)ptr);
+    }
+
+    xaml_result XAML_CALL add_method(xaml_method_info* method) noexcept override
+    {
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(method->get_name(&name));
+        bool replaced;
+        return m_method_map->insert(name.get(), method, &replaced);
+    }
+
+    xaml_result XAML_CALL get_properties(xaml_map_view** ptr) noexcept override
+    {
+        m_prop_map.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_property(xaml_string* name, xaml_property_info** ptr) noexcept override
+    {
+        return m_prop_map->lookup(name, (xaml_object**)ptr);
+    }
+
+    xaml_result XAML_CALL add_property(xaml_property_info* prop) noexcept override
+    {
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(prop->get_name(&name));
+        bool replaced;
+        return m_prop_map->insert(name.get(), prop, &replaced);
+    }
+
+    xaml_result XAML_CALL get_collection_properties(xaml_map_view** ptr) noexcept override
+    {
+        m_cprop_map.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_collection_property(xaml_string* name, xaml_collection_property_info** ptr) noexcept override
+    {
+        return m_cprop_map->lookup(name, (xaml_object**)ptr);
+    }
+
+    xaml_result XAML_CALL add_collection_property(xaml_collection_property_info* prop) noexcept override
+    {
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(prop->get_name(&name));
+        bool replaced;
+        return m_cprop_map->insert(name.get(), prop, &replaced);
+    }
+
+    xaml_result XAML_CALL get_events(xaml_map_view** ptr) noexcept override
+    {
+        m_event_map.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_event(xaml_string* name, xaml_event_info** ptr) noexcept override
+    {
+        return m_event_map->lookup(name, (xaml_object**)ptr);
+    }
+
+    xaml_result XAML_CALL add_event(xaml_event_info* ev) noexcept override
+    {
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(ev->get_name(&name));
+        bool replaced;
+        return m_event_map->insert(name.get(), ev, &replaced);
+    }
 };
 
 xaml_result xaml_type_info_registration_new(xaml_guid const& type, xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept

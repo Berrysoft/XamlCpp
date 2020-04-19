@@ -36,7 +36,7 @@ struct XAML_NOVTBL xaml_type_info : xaml_reflection_info
 #define XAML_TYPE_INFO_VTBL(type)                                                                                \
     XAML_REFLECTION_INFO_VTBL(type)                                                                              \
     xaml_result(XAML_CALL* get_attributes)(type* const, xaml_map_view**);                                        \
-    xaml_result(XAML_CALL* get_attribute)(type* const, xaml_guid const&, xaml_object**);                         \
+    xaml_result(XAML_CALL* get_attribute)(type* const, xaml_guid const*, xaml_object**);                         \
     xaml_result(XAML_CALL* get_constructor)(type* const, xaml_delegate**);                                       \
     xaml_result(XAML_CALL* get_methods)(type* const, xaml_map_view**);                                           \
     xaml_result(XAML_CALL* get_method)(type* const, xaml_string*, xaml_delegate**);                              \
@@ -77,7 +77,7 @@ struct XAML_NOVTBL xaml_type_info_registration : xaml_type_info
 #else
 #define XAML_TYPE_INFO_REGISTRATION_VTBL(type)                                                    \
     XAML_TYPE_INFO_VTBL(type)                                                                     \
-    xaml_result(XAML_CALL* add_attribute)(type* const, xaml_guid const&, xaml_object*);           \
+    xaml_result(XAML_CALL* add_attribute)(type* const, xaml_guid const*, xaml_object*);           \
     xaml_result(XAML_CALL* set_constructor)(type* const, xaml_delegate*);                         \
     xaml_result(XAML_CALL* add_method)(type* const, xaml_string*, xaml_delegate*);                \
     xaml_result(XAML_CALL* add_property)(type* const, xaml_property_info*);                       \
