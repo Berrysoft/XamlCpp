@@ -22,16 +22,7 @@ public:
             *ptoken = token;
             return XAML_S_OK;
         }
-        catch (bad_alloc const&)
-        {
-            handler->release();
-            return XAML_E_OUTOFMEMORY;
-        }
-        catch (...)
-        {
-            handler->release();
-            return XAML_E_FAIL;
-        }
+        XAML_CATCH_RETURN()
     }
 
     xaml_result XAML_CALL remove(size_t token) noexcept override

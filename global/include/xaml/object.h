@@ -124,18 +124,7 @@ inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
         *ptr = res;
         return XAML_S_OK;
     }
-    catch (xaml_result_error const& e)
-    {
-        return e.get_result();
-    }
-    catch (std::bad_alloc const&)
-    {
-        return XAML_E_OUTOFMEMORY;
-    }
-    catch (...)
-    {
-        return XAML_E_FAIL;
-    }
+    XAML_CATCH_RETURN()
 }
 #endif // __cplusplus
 

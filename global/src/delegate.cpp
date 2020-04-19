@@ -48,13 +48,5 @@ xaml_result xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* args, xaml
                 }
                 return func->invoke(real_args.get(), ptr);
             }
-            catch (xaml_result_error const& e)
-            {
-                return e.get_result();
-            }
-            catch (...)
-            {
-                return XAML_E_FAIL;
-            }
-        });
+            XAML_CATCH_RETURN() });
 }

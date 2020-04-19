@@ -60,6 +60,11 @@ public:
         if (XAML_FAILED(hr))               \
             throw xaml_result_error{ hr }; \
     } while (0)
+
+#define XAML_CATCH_RETURN()                                       \
+    catch (xaml_result_error const& e) { return e.get_result(); } \
+    catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }  \
+    catch (...) { return XAML_E_FAIL; }
 #else
 #define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCESS(expr)
 #endif // __cplusplus

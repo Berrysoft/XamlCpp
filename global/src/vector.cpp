@@ -71,16 +71,7 @@ public:
             m_vec.push_back(obj);
             return XAML_S_OK;
         }
-        catch (bad_alloc const&)
-        {
-            obj->release();
-            return XAML_E_OUTOFMEMORY;
-        }
-        catch (...)
-        {
-            obj->release();
-            return XAML_E_FAIL;
-        }
+        XAML_CATCH_RETURN()
     }
 
     xaml_result XAML_CALL remove_at(size_t index) noexcept override

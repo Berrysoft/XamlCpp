@@ -80,15 +80,7 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
                         return box_value(res, ptr);
                     }
                 }
-                catch (xaml_result_error const& e)
-                {
-                    return e.get_result();
-                }
-                catch (...)
-                {
-                    return XAML_E_FAIL;
-                }
-            } },
+                XAML_CATCH_RETURN() } },
         ptr);
 }
 #endif // __cplusplus

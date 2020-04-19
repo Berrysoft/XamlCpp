@@ -1,11 +1,9 @@
-#include <string>
-#include <vector>
-#include <xaml/meta/module.hpp>
-#include <xaml/strings.hpp>
+#include <filesystem>
+#include <xaml/meta/module.h>
 
 #ifdef XAML_WIN32
 #include <Windows.h>
-#include <system_error>
+#include <xaml/result_win32.h>
 #else
 #include <dlfcn.h>
 #ifdef XAML_APPLE
@@ -20,164 +18,180 @@ static constexpr bool has_prefix = true;
 #endif // XAML_WIN32 && !XAML_MINGW
 static inline std::filesystem::path module_prefix{ "lib" };
 
+#ifdef XAML_WIN32
+static inline std::filesystem::path module_extension{ ".dll" };
+#elif defined(XAML_APPLE)
+static inline std::filesystem::path module_extension{ ".dylib" };
+#else
+static inline std::filesystem::path module_extension{ ".so" };
+#endif // XAML_WIN32
+
 using namespace std;
 using namespace std::filesystem;
 
-namespace xaml
+using path_char_t = typename path::string_type::value_type;
+using path_string_t = typename path::string_type;
+using path_string_view_t = basic_string_view<path_char_t>;
+
+static vector<path> split(path_string_view_t str, path_char_t separater)
 {
-    using path_char_t = typename path::string_type::value_type;
-    using path_string_t = typename path::string_type;
-    using path_string_view_t = basic_string_view<path_char_t>;
-
-    static vector<path> split(path_string_view_t str, path_char_t separater)
+    if (str.empty()) return {};
+    size_t index = 0, offset = 0;
+    vector<path> result;
+    for (;;)
     {
-        if (str.empty()) return {};
-        size_t index = 0, offset = 0;
-        vector<path> result;
-        for (;;)
+        index = str.find_first_of(separater, offset);
+        if (index > offset)
         {
-            index = str.find_first_of(separater, offset);
-            if (index > offset)
-            {
-                auto sub = str.substr(offset, index - offset);
-                if (!sub.empty())
-                    result.emplace_back(sub);
-            }
-            if (index == path_string_view_t::npos) break;
-            offset = index + 1;
+            auto sub = str.substr(offset, index - offset);
+            if (!sub.empty())
+                result.emplace_back(sub);
         }
-        return result;
+        if (index == path_string_view_t::npos) break;
+        offset = index + 1;
     }
+    return result;
+}
 
-    static path program_location()
-    {
+static path program_location()
+{
 #ifdef XAML_WIN32
-        wstring path(1024, L'\0');
-        if (GetModuleFileNameW(nullptr, path.data(), (DWORD)path.size()) == 0) return {};
-        return path;
+    wstring path(1024, L'\0');
+    if (GetModuleFileNameW(nullptr, path.data(), (DWORD)path.size()) == 0) return {};
+    return path;
 #elif defined(XAML_APPLE)
-        string path(1024, '\0');
-        uint32_t size = (uint32_t)path.size();
-        if (_NSGetExecutablePath(path.data(), &size) == 0)
-            return path;
-        path.resize((size_t)size);
-        if (_NSGetExecutablePath(path.data(), &size) != 0)
-            return {};
+    string path(1024, '\0');
+    uint32_t size = (uint32_t)path.size();
+    if (_NSGetExecutablePath(path.data(), &size) == 0)
         return path;
+    path.resize((size_t)size);
+    if (_NSGetExecutablePath(path.data(), &size) != 0)
+        return {};
+    return path;
 #else
-        return read_symlink("/proc/self/exe");
+    return read_symlink("/proc/self/exe");
 #endif // XAML_WIN32
-    }
+}
 
-    static vector<path> get_module_search_path()
-    {
+static vector<path> get_module_search_path()
+{
 #ifdef XAML_WIN32
-        wstring buffer(32767, L'\0');
-        DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
-        buffer.resize(count);
-        vector<path> result = split(buffer, ';');
+    wstring buffer(32767, L'\0');
+    DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
+    buffer.resize(count);
+    vector<path> result = split(buffer, ';');
 #else
 #ifdef XAML_APPLE
-        constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
+    constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
 #else
-        constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
+    constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
 #endif // XAML_APPLE
-        char* ldp = getenv(ld_library_path.data());
-        vector<path> result = split(ldp ? ldp : path_string_view_t{}, ':');
+    char* ldp = getenv(ld_library_path.data());
+    vector<path> result = split(ldp ? ldp : path_string_view_t{}, ':');
 #endif // XAML_WIN32
-        result.push_back(".");
-        result.push_back("../lib");
-        auto location = program_location().parent_path();
-        if (!location.empty())
-        {
-            result.push_back(location);
-            result.push_back(location / ".." / "lib");
-        }
-        return result;
-    }
-
-    static path get_full_path(path const& name, vector<path> const& sds)
+    result.push_back(".");
+    result.push_back("../lib");
+    auto location = program_location().parent_path();
+    if (!location.empty())
     {
-        if (name.is_absolute()) return name;
-        path pname = name;
-        if constexpr (has_prefix)
-        {
-            if (!pname.native().starts_with(module_prefix.native()))
-            {
-                pname = module_prefix;
-                pname += name;
-            }
-        }
-        else
-        {
-            if (pname.native().starts_with(module_prefix.native()))
-            {
-                pname = pname.native().substr(3);
-            }
-        }
-        auto search_dirs = get_module_search_path();
-        search_dirs.insert(search_dirs.end(), sds.begin(), sds.end());
-        for (auto& dir : search_dirs)
-        {
-            path fullname = pname;
-            fullname += module_extension;
-            path p = path{ dir } / fullname;
-            if (exists(p)) return p;
-        }
-        return name;
+        result.push_back(location);
+        result.push_back(location / ".." / "lib");
     }
+    return result;
+}
 
+static path get_full_path(path const& name)
+{
+    if (name.is_absolute()) return name;
+    path pname = name;
+    if constexpr (has_prefix)
+    {
+        if (!pname.native().starts_with(module_prefix.native()))
+        {
+            pname = module_prefix;
+            pname += name;
+        }
+    }
+    else
+    {
+        if (pname.native().starts_with(module_prefix.native()))
+        {
+            pname = pname.native().substr(3);
+        }
+    }
+    auto search_dirs = get_module_search_path();
+    for (auto& dir : search_dirs)
+    {
+        path fullname = pname;
+        fullname += module_extension;
+        path p = path{ dir } / fullname;
+        if (exists(p)) return p;
+    }
+    return name;
+}
+
+struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_object>
+{
 #ifdef XAML_WIN32
-    void module::open(path const& name)
+private:
+    HMODULE m_handle;
+
+public:
+    xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {
-        close();
-        auto p = get_full_path(name, m_search_dir);
-        set_handle(LoadLibraryW(p.c_str()));
-        if (!get_handle())
+        try
         {
-            throw system_error(GetLastError(), system_category());
+            if (m_handle)
+            {
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
+            }
+            auto p = get_full_path(to_string_view_t(path));
+            m_handle = LoadLibraryW(p.c_str());
+            if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
         }
+        XAML_CATCH_RETURN()
     }
 
-    void* module::get_method(string_view name) const
+    xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
     {
-        FARPROC p = GetProcAddress((HMODULE)get_handle(), name.data());
-        return (void*)p;
-    }
-
-    void module::close()
-    {
-        if (get_handle())
-        {
-            FreeLibrary((HMODULE)get_handle());
-            set_handle(nullptr);
-        }
+        if (!m_handle) return XAML_E_NOTIMPL;
+        auto proc = GetProcAddress(m_handle, name);
+        if (!proc) return XAML_E_NOTIMPL;
+        *ptr = (void*)proc;
+        return XAML_S_OK;
     }
 #else
-    void module::open(path const& name)
+private:
+    void* m_handle;
+
+public:
+    xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {
-        close();
-        auto p = get_full_path(name, m_search_dir);
-        set_handle(dlopen(p.c_str(), RTLD_LAZY));
-        if (!get_handle())
+        try
         {
-            throw system_error(error_code{}, dlerror());
+            if (m_handle)
+            {
+                dlclose(m_handle);
+            }
+            auto p = get_full_path(to_string_view_t(path));
+            m_handle = dlopen(p.c_str(), RTLD_LAZY);
+            if (!m_handle) return XAML_E_FAIL;
         }
+        XAML_CATCH_RETURN()
     }
 
-    void* module::get_method(string_view name) const
+    xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
     {
-        void* p = dlsym(get_handle(), name.data());
-        return p;
-    }
-
-    void module::close()
-    {
-        if (get_handle())
-        {
-            dlclose(get_handle());
-            set_handle(nullptr);
-        }
+        if (!m_handle) return XAML_E_NOTIMPL;
+        auto proc = dlsym(m_handle, name);
+        if (!proc) return XAML_E_NOTIMPL;
+        *ptr = (void*)proc;
+        return XAML_S_OK;
     }
 #endif // XAML_WIN32
-} // namespace xaml
+};
+
+xaml_result xaml_module_new(xaml_module** ptr) noexcept
+{
+    return xaml_object_new<xaml_module_impl>(ptr);
+}
