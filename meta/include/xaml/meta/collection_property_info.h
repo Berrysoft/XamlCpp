@@ -49,7 +49,7 @@ EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string
 XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
 
 template <typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
-inline xaml_result xaml_collection_property_info_new(xaml_string*, xaml_result (T::*adder)(TValueAdd), xaml_result (T::*remover)(TValueRemove), xaml_collection_property_info** ptr) noexcept
+inline xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_collection_property_info_new(
         name, xaml_type_guid_v<T>,

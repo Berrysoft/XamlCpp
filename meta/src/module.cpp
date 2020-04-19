@@ -148,6 +148,7 @@ public:
             auto p = get_full_path(to_string_view_t(path));
             m_handle = LoadLibraryW(p.c_str());
             if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
+            return XAML_S_OK;
         }
         XAML_CATCH_RETURN()
     }
@@ -176,6 +177,7 @@ public:
             auto p = get_full_path(to_string_view_t(path));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
             if (!m_handle) return XAML_E_FAIL;
+            return XAML_S_OK;
         }
         XAML_CATCH_RETURN()
     }

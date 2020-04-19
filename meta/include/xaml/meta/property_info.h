@@ -49,7 +49,7 @@ EXTERN_C XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_gui
 XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
 
 template <typename T, typename TValueGet, typename TValueSet = TValueGet>
-xaml_result xaml_property_info_new(xaml_string* name, xaml_result (T::*getter)(TValueGet*), xaml_result (T::*setter)(TValueSet), xaml_property_info** ptr) noexcept
+xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<T>,

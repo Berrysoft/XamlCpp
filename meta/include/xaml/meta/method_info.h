@@ -24,13 +24,13 @@ struct xaml_method_info
 };
 #endif // __cplusplus
 
-EXTERN_C XAML_META_API xaml_result xaml_method_info_new(xaml_string*, xaml_result (*)(xaml_vector_view*), xaml_method_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_vector_view*), xaml_method_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view*)>&&, xaml_method_info**) noexcept;
 
 template <typename T, typename... Args>
-inline xaml_result xaml_method_info_new(xaml_string* name, xaml_result (T::*func)(Args...), xaml_method_info** ptr) noexcept
+inline xaml_result xaml_method_info_new(xaml_string* name, xaml_result (XAML_CALL T::*func)(Args...) noexcept, xaml_method_info** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
     return xaml_method_info_new(
@@ -40,7 +40,8 @@ inline xaml_result xaml_method_info_new(xaml_string* name, xaml_result (T::*func
                 std::size_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
-                return __xaml_delegate_impl_invoke<xaml_result, xaml_ptr<T>, Args...>(func, args);
+                return __xaml_delegate_impl_invoke<xaml_result, xaml_ptr<T>, Args...>(
+                    std::function<xaml_result(xaml_ptr<T>, Args...)>{ std::mem_fn(func) }, args);
             } },
         ptr);
 }
