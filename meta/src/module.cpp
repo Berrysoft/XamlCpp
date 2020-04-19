@@ -173,7 +173,8 @@ public:
         {
             if (m_handle)
             {
-                dlclose(m_handle);
+                int res = dlclose(m_handle);
+                if (res) return XAML_E_FAIL;
             }
             auto p = get_full_path(to_string_view_t(path));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
