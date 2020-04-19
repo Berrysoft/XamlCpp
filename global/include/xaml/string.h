@@ -84,14 +84,32 @@ inline xaml_std_string_view_t to_string_view_t(xaml_ptr<xaml_string> const& str)
 {
     xaml_char_t const* data;
     XAML_THROW_IF_FAILED(str->get_data(&data));
-    size_t length;
+    std::size_t length;
     XAML_THROW_IF_FAILED(str->get_length(&length));
     return xaml_std_string_view_t(data, length);
+}
+
+inline xaml_result to_string_view_t(xaml_ptr<xaml_string> const& str, xaml_std_string_view_t& view) noexcept
+{
+    xaml_char_t const* data;
+    XAML_RETURN_IF_FAILED(str->get_data(&data));
+    std::size_t length;
+    XAML_RETURN_IF_FAILED(str->get_length(&length));
+    view = xaml_std_string_view_t(data, length);
+    return XAML_S_OK;
 }
 
 inline xaml_std_string_t to_string_t(xaml_ptr<xaml_string> const& str)
 {
     return (xaml_std_string_t)to_string_view_t(str);
+}
+
+inline xaml_result to_string_t(xaml_ptr<xaml_string> const& str, xaml_std_string_t& s) noexcept
+{
+    xaml_std_string_view_t view;
+    XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
+    s = (xaml_std_string_t)view;
+    return XAML_S_OK;
 }
 #endif // __cplusplus
 

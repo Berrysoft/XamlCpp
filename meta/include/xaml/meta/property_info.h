@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 #include <functional>
 #include <xaml/box.h>
+#include <xaml/meta/conv.hpp>
 #include <xaml/ptr.hpp>
 #else
 #include <stdbool.h>
@@ -64,7 +65,7 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             std::decay_t<TValueSet> value;
-            XAML_RETURN_IF_FAILED(unbox_value(obj, value));
+            XAML_RETURN_IF_FAILED(__xaml_converter<std::decay_t<TValueSet>>{}(obj, value));
             return (self.get()->*setter)(value);
         },
         ptr);

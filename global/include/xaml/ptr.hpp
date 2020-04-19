@@ -95,6 +95,14 @@ public:
         *ptr = m_ptr;
     }
 
+    template <typename D>
+    constexpr xaml_ptr<D> query() const noexcept
+    {
+        xaml_ptr<D> res;
+        if (XAML_SUCCESS(m_ptr->query(&res))) return res;
+        return nullptr;
+    }
+
     constexpr operator bool() const noexcept { return m_ptr; }
 
     template <typename D>

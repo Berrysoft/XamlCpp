@@ -49,8 +49,7 @@ int main()
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
     XAML_THROW_IF_FAILED(prop->set(obj.get(), box_value(100).get()));
-    //prop.set(mc, box_value("100"));
-    //prop.set(mc, box_value(L"200"sv));
+    XAML_THROW_IF_FAILED(prop->set(obj.get(), to_xaml_string(U("200")).get()));
     // Remove the handler.
     XAML_THROW_IF_FAILED(ev->remove(obj.get(), token));
     {
