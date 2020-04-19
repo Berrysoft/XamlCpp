@@ -7,7 +7,6 @@
 
 XAML_CLASS(xaml_test_calculator, { 0x2662320c, 0xb748, 0x435d, { 0xae, 0xfb, 0xc5, 0x2e, 0xed, 0xb9, 0xa9, 0xb5 } })
 
-#ifdef __cplusplus
 struct XAML_NOVTBL xaml_test_calculator : xaml_object
 {
     virtual xaml_result XAML_CALL get_value(int*) noexcept = 0;
@@ -17,9 +16,6 @@ struct XAML_NOVTBL xaml_test_calculator : xaml_object
     virtual xaml_result XAML_CALL plus(int, int) noexcept = 0;
     virtual xaml_result XAML_CALL minus(int, int) noexcept = 0;
 };
-#else
-
-#endif // __cplusplus
 
 EXTERN_C xaml_result xaml_test_calculator_new(xaml_test_calculator**) XAML_NOEXCEPT;
 EXTERN_C xaml_result xaml_test_calculator_register(xaml_meta_context*) XAML_NOEXCEPT;

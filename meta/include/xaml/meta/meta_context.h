@@ -35,7 +35,23 @@ struct XAML_NOVTBL xaml_meta_context : xaml_object
     }
 };
 #else
+#define XAML_META_CONTEXT_VTBL(type)                                                             \
+    XAML_OBJECT_VTBL(type)                                                                       \
+    xaml_result(XAML_CALL* get_modules)(type* const, xaml_vector_view**);                        \
+    xaml_result(XAML_CALL* add_module)(type* const, xaml_module*);                               \
+    xaml_result(XAML_CALL* get_types)(type* const, xaml_map_view**);                             \
+    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid const*, xaml_reflection_info**);     \
+    xaml_result(XAML_CALL* get_type_by_name)(type* const, xaml_string*, xaml_reflection_info**); \
+    xaml_result(XAML_CALL* add_type)(type* const, xaml_reflection_info*);                        \
+    xaml_result(XAML_CALL* bind)(type* const, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode);
 
+struct xaml_meta_context
+{
+    struct
+    {
+        XAML_META_CONTEXT_VTBL(xaml_meta_context)
+    } const* vtbl;
+};
 #endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_meta_context_new(xaml_meta_context**) XAML_NOEXCEPT;

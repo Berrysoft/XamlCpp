@@ -12,7 +12,17 @@ struct XAML_NOVTBL xaml_default_property : xaml_object
     virtual xaml_result XAML_CALL get_default_property(xaml_string**) noexcept = 0;
 };
 #else
+#define XAML_DEFAULT_PROPERTY_VTBL(type) \
+    XAML_OBJECT_VTBL(type)               \
+    xaml_result(XAML_CALL* get_default_property)(type* const, xaml_string**);
 
+struct xaml_default_property
+{
+    struct
+    {
+        XAML_DEFAULT_PROPERTY_VTBL(xaml_default_property)
+    } const* vtbl;
+};
 #endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_default_property_new(xaml_string*, xaml_default_property**) XAML_NOEXCEPT;
