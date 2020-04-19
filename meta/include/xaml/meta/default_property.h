@@ -7,7 +7,7 @@
 XAML_CLASS(xaml_default_property, { 0xaf8c4c53, 0xa4a0, 0x4f46, { 0xbd, 0x28, 0x2a, 0xf6, 0xb2, 0xfe, 0xe1, 0x79 } })
 
 #ifdef __cplusplus
-struct xaml_default_property : xaml_object
+struct XAML_NOVTBL xaml_default_property : xaml_object
 {
     virtual xaml_result XAML_CALL get_default_property(xaml_string**) noexcept = 0;
 };

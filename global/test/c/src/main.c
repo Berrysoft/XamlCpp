@@ -111,9 +111,7 @@ int main()
     size_t token;
     XAML_ASSERT_SUCCESS(vec->vtbl->add_vector_changed(vec, callback, &token));
     callback->vtbl->release(callback);
-    xaml_object* obj;
-    XAML_ASSERT_SUCCESS(str->vtbl->query(str, &xaml_guid_xaml_object, &obj));
-    XAML_ASSERT_SUCCESS(vec->vtbl->append(vec, obj));
+    XAML_ASSERT_SUCCESS(vec->vtbl->append(vec, (xaml_object*)str));
     XAML_ASSERT_SUCCESS(vec->vtbl->remove_at(vec, 0));
     vec->vtbl->release(vec);
     str->vtbl->release(str);

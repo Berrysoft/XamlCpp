@@ -18,7 +18,7 @@ typedef enum xaml_binding_mode
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
 #ifdef __cplusplus
-struct xaml_meta_context : xaml_object
+struct XAML_NOVTBL xaml_meta_context : xaml_object
 {
     virtual xaml_result XAML_CALL get_modules(xaml_vector_view**) noexcept = 0;
     virtual xaml_result XAML_CALL add_module(xaml_module*) noexcept = 0;
