@@ -23,6 +23,10 @@ public:
     {
         if (m_ptr) m_ptr->add_ref();
     }
+    xaml_ptr(xaml_ptr const& p) noexcept : m_ptr{ p.m_ptr }
+    {
+        if (m_ptr) m_ptr->add_ref();
+    }
     template <typename D, typename = std::enable_if_t<std::is_base_of_v<T, D>>>
     xaml_ptr(xaml_ptr<D> const& p) noexcept : m_ptr{ p.m_ptr }
     {
@@ -43,6 +47,14 @@ public:
     {
         try_release();
         m_ptr = ptr;
+        if (m_ptr) m_ptr->add_ref();
+        return *this;
+    }
+
+    xaml_ptr& operator=(xaml_ptr const& p) noexcept
+    {
+        try_release();
+        m_ptr = p.m_ptr;
         if (m_ptr) m_ptr->add_ref();
         return *this;
     }
