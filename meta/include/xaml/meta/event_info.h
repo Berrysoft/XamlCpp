@@ -36,22 +36,32 @@ EXTERN_C XAML_META_API xaml_result xaml_event_info_new(xaml_string*, xaml_result
 XAML_META_API xaml_result xaml_event_info_new(xaml_string*, std::function<xaml_result(xaml_object*, xaml_delegate*, std::size_t*)>&&, std::function<xaml_result(xaml_object*, std::size_t)>&&, xaml_event_info**) noexcept;
 
 template <typename T>
-inline xaml_result xaml_event_info_new(xaml_string* name, xaml_result (T::*XAML_CALL adder)(xaml_delegate*, std::size_t*), xaml_result (T::*XAML_CALL remover)(std::size_t), xaml_event_info** ptr) noexcept
+inline xaml_result xaml_event_info_new(xaml_string* name, xaml_result (T::*adder)(xaml_delegate*, std::size_t*), xaml_result (T::*remover)(std::size_t), xaml_event_info** ptr) noexcept
 {
     return xaml_event_info_new(
         name,
         [adder](xaml_object* target, xaml_delegate* handler, std::size_t* ptoken) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            return self.get()->*adder(handler, ptoken);
+            return (self.get()->*adder)(handler, ptoken);
         },
         [remover](xaml_object* target, std::size_t token) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            return self.get()->*remover(token);
+            return (self.get()->*remover)(token);
         },
         ptr);
 }
+
+#define XAML_TYPE_INFO_ADD_EVENT(name, type, event)                                                                               \
+    do                                                                                                                            \
+    {                                                                                                                             \
+        xaml_ptr<xaml_string> __event_name;                                                                                       \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#event), &__event_name));                                                         \
+        xaml_ptr<xaml_event_info> __event_info;                                                                                   \
+        XAML_RETURN_IF_FAILED(xaml_event_info_new(__event_name.get(), &type::add_##event, &type::remove_##event, &__event_info)); \
+        XAML_RETURN_IF_FAILED(name->add_event(__event_info.get()));                                                               \
+    } while (0)
 #endif // __cplusplus
 
 #endif // !XAML_META_EVENT_INFO_H

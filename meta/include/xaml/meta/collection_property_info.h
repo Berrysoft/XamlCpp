@@ -49,7 +49,7 @@ EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string
 XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
 
 template <typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
-inline xaml_result xaml_collection_property_info_new(xaml_string*, xaml_result (T::*XAML_CALL adder)(TValueAdd), xaml_result (T::*XAML_CALL remover)(TValueRemove), xaml_collection_property_info** ptr) noexcept
+inline xaml_result xaml_collection_property_info_new(xaml_string*, xaml_result (T::*adder)(TValueAdd), xaml_result (T::*remover)(TValueRemove), xaml_collection_property_info** ptr) noexcept
 {
     return xaml_collection_property_info_new(
         name, xaml_type_guid_v<T>,
@@ -58,17 +58,28 @@ inline xaml_result xaml_collection_property_info_new(xaml_string*, xaml_result (
             XAML_RETURN_IF_FAILED(target->query(&self));
             std::decay_t<TValueAdd> value;
             XAML_RETURN_IF_FAILED(unbox_value(obj, value));
-            return self.get()->*adder(value);
+            return (self.get()->*adder)(value);
         },
         [remover](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             std::decay_t<TValueRemove> value;
             XAML_RETURN_IF_FAILED(unbox_value(obj, value));
-            return self.get()->*remover(value);
+            return (self.get()->*remover)(value);
         },
         ptr);
 }
+
+#define XAML_TYPE_INFO_ADD_CPROP(name, type, prop)                                                                               \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        xaml_ptr<xaml_string> __prop_name;                                                                                       \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                          \
+        xaml_ptr<xaml_property_info> __prop_info;                                                                                \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::add_##prop, &type::remove_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(info->add_collection_property(__prop_info.get()));                                                 \
+    } while (0)
+
 #endif // __cplusplus
 
 #endif // !XAML_META_COLLECTION_PROPERTY_INFO_H

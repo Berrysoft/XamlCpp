@@ -127,6 +127,27 @@ struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T
 };
 
 template <typename T>
+struct __box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_view_t>>>
+{
+    xaml_result box(xaml_std_string_view_t value, xaml_object** ptr) const noexcept
+    {
+        return xaml_string_new(value, (xaml_string**)ptr);
+    }
+
+    xaml_result unbox(xaml_object* obj, xaml_std_string_view_t& value) const noexcept
+    {
+        xaml_ptr<xaml_string> str;
+        XAML_RETURN_IF_FAILED(obj->query(&str));
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(str->get_data(&data));
+        size_t length;
+        XAML_RETURN_IF_FAILED(str->get_length(&length));
+        value = xaml_std_string_view_t(data, length);
+        return XAML_S_OK;
+    }
+};
+
+template <typename T>
 xaml_result box_value(T const& value, xaml_object** ptr) noexcept
 {
     return __box_impl<T>{}.box(value, ptr);

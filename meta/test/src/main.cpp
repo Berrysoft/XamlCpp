@@ -1,150 +1,66 @@
+#include <calculator.h>
 #include <iostream>
-#include <xaml/meta/meta.hpp>
-#include <xaml/meta/meta_macro.hpp>
-#include <xaml/observable_vector.hpp>
+#include <xaml/meta/meta_context.h>
+#include <xaml/meta/type_info.h>
 
 using namespace std;
-using namespace xaml;
-
-namespace xaml
-{
-    namespace test
-    {
-        class calculator;
-    }
-
-    template <>
-    struct type_guid<xaml::test::calculator>
-    {
-        static constexpr guid value{ 0x2662320c, 0xb748, 0x435d, { 0xae, 0xfb, 0xc5, 0x2e, 0xed, 0xb9, 0xa9, 0xb5 } };
-    };
-} // namespace xaml
-
-namespace xaml::test
-{
-    // The class should inherit `xaml::meta_class`.
-    class calculator : public meta_class
-    {
-    public:
-        // Add type info.
-        META_CLASS_IMPL(meta_class)
-
-        // Adds a property named "value" with type "int",
-        // and raise "value_changed" event when it changes.
-        // To simply get or set its value, call `int get_value()`
-        // or `void set_value(int)`.
-        PROP_EVENT(value, int)
-
-        // Adds an event named "value_changed" with signature
-        // `void(calculator const&, int)`.
-        // It is necessary for the property above.
-        // To simply add a handler, call `size_t add_value_changed(function<void(calculator const&,int)>)`;
-        // to remove it, call `void remove_value_changed(size_t)`,
-        // the parameter is the return value of the add method.
-        EVENT(value_changed, std::shared_ptr<calculator>, int)
-
-    public:
-        void plus(int x, int y) { set_value(x + y); }
-        void minus(int x, int y) { set_value(x - y); }
-
-        static int multiply(int x, int y) { return x * y; }
-
-        ~calculator() override {}
-
-        // Register a type named "calculator" in namespace "test".
-        // The namespace is optional.
-        REGISTER_CLASS_DECL_NOFILE(xaml::test, calculator)
-        {
-            // Add default constructor.
-            ADD_CTOR();
-            // Add methods `plus` and `minus`.
-            ADD_METHOD(plus);
-            ADD_METHOD(minus);
-            // Add static method `multiply`.
-            ADD_STATIC_METHOD(multiply);
-            // Add property `value` and event `value_changed`.
-            ADD_PROP_EVENT(value);
-        }
-        REGISTER_CLASS_END()
-    };
-} // namespace xaml::test
-
-using namespace xaml::test;
 
 int main()
 {
     // Initialize metadata context.
-    meta_context ctx{};
+    xaml_ptr<xaml_meta_context> ctx;
+    XAML_THROW_IF_FAILED(xaml_meta_context_new(&ctx));
     // A helper method to register many classes.
-    register_class<calculator>(ctx);
-
+    XAML_THROW_IF_FAILED(xaml_test_calculator_register(ctx.get()));
     // We suppressed some failure check because we know it will success.
 
     // Get a type named "calculator" in namespace "test".
-    auto& t = *ctx.get_type("xaml::test", "calculator");
+    xaml_ptr<xaml_type_info> t;
+    XAML_THROW_IF_FAILED(ctx->get_type_by_name(to_xaml_string(U("xaml_test_calculator")).get(), (xaml_reflection_info**)&t));
     // Construct the class with default constructor.
-    // It is as same as calling operator new, so you should manully wrap it.
-    auto mc{ t.construct() };
+    xaml_ptr<xaml_object> obj;
+    XAML_THROW_IF_FAILED(t->construct(&obj));
     // Get the event named "value_changed".
-    auto& ev = *t.get_event("value_changed");
+    xaml_ptr<xaml_event_info> ev;
+    XAML_THROW_IF_FAILED(t->get_event(to_xaml_string(U("value_changed")).get(), &ev));
     // Add a handler to the event of the object.
-    auto token = ev.add(mc, *make_type_erased_function<void, shared_ptr<calculator>, int>([](shared_ptr<calculator>, int i) { cout << "Value changed: " << i << endl; }));
-    // Invoke the method of the object.
-    // The property `value` has changed, so the event will be raised,
-    // and the handler will be called.
-    t.invoke_method<void>(mc, "plus", 1, 1);
+    xaml_ptr<xaml_delegate> handler;
+    XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_test_calculator>, int>(
+        [](xaml_ptr<xaml_test_calculator>, int i) {
+            cout << "Value changed: " << i << endl;
+        },
+        &handler)));
+    size_t token;
+    XAML_THROW_IF_FAILED(ev->add(obj.get(), handler.get(), &token));
+    {
+        // Invoke the method of the object.
+        // The property `value` has changed, so the event will be raised,
+        // and the handler will be called.
+        xaml_ptr<xaml_method_info> method;
+        XAML_THROW_IF_FAILED(t->get_method(to_xaml_string(U("plus")).get(), &method));
+        xaml_ptr<xaml_vector> args;
+        XAML_THROW_IF_FAILED(xaml_vector_new({ obj, box_value(1), box_value(1) }, &args));
+        xaml_ptr<xaml_object> res;
+        XAML_THROW_IF_FAILED(method->invoke(args.get(), &res));
+    }
     // Get the property named "value".
-    auto& prop = *t.get_property("value");
+    xaml_ptr<xaml_property_info> prop;
+    XAML_THROW_IF_FAILED(t->get_property(to_xaml_string(U("value")).get(), &prop));
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
-    prop.set(mc, box_value("100"));
-    prop.set(mc, box_value(L"200"sv));
+    XAML_THROW_IF_FAILED(prop->set(obj.get(), box_value(100).get()));
+    //prop.set(mc, box_value("100"));
+    //prop.set(mc, box_value(L"200"sv));
     // Remove the handler.
-    ev.remove(mc, token);
-    // Although `value` has changed, the handler won't be called,
-    // because the handler has been removed.
-    t.invoke_method<void>(mc, "minus", 1, 1);
-    // Invoke the static method.
-    cout << "3 * 7 = " << *t.invoke_static_method<int>("multiply", 3, 7) << endl;
-    cout << endl;
-    observable_vector<int> obs{ 1, 2, 3 };
-    obs.add_vector_changed([](observable_vector<int>&, vector_changed_args<int>& args) {
-        switch (args.action)
-        {
-        case vector_changed_action::add:
-            cout << "Add items at " << args.new_index << ": ";
-            for (auto& item : args.new_items)
-            {
-                cout << item << ' ';
-            }
-            cout << endl;
-            break;
-        case vector_changed_action::erase:
-            cout << "Erase items at " << args.old_index << ": ";
-            for (auto& item : args.old_items)
-            {
-                cout << item << ' ';
-            }
-            cout << endl;
-            break;
-        case vector_changed_action::move:
-            cout << "Move item " << args.old_items[0] << " at " << args.old_index << " to " << args.new_index << '.' << endl;
-            break;
-        case vector_changed_action::replace:
-            cout << "Replace item at " << args.old_index << " from " << args.old_items[0] << " to " << args.new_items[0] << '.' << endl;
-            break;
-        case vector_changed_action::reset:
-            cout << "Reset. Old count: " << args.old_items.size() << "; new count: " << args.new_items.size() << '.' << endl;
-            break;
-        }
-    });
-    obs.push_back(4);
-    obs.pop_back();
-    obs.insert(obs.begin() + 2, 5);
-    for (auto item : obs)
+    XAML_THROW_IF_FAILED(ev->remove(obj.get(), token));
     {
-        item = item + 1;
+        // Although `value` has changed, the handler won't be called,
+        // because the handler has been removed.
+        xaml_ptr<xaml_method_info> method;
+        XAML_THROW_IF_FAILED(t->get_method(to_xaml_string(U("minus")).get(), &method));
+        xaml_ptr<xaml_vector> args;
+        XAML_THROW_IF_FAILED(xaml_vector_new({ obj, box_value(1), box_value(1) }, &args));
+        xaml_ptr<xaml_object> res;
+        XAML_THROW_IF_FAILED(method->invoke(args.get(), &res));
     }
-    obs = { 4, 5, 6, 7, 8 };
-    obs.clear();
 }

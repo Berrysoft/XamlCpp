@@ -31,6 +31,16 @@ struct XAML_NOVTBL xaml_type_info : xaml_reflection_info
     {
         return get_attribute(xaml_type_guid_v<T>, (xaml_object**)ptr);
     }
+
+    xaml_result construct(xaml_object** ptr) noexcept
+    {
+        xaml_ptr<xaml_delegate> ctor;
+        XAML_RETURN_IF_FAILED(get_constructor(&ctor));
+        if (!ctor) return XAML_E_NOTIMPL;
+        xaml_ptr<xaml_vector> args;
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
+        return ctor->invoke(args.get(), ptr);
+    }
 };
 #else
 #define XAML_TYPE_INFO_VTBL(type)                                                                                \
@@ -94,5 +104,35 @@ struct xaml_type_info_registration
 #endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_type_info_registration_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_type_info_registration**) XAML_NOEXCEPT;
+
+#ifdef __cplusplus
+template <typename T>
+xaml_result xaml_type_info_registration_new(xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
+{
+    return xaml_type_info_registration_new(xaml_type_guid_v<T>, name, include_file, ptr);
+}
+
+#define XAML_TYPE_INFO_NEW(name, type, file)                          \
+    xaml_ptr<xaml_string> __type_name;                                \
+    XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__type_name));   \
+    xaml_ptr<xaml_string> __include_file;                             \
+    XAML_RETURN_IF_FAILED(xaml_string_new(U(file), &__include_file)); \
+    xaml_ptr<xaml_type_info_registration> name;                       \
+    XAML_RETURN_IF_FAILED(xaml_type_info_registration_new<type>(__type_name.get(), __include_file.get(), &name))
+
+#define XAML_TYPE_INFO_ADD_CTOR(name, type)                      \
+    do                                                           \
+    {                                                            \
+        xaml_ptr<xaml_delegate> __ctor;                          \
+        XAML_RETURN_IF_FAILED(xaml_delegate_new<xaml_ptr<type>>( \
+            []() -> xaml_ptr<type> {                             \
+                xaml_ptr<type> __res;                            \
+                XAML_THROW_IF_FAILED(type##_new(&__res));        \
+                return __res;                                    \
+            },                                                   \
+            &__ctor));                                           \
+        name->set_constructor(__ctor.get());                     \
+    } while (0)
+#endif // __cplusplus
 
 #endif // !XAML_META_TYPE_INFO_H

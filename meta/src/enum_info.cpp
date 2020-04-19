@@ -48,5 +48,5 @@ public:
 
 xaml_result xaml_enum_info_new(xaml_guid const& type, xaml_string* name, xaml_string* include_file, xaml_map_view* map, xaml_enum_info** ptr) noexcept
 {
-    return xaml_object_new<xaml_enum_info_impl>(ptr, map);
+    return xaml_object_new<xaml_enum_info_impl>(ptr, type, name, include_file, map);
 }
