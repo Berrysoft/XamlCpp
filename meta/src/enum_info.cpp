@@ -1,3 +1,4 @@
+#include <reflection_info.hpp>
 #include <xaml/meta/enum_info.h>
 
 using namespace std;

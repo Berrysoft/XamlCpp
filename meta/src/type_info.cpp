@@ -1,3 +1,4 @@
+#include <reflection_info.hpp>
 #include <xaml/meta/type_info.h>
 
 using namespace std;
