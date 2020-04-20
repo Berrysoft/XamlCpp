@@ -15,18 +15,18 @@ XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0
 
 typedef struct xaml_window xaml_window;
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_application : xaml_object
-{
-    virtual xaml_result XAML_CALL run(int*) noexcept = 0;
-    virtual xaml_result XAML_CALL quit(int) noexcept = 0;
-    virtual xaml_result XAML_CALL get_cmd_lines(xaml_vector_view**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_main_window(xaml_window**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_theme(xaml_application_theme*) noexcept = 0;
-};
-#else
+#define XAML_APPLICATION_VTBL(type)                       \
+    XAML_OBJECT_VTBL(type);                               \
+    XAML_METHOD(run, type, int*);                         \
+    XAML_METHOD(quit, type, int);                         \
+    XAML_METHOD(get_cmd_lines, type, xaml_vector_view**); \
+    XAML_METHOD(get_main_window, type, xaml_window**);    \
+    XAML_METHOD(get_theme, type, xaml_application_theme*)
 
-#endif // __cplusplus
+XAML_DECL_INTERFACE_(xaml_application, xaml_object)
+{
+    XAML_DECL_VTBL(xaml_application, XAML_APPLICATION_VTBL);
+};
 
 EXTERN_C XAML_UI_API xaml_result xaml_application_init(xaml_application**) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_API xaml_result xaml_application_init_with_args(int, xaml_char_t**, xaml_application**) XAML_NOEXCEPT;

@@ -86,16 +86,20 @@ xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noe
     return XAML_S_OK;
 }
 
-HFONT xaml_application_impl::get_default_font(UINT udpi) noexcept
+xaml_result xaml_application_impl::get_default_font(UINT udpi, HFONT* pfont) noexcept
 {
     auto it = s_dpi_fonts.find(udpi);
     if (it != s_dpi_fonts.end())
     {
-        return it->second.get();
+        *pfont = it->second.get();
     }
-    LOGFONT f = s_default_font;
-    f.lfHeight = MulDiv(f.lfHeight, (int)udpi, USER_DEFAULT_SCREEN_DPI);
-    f.lfWidth = MulDiv(f.lfWidth, (int)udpi, USER_DEFAULT_SCREEN_DPI);
-    auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
-    return p.second ? p.first->second.get() : NULL;
+    else
+    {
+        LOGFONT f = s_default_font;
+        f.lfHeight = MulDiv(f.lfHeight, (int)udpi, USER_DEFAULT_SCREEN_DPI);
+        f.lfWidth = MulDiv(f.lfWidth, (int)udpi, USER_DEFAULT_SCREEN_DPI);
+        auto p = s_dpi_fonts.emplace(udpi, CreateFontIndirect(&f));
+        *pfont = p.second ? p.first->second.get() : NULL;
+    }
+    return XAML_S_OK;
 }

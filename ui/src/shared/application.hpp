@@ -3,12 +3,9 @@
 
 #include <atomic>
 #include <xaml/ui/application.h>
+#include <xaml/ui/native_application.h>
 
-#ifdef XAML_UI_WINDOWS
-#include <Windows.h>
-#endif // XAML_UI_WINDOWS
-
-struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
+struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_native_application, xaml_application, xaml_object>
 {
 private:
     std::atomic<int> m_quit_value{ 0 };
@@ -35,7 +32,7 @@ public:
     xaml_result XAML_CALL get_theme(xaml_application_theme*) noexcept override;
 
 #ifdef XAML_UI_WINDOWS
-    HFONT get_default_font(UINT) noexcept;
+    xaml_result XAML_CALL get_default_font(UINT, HFONT*) noexcept override;
 #endif // XAML_UI_WINDOWS
 };
 
