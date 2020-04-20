@@ -12,37 +12,52 @@
 #include <xaml/result.h>
 #include <xaml/utility.h>
 
+#ifdef __cplusplus
+#define XAML_DECL_INTERFACE(name) struct XAML_NOVTBL name
+#define XAML_DECL_INTERFACE_(name, base) struct XAML_NOVTBL name : base
+#define XAML_ARGS(type, ...) (__VA_ARGS__)
+#define XAML_METHOD_(type, name, ...) virtual type XAML_CALL name XAML_ARGS(__VA_ARGS__) noexcept = 0
+#define XAML_METHOD(name, ...) XAML_METHOD_(xaml_result, name, __VA_ARGS__)
+#define XAML_VTBL_BEGIN
+#define XAML_VTBL_END
+#else
+#define XAML_DECL_INTERFACE(name) struct name
+#define XAML_DECL_INTERFACE_(name, base) struct name
+#define XAML_ARGS(type, ...) (type* const, ##__VA_ARGS__)
+#define XAML_METHOD_(type, name, ...) type(XAML_CALL* name) XAML_ARGS(__VA_ARGS__)
+#define XAML_METHOD(name, ...) XAML_METHOD_(xaml_result, name, __VA_ARGS__)
+#define XAML_VTBL_BEGIN \
+    struct              \
+    {
+#define XAML_VTBL_END \
+    }                 \
+    const* vtbl
+#endif // __cplusplus
+
+#define XAML_DECL_VTBL(type, vtbl) \
+    XAML_VTBL_BEGIN                \
+    vtbl(type);                    \
+    XAML_VTBL_END
+
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_object
-{
-    virtual std::size_t XAML_CALL add_ref() noexcept = 0;
-    virtual std::size_t XAML_CALL release() noexcept = 0;
-    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
-    virtual xaml_result XAML_CALL query(xaml_guid const&, xaml_object**) noexcept = 0;
+#define XAML_OBJECT_VTBL(type)                     \
+    XAML_METHOD_(XAML_CSTD size_t, add_ref, type); \
+    XAML_METHOD_(XAML_CSTD size_t, release, type); \
+    XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, xaml_object**)
 
+XAML_DECL_INTERFACE(xaml_object)
+{
+    XAML_DECL_VTBL(xaml_object, XAML_OBJECT_VTBL);
+
+#ifdef __cplusplus
     template <typename T>
-    xaml_result query(T** ptr) noexcept
+    xaml_result query(T * *ptr) noexcept
     {
         return query(xaml_type_guid_v<T>, (xaml_object**)ptr);
     }
-};
-#else
-#define XAML_OBJECT_VTBL(type)                                 \
-    size_t(XAML_CALL* add_ref)(type* const);                   \
-    size_t(XAML_CALL* release)(type* const);                   \
-    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*); \
-    xaml_result(XAML_CALL* query)(type* const, xaml_guid const*, xaml_object**);
-
-struct xaml_object
-{
-    struct
-    {
-        XAML_OBJECT_VTBL(xaml_object)
-    } const* vtbl;
-};
 #endif // __cplusplus
+};
 
 #ifdef __cplusplus
 template <typename T, typename D, typename... Base>
@@ -66,12 +81,6 @@ public:
         {
             return res;
         }
-    }
-
-    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
-    {
-        *ptype = xaml_type_guid_v<D>;
-        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override;

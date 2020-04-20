@@ -12,24 +12,14 @@
 
 XAML_CLASS(xaml_delegate, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e, 0x00, 0x0c, 0x0f, 0xc3 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_delegate : xaml_object
-{
-    virtual xaml_result XAML_CALL invoke(xaml_vector_view*, xaml_object**) noexcept = 0;
-};
-#else
 #define XAML_DELEGATE_VTBL(type) \
-    XAML_OBJECT_VTBL(type)       \
-    xaml_result(XAML_CALL* invoke)(type* const, xaml_vector_view*, xaml_object**);
+    XAML_OBJECT_VTBL(type);      \
+    XAML_METHOD(invoke, type, xaml_vector_view*, xaml_object**)
 
-struct xaml_delegate
+XAML_DECL_INTERFACE_(xaml_delegate, xaml_object)
 {
-    struct
-    {
-        XAML_DELEGATE_VTBL(xaml_delegate)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_delegate, XAML_DELEGATE_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**), xaml_delegate**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_delegate_bind(xaml_delegate*, xaml_vector_view*, xaml_delegate**) XAML_NOEXCEPT;

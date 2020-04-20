@@ -14,76 +14,42 @@
 
 XAML_CLASS(xaml_key_value_pair, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_key_value_pair : xaml_object
-{
-    virtual xaml_result XAML_CALL get_key(xaml_object**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_value(xaml_object**) noexcept = 0;
-};
-#else
-#define XAML_KEY_VALUE_PAIR_VTBL(type)                           \
-    XAML_OBJECT_VTBL(type)                                       \
-    xaml_result(XAML_CALL* get_key)(type* const, xaml_object**); \
-    xaml_result(XAML_CALL* get_value)(type* const, xaml_object**);
+#define XAML_KEY_VALUE_PAIR_VTBL(type)         \
+    XAML_OBJECT_VTBL(type);                    \
+    XAML_METHOD(get_key, type, xaml_object**); \
+    XAML_METHOD(get_value, type, xaml_object**)
 
-struct xaml_key_value_pair
+XAML_DECL_INTERFACE_(xaml_key_value_pair, xaml_object)
 {
-    struct
-    {
-        XAML_KEY_VALUE_PAIR_VTBL(xaml_key_value_pair)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_key_value_pair, XAML_KEY_VALUE_PAIR_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_key_value_pair_new(xaml_object*, xaml_object*, xaml_key_value_pair**) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_map_view : xaml_enumerable
-{
-    virtual xaml_result XAML_CALL lookup(xaml_object*, xaml_object**) noexcept = 0;
-    virtual xaml_result XAML_CALL has_key(xaml_object*, bool*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_size(std::size_t*) noexcept = 0;
-};
-#else
-#define XAML_MAP_VIEW_VTBL(type)                                              \
-    XAML_ENUMERABLE_VTBL(type)                                                \
-    xaml_result(XAML_CALL* lookup)(type* const, xaml_object*, xaml_object**); \
-    xaml_result(XAML_CALL* has_key)(type* const, xaml_object*, bool*);        \
-    xaml_result(XAML_CALL* get_size)(type* const, size_t*);
+#define XAML_MAP_VIEW_VTBL(type)                            \
+    XAML_ENUMERABLE_VTBL(type);                             \
+    XAML_METHOD(lookup, type, xaml_object*, xaml_object**); \
+    XAML_METHOD(has_key, type, xaml_object*, bool*);        \
+    XAML_METHOD(get_size, type, XAML_CSTD size_t*)
 
-struct xaml_map_view
+XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 {
-    struct
-    {
-        XAML_MAP_VIEW_VTBL(xaml_map_view)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_map_view, XAML_MAP_VIEW_VTBL);
 };
-#endif // __cplusplus
 
 XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_hasher : xaml_object
-{
-    virtual xaml_result XAML_CALL hash(xaml_object*, std::size_t*) noexcept = 0;
-    virtual xaml_result XAML_CALL equal(xaml_object*, xaml_object*, bool*) noexcept = 0;
-};
-#else
-#define XAML_COMPARER_VTBL(type)                                      \
-    XAML_OBJECT_VTBL(type)                                            \
-    xaml_result(XAML_CALL* hash)(type* const, xaml_object*, size_t*); \
-    xaml_result(XAML_CALL* equal)(type* const, xaml_object*, xaml_object*, bool*);
+#define XAML_HASHER_VTBL(type)                                \
+    XAML_OBJECT_VTBL(type);                                   \
+    XAML_METHOD(hash, type, xaml_object*, XAML_CSTD size_t*); \
+    XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
 
-struct xaml_hasher
+XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
 {
-    struct
-    {
-        XAML_COMPARER_VTBL(xaml_hasher)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_hasher, XAML_HASHER_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
@@ -156,30 +122,17 @@ public:
 
 XAML_CLASS(xaml_map, { 0xe457ba53, 0x03d1, 0x4047, { 0xac, 0x85, 0x83, 0xdd, 0x85, 0x34, 0x6c, 0x7e } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_map : xaml_map_view
-{
-    virtual xaml_result XAML_CALL insert(xaml_object*, xaml_object*, bool*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove(xaml_object*) noexcept = 0;
-    virtual xaml_result XAML_CALL clear() noexcept = 0;
-    virtual xaml_result XAML_CALL get_hasher(xaml_hasher**) noexcept = 0;
-};
-#else
-#define XAML_MAP_VTBL(type)                                                         \
-    XAML_MAP_VIEW_VTBL(type)                                                        \
-    xaml_result(XAML_CALL* insert)(type* const, xaml_object*, xaml_object*, bool*); \
-    xaml_result(XAML_CALL* remove)(type* const, xaml_object*);                      \
-    xaml_result(XAML_CALL* clear)(type* const);                                     \
-    xaml_result(XAML_CALL* get_hasher)(type* const, xaml_hasher**);
+#define XAML_MAP_VTBL(type)                                       \
+    XAML_MAP_VIEW_VTBL(type);                                     \
+    XAML_METHOD(insert, type, xaml_object*, xaml_object*, bool*); \
+    XAML_METHOD(remove, type, xaml_object*);                      \
+    XAML_METHOD(clear, type);                                     \
+    XAML_METHOD(get_hasher, type, xaml_hasher**)
 
-struct xaml_map
+XAML_DECL_INTERFACE_(xaml_map, xaml_map_view)
 {
-    struct
-    {
-        XAML_MAP_VTBL(xaml_map)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_map, XAML_MAP_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_API xaml_result xaml_map_new(xaml_map**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_map_new_with_hasher(xaml_hasher*, xaml_map**) XAML_NOEXCEPT;

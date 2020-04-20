@@ -11,14 +11,18 @@
 
 XAML_CLASS(xaml_box, { 0x8ba3da41, 0x01bc, 0x4c97, { 0x92, 0x5e, 0xb1, 0x71, 0x57, 0xda, 0x5e, 0x31 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_box : xaml_object
-{
-    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_data(void const**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_size(size_t*) noexcept = 0;
-    virtual xaml_result XAML_CALL set_data(xaml_guid XAML_CONST_REF, void const*, size_t) noexcept = 0;
+#define XAML_BOX_VTBL(type)                         \
+    XAML_OBJECT_VTBL(type);                         \
+    XAML_METHOD(get_type, type, xaml_guid*);        \
+    XAML_METHOD(get_data, type, void const**);      \
+    XAML_METHOD(get_size, type, XAML_CSTD size_t*); \
+    XAML_METHOD(set_data, type, xaml_guid XAML_CONST_REF, void const*, XAML_CSTD size_t)
 
+XAML_DECL_INTERFACE_(xaml_box, xaml_object)
+{
+    XAML_DECL_VTBL(xaml_box, XAML_BOX_VTBL);
+
+#ifdef __cplusplus
     template <typename T>
     xaml_result set_value(T const& value)
     {
@@ -26,7 +30,7 @@ struct XAML_NOVTBL xaml_box : xaml_object
     }
 
     template <typename T>
-    xaml_result get_value(T& value)
+    xaml_result get_value(T & value)
     {
         xaml_guid type;
         XAML_RETURN_IF_FAILED(get_type(&type));
@@ -38,23 +42,8 @@ struct XAML_NOVTBL xaml_box : xaml_object
         std::memcpy(&value, data, size);
         return XAML_S_OK;
     }
-};
-#else
-#define XAML_BOX_VTBL(type)                                      \
-    XAML_OBJECT_VTBL(type)                                       \
-    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);   \
-    xaml_result(XAML_CALL* get_data)(type* const, void const**); \
-    xaml_result(XAML_CALL* get_size)(type* const, size_t*);      \
-    xaml_result(XAML_CALL* set_data)(type* const, xaml_guid XAML_CONST_REF, void const*, size_t);
-
-struct xaml_box
-{
-    struct
-    {
-        XAML_BOX_VTBL(xaml_box)
-    } const* vtbl;
-};
 #endif // __cplusplus
+};
 
 EXTERN_C XAML_API xaml_result xaml_box_new(xaml_guid XAML_CONST_REF, void const*, size_t, xaml_box**) XAML_NOEXCEPT;
 
