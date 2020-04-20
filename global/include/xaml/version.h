@@ -15,40 +15,42 @@
 
 #include <xaml/utility.h>
 
-struct version
+typedef struct xaml_version xaml_version;
+
+struct xaml_version
 {
     XAML_CSTD size_t major;
     XAML_CSTD size_t minor;
     XAML_CSTD size_t patch;
 
 #ifdef __cpp_impl_three_way_comparison
-    auto operator<=>(version const&) const = default;
+    auto operator<=>(xaml_version const&) const = default;
 #endif // __cpp_impl_three_way_comparison
 };
 
-XAML_CONSTEXPR_VAR version current_version = { XAML_VERSION_MAJOR, XAML_VERSION_MINOR, XAML_VERSION_PATCH };
+XAML_CONSTEXPR_VAR xaml_version current_xaml_version = { XAML_VERSION_MAJOR, XAML_VERSION_MINOR, XAML_VERSION_PATCH };
 
 #ifdef __cplusplus
 template <typename Char, typename Traits>
-inline std::basic_ostream<Char, Traits>& operator<<(std::basic_ostream<Char, Traits>& stream, version const& v)
+inline std::basic_ostream<Char, Traits>& operator<<(std::basic_ostream<Char, Traits>& stream, xaml_version const& v)
 {
     return stream << v.major << Char{ '.' } << v.minor << Char{ '.' } << v.patch;
 }
 
 #ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(version const& lhs, version const& rhs)
+constexpr bool operator==(xaml_version const& lhs, xaml_version const& rhs)
 {
     return lhs.major == rhs.major && lhs.minor == rhs.minor && lhs.patch == rhs.patch;
 }
-constexpr bool operator!=(version const& lhs, version const& rhs) { return !(lhs == rhs); }
+constexpr bool operator!=(xaml_version const& lhs, xaml_version const& rhs) { return !(lhs == rhs); }
 
-constexpr bool operator>(version const& lhs, version const& rhs) { return lhs.major > rhs.major || (lhs.major == rhs.major && (lhs.minor > rhs.minor || (lhs.minor == rhs.minor && lhs.patch > rhs.patch))); }
-constexpr bool operator<(version const& lhs, version const& rhs) { return rhs > lhs; }
-constexpr bool operator>=(version const& lhs, version const& rhs) { return !(lhs < rhs); }
-constexpr bool operator<=(version const& lhs, version const& rhs) { return !(lhs > rhs); }
+constexpr bool operator>(xaml_version const& lhs, xaml_version const& rhs) { return lhs.major > rhs.major || (lhs.major == rhs.major && (lhs.minor > rhs.minor || (lhs.minor == rhs.minor && lhs.patch > rhs.patch))); }
+constexpr bool operator<(xaml_version const& lhs, xaml_version const& rhs) { return rhs > lhs; }
+constexpr bool operator>=(xaml_version const& lhs, xaml_version const& rhs) { return !(lhs < rhs); }
+constexpr bool operator<=(xaml_version const& lhs, xaml_version const& rhs) { return !(lhs > rhs); }
 #endif // !__cpp_impl_three_way_comparison
 #else
-XAML_CONSTEXPR bool xaml_version_equal(version const* lhs, version const* rhs)
+XAML_CONSTEXPR bool xaml_xaml_version_equal(xaml_version const* lhs, xaml_version const* rhs)
 {
     return lhs->major == rhs->major && lhs->minor == rhs->minor && lhs->patch == rhs->patch;
 }

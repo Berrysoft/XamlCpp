@@ -1,13 +1,10 @@
 #ifndef XAML_CONV_HPP
 #define XAML_CONV_HPP
 
-#include <initializer_list>
-#include <optional>
-#include <string>
-#include <string_view>
 #include <xaml/box.h>
 #include <xaml/object.h>
 #include <xaml/ptr.hpp>
+#include <xaml/string.h>
 
 template <typename T, typename = void>
 struct __xaml_converter
@@ -224,18 +221,6 @@ inline TInt __stoi(std::basic_string_view<TChar> str) noexcept
     return __stoi_helper<TInt, TChar>{}(str);
 }
 
-template <typename TInt>
-inline TInt stoi(std::string_view str) noexcept
-{
-    return __stoi<TInt, char>(str);
-}
-
-template <typename TInt>
-inline TInt stoi(std::wstring_view str) noexcept
-{
-    return __stoi<TInt, wchar_t>(str);
-}
-
 template <typename T>
 struct __xaml_converter<T, std::enable_if_t<__can_stoi_v<T>>> : __xaml_converter_helper<T, __stoi<T, xaml_char_t>>
 {
@@ -345,18 +330,6 @@ inline TFloat __stof(std::basic_string_view<TChar> str) noexcept
     return __stof_helper<TFloat, TChar>{}(str);
 }
 
-template <typename TFloat>
-inline TFloat stof(std::string_view str) noexcept
-{
-    return __stof<TFloat, char>(str);
-}
-
-template <typename TFloat>
-inline TFloat stof(std::wstring_view str) noexcept
-{
-    return __stof<TFloat, wchar_t>(str);
-}
-
 template <typename T>
 struct __xaml_converter<T, std::enable_if_t<__can_stof_v<T>>> : __xaml_converter_helper<T, __stof<T, xaml_char_t>>
 {
@@ -373,9 +346,6 @@ inline bool __stob(std::basic_string_view<TChar> str) noexcept
     }
     return true;
 }
-
-inline bool stob(std::string_view str) noexcept { return __stob<char>(str); }
-inline bool stob(std::wstring_view str) noexcept { return __stob<wchar_t>(str); }
 
 template <>
 struct __xaml_converter<bool, void> : __xaml_converter_helper<bool, __stob<xaml_char_t>>
