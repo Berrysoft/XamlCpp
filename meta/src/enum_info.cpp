@@ -2,35 +2,14 @@
 
 using namespace std;
 
-struct xaml_enum_info_impl : xaml_implement<xaml_enum_info_impl, xaml_enum_info, xaml_reflection_info, xaml_object>
+struct xaml_enum_info_impl : xaml_reflection_info_implement<xaml_enum_info_impl, xaml_enum_info>
 {
 private:
-    xaml_guid m_type;
-    xaml_ptr<xaml_string> m_name;
-    xaml_ptr<xaml_string> m_include_file;
     xaml_ptr<xaml_map_view> m_map;
 
 public:
     xaml_enum_info_impl(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file, xaml_ptr<xaml_map_view>&& map) noexcept
-        : m_type(type), m_name(move(name)), m_include_file(move(include_file)), m_map(move(map)) {}
-
-    xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override
-    {
-        *ptype = m_type;
-        return XAML_S_OK;
-    }
-
-    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
-    {
-        m_name.add_ref_to(ptr);
-        return XAML_S_OK;
-    }
-
-    xaml_result XAML_CALL get_include_file(xaml_string** ptr) noexcept override
-    {
-        m_include_file.add_ref_to(ptr);
-        return XAML_S_OK;
-    }
+        : xaml_reflection_info_implement(type, move(name), move(include_file)), m_map(move(map)) {}
 
     xaml_result XAML_CALL get_values(xaml_map_view** ptr) noexcept override
     {
