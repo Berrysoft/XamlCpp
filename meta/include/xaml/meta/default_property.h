@@ -6,24 +6,14 @@
 
 XAML_CLASS(xaml_default_property, { 0xaf8c4c53, 0xa4a0, 0x4f46, { 0xbd, 0x28, 0x2a, 0xf6, 0xb2, 0xfe, 0xe1, 0x79 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_default_property : xaml_object
-{
-    virtual xaml_result XAML_CALL get_default_property(xaml_string**) noexcept = 0;
-};
-#else
 #define XAML_DEFAULT_PROPERTY_VTBL(type) \
-    XAML_OBJECT_VTBL(type)               \
-    xaml_result(XAML_CALL* get_default_property)(type* const, xaml_string**);
+    XAML_OBJECT_VTBL(type);              \
+    XAML_METHOD(get_default_property, type, xaml_string**)
 
-struct xaml_default_property
+XAML_DECL_INTERFACE_(xaml_default_property, xaml_object)
 {
-    struct
-    {
-        XAML_DEFAULT_PROPERTY_VTBL(xaml_default_property)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_default_property, XAML_DEFAULT_PROPERTY_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_default_property_new(xaml_string*, xaml_default_property**) XAML_NOEXCEPT;
 

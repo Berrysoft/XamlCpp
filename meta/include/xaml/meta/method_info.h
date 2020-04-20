@@ -5,24 +5,14 @@
 
 XAML_CLASS(xaml_method_info, { 0xac6df520, 0x582e, 0x46e3, { 0xbd, 0x8b, 0xfb, 0x30, 0x34, 0x3e, 0x16, 0xa1 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_method_info : xaml_delegate
-{
-    virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
-};
-#else
 #define XAML_METHOD_INFO_VTBL(type) \
-    XAML_DELEGATE_VTBL(type)        \
-    xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);
+    XAML_DELEGATE_VTBL(type);       \
+    XAML_METHOD(get_name, type, xaml_string**)
 
-struct xaml_method_info
+XAML_DECL_INTERFACE_(xaml_method_info, xaml_delegate)
 {
-    struct
-    {
-        XAML_METHOD_INFO_VTBL(xaml_method_info)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_method_info, XAML_METHOD_INFO_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_vector_view*), xaml_method_info**) XAML_NOEXCEPT;
 

@@ -7,28 +7,16 @@
 
 XAML_CLASS(xaml_event_info, { 0x3e92f836, 0x4337, 0x40c7, { 0x83, 0x99, 0x52, 0x7e, 0x46, 0xd4, 0x30, 0x48 } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_event_info : xaml_object
-{
-    virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
-    virtual xaml_result XAML_CALL add(xaml_object*, xaml_delegate*, std::size_t*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove(xaml_object*, std::size_t) noexcept = 0;
-};
-#else
-#define XAML_EVENT_VTBL(type)                                                        \
-    XAML_OBJECT_VTBL(type)                                                           \
-    xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);                    \
-    xaml_result(XAML_CALL* add)(type* const, xaml_object*, xaml_delegate*, size_t*); \
-    xaml_result(XAML_CALL* remove)(type* const, xaml_object*, size_t);
+#define XAML_EVENT_INFO_VTBL(type)                                 \
+    XAML_OBJECT_VTBL(type);                                        \
+    XAML_METHOD(get_name, type, xaml_string**);                    \
+    XAML_METHOD(add, type, xaml_object*, xaml_delegate*, size_t*); \
+    XAML_METHOD(remove, type, xaml_object*, size_t)
 
-struct xaml_event_info
+XAML_DECL_INTERFACE_(xaml_event_info, xaml_object)
 {
-    struct
-    {
-        XAML_EVENT_VTBL(xaml_Event_info)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_event_info, XAML_EVENT_INFO_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_event_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_object*, xaml_delegate*, XAML_CSTD size_t*), xaml_result(XAML_CALL*)(xaml_object*, XAML_CSTD size_t), xaml_event_info**) XAML_NOEXCEPT;
 

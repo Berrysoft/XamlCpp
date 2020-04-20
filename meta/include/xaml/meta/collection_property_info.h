@@ -15,34 +15,19 @@
 
 XAML_CLASS(xaml_collection_property_info, { 0xedd279d5, 0x1c51, 0x41c0, { 0x80, 0x6c, 0x38, 0x62, 0x9c, 0x86, 0xfd, 0x7f } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_collection_property_info : xaml_object
-{
-    virtual xaml_result XAML_CALL get_name(xaml_string**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_type(xaml_guid*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_can_add(bool*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_can_remove(bool*) noexcept = 0;
-    virtual xaml_result XAML_CALL add(xaml_object*, xaml_object*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove(xaml_object*, xaml_object*) noexcept = 0;
-};
-#else
-#define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)                          \
-    XAML_OBJECT_VTBL(type)                                                \
-    xaml_result(XAML_CALL* get_name)(type* const, xaml_string**);         \
-    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid*);            \
-    xaml_result(XAML_CALL* get_can_add)(type* const, bool*);              \
-    xaml_result(XAML_CALL* get_can_remove)(type* const, bool*);           \
-    xaml_result(XAML_CALL* add)(type* const, xaml_object*, xaml_object*); \
-    xaml_result(XAML_CALL* remove)(type* const, xaml_object*, xaml_object*);
+#define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)        \
+    XAML_OBJECT_VTBL(type);                             \
+    XAML_METHOD(get_name, type, xaml_string**);         \
+    XAML_METHOD(get_type, type, xaml_guid*);            \
+    XAML_METHOD(get_can_add, type, bool*);              \
+    XAML_METHOD(get_can_remove, type, bool*);           \
+    XAML_METHOD(add, type, xaml_object*, xaml_object*); \
+    XAML_METHOD(remove, type, xaml_object*, xaml_object*)
 
-struct xaml_collection_property_info
+XAML_DECL_INTERFACE_(xaml_collection_property_info, xaml_object)
 {
-    struct
-    {
-        XAML_COLLECTION_PROPERTY_INFO_VTBL(xaml_collection_property_info)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_collection_property_info, XAML_COLLECTION_PROPERTY_INFO_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*), xaml_result(XAML_CALL*)(xaml_object*, xaml_object*), xaml_collection_property_info**) XAML_NOEXCEPT;
 

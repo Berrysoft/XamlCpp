@@ -17,42 +17,20 @@ typedef enum xaml_binding_mode
 
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
-#ifdef __cplusplus
-struct XAML_NOVTBL xaml_meta_context : xaml_object
-{
-    virtual xaml_result XAML_CALL get_modules(xaml_vector_view**) noexcept = 0;
-    virtual xaml_result XAML_CALL add_module(xaml_module*) noexcept = 0;
-    virtual xaml_result XAML_CALL get_types(xaml_map_view**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_type(xaml_guid const&, xaml_reflection_info**) noexcept = 0;
-    virtual xaml_result XAML_CALL get_type_by_name(xaml_string*, xaml_reflection_info**) noexcept = 0;
-    virtual xaml_result XAML_CALL add_type(xaml_reflection_info*) noexcept = 0;
-    virtual xaml_result XAML_CALL bind(xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode = xaml_binding_one_time) noexcept = 0;
+#define XAML_META_CONTEXT_VTBL(type)                                               \
+    XAML_OBJECT_VTBL(type);                                                        \
+    XAML_METHOD(get_modules, type, xaml_vector_view**);                            \
+    XAML_METHOD(add_module, type, xaml_module*);                                   \
+    XAML_METHOD(get_types, type, xaml_map_view**);                                 \
+    XAML_METHOD(get_type, type, xaml_guid XAML_CONST_REF, xaml_reflection_info**); \
+    XAML_METHOD(get_type_by_name, type, xaml_string*, xaml_reflection_info**);     \
+    XAML_METHOD(add_type, type, xaml_reflection_info*);                            \
+    XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode)
 
-    template <typename T>
-    xaml_result get_type(xaml_reflection_info** ptr) noexcept
-    {
-        return get_type(xaml_type_guid_v<T>, ptr);
-    }
-};
-#else
-#define XAML_META_CONTEXT_VTBL(type)                                                             \
-    XAML_OBJECT_VTBL(type)                                                                       \
-    xaml_result(XAML_CALL* get_modules)(type* const, xaml_vector_view**);                        \
-    xaml_result(XAML_CALL* add_module)(type* const, xaml_module*);                               \
-    xaml_result(XAML_CALL* get_types)(type* const, xaml_map_view**);                             \
-    xaml_result(XAML_CALL* get_type)(type* const, xaml_guid const*, xaml_reflection_info**);     \
-    xaml_result(XAML_CALL* get_type_by_name)(type* const, xaml_string*, xaml_reflection_info**); \
-    xaml_result(XAML_CALL* add_type)(type* const, xaml_reflection_info*);                        \
-    xaml_result(XAML_CALL* bind)(type* const, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode);
-
-struct xaml_meta_context
+XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
 {
-    struct
-    {
-        XAML_META_CONTEXT_VTBL(xaml_meta_context)
-    } const* vtbl;
+    XAML_DECL_VTBL(xaml_meta_context, XAML_META_CONTEXT_VTBL);
 };
-#endif // __cplusplus
 
 EXTERN_C XAML_META_API xaml_result xaml_meta_context_new(xaml_meta_context**) XAML_NOEXCEPT;
 
