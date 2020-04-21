@@ -75,6 +75,10 @@ public:                                                   \
         return XAML_S_OK;                                  \
     }
 
+#define XAML_CPROP(name, type, atype, rtype) \
+    XAML_METHOD(add_##name, type, atype);    \
+    XAML_METHOD(remove_##name, type, rtype)
+
 #define XAML_EVENT(name, type)                                        \
     XAML_METHOD(add_##name, type, xaml_delegate*, XAML_CSTD size_t*); \
     XAML_METHOD(remove_##name, type, XAML_CSTD size_t)

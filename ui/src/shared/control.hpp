@@ -167,7 +167,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
+    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
     {
         return XAML_E_NOTIMPL;
     }
