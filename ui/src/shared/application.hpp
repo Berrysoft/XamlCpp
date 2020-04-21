@@ -8,17 +8,7 @@
 #include <xaml/ui/win/font_provider.h>
 #endif // XAML_UI_WINDOWS
 
-struct xaml_application_impl
-    : xaml_implement<xaml_application_impl, xaml_application, xaml_object
-#ifdef XAML_UI_WINDOWS
-                     ,
-                     xaml_win32_font_provider
-#endif // XAML_UI_WINDOWS
-                     >
-#ifdef XAML_UI_WINDOWS
-    ,
-      xaml_win32_font_provider
-#endif // XAML_UI_WINDOWS
+struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
 {
 private:
     std::atomic<int> m_quit_value{ 0 };
@@ -45,7 +35,26 @@ public:
     xaml_result XAML_CALL get_theme(xaml_application_theme*) noexcept override;
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL get_default_font(UINT, HFONT*) noexcept override;
+    struct xaml_win32_font_provider_impl : xaml_inner_implement<xaml_win32_font_provider_impl, xaml_application_impl, xaml_win32_font_provider>
+    {
+        xaml_result XAML_CALL get_default_font(UINT udpi, HFONT* pfont) noexcept override { return m_outer->get_default_font(udpi, pfont); }
+    } m_font_provider;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_win32_font_provider>)
+        {
+            add_ref();
+            *ptr = &m_font_provider;
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_implement::query(type, ptr);
+        }
+    }
+
+    xaml_result XAML_CALL get_default_font(UINT, HFONT*) noexcept;
 #endif // XAML_UI_WINDOWS
 };
 

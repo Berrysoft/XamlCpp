@@ -44,7 +44,7 @@ XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 
 #define XAML_OBJECT_VTBL(type)                     \
     XAML_METHOD_(XAML_CSTD size_t, add_ref, type); \
     XAML_METHOD_(XAML_CSTD size_t, release, type); \
-    XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, xaml_object**)
+    XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, void**)
 
 XAML_DECL_INTERFACE(xaml_object)
 {
@@ -54,7 +54,7 @@ XAML_DECL_INTERFACE(xaml_object)
     template <typename T>
     xaml_result query(T * *ptr) noexcept
     {
-        return query(xaml_type_guid_v<T>, (xaml_object**)ptr);
+        return query(xaml_type_guid_v<T>, (void**)ptr);
     }
 #endif // __cplusplus
 };
@@ -83,7 +83,7 @@ public:
         }
     }
 
-    xaml_result XAML_CALL query(xaml_guid const& type, xaml_object** ptr) noexcept override;
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override;
 };
 
 template <typename... B>
@@ -93,13 +93,13 @@ template <typename B1, typename... B>
 struct __query_impl<B1, B...>
 {
     template <typename T, typename D, typename... Base>
-    xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, xaml_object** ptr) const noexcept
+    xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, void** ptr) const noexcept
     {
         if (type == xaml_type_guid_v<B1>)
         {
             self->add_ref();
             *ptr = static_cast<B1*>(static_cast<T*>(self));
-            return 0;
+            return XAML_S_OK;
         }
         else
         {
@@ -112,14 +112,14 @@ template <>
 struct __query_impl<>
 {
     template <typename T, typename D, typename... Base>
-    xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, xaml_object**) const noexcept
+    xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, void**) const noexcept
     {
         return XAML_E_NOINTERFACE;
     }
 };
 
 template <typename T, typename D, typename... Base>
-inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, xaml_object** ptr) noexcept
+inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, void** ptr) noexcept
 {
     return __query_impl<D, Base...>{}(this, type, ptr);
 }
@@ -135,6 +135,16 @@ inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
     }
     XAML_CATCH_RETURN()
 }
+
+template <typename T, typename D, typename Base>
+struct xaml_inner_implement : Base
+{
+    D* m_outer;
+
+    std::size_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
+    std::size_t XAML_CALL release() noexcept override { return m_outer->release(); }
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override { return m_outer->query(type, ptr); }
+};
 #endif // __cplusplus
 
 #endif // !XAML_OBJECT_HPP

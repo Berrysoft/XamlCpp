@@ -41,6 +41,7 @@ static BOOL register_window_class()
 
 xaml_application_impl::xaml_application_impl(int argc, xaml_char_t** argv)
 {
+    m_font_provider.m_outer = this;
     XAML_THROW_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
     {
