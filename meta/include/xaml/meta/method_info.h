@@ -5,8 +5,8 @@
 
 XAML_CLASS(xaml_method_info, { 0xac6df520, 0x582e, 0x46e3, { 0xbd, 0x8b, 0xfb, 0x30, 0x34, 0x3e, 0x16, 0xa1 } })
 
-#define XAML_METHOD_INFO_VTBL(type) \
-    XAML_DELEGATE_VTBL(type);       \
+#define XAML_METHOD_INFO_VTBL(type)              \
+    XAML_VTBL_INHERIT(XAML_DELEGATE_VTBL(type)); \
     XAML_METHOD(get_name, type, xaml_string**)
 
 XAML_DECL_INTERFACE_(xaml_method_info, xaml_delegate)

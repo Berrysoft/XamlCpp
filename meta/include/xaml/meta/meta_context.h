@@ -18,7 +18,7 @@ typedef enum xaml_binding_mode
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
 #define XAML_META_CONTEXT_VTBL(type)                                               \
-    XAML_OBJECT_VTBL(type);                                                        \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                     \
     XAML_METHOD(get_modules, type, xaml_vector_view**);                            \
     XAML_METHOD(add_module, type, xaml_module*);                                   \
     XAML_METHOD(get_types, type, xaml_map_view**);                                 \

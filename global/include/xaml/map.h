@@ -15,7 +15,7 @@
 XAML_CLASS(xaml_key_value_pair, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
 
 #define XAML_KEY_VALUE_PAIR_VTBL(type)         \
-    XAML_OBJECT_VTBL(type);                    \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
     XAML_METHOD(get_key, type, xaml_object**); \
     XAML_METHOD(get_value, type, xaml_object**)
 
@@ -29,7 +29,7 @@ EXTERN_C XAML_API xaml_result xaml_key_value_pair_new(xaml_object*, xaml_object*
 XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 
 #define XAML_MAP_VIEW_VTBL(type)                            \
-    XAML_ENUMERABLE_VTBL(type);                             \
+    XAML_VTBL_INHERIT(XAML_ENUMERABLE_VTBL(type));          \
     XAML_METHOD(lookup, type, xaml_object*, xaml_object**); \
     XAML_METHOD(has_key, type, xaml_object*, bool*);        \
     XAML_METHOD(get_size, type, XAML_CSTD size_t*)
@@ -42,7 +42,7 @@ XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
 
 #define XAML_HASHER_VTBL(type)                                \
-    XAML_OBJECT_VTBL(type);                                   \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                \
     XAML_METHOD(hash, type, xaml_object*, XAML_CSTD size_t*); \
     XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
 
@@ -123,7 +123,7 @@ public:
 XAML_CLASS(xaml_map, { 0xe457ba53, 0x03d1, 0x4047, { 0xac, 0x85, 0x83, 0xdd, 0x85, 0x34, 0x6c, 0x7e } })
 
 #define XAML_MAP_VTBL(type)                                       \
-    XAML_MAP_VIEW_VTBL(type);                                     \
+    XAML_VTBL_INHERIT(XAML_MAP_VIEW_VTBL(type));                  \
     XAML_METHOD(insert, type, xaml_object*, xaml_object*, bool*); \
     XAML_METHOD(remove, type, xaml_object*);                      \
     XAML_METHOD(clear, type);                                     \

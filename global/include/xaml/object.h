@@ -18,6 +18,7 @@
 #define XAML_ARGS(type, ...) (__VA_ARGS__)
 #define XAML_METHOD_(type, name, ...) virtual type XAML_CALL name XAML_ARGS(__VA_ARGS__) noexcept = 0
 #define XAML_METHOD(name, ...) XAML_METHOD_(xaml_result, name, __VA_ARGS__)
+#define XAML_VTBL_INHERIT(x)
 #define XAML_VTBL_BEGIN
 #define XAML_VTBL_END
 #else
@@ -26,6 +27,7 @@
 #define XAML_ARGS(type, ...) (type* const, ##__VA_ARGS__)
 #define XAML_METHOD_(type, name, ...) type(XAML_CALL* name) XAML_ARGS(__VA_ARGS__)
 #define XAML_METHOD(name, ...) XAML_METHOD_(xaml_result, name, __VA_ARGS__)
+#define XAML_VTBL_INHERIT(x) x
 #define XAML_VTBL_BEGIN \
     struct              \
     {

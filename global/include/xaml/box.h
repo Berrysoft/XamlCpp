@@ -12,7 +12,7 @@
 XAML_CLASS(xaml_box, { 0x8ba3da41, 0x01bc, 0x4c97, { 0x92, 0x5e, 0xb1, 0x71, 0x57, 0xda, 0x5e, 0x31 } })
 
 #define XAML_BOX_VTBL(type)                         \
-    XAML_OBJECT_VTBL(type);                         \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));      \
     XAML_METHOD(get_type, type, xaml_guid*);        \
     XAML_METHOD(get_data, type, void const**);      \
     XAML_METHOD(get_size, type, XAML_CSTD size_t*); \

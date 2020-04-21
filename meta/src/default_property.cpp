@@ -1,4 +1,5 @@
 #include <xaml/meta/default_property.h>
+#include <xaml/meta/type_info.h>
 
 using namespace std;
 
@@ -20,4 +21,11 @@ public:
 xaml_result xaml_default_property_new(xaml_string* name, xaml_default_property** ptr) noexcept
 {
     return xaml_object_new<xaml_default_property_impl>(ptr, name);
+}
+
+xaml_result xaml_default_property_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(info, xaml_default_property, "xaml/meta/default_property.h");
+    XAML_TYPE_INFO_ADD_PROP_RD(info, xaml_default_property, default_property);
+    return ctx->add_type(info.get());
 }

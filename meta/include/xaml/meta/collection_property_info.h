@@ -16,7 +16,7 @@
 XAML_CLASS(xaml_collection_property_info, { 0xedd279d5, 0x1c51, 0x41c0, { 0x80, 0x6c, 0x38, 0x62, 0x9c, 0x86, 0xfd, 0x7f } })
 
 #define XAML_COLLECTION_PROPERTY_INFO_VTBL(type)        \
-    XAML_OBJECT_VTBL(type);                             \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));          \
     XAML_METHOD(get_name, type, xaml_string**);         \
     XAML_METHOD(get_type, type, xaml_guid*);            \
     XAML_METHOD(get_can_add, type, bool*);              \

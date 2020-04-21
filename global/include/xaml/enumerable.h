@@ -11,9 +11,9 @@
 
 XAML_CLASS(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x0c, 0x7d, 0x34, 0x9e, 0x11 } })
 
-#define XAML_ENUMERATOR_VTBL(type)       \
-    XAML_OBJECT_VTBL(type);              \
-    XAML_METHOD(move_next, type, bool*); \
+#define XAML_ENUMERATOR_VTBL(type)             \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
+    XAML_METHOD(move_next, type, bool*);       \
     XAML_METHOD(get_current, type, xaml_object**)
 
 XAML_DECL_INTERFACE_(xaml_enumerator, xaml_object)
@@ -23,8 +23,8 @@ XAML_DECL_INTERFACE_(xaml_enumerator, xaml_object)
 
 XAML_CLASS(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4b, 0xab, 0x09, 0x0f, 0xc2, 0xb0, 0x95 } })
 
-#define XAML_ENUMERABLE_VTBL(type) \
-    XAML_OBJECT_VTBL(type);        \
+#define XAML_ENUMERABLE_VTBL(type)             \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
     XAML_METHOD(get_enumerator, type, xaml_enumerator**)
 
 XAML_DECL_INTERFACE_(xaml_enumerable, xaml_object)

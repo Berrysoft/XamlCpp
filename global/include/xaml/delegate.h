@@ -12,8 +12,8 @@
 
 XAML_CLASS(xaml_delegate, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e, 0x00, 0x0c, 0x0f, 0xc3 } })
 
-#define XAML_DELEGATE_VTBL(type) \
-    XAML_OBJECT_VTBL(type);      \
+#define XAML_DELEGATE_VTBL(type)               \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
     XAML_METHOD(invoke, type, xaml_vector_view*, xaml_object**)
 
 XAML_DECL_INTERFACE_(xaml_delegate, xaml_object)

@@ -11,9 +11,9 @@
 
 XAML_CLASS(xaml_enum_info, { 0x51dcc841, 0xc0d0, 0x4c8b, { 0x9f, 0x9f, 0xed, 0x7b, 0x48, 0xa1, 0xa9, 0xd9 } })
 
-#define XAML_ENUM_INFO_VTBL(type)                   \
-    XAML_REFLECTION_INFO_VTBL(type);                \
-    XAML_METHOD(get_values, type, xaml_map_view**); \
+#define XAML_ENUM_INFO_VTBL(type)                       \
+    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type)); \
+    XAML_METHOD(get_values, type, xaml_map_view**);     \
     XAML_METHOD(get_value, type, xaml_string*, xaml_box**)
 
 XAML_DECL_INTERFACE_(xaml_enum_info, xaml_reflection_info)

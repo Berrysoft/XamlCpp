@@ -12,7 +12,7 @@
 XAML_CLASS(xaml_type_info, { 0x3de3b2c1, 0x09d6, 0x433c, { 0xbf, 0x40, 0x40, 0x2d, 0xfe, 0x28, 0xda, 0x1d } })
 
 #define XAML_TYPE_INFO_VTBL(type)                                                              \
-    XAML_REFLECTION_INFO_VTBL(type);                                                           \
+    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                                        \
     XAML_METHOD(get_attributes, type, xaml_map_view**);                                        \
     XAML_METHOD(get_attribute, type, xaml_guid XAML_CONST_REF, xaml_object**);                 \
     XAML_METHOD(get_constructor, type, xaml_delegate**);                                       \
@@ -51,7 +51,7 @@ XAML_DECL_INTERFACE_(xaml_type_info, xaml_reflection_info)
 XAML_CLASS(xaml_type_info_registration, { 0x18aecfb7, 0x7fd3, 0x44a2, { 0xba, 0xc7, 0x1b, 0x2d, 0x75, 0xb1, 0x4f, 0xc9 } })
 
 #define XAML_TYPE_INFO_REGISTRATION_VTBL(type)                                  \
-    XAML_TYPE_INFO_VTBL(type);                                                  \
+    XAML_VTBL_INHERIT(XAML_TYPE_INFO_VTBL(type));                               \
     XAML_METHOD(add_attribute, type, xaml_guid XAML_CONST_REF, xaml_object*);   \
     XAML_METHOD(set_constructor, type, xaml_delegate*);                         \
     XAML_METHOD(add_method, type, xaml_method_info*);                           \

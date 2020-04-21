@@ -16,7 +16,7 @@
 XAML_CLASS(xaml_property_info, { 0x80cafe4e, 0xcda3, 0x476b, { 0xa5, 0xe3, 0x2e, 0x80, 0xa1, 0x11, 0xba, 0x85 } })
 
 #define XAML_PROPERTY_INFO_VTBL(type)                    \
-    XAML_OBJECT_VTBL(type);                              \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));           \
     XAML_METHOD(get_name, type, xaml_string**);          \
     XAML_METHOD(get_type, type, xaml_guid*);             \
     XAML_METHOD(get_can_read, type, bool*);              \
@@ -34,6 +34,21 @@ EXTERN_C XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_gui
 #ifdef __cplusplus
 XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
 
+template <typename T, typename = void>
+struct __xaml_wrapper
+{
+    using type = T;
+};
+
+template <typename T>
+struct __xaml_wrapper<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+{
+    using type = xaml_ptr<T>;
+};
+
+template <typename T>
+using __xaml_wrapper_t = typename __xaml_wrapper<T>::type;
+
 template <typename T, typename TValueGet, typename TValueSet = TValueGet>
 xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
@@ -42,18 +57,33 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::
         [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            std::decay_t<TValueGet> value;
+            __xaml_wrapper_t<std::decay_t<TValueGet>> value;
             XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
             return box_value(value, ptr);
         },
         [setter](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            std::decay_t<TValueSet> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<std::decay_t<TValueSet>>{}(obj, value));
+            __xaml_wrapper_t<std::decay_t<TValueSet>> value;
+            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, value));
             return (self.get()->*setter)(value);
         },
         ptr);
+}
+
+template <typename T, typename TValueGet>
+xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
+{
+    return xaml_property_info_new(
+        name, xaml_type_guid_v<T>,
+        [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
+            xaml_ptr<T> self;
+            XAML_RETURN_IF_FAILED(target->query(&self));
+            __xaml_wrapper_t<std::decay_t<TValueGet>> value;
+            XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
+            return box_value(value, ptr);
+        },
+        nullptr, ptr);
 }
 
 #define XAML_TYPE_INFO_ADD_PROP(name, type, prop)                                                                             \
@@ -64,6 +94,16 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::
         xaml_ptr<xaml_property_info> __prop_info;                                                                             \
         XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::get_##prop, &type::set_##prop, &__prop_info)); \
         XAML_RETURN_IF_FAILED(info->add_property(__prop_info.get()));                                                         \
+    } while (0)
+
+#define XAML_TYPE_INFO_ADD_PROP_RD(name, type, prop)                                                       \
+    do                                                                                                     \
+    {                                                                                                      \
+        xaml_ptr<xaml_string> __prop_name;                                                                 \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                    \
+        xaml_ptr<xaml_property_info> __prop_info;                                                          \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::get_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(info->add_property(__prop_info.get()));                                      \
     } while (0)
 #endif // __cplusplus
 
