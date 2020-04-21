@@ -81,8 +81,7 @@ xaml_result xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noex
     {
         xaml_ptr<xaml_vector> res;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ box_value(std::forward<Args>(args))... }, &res));
-        res.add_ref_to(ptr);
-        return XAML_S_OK;
+        return res->query(ptr);
     }
     XAML_CATCH_RETURN()
 }

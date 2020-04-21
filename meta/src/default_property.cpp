@@ -13,8 +13,7 @@ public:
 
     xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override
     {
-        m_def_prop.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_def_prop->query(ptr);
     }
 };
 

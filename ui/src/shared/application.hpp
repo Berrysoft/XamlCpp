@@ -20,14 +20,12 @@ public:
 
     xaml_result XAML_CALL get_cmd_lines(xaml_vector_view** ptr) noexcept override
     {
-        m_cmd_lines.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_cmd_lines->query(ptr);
     }
 
     xaml_result XAML_CALL get_main_window(xaml_window** ptr) noexcept override
     {
-        m_main_wnd.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_main_wnd->query(ptr);
     }
 
     xaml_result XAML_CALL run(int*) noexcept override;

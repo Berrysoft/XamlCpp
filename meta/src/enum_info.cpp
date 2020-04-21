@@ -14,8 +14,7 @@ public:
 
     xaml_result XAML_CALL get_values(xaml_map_view** ptr) noexcept override
     {
-        m_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_value(xaml_string* str, xaml_box** ptr) noexcept override

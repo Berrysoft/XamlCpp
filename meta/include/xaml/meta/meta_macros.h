@@ -51,8 +51,7 @@ protected:                                                \
 public:                                                   \
     xaml_result XAML_CALL get_##name(type** ptr) noexcept \
     {                                                     \
-        m_##name.add_ref_to(ptr);                         \
-        return XAML_S_OK;                                 \
+        return m_##name->query(ptr);                      \
     }
 
 #define XAML_PROP_PTR_IMPL(name, type)                     \

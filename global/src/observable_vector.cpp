@@ -119,8 +119,7 @@ public:
 
     xaml_result XAML_CALL get_new_items(xaml_vector_view** ptr) noexcept override
     {
-        m_new_items.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_new_items->query(ptr);
     }
 
     xaml_result XAML_CALL get_new_index(size_t* pindex) noexcept override
@@ -131,8 +130,7 @@ public:
 
     xaml_result XAML_CALL get_old_items(xaml_vector_view** ptr) noexcept override
     {
-        m_old_items.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_old_items->query(ptr);
     }
 
     xaml_result XAML_CALL get_old_index(size_t* pindex) noexcept override

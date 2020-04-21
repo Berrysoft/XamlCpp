@@ -30,8 +30,7 @@ public:
     xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
     {
         if (m_begin == m_end) return XAML_E_FAIL;
-        m_begin->add_ref_to(ptr);
-        return XAML_S_OK;
+        return (*m_begin)->query(ptr);
     }
 };
 
@@ -53,8 +52,7 @@ public:
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         auto& res = m_vec[index];
-        res.add_ref_to(ptr);
-        return XAML_S_OK;
+        return res->query(ptr);
     }
 
     xaml_result XAML_CALL set_at(size_t index, xaml_object* obj) noexcept override

@@ -24,12 +24,10 @@ xaml_result xaml_application_init_with_args(int argc, xaml_char_t** argv, xaml_a
 {
     s_current = nullptr;
     XAML_RETURN_IF_FAILED(xaml_object_new<xaml_application_impl>(&s_current, argc, argv));
-    s_current.add_ref_to(ptr);
-    return XAML_S_OK;
+    return s_current->query(ptr);
 }
 
 xaml_result xaml_application_current(xaml_application** ptr) noexcept
 {
-    s_current.add_ref_to(ptr);
-    return XAML_S_OK;
+    return s_current->query(ptr);
 }

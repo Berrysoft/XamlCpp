@@ -30,8 +30,7 @@ public:
 
     xaml_result XAML_CALL get_attributes(xaml_map_view** ptr) noexcept override
     {
-        m_attr_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_attr_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_attribute(xaml_guid const& type, xaml_object** ptr) noexcept override
@@ -51,8 +50,7 @@ public:
 
     xaml_result XAML_CALL get_constructor(xaml_delegate** ptr) noexcept override
     {
-        m_ctor.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_ctor->query(ptr);
     }
     xaml_result XAML_CALL set_constructor(xaml_delegate* d) noexcept override
     {
@@ -61,8 +59,7 @@ public:
     }
     xaml_result XAML_CALL get_methods(xaml_map_view** ptr) noexcept override
     {
-        m_method_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_method_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_method(xaml_string* name, xaml_method_info** ptr) noexcept override
@@ -80,8 +77,7 @@ public:
 
     xaml_result XAML_CALL get_properties(xaml_map_view** ptr) noexcept override
     {
-        m_prop_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_prop_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_property(xaml_string* name, xaml_property_info** ptr) noexcept override
@@ -99,8 +95,7 @@ public:
 
     xaml_result XAML_CALL get_collection_properties(xaml_map_view** ptr) noexcept override
     {
-        m_cprop_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_cprop_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_collection_property(xaml_string* name, xaml_collection_property_info** ptr) noexcept override
@@ -118,8 +113,7 @@ public:
 
     xaml_result XAML_CALL get_events(xaml_map_view** ptr) noexcept override
     {
-        m_event_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_event_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_event(xaml_string* name, xaml_event_info** ptr) noexcept override

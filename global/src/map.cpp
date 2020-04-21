@@ -15,14 +15,12 @@ public:
 
     xaml_result XAML_CALL get_key(xaml_object** ptr) noexcept
     {
-        m_key.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_key->query(ptr);
     }
 
     xaml_result XAML_CALL get_value(xaml_object** ptr) noexcept
     {
-        m_value.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_value->query(ptr);
     }
 };
 
@@ -145,8 +143,7 @@ public:
     {
         auto it = m_map.find(key);
         if (it == m_map.end()) return XAML_E_KEYNOTFOUND;
-        it->second.add_ref_to(ptr);
-        return XAML_S_OK;
+        return it->second->query(ptr);
     }
 
     xaml_result XAML_CALL has_key(xaml_object* key, bool* pb) noexcept override
@@ -182,8 +179,7 @@ public:
     xaml_result XAML_CALL get_hasher(xaml_hasher** ptr) noexcept override
     {
         auto hasher = m_map.hash_function().get_hasher();
-        hasher.add_ref_to(ptr);
-        return XAML_S_OK;
+        return hasher->query(ptr);
     }
 
     xaml_result XAML_CALL get_enumerator(xaml_enumerator** ptr) noexcept override

@@ -21,8 +21,7 @@ public:
 
     xaml_result XAML_CALL get_modules(xaml_vector_view** ptr) noexcept override
     {
-        m_modules.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_modules->query(ptr);
     }
 
     xaml_result XAML_CALL add_module(xaml_module* mod) noexcept override
@@ -32,8 +31,7 @@ public:
 
     xaml_result XAML_CALL get_types(xaml_map_view** ptr) noexcept override
     {
-        m_type_info_map.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_type_info_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_type(xaml_guid const& type, xaml_reflection_info** ptr) noexcept override

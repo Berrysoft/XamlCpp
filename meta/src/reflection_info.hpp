@@ -24,14 +24,12 @@ public:
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
-        m_name.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_name->query(ptr);
     }
 
     xaml_result XAML_CALL get_include_file(xaml_string** ptr) noexcept override
     {
-        m_include_file.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_include_file->query(ptr);
     }
 };
 

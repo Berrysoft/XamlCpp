@@ -32,8 +32,7 @@ protected:
 public:
     xaml_result XAML_CALL get_children(xaml_vector_view** ptr) noexcept override
     {
-        m_children.add_ref_to(ptr);
-        return XAML_S_OK;
+        return m_children->query(ptr);
     }
 
     xaml_result XAML_CALL add_child(xaml_control* child) noexcept override

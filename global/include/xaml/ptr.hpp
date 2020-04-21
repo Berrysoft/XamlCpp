@@ -88,13 +88,6 @@ public:
         return res;
     }
 
-    template <typename D, typename = std::enable_if_t<std::is_base_of_v<D, T>>>
-    constexpr void add_ref_to(D** ptr) const noexcept
-    {
-        if (m_ptr) m_ptr->add_ref();
-        *ptr = m_ptr;
-    }
-
     template <typename D>
     constexpr xaml_ptr<D> query() const noexcept
     {
