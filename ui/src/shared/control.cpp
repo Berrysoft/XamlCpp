@@ -1,5 +1,5 @@
+#include <shared/control.hpp>
 #include <xaml/ui/control.h>
-#include <xaml/ui/native_control.h>
 
 using namespace std;
 

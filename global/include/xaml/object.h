@@ -98,7 +98,7 @@ struct __query_impl<B1, B...>
         if (type == xaml_type_guid_v<B1>)
         {
             self->add_ref();
-            *ptr = static_cast<B1*>(self);
+            *ptr = static_cast<B1*>(static_cast<T*>(self));
             return 0;
         }
         else
@@ -114,7 +114,7 @@ struct __query_impl<>
     template <typename T, typename D, typename... Base>
     xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, xaml_object**) const noexcept
     {
-        return 1;
+        return XAML_E_NOINTERFACE;
     }
 };
 

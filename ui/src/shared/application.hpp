@@ -3,9 +3,22 @@
 
 #include <atomic>
 #include <xaml/ui/application.h>
-#include <xaml/ui/native_application.h>
 
-struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_native_application, xaml_application, xaml_object>
+#ifdef XAML_UI_WINDOWS
+#include <xaml/ui/win/font_provider.h>
+#endif // XAML_UI_WINDOWS
+
+struct xaml_application_impl
+    : xaml_implement<xaml_application_impl, xaml_application, xaml_object
+#ifdef XAML_UI_WINDOWS
+                     ,
+                     xaml_win32_font_provider
+#endif // XAML_UI_WINDOWS
+                     >
+#ifdef XAML_UI_WINDOWS
+    ,
+      xaml_win32_font_provider
+#endif // XAML_UI_WINDOWS
 {
 private:
     std::atomic<int> m_quit_value{ 0 };

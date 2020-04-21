@@ -73,6 +73,19 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
                 XAML_CATCH_RETURN() } },
         ptr);
 }
+
+template <typename... Args>
+xaml_result xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noexcept
+{
+    try
+    {
+        xaml_ptr<xaml_vector> res;
+        XAML_RETURN_IF_FAILED(xaml_vector_new({ box_value(std::forward<Args>(args))... }, &res));
+        res.add_ref_to(ptr);
+        return XAML_S_OK;
+    }
+    XAML_CATCH_RETURN()
+}
 #endif // __cplusplus
 
 #endif // !XAML_DELEGATE_H
