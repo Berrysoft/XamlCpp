@@ -2,6 +2,7 @@
 #define XAML_UI_CONTROL_H
 
 #include <xaml/delegate.h>
+#include <xaml/meta/meta_context.h>
 #include <xaml/meta/meta_macros.h>
 #include <xaml/object.h>
 #include <xaml/ui/drawing.h>
@@ -49,5 +50,7 @@ XAML_DECL_INTERFACE_(xaml_control, xaml_object)
 {
     XAML_DECL_VTBL(xaml_control, XAML_CONTROL_VTBL);
 };
+
+EXTERN_C XAML_UI_API xaml_result xaml_control_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROL_H

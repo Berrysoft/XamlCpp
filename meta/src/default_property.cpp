@@ -1,5 +1,5 @@
 #include <xaml/meta/default_property.h>
-#include <xaml/meta/type_info.h>
+#include <xaml/meta/meta_macros.h>
 
 using namespace std;
 

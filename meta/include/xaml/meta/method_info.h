@@ -35,16 +35,6 @@ inline xaml_result xaml_method_info_new(xaml_string* name, xaml_result (XAML_CAL
             } },
         ptr);
 }
-
-#define XAML_TYPE_INFO_ADD_METHOD(method)                                                                     \
-    do                                                                                                        \
-    {                                                                                                         \
-        xaml_ptr<xaml_string> __method_name;                                                                  \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#method), &__method_name));                                   \
-        xaml_ptr<xaml_method_info> __method_info;                                                             \
-        XAML_RETURN_IF_FAILED(xaml_method_info_new(__method_name.get(), &self_type::method, &__method_info)); \
-        XAML_RETURN_IF_FAILED(__info->add_method(__method_info.get()));                                       \
-    } while (0)
 #endif // __cplusplus
 
 #endif // !XAML_META_METHOD_INFO_H
