@@ -67,11 +67,11 @@ xaml_result xaml_test_calculator_new(xaml_test_calculator** ptr) noexcept
 
 xaml_result xaml_test_calculator_register(xaml_meta_context* ctx) noexcept
 {
-    XAML_TYPE_INFO_NEW(info, xaml_test_calculator, "calculator.h");
-    XAML_TYPE_INFO_ADD_CTOR(info, xaml_test_calculator);
-    XAML_TYPE_INFO_ADD_METHOD(info, xaml_test_calculator, plus);
-    XAML_TYPE_INFO_ADD_METHOD(info, xaml_test_calculator, minus);
-    XAML_TYPE_INFO_ADD_PROP(info, xaml_test_calculator, value);
-    XAML_TYPE_INFO_ADD_EVENT(info, xaml_test_calculator, value_changed);
-    return ctx->add_type(info.get());
+    XAML_TYPE_INFO_NEW(xaml_test_calculator, "calculator.h");
+    XAML_TYPE_INFO_ADD_CTOR(xaml_test_calculator_new);
+    XAML_TYPE_INFO_ADD_METHOD(plus);
+    XAML_TYPE_INFO_ADD_METHOD(minus);
+    XAML_TYPE_INFO_ADD_PROP(value);
+    XAML_TYPE_INFO_ADD_EVENT(value_changed);
+    return ctx->add_type(__info.get());
 }

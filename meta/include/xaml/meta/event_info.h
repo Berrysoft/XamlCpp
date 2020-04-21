@@ -41,14 +41,14 @@ inline xaml_result xaml_event_info_new(xaml_string* name, xaml_result (XAML_CALL
         ptr);
 }
 
-#define XAML_TYPE_INFO_ADD_EVENT(name, type, event)                                                                               \
-    do                                                                                                                            \
-    {                                                                                                                             \
-        xaml_ptr<xaml_string> __event_name;                                                                                       \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#event), &__event_name));                                                         \
-        xaml_ptr<xaml_event_info> __event_info;                                                                                   \
-        XAML_RETURN_IF_FAILED(xaml_event_info_new(__event_name.get(), &type::add_##event, &type::remove_##event, &__event_info)); \
-        XAML_RETURN_IF_FAILED(name->add_event(__event_info.get()));                                                               \
+#define XAML_TYPE_INFO_ADD_EVENT(event)                                                                                                     \
+    do                                                                                                                                      \
+    {                                                                                                                                       \
+        xaml_ptr<xaml_string> __event_name;                                                                                                 \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#event), &__event_name));                                                                   \
+        xaml_ptr<xaml_event_info> __event_info;                                                                                             \
+        XAML_RETURN_IF_FAILED(xaml_event_info_new(__event_name.get(), &self_type::add_##event, &self_type::remove_##event, &__event_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_event(__event_info.get()));                                                                       \
     } while (0)
 #endif // __cplusplus
 

@@ -56,14 +56,14 @@ inline xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_res
         ptr);
 }
 
-#define XAML_TYPE_INFO_ADD_CPROP(name, type, prop)                                                                               \
-    do                                                                                                                           \
-    {                                                                                                                            \
-        xaml_ptr<xaml_string> __prop_name;                                                                                       \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                          \
-        xaml_ptr<xaml_property_info> __prop_info;                                                                                \
-        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::add_##prop, &type::remove_##prop, &__prop_info)); \
-        XAML_RETURN_IF_FAILED(info->add_collection_property(__prop_info.get()));                                                 \
+#define XAML_TYPE_INFO_ADD_CPROP(prop)                                                                                                     \
+    do                                                                                                                                     \
+    {                                                                                                                                      \
+        xaml_ptr<xaml_string> __prop_name;                                                                                                 \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                    \
+        xaml_ptr<xaml_property_info> __prop_info;                                                                                          \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &self_type::add_##prop, &self_type::remove_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_collection_property(__prop_info.get()));                                                         \
     } while (0)
 
 #endif // __cplusplus

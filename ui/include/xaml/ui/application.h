@@ -16,7 +16,7 @@ XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0
 typedef struct xaml_window xaml_window;
 
 #define XAML_APPLICATION_VTBL(type)                       \
-    XAML_OBJECT_VTBL(type);                               \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));            \
     XAML_METHOD(run, type, int*);                         \
     XAML_METHOD(quit, type, int);                         \
     XAML_METHOD(get_cmd_lines, type, xaml_vector_view**); \

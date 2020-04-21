@@ -25,7 +25,7 @@ typedef enum xaml_valignment
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 
 #define XAML_CONTROL_VTBL(type)                                        \
-    XAML_OBJECT_VTBL(type);                                            \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                         \
     XAML_PROP(parent, type, xaml_control**, xaml_control*);            \
     XAML_EVENT(parent_changed, type);                                  \
     XAML_PROP(size, type, xaml_size*, xaml_size XAML_CONST_REF);       \

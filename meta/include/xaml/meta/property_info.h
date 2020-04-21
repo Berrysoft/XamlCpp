@@ -86,24 +86,24 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::
         nullptr, ptr);
 }
 
-#define XAML_TYPE_INFO_ADD_PROP(name, type, prop)                                                                             \
-    do                                                                                                                        \
-    {                                                                                                                         \
-        xaml_ptr<xaml_string> __prop_name;                                                                                    \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                       \
-        xaml_ptr<xaml_property_info> __prop_info;                                                                             \
-        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::get_##prop, &type::set_##prop, &__prop_info)); \
-        XAML_RETURN_IF_FAILED(info->add_property(__prop_info.get()));                                                         \
+#define XAML_TYPE_INFO_ADD_PROP(prop)                                                                                                   \
+    do                                                                                                                                  \
+    {                                                                                                                                   \
+        xaml_ptr<xaml_string> __prop_name;                                                                                              \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                 \
+        xaml_ptr<xaml_property_info> __prop_info;                                                                                       \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &self_type::get_##prop, &self_type::set_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_property(__prop_info.get()));                                                                 \
     } while (0)
 
-#define XAML_TYPE_INFO_ADD_PROP_RD(name, type, prop)                                                       \
-    do                                                                                                     \
-    {                                                                                                      \
-        xaml_ptr<xaml_string> __prop_name;                                                                 \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                    \
-        xaml_ptr<xaml_property_info> __prop_info;                                                          \
-        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &type::get_##prop, &__prop_info)); \
-        XAML_RETURN_IF_FAILED(info->add_property(__prop_info.get()));                                      \
+#define XAML_TYPE_INFO_ADD_PROP_RD(prop)                                                                        \
+    do                                                                                                          \
+    {                                                                                                           \
+        xaml_ptr<xaml_string> __prop_name;                                                                      \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                         \
+        xaml_ptr<xaml_property_info> __prop_info;                                                               \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &self_type::get_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_property(__prop_info.get()));                                         \
     } while (0)
 #endif // __cplusplus
 

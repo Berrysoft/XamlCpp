@@ -81,26 +81,27 @@ xaml_result xaml_type_info_registration_new(xaml_string* name, xaml_string* incl
     return xaml_type_info_registration_new(xaml_type_guid_v<T>, name, include_file, ptr);
 }
 
-#define XAML_TYPE_INFO_NEW(name, type, file)                          \
+#define XAML_TYPE_INFO_NEW(type, file)                                \
+    using self_type = type;                                           \
     xaml_ptr<xaml_string> __type_name;                                \
     XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__type_name));   \
     xaml_ptr<xaml_string> __include_file;                             \
     XAML_RETURN_IF_FAILED(xaml_string_new(U(file), &__include_file)); \
-    xaml_ptr<xaml_type_info_registration> name;                       \
-    XAML_RETURN_IF_FAILED(xaml_type_info_registration_new<type>(__type_name.get(), __include_file.get(), &name))
+    xaml_ptr<xaml_type_info_registration> __info;                     \
+    XAML_RETURN_IF_FAILED(xaml_type_info_registration_new<type>(__type_name.get(), __include_file.get(), &__info))
 
-#define XAML_TYPE_INFO_ADD_CTOR(name, type)                      \
-    do                                                           \
-    {                                                            \
-        xaml_ptr<xaml_delegate> __ctor;                          \
-        XAML_RETURN_IF_FAILED(xaml_delegate_new<xaml_ptr<type>>( \
-            []() -> xaml_ptr<type> {                             \
-                xaml_ptr<type> __res;                            \
-                XAML_THROW_IF_FAILED(type##_new(&__res));        \
-                return __res;                                    \
-            },                                                   \
-            &__ctor));                                           \
-        name->set_constructor(__ctor.get());                     \
+#define XAML_TYPE_INFO_ADD_CTOR(ctor)                                 \
+    do                                                                \
+    {                                                                 \
+        xaml_ptr<xaml_delegate> __ctor;                               \
+        XAML_RETURN_IF_FAILED(xaml_delegate_new<xaml_ptr<self_type>>( \
+            []() -> xaml_ptr<self_type> {                             \
+                xaml_ptr<self_type> __res;                            \
+                XAML_THROW_IF_FAILED(ctor(&__res));                   \
+                return __res;                                         \
+            },                                                        \
+            &__ctor));                                                \
+        __info->set_constructor(__ctor.get());                        \
     } while (0)
 #endif // __cplusplus
 

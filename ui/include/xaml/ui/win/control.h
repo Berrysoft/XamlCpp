@@ -29,7 +29,7 @@ typedef struct xaml_win32_window_create_params
 XAML_CLASS(xaml_win32_control, { 0x5aa117c2, 0x59f0, 0x43d6, { 0x94, 0x4c, 0x41, 0x2b, 0x52, 0xa9, 0x35, 0x3b } })
 
 #define XAML_WIN32_CONTROL_VTBL(type)                                               \
-    XAML_OBJECT_VTBL(type);                                                         \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                      \
     XAML_PROP(handle, type, HWND*, HWND);                                           \
     XAML_METHOD(wnd_proc, type, xaml_win32_window_message XAML_CONST_REF, LPARAM*); \
     XAML_PROP(real_size, type, xaml_size*, xaml_size XAML_CONST_REF);               \
