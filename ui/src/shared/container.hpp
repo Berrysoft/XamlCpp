@@ -4,6 +4,10 @@
 #include <shared/control.hpp>
 #include <xaml/ui/container.h>
 
+#ifdef XAML_UI_WINDOWS
+#include <optional>
+#endif // XAML_UI_WINDOWS
+
 template <typename T, typename... Base>
 struct xaml_container_implement : xaml_control_implement<T, Base..., xaml_container>
 {
@@ -51,7 +55,37 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_multicontainer_implement() : xaml_control_implement() {}
+#ifdef XAML_UI_WINDOWS
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
+    {
+        try
+        {
+            std::optional<LPARAM> result;
+            for (auto c : m_children)
+            {
+                xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
+                if (win32_control)
+                {
+                    LPARAM res;
+                    if (XAML_SUCCESS(win32_control->wnd_proc(msg, &res))) result = res;
+                }
+            }
+            if (result)
+            {
+                *pres = *result;
+                return XAML_S_OK;
+            }
+            else
+                return XAML_E_NOTIMPL;
+        }
+        XAML_CATCH_RETURN()
+    }
+#endif // XAML_UI_WINDOWS
+
+    xaml_multicontainer_implement() : xaml_control_implement()
+    {
+        XAML_THROW_IF_FAILED(xaml_vector_new(&m_children));
+    }
 };
 
 #endif // !XAML_UI_SHARED_CONTAINER_HPP

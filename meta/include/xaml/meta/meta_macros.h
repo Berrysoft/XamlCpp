@@ -3,6 +3,7 @@
 
 #include <xaml/delegate.h>
 #include <xaml/meta/collection_property_info.h>
+#include <xaml/meta/default_property.h>
 #include <xaml/meta/event_info.h>
 #include <xaml/meta/method_info.h>
 #include <xaml/meta/property_info.h>
@@ -157,14 +158,14 @@ public:                                                                         
         XAML_RETURN_IF_FAILED(__info->add_property(__prop_info.get()));                                         \
     } while (0)
 
-#define XAML_TYPE_INFO_ADD_CPROP(prop)                                                                                                     \
-    do                                                                                                                                     \
-    {                                                                                                                                      \
-        xaml_ptr<xaml_string> __prop_name;                                                                                                 \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                    \
-        xaml_ptr<xaml_property_info> __prop_info;                                                                                          \
-        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), &self_type::add_##prop, &self_type::remove_##prop, &__prop_info)); \
-        XAML_RETURN_IF_FAILED(__info->add_collection_property(__prop_info.get()));                                                         \
+#define XAML_TYPE_INFO_ADD_CPROP(prop)                                                                                                                \
+    do                                                                                                                                                \
+    {                                                                                                                                                 \
+        xaml_ptr<xaml_string> __prop_name;                                                                                                            \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                               \
+        xaml_ptr<xaml_collection_property_info> __prop_info;                                                                                          \
+        XAML_RETURN_IF_FAILED(xaml_collection_property_info_new(__prop_name.get(), &self_type::add_##prop, &self_type::remove_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_collection_property(__prop_info.get()));                                                                    \
     } while (0)
 
 #define XAML_TYPE_INFO_ADD_EVENT(event)                                                                                                     \
@@ -180,5 +181,15 @@ public:                                                                         
 #define XAML_TYPE_INFO_ADD_PROP_EVENT(prop) \
     XAML_TYPE_INFO_ADD_PROP(prop);          \
     XAML_TYPE_INFO_ADD_EVENT(prop##_changed)
+
+#define XAML_TYPE_INFO_ADD_DEF_PROP(name)                                                 \
+    do                                                                                    \
+    {                                                                                     \
+        xaml_ptr<xaml_string> __prop_name;                                                \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#name), &__prop_name));                   \
+        xaml_ptr<xaml_default_property> __def_prop;                                       \
+        XAML_RETURN_IF_FAILED(xaml_default_property_new(__prop_name.get(), &__def_prop)); \
+        XAML_RETURN_IF_FAILED(__info->add_attribute(__def_prop.get()));                   \
+    } while (0)
 
 #endif // !XAML_META_META_MACROS_H
