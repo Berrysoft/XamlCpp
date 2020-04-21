@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <utility>
-#include <xaml/object.h>
+#include <xaml/result.h>
 
 template <typename T>
 class xaml_ptr

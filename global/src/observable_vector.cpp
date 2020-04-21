@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_enumerable, xaml_object>
+struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
 {
 private:
     xaml_ptr<xaml_vector> m_vec{ nullptr };
@@ -17,7 +17,7 @@ private:
         xaml_ptr<xaml_vector_changed_args> args;
         XAML_RETURN_IF_FAILED(xaml_vector_changed_args_new(action, new_items, new_index, old_items, old_index, &args));
         xaml_ptr<xaml_vector> invoke_args;
-        XAML_RETURN_IF_FAILED(xaml_vector_new(vector<xaml_ptr<xaml_object>>{ this, args.get() }, &invoke_args));
+        XAML_RETURN_IF_FAILED(xaml_vector_new({ this, args.get() }, &invoke_args));
         xaml_ptr<xaml_object> obj;
         return m_collection_changed->invoke(invoke_args.get(), &obj);
     }

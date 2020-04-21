@@ -3,14 +3,16 @@
 
 using namespace std;
 
+using inner_vector_type = vector<xaml_ptr<xaml_object>>;
+
 struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl, xaml_enumerator, xaml_object>
 {
 private:
-    vector<xaml_ptr<xaml_object>>::const_iterator m_begin, m_end;
+    inner_vector_type::const_iterator m_begin, m_end;
     bool m_init;
 
 public:
-    xaml_vector_enumerator_impl(vector<xaml_ptr<xaml_object>>::const_iterator begin, vector<xaml_ptr<xaml_object>>::const_iterator end) noexcept
+    xaml_vector_enumerator_impl(inner_vector_type::const_iterator begin, inner_vector_type::const_iterator end) noexcept
         : m_begin(begin), m_end(end), m_init(false) {}
 
     xaml_result XAML_CALL move_next(bool* pb) noexcept override
@@ -34,13 +36,13 @@ public:
     }
 };
 
-struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_enumerable, xaml_object>
+struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
 {
 private:
-    vector<xaml_ptr<xaml_object>> m_vec{};
+    inner_vector_type m_vec{};
 
 public:
-    xaml_vector_impl(vector<xaml_ptr<xaml_object>>&& vec) noexcept : m_vec(move(vec)) {}
+    xaml_vector_impl(inner_vector_type&& vec) noexcept : m_vec(move(vec)) {}
 
     xaml_result XAML_CALL get_size(size_t* psize) noexcept override
     {
@@ -91,7 +93,7 @@ public:
     }
 };
 
-xaml_result xaml_vector_new(vector<xaml_ptr<xaml_object>>&& vec, xaml_vector** ptr) noexcept
+xaml_result xaml_vector_new(inner_vector_type&& vec, xaml_vector** ptr) noexcept
 {
     return xaml_object_new<xaml_vector_impl>(ptr, move(vec));
 }
