@@ -224,8 +224,8 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         XAML_THROW_IF_FAILED(xaml_event_new(&m_valignment_changed));
         XAML_THROW_IF_FAILED(xaml_event_new(&m_is_visible_changed));
 
-        xaml_ptr<xaml_delegate> size_changed_callback;
-        XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_control>, xaml_size>(
+        std::size_t token;
+        XAML_THROW_IF_FAILED((m_size_changed->add<void, xaml_ptr<xaml_control>, xaml_size>(
             [this](xaml_ptr<xaml_control>, xaml_size) {
                 if (m_handle)
                 {
@@ -233,17 +233,12 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
                     parent_redraw();
                 }
             },
-            &size_changed_callback)));
-        std::size_t token;
-        XAML_THROW_IF_FAILED(m_size_changed->add(size_changed_callback.get(), &token));
-
-        xaml_ptr<xaml_delegate> is_visible_changed_callback;
-        XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_control>, bool>(
+            &token)));
+        XAML_THROW_IF_FAILED((m_is_visible_changed->add<void, xaml_ptr<xaml_control>, bool>(
             [this](xaml_ptr<xaml_control>, bool) {
                 if (m_handle) draw_visible();
             },
-            &is_visible_changed_callback)));
-        XAML_THROW_IF_FAILED(m_is_visible_changed->add(is_visible_changed_callback.get(), &token));
+            &token)));
     }
 };
 

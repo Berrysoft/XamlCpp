@@ -1,11 +1,16 @@
 #ifndef XAML_UI_SHARED_WINDOW_HPP
 #define XAML_UI_SHARED_WINDOW_HPP
 
+#include <atomic>
 #include <shared/container.hpp>
 #include <xaml/ui/window.h>
 
 struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window>
 {
+protected:
+    std::atomic<bool> m_resizing;
+
+public:
     xaml_window_impl();
 
     xaml_result XAML_CALL show() noexcept override;
