@@ -7,6 +7,7 @@
 #include <xaml/ui/application.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
+#include <xaml/ui/win/window.h>
 
 using namespace std;
 
@@ -29,7 +30,7 @@ static BOOL register_window_class()
 {
     WNDCLASSEX cls = {};
     cls.cbSize = sizeof(WNDCLASSEX);
-    cls.lpfnWndProc = __wnd_callback;
+    cls.lpfnWndProc = xaml_window_callback;
     cls.cbClsExtra = 0;
     cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
     cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);

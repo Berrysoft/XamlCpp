@@ -94,13 +94,13 @@ struct __query_impl;
 template <typename B1, typename... B>
 struct __query_impl<B1, B...>
 {
-    template <typename T, typename D, typename... Base>
-    xaml_result operator()(xaml_implement<T, D, Base...>* self, xaml_guid const& type, void** ptr) const noexcept
+    template <typename T>
+    xaml_result operator()(T* self, xaml_guid const& type, void** ptr) const noexcept
     {
         if (type == xaml_type_guid_v<B1>)
         {
             self->add_ref();
-            *ptr = static_cast<B1*>(static_cast<T*>(self));
+            *ptr = static_cast<B1*>(self);
             return XAML_S_OK;
         }
         else
@@ -113,8 +113,8 @@ struct __query_impl<B1, B...>
 template <>
 struct __query_impl<>
 {
-    template <typename T, typename D, typename... Base>
-    xaml_result operator()(xaml_implement<T, D, Base...>*, xaml_guid const&, void**) const noexcept
+    template <typename T>
+    xaml_result operator()(T*, xaml_guid const&, void**) const noexcept
     {
         return XAML_E_NOINTERFACE;
     }
@@ -123,7 +123,7 @@ struct __query_impl<>
 template <typename T, typename D, typename... Base>
 inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, void** ptr) noexcept
 {
-    return __query_impl<D, Base...>{}(this, type, ptr);
+    return __query_impl<D, Base...>{}(static_cast<T*>(this), type, ptr);
 }
 
 template <typename D, typename T, typename... Args>

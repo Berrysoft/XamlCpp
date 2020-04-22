@@ -8,7 +8,7 @@
 typedef struct xaml_win32_window_message
 {
     HWND hWnd;
-    UINT msg;
+    UINT Msg;
     WPARAM wParam;
     LPARAM lParam;
 } xaml_win32_window_message;

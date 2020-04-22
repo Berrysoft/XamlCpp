@@ -12,6 +12,7 @@ protected:
 
 public:
     xaml_window_impl();
+    ~xaml_window_impl();
 
     xaml_result XAML_CALL show() noexcept override;
     xaml_result XAML_CALL close() noexcept override;

@@ -10,7 +10,7 @@
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
 {
-private:
+protected:
     std::atomic<int> m_quit_value{ 0 };
     xaml_ptr<xaml_vector> m_cmd_lines{ nullptr };
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
