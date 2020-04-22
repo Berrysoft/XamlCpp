@@ -129,13 +129,30 @@ inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, v
 template <typename D, typename T, typename... Args>
 inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
 {
-    try
-    {
-        T* res = new D(std::forward<Args>(args)...);
-        *ptr = res;
-        return XAML_S_OK;
-    }
-    XAML_CATCH_RETURN()
+    D* res = new (std::nothrow) D(std::forward<Args>(args)...);
+    if (!res) return XAML_E_OUTOFMEMORY;
+    *ptr = res;
+    return XAML_S_OK;
+}
+
+template <typename D, typename T, typename... Args>
+inline xaml_result xaml_object_init(T** ptr, Args&&... args) noexcept
+{
+    D* res = new (std::nothrow) D;
+    if (!res) return XAML_E_OUTOFMEMORY;
+    XAML_RETURN_IF_FAILED(res->init(std::forward<Args>(args)...));
+    *ptr = res;
+    return XAML_S_OK;
+}
+
+template <typename D, typename T, typename... Args>
+inline xaml_result xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
+{
+    D* res = new (std::nothrow) D(std::forward<Args>(args)...);
+    if (!res) return XAML_E_OUTOFMEMORY;
+    XAML_RETURN_IF_FAILED(res->init());
+    *ptr = res;
+    return XAML_S_OK;
 }
 
 template <typename T, typename D, typename Base>

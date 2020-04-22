@@ -23,10 +23,11 @@ private:
     }
 
 public:
-    xaml_observable_vector_impl()
+    xaml_result init() noexcept
     {
-        XAML_THROW_IF_FAILED(xaml_vector_new(&m_vec));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_collection_changed));
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&m_vec));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_collection_changed));
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_size(size_t* psize) noexcept override
@@ -95,7 +96,7 @@ public:
 
 xaml_result xaml_observable_vector_new(xaml_observable_vector** ptr) noexcept
 {
-    return xaml_object_new<xaml_observable_vector_impl>(ptr);
+    return xaml_object_init<xaml_observable_vector_impl>(ptr);
 }
 
 struct xaml_vector_changed_args_impl : xaml_implement<xaml_vector_changed_args_impl, xaml_vector_changed_args, xaml_object>
@@ -108,7 +109,7 @@ private:
     size_t m_old_index;
 
 public:
-    xaml_vector_changed_args_impl(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index)
+    xaml_vector_changed_args_impl(xaml_vector_changed_action action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index) noexcept
         : m_action(action), m_new_items(new_items), m_new_index(new_index), m_old_items(old_items), m_old_index(old_index) {}
 
     xaml_result XAML_CALL get_action(xaml_vector_changed_action* paction) noexcept override

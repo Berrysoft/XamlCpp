@@ -16,7 +16,7 @@ protected:
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
 
 public:
-    xaml_application_impl(int, xaml_char_t**);
+    xaml_result init(int, xaml_char_t**) noexcept;
 
     xaml_result XAML_CALL get_cmd_lines(xaml_vector_view** ptr) noexcept override
     {

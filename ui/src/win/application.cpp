@@ -4,7 +4,9 @@
 #include <wil/resource.h>
 #include <wil/result_macros.h>
 #include <windowsx.h>
+#include <xaml/result_win32.h>
 #include <xaml/ui/application.h>
+#include <xaml/ui/win/control.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/win/window.h>
@@ -40,20 +42,20 @@ static BOOL register_window_class()
     return RegisterClassEx(&cls);
 }
 
-xaml_application_impl::xaml_application_impl(int argc, xaml_char_t** argv)
+xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
 {
     m_font_provider.m_outer = this;
-    XAML_THROW_IF_FAILED(xaml_vector_new(&m_cmd_lines));
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
     {
-        XAML_THROW_IF_FAILED(m_cmd_lines->append(to_xaml_string(argv[i]).get()));
+        XAML_RETURN_IF_FAILED(m_cmd_lines->append(to_xaml_string(argv[i]).get()));
     }
     XamlInitializeDpiFunc();
-    THROW_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());
     XamlInitializeDarkModeFunc();
     XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
-    THROW_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
-    THROW_IF_WIN32_BOOL_FALSE(register_window_class());
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(register_window_class());
 }
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
@@ -78,7 +80,16 @@ xaml_result xaml_application_impl::run(int* pvalue) noexcept
 xaml_result xaml_application_impl::quit(int value) noexcept
 {
     m_quit_value = value;
-    //if (m_main_wnd) DestroyWindow(m_main_wnd->get_handle()->handle);
+    if (m_main_wnd)
+    {
+        xaml_ptr<xaml_win32_control> native_control = m_main_wnd.query<xaml_win32_control>();
+        if (native_control)
+        {
+            HWND hWnd;
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&hWnd));
+            DestroyWindow(hWnd);
+        }
+    }
     return XAML_S_OK;
 }
 

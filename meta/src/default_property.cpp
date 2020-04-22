@@ -9,7 +9,7 @@ private:
     xaml_ptr<xaml_string> m_def_prop;
 
 public:
-    xaml_default_property_impl(xaml_ptr<xaml_string>&& name) : m_def_prop(move(name)) {}
+    xaml_default_property_impl(xaml_ptr<xaml_string>&& name) noexcept : m_def_prop(move(name)) {}
 
     xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override
     {

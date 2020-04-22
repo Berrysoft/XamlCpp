@@ -11,7 +11,7 @@ private:
     function<xaml_result(xaml_object*, size_t)> m_remover;
 
 public:
-    xaml_event_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result(xaml_object*, size_t)>&& remover)
+    xaml_event_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_object*, xaml_delegate*, size_t*)>&& adder, function<xaml_result(xaml_object*, size_t)>&& remover) noexcept
         : m_name(move(name)), m_adder(move(adder)), m_remover(move(remover)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override

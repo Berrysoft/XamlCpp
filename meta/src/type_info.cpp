@@ -14,18 +14,21 @@ private:
     xaml_ptr<xaml_map> m_event_map;
 
 public:
-    xaml_type_info_registration_impl(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file)
-        : xaml_reflection_info_implement(type, move(name), move(include_file))
+    xaml_type_info_registration_impl(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file) noexcept
+        : xaml_reflection_info_implement(type, move(name), move(include_file)) {}
+
+    xaml_result init() noexcept
     {
         xaml_ptr<xaml_hasher> guid_hasher;
-        XAML_THROW_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
-        XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_attr_map));
+        XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_attr_map));
         xaml_ptr<xaml_hasher> string_hasher;
-        XAML_THROW_IF_FAILED(xaml_hasher_string_default(&string_hasher));
-        XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_method_map));
-        XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_prop_map));
-        XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_cprop_map));
-        XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_event_map));
+        XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_method_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_prop_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_cprop_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_event_map));
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_attributes(xaml_map_view** ptr) noexcept override
@@ -132,5 +135,5 @@ public:
 
 xaml_result xaml_type_info_registration_new(xaml_guid const& type, xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
 {
-    return xaml_object_new<xaml_type_info_registration_impl>(ptr, type, name, include_file);
+    return xaml_object_new_and_init<xaml_type_info_registration_impl>(ptr, type, name, include_file);
 }

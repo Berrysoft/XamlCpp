@@ -9,7 +9,7 @@ private:
     function<xaml_result(xaml_vector_view*)> m_func;
 
 public:
-    xaml_method_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_vector_view*)>&& func) : m_name(name), m_func(move(func)) {}
+    xaml_method_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_vector_view*)>&& func) noexcept : m_name(name), m_func(move(func)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {

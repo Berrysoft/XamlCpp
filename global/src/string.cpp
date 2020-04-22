@@ -11,9 +11,25 @@ private:
 
 public:
     xaml_string_impl() noexcept {}
-    xaml_string_impl(xaml_char_t const* str) : m_str(str) {}
+    xaml_result init(xaml_char_t const* str)
+    {
+        try
+        {
+            m_str = str;
+            return XAML_S_OK;
+        }
+        XAML_CATCH_RETURN()
+    }
     xaml_string_impl(xaml_std_string_t&& str) : m_str(move(str)) {}
-    xaml_string_impl(xaml_std_string_view_t str) : m_str(str) {}
+    xaml_result init(xaml_std_string_view_t str)
+    {
+        try
+        {
+            m_str = str;
+            return XAML_S_OK;
+        }
+        XAML_CATCH_RETURN()
+    }
 
     xaml_result XAML_CALL get_length(size_t* psize) noexcept override
     {
@@ -46,7 +62,7 @@ public:
 xaml_result xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
 {
     if (str)
-        return xaml_object_new<xaml_string_impl>(ptr, str);
+        return xaml_object_init<xaml_string_impl>(ptr, str);
     else
         return xaml_object_new<xaml_string_impl>(ptr);
 }
@@ -58,5 +74,5 @@ xaml_result xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr) noexcept
 
 xaml_result xaml_string_new(xaml_std_string_view_t str, xaml_string** ptr) noexcept
 {
-    return xaml_object_new<xaml_string_impl>(ptr, str);
+    return xaml_object_init<xaml_string_impl>(ptr, str);
 }

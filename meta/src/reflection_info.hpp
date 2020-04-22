@@ -13,7 +13,7 @@ protected:
     xaml_ptr<xaml_string> m_include_file;
 
 public:
-    xaml_reflection_info_implement(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file)
+    xaml_reflection_info_implement(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file) noexcept
         : m_type(type), m_name(std::move(name)), m_include_file(std::move(include_file)) {}
 
     xaml_result XAML_CALL get_type(xaml_guid* ptype) noexcept override

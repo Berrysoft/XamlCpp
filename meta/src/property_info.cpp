@@ -14,7 +14,7 @@ private:
     function<xaml_result(xaml_object*, xaml_object*)> m_setter;
 
 public:
-    xaml_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object**)>&& getter, function<xaml_result(xaml_object*, xaml_object*)>&& setter)
+    xaml_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object**)>&& getter, function<xaml_result(xaml_object*, xaml_object*)>&& setter) noexcept
         : m_name(move(name)), m_type(type), m_getter(move(getter)), m_setter(move(setter)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
