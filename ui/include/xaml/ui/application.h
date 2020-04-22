@@ -3,6 +3,7 @@
 
 #include <xaml/object.h>
 #include <xaml/string.h>
+#include <xaml/ui/window.h>
 #include <xaml/vector.h>
 
 typedef enum xaml_application_theme
@@ -12,8 +13,6 @@ typedef enum xaml_application_theme
 } xaml_application_theme;
 
 XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0x66, 0x54, 0xa3, 0x30, 0x12 } })
-
-typedef struct xaml_window xaml_window;
 
 #define XAML_APPLICATION_VTBL(type)                       \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));            \

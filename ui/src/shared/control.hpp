@@ -198,7 +198,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
     }
 
-    xaml_result XAML_CALL draw_size() noexcept
+    virtual xaml_result XAML_CALL draw_size() noexcept
     {
         xaml_size real_size;
         XAML_RETURN_IF_FAILED(get_real_size(&real_size));
@@ -206,7 +206,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL draw_visible() noexcept
+    virtual xaml_result XAML_CALL draw_visible() noexcept
     {
         ShowWindow(m_handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
         return XAML_S_OK;
