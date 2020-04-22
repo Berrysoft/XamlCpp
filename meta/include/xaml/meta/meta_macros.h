@@ -67,7 +67,7 @@ public:                                                   \
     XAML_PROP_PTR_IMPL_BASE(name, type)                    \
     xaml_result XAML_CALL set_##name(type* value) noexcept \
     {                                                      \
-        if (m_##name != value)                             \
+        if (m_##name.get() != value)                       \
         {                                                  \
             m_##name = value;                              \
             return on_##name##_changed(this, m_##name);    \

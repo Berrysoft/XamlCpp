@@ -32,6 +32,21 @@ public:
     xaml_result XAML_CALL quit(int) noexcept override;
     xaml_result XAML_CALL get_theme(xaml_application_theme*) noexcept override;
 
+    xaml_result XAML_CALL window_added(xaml_window* window) noexcept override
+    {
+        if (!m_main_wnd) m_main_wnd = window;
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL window_removed(xaml_window* window) noexcept override
+    {
+        if (m_main_wnd.get() == window)
+        {
+            return quit(0);
+        }
+        return XAML_S_OK;
+    }
+
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_font_provider_impl : xaml_inner_implement<xaml_win32_font_provider_impl, xaml_application_impl, xaml_win32_font_provider>
     {

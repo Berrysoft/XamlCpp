@@ -14,13 +14,15 @@ typedef enum xaml_application_theme
 
 XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0x66, 0x54, 0xa3, 0x30, 0x12 } })
 
-#define XAML_APPLICATION_VTBL(type)                       \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));            \
-    XAML_METHOD(run, type, int*);                         \
-    XAML_METHOD(quit, type, int);                         \
-    XAML_METHOD(get_cmd_lines, type, xaml_vector_view**); \
-    XAML_METHOD(get_main_window, type, xaml_window**);    \
-    XAML_METHOD(get_theme, type, xaml_application_theme*)
+#define XAML_APPLICATION_VTBL(type)                        \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));             \
+    XAML_METHOD(run, type, int*);                          \
+    XAML_METHOD(quit, type, int);                          \
+    XAML_METHOD(get_cmd_lines, type, xaml_vector_view**);  \
+    XAML_METHOD(get_main_window, type, xaml_window**);     \
+    XAML_METHOD(get_theme, type, xaml_application_theme*); \
+    XAML_METHOD(window_added, type, xaml_window*);         \
+    XAML_METHOD(window_removed, type, xaml_window*)
 
 XAML_DECL_INTERFACE_(xaml_application, xaml_object)
 {

@@ -14,6 +14,7 @@ public:
     xaml_window_impl();
     ~xaml_window_impl();
 
+    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
     xaml_result XAML_CALL show() noexcept override;
     xaml_result XAML_CALL close() noexcept override;
     xaml_result XAML_CALL hide() noexcept override;
@@ -68,6 +69,15 @@ public:
     virtual xaml_result draw_child() noexcept;
     virtual xaml_result draw_resizable() noexcept;
     virtual xaml_result draw_menu_bar() noexcept;
+
+#ifdef XAML_UI_WINDOWS
+    xaml_result wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept override;
+
+    xaml_result get_real_location(xaml_point*) noexcept;
+    xaml_result set_real_location(xaml_point const&) noexcept;
+
+    xaml_result get_real_client_region(xaml_rectangle*) noexcept;
+#endif // XAML_UI_WINDOWS
 };
 
 #endif // !XAML_UI_SHARED_WINDOW_HPP
