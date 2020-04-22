@@ -52,7 +52,7 @@ public:
         }
     }
 
-    xaml_result XAML_CALL get_default_font(UINT, HFONT*) noexcept;
+    xaml_result get_default_font(UINT, HFONT*) noexcept;
 #endif // XAML_UI_WINDOWS
 };
 

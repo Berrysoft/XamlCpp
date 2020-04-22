@@ -62,11 +62,11 @@ public:
     xaml_result XAML_CALL get_client_region(xaml_rectangle*) noexcept override;
     xaml_result XAML_CALL get_dpi(double*) noexcept override;
 
-    xaml_result XAML_CALL draw_size() noexcept override;
-    virtual xaml_result XAML_CALL draw_title() noexcept;
-    virtual xaml_result XAML_CALL draw_child() noexcept;
-    virtual xaml_result XAML_CALL draw_resizable() noexcept;
-    virtual xaml_result XAML_CALL draw_menu_bar() noexcept;
+    xaml_result draw_size() noexcept override;
+    virtual xaml_result draw_title() noexcept;
+    virtual xaml_result draw_child() noexcept;
+    virtual xaml_result draw_resizable() noexcept;
+    virtual xaml_result draw_menu_bar() noexcept;
 };
 
 #endif // !XAML_UI_SHARED_WINDOW_HPP

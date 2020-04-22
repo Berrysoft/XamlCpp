@@ -113,7 +113,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
 
     XAML_PROP_IMPL(handle, HWND, HWND*, HWND)
 
-    xaml_result XAML_CALL create(xaml_win32_window_create_params const& params) noexcept
+    xaml_result create(xaml_win32_window_create_params const& params) noexcept
     {
         HWND parent = nullptr;
         if (params.parent)
@@ -142,7 +142,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         XamlControlUseDarkMode(m_handle);
     }
 
-    xaml_result XAML_CALL set_rect(xaml_rectangle const& region) noexcept
+    xaml_result set_rect(xaml_rectangle const& region) noexcept
     {
         xaml_rectangle real = region - m_margin;
         UINT udpi = XamlGetDpiForWindow(m_handle);
@@ -151,7 +151,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return set_size_noevent({ real.width, real.height });
     }
 
-    xaml_result XAML_CALL measure_string(xaml_std_string_view_t str, xaml_size offset, xaml_size* pvalue) noexcept
+    xaml_result measure_string(xaml_std_string_view_t str, xaml_size offset, xaml_size* pvalue) noexcept
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
         if (hDC)
@@ -167,38 +167,38 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return XAML_S_OK;
     }
 
-    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
+    virtual xaml_result wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
     {
         return XAML_E_NOTIMPL;
     }
 
-    xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept
+    xaml_result get_real_size(xaml_size* pvalue) noexcept
     {
         UINT udpi = XamlGetDpiForWindow(m_handle);
         *pvalue = m_size * udpi / USER_DEFAULT_SCREEN_DPI;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept
+    xaml_result set_real_size(xaml_size const& value) noexcept
     {
         UINT udpi = XamlGetDpiForWindow(m_handle);
         return set_size(value * USER_DEFAULT_SCREEN_DPI / udpi);
     }
 
-    xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept
+    xaml_result get_real_margin(xaml_margin* pvalue) noexcept
     {
         UINT udpi = XamlGetDpiForWindow(m_handle);
         *pvalue = m_margin * udpi / USER_DEFAULT_SCREEN_DPI;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept
+    xaml_result set_real_margin(xaml_margin const& value) noexcept
     {
         UINT udpi = XamlGetDpiForWindow(m_handle);
         return set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
     }
 
-    virtual xaml_result XAML_CALL draw_size() noexcept
+    virtual xaml_result draw_size() noexcept
     {
         xaml_size real_size;
         XAML_RETURN_IF_FAILED(get_real_size(&real_size));
@@ -206,7 +206,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return XAML_S_OK;
     }
 
-    virtual xaml_result XAML_CALL draw_visible() noexcept
+    virtual xaml_result draw_visible() noexcept
     {
         ShowWindow(m_handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
         return XAML_S_OK;

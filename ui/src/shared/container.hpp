@@ -56,7 +56,7 @@ public:
     }
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
+    xaml_result wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
     {
         try
         {
