@@ -42,4 +42,5 @@ install(FILES ${UI_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win)
 install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
 install(FILES ${UI_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3)
 
+add_subdirectory(appmain)
 add_subdirectory(meta)
