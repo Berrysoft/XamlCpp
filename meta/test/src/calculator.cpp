@@ -11,7 +11,7 @@ private:
     xaml_result on_value_changed(int value)
     {
         xaml_ptr<xaml_object> obj;
-        XAML_RETURN_IF_FAILED(box_value(value, &obj));
+        XAML_RETURN_IF_FAILED(xaml_box_value(value, &obj));
         xaml_ptr<xaml_vector> args;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ this, obj }, &args));
         xaml_ptr<xaml_object> res;

@@ -106,7 +106,7 @@ xaml_result xaml_hasher_string_default(xaml_hasher** ptr) noexcept
             [](xaml_object* obj, size_t* phash) -> xaml_result {
                 static hash<xaml_std_string_view_t> hasher{};
                 xaml_ptr<xaml_string> value;
-                XAML_RETURN_IF_FAILED(unbox_value(obj, value));
+                XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, value));
                 xaml_char_t const* data;
                 XAML_RETURN_IF_FAILED(value->get_data(&data));
                 size_t length;
@@ -117,8 +117,8 @@ xaml_result xaml_hasher_string_default(xaml_hasher** ptr) noexcept
         function<xaml_result(xaml_object*, xaml_object*, bool*)>{
             [](xaml_object* lhs, xaml_object* rhs, bool* pb) -> xaml_result {
                 xaml_ptr<xaml_string> lvalue, rvalue;
-                XAML_RETURN_IF_FAILED(unbox_value(lhs, lvalue));
-                XAML_RETURN_IF_FAILED(unbox_value(rhs, rvalue));
+                XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, lvalue));
+                XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, rvalue));
                 return lvalue->equals(rvalue.get(), pb);
             } },
         ptr);

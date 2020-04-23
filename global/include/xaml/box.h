@@ -72,7 +72,7 @@ inline xaml_result xaml_box_new(T const& value, xaml_box** ptr) noexcept
 }
 
 template <typename T, typename = void>
-struct __box_impl
+struct __xaml_box_impl
 {
     xaml_result box(T const& value, xaml_object** ptr) const noexcept
     {
@@ -88,7 +88,7 @@ struct __box_impl
 };
 
 template <typename T>
-struct __box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+struct __xaml_box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
     xaml_result box(T* value, xaml_object** ptr) const noexcept
     {
@@ -102,7 +102,7 @@ struct __box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 };
 
 template <typename T>
-struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
     xaml_result box(xaml_ptr<T> const& value, xaml_object** ptr) const noexcept
     {
@@ -116,7 +116,7 @@ struct __box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T
 };
 
 template <typename T>
-struct __box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_view_t>>>
+struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_view_t>>>
 {
     xaml_result box(xaml_std_string_view_t value, xaml_object** ptr) const noexcept
     {
@@ -137,30 +137,30 @@ struct __box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_v
 };
 
 template <typename T>
-xaml_result box_value(T const& value, xaml_object** ptr) noexcept
+xaml_result xaml_box_value(T const& value, xaml_object** ptr) noexcept
 {
-    return __box_impl<T>{}.box(value, ptr);
+    return __xaml_box_impl<T>{}.box(value, ptr);
 }
 
 template <typename T>
-xaml_ptr<xaml_object> box_value(T const& value)
+xaml_ptr<xaml_object> xaml_box_value(T const& value)
 {
     xaml_ptr<xaml_object> obj;
-    XAML_THROW_IF_FAILED(box_value(value, &obj));
+    XAML_THROW_IF_FAILED(xaml_box_value(value, &obj));
     return obj;
 }
 
 template <typename T>
-xaml_result unbox_value(xaml_object* obj, T& value) noexcept
+xaml_result xaml_unbox_value(xaml_object* obj, T& value) noexcept
 {
-    return __box_impl<T>{}.unbox(obj, value);
+    return __xaml_box_impl<T>{}.unbox(obj, value);
 }
 
 template <typename T>
-T unbox_value(xaml_ptr<xaml_object> const& obj)
+T xaml_unbox_value(xaml_ptr<xaml_object> const& obj)
 {
     T value;
-    XAML_THROW_IF_FAILED(unbox_value(obj.get(), value));
+    XAML_THROW_IF_FAILED(xaml_unbox_value(obj.get(), value));
     return value;
 }
 #endif // __cplusplus

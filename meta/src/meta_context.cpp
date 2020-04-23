@@ -38,7 +38,7 @@ public:
     xaml_result XAML_CALL get_type(xaml_guid const& type, xaml_reflection_info** ptr) noexcept override
     {
         xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         return m_type_info_map->lookup(key.get(), (xaml_object**)ptr);
     }
 
@@ -54,7 +54,7 @@ public:
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(info->get_name(&name));
         xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         bool replaced;
         XAML_RETURN_IF_FAILED(m_type_info_map->insert(key.get(), info, &replaced));
         return m_name_info_map->insert(name.get(), info, &replaced);

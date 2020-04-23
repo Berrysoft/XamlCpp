@@ -39,14 +39,14 @@ public:
     xaml_result XAML_CALL get_attribute(xaml_guid const& type, xaml_object** ptr) noexcept override
     {
         xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         return m_attr_map->lookup(key.get(), ptr);
     }
 
     xaml_result XAML_CALL add_attribute(xaml_guid const& type, xaml_object* attr) noexcept override
     {
         xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(box_value(type, &key));
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         bool replaced;
         return m_attr_map->insert(key.get(), attr, &replaced);
     }

@@ -38,8 +38,8 @@ int main()
         // and the handler will be called.
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(to_xaml_string(U("plus")).get(), &method));
-        xaml_ptr<xaml_vector> args;
-        XAML_THROW_IF_FAILED(xaml_vector_new({ obj, box_value(1), box_value(1) }, &args));
+        xaml_ptr<xaml_vector_view> args;
+        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
         xaml_ptr<xaml_object> res;
         XAML_THROW_IF_FAILED(method->invoke(args.get(), &res));
     }
@@ -48,7 +48,7 @@ int main()
     XAML_THROW_IF_FAILED(t->get_property(to_xaml_string(U("value")).get(), &prop));
     // Set the int property with string.
     // It *will* success because the library converts it implicitly.
-    XAML_THROW_IF_FAILED(prop->set(obj.get(), box_value(100).get()));
+    XAML_THROW_IF_FAILED(prop->set(obj.get(), xaml_box_value(100).get()));
     XAML_THROW_IF_FAILED(prop->set(obj.get(), to_xaml_string(U("200")).get()));
     // Remove the handler.
     XAML_THROW_IF_FAILED(ev->remove(obj.get(), token));
@@ -57,8 +57,8 @@ int main()
         // because the handler has been removed.
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(to_xaml_string(U("minus")).get(), &method));
-        xaml_ptr<xaml_vector> args;
-        XAML_THROW_IF_FAILED(xaml_vector_new({ obj, box_value(1), box_value(1) }, &args));
+        xaml_ptr<xaml_vector_view> args;
+        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
         xaml_ptr<xaml_object> res;
         XAML_THROW_IF_FAILED(method->invoke(args.get(), &res));
     }

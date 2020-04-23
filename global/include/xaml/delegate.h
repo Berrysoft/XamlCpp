@@ -37,7 +37,7 @@ inline xaml_ptr<xaml_object> __xaml_delegate_impl_invoke_impl_get_at(xaml_vector
 template <typename Return, typename... Args, size_t... Indicies>
 Return __xaml_delegate_impl_invoke_impl(std::function<Return(Args...)> const& func, xaml_vector_view* args, std::index_sequence<Indicies...>)
 {
-    return func(unbox_value<Args>(__xaml_delegate_impl_invoke_impl_get_at(args, Indicies))...);
+    return func(xaml_unbox_value<Args>(__xaml_delegate_impl_invoke_impl_get_at(args, Indicies))...);
 }
 
 template <typename Return, typename... Args>
@@ -67,7 +67,7 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
                     else
                     {
                         Return res = __xaml_delegate_impl_invoke<Return, Args...>(func, args);
-                        return box_value(res, ptr);
+                        return xaml_box_value(res, ptr);
                     }
                 }
                 XAML_CATCH_RETURN() } },
@@ -80,7 +80,7 @@ xaml_result xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noex
     try
     {
         xaml_ptr<xaml_vector> res;
-        XAML_RETURN_IF_FAILED(xaml_vector_new({ box_value(std::forward<Args>(args))... }, &res));
+        XAML_RETURN_IF_FAILED(xaml_vector_new({ xaml_box_value(std::forward<Args>(args))... }, &res));
         return res->query(ptr);
     }
     XAML_CATCH_RETURN()
