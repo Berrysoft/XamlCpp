@@ -81,7 +81,8 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     }
 
 #ifdef XAML_UI_WINDOWS
-    struct xaml_win32_control_impl : xaml_inner_implement<xaml_win32_control_impl, T, xaml_win32_control>
+    template <typename T, typename D, typename Base>
+    struct xaml_win32_control_implement : xaml_inner_implement<T, D, Base>
     {
         xaml_result XAML_CALL get_handle(HWND* pvalue) noexcept override { return m_outer->get_handle(pvalue); }
         xaml_result XAML_CALL set_handle(HWND value) noexcept override { return m_outer->set_handle(value); }
@@ -90,6 +91,10 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept override { return m_outer->set_real_size(value); }
         xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept override { return m_outer->get_real_margin(pvalue); }
         xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept override { return m_outer->set_real_margin(value); }
+    };
+
+    struct xaml_win32_control_impl : xaml_win32_control_implement<xaml_win32_control_impl, T, xaml_win32_control>
+    {
     } m_native_control;
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
@@ -97,7 +102,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         if (type == xaml_type_guid_v<xaml_win32_control>)
         {
             add_ref();
-            *ptr = &m_native_control;
+            *ptr = static_cast<xaml_win32_control*>(&m_native_control);
             return XAML_S_OK;
         }
         else

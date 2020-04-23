@@ -5,6 +5,10 @@
 #include <shared/container.hpp>
 #include <xaml/ui/window.h>
 
+#ifdef XAML_UI_WINDOWS
+#include <xaml/ui/win/window.h>
+#endif // XAML_UI_WINDOWS
+
 struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window>
 {
 protected:
@@ -74,6 +78,27 @@ public:
     virtual xaml_result draw_menu_bar() noexcept;
 
 #ifdef XAML_UI_WINDOWS
+    struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, xaml_window_impl, xaml_win32_window>
+    {
+        xaml_result XAML_CALL get_real_location(xaml_point* pvalue) noexcept override { return m_outer->get_real_location(pvalue); }
+        xaml_result XAML_CALL set_real_location(xaml_point const& value) noexcept override { return m_outer->set_real_location(value); }
+        xaml_result XAML_CALL get_real_client_region(xaml_rectangle* pvalue) noexcept override { return m_outer->get_real_client_region(pvalue); }
+    } m_native_window;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_win32_window>)
+        {
+            add_ref();
+            *ptr = static_cast<xaml_win32_window*>(&m_native_window);
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_container_implement::query(type, ptr);
+        }
+    }
+
     xaml_result wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept override;
 
     xaml_result get_real_location(xaml_point*) noexcept;
@@ -81,6 +106,11 @@ public:
 
     xaml_result get_real_client_region(xaml_rectangle*) noexcept;
 #endif // XAML_UI_WINDOWS
+
+    xaml_window_impl() noexcept : xaml_container_implement()
+    {
+        m_native_window.m_outer = this;
+    }
 };
 
 #endif // !XAML_UI_SHARED_WINDOW_HPP
