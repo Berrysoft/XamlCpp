@@ -15,6 +15,8 @@ public:
     xaml_result init() noexcept override;
     ~xaml_window_impl();
 
+    XAML_PROP_PTR_IMPL(menu_bar, xaml_control)
+
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
     xaml_result XAML_CALL show() noexcept override;
     xaml_result XAML_CALL close() noexcept override;

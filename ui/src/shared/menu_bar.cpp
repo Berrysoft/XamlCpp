@@ -1,8 +1,2 @@
-#include <xaml/ui/menu_bar.hpp>
-
-namespace xaml
-{
-    menu_bar::menu_bar() : multicontainer() {}
-
-    menu_bar::~menu_bar() {}
-} // namespace xaml
+#include <shared/menu_bar.hpp>
+#include <xaml/ui/menu_bar.h>

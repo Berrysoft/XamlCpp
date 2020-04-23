@@ -142,6 +142,7 @@ xaml_result xaml_window_impl::draw_child()
         XAML_RETURN_IF_FAILED(get_client_region(&region));
         return m_child->draw(region);
     }
+    return XAML_S_OK;
 }
 
 xaml_result xaml_window_impl::draw_resizable()
@@ -152,17 +153,19 @@ xaml_result xaml_window_impl::draw_resizable()
     else
         style &= (~WS_THICKFRAME) & (~WS_MAXIMIZEBOX);
     SetWindowLongPtr(m_handle, GWL_STYLE, style);
+    return XAML_S_OK;
 }
-//
-//    void window::draw_menu_bar()
-//    {
-//        if (get_menu_bar())
-//        {
-//            get_menu_bar()->set_parent_window(shared_from_this<window>());
-//            get_menu_bar()->__draw({});
-//        }
-//    }
-//
+
+xaml_result xaml_window_impl::draw_menu_bar()
+{
+    if (m_menu_bar)
+    {
+        XAML_RETURN_IF_FAILED(m_menu_bar->set_parent(this));
+        XAML_RETURN_IF_FAILED(m_menu_bar->draw({}));
+    }
+    return XAML_S_OK;
+}
+
 xaml_result xaml_window_impl::show()
 {
     XAML_RETURN_IF_FAILED(draw({}));

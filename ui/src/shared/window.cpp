@@ -1,3 +1,4 @@
+#include <shared/menu_bar.hpp>
 #include <shared/window.hpp>
 #include <xaml/ui/window.h>
 
