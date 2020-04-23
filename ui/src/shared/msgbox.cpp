@@ -1,41 +1,35 @@
-#include <xaml/ui/msgbox.hpp>
+#include <xaml/ui/msgbox.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_msgbox(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_msgbox_buttons buttons, xaml_msgbox_result* presult) noexcept
 {
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, msgbox_style style, msgbox_buttons buttons)
+    vector<xaml_ptr<xaml_object>> mbs;
+    switch (buttons)
     {
-        return msgbox(parent, message, title, {}, style, buttons);
+    case xaml_msgbox_buttons_ok_cancel:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_ok, U("OK") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_cancel, U("Cancel") }) };
+        break;
+    case xaml_msgbox_buttons_abort_retry_ignore:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_abort, U("Abort") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_retry, U("Retry") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_ignore, U("Ignore") }) };
+        break;
+    case xaml_msgbox_buttons_yes_no_cancel:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_yes, U("Yes") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_no, U("No") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_cancel, U("Cancel") }) };
+        break;
+    case xaml_msgbox_buttons_yes_no:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_yes, U("Yes") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_no, U("No") }) };
+        break;
+    case xaml_msgbox_buttons_retry_cancel:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_retry, U("Retry") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_cancel, U("Cancel") }) };
+        break;
+    case xaml_msgbox_buttons_cancel_try_resume:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_cancel, U("Cancel") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_try_again, U("Try Again") }), xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_resume, U("Continue") }) };
+        break;
+    default:
+        mbs = { xaml_box_value<xaml_msgbox_custom_button>({ xaml_msgbox_result_ok, U("OK") }) };
+        break;
     }
-
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, msgbox_buttons buttons)
-    {
-        vector<msgbox_button> mbs;
-        switch (buttons)
-        {
-        case msgbox_buttons::ok_cancel:
-            mbs = { msgbox_common_button::ok, msgbox_common_button::cancel };
-            break;
-        case msgbox_buttons::abort_retry_ignore:
-            mbs = { msgbox_custom_button{ msgbox_result::abort, U("Abort") }, msgbox_custom_button{ msgbox_result::retry, U("Retry") }, msgbox_custom_button{ msgbox_result::ignore, U("Ignore") } };
-            break;
-        case msgbox_buttons::yes_no_cancel:
-            mbs = { msgbox_common_button::yes, msgbox_common_button::no, msgbox_common_button::cancel };
-            break;
-        case msgbox_buttons::yes_no:
-            mbs = { msgbox_common_button::yes, msgbox_common_button::no };
-            break;
-        case msgbox_buttons::retry_cancel:
-            mbs = { msgbox_common_button::retry, msgbox_common_button::cancel };
-            break;
-        case msgbox_buttons::cancel_try_resume:
-            mbs = { msgbox_custom_button{ msgbox_result::cancel, U("Cancel") }, msgbox_custom_button{ msgbox_result::try_again, U("Try Again") }, msgbox_custom_button{ msgbox_result::resume, U("Continue") } };
-            break;
-        default:
-            mbs = { msgbox_common_button::ok };
-            break;
-        }
-        return msgbox(parent, message, title, instruction, style, mbs);
-    }
-} // namespace xaml
+    xaml_ptr<xaml_vector> cbs;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(move(mbs), &cbs));
+    return xaml_msgbox_custom(parent, message, title, instruction, style, cbs.get(), presult);
+}
