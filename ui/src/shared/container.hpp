@@ -23,8 +23,6 @@ struct xaml_container_implement : xaml_control_implement<T, Base..., xaml_contai
         }
         return XAML_S_OK;
     }
-
-    xaml_container_implement() : xaml_control_implement() {}
 };
 
 template <typename T, typename... Base>
@@ -82,9 +80,10 @@ public:
     }
 #endif // XAML_UI_WINDOWS
 
-    xaml_multicontainer_implement() : xaml_control_implement()
+    xaml_result init() noexcept override
     {
-        XAML_THROW_IF_FAILED(xaml_vector_new(&m_children));
+        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&m_children));
     }
 };
 

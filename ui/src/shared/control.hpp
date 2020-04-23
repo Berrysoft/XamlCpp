@@ -213,19 +213,22 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     }
 #endif // XAML_UI_WINDOWS
 
-    xaml_control_implement() : m_is_visible(true)
+    xaml_control_implement() noexcept : m_is_visible(true)
     {
         m_native_control.m_outer = this;
+    }
 
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_parent_changed));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_size_changed));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_margin_changed));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_halignment_changed));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_valignment_changed));
-        XAML_THROW_IF_FAILED(xaml_event_new(&m_is_visible_changed));
+    virtual xaml_result init() noexcept
+    {
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_parent_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_size_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_margin_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_halignment_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_valignment_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_visible_changed));
 
         std::size_t token;
-        XAML_THROW_IF_FAILED((m_size_changed->add<void, xaml_ptr<xaml_control>, xaml_size>(
+        XAML_RETURN_IF_FAILED((m_size_changed->add<void, xaml_ptr<xaml_control>, xaml_size>(
             [this](xaml_ptr<xaml_control>, xaml_size) {
                 if (m_handle)
                 {
@@ -234,7 +237,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
                 }
             },
             &token)));
-        XAML_THROW_IF_FAILED((m_is_visible_changed->add<void, xaml_ptr<xaml_control>, bool>(
+        XAML_RETURN_IF_FAILED((m_is_visible_changed->add<void, xaml_ptr<xaml_control>, bool>(
             [this](xaml_ptr<xaml_control>, bool) {
                 if (m_handle) draw_visible();
             },

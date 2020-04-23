@@ -16,7 +16,7 @@
 
 #define XAML_PROP_IMPL_BASE(name, vtype, gtype)          \
 protected:                                               \
-    vtype m_##name;                                      \
+    vtype m_##name{};                                    \
                                                          \
 public:                                                  \
     xaml_result XAML_CALL get_##name(gtype ptr) noexcept \
@@ -47,7 +47,7 @@ public:                                                  \
 
 #define XAML_PROP_PTR_IMPL_BASE(name, type)               \
 protected:                                                \
-    xaml_ptr<type> m_##name;                              \
+    xaml_ptr<type> m_##name{ nullptr };                   \
                                                           \
 public:                                                   \
     xaml_result XAML_CALL get_##name(type** ptr) noexcept \

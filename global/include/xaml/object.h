@@ -140,9 +140,17 @@ inline xaml_result xaml_object_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D;
     if (!res) return XAML_E_OUTOFMEMORY;
-    XAML_RETURN_IF_FAILED(res->init(std::forward<Args>(args)...));
-    *ptr = res;
-    return XAML_S_OK;
+    xaml_result hr = res->init(std::forward<Args>(args)...);
+    if (XAML_SUCCESS(hr))
+    {
+        *ptr = res;
+        return XAML_S_OK;
+    }
+    else
+    {
+        delete res;
+        return hr;
+    }
 }
 
 template <typename D, typename T, typename... Args>
@@ -150,9 +158,17 @@ inline xaml_result xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
     if (!res) return XAML_E_OUTOFMEMORY;
-    XAML_RETURN_IF_FAILED(res->init());
-    *ptr = res;
-    return XAML_S_OK;
+    xaml_result hr = res->init();
+    if (XAML_SUCCESS(hr))
+    {
+        *ptr = res;
+        return XAML_S_OK;
+    }
+    else
+    {
+        delete res;
+        return hr;
+    }
 }
 
 template <typename T, typename D, typename Base>

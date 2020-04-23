@@ -27,6 +27,7 @@ XAML_DECL_INTERFACE_(xaml_window, xaml_container)
     XAML_DECL_VTBL(xaml_window, XAML_WINDOW_VTBL);
 };
 
+EXTERN_C XAML_UI_API xaml_result xaml_window_new(xaml_window**) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_API xaml_result xaml_window_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_API xaml_result xaml_window_register(xaml_meta_context*) XAML_NOEXCEPT;
 

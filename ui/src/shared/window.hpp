@@ -11,7 +11,8 @@ protected:
     std::atomic<bool> m_resizing;
 
 public:
-    xaml_window_impl();
+    xaml_window_impl() noexcept;
+    xaml_result init() noexcept override;
     ~xaml_window_impl();
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
