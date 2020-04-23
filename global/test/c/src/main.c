@@ -45,7 +45,7 @@ xaml_result observable_vector_changed_callback(xaml_vector_view* args, xaml_obje
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(new_items->vtbl->get_at(new_items, i, &obj));
             xaml_string* str;
-            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (xaml_object**)&str));
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (void**)&str));
             print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
@@ -68,7 +68,7 @@ xaml_result observable_vector_changed_callback(xaml_vector_view* args, xaml_obje
             xaml_object* obj;
             XAML_RETURN_IF_FAILED(old_items->vtbl->get_at(old_items, i, &obj));
             xaml_string* str;
-            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (xaml_object**)&str));
+            XAML_RETURN_IF_FAILED(obj->vtbl->query(obj, &xaml_guid_xaml_string, (void**)&str));
             print_string(str);
             str->vtbl->release(str);
             obj->vtbl->release(obj);
