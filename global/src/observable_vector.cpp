@@ -74,6 +74,7 @@ public:
     xaml_result XAML_CALL clear() noexcept override
     {
         xaml_ptr<xaml_vector> old_items = m_vec;
+        m_vec = nullptr;
         XAML_RETURN_IF_FAILED(xaml_vector_new(&m_vec));
         return on_collection_changed(xaml_vector_changed_erase, nullptr, 0, old_items.get(), 0);
     }
