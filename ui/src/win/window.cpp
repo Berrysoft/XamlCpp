@@ -218,7 +218,8 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             XAML_RETURN_IF_WIN32_BOOL_FALSE(GetClientRect(msg.hWnd, &r));
             XAML_RETURN_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left - 1, r.top - 1, r.right + 1, r.bottom + 1));
             SelectBrush(hDC, orib);
-            return 1;
+            *presult = 1;
+            return XAML_S_OK;
         }
         case WM_SIZE:
         {
@@ -226,10 +227,10 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             if (!guard.test_and_set())
             {
                 RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
-                rectangle r = from_native(rect);
-                __set_real_location({ r.x, r.y });
-                __set_real_size({ r.width, r.height });
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetWindowRect(m_handle, &rect));
+                xaml_rectangle r = xaml_from_native(rect);
+                XAML_RETURN_IF_FAILED(set_real_location({ r.x, r.y }));
+                XAML_RETURN_IF_FAILED(set_real_size({ r.width, r.height }));
             }
             break;
         }
@@ -239,9 +240,9 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             if (!guard.test_and_set())
             {
                 RECT rect = {};
-                THROW_IF_WIN32_BOOL_FALSE(GetWindowRect(get_handle()->handle, &rect));
-                rectangle r = from_native(rect);
-                __set_real_location({ r.x, r.y });
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetWindowRect(m_handle, &rect));
+                xaml_rectangle r = xaml_from_native(rect);
+                XAML_RETURN_IF_FAILED(set_real_location({ r.x, r.y }));
             }
             break;
         }
@@ -250,10 +251,19 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             xaml_atomic_guard guard(m_resizing);
             if (!guard.test_and_set())
             {
-                SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(HIWORD(msg.wParam)), TRUE);
-                size real_size = __get_real_size();
-                THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-                __draw({});
+                xaml_ptr<xaml_application> current_app;
+                XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));
+                xaml_ptr<xaml_win32_font_provider> provider = current_app.query<xaml_win32_font_provider>();
+                if (provider)
+                {
+                    HFONT font;
+                    XAML_RETURN_IF_FAILED(provider->get_default_font(XamlGetDpiForWindow(m_handle), &font));
+                    SendMessage(m_handle, WM_SETFONT, (WPARAM)font, TRUE);
+                }
+                xaml_size real_size;
+                XAML_RETURN_IF_FAILED(get_real_size(&real_size));
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowPos(m_handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+                XAML_RETURN_IF_FAILED(draw({}));
             }
             break;
         }
@@ -293,9 +303,15 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             break;
         }
         }
-        auto result = get_child() ? get_child()->__wnd_proc(msg) : nullopt;
-        if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
-        return result;
+        if (m_child)
+        {
+            xaml_ptr<xaml_win32_control> native_control = m_child.query<xaml_win32_control>();
+            if (native_control)
+            {
+                if (XAML_SUCCESS(native_control->wnd_proc(msg, presult))) return XAML_S_OK;
+            }
+        }
+        //if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
     }
     return XAML_E_NOTIMPL;
 }
@@ -308,7 +324,7 @@ xaml_result xaml_window_impl::get_real_location(xaml_point* plocation) noexcept
 
 xaml_result xaml_window_impl::set_real_location(xaml_point const& value) noexcept
 {
-    return set_location(value * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow());
+    return set_location(value * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(m_handle));
 }
 
 xaml_result xaml_window_impl::get_dpi(double* pvalue) noexcept
