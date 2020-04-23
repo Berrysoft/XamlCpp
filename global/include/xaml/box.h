@@ -42,6 +42,18 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
         std::memcpy(&value, data, size);
         return XAML_S_OK;
     }
+
+    template <typename T>
+    xaml_result get_value_ptr(T const*& ptr)
+    {
+        xaml_guid type;
+        XAML_RETURN_IF_FAILED(get_type(&type));
+        if (type != xaml_type_guid_v<T>) return XAML_E_NOINTERFACE;
+        void const* data;
+        XAML_RETURN_IF_FAILED(get_data(&data));
+        ptr = (T const*)data;
+        return XAML_S_OK;
+    }
 #endif // __cplusplus
 };
 
