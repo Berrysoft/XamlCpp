@@ -157,13 +157,15 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return set_size_noevent({ real.width, real.height });
     }
 
-    xaml_result measure_string(xaml_std_string_view_t str, xaml_size offset, xaml_size* pvalue) noexcept
+    xaml_result measure_string(xaml_ptr<xaml_string> const& str, xaml_size offset, xaml_size* pvalue) noexcept
     {
         wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
         if (hDC)
         {
+            xaml_std_string_view_t view;
+            XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
             SIZE s = {};
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
+            XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), view.data(), (int)view.length(), &s));
             *pvalue = xaml_from_native(s) + offset;
         }
         else

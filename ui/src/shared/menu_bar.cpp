@@ -8,7 +8,10 @@ xaml_result xaml_menu_bar_new(xaml_menu_bar** ptr) noexcept
 
 xaml_result xaml_menu_bar_members(xaml_type_info_registration* __info) noexcept
 {
-    return xaml_container_members(__info);
+    using self_type = xaml_menu_bar;
+    XAML_RETURN_IF_FAILED(xaml_container_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_menu_bar_new);
+    return XAML_S_OK;
 }
 
 xaml_result xaml_menu_bar_register(xaml_meta_context* ctx) noexcept
