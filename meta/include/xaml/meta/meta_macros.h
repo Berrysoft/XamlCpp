@@ -86,6 +86,8 @@ public:                                                   \
 #define XAML_EVENT_IMPL(name)                                                                      \
 protected:                                                                                         \
     xaml_ptr<xaml_event> m_##name;                                                                 \
+                                                                                                   \
+public:                                                                                            \
     template <typename... Args>                                                                    \
     xaml_result on_##name(Args&&... args) noexcept                                                 \
     {                                                                                              \
@@ -94,8 +96,6 @@ protected:                                                                      
         xaml_ptr<xaml_object> res;                                                                 \
         return m_##name->invoke(invoke_args.get(), &res);                                          \
     }                                                                                              \
-                                                                                                   \
-public:                                                                                            \
     xaml_result XAML_CALL add_##name(xaml_delegate* handler, std::size_t* ptoken) noexcept         \
     {                                                                                              \
         return m_##name->add(handler, ptoken);                                                     \
