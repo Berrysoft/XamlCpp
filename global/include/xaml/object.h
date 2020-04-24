@@ -141,7 +141,7 @@ inline xaml_result xaml_object_init(T** ptr, Args&&... args) noexcept
     D* res = new (std::nothrow) D;
     if (!res) return XAML_E_OUTOFMEMORY;
     xaml_result hr = res->init(std::forward<Args>(args)...);
-    if (XAML_SUCCESS(hr))
+    if (XAML_SUCCEEDED(hr))
     {
         *ptr = res;
         return XAML_S_OK;
@@ -159,7 +159,7 @@ inline xaml_result xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
     if (!res) return XAML_E_OUTOFMEMORY;
     xaml_result hr = res->init();
-    if (XAML_SUCCESS(hr))
+    if (XAML_SUCCEEDED(hr))
     {
         *ptr = res;
         return XAML_S_OK;

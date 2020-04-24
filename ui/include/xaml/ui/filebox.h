@@ -21,7 +21,7 @@ XAML_CLASS(xaml_filebox, { 0xeed5f78a, 0x5be0, 0x4294, { 0xb9, 0x93, 0xd0, 0xcc,
     XAML_PROP(filename, type, xaml_string**, xaml_string);          \
     XAML_PROP(filters, type, xaml_vector_view**, xaml_vector_view); \
     XAML_METHOD(get_result, type, xaml_string**);                   \
-    XAML_METHOD(show, type, xaml_window*, bool*)
+    XAML_METHOD(show, type, xaml_window*)
 
 XAML_DECL_INTERFACE_(xaml_filebox, xaml_object)
 {

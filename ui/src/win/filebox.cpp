@@ -2,13 +2,14 @@
 #include <shared/filebox.hpp>
 #include <wil/com.h>
 #include <xaml/ui/filebox.h>
+#include <xaml/ui/win/control.h>
 
 #include <ShObjIdl.h>
 
 using namespace std;
 
 template <typename I>
-xaml_result xaml_filebox_impl<I>::show(xaml_window* parent, bool* presult) noexcept
+xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
     wil::com_ptr_t<IFileDialog, wil::err_returncode_policy> handle;
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
@@ -34,7 +35,9 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent, bool* presult) noexc
     vector<COMDLG_FILTERSPEC> types;
     for (auto f : m_filters)
     {
-        types.push_back({ f.name.c_str(), f.pattern.c_str() });
+        xaml_filebox_filter filter;
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), filter));
+        types.push_back({ filter.name, filter.pattern });
     }
     XAML_RETURN_IF_FAILED(handle->SetFileTypes((UINT)types.size(), types.data()));
     if (m_multiple)
@@ -44,67 +47,48 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent, bool* presult) noexc
         opt |= FOS_ALLOWMULTISELECT;
         XAML_RETURN_IF_FAILED(handle->SetOptions(opt));
     }
-    auto ret = SUCCEEDED(handle->Show(owner ? owner->get_handle()->handle : nullptr));
-    if (ret)
+    HWND owner = nullptr;
+    if (parent)
     {
-        if (m_multiple)
+        xaml_ptr<xaml_win32_control> native_control;
+        if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            m_results.clear();
-            com_ptr<IShellItemArray> items;
-            com_ptr<IFileOpenDialog> open_dlg = m_handle->handle.query<IFileOpenDialog>();
-            XAML_RETURN_IF_FAILED(open_dlg->GetResults(&items));
-            DWORD count;
-            XAML_RETURN_IF_FAILED(items->GetCount(&count));
-            for (DWORD i = 0; i < count; i++)
-            {
-                com_ptr<IShellItem> item;
-                XAML_RETURN_IF_FAILED(items->GetItemAt(i, &item));
-                unique_cotaskmem_string name;
-                XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
-                m_results.push_back(name.get());
-            }
-        }
-        else
-        {
-            com_ptr<IShellItem> item;
-            XAML_RETURN_IF_FAILED(m_handle->handle->GetResult(&item));
-            unique_cotaskmem_string name;
-            XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
-            m_results = { name.get() };
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&owner));
         }
     }
-    *presult = ret;
+    XAML_RETURN_IF_FAILED(handle->Show(owner));
+    m_results = nullptr;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));
+    if (m_multiple)
+    {
+        wil::com_ptr_t<IFileOpenDialog, wil::err_returncode_policy> open_dlg = handle.try_query<IFileOpenDialog>();
+        wil::com_ptr_t<IShellItemArray, wil::err_returncode_policy> items;
+        XAML_RETURN_IF_FAILED(open_dlg->GetResults(&items));
+        DWORD count;
+        XAML_RETURN_IF_FAILED(items->GetCount(&count));
+        for (DWORD i = 0; i < count; i++)
+        {
+            wil::com_ptr_t<IShellItem, wil::err_returncode_policy> item;
+            XAML_RETURN_IF_FAILED(items->GetItemAt(i, &item));
+            wil::unique_cotaskmem_string name;
+            XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
+            xaml_ptr<xaml_string> xaml_name;
+            XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
+            XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+        }
+    }
+    else
+    {
+        wil::com_ptr_t<IShellItem, wil::err_returncode_policy> item;
+        XAML_RETURN_IF_FAILED(handle->GetResult(&item));
+        wil::unique_cotaskmem_string name;
+        XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
+        xaml_ptr<xaml_string> xaml_name;
+        XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
+        XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+    }
     return XAML_S_OK;
 }
 
 template struct xaml_filebox_impl<xaml_open_filebox>;
 template struct xaml_filebox_impl<xaml_save_filebox>;
-
-//using namespace wil;
-//
-//namespace xaml
-//{
-//    bool filebox::show(shared_ptr<window> owner)
-//    {
-//        if (m_handle)
-//        {
-//        }
-//        return false;
-//    }
-//
-//    bool open_filebox::show(shared_ptr<window> owner)
-//    {
-//        auto h = make_shared<native_filebox>();
-//        h->handle = CoCreateInstance<FileOpenDialog, IFileDialog>(CLSCTX_INPROC_SERVER);
-//        set_handle(h);
-//        return filebox::show(owner);
-//    }
-//
-//    bool save_filebox::show(shared_ptr<window> owner)
-//    {
-//        auto h = make_shared<native_filebox>();
-//        h->handle = CoCreateInstance<FileSaveDialog, IFileDialog>(CLSCTX_INPROC_SERVER);
-//        set_handle(h);
-//        return filebox::show(owner);
-//    }
-//} // namespace xaml

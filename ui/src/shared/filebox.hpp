@@ -27,7 +27,7 @@ public:
         return m_results->query(ptr);
     }
 
-    xaml_result XAML_CALL show(xaml_window*, bool*) noexcept override;
+    xaml_result XAML_CALL show(xaml_window*) noexcept override;
 };
 
 extern template struct xaml_filebox_impl<xaml_open_filebox>;

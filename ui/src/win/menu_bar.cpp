@@ -10,7 +10,7 @@ xaml_result xaml_menu_bar_impl::draw(xaml_rectangle const& region) noexcept
     xaml_control* parent;
     XAML_RETURN_IF_FAILED(get_parent(&parent));
     xaml_ptr<xaml_win32_control> native_parent;
-    if (XAML_SUCCESS(parent->query(&native_parent)))
+    if (XAML_SUCCEEDED(parent->query(&native_parent)))
     {
         XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
     }

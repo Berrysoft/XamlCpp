@@ -28,7 +28,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
     xaml_win32_window_message msg = { hWnd, Msg, wParam, lParam };
     auto wnd = window_map[hWnd];
     xaml_ptr<xaml_win32_control> native_control;
-    if (XAML_SUCCESS(wnd->query(&native_control)))
+    if (XAML_SUCCEEDED(wnd->query(&native_control)))
     {
         LPARAM result;
         xaml_result hr = native_control->wnd_proc(msg, &result);
@@ -66,7 +66,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
             }
             break;
         }
-        if (XAML_SUCCESS(hr)) return result;
+        if (XAML_SUCCEEDED(hr)) return result;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
@@ -311,7 +311,7 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             xaml_ptr<xaml_win32_control> native_control = m_child.query<xaml_win32_control>();
             if (native_control)
             {
-                if (XAML_SUCCESS(native_control->wnd_proc(msg, presult))) return XAML_S_OK;
+                if (XAML_SUCCEEDED(native_control->wnd_proc(msg, presult))) return XAML_S_OK;
             }
         }
         //if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);

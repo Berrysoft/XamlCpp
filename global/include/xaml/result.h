@@ -14,7 +14,7 @@
 
 typedef XAML_CSTD uint32_t xaml_result;
 
-#define XAML_SUCCESS(expr) (!(expr))
+#define XAML_SUCCEEDED(expr) (!(expr))
 #define XAML_FAILED(expr) (expr)
 
 #define XAML_RETURN_IF_FAILED(expr)     \
@@ -24,11 +24,11 @@ typedef XAML_CSTD uint32_t xaml_result;
         if (XAML_FAILED(hr)) return hr; \
     } while (0)
 
-#define XAML_ASSERT_SUCCESS(expr) \
-    do                            \
-    {                             \
-        xaml_result hr = (expr);  \
-        assert(XAML_SUCCESS(hr)); \
+#define XAML_ASSERT_SUCCESS(expr)   \
+    do                              \
+    {                               \
+        xaml_result hr = (expr);    \
+        assert(XAML_SUCCEEDED(hr)); \
     } while (0)
 
 #define XAML_S_OK 0

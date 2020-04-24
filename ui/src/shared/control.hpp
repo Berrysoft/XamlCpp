@@ -124,7 +124,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         if (params.parent)
         {
             xaml_ptr<xaml_win32_control> native_parent;
-            if (XAML_SUCCESS(params.parent->query(&native_parent)))
+            if (XAML_SUCCEEDED(params.parent->query(&native_parent)))
             {
                 XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent));
             }

@@ -10,7 +10,7 @@ using namespace std;
 
 static int xaml_main_end(xaml_result hr) noexcept
 {
-    if (XAML_SUCCESS(hr))
+    if (XAML_SUCCEEDED(hr))
     {
         return 0;
     }

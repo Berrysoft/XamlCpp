@@ -14,7 +14,7 @@ xaml_result xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_s
     if (parent)
     {
         xaml_ptr<xaml_win32_control> native_control;
-        if (XAML_SUCCESS(parent->query(&native_control)))
+        if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
             HWND handle;
             XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));

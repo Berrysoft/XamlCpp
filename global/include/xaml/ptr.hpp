@@ -92,7 +92,7 @@ public:
     constexpr xaml_ptr<D> query() const noexcept
     {
         xaml_ptr<D> res;
-        if (XAML_SUCCESS(m_ptr->query(&res))) return res;
+        if (XAML_SUCCEEDED(m_ptr->query(&res))) return res;
         return nullptr;
     }
 

@@ -65,7 +65,7 @@ public:
                 if (win32_control)
                 {
                     LPARAM res;
-                    if (XAML_SUCCESS(win32_control->wnd_proc(msg, &res))) result = res;
+                    if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
                 }
             }
             if (result)
