@@ -240,14 +240,14 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
             [this](xaml_ptr<xaml_control>, xaml_size) {
                 if (m_handle)
                 {
-                    draw_size();
-                    parent_redraw();
+                    XAML_THROW_IF_FAILED(draw_size());
+                    XAML_THROW_IF_FAILED(parent_redraw());
                 }
             },
             &token)));
         XAML_RETURN_IF_FAILED((m_is_visible_changed->add<void, xaml_ptr<xaml_control>, bool>(
             [this](xaml_ptr<xaml_control>, bool) {
-                if (m_handle) draw_visible();
+                if (m_handle) XAML_THROW_IF_FAILED(draw_visible());
             },
             &token)));
         return XAML_S_OK;

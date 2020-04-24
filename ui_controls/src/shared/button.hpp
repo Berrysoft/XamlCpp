@@ -89,14 +89,14 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
             [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) {
                 if (m_handle)
                 {
-                    draw_text();
-                    parent_redraw();
+                    XAML_THROW_IF_FAILED(draw_text());
+                    XAML_THROW_IF_FAILED(parent_redraw());
                 }
             },
             &token)));
         XAML_RETURN_IF_FAILED((m_is_default_changed->add<void, xaml_ptr<xaml_button>, bool>(
             [this](xaml_ptr<xaml_button>, bool) {
-                if (m_handle) draw_default();
+                if (m_handle) XAML_THROW_IF_FAILED(draw_default());
             },
             &token)));
     }
