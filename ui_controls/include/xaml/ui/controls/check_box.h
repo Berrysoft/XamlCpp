@@ -8,7 +8,7 @@ XAML_CLASS(xaml_check_box, { 0x4d5724c2, 0x77c5, 0x4935, { 0xbd, 0x12, 0x86, 0x8
 #define XAML_CHECK_BOX_VTBL(type)              \
     XAML_VTBL_INHERIT(XAML_BUTTON_VTBL(type)); \
     XAML_PROP(is_checked, type, bool*, bool);  \
-    XAML_EVENT(is_check_changed, type)
+    XAML_EVENT(is_checked_changed, type)
 
 XAML_DECL_INTERFACE_(xaml_check_box, xaml_button)
 {
