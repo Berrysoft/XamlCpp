@@ -85,7 +85,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
 
         std::size_t token;
-        XAML_RETURN_IF_FAILED((m_text_changed->add<void, xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
+        XAML_RETURN_IF_FAILED((m_text_changed->add<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
             [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) {
                 if (m_handle)
                 {
@@ -94,7 +94,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
                 }
             },
             &token)));
-        XAML_RETURN_IF_FAILED((m_is_default_changed->add<void, xaml_ptr<xaml_button>, bool>(
+        XAML_RETURN_IF_FAILED((m_is_default_changed->add<xaml_ptr<xaml_button>, bool>(
             [this](xaml_ptr<xaml_button>, bool) {
                 if (m_handle) XAML_THROW_IF_FAILED(draw_default());
             },

@@ -236,7 +236,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_visible_changed));
 
         std::size_t token;
-        XAML_RETURN_IF_FAILED((m_size_changed->add<void, xaml_ptr<xaml_control>, xaml_size>(
+        XAML_RETURN_IF_FAILED((m_size_changed->add<xaml_ptr<xaml_control>, xaml_size>(
             [this](xaml_ptr<xaml_control>, xaml_size) {
                 if (m_handle)
                 {
@@ -245,7 +245,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
                 }
             },
             &token)));
-        XAML_RETURN_IF_FAILED((m_is_visible_changed->add<void, xaml_ptr<xaml_control>, bool>(
+        XAML_RETURN_IF_FAILED((m_is_visible_changed->add<xaml_ptr<xaml_control>, bool>(
             [this](xaml_ptr<xaml_control>, bool) {
                 if (m_handle) XAML_THROW_IF_FAILED(draw_visible());
             },

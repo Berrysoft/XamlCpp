@@ -20,11 +20,11 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
     XAML_DECL_VTBL(xaml_event, XAML_EVENT_VTBL);
 
 #ifdef __cplusplus
-    template <typename Return, typename... Args, typename F>
+    template <typename... Args, typename F>
     xaml_result add(F && f, std::size_t * ptoken) noexcept
     {
         xaml_ptr<xaml_delegate> callback;
-        XAML_RETURN_IF_FAILED((xaml_delegate_new<Return, Args...>(std::forward<F>(f), &callback)));
+        XAML_RETURN_IF_FAILED((xaml_delegate_new<void, Args...>(std::forward<F>(f), &callback)));
         return add(callback.get(), ptoken);
     }
 #endif // __cplusplus

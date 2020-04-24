@@ -14,17 +14,17 @@ xaml_result xaml_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_closing));
 
     size_t token;
-    XAML_RETURN_IF_FAILED((m_size_changed->add<void, xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
+    XAML_RETURN_IF_FAILED((m_size_changed->add<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
         [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) {
             if (m_handle) draw_title();
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_location_changed->add<void, xaml_ptr<xaml_window>, xaml_point>(
+    XAML_RETURN_IF_FAILED((m_location_changed->add<xaml_ptr<xaml_window>, xaml_point>(
         [this](xaml_ptr<xaml_window>, xaml_point) {
             if (m_handle && !m_resizing) draw({});
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_is_resizable_changed->add<void, xaml_ptr<xaml_window>, bool>(
+    XAML_RETURN_IF_FAILED((m_is_resizable_changed->add<xaml_ptr<xaml_window>, bool>(
         [this](xaml_ptr<xaml_window>, bool) {
             if (m_handle) draw_resizable();
         },
