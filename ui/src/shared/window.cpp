@@ -4,10 +4,6 @@
 
 using namespace std;
 
-xaml_window_impl::xaml_window_impl() noexcept : xaml_container_implement()
-{
-}
-
 xaml_result xaml_window_impl::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_container_implement::init());
@@ -33,6 +29,7 @@ xaml_result xaml_window_impl::init() noexcept
             if (m_handle) draw_resizable();
         },
         &token)));
+    return XAML_S_OK;
 }
 
 xaml_result xaml_window_new(xaml_window** ptr) noexcept
@@ -50,7 +47,7 @@ xaml_result xaml_window_members(xaml_type_info_registration* __info) noexcept
     XAML_TYPE_INFO_ADD_PROP(y);
     XAML_TYPE_INFO_ADD_EVENT(closing);
     XAML_TYPE_INFO_ADD_PROP_EVENT(is_resizable);
-    //XAML_TYPE_INFO_ADD_PROP(menu_bar);
+    XAML_TYPE_INFO_ADD_PROP(menu_bar);
     return XAML_S_OK;
 }
 

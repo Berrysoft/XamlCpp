@@ -28,7 +28,7 @@ struct xaml_version
 #endif // __cpp_impl_three_way_comparison
 };
 
-XAML_CONSTEXPR_VAR xaml_version current_xaml_version = { XAML_VERSION_MAJOR, XAML_VERSION_MINOR, XAML_VERSION_PATCH };
+XAML_CONSTEXPR_VAR xaml_version xaml_version_current = { XAML_VERSION_MAJOR, XAML_VERSION_MINOR, XAML_VERSION_PATCH };
 
 #ifdef __cplusplus
 template <typename Char, typename Traits>

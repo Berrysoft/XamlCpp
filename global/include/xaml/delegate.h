@@ -49,7 +49,6 @@ Return __xaml_delegate_impl_invoke(std::function<Return(Args...)> const& func, x
 template <typename Return, typename... Args, typename F>
 inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
 {
-    if (!func) return XAML_E_INVALIDARG;
     return xaml_delegate_new(
         std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
             [func = std::function<Return(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {

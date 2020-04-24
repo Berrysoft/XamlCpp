@@ -24,7 +24,7 @@ xaml_result xaml_menu_bar_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_menu_bar_impl::draw_submenu()
+xaml_result xaml_menu_bar_impl::draw_submenu() noexcept
 {
     for (auto child : m_children)
     {
@@ -35,7 +35,7 @@ xaml_result xaml_menu_bar_impl::draw_submenu()
     return XAML_S_OK;
 }
 
-xaml_result xaml_menu_bar_impl::draw_visible()
+xaml_result xaml_menu_bar_impl::draw_visible() noexcept
 {
     if (m_is_visible)
         XAML_RETURN_IF_WIN32_BOOL_FALSE(SetMenu(m_handle, m_menu.get()));

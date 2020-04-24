@@ -56,6 +56,7 @@ xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
     XamlSetPreferredAppMode(XAML_PREFERRED_APP_MODE_ALLOW_DARK);
     XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlSystemDefaultFontForDpi(&s_default_font, USER_DEFAULT_SCREEN_DPI));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(register_window_class());
+    return XAML_S_OK;
 }
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept

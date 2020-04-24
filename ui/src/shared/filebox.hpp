@@ -4,7 +4,7 @@
 #include <xaml/ui/filebox.h>
 
 template <typename I>
-struct xaml_filebox_impl : xaml_implement<xaml_filebox_impl, I, xaml_filebox, xaml_object>
+struct xaml_filebox_impl : xaml_implement<xaml_filebox_impl<I>, I, xaml_filebox, xaml_object>
 {
     XAML_PROP_PTR_IMPL(title, xaml_string)
     XAML_PROP_PTR_IMPL(filename, xaml_string)

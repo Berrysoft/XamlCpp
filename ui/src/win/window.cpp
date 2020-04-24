@@ -112,7 +112,7 @@ xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_size()
+xaml_result xaml_window_impl::draw_size() noexcept
 {
     xaml_atomic_guard guard(m_resizing);
     if (!guard.test_and_set())
@@ -126,7 +126,7 @@ xaml_result xaml_window_impl::draw_size()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_title()
+xaml_result xaml_window_impl::draw_title() noexcept
 {
     xaml_char_t const* title;
     XAML_RETURN_IF_FAILED(m_title->get_data(&title));
@@ -134,7 +134,7 @@ xaml_result xaml_window_impl::draw_title()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_child()
+xaml_result xaml_window_impl::draw_child() noexcept
 {
     if (m_child)
     {
@@ -145,7 +145,7 @@ xaml_result xaml_window_impl::draw_child()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_resizable()
+xaml_result xaml_window_impl::draw_resizable() noexcept
 {
     LONG_PTR style = GetWindowLongPtr(m_handle, GWL_STYLE);
     if (m_is_resizable)
@@ -156,7 +156,7 @@ xaml_result xaml_window_impl::draw_resizable()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_menu_bar()
+xaml_result xaml_window_impl::draw_menu_bar() noexcept
 {
     if (m_menu_bar)
     {
@@ -166,7 +166,7 @@ xaml_result xaml_window_impl::draw_menu_bar()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::show()
+xaml_result xaml_window_impl::show() noexcept
 {
     XAML_RETURN_IF_FAILED(draw({}));
     ShowWindow(m_handle, SW_SHOWNORMAL);
@@ -175,13 +175,13 @@ xaml_result xaml_window_impl::show()
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::close()
+xaml_result xaml_window_impl::close() noexcept
 {
     SendMessage(m_handle, WM_CLOSE, 0, 0);
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::hide()
+xaml_result xaml_window_impl::hide() noexcept
 {
     return set_is_visible(false);
 }

@@ -7,7 +7,7 @@ XAML_CLASS(xaml_window, { 0xf65be476, 0xbef3, 0x4d90, { 0xa6, 0xcd, 0x89, 0x33, 
 
 #define XAML_WINDOW_VTBL(type)                                         \
     XAML_VTBL_INHERIT(XAML_CONTAINER_VTBL(type));                      \
-    XAML_PROP(get_menu_bar, type, xaml_control**, xaml_control*);      \
+    XAML_PROP(menu_bar, type, xaml_control**, xaml_control*);          \
     XAML_METHOD(show, type);                                           \
     XAML_METHOD(close, type);                                          \
     XAML_METHOD(hide, type);                                           \
@@ -17,7 +17,7 @@ XAML_CLASS(xaml_window, { 0xf65be476, 0xbef3, 0x4d90, { 0xa6, 0xcd, 0x89, 0x33, 
     XAML_EVENT(location_changed, type);                                \
     XAML_PROP(x, type, double*, double);                               \
     XAML_PROP(y, type, double*, double);                               \
-    XAML_PROP(title, type, xaml_string**, xaml_string);                \
+    XAML_PROP(title, type, xaml_string**, xaml_string*);               \
     XAML_EVENT(title_changed, type);                                   \
     XAML_EVENT(closing, type);                                         \
     XAML_METHOD(get_client_region, type, xaml_rectangle*);             \

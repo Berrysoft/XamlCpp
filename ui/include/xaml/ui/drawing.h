@@ -133,7 +133,7 @@ XAML_TYPE(xaml_point, { 0xd529263c, 0x9ea7, 0x4be9, { 0xa0, 0x81, 0x9a, 0xc1, 0x
 
 #ifdef __cplusplus
 template <typename TChar>
-inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str)
+inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str) noexcept
 {
     constexpr TChar __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
     std::size_t index = str.find_first_of(__delimeter);
@@ -237,7 +237,7 @@ XAML_TYPE(xaml_margin, { 0xb31a5b36, 0x30c3, 0x408f, { 0xae, 0x44, 0xaf, 0xc2, 0
 
 #ifdef __cplusplus
 template <typename TChar>
-inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str)
+inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str) noexcept
 {
     constexpr TChar __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
     std::size_t len1 = str.find_first_of(__delimeter);

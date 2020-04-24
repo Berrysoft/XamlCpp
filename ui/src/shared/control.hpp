@@ -145,6 +145,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
             SendMessage(m_handle, WM_SETFONT, (WPARAM)font, TRUE);
         }
         XamlControlUseDarkMode(m_handle);
+        return XAML_S_OK;
     }
 
     xaml_result set_rect(xaml_rectangle const& region) noexcept
@@ -220,7 +221,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
 
     xaml_control_implement() noexcept : m_is_visible(true)
     {
-        m_native_control.m_outer = this;
+        m_native_control.m_outer = static_cast<T*>(this);
     }
 
     virtual xaml_result init() noexcept
@@ -247,6 +248,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
                 if (m_handle) draw_visible();
             },
             &token)));
+        return XAML_S_OK;
     }
 };
 

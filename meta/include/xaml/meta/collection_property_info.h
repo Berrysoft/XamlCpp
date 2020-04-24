@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #endif // __cplusplus
 
+#include <xaml/meta/property_info.h>
 #include <xaml/object.h>
 #include <xaml/string.h>
 
@@ -42,16 +43,16 @@ inline xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_res
         [adder](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            std::decay_t<TValueAdd> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<std::decay_t<TValueAdd>>{}(obj, value));
-            return (self.get()->*adder)(value);
+            __xaml_wrapper_t<std::decay_t<TValueAdd>> value;
+            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueAdd>>>{}(obj, value));
+            return (self.get()->*adder)(__xaml_wrapper_get<std::decay_t<TValueAdd>>(value));
         },
         [remover](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
-            std::decay_t<TValueRemove> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<std::decay_t<TValueRemove>>{}(obj, value));
-            return (self.get()->*remover)(value);
+            __xaml_wrapper_t<std::decay_t<TValueRemove>> value;
+            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueRemove>>>{}(obj, value));
+            return (self.get()->*remover)(__xaml_wrapper_get<std::decay_t<TValueRemove>>(value));
         },
         ptr);
 }

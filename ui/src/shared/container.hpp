@@ -13,9 +13,9 @@ struct xaml_container_implement : xaml_control_implement<T, Base..., xaml_contai
 {
     XAML_EVENT_IMPL(child_changed)
     XAML_PROP_PTR_IMPL_BASE(child, xaml_control)
-    xaml_result XAML_CALL set_child(type* value) noexcept override
+    xaml_result XAML_CALL set_child(xaml_control* value) noexcept override
     {
-        if (m_child != value)
+        if (m_child.get() != value)
         {
             m_child = value;
             m_child->set_parent(this);
@@ -84,6 +84,7 @@ public:
     {
         XAML_RETURN_IF_FAILED(xaml_control_implement::init());
         XAML_RETURN_IF_FAILED(xaml_vector_new(&m_children));
+        return XAML_S_OK;
     }
 };
 
