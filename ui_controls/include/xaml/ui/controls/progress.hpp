@@ -27,7 +27,7 @@ namespace xaml
 
 #ifndef XAML_UI_GTK3
     public:
-        XAML_UI_CONTROLS_API void __int32_to_fit() override;
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // !XAML_UI_GTK3
 
 #ifdef XAML_UI_GTK3

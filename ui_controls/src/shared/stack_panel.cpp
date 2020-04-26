@@ -50,7 +50,7 @@ xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, funct
     return XAML_S_OK;
 }
 
-xaml_result xaml_stack_panel_impl::int32_to_fit() noexcept
+xaml_result xaml_stack_panel_impl::size_to_fit() noexcept
 {
     if (m_orientation == xaml_orientation_vertical)
     {

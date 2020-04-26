@@ -13,7 +13,7 @@ namespace xaml
         draw_size();
     }
 
-    void control::__int32_to_fit()
+    void control::__size_to_fit()
     {
         int width, height;
         gtk_widget_get_preferred_width(get_handle()->handle, NULL, &width);

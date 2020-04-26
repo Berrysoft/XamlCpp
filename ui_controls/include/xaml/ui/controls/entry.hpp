@@ -39,7 +39,7 @@ namespace xaml
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;
 
 #ifndef XAML_UI_COCOA
-        XAML_UI_CONTROLS_API void __int32_to_fit() override;
+        XAML_UI_CONTROLS_API void __size_to_fit() override;
 #endif // !XAML_UI_COCOA
 
     protected:

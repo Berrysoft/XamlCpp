@@ -9,7 +9,7 @@ struct xaml_stack_panel_impl : xaml_layout_base_implement<xaml_stack_panel_impl,
     XAML_PROP_IMPL(orientation, xaml_orientation, xaml_orientation*, xaml_orientation)
 
     xaml_result draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)>) noexcept override;
-    xaml_result XAML_CALL int32_to_fit() noexcept override;
+    xaml_result XAML_CALL size_to_fit() noexcept override;
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_STACK_PANEL_HPP

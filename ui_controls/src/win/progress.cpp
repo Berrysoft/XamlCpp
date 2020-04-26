@@ -49,7 +49,7 @@ namespace xaml
         draw_progress();
     }
 
-    void progress::__int32_to_fit()
+    void progress::__size_to_fit()
     {
         static int cyVScroll = XamlGetSystemMetricsForDpi(SM_CYVSCROLL, USER_DEFAULT_SCREEN_DPI);
         __set_size_noevent({ get_width(), (double)cyVScroll });

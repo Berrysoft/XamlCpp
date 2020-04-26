@@ -103,7 +103,7 @@ namespace xaml
         }
     }
 
-    void combo_box::__int32_to_fit()
+    void combo_box::__size_to_fit()
     {
         double fw = 0.0, fh = 0.0;
         for (auto item : get_items())

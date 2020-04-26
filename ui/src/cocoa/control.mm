@@ -17,7 +17,7 @@ namespace xaml
         __set_size_noevent({ real.width, real.height });
     }
 
-    void control::__int32_to_fit()
+    void control::__size_to_fit()
     {
         NSView* view = get_handle()->handle;
         if ([view isKindOfClass:[NSControl class]])

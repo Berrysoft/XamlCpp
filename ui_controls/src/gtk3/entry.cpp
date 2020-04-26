@@ -49,9 +49,9 @@ namespace xaml
         self->set_text(gtk_entry_get_text(GTK_ENTRY(self->get_handle()->handle)));
     }
 
-    void entry::__int32_to_fit()
+    void entry::__size_to_fit()
     {
         gtk_entry_set_width_chars(GTK_ENTRY(get_handle()->handle), (gint)m_text.length());
-        control::__int32_to_fit();
+        control::__size_to_fit();
     }
 } // namespace xaml

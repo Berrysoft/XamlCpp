@@ -68,7 +68,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         return XAML_E_NOTIMPL;
     }
 
-    xaml_result XAML_CALL int32_to_fit() noexcept override
+    xaml_result XAML_CALL size_to_fit() noexcept override
     {
         xaml_size res;
         XAML_RETURN_IF_FAILED(measure_string(m_text, { 5, 5 }, &res));

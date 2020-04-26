@@ -111,7 +111,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         }
     }
 
-    xaml_result XAML_CALL int32_to_fit() noexcept override
+    xaml_result XAML_CALL size_to_fit() noexcept override
     {
         return XAML_S_OK;
     }
