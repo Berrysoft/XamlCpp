@@ -14,4 +14,8 @@ XAML_DECL_INTERFACE_(xaml_stack_panel, xaml_layout_base)
     XAML_DECL_VTBL(xaml_stack_panel, XAML_STACK_PANEL_VTBL);
 };
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_stack_panel_new(xaml_stack_panel**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_stack_panel_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_stack_panel_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CONTROLS_STACK_PANEL_H
