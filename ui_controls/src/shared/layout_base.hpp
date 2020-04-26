@@ -13,7 +13,7 @@ struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Base..., xa
 {
     virtual xaml_result draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)>) noexcept
     {
-        for (auto c : m_children)
+        XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_control> cc;
             XAML_RETURN_IF_FAILED(c->query(&cc));
@@ -35,6 +35,7 @@ struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Base..., xa
             }
             XAML_RETURN_IF_FAILED(cc->size_to_fit());
         }
+        XAML_FOREACH_END();
         return XAML_S_OK;
     }
 

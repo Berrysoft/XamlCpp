@@ -31,33 +31,31 @@ xaml_result xaml_radio_box_impl::init() noexcept
 #ifndef XAML_UI_GTK3
 xaml_result xaml_radio_box_impl::draw_group() noexcept
 {
-    if (m_parent)
+    if (m_parent && m_is_checked)
     {
-        if (m_is_checked)
+        xaml_ptr<xaml_multicontainer> multic;
+        if (XAML_SUCCEEDED(m_parent->query(&multic)))
         {
-            xaml_ptr<xaml_multicontainer> multic;
-            if (XAML_SUCCEEDED(m_parent->query(&multic)))
+            xaml_ptr<xaml_vector_view> children;
+            XAML_RETURN_IF_FAILED(multic->get_children(&children));
+            XAML_FOREACH_START(c, children);
             {
-                xaml_ptr<xaml_vector_view> children;
-                XAML_RETURN_IF_FAILED(multic->get_children(&children));
-                for (auto c : children)
+                if (auto rc = c.query<xaml_radio_box>())
                 {
-                    if (auto rc = c.query<xaml_radio_box>())
+                    if (rc.get() != this)
                     {
-                        if (rc.get() != this)
+                        xaml_ptr<xaml_string> group;
+                        XAML_RETURN_IF_FAILED(rc->get_group(&group));
+                        bool equals;
+                        XAML_RETURN_IF_FAILED(group->equals(m_group.get(), &equals));
+                        if (equals)
                         {
-                            xaml_ptr<xaml_string> group;
-                            XAML_RETURN_IF_FAILED(rc->get_group(&group));
-                            bool equals;
-                            XAML_RETURN_IF_FAILED(group->equals(m_group.get(), &equals));
-                            if (equals)
-                            {
-                                XAML_RETURN_IF_FAILED(rc->set_is_checked(false));
-                            }
+                            XAML_RETURN_IF_FAILED(rc->set_is_checked(false));
                         }
                     }
                 }
             }
+            XAML_FOREACH_END();
         }
     }
 }

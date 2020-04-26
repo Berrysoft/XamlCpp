@@ -42,7 +42,7 @@ xaml_result xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_s
     }
     TASKDIALOG_COMMON_BUTTON_FLAGS flags = 0;
     vector<TASKDIALOG_BUTTON> cbs;
-    for (auto b : buttons)
+    XAML_FOREACH_START(b, buttons);
     {
         xaml_ptr<xaml_box> box;
         XAML_RETURN_IF_FAILED(b->query(&box));
@@ -50,6 +50,7 @@ xaml_result xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_s
         XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
         cbs.push_back({ (int)button->result, button->text });
     }
+    XAML_FOREACH_END();
     config.dwCommonButtons = flags;
     config.cButtons = (UINT)cbs.size();
     config.pButtons = cbs.data();

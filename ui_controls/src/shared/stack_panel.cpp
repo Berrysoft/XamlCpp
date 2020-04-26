@@ -12,7 +12,7 @@ xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, funct
     if (m_orientation == xaml_orientation_vertical)
     {
         double suby = real.y;
-        for (auto c : m_children)
+        XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_control> cc;
             XAML_RETURN_IF_FAILED(c->query(&cc));
@@ -26,11 +26,12 @@ xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, funct
             if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
             suby += subh;
         }
+        XAML_FOREACH_END();
     }
     else
     {
         double subx = real.x;
-        for (auto c : m_children)
+        XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_control> cc;
             XAML_RETURN_IF_FAILED(c->query(&cc));
@@ -44,6 +45,7 @@ xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, funct
             if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
             subx += subw;
         }
+        XAML_FOREACH_END();
     }
     return XAML_S_OK;
 }
@@ -53,7 +55,7 @@ xaml_result xaml_stack_panel_impl::size_to_fit() noexcept
     if (m_orientation == xaml_orientation_vertical)
     {
         double height = 0;
-        for (auto c : m_children)
+        XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_control> cc;
             XAML_RETURN_IF_FAILED(c->query(&cc));
@@ -63,12 +65,13 @@ xaml_result xaml_stack_panel_impl::size_to_fit() noexcept
             XAML_RETURN_IF_FAILED(cc->get_size(&cs));
             height += cs.height + cm.top + cm.bottom;
         }
+        XAML_FOREACH_END();
         return set_size_noevent({ m_size.width, height });
     }
     else
     {
         double width = 0;
-        for (auto c : m_children)
+        XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_control> cc;
             XAML_RETURN_IF_FAILED(c->query(&cc));
@@ -78,6 +81,7 @@ xaml_result xaml_stack_panel_impl::size_to_fit() noexcept
             XAML_RETURN_IF_FAILED(cc->get_size(&cs));
             width += cs.width + cm.left + cm.right;
         }
+        XAML_FOREACH_END();
         return set_size_noevent({ width, m_size.height });
     }
 }

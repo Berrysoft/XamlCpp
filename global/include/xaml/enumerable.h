@@ -33,6 +33,24 @@ XAML_DECL_INTERFACE_(xaml_enumerable, xaml_object)
 };
 
 #ifdef __cplusplus
+#define XAML_FOREACH_START(item, enumerable)                     \
+    do                                                           \
+    {                                                            \
+        xaml_ptr<xaml_enumerator> __e;                           \
+        XAML_RETURN_IF_FAILED(enumerable->get_enumerator(&__e)); \
+        while (true)                                             \
+        {                                                        \
+            bool __moved;                                        \
+            XAML_RETURN_IF_FAILED(__e->move_next(&__moved));     \
+            if (!__moved) break;                                 \
+            xaml_ptr<xaml_object> item;                          \
+            XAML_RETURN_IF_FAILED(__e->get_current(&item))
+
+#define XAML_FOREACH_END() \
+    }                      \
+    }                      \
+    while (0)
+
 struct __xaml_enumerator_iterator
 {
 private:

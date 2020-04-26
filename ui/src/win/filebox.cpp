@@ -33,12 +33,13 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         XAML_RETURN_IF_FAILED(handle->SetFileName(data));
     }
     vector<COMDLG_FILTERSPEC> types;
-    for (auto f : m_filters)
+    XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter filter;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), filter));
         types.push_back({ filter.name, filter.pattern });
     }
+    XAML_FOREACH_END();
     XAML_RETURN_IF_FAILED(handle->SetFileTypes((UINT)types.size(), types.data()));
     if (m_multiple)
     {

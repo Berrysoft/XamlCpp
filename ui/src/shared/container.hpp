@@ -59,7 +59,7 @@ public:
         try
         {
             std::optional<LPARAM> result;
-            for (auto c : m_children)
+            XAML_FOREACH_START(c, m_children);
             {
                 xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
                 if (win32_control)
@@ -68,6 +68,7 @@ public:
                     if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
                 }
             }
+            XAML_FOREACH_END();
             if (result)
             {
                 *pres = *result;
