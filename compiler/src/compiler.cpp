@@ -25,7 +25,7 @@ namespace xaml
 
     static string module_compile(module const& m, guid const& type, string_view code) noexcept
     {
-        using compile_t = void (*)(void const*, const char*, size_t, void*) noexcept;
+        using compile_t = void (*)(void const*, const char*, int32_t, void*) noexcept;
         auto pc = (compile_t)m.get_method("compile");
         if (pc)
         {
@@ -63,7 +63,7 @@ namespace xaml
         type_guid_v<meta_box<string>>, type_guid_v<meta_box<wstring>>
     };
 
-    template <size_t N>
+    template <int32_t N>
     static bool is_of_type(guid const& type, array<guid, N> const& arr)
     {
         return find(arr.begin(), arr.end(), type) != arr.end();

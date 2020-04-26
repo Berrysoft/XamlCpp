@@ -40,7 +40,7 @@ namespace xaml
             [prog stopAnimation:nil];
     }
 
-    void progress::__size_to_fit()
+    void progress::__int32_to_fit()
     {
         __set_size_noevent({ get_width(), 20 });
     }

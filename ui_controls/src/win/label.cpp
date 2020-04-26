@@ -56,7 +56,7 @@ namespace xaml
         SetWindowLongPtr(get_handle()->handle, GWL_STYLE, style);
     }
 
-    void label::__size_to_fit()
+    void label::__int32_to_fit()
     {
         __set_size_noevent(__measure_text_size(m_text, {}));
     }

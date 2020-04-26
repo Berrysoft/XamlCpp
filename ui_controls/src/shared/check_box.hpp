@@ -15,7 +15,7 @@ struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_che
 
 #ifdef XAML_UI_WINDOWS
     xaml_result wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
-    xaml_result XAML_CALL size_to_fit() noexcept override;
+    xaml_result XAML_CALL int32_to_fit() noexcept override;
 #endif // XAML_UI_WINDOWS
 
     xaml_result init() noexcept override;

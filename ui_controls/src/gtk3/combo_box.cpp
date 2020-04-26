@@ -89,12 +89,12 @@ namespace xaml
         }
     }
 
-    void combo_box::insert_item(size_t index, string_t const& value)
+    void combo_box::insert_item(int32_t index, string_t const& value)
     {
         gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(get_handle()->handle), (gint)index, value.c_str());
     }
 
-    void combo_box::remove_item(size_t index)
+    void combo_box::remove_item(int32_t index)
     {
         gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(get_handle()->handle), (gint)index);
     }
@@ -104,7 +104,7 @@ namespace xaml
         gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(get_handle()->handle));
     }
 
-    void combo_box::replace_item(size_t index, string_t const& value)
+    void combo_box::replace_item(int32_t index, string_t const& value)
     {
         remove_item(index);
         insert_item(index, value);

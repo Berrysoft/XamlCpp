@@ -20,7 +20,7 @@ namespace rapidxml
         {
         private:
             xml_namespace_processor& m_processor;
-            size_t const m_stack_position;
+            int32_t const m_stack_position;
             optional<pmr::list<xml_attribute>::iterator> m_default_namespace;
 
         public:
@@ -262,12 +262,12 @@ namespace rapidxml
             return *this;
         }
 
-        constexpr operator size_t() const noexcept { return current - begin; }
+        constexpr operator int32_t() const noexcept { return current - begin; }
 
-        constexpr tuple<size_t, size_t> get_row_col() const noexcept
+        constexpr tuple<int32_t, int32_t> get_row_col() const noexcept
         {
-            size_t row = 0, col = current - begin;
-            size_t line = 0;
+            int32_t row = 0, col = current - begin;
+            int32_t line = 0;
             char* tmp = begin;
             while (tmp < current)
             {

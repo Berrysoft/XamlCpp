@@ -33,7 +33,7 @@ struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Base..., xa
                     XAML_RETURN_IF_FAILED(cc->draw(xaml_rectangle{} + margin));
                 }
             }
-            XAML_RETURN_IF_FAILED(cc->size_to_fit());
+            XAML_RETURN_IF_FAILED(cc->int32_to_fit());
         }
         XAML_FOREACH_END();
         return XAML_S_OK;

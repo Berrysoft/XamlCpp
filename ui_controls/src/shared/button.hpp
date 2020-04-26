@@ -68,7 +68,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         return XAML_E_NOTIMPL;
     }
 
-    xaml_result XAML_CALL size_to_fit() noexcept override
+    xaml_result XAML_CALL int32_to_fit() noexcept override
     {
         xaml_size res;
         XAML_RETURN_IF_FAILED(measure_string(m_text, { 5, 5 }, &res));
@@ -84,7 +84,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_default_changed));
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
 
-        std::size_t token;
+        std::int32_t token;
         XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
             [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) -> xaml_result {
                 if (m_handle)

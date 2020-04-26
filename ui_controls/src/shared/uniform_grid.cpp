@@ -15,9 +15,9 @@ namespace xaml
         {
             layout_base::__draw_impl(region, func);
             rectangle real = region - get_margin();
-            size_t cs = get_columns();
-            size_t rs = get_rows();
-            size_t n = get_children().size();
+            int32_t cs = get_columns();
+            int32_t rs = get_rows();
+            int32_t n = get_children().size();
             if (cs > 0 && rs > 0)
             {
                 if (get_orientation() == orientation::vertical)
@@ -43,19 +43,19 @@ namespace xaml
                 {
                     if (get_orientation() == orientation::vertical)
                     {
-                        cs = (size_t)sqrt(n);
+                        cs = (int32_t)sqrt(n);
                         rs = (n + cs - 1) / cs;
                     }
                     else
                     {
-                        rs = (size_t)sqrt(n);
+                        rs = (int32_t)sqrt(n);
                         cs = (n + rs - 1) / rs;
                     }
                 }
             }
             double w = real.width / cs;
             double h = real.height / rs;
-            size_t x = 0, y = 0;
+            int32_t x = 0, y = 0;
             if (get_orientation() == orientation::vertical)
             {
                 for (auto& c : get_children())
@@ -89,25 +89,25 @@ namespace xaml
         }
     }
 
-    void uniform_grid::__size_to_fit()
+    void uniform_grid::__int32_to_fit()
     {
-        size_t cs, rs;
-        size_t n = get_children().size();
+        int32_t cs, rs;
+        int32_t n = get_children().size();
         if (get_orientation() == orientation::vertical)
         {
-            cs = (size_t)sqrt(n);
+            cs = (int32_t)sqrt(n);
             rs = (n + cs - 1) / cs;
         }
         else
         {
-            rs = (size_t)sqrt(n);
+            rs = (int32_t)sqrt(n);
             cs = (n + rs - 1) / rs;
         }
         double mw = 0, mh = 0;
         for (auto& c : get_children())
         {
             if (!c->get_handle()) c->__draw(rectangle{ 0, 0, 0, 0 } + c->get_margin());
-            c->__size_to_fit();
+            c->__int32_to_fit();
             auto csize = c->get_size();
             auto cmargin = c->get_margin();
             csize.width += cmargin.left + cmargin.right;

@@ -32,13 +32,13 @@ namespace xaml
         ~items_base() override {}
 
     protected:
-        virtual void insert_item(std::size_t index, T const& value) = 0;
-        virtual void remove_item(std::size_t index) = 0;
+        virtual void insert_item(std::int32_t index, T const& value) = 0;
+        virtual void remove_item(std::int32_t index) = 0;
         virtual void clear_items() = 0;
-        virtual void replace_item(std::size_t index, T const& value) = 0;
+        virtual void replace_item(std::int32_t index, T const& value) = 0;
 
     private:
-        std::size_t on_items_changed_token{ 0 };
+        std::int32_t on_items_changed_token{ 0 };
         void on_items_changed(observable_vector<T>&, vector_changed_args<T>& args)
         {
             switch (args.action)
@@ -47,13 +47,13 @@ namespace xaml
                 clear_items();
                 [[fallthrough]];
             case vector_changed_action::add:
-                for (std::size_t i = 0; i < args.new_items.size(); i++)
+                for (std::int32_t i = 0; i < args.new_items.size(); i++)
                 {
                     insert_item(i + args.new_index, args.new_items[i]);
                 }
                 break;
             case vector_changed_action::erase:
-                for (std::size_t i = 0; i < args.old_items.size(); i++)
+                for (std::int32_t i = 0; i < args.old_items.size(); i++)
                 {
                     remove_item(i + args.old_index);
                 }
@@ -83,8 +83,8 @@ namespace xaml
             }
         }
 
-        EVENT(sel_id_changed, std::shared_ptr<items_base>, std::size_t)
-        PROP_CONSTEXPR_EVENT(sel_id, std::size_t)
+        EVENT(sel_id_changed, std::shared_ptr<items_base>, std::int32_t)
+        PROP_CONSTEXPR_EVENT(sel_id, std::int32_t)
 
     public:
 #define ADD_ITEMS_BASE_MEMBERS() \

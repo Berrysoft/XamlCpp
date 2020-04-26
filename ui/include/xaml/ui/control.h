@@ -46,7 +46,7 @@ XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb,
     XAML_PROP(is_visible, type, bool*, bool);                          \
     XAML_EVENT(is_visible_changed, type);                              \
     XAML_METHOD(draw, type, xaml_rectangle XAML_CONST_REF);            \
-    XAML_METHOD(size_to_fit, type);                                    \
+    XAML_METHOD(int32_to_fit, type);                                    \
     XAML_METHOD(parent_redraw, type);                                  \
     XAML_METHOD(set_size_noevent, type, xaml_size XAML_CONST_REF)
 

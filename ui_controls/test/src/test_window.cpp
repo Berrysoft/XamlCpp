@@ -167,7 +167,7 @@ namespace xaml::test
                 btn->set_margin({ 5, 5, 5, 5 });
                 btn->set_text(U("Show"));
                 btn->add_click([this, box](shared_ptr<button>) {
-                    size_t sel = box->get_sel_id();
+                    int32_t sel = box->get_sel_id();
                     if (sel >= 0 && sel < combo_source.size())
                         msgbox(shared_from_this<window>(), combo_source[sel].get(), U("Show selected item"));
                 });

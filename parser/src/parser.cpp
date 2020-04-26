@@ -69,7 +69,7 @@ namespace xaml
 
     static string get_random_name(reflection_info const* ref)
     {
-        static size_t index = 0;
+        static int32_t index = 0;
         auto& [ns, name] = ref->get_type_name();
         ostringstream oss;
         write_valid_name(oss << "__", ns) << "__" << name << "__" << index++;
@@ -95,8 +95,8 @@ namespace xaml
     markup_node parser_impl::parse_markup(string_view value)
     {
         string_view ns, name;
-        size_t sep_index = 0;
-        size_t i = 0;
+        int32_t sep_index = 0;
+        int32_t i = 0;
         for (; i < value.length(); i++)
         {
             if (!ns.empty() && value[i] == ':')
@@ -120,7 +120,7 @@ namespace xaml
             while (i < value.length())
             {
                 while (i < value.length() && isspace(value[i])) i++;
-                size_t start_index = i;
+                int32_t start_index = i;
                 for (; i < value.length(); i++)
                 {
                     if (value[i] == ',')
@@ -209,7 +209,7 @@ namespace xaml
                 }
                 else
                 {
-                    size_t dm_index = attr_name.find_first_of('.');
+                    int32_t dm_index = attr_name.find_first_of('.');
                     if (dm_index != string_view::npos)
                     {
                         string_view class_name = attr_name.substr(0, dm_index);
@@ -293,7 +293,7 @@ namespace xaml
             {
                 auto ns = c.namespace_uri();
                 auto name = c.local_name();
-                size_t dm_index = name.find_first_of('.');
+                int32_t dm_index = name.find_first_of('.');
                 if (dm_index != string_view::npos)
                 {
                     string_view class_name = name.substr(0, dm_index);

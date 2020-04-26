@@ -144,7 +144,7 @@ namespace rapidxml
     {
     private:
         // Size of static memory block.
-        static constexpr size_t static_pool_size = 64 * 1024;
+        static constexpr int32_t static_pool_size = 64 * 1024;
 
         pmr::monotonic_buffer_resource m_pool{ static_pool_size };
 

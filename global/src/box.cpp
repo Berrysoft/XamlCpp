@@ -8,10 +8,10 @@ struct xaml_box_impl : xaml_implement<xaml_box_impl, xaml_box, xaml_object>
 private:
     xaml_guid m_type;
     void* m_data;
-    size_t m_size;
+    int32_t m_size;
 
 public:
-    xaml_result init(xaml_guid const& type, void const* data, size_t size)
+    xaml_result init(xaml_guid const& type, void const* data, int32_t size)
     {
         m_type = type;
         m_size = size;
@@ -34,13 +34,13 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
+    xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
         *psize = m_size;
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL set_data(xaml_guid const& type, void const* data, size_t size) noexcept override
+    xaml_result XAML_CALL set_data(xaml_guid const& type, void const* data, int32_t size) noexcept override
     {
         if (m_size != size)
         {
@@ -55,7 +55,7 @@ public:
     }
 };
 
-xaml_result xaml_box_new(xaml_guid const& type, void const* data, size_t size, xaml_box** ptr) noexcept
+xaml_result xaml_box_new(xaml_guid const& type, void const* data, int32_t size, xaml_box** ptr) noexcept
 {
     return xaml_object_init<xaml_box_impl>(ptr, type, data, size);
 }

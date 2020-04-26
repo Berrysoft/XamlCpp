@@ -103,7 +103,7 @@ namespace xaml
         }
     }
 
-    void combo_box::__size_to_fit()
+    void combo_box::__int32_to_fit()
     {
         double fw = 0.0, fh = 0.0;
         for (auto item : get_items())
@@ -115,12 +115,12 @@ namespace xaml
         __set_size_noevent({ fw, fh });
     }
 
-    void combo_box::insert_item(size_t index, string_t const& value)
+    void combo_box::insert_item(int32_t index, string_t const& value)
     {
         ComboBox_InsertString(get_handle()->handle, index, value.c_str());
     }
 
-    void combo_box::remove_item(size_t index)
+    void combo_box::remove_item(int32_t index)
     {
         ComboBox_DeleteString(get_handle()->handle, index);
     }
@@ -130,7 +130,7 @@ namespace xaml
         ComboBox_ResetContent(get_handle()->handle);
     }
 
-    void combo_box::replace_item(size_t index, string_t const& value)
+    void combo_box::replace_item(int32_t index, string_t const& value)
     {
         ComboBox_SetItemData(get_handle()->handle, index, value.c_str());
     }

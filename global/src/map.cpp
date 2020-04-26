@@ -66,14 +66,14 @@ public:
 struct xaml_hasher_impl : xaml_implement<xaml_hasher_impl, xaml_hasher, xaml_object>
 {
 private:
-    function<xaml_result(xaml_object*, size_t*)> m_func;
+    function<xaml_result(xaml_object*, int32_t*)> m_func;
     function<xaml_result(xaml_object*, xaml_object*, bool*)> m_eq_func;
 
 public:
-    xaml_hasher_impl(function<xaml_result(xaml_object*, size_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func) noexcept
+    xaml_hasher_impl(function<xaml_result(xaml_object*, int32_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func) noexcept
         : m_func(move(func)), m_eq_func(move(eq_func)) {}
 
-    xaml_result XAML_CALL hash(xaml_object* obj, size_t* phash) noexcept override
+    xaml_result XAML_CALL hash(xaml_object* obj, int32_t* phash) noexcept override
     {
         return m_func(obj, phash);
     }
@@ -84,12 +84,12 @@ public:
     }
 };
 
-xaml_result xaml_hasher_new(xaml_result (*func)(xaml_object*, size_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, bool*), xaml_hasher** ptr) noexcept
+xaml_result xaml_hasher_new(xaml_result (*func)(xaml_object*, int32_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, bool*), xaml_hasher** ptr) noexcept
 {
     return xaml_object_new<xaml_hasher_impl>(ptr, func, eq_func);
 }
 
-xaml_result xaml_hasher_new(function<xaml_result(xaml_object*, size_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func, xaml_hasher** ptr) noexcept
+xaml_result xaml_hasher_new(function<xaml_result(xaml_object*, int32_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func, xaml_hasher** ptr) noexcept
 {
     return xaml_object_new<xaml_hasher_impl>(ptr, move(func), move(eq_func));
 }
@@ -102,14 +102,14 @@ xaml_result xaml_hasher_default(xaml_hasher** ptr) noexcept
 xaml_result xaml_hasher_string_default(xaml_hasher** ptr) noexcept
 {
     return xaml_hasher_new(
-        function<xaml_result(xaml_object*, std::size_t*)>{
-            [](xaml_object* obj, size_t* phash) -> xaml_result {
+        function<xaml_result(xaml_object*, std::int32_t*)>{
+            [](xaml_object* obj, int32_t* phash) -> xaml_result {
                 static hash<xaml_std_string_view_t> hasher{};
                 xaml_ptr<xaml_string> value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, value));
                 xaml_char_t const* data;
                 XAML_RETURN_IF_FAILED(value->get_data(&data));
-                size_t length;
+                int32_t length;
                 XAML_RETURN_IF_FAILED(value->get_length(&length));
                 *phash = hasher(xaml_std_string_view_t(data, length));
                 return XAML_S_OK;
@@ -133,7 +133,7 @@ public:
     xaml_map_impl(xaml_ptr<xaml_hasher> const& hasher) noexcept : m_map(1, __std_xaml_hasher{ hasher }, __std_xaml_eq{ hasher }) {}
     xaml_map_impl(inner_map_type&& map) noexcept : m_map(move(map)) {}
 
-    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
+    xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
         *psize = m_map.size();
         return XAML_S_OK;

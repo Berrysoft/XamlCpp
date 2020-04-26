@@ -29,7 +29,7 @@ EXTERN_C XAML_UI_API xaml_result xaml_module_register(xaml_meta_context* ctx) no
 //        type_guid_v<meta_box<rectangle>>, type_guid_v<meta_box<margin>>
 //    };
 //
-//    template <size_t N>
+//    template <int32_t N>
 //    static bool is_of_type(guid const& type, array<guid, N> const& arr)
 //    {
 //        return find(arr.begin(), arr.end(), type) != arr.end();
@@ -54,7 +54,7 @@ EXTERN_C XAML_UI_API xaml_result xaml_module_register(xaml_meta_context* ctx) no
 //        return is_of_type(type, t2d_types) || is_of_type(type, t4d_types);
 //    }
 //
-//    XAML_UI_META_API void compile(void const* ty, const char* code, size_t code_len, void* res) noexcept
+//    XAML_UI_META_API void compile(void const* ty, const char* code, int32_t code_len, void* res) noexcept
 //    {
 //        guid const& type = *(guid const*)ty;
 //        if (is_of_type(type, t2d_types))

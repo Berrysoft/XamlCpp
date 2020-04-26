@@ -37,7 +37,7 @@ using path_string_view_t = basic_string_view<path_char_t>;
 static vector<path> split(path_string_view_t str, path_char_t separater)
 {
     if (str.empty()) return {};
-    size_t index = 0, offset = 0;
+    int32_t index = 0, offset = 0;
     vector<path> result;
     for (;;)
     {
@@ -65,7 +65,7 @@ static path program_location()
     uint32_t size = (uint32_t)path.size();
     if (_NSGetExecutablePath(path.data(), &size) == 0)
         return path;
-    path.resize((size_t)size);
+    path.resize((int32_t)size);
     if (_NSGetExecutablePath(path.data(), &size) != 0)
         return {};
     return path;

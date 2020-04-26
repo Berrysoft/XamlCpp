@@ -36,9 +36,9 @@ namespace xaml::cmdline
         META_CLASS_IMPL(meta_class)
 
     private:
-        std::map<char_t, size_t> m_short_args{};
-        std::map<string_t, size_t> m_long_args{};
-        std::map<size_t, std::string> m_properties{};
+        std::map<char_t, int32_t> m_short_args{};
+        std::map<string_t, int32_t> m_long_args{};
+        std::map<int32_t, std::string> m_properties{};
         std::multimap<std::string, option_entry> m_entries{};
         std::string m_default_property{};
 

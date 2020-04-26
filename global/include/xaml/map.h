@@ -32,7 +32,7 @@ XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3
     XAML_VTBL_INHERIT(XAML_ENUMERABLE_VTBL(type));          \
     XAML_METHOD(lookup, type, xaml_object*, xaml_object**); \
     XAML_METHOD(has_key, type, xaml_object*, bool*);        \
-    XAML_METHOD(get_size, type, XAML_CSTD size_t*)
+    XAML_METHOD(get_size, type, XAML_CSTD int32_t*)
 
 XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 {
@@ -43,7 +43,7 @@ XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 
 
 #define XAML_HASHER_VTBL(type)                                \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                \
-    XAML_METHOD(hash, type, xaml_object*, XAML_CSTD size_t*); \
+    XAML_METHOD(hash, type, xaml_object*, XAML_CSTD int32_t*); \
     XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
 
 XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
@@ -53,17 +53,17 @@ XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
 
 EXTERN_C XAML_API xaml_result xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD size_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD int32_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_hasher_new(std::function<xaml_result(xaml_object*, std::size_t*)>&&, std::function<xaml_result(xaml_object*, xaml_object*, bool*)>&&, xaml_hasher**) noexcept;
+XAML_API xaml_result xaml_hasher_new(std::function<xaml_result(xaml_object*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, xaml_object*, bool*)>&&, xaml_hasher**) noexcept;
 
 template <typename T>
 inline xaml_result xaml_hasher_new(xaml_hasher** ptr) noexcept
 {
     return xaml_hasher_new(
-        std::function<xaml_result(xaml_object*, std::size_t*)>{
-            [](xaml_object* obj, std::size_t* phash) -> xaml_result {
+        std::function<xaml_result(xaml_object*, std::int32_t*)>{
+            [](xaml_object* obj, std::int32_t* phash) -> xaml_result {
                 static std::hash<T> hasher{};
                 T value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, value));
@@ -92,9 +92,9 @@ public:
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 
-    std::size_t operator()(xaml_ptr<xaml_object> const& obj) const
+    std::int32_t operator()(xaml_ptr<xaml_object> const& obj) const
     {
-        std::size_t hash;
+        std::int32_t hash;
         XAML_THROW_IF_FAILED(m_inner->hash(obj.get(), &hash));
         return hash;
     }

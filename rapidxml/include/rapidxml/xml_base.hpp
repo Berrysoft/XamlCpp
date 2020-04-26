@@ -42,13 +42,13 @@ namespace rapidxml
     class parse_error : public std::logic_error
     {
     private:
-        std::size_t m_where;
-        std::size_t m_row;
-        std::size_t m_col;
+        std::int32_t m_where;
+        std::int32_t m_row;
+        std::int32_t m_col;
 
     public:
         //! Constructs parse error
-        parse_error(const char* what, std::size_t where, std::size_t row, std::size_t col) noexcept
+        parse_error(const char* what, std::int32_t where, std::int32_t row, std::int32_t col) noexcept
             : logic_error(what), m_where(where), m_row(row), m_col(col)
         {
         }
@@ -58,11 +58,11 @@ namespace rapidxml
         //! Gets pointer to character data where error happened.
         //! char should be the same as char type of xml_document that produced the error.
         //! \return Pointer to location within the parsed string where error occured.
-        constexpr std::size_t where() const noexcept { return m_where; }
+        constexpr std::int32_t where() const noexcept { return m_where; }
 
-        constexpr std::size_t row() const noexcept { return m_row; }
+        constexpr std::int32_t row() const noexcept { return m_row; }
 
-        constexpr std::size_t col() const noexcept { return m_row; }
+        constexpr std::int32_t col() const noexcept { return m_row; }
     };
 
     //! Enumeration listing all node types produced by the parser.
@@ -87,7 +87,7 @@ namespace rapidxml
     class xml_base
     {
     protected:
-        std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
+        std::int32_t m_local_name{ 0 }; // Pointer into m_name where local part begins
         std::string_view m_name{}; // Name of node
         std::string_view m_value{}; // Value of node
         std::string_view m_namespace_uri{};
@@ -117,7 +117,7 @@ namespace rapidxml
 
         constexpr std::string_view local_name() const noexcept { return m_name.substr(m_local_name); }
 
-        constexpr std::size_t local_offset() const noexcept { return m_local_name; }
+        constexpr std::int32_t local_offset() const noexcept { return m_local_name; }
 
         //! Gets namespace prefix.
         //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
@@ -159,7 +159,7 @@ namespace rapidxml
         }
 
         //! Sets QName as PrefixedName or UnprefixedName where local_part points in QName string
-        void qname(std::string_view qname, std::size_t local_part) noexcept
+        void qname(std::string_view qname, std::int32_t local_part) noexcept
         {
             m_name = qname;
             m_local_name = local_part;

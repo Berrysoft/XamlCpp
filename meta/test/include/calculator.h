@@ -11,8 +11,8 @@ struct XAML_NOVTBL xaml_test_calculator : xaml_object
 {
     virtual xaml_result XAML_CALL get_value(int*) noexcept = 0;
     virtual xaml_result XAML_CALL set_value(int) noexcept = 0;
-    virtual xaml_result XAML_CALL add_value_changed(xaml_delegate*, std::size_t*) noexcept = 0;
-    virtual xaml_result XAML_CALL remove_value_changed(std::size_t) noexcept = 0;
+    virtual xaml_result XAML_CALL add_value_changed(xaml_delegate*, std::int32_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL remove_value_changed(std::int32_t) noexcept = 0;
     virtual xaml_result XAML_CALL plus(int, int) noexcept = 0;
     virtual xaml_result XAML_CALL minus(int, int) noexcept = 0;
 };

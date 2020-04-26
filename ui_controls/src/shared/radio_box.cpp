@@ -8,7 +8,7 @@ xaml_result xaml_radio_box_impl::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_button_implement::init());
 
-    size_t token;
+    int32_t token;
     XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
         [this](xaml_ptr<xaml_radio_box>, bool) -> xaml_result {
             if (m_handle)

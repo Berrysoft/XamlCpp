@@ -13,7 +13,7 @@ xaml_result xaml_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_title_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_closing));
 
-    size_t token;
+    int32_t token;
     XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
         [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_title());

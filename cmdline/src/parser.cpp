@@ -27,7 +27,7 @@ namespace xaml::cmdline
         auto popt = refl->get_attribute<option>();
         if (!popt) throw no_registered_option{};
         options result;
-        for (size_t i = 0; i < args.size(); i++)
+        for (int32_t i = 0; i < args.size(); i++)
         {
             string_view_t arg = args[i];
             if (arg.empty())
@@ -40,7 +40,7 @@ namespace xaml::cmdline
                 {
                     if (arg.size() == 2) throw invalid_option{ arg };
                     string_view_t long_arg = arg.substr(2);
-                    size_t index = long_arg.find_first_of('=');
+                    int32_t index = long_arg.find_first_of('=');
                     string_view_t maybe_value = {};
                     if (index != string_view_t::npos)
                     {

@@ -44,8 +44,8 @@
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })
 
 #define XAML_OBJECT_VTBL(type)                     \
-    XAML_METHOD_(XAML_CSTD size_t, add_ref, type); \
-    XAML_METHOD_(XAML_CSTD size_t, release, type); \
+    XAML_METHOD_(XAML_CSTD int32_t, add_ref, type); \
+    XAML_METHOD_(XAML_CSTD int32_t, release, type); \
     XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, void**)
 
 XAML_DECL_INTERFACE(xaml_object)
@@ -66,14 +66,14 @@ template <typename T, typename D, typename... Base>
 struct xaml_implement : D
 {
 protected:
-    std::atomic<std::size_t> m_ref_count{ 1 };
+    std::atomic<std::int32_t> m_ref_count{ 1 };
 
 public:
-    std::size_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
+    std::int32_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
 
-    std::size_t XAML_CALL release() noexcept override
+    std::int32_t XAML_CALL release() noexcept override
     {
-        std::size_t res = --m_ref_count;
+        std::int32_t res = --m_ref_count;
         if (!res)
         {
             delete static_cast<T*>(this);
@@ -176,8 +176,8 @@ struct xaml_inner_implement : Base
 {
     D* m_outer;
 
-    std::size_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
-    std::size_t XAML_CALL release() noexcept override { return m_outer->release(); }
+    std::int32_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
+    std::int32_t XAML_CALL release() noexcept override { return m_outer->release(); }
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override { return m_outer->query(type, ptr); }
 };
 #endif // __cplusplus

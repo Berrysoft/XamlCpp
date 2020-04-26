@@ -340,7 +340,7 @@ inline bool __stob(std::basic_string_view<TChar> str) noexcept
 {
     constexpr TChar __true_str[] = { 't', 'r', 'u', 'e' };
     if (str.length() != 4) return false;
-    for (std::size_t i = 0; i < 4; i++)
+    for (std::int32_t i = 0; i < 4; i++)
     {
         if (std::tolower(str[i]) != __true_str[i]) return false;
     }

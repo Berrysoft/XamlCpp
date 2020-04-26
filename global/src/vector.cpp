@@ -44,20 +44,20 @@ private:
 public:
     xaml_vector_impl(inner_vector_type&& vec) noexcept : m_vec(move(vec)) {}
 
-    xaml_result XAML_CALL get_size(size_t* psize) noexcept override
+    xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
         *psize = m_vec.size();
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_at(size_t index, xaml_object** ptr) noexcept override
+    xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         auto& res = m_vec[index];
         return res->query(ptr);
     }
 
-    xaml_result XAML_CALL set_at(size_t index, xaml_object* obj) noexcept override
+    xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         m_vec[index] = obj;
@@ -74,7 +74,7 @@ public:
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL remove_at(size_t index) noexcept override
+    xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
         if (index >= m_vec.size()) return XAML_E_INVALIDARG;
         m_vec.erase(m_vec.begin() + index);

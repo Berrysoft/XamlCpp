@@ -8,8 +8,8 @@ XAML_CLASS(xaml_observable_vector, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0
 
 #define XAML_OBSERVABLE_VECTOR_VTBL(type)                                     \
     XAML_VTBL_INHERIT(XAML_VECTOR_VTBL(type));                                \
-    XAML_METHOD(add_vector_changed, type, xaml_delegate*, XAML_CSTD size_t*); \
-    XAML_METHOD(remove_vector_changed, type, XAML_CSTD size_t)
+    XAML_METHOD(add_vector_changed, type, xaml_delegate*, XAML_CSTD int32_t*); \
+    XAML_METHOD(remove_vector_changed, type, XAML_CSTD int32_t)
 
 XAML_DECL_INTERFACE_(xaml_observable_vector, xaml_vector)
 {
@@ -33,15 +33,15 @@ XAML_CLASS(xaml_vector_changed_args, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7,
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                  \
     XAML_METHOD(get_action, type, xaml_vector_changed_action*); \
     XAML_METHOD(get_new_items, type, xaml_vector_view**);       \
-    XAML_METHOD(get_new_index, type, XAML_CSTD size_t*);        \
+    XAML_METHOD(get_new_index, type, XAML_CSTD int32_t*);        \
     XAML_METHOD(get_old_items, type, xaml_vector_view**);       \
-    XAML_METHOD(get_old_index, type, XAML_CSTD size_t*)
+    XAML_METHOD(get_old_index, type, XAML_CSTD int32_t*)
 
 XAML_DECL_INTERFACE_(xaml_vector_changed_args, xaml_object)
 {
     XAML_DECL_VTBL(xaml_vector_changed_args, XAML_VECTOR_CHANGED_ARGS_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action, xaml_vector_view* new_items, size_t new_index, xaml_vector_view* old_items, size_t old_index, xaml_vector_changed_args**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index, xaml_vector_changed_args**) XAML_NOEXCEPT;
 
 #endif // !XAML_OBSERVABLE_VECTOR_H

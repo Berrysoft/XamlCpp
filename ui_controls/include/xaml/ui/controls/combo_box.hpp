@@ -26,7 +26,7 @@ namespace xaml
 #ifdef XAML_UI_WINDOWS
     public:
         XAML_UI_CONTROLS_API std::optional<std::intptr_t> __wnd_proc(window_message const& msg) override;
-        XAML_UI_CONTROLS_API void __size_to_fit() override;
+        XAML_UI_CONTROLS_API void __int32_to_fit() override;
 #endif // XAML_UI_WINDOWS
 
 #ifdef XAML_UI_GTK3
@@ -40,10 +40,10 @@ namespace xaml
 #endif // XAML_UI_COCOA
 
     protected:
-        void insert_item(std::size_t index, string_t const& value) override;
-        void remove_item(std::size_t index) override;
+        void insert_item(std::int32_t index, string_t const& value) override;
+        void remove_item(std::int32_t index) override;
         void clear_items() override;
-        void replace_item(std::size_t index, string_t const& value) override;
+        void replace_item(std::int32_t index, string_t const& value) override;
 
     public:
         XAML_UI_CONTROLS_API void __draw(rectangle const& region) override;

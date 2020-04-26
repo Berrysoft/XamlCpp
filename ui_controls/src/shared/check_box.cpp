@@ -9,7 +9,7 @@ xaml_result xaml_check_box_impl::init() noexcept
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
-    std::size_t token;
+    std::int32_t token;
     XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_box>, bool>(
         [this](xaml_ptr<xaml_check_box>, bool) -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_checked());

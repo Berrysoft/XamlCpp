@@ -15,7 +15,7 @@ namespace xaml
     {
     private:
         meta_context* m_ctx;
-        size_t m_indent_count{ 0 };
+        int32_t m_indent_count{ 0 };
 
     public:
         compiler(meta_context& ctx) : m_ctx(&ctx) {}

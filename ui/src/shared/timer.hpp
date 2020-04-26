@@ -11,7 +11,7 @@
 
 struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object>
 {
-    XAML_PROP_IMPL(interval, std::size_t, std::size_t*, std::size_t)
+    XAML_PROP_IMPL(interval, std::int32_t, std::int32_t*, std::int32_t)
     XAML_PROP_IMPL_BASE(is_enabled, std::atomic_bool, bool*)
     XAML_EVENT_IMPL(tick)
 
@@ -26,7 +26,7 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
     {
     }
 
-    xaml_timer_impl(std::size_t interval) noexcept : m_interval(interval) {}
+    xaml_timer_impl(std::int32_t interval) noexcept : m_interval(interval) {}
 };
 
 #endif // !XMAL_UI_SHARED_TIMER_HPP

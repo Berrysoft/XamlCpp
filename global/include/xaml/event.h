@@ -12,8 +12,8 @@ XAML_CLASS(xaml_event, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0
 
 #define XAML_EVENT_VTBL(type)                                  \
     XAML_VTBL_INHERIT(XAML_DELEGATE_VTBL(type));               \
-    XAML_METHOD(add, type, xaml_delegate*, XAML_CSTD size_t*); \
-    XAML_METHOD(remove, type, XAML_CSTD size_t)
+    XAML_METHOD(add, type, xaml_delegate*, XAML_CSTD int32_t*); \
+    XAML_METHOD(remove, type, XAML_CSTD int32_t)
 
 XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
 {
@@ -21,7 +21,7 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
 
 #ifdef __cplusplus
     template <typename... Args, typename F>
-    xaml_result add(F && f, std::size_t * ptoken) noexcept
+    xaml_result add(F && f, std::int32_t * ptoken) noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new<void, Args...>(std::forward<F>(f), &callback)));
@@ -29,7 +29,7 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
     }
 
     template <typename... Args, typename F>
-    xaml_result add_noexcept(F && f, std::size_t * ptoken) noexcept
+    xaml_result add_noexcept(F && f, std::int32_t * ptoken) noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, Args...>(std::forward<F>(f), &callback)));

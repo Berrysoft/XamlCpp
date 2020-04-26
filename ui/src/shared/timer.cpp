@@ -8,7 +8,7 @@ xaml_result xaml_timer_new(xaml_timer** ptr) noexcept
     return xaml_object_new<xaml_timer_impl>(ptr);
 }
 
-xaml_result xaml_timer_new_interval(size_t interval, xaml_timer** ptr) noexcept
+xaml_result xaml_timer_new_interval(int32_t interval, xaml_timer** ptr) noexcept
 {
     return xaml_object_new<xaml_timer_impl>(ptr, interval);
 }

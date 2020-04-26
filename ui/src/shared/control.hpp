@@ -111,7 +111,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         }
     }
 
-    xaml_result XAML_CALL size_to_fit() noexcept override
+    xaml_result XAML_CALL int32_to_fit() noexcept override
     {
         return XAML_S_OK;
     }
@@ -235,7 +235,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_valignment_changed));
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_visible_changed));
 
-        std::size_t token;
+        std::int32_t token;
         XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_control>, xaml_size>(
             [this](xaml_ptr<xaml_control>, xaml_size) -> xaml_result {
                 if (m_handle)

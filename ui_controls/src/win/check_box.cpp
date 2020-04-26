@@ -58,7 +58,7 @@ xaml_result xaml_check_box_impl::draw_checked() noexcept
     Button_SetCheck(m_handle, m_is_checked ? BST_CHECKED : BST_UNCHECKED);
 }
 
-xaml_result xaml_check_box_impl::size_to_fit() noexcept
+xaml_result xaml_check_box_impl::int32_to_fit() noexcept
 {
     xaml_size res;
     XAML_RETURN_IF_FAILED(measure_string(m_text, { 0, 5 }, &res));

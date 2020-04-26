@@ -85,14 +85,14 @@ namespace xaml
         set_text(box_value(combo.stringValue.UTF8String));
     }
 
-    void combo_box::insert_item(size_t index, string_t const& value)
+    void combo_box::insert_item(int32_t index, string_t const& value)
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         [combo insertItemWithObjectValue:[NSString stringWithUTF8String:value.c_str()]
                                  atIndex:(NSInteger)index];
     }
 
-    void combo_box::remove_item(size_t index)
+    void combo_box::remove_item(int32_t index)
     {
         NSComboBox* combo = (NSComboBox*)get_handle()->handle;
         [combo removeItemAtIndex:(NSInteger)index];
@@ -104,7 +104,7 @@ namespace xaml
         [combo removeAllItems];
     }
 
-    void combo_box::replace_item(size_t index, string_t const& value)
+    void combo_box::replace_item(int32_t index, string_t const& value)
     {
         remove_item(index);
         insert_item(index, value);

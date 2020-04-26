@@ -30,7 +30,7 @@ int main()
             cout << "Value changed: " << i << endl;
         },
         &handler)));
-    size_t token;
+    int32_t token;
     XAML_THROW_IF_FAILED(ev->add(obj.get(), handler.get(), &token));
     {
         // Invoke the method of the object.

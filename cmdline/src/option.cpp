@@ -49,11 +49,11 @@ namespace xaml::cmdline
 
     basic_ostream<char_t>& option::print_help(basic_ostream<char_t>& stream) const
     {
-        constexpr size_t offset = 2;
-        constexpr size_t spacing = 24;
+        constexpr int32_t offset = 2;
+        constexpr int32_t spacing = 24;
         for (auto& prop : m_entries)
         {
-            size_t count = offset;
+            int32_t count = offset;
             stream << string_t(offset, U(' '));
             auto& entry = prop.second;
             if (entry.short_arg)

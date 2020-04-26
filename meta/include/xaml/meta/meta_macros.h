@@ -80,8 +80,8 @@ public:                                                   \
     XAML_METHOD(remove_##name, type, rtype)
 
 #define XAML_EVENT(name, type)                                        \
-    XAML_METHOD(add_##name, type, xaml_delegate*, XAML_CSTD size_t*); \
-    XAML_METHOD(remove_##name, type, XAML_CSTD size_t)
+    XAML_METHOD(add_##name, type, xaml_delegate*, XAML_CSTD int32_t*); \
+    XAML_METHOD(remove_##name, type, XAML_CSTD int32_t)
 
 #define XAML_EVENT_IMPL(name)                                                                      \
 protected:                                                                                         \
@@ -96,11 +96,11 @@ public:                                                                         
         xaml_ptr<xaml_object> res;                                                                 \
         return m_##name->invoke(invoke_args.get(), &res);                                          \
     }                                                                                              \
-    xaml_result XAML_CALL add_##name(xaml_delegate* handler, std::size_t* ptoken) noexcept         \
+    xaml_result XAML_CALL add_##name(xaml_delegate* handler, std::int32_t* ptoken) noexcept         \
     {                                                                                              \
         return m_##name->add(handler, ptoken);                                                     \
     }                                                                                              \
-    xaml_result XAML_CALL remove_##name(std::size_t token) noexcept                                \
+    xaml_result XAML_CALL remove_##name(std::int32_t token) noexcept                                \
     {                                                                                              \
         return m_##name->remove(token);                                                            \
     }

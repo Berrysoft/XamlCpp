@@ -9,13 +9,13 @@ using namespace std;
 struct xaml_event_impl : xaml_implement<xaml_event_impl, xaml_event, xaml_delegate, xaml_object>
 {
 private:
-    atomic<size_t> index{ 0 };
-    map<size_t, xaml_ptr<xaml_delegate>> m_callbacks{};
+    atomic<int32_t> index{ 0 };
+    map<int32_t, xaml_ptr<xaml_delegate>> m_callbacks{};
 
 public:
-    xaml_result XAML_CALL add(xaml_delegate* handler, size_t* ptoken) noexcept override
+    xaml_result XAML_CALL add(xaml_delegate* handler, int32_t* ptoken) noexcept override
     {
-        size_t token = ++index;
+        int32_t token = ++index;
         try
         {
             m_callbacks.emplace(token, handler);
@@ -25,7 +25,7 @@ public:
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL remove(size_t token) noexcept override
+    xaml_result XAML_CALL remove(int32_t token) noexcept override
     {
         auto it = m_callbacks.find(token);
         if (it == m_callbacks.end()) return XAML_E_INVALIDARG;

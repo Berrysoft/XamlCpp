@@ -27,7 +27,7 @@ inline xaml_result xaml_method_info_new(xaml_string* name, xaml_result (XAML_CAL
         name,
         std::function<xaml_result(xaml_vector_view*)>{
             [func](xaml_vector_view* args) -> xaml_result {
-                std::size_t size;
+                std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
                 return __xaml_delegate_impl_invoke<xaml_result, xaml_ptr<T>, Args...>(

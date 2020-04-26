@@ -27,7 +27,7 @@ namespace xaml
 
 #ifndef XAML_UI_GTK3
     public:
-        XAML_UI_CONTROLS_API void __size_to_fit() override;
+        XAML_UI_CONTROLS_API void __int32_to_fit() override;
 #endif // !XAML_UI_GTK3
 
 #ifdef XAML_UI_GTK3
@@ -46,11 +46,11 @@ namespace xaml
         XAML_UI_CONTROLS_API virtual void draw_indeterminate();
 
     public:
-        EVENT(value_changed, std::shared_ptr<progress>, std::size_t)
-        PROP_CONSTEXPR_EVENT(value, std::size_t)
+        EVENT(value_changed, std::shared_ptr<progress>, std::int32_t)
+        PROP_CONSTEXPR_EVENT(value, std::int32_t)
 
-        PROP_CONSTEXPR(minimum, std::size_t)
-        PROP_CONSTEXPR(maximum, std::size_t)
+        PROP_CONSTEXPR(minimum, std::int32_t)
+        PROP_CONSTEXPR(maximum, std::int32_t)
 
         EVENT(is_indeterminate_changed, std::shared_ptr<progress>, bool)
         PROP_CONSTEXPR_EVENT(is_indeterminate, bool)

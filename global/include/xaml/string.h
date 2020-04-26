@@ -29,7 +29,7 @@ XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 
 
 #define XAML_STRING_VTBL(type)                        \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));        \
-    XAML_METHOD(get_length, type, XAML_CSTD size_t*); \
+    XAML_METHOD(get_length, type, XAML_CSTD int32_t*); \
     XAML_METHOD(get_data, type, xaml_char_t const**); \
     XAML_METHOD(equals, type, xaml_string*, bool*)
 
@@ -72,7 +72,7 @@ inline xaml_std_string_view_t to_string_view_t(xaml_ptr<xaml_string> const& str)
 {
     xaml_char_t const* data;
     XAML_THROW_IF_FAILED(str->get_data(&data));
-    std::size_t length;
+    std::int32_t length;
     XAML_THROW_IF_FAILED(str->get_length(&length));
     return xaml_std_string_view_t(data, length);
 }
@@ -81,7 +81,7 @@ inline xaml_result to_string_view_t(xaml_ptr<xaml_string> const& str, xaml_std_s
 {
     xaml_char_t const* data;
     XAML_RETURN_IF_FAILED(str->get_data(&data));
-    std::size_t length;
+    std::int32_t length;
     XAML_RETURN_IF_FAILED(str->get_length(&length));
     view = xaml_std_string_view_t(data, length);
     return XAML_S_OK;

@@ -6,7 +6,7 @@ using namespace std;
 
 namespace xaml
 {
-    static double get_max_compact(size_t index, array_view<shared_ptr<control>> children, bool vertical)
+    static double get_max_compact(int32_t index, array_view<shared_ptr<control>> children, bool vertical)
     {
         double result = 0;
         for (auto& c : children)
@@ -32,7 +32,7 @@ namespace xaml
         }
         double total_star = 0;
         double total_remain = total;
-        for (size_t i = 0; i < lengths.size(); i++)
+        for (int32_t i = 0; i < lengths.size(); i++)
         {
             switch (lengths[i].layout)
             {
@@ -51,7 +51,7 @@ namespace xaml
             }
             }
         }
-        for (size_t i = 0; i < lengths.size(); i++)
+        for (int32_t i = 0; i < lengths.size(); i++)
         {
             if (lengths[i].layout == grid_layout::star)
             {
@@ -127,8 +127,8 @@ namespace xaml
             auto index = m_indecies[c.get()];
             double subx = get<1>(columns[(min)(index.column, columns.size() - 1)]) + real.x;
             double suby = get<1>(rows[(min)(index.row, rows.size() - 1)]) + real.y;
-            double subw = accumulate(columns.begin() + (min)(index.column, columns.size() - 1), columns.begin() + (min)(index.column + (max<size_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);
-            double subh = accumulate(rows.begin() + (min)(index.row, rows.size() - 1), rows.begin() + (min)(index.row + (max<size_t>)(index.row_span, 1), rows.size()), 0.0, real_length_plus);
+            double subw = accumulate(columns.begin() + (min)(index.column, columns.size() - 1), columns.begin() + (min)(index.column + (max<int32_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);
+            double subh = accumulate(rows.begin() + (min)(index.row, rows.size() - 1), rows.begin() + (min)(index.row + (max<int32_t>)(index.row_span, 1), rows.size()), 0.0, real_length_plus);
             rectangle subrect = { subx, suby, subw, subh };
             subrect = get_real_region(c, subrect);
             c->__draw(subrect);
