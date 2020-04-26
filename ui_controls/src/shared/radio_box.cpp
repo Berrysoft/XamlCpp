@@ -9,19 +9,20 @@ xaml_result xaml_radio_box_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_button_implement::init());
 
     size_t token;
-    XAML_RETURN_IF_FAILED((m_is_checked_changed->add<xaml_ptr<xaml_radio_box>, bool>(
-        [this](xaml_ptr<xaml_radio_box>, bool) {
+    XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
+        [this](xaml_ptr<xaml_radio_box>, bool) -> xaml_result {
             if (m_handle)
             {
-                XAML_THROW_IF_FAILED(draw_checked());
-                XAML_THROW_IF_FAILED(draw_group());
+                XAML_RETURN_IF_FAILED(draw_checked());
+                XAML_RETURN_IF_FAILED(draw_group());
             }
+            return XAML_S_OK;
         },
         &token)));
 
 #ifdef XAML_UI_COCOA
-    XAML_RETURN_IF_FAILED((m_click->add<xaml_ptr<xaml_check_box>>(
-        [this](xaml_ptr<xaml_check_box>) {
+    XAML_RETURN_IF_FAILED((m_click->add_noexcept<xaml_ptr<xaml_check_box>>(
+        [this](xaml_ptr<xaml_check_box>) -> xaml_result {
             // TODO
         },
         &token)));

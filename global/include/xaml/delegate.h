@@ -21,7 +21,7 @@ XAML_DECL_INTERFACE_(xaml_delegate, xaml_object)
     XAML_DECL_VTBL(xaml_delegate, XAML_DELEGATE_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**), xaml_delegate**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**) XAML_NOEXCEPT, xaml_delegate**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result xaml_delegate_bind(xaml_delegate*, xaml_vector_view*, xaml_delegate**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
@@ -71,6 +71,90 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
                 }
                 XAML_CATCH_RETURN() } },
         ptr);
+}
+
+template <typename Return, typename... Args, typename F>
+Return __xaml_delegate_noexcept_invoke(F&& f, xaml_result* pres, Args&&... args) noexcept
+{
+    Return result;
+    xaml_result hr = f(std::forward<Args>(args)..., result);
+    if (XAML_FAILED(hr)) *pres = hr;
+    return result;
+}
+
+template <typename Return, typename... Args, size_t... Indicies>
+xaml_result __xaml_delegate_noexcept_impl_invoke_impl(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args, std::index_sequence<Indicies...>) noexcept
+{
+    xaml_result hr = XAML_S_OK;
+    XAML_RETURN_IF_FAILED(func(
+        __xaml_delegate_noexcept_invoke<Args>(
+            [args](size_t i, auto& arg) -> xaml_result {
+                xaml_ptr<xaml_object> item;
+                XAML_RETURN_IF_FAILED(args->get_at(i, &item));
+                return xaml_unbox_value<Args>(item.get(), arg);
+            },
+            &hr, Indicies)...,
+        presult));
+    return hr;
+}
+
+template <typename Return, typename... Args>
+xaml_result __xaml_delegate_noexcept_impl_invoke(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args)
+{
+    return __xaml_delegate_noexcept_impl_invoke_impl<Return, Args...>(func, args, std::make_index_sequence<sizeof...(Args)>{});
+}
+
+template <typename... Args, size_t... Indicies>
+xaml_result __xaml_delegate_noexcept_impl_invoke_void_impl(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args, std::index_sequence<Indicies...>) noexcept
+{
+    xaml_result hr = XAML_S_OK;
+    XAML_RETURN_IF_FAILED(func(__xaml_delegate_noexcept_invoke<Args>(
+        [args](size_t i, auto& arg) -> xaml_result {
+            xaml_ptr<xaml_object> item;
+            XAML_RETURN_IF_FAILED(args->get_at(i, &item));
+            return xaml_unbox_value<Args>(item.get(), arg);
+        },
+        &hr, Indicies)...));
+    return hr;
+}
+
+template <typename... Args>
+xaml_result __xaml_delegate_noexcept_impl_invoke_void(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args)
+{
+    return __xaml_delegate_noexcept_impl_invoke_void_impl<Args...>(func, args, std::make_index_sequence<sizeof...(Args)>{});
+}
+
+template <typename Return, typename... Args, typename F>
+inline xaml_result xaml_delegate_new_noexcept(F&& func, xaml_delegate** ptr) noexcept
+{
+    if constexpr (std::is_same_v<Return, void>)
+    {
+        return xaml_delegate_new(
+            std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
+                [func = std::function<xaml_result(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+                    std::size_t size;
+                    XAML_RETURN_IF_FAILED(args->get_size(&size));
+                    if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                    XAML_RETURN_IF_FAILED(__xaml_delegate_noexcept_impl_invoke_void(func, args));
+                    *ptr = nullptr;
+                    return XAML_S_OK;
+                } },
+            ptr);
+    }
+    else
+    {
+        return xaml_delegate_new(
+            std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
+                [func = std::function<xaml_result(Args..., Return*)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+                    std::size_t size;
+                    XAML_RETURN_IF_FAILED(args->get_size(&size));
+                    if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                    Return result;
+                    XAML_RETURN_IF_FAILED(__xaml_delegate_noexcept_impl_invoke(&result, func, args));
+                    return xaml_box_value(result, ptr);
+                } },
+            ptr);
+    }
 }
 
 template <typename... Args>

@@ -14,19 +14,22 @@ xaml_result xaml_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_closing));
 
     size_t token;
-    XAML_RETURN_IF_FAILED((m_size_changed->add<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
-        [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) {
-            if (m_handle) draw_title();
+    XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
+        [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) -> xaml_result {
+            if (m_handle) XAML_RETURN_IF_FAILED(draw_title());
+            return XAML_S_OK;
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_location_changed->add<xaml_ptr<xaml_window>, xaml_point>(
-        [this](xaml_ptr<xaml_window>, xaml_point) {
-            if (m_handle && !m_resizing) draw({});
+    XAML_RETURN_IF_FAILED((m_location_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_point>(
+        [this](xaml_ptr<xaml_window>, xaml_point) -> xaml_result {
+            if (m_handle && !m_resizing) XAML_RETURN_IF_FAILED(draw({}));
+            return XAML_S_OK;
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_is_resizable_changed->add<xaml_ptr<xaml_window>, bool>(
-        [this](xaml_ptr<xaml_window>, bool) {
-            if (m_handle) draw_resizable();
+    XAML_RETURN_IF_FAILED((m_is_resizable_changed->add_noexcept<xaml_ptr<xaml_window>, bool>(
+        [this](xaml_ptr<xaml_window>, bool) -> xaml_result {
+            if (m_handle) XAML_RETURN_IF_FAILED(draw_resizable());
+            return XAML_S_OK;
         },
         &token)));
     return XAML_S_OK;

@@ -85,18 +85,20 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
 
         std::size_t token;
-        XAML_RETURN_IF_FAILED((m_text_changed->add<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
-            [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) {
+        XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
+            [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) -> xaml_result {
                 if (m_handle)
                 {
-                    XAML_THROW_IF_FAILED(draw_text());
-                    XAML_THROW_IF_FAILED(parent_redraw());
+                    XAML_RETURN_IF_FAILED(draw_text());
+                    XAML_RETURN_IF_FAILED(parent_redraw());
                 }
+                return XAML_S_OK;
             },
             &token)));
-        XAML_RETURN_IF_FAILED((m_is_default_changed->add<xaml_ptr<xaml_button>, bool>(
-            [this](xaml_ptr<xaml_button>, bool) {
-                if (m_handle) XAML_THROW_IF_FAILED(draw_default());
+        XAML_RETURN_IF_FAILED((m_is_default_changed->add_noexcept<xaml_ptr<xaml_button>, bool>(
+            [this](xaml_ptr<xaml_button>, bool) -> xaml_result {
+                if (m_handle) XAML_RETURN_IF_FAILED(draw_default());
+                XAML_S_OK;
             },
             &token)));
     }

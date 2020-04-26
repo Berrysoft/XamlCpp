@@ -30,7 +30,7 @@ XAML_DECL_INTERFACE_(xaml_collection_property_info, xaml_object)
     XAML_DECL_VTBL(xaml_collection_property_info, XAML_COLLECTION_PROPERTY_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*), xaml_result(XAML_CALL*)(xaml_object*, xaml_object*), xaml_collection_property_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_collection_property_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;

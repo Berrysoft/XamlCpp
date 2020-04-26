@@ -27,6 +27,14 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
         XAML_RETURN_IF_FAILED((xaml_delegate_new<void, Args...>(std::forward<F>(f), &callback)));
         return add(callback.get(), ptoken);
     }
+
+    template <typename... Args, typename F>
+    xaml_result add_noexcept(F && f, std::size_t * ptoken) noexcept
+    {
+        xaml_ptr<xaml_delegate> callback;
+        XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, Args...>(std::forward<F>(f), &callback)));
+        return add(callback.get(), ptoken);
+    }
 #endif // __cplusplus
 };
 

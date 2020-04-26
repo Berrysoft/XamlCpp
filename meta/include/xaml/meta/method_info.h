@@ -14,7 +14,7 @@ XAML_DECL_INTERFACE_(xaml_method_info, xaml_delegate)
     XAML_DECL_VTBL(xaml_method_info, XAML_METHOD_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_vector_view*), xaml_method_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_vector_view*) XAML_NOEXCEPT, xaml_method_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view*)>&&, xaml_method_info**) noexcept;
