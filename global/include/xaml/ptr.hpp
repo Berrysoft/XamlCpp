@@ -120,7 +120,7 @@ namespace std
     template <typename T>
     struct hash<xaml_ptr<T>>
     {
-        int32_t operator()(xaml_ptr<T> const& ptr) const noexcept
+        size_t operator()(xaml_ptr<T> const& ptr) const noexcept
         {
             return hash<intptr_t>{}((intptr_t)ptr.get());
         }

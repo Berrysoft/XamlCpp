@@ -33,7 +33,7 @@ public:
 
     xaml_result XAML_CALL get_length(int32_t* psize) noexcept override
     {
-        *psize = m_str.size();
+        *psize = (int32_t)m_str.size();
         return XAML_S_OK;
     }
 

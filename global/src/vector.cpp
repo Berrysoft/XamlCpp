@@ -46,7 +46,7 @@ public:
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
-        *psize = m_vec.size();
+        *psize = (int32_t)m_vec.size();
         return XAML_S_OK;
     }
 

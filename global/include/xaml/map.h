@@ -41,8 +41,8 @@ XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 
 XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
 
-#define XAML_HASHER_VTBL(type)                                \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                \
+#define XAML_HASHER_VTBL(type)                                 \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                 \
     XAML_METHOD(hash, type, xaml_object*, XAML_CSTD int32_t*); \
     XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
 
@@ -67,7 +67,17 @@ inline xaml_result xaml_hasher_new(xaml_hasher** ptr) noexcept
                 static std::hash<T> hasher{};
                 T value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, value));
-                *phash = hasher(value);
+                std::size_t std_hash = hasher(value);
+                std::int32_t* ptr = (std::int32_t*)&std_hash;
+#if SIZE_MAX == UINT64_MAX
+                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint64_t), "Unknown 64-bit platform.");
+                *phash = ptr[0] ^ ptr[1];
+#elif SIZE_MAX == UINT32_MAX
+                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint32_t), "Unknown 32-bit platform.");
+                *phash = ptr[0];
+#else
+#error Cannot determine platform architecture
+#endif
                 return XAML_S_OK;
             } },
         std::function<xaml_result(xaml_object*, xaml_object*, bool*)>{

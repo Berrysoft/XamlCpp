@@ -111,7 +111,17 @@ xaml_result xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 XAML_RETURN_IF_FAILED(value->get_data(&data));
                 int32_t length;
                 XAML_RETURN_IF_FAILED(value->get_length(&length));
-                *phash = hasher(xaml_std_string_view_t(data, length));
+                std::size_t std_hash = hasher(xaml_std_string_view_t(data, (std::size_t)length));
+                std::int32_t* ptr = (std::int32_t*)&std_hash;
+#if SIZE_MAX == UINT64_MAX
+                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint64_t), "Unknown 64-bit platform.");
+                *phash = ptr[0] ^ ptr[1];
+#elif SIZE_MAX == UINT32_MAX
+                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint32_t), "Unknown 32-bit platform.");
+                *phash = ptr[0];
+#else
+#error Cannot determine platform architecture
+#endif
                 return XAML_S_OK;
             } },
         function<xaml_result(xaml_object*, xaml_object*, bool*)>{
@@ -135,7 +145,7 @@ public:
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
-        *psize = m_map.size();
+        *psize = (int32_t)m_map.size();
         return XAML_S_OK;
     }
 
