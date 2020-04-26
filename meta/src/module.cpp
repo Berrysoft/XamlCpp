@@ -37,7 +37,7 @@ using path_string_view_t = basic_string_view<path_char_t>;
 static vector<path> split(path_string_view_t str, path_char_t separater)
 {
     if (str.empty()) return {};
-    int32_t index = 0, offset = 0;
+    size_t index = 0, offset = 0;
     vector<path> result;
     for (;;)
     {
