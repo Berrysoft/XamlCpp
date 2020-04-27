@@ -11,7 +11,7 @@
 template <typename T, typename... Base>
 struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Base..., xaml_layout_base>
 {
-    virtual xaml_result draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)>) noexcept
+    virtual xaml_result draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
     {
         XAML_FOREACH_START(c, m_children);
         {
