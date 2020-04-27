@@ -15,8 +15,8 @@ XAML_DECL_INTERFACE_(xaml_container, xaml_control)
     XAML_DECL_VTBL(xaml_container, XAML_CONTAINER_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_container_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_container_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_container_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_container_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_multicontainer, { 0xc9a53763, 0x404b, 0x4531, { 0xba, 0x56, 0x56, 0x01, 0xc9, 0x49, 0x05, 0x8d } })
 
@@ -30,7 +30,7 @@ XAML_DECL_INTERFACE_(xaml_multicontainer, xaml_control)
     XAML_DECL_VTBL(xaml_multicontainer, XAML_MULTICONTAINER_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_multicontainer_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_multicontainer_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_multicontainer_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_multicontainer_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTAINER_H

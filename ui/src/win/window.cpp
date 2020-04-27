@@ -71,7 +71,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
 
-xaml_result xaml_window_from_native(HWND hWnd, xaml_window** ptr) noexcept
+xaml_result XAML_CALL xaml_window_from_native(HWND hWnd, xaml_window** ptr) noexcept
 {
     if (auto wnd = window_map[hWnd])
     {

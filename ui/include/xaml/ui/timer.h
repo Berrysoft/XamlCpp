@@ -25,8 +25,8 @@ XAML_DECL_INTERFACE_(xaml_timer, xaml_object)
     XAML_DECL_VTBL(xaml_timer, XAML_TIMER_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_timer_new(xaml_timer**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_timer_new_interval(XAML_CSTD int32_t, xaml_timer**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_timer_new(xaml_timer**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_timer_new_interval(XAML_CSTD int32_t, xaml_timer**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 inline xaml_result xaml_timer_new_interval(std::chrono::milliseconds ms, xaml_timer** ptr) noexcept

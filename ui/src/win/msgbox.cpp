@@ -7,7 +7,7 @@
 
 using namespace std;
 
-xaml_result xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
 {
     TASKDIALOGCONFIG config{};
     config.cbSize = sizeof(TASKDIALOGCONFIG);

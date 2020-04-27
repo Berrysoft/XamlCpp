@@ -35,12 +35,12 @@ xaml_result xaml_window_impl::init() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_new(xaml_window** ptr) noexcept
+xaml_result XAML_CALL xaml_window_new(xaml_window** ptr) noexcept
 {
     return xaml_object_init<xaml_window_impl>(ptr);
 }
 
-xaml_result xaml_window_members(xaml_type_info_registration* __info) noexcept
+xaml_result XAML_CALL xaml_window_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_window;
     XAML_RETURN_IF_FAILED(xaml_container_members(__info));
@@ -55,7 +55,7 @@ xaml_result xaml_window_members(xaml_type_info_registration* __info) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_register(xaml_meta_context* ctx) noexcept
+xaml_result XAML_CALL xaml_window_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_window, "xaml/ui/window.h");
     XAML_RETURN_IF_FAILED(xaml_window_members(__info.get()));

@@ -16,7 +16,7 @@ protected:
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
 
 public:
-    xaml_result init(int, xaml_char_t**) noexcept;
+    xaml_result XAML_CALL init(int, xaml_char_t**) noexcept;
 
     xaml_result XAML_CALL get_cmd_lines(xaml_vector_view** ptr) noexcept override
     {
@@ -67,7 +67,7 @@ public:
         }
     }
 
-    xaml_result get_default_font(UINT, HFONT*) noexcept;
+    xaml_result XAML_CALL get_default_font(UINT, HFONT*) noexcept;
 #endif // XAML_UI_WINDOWS
 };
 

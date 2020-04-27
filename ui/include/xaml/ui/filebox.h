@@ -40,7 +40,7 @@ XAML_DECL_INTERFACE_(xaml_open_filebox, xaml_filebox)
     XAML_DECL_VTBL(xaml_open_filebox, XAML_OPEN_FILEBOX_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_open_filebox_new(xaml_open_filebox**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_open_filebox_new(xaml_open_filebox**) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_save_filebox, { 0x057ba594, 0xf0c4, 0x4ddd, { 0x9f, 0xc7, 0x76, 0x7d, 0x36, 0x48, 0xd3, 0x3a } })
 
@@ -51,6 +51,6 @@ XAML_DECL_INTERFACE_(xaml_save_filebox, xaml_filebox)
     XAML_DECL_VTBL(xaml_save_filebox, XAML_SAVE_FILEBOX_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_save_filebox_new(xaml_save_filebox**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_save_filebox_new(xaml_save_filebox**) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_FILEBOX_H

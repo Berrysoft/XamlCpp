@@ -15,7 +15,7 @@ protected:
     std::atomic<bool> m_resizing;
 
 public:
-    xaml_result init() noexcept override;
+    xaml_result XAML_CALL init() noexcept override;
     ~xaml_window_impl();
 
     XAML_PROP_PTR_IMPL(menu_bar, xaml_control)
@@ -70,11 +70,11 @@ public:
     xaml_result XAML_CALL get_client_region(xaml_rectangle*) noexcept override;
     xaml_result XAML_CALL get_dpi(double*) noexcept override;
 
-    xaml_result draw_size() noexcept override;
-    virtual xaml_result draw_title() noexcept;
-    virtual xaml_result draw_child() noexcept;
-    virtual xaml_result draw_resizable() noexcept;
-    virtual xaml_result draw_menu_bar() noexcept;
+    xaml_result XAML_CALL draw_size() noexcept override;
+    virtual xaml_result XAML_CALL draw_title() noexcept;
+    virtual xaml_result XAML_CALL draw_child() noexcept;
+    virtual xaml_result XAML_CALL draw_resizable() noexcept;
+    virtual xaml_result XAML_CALL draw_menu_bar() noexcept;
 
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, xaml_window_impl, xaml_win32_window>
@@ -98,12 +98,12 @@ public:
         }
     }
 
-    xaml_result wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept override;
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept override;
 
-    xaml_result get_real_location(xaml_point*) noexcept;
-    xaml_result set_real_location(xaml_point const&) noexcept;
+    xaml_result XAML_CALL get_real_location(xaml_point*) noexcept;
+    xaml_result XAML_CALL set_real_location(xaml_point const&) noexcept;
 
-    xaml_result get_real_client_region(xaml_rectangle*) noexcept;
+    xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_window_impl() noexcept : xaml_container_implement()

@@ -13,8 +13,8 @@ XAML_DECL_INTERFACE_(xaml_menu_bar, xaml_multicontainer)
     XAML_DECL_VTBL(xaml_menu_bar, XAML_MENU_BAR_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_menu_bar_new(xaml_menu_bar**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_menu_bar_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_menu_bar_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_menu_bar_new(xaml_menu_bar**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_menu_bar_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_menu_bar_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_MENU_BAR_H

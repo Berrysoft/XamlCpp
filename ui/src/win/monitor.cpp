@@ -11,7 +11,7 @@ struct xaml_monitor_get_args
     xaml_result res;
 };
 
-static xaml_result xaml_monitor_enum(HMONITOR m, xaml_vector* vec)
+static xaml_result XAML_CALL xaml_monitor_enum(HMONITOR m, xaml_vector* vec)
 {
     MONITORINFO info = {};
     info.cbSize = sizeof(MONITORINFO);
@@ -36,7 +36,7 @@ static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
     }
 }
 
-xaml_result xaml_monitor_get_all(xaml_vector_view** ptr) noexcept
+xaml_result XAML_CALL xaml_monitor_get_all(xaml_vector_view** ptr) noexcept
 {
     xaml_ptr<xaml_vector> result;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&result));

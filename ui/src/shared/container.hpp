@@ -54,7 +54,7 @@ public:
     }
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
     {
         try
         {
@@ -81,7 +81,7 @@ public:
     }
 #endif // XAML_UI_WINDOWS
 
-    xaml_result init() noexcept override
+    xaml_result XAML_CALL init() noexcept override
     {
         XAML_RETURN_IF_FAILED(xaml_control_implement::init());
         XAML_RETURN_IF_FAILED(xaml_vector_new(&m_children));

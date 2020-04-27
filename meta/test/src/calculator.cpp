@@ -1,6 +1,6 @@
 #include <calculator.h>
 #include <xaml/event.h>
-#include <xaml/meta/meta_macros.hpp>
+#include <xaml/meta/meta_macros.h>
 
 struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator, xaml_object>
 {

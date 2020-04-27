@@ -55,7 +55,7 @@ XAML_DECL_INTERFACE_(xaml_control, xaml_object)
     XAML_DECL_VTBL(xaml_control, XAML_CONTROL_VTBL);
 };
 
-EXTERN_C XAML_UI_API xaml_result xaml_control_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_control_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_control_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_control_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROL_H

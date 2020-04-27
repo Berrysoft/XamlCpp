@@ -2,7 +2,7 @@
 
 using namespace std;
 
-xaml_result xaml_msgbox(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_msgbox_buttons buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_msgbox_buttons buttons, xaml_msgbox_result* presult) noexcept
 {
     vector<xaml_ptr<xaml_object>> mbs;
     switch (buttons)

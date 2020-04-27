@@ -14,6 +14,15 @@
     XAML_METHOD(get_##name, type, gtype);   \
     XAML_METHOD(set_##name, type, stype)
 
+#define XAML_CPROP(name, type, atype, rtype) \
+    XAML_METHOD(add_##name, type, atype);    \
+    XAML_METHOD(remove_##name, type, rtype)
+
+#define XAML_EVENT(name, type)                                         \
+    XAML_METHOD(add_##name, type, xaml_delegate*, XAML_CSTD int32_t*); \
+    XAML_METHOD(remove_##name, type, XAML_CSTD int32_t)
+
+#ifdef __cplusplus
 #define XAML_PROP_IMPL_BASE(name, vtype, gtype)          \
 protected:                                               \
     vtype m_##name{};                                    \
@@ -74,14 +83,6 @@ public:                                                   \
         }                                                  \
         return XAML_S_OK;                                  \
     }
-
-#define XAML_CPROP(name, type, atype, rtype) \
-    XAML_METHOD(add_##name, type, atype);    \
-    XAML_METHOD(remove_##name, type, rtype)
-
-#define XAML_EVENT(name, type)                                         \
-    XAML_METHOD(add_##name, type, xaml_delegate*, XAML_CSTD int32_t*); \
-    XAML_METHOD(remove_##name, type, XAML_CSTD int32_t)
 
 #define XAML_EVENT_IMPL(name)                                                                      \
 protected:                                                                                         \
@@ -191,5 +192,6 @@ public:                                                                         
         XAML_RETURN_IF_FAILED(xaml_default_property_new(__prop_name.get(), &__def_prop)); \
         XAML_RETURN_IF_FAILED(__info->add_attribute(__def_prop.get()));                   \
     } while (0)
+#endif // __cplusplus
 
 #endif // !XAML_META_META_MACROS_HPP

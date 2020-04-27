@@ -3,7 +3,7 @@
 
 using namespace std;
 
-xaml_result xaml_control_members(xaml_type_info_registration* __info) noexcept
+xaml_result XAML_CALL xaml_control_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_control;
     XAML_TYPE_INFO_ADD_PROP_EVENT(size);
@@ -15,7 +15,7 @@ xaml_result xaml_control_members(xaml_type_info_registration* __info) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_control_register(xaml_meta_context* ctx) noexcept
+xaml_result XAML_CALL xaml_control_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_control, "xaml/ui/control.h");
     XAML_RETURN_IF_FAILED(xaml_control_members(__info.get()));

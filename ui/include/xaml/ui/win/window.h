@@ -17,6 +17,6 @@ XAML_DECL_INTERFACE_(xaml_win32_window, xaml_win32_control)
 };
 
 EXTERN_C XAML_UI_API LRESULT CALLBACK xaml_window_callback(HWND, UINT, WPARAM, LPARAM) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result xaml_window_from_native(HWND, xaml_window**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_window_from_native(HWND, xaml_window**) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_WINDOWS_WINDOW_H

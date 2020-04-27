@@ -13,8 +13,8 @@ struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xa
 {
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
-    virtual xaml_result draw_submenu() noexcept;
-    xaml_result draw_visible() noexcept override;
+    virtual xaml_result XAML_CALL draw_submenu() noexcept;
+    xaml_result XAML_CALL draw_visible() noexcept override;
 
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_menu_bar_impl : xaml_inner_implement<xaml_win32_menu_bar_impl, xaml_menu_bar_impl, xaml_win32_menu_bar>
@@ -41,12 +41,12 @@ protected:
     wil::unique_hmenu m_menu{};
 
 public:
-    xaml_result get_menu(HMENU* pvalue) noexcept
+    xaml_result XAML_CALL get_menu(HMENU* pvalue) noexcept
     {
         *pvalue = m_menu.get();
         return XAML_S_OK;
     }
-    xaml_result set_menu(HMENU value) noexcept
+    xaml_result XAML_CALL set_menu(HMENU value) noexcept
     {
         m_menu.reset(value);
         return XAML_S_OK;
