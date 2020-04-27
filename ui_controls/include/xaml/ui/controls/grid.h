@@ -24,12 +24,12 @@ XAML_TYPE(xaml_grid_length, { 0xfed37e9d, 0x1f3b, 0x4247, { 0x82, 0x69, 0x95, 0x
 
 XAML_CLASS(xaml_grid, { 0x72737dd1, 0x7c10, 0x46e6, { 0x82, 0x38, 0x06, 0x2f, 0x43, 0x6b, 0xb0, 0x24 } })
 
-#define XAML_GRID_VTBL(type)                                                      \
-    XAML_VTBL_INHERIT(XAML_LAYOUT_BASE_VTBL(type));                               \
-    XAML_METHOD(get_columns, type, xaml_vector_view**);                           \
-    XAML_METHOD(get_rows, type, xaml_vector_view**);                              \
-    XAML_CPROP(column, type, xaml_grid_length*, xaml_grid_length XAML_CONST_REF); \
-    XAML_CPROP(row, type, xaml_grid_length*, xaml_grid_length XAML_CONST_REF)
+#define XAML_GRID_VTBL(type)                                                                    \
+    XAML_VTBL_INHERIT(XAML_LAYOUT_BASE_VTBL(type));                                             \
+    XAML_METHOD(get_columns, type, xaml_vector_view**);                                         \
+    XAML_METHOD(get_rows, type, xaml_vector_view**);                                            \
+    XAML_CPROP(column, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF); \
+    XAML_CPROP(row, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_grid, xaml_layout_base)
 {
@@ -39,5 +39,14 @@ XAML_DECL_INTERFACE_(xaml_grid, xaml_layout_base)
 EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_new(xaml_grid**) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_register(xaml_meta_context*) XAML_NOEXCEPT;
+
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column_span(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column_span(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row_span(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_GRID_H
