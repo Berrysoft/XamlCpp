@@ -1,5 +1,5 @@
-#ifndef XAML_META_META_MACROS_H
-#define XAML_META_META_MACROS_H
+#ifndef XAML_META_META_MACROS_HPP
+#define XAML_META_META_MACROS_HPP
 
 #include <xaml/delegate.h>
 #include <xaml/meta/collection_property_info.h>
@@ -89,7 +89,7 @@ protected:                                                                      
                                                                                                    \
 public:                                                                                            \
     template <typename... Args>                                                                    \
-    xaml_result on_##name(Args&&... args) noexcept                                                 \
+    xaml_result XAML_CALL on_##name(Args&&... args) noexcept                                       \
     {                                                                                              \
         xaml_ptr<xaml_vector_view> invoke_args;                                                    \
         XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&invoke_args, std::forward<Args>(args)...)); \
@@ -192,4 +192,4 @@ public:                                                                         
         XAML_RETURN_IF_FAILED(__info->add_attribute(__def_prop.get()));                   \
     } while (0)
 
-#endif // !XAML_META_META_MACROS_H
+#endif // !XAML_META_META_MACROS_HPP

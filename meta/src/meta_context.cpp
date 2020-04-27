@@ -67,7 +67,7 @@ public:
     }
 };
 
-xaml_result xaml_meta_context_new(xaml_meta_context** ptr) noexcept
+xaml_result XAML_CALL xaml_meta_context_new(xaml_meta_context** ptr) noexcept
 {
     return xaml_object_init<xaml_meta_context_impl>(ptr);
 }

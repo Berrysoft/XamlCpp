@@ -24,12 +24,12 @@ public:
     }
 };
 
-xaml_result xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view*), xaml_method_info** ptr) noexcept
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view*), xaml_method_info** ptr) noexcept
 {
     return xaml_object_new<xaml_method_info_impl>(ptr, name, func);
 }
 
-xaml_result xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_vector_view*)>&& func, xaml_method_info** ptr) noexcept
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_vector_view*)>&& func, xaml_method_info** ptr) noexcept
 {
     return xaml_object_new<xaml_method_info_impl>(ptr, name, move(func));
 }

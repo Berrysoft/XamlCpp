@@ -32,6 +32,6 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
     XAML_DECL_VTBL(xaml_meta_context, XAML_META_CONTEXT_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_meta_context_new(xaml_meta_context**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_meta_context_new(xaml_meta_context**) XAML_NOEXCEPT;
 
 #endif // !XAML_META_META_CONTEXT_H

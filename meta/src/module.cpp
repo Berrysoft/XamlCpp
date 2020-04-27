@@ -195,7 +195,7 @@ public:
 #endif // XAML_WIN32
 };
 
-xaml_result xaml_module_new(xaml_module** ptr) noexcept
+xaml_result XAML_CALL xaml_module_new(xaml_module** ptr) noexcept
 {
     return xaml_object_new<xaml_module_impl>(ptr);
 }

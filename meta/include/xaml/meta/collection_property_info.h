@@ -30,13 +30,13 @@ XAML_DECL_INTERFACE_(xaml_collection_property_info, xaml_object)
     XAML_DECL_VTBL(xaml_collection_property_info, XAML_COLLECTION_PROPERTY_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_collection_property_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_collection_property_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_META_API xaml_result xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
+XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
 
 template <typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
-inline xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
+inline xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_collection_property_info_new(
         name, xaml_type_guid_v<T>,

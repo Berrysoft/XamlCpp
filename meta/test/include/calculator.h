@@ -17,7 +17,7 @@ struct XAML_NOVTBL xaml_test_calculator : xaml_object
     virtual xaml_result XAML_CALL minus(int, int) noexcept = 0;
 };
 
-EXTERN_C xaml_result xaml_test_calculator_new(xaml_test_calculator**) XAML_NOEXCEPT;
-EXTERN_C xaml_result xaml_test_calculator_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C xaml_result XAML_CALL xaml_test_calculator_new(xaml_test_calculator**) XAML_NOEXCEPT;
+EXTERN_C xaml_result XAML_CALL xaml_test_calculator_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_TEST_CALCULATOR_H

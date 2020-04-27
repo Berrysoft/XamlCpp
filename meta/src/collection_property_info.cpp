@@ -56,12 +56,12 @@ public:
     }
 };
 
-xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_object*), xaml_result(XAML_CALL* remover)(xaml_object*, xaml_object*), xaml_collection_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_object*), xaml_result(XAML_CALL* remover)(xaml_object*, xaml_object*), xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, adder, remover);
 }
 
-xaml_result xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, move(adder), move(remover));
 }

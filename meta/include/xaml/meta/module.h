@@ -16,6 +16,6 @@ XAML_DECL_INTERFACE_(xaml_module, xaml_object)
     XAML_DECL_VTBL(xaml_module, XAML_MODULE_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_module_new(xaml_module**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_module_new(xaml_module**) XAML_NOEXCEPT;
 
 #endif // !XAML_META_MODULE_H

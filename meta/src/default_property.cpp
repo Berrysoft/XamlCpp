@@ -1,5 +1,5 @@
 #include <xaml/meta/default_property.h>
-#include <xaml/meta/meta_macros.h>
+#include <xaml/meta/meta_macros.hpp>
 
 using namespace std;
 
@@ -17,12 +17,12 @@ public:
     }
 };
 
-xaml_result xaml_default_property_new(xaml_string* name, xaml_default_property** ptr) noexcept
+xaml_result XAML_CALL xaml_default_property_new(xaml_string* name, xaml_default_property** ptr) noexcept
 {
     return xaml_object_new<xaml_default_property_impl>(ptr, name);
 }
 
-xaml_result xaml_default_property_register(xaml_meta_context* ctx) noexcept
+xaml_result XAML_CALL xaml_default_property_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_default_property, "xaml/meta/default_property.h");
     XAML_TYPE_INFO_ADD_PROP_RD(default_property);

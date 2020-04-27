@@ -16,7 +16,7 @@ XAML_DECL_INTERFACE_(xaml_default_property, xaml_object)
     XAML_DECL_VTBL(xaml_default_property, XAML_DEFAULT_PROPERTY_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_default_property_new(xaml_string*, xaml_default_property**) XAML_NOEXCEPT;
-EXTERN_C XAML_META_API xaml_result xaml_default_property_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_default_property_new(xaml_string*, xaml_default_property**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_default_property_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_META_DEFAULT_PROPERTY_H

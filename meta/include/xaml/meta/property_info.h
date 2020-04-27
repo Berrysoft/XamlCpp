@@ -29,10 +29,10 @@ XAML_DECL_INTERFACE_(xaml_property_info, xaml_object)
     XAML_DECL_VTBL(xaml_property_info, XAML_PROPERTY_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object**) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_property_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object**) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_property_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_META_API xaml_result xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
+XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
 
 template <typename T, typename = void>
 struct __xaml_wrapper
@@ -58,7 +58,7 @@ decltype(auto) __xaml_wrapper_get(__xaml_wrapper_t<T> const& value) noexcept
 }
 
 template <typename T, typename TValueGet, typename TValueSet = TValueGet>
-xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<T>,
@@ -80,7 +80,7 @@ xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::
 }
 
 template <typename T, typename TValueGet>
-xaml_result xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<T>,

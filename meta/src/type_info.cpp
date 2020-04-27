@@ -133,7 +133,7 @@ public:
     }
 };
 
-xaml_result xaml_type_info_registration_new(xaml_guid const& type, xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
+xaml_result XAML_CALL xaml_type_info_registration_new(xaml_guid const& type, xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
 {
     return xaml_object_new_and_init<xaml_type_info_registration_impl>(ptr, type, name, include_file);
 }

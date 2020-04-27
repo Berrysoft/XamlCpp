@@ -38,12 +38,12 @@ public:
     }
 };
 
-xaml_result xaml_event_info_new(xaml_string* name, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_delegate*, int32_t*), xaml_result(XAML_CALL* remover)(xaml_object*, int32_t), xaml_event_info** ptr) noexcept
+xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_delegate*, int32_t*), xaml_result(XAML_CALL* remover)(xaml_object*, int32_t), xaml_event_info** ptr) noexcept
 {
     return xaml_object_new<xaml_event_info_impl>(ptr, name, adder, remover);
 }
 
-xaml_result xaml_event_info_new(xaml_string* name, function<xaml_result(xaml_object*, xaml_delegate*, int32_t*)>&& adder, function<xaml_result(xaml_object*, int32_t)>&& remover, xaml_event_info** ptr) noexcept
+xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, function<xaml_result(xaml_object*, xaml_delegate*, int32_t*)>&& adder, function<xaml_result(xaml_object*, int32_t)>&& remover, xaml_event_info** ptr) noexcept
 {
     return xaml_object_new<xaml_event_info_impl>(ptr, name, move(adder), move(remover));
 }

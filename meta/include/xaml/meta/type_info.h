@@ -31,12 +31,12 @@ XAML_DECL_INTERFACE_(xaml_type_info, xaml_reflection_info)
 
 #ifdef __cplusplus
     template <typename T>
-    xaml_result get_attribute(T * *ptr) noexcept
+    xaml_result XAML_CALL get_attribute(T * *ptr) noexcept
     {
         return get_attribute(xaml_type_guid_v<T>, (xaml_object**)ptr);
     }
 
-    xaml_result construct(xaml_object * *ptr) noexcept
+    xaml_result XAML_CALL construct(xaml_object * *ptr) noexcept
     {
         xaml_ptr<xaml_delegate> ctor;
         XAML_RETURN_IF_FAILED(get_constructor(&ctor));
@@ -65,18 +65,18 @@ XAML_DECL_INTERFACE_(xaml_type_info_registration, xaml_type_info)
 
 #ifdef __cplusplus
     template <typename T>
-    xaml_result add_attribute(T * ptr) noexcept
+    xaml_result XAML_CALL add_attribute(T * ptr) noexcept
     {
         return add_attribute(xaml_type_guid_v<T>, (xaml_object*)ptr);
     }
 #endif // __cplusplus
 };
 
-EXTERN_C XAML_META_API xaml_result xaml_type_info_registration_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_type_info_registration**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_type_info_registration_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_type_info_registration**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T>
-xaml_result xaml_type_info_registration_new(xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
+xaml_result XAML_CALL xaml_type_info_registration_new(xaml_string* name, xaml_string* include_file, xaml_type_info_registration** ptr) noexcept
 {
     return xaml_type_info_registration_new(xaml_type_guid_v<T>, name, include_file, ptr);
 }

@@ -1,6 +1,6 @@
 #include <calculator.h>
 #include <xaml/event.h>
-#include <xaml/meta/meta_macros.h>
+#include <xaml/meta/meta_macros.hpp>
 
 struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator, xaml_object>
 {
@@ -25,12 +25,12 @@ public:
     }
 };
 
-xaml_result xaml_test_calculator_new(xaml_test_calculator** ptr) noexcept
+xaml_result XAML_CALL xaml_test_calculator_new(xaml_test_calculator** ptr) noexcept
 {
     return xaml_object_init<xaml_test_calculator_impl>(ptr);
 }
 
-xaml_result xaml_test_calculator_register(xaml_meta_context* ctx) noexcept
+xaml_result XAML_CALL xaml_test_calculator_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_test_calculator, "calculator.h");
     XAML_TYPE_INFO_ADD_CTOR(xaml_test_calculator_new);
