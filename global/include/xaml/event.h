@@ -21,7 +21,7 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
 
 #ifdef __cplusplus
     template <typename... Args, typename F>
-    xaml_result add(F && f, std::int32_t * ptoken) noexcept
+    xaml_result XAML_CALL add(F && f, std::int32_t * ptoken) noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new<void, Args...>(std::forward<F>(f), &callback)));
@@ -29,7 +29,7 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
     }
 
     template <typename... Args, typename F>
-    xaml_result add_noexcept(F && f, std::int32_t * ptoken) noexcept
+    xaml_result XAML_CALL add_noexcept(F && f, std::int32_t * ptoken) noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, Args...>(std::forward<F>(f), &callback)));
@@ -38,6 +38,6 @@ XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
 #endif // __cplusplus
 };
 
-EXTERN_C XAML_API xaml_result xaml_event_new(xaml_event**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_event_new(xaml_event**) XAML_NOEXCEPT;
 
 #endif // !XAML_EVENT_H

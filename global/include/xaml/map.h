@@ -24,7 +24,7 @@ XAML_DECL_INTERFACE_(xaml_key_value_pair, xaml_object)
     XAML_DECL_VTBL(xaml_key_value_pair, XAML_KEY_VALUE_PAIR_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_key_value_pair_new(xaml_object*, xaml_object*, xaml_key_value_pair**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_key_value_pair_new(xaml_object*, xaml_object*, xaml_key_value_pair**) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 
@@ -51,15 +51,15 @@ XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
     XAML_DECL_VTBL(xaml_hasher, XAML_HASHER_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD int32_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD int32_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_hasher_new(std::function<xaml_result(xaml_object*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, xaml_object*, bool*)>&&, xaml_hasher**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_hasher_new(std::function<xaml_result(xaml_object*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, xaml_object*, bool*)>&&, xaml_hasher**) noexcept;
 
 template <typename T>
-inline xaml_result xaml_hasher_new(xaml_hasher** ptr) noexcept
+inline xaml_result XAML_CALL xaml_hasher_new(xaml_hasher** ptr) noexcept
 {
     return xaml_hasher_new(
         std::function<xaml_result(xaml_object*, std::int32_t*)>{
@@ -144,11 +144,11 @@ XAML_DECL_INTERFACE_(xaml_map, xaml_map_view)
     XAML_DECL_VTBL(xaml_map, XAML_MAP_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_map_new(xaml_map**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result xaml_map_new_with_hasher(xaml_hasher*, xaml_map**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_map_new(xaml_map**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_map_new_with_hasher(xaml_hasher*, xaml_map**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_map_new(std::unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>, __std_xaml_hasher, __std_xaml_eq>&&, xaml_map**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_map_new(std::unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>, __std_xaml_hasher, __std_xaml_eq>&&, xaml_map**) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_MAP_H

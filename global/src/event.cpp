@@ -46,7 +46,7 @@ public:
     }
 };
 
-xaml_result xaml_event_new(xaml_event** ptr) noexcept
+xaml_result XAML_CALL xaml_event_new(xaml_event** ptr) noexcept
 {
     return xaml_object_new<xaml_event_impl>(ptr);
 }

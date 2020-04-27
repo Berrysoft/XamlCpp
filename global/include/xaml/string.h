@@ -38,14 +38,14 @@ XAML_DECL_INTERFACE_(xaml_string, xaml_object)
     XAML_DECL_VTBL(xaml_string, XAML_STRING_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 using xaml_std_string_t = std::basic_string<xaml_char_t>;
 using xaml_std_string_view_t = std::basic_string_view<xaml_char_t>;
 
-XAML_API xaml_result xaml_string_new(xaml_std_string_t&&, xaml_string**) noexcept;
-XAML_API xaml_result xaml_string_new(xaml_std_string_view_t, xaml_string**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&&, xaml_string**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t, xaml_string**) noexcept;
 
 inline xaml_ptr<xaml_string> to_xaml_string(xaml_char_t const* str)
 {

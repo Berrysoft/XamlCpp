@@ -54,7 +54,7 @@ XAML_DECL_INTERFACE(xaml_object)
 
 #ifdef __cplusplus
     template <typename T>
-    xaml_result query(T * *ptr) noexcept
+    xaml_result XAML_CALL query(T * *ptr) noexcept
     {
         return query(xaml_type_guid_v<T>, (void**)ptr);
     }
@@ -95,7 +95,7 @@ template <typename B1, typename... B>
 struct __query_impl<B1, B...>
 {
     template <typename T>
-    xaml_result operator()(T* self, xaml_guid const& type, void** ptr) const noexcept
+    xaml_result XAML_CALL operator()(T* self, xaml_guid const& type, void** ptr) const noexcept
     {
         if (type == xaml_type_guid_v<B1>)
         {
@@ -114,7 +114,7 @@ template <>
 struct __query_impl<>
 {
     template <typename T>
-    xaml_result operator()(T*, xaml_guid const&, void**) const noexcept
+    xaml_result XAML_CALL operator()(T*, xaml_guid const&, void**) const noexcept
     {
         return XAML_E_NOINTERFACE;
     }
@@ -127,7 +127,7 @@ inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, v
 }
 
 template <typename D, typename T, typename... Args>
-inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
+inline xaml_result XAML_CALL xaml_object_new(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
     if (!res) return XAML_E_OUTOFMEMORY;
@@ -136,7 +136,7 @@ inline xaml_result xaml_object_new(T** ptr, Args&&... args) noexcept
 }
 
 template <typename D, typename T, typename... Args>
-inline xaml_result xaml_object_init(T** ptr, Args&&... args) noexcept
+inline xaml_result XAML_CALL xaml_object_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D;
     if (!res) return XAML_E_OUTOFMEMORY;
@@ -154,7 +154,7 @@ inline xaml_result xaml_object_init(T** ptr, Args&&... args) noexcept
 }
 
 template <typename D, typename T, typename... Args>
-inline xaml_result xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
+inline xaml_result XAML_CALL xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
     if (!res) return XAML_E_OUTOFMEMORY;

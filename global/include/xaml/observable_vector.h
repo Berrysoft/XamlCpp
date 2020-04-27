@@ -16,7 +16,7 @@ XAML_DECL_INTERFACE_(xaml_observable_vector, xaml_vector)
     XAML_DECL_VTBL(xaml_observable_vector, XAML_OBSERVABLE_VECTOR_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_observable_vector_new(xaml_observable_vector** ptr) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_observable_vector_new(xaml_observable_vector** ptr) XAML_NOEXCEPT;
 
 typedef enum xaml_vector_changed_action
 {
@@ -42,6 +42,6 @@ XAML_DECL_INTERFACE_(xaml_vector_changed_args, xaml_object)
     XAML_DECL_VTBL(xaml_vector_changed_args, XAML_VECTOR_CHANGED_ARGS_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index, xaml_vector_changed_args**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_vector_changed_args_new(xaml_vector_changed_action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index, xaml_vector_changed_args**) XAML_NOEXCEPT;
 
 #endif // !XAML_OBSERVABLE_VECTOR_H

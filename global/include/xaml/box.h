@@ -24,13 +24,13 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
 
 #ifdef __cplusplus
     template <typename T>
-    xaml_result set_value(T const& value)
+    xaml_result XAML_CALL set_value(T const& value)
     {
         return set_data(xaml_type_guid_v<T>, &value, sizeof(T));
     }
 
     template <typename T>
-    xaml_result get_value(T & value)
+    xaml_result XAML_CALL get_value(T & value)
     {
         xaml_guid type;
         XAML_RETURN_IF_FAILED(get_type(&type));
@@ -44,7 +44,7 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
     }
 
     template <typename T>
-    xaml_result get_value_ptr(T const*& ptr)
+    xaml_result XAML_CALL get_value_ptr(T const*& ptr)
     {
         xaml_guid type;
         XAML_RETURN_IF_FAILED(get_type(&type));
@@ -57,7 +57,7 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
 #endif // __cplusplus
 };
 
-EXTERN_C XAML_API xaml_result xaml_box_new(xaml_guid XAML_CONST_REF, void const*, int32_t, xaml_box**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_box_new(xaml_guid XAML_CONST_REF, void const*, int32_t, xaml_box**) XAML_NOEXCEPT;
 
 XAML_TYPE(bool, { 0xc3a0fdbf, 0xa30b, 0x315e, { 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae } })
 XAML_TYPE_NAME(xaml_char_t, char, { 0x2d08eb84, 0x64e6, 0x3688, { 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d } })
@@ -75,7 +75,7 @@ XAML_TYPE(xaml_guid, { 0x3c88cf27, 0x75ef, 0x3412, { 0x86, 0x88, 0x70, 0x59, 0xe
 
 #ifdef __cplusplus
 template <typename T>
-inline xaml_result xaml_box_new(T const& value, xaml_box** ptr) noexcept
+inline xaml_result XAML_CALL xaml_box_new(T const& value, xaml_box** ptr) noexcept
 {
     return xaml_box_new(xaml_type_guid_v<T>, &value, sizeof(T), ptr);
 }

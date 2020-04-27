@@ -95,7 +95,7 @@ public:
     }
 };
 
-xaml_result xaml_observable_vector_new(xaml_observable_vector** ptr) noexcept
+xaml_result XAML_CALL xaml_observable_vector_new(xaml_observable_vector** ptr) noexcept
 {
     return xaml_object_init<xaml_observable_vector_impl>(ptr);
 }
@@ -142,7 +142,7 @@ public:
     }
 };
 
-xaml_result xaml_vector_changed_args_new(xaml_vector_changed_action action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index, xaml_vector_changed_args** ptr) noexcept
+xaml_result XAML_CALL xaml_vector_changed_args_new(xaml_vector_changed_action action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index, xaml_vector_changed_args** ptr) noexcept
 {
     return xaml_object_new<xaml_vector_changed_args_impl>(ptr, action, new_items, new_index, old_items, old_index);
 }

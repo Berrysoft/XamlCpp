@@ -21,13 +21,13 @@ XAML_DECL_INTERFACE_(xaml_delegate, xaml_object)
     XAML_DECL_VTBL(xaml_delegate, XAML_DELEGATE_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_delegate_new(xaml_result (*)(xaml_vector_view*, xaml_object**) XAML_NOEXCEPT, xaml_delegate**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result xaml_delegate_bind(xaml_delegate*, xaml_vector_view*, xaml_delegate**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_delegate_new(xaml_result(XAML_CALL*)(xaml_vector_view*, xaml_object**) XAML_NOEXCEPT, xaml_delegate**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_delegate_bind(xaml_delegate*, xaml_vector_view*, xaml_delegate**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_delegate_new(std::function<xaml_result(xaml_vector_view*, xaml_object**)>&&, xaml_delegate**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_delegate_new(std::function<xaml_result(xaml_vector_view*, xaml_object**)>&&, xaml_delegate**) noexcept;
 
-inline xaml_ptr<xaml_object> __xaml_delegate_impl_invoke_impl_get_at(xaml_vector_view* args, int32_t index)
+inline xaml_ptr<xaml_object> XAML_CALL __xaml_delegate_impl_invoke_impl_get_at(xaml_vector_view* args, int32_t index)
 {
     xaml_ptr<xaml_object> item;
     XAML_THROW_IF_FAILED(args->get_at(index, &item));
@@ -35,19 +35,19 @@ inline xaml_ptr<xaml_object> __xaml_delegate_impl_invoke_impl_get_at(xaml_vector
 }
 
 template <typename Return, typename... Args, std::int32_t... Indicies>
-Return __xaml_delegate_impl_invoke_impl(std::function<Return(Args...)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>)
+Return XAML_CALL __xaml_delegate_impl_invoke_impl(std::function<Return(Args...)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>)
 {
     return func(xaml_unbox_value<Args>(__xaml_delegate_impl_invoke_impl_get_at(args, Indicies))...);
 }
 
 template <typename Return, typename... Args>
-Return __xaml_delegate_impl_invoke(std::function<Return(Args...)> const& func, xaml_vector_view* args)
+Return XAML_CALL __xaml_delegate_impl_invoke(std::function<Return(Args...)> const& func, xaml_vector_view* args)
 {
     return __xaml_delegate_impl_invoke_impl<Return, Args...>(func, args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
 }
 
 template <typename Return, typename... Args, typename F>
-inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
+inline xaml_result XAML_CALL xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
 {
     return xaml_delegate_new(
         std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
@@ -74,7 +74,7 @@ inline xaml_result xaml_delegate_new(F&& func, xaml_delegate** ptr) noexcept
 }
 
 template <typename Return, typename... Args, typename F>
-Return __xaml_delegate_noexcept_invoke(F&& f, xaml_result* pres, Args&&... args) noexcept
+Return XAML_CALL __xaml_delegate_noexcept_invoke(F&& f, xaml_result* pres, Args&&... args) noexcept
 {
     Return result;
     xaml_result hr = f(std::forward<Args>(args)..., result);
@@ -83,7 +83,7 @@ Return __xaml_delegate_noexcept_invoke(F&& f, xaml_result* pres, Args&&... args)
 }
 
 template <typename Return, typename... Args, std::int32_t... Indicies>
-xaml_result __xaml_delegate_noexcept_impl_invoke_impl(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
+xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_impl(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
 {
     xaml_result hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(func(
@@ -99,13 +99,13 @@ xaml_result __xaml_delegate_noexcept_impl_invoke_impl(Return* presult, std::func
 }
 
 template <typename Return, typename... Args>
-xaml_result __xaml_delegate_noexcept_impl_invoke(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args)
+xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke(Return* presult, std::function<xaml_result(Args..., Return*)> const& func, xaml_vector_view* args)
 {
     return __xaml_delegate_noexcept_impl_invoke_impl<Return, Args...>(func, args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
 }
 
 template <typename... Args, std::int32_t... Indicies>
-xaml_result __xaml_delegate_noexcept_impl_invoke_void_impl(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
+xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void_impl(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
 {
     xaml_result hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(func(__xaml_delegate_noexcept_invoke<Args>(
@@ -119,13 +119,13 @@ xaml_result __xaml_delegate_noexcept_impl_invoke_void_impl(std::function<xaml_re
 }
 
 template <typename... Args>
-xaml_result __xaml_delegate_noexcept_impl_invoke_void(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args)
+xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args)
 {
     return __xaml_delegate_noexcept_impl_invoke_void_impl<Args...>(func, args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
 }
 
 template <typename Return, typename... Args, typename F>
-inline xaml_result xaml_delegate_new_noexcept(F&& func, xaml_delegate** ptr) noexcept
+inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate** ptr) noexcept
 {
     if constexpr (std::is_same_v<Return, void>)
     {
@@ -158,7 +158,7 @@ inline xaml_result xaml_delegate_new_noexcept(F&& func, xaml_delegate** ptr) noe
 }
 
 template <typename... Args>
-xaml_result xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noexcept
+xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noexcept
 {
     try
     {

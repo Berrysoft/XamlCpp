@@ -52,14 +52,14 @@ public:
 
     xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
-        if (index >= m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
         auto& res = m_vec[index];
         return res->query(ptr);
     }
 
     xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
-        if (index >= m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
         m_vec[index] = obj;
         return XAML_S_OK;
     }
@@ -76,7 +76,7 @@ public:
 
     xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
-        if (index >= m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
         m_vec.erase(m_vec.begin() + index);
         return XAML_S_OK;
     }
@@ -93,12 +93,12 @@ public:
     }
 };
 
-xaml_result xaml_vector_new(inner_vector_type&& vec, xaml_vector** ptr) noexcept
+xaml_result XAML_CALL xaml_vector_new(inner_vector_type&& vec, xaml_vector** ptr) noexcept
 {
     return xaml_object_new<xaml_vector_impl>(ptr, move(vec));
 }
 
-xaml_result xaml_vector_new(xaml_vector** ptr) noexcept
+xaml_result XAML_CALL xaml_vector_new(xaml_vector** ptr) noexcept
 {
     return xaml_vector_new({}, ptr);
 }

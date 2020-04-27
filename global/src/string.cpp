@@ -59,7 +59,7 @@ public:
     }
 };
 
-xaml_result xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
+xaml_result XAML_CALL xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
 {
     if (str)
         return xaml_object_init<xaml_string_impl>(ptr, str);
@@ -67,12 +67,12 @@ xaml_result xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
         return xaml_object_new<xaml_string_impl>(ptr);
 }
 
-xaml_result xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr) noexcept
+xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr) noexcept
 {
     return xaml_object_new<xaml_string_impl>(ptr, move(str));
 }
 
-xaml_result xaml_string_new(xaml_std_string_view_t str, xaml_string** ptr) noexcept
+xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t str, xaml_string** ptr) noexcept
 {
     return xaml_object_init<xaml_string_impl>(ptr, str);
 }

@@ -23,7 +23,7 @@ void print_string(xaml_string* str)
     _tprintf(U("%*s "), (int)length, data);
 }
 
-xaml_result observable_vector_changed_callback(xaml_vector_view* args, xaml_object** ptr)
+xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args, xaml_object** ptr)
 {
     xaml_vector_changed_args* e;
     XAML_RETURN_IF_FAILED(args->vtbl->get_at(args, 1, (xaml_object**)&e));

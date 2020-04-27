@@ -34,10 +34,10 @@ XAML_DECL_INTERFACE_(xaml_vector, xaml_vector_view)
     XAML_DECL_VTBL(xaml_vector, XAML_VECTOR_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result xaml_vector_new(xaml_vector**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_vector_new(xaml_vector**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_API xaml_result xaml_vector_new(std::vector<xaml_ptr<xaml_object>>&&, xaml_vector**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_vector_new(std::vector<xaml_ptr<xaml_object>>&&, xaml_vector**) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_VECTOR_H

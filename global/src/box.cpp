@@ -55,7 +55,7 @@ public:
     }
 };
 
-xaml_result xaml_box_new(xaml_guid const& type, void const* data, int32_t size, xaml_box** ptr) noexcept
+xaml_result XAML_CALL xaml_box_new(xaml_guid const& type, void const* data, int32_t size, xaml_box** ptr) noexcept
 {
     return xaml_object_init<xaml_box_impl>(ptr, type, data, size);
 }
