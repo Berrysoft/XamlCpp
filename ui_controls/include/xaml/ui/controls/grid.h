@@ -36,4 +36,8 @@ XAML_DECL_INTERFACE_(xaml_grid, xaml_layout_base)
     XAML_DECL_VTBL(xaml_grid, XAML_GRID_VTBL);
 };
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_grid_new(xaml_grid**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_grid_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_grid_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CONTROLS_GRID_H
