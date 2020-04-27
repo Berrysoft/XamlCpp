@@ -12,7 +12,7 @@ private:
     xaml_ptr<xaml_vector> m_vec{ nullptr };
     xaml_ptr<xaml_event> m_collection_changed{ nullptr };
 
-    xaml_result on_collection_changed(xaml_vector_changed_action action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index) noexcept
+    xaml_result XAML_CALL on_collection_changed(xaml_vector_changed_action action, xaml_vector_view* new_items, int32_t new_index, xaml_vector_view* old_items, int32_t old_index) noexcept
     {
         xaml_ptr<xaml_vector_changed_args> args;
         XAML_RETURN_IF_FAILED(xaml_vector_changed_args_new(action, new_items, new_index, old_items, old_index, &args));
@@ -23,7 +23,7 @@ private:
     }
 
 public:
-    xaml_result init() noexcept
+    xaml_result XAML_CALL init() noexcept
     {
         XAML_RETURN_IF_FAILED(xaml_vector_new(&m_vec));
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_collection_changed));

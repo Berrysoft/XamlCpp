@@ -15,8 +15,8 @@ XAML_DECL_INTERFACE_(xaml_check_box, xaml_button)
     XAML_DECL_VTBL(xaml_check_box, XAML_CHECK_BOX_VTBL);
 };
 
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_check_box_new(xaml_check_box**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_check_box_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_check_box_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_check_box_new(xaml_check_box**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_check_box_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_check_box_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_CHECK_BOX_H

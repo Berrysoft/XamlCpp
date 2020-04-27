@@ -11,7 +11,7 @@ private:
 
 public:
     xaml_string_impl() noexcept {}
-    xaml_result init(xaml_char_t const* str)
+    xaml_result XAML_CALL init(xaml_char_t const* str)
     {
         try
         {
@@ -21,7 +21,7 @@ public:
         XAML_CATCH_RETURN()
     }
     xaml_string_impl(xaml_std_string_t&& str) : m_str(move(str)) {}
-    xaml_result init(xaml_std_string_view_t str)
+    xaml_result XAML_CALL init(xaml_std_string_view_t str)
     {
         try
         {

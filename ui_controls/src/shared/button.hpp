@@ -21,7 +21,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
     XAML_EVENT_IMPL(click)
 
 #ifdef XAML_UI_WINDOWS
-    virtual xaml_result draw_text() noexcept
+    virtual xaml_result XAML_CALL draw_text() noexcept
     {
         if (m_text)
         {
@@ -36,7 +36,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         return XAML_S_OK;
     }
 
-    virtual xaml_result draw_default() noexcept
+    virtual xaml_result XAML_CALL draw_default() noexcept
     {
         auto style = GetWindowLongPtr(m_handle, GWL_STYLE);
         if (m_is_default)
@@ -47,7 +47,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         return XAML_S_OK;
     }
 
-    xaml_result wnd_proc(xaml_win32_window_message const& msg, LPARAM*) noexcept override
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM*) noexcept override
     {
         switch (msg.Msg)
         {
@@ -76,7 +76,7 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
     }
 #endif // XAML_UI_WINDOWS
 
-    xaml_result init() noexcept override
+    xaml_result XAML_CALL init() noexcept override
     {
         XAML_RETURN_IF_FAILED(xaml_control_implement::init());
 

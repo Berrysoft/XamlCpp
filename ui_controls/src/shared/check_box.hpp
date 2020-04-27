@@ -9,16 +9,16 @@ struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_che
     XAML_EVENT_IMPL(is_checked_changed)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
 
-    virtual xaml_result draw_checked() noexcept;
+    virtual xaml_result XAML_CALL draw_checked() noexcept;
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
     xaml_result XAML_CALL size_to_fit() noexcept override;
 #endif // XAML_UI_WINDOWS
 
-    xaml_result init() noexcept override;
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_CHECK_BOX_HPP

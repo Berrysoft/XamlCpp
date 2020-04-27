@@ -16,8 +16,8 @@ XAML_DECL_INTERFACE_(xaml_uniform_grid, xaml_layout_base)
     XAML_DECL_VTBL(xaml_uniform_grid, XAML_UNIFORM_GRID_VTBL);
 };
 
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_uniform_grid_new(xaml_uniform_grid**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_uniform_grid_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_uniform_grid_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_uniform_grid_new(xaml_uniform_grid**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_uniform_grid_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_uniform_grid_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_UNIFORM_GRID_H

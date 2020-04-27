@@ -18,8 +18,8 @@ XAML_DECL_INTERFACE_(xaml_button, xaml_control)
     XAML_DECL_VTBL(xaml_button, XAML_BUTTON_VTBL);
 };
 
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_button_new(xaml_button**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_button_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_button_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_button_new(xaml_button**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_button_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_button_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_BUTTON_H

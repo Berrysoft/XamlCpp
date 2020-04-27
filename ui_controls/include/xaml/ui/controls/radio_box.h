@@ -16,8 +16,8 @@ XAML_DECL_INTERFACE_(xaml_radio_box, xaml_button)
     XAML_DECL_VTBL(xaml_radio_box, XAML_RADIO_BOX_VTBL);
 };
 
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_radio_box_new(xaml_radio_box**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_radio_box_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_radio_box_register(xaml_meta_context*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_radio_box_new(xaml_radio_box**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_radio_box_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_radio_box_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_RADIO_BOX_H

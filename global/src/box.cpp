@@ -11,7 +11,7 @@ private:
     int32_t m_size;
 
 public:
-    xaml_result init(xaml_guid const& type, void const* data, int32_t size)
+    xaml_result XAML_CALL init(xaml_guid const& type, void const* data, int32_t size)
     {
         m_type = type;
         m_size = size;
