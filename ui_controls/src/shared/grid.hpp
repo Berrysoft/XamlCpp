@@ -33,6 +33,8 @@ public:
     xaml_result XAML_CALL remove_row(xaml_grid_length const& length) noexcept override { return XAML_E_NOTIMPL; }
 
     xaml_result XAML_CALL draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept override;
+
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_GRID_HPP
