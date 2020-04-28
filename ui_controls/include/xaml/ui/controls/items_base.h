@@ -18,4 +18,7 @@ XAML_DECL_INTERFACE_(xaml_items_base, xaml_control)
     XAML_DECL_VTBL(xaml_items_base, XAML_ITEMS_BASE_VTBL);
 };
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_items_base_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_items_base_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CONTROLS_ITEMS_BASE_H
