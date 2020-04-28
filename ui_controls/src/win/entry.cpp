@@ -6,37 +6,6 @@
 
 using namespace std;
 
-xaml_result xaml_entry_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
-{
-    switch (msg.Msg)
-    {
-    case WM_COMMAND:
-    {
-        HWND h = (HWND)msg.lParam;
-        if (m_handle == h)
-        {
-            switch (HIWORD(msg.wParam))
-            {
-            case EN_UPDATE:
-            {
-                int len = Edit_GetTextLength(m_handle);
-                xaml_std_string_t t(len, U('\0'));
-                Edit_GetText(m_handle, t.data(), len + 1);
-                DWORD start, end;
-                SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
-                m_text = nullptr;
-                XAML_RETURN_IF_FAILED(xaml_string_new(move(t), &m_text));
-                SetFocus(m_handle);
-                Edit_SetSel(m_handle, start, end);
-                break;
-            }
-            }
-        }
-    }
-    }
-    return XAML_S_OK;
-}
-
 xaml_result xaml_entry_impl::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
@@ -60,45 +29,4 @@ xaml_result xaml_entry_impl::draw(xaml_rectangle const& region) noexcept
         XAML_RETURN_IF_FAILED(set_rect(region));
     }
     return XAML_S_OK;
-}
-
-xaml_result xaml_entry_impl::draw_text() noexcept
-{
-    if (m_text)
-    {
-        xaml_char_t const* data;
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, data));
-    }
-    else
-    {
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, U("")));
-    }
-    return XAML_S_OK;
-}
-
-xaml_result xaml_entry_impl::draw_alignment() noexcept
-{
-    LONG_PTR style = WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL;
-    switch (m_text_halignment)
-    {
-    case xaml_halignment_center:
-        style |= ES_CENTER;
-        break;
-    case xaml_halignment_right:
-        style |= ES_RIGHT;
-        break;
-    default:
-        style |= ES_LEFT;
-        break;
-    }
-    SetWindowLongPtr(m_handle, GWL_STYLE, style);
-    return XAML_S_OK;
-}
-
-xaml_result xaml_entry_impl::size_to_fit() noexcept
-{
-    xaml_size res;
-    XAML_RETURN_IF_FAILED(measure_string(m_text, { 2, 2 }, &res));
-    return set_size_noevent(res);
 }
