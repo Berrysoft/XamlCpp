@@ -5,6 +5,8 @@ using namespace std;
 
 xaml_result xaml_label_impl::init() noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
+
     int32_t token;
     XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_label>, xaml_ptr<xaml_string>>(
         [this](xaml_ptr<xaml_label>, xaml_ptr<xaml_string>) -> xaml_result {
