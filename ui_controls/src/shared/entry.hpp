@@ -12,6 +12,7 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
 
     XAML_PROP_IMPL(text_halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
 
+#ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL size_to_fit() noexcept override
     {
         xaml_size res;
@@ -19,7 +20,6 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
         return set_size_noevent(res);
     }
 
-#ifdef XAML_UI_WINDOWS
     virtual xaml_result XAML_CALL draw_text() noexcept
     {
         if (m_text)
