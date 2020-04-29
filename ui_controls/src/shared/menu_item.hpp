@@ -84,6 +84,15 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Base..., xaml_menu_i
         return XAML_S_OK;
     }
 #endif // XAML_UI_WINDOWS
+
+    xaml_result XAML_CALL init() noexcept override
+    {
+        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
+        return XAML_S_OK;
+    }
 };
 
 struct xaml_menu_item_impl : xaml_menu_item_implement<xaml_menu_item_impl>
@@ -127,6 +136,8 @@ public:
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept override;
     xaml_result XAML_CALL draw_append(HMENU pmenu, UINT flags) noexcept override;
 #endif // XAML_UI_WINDOWS
+
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 struct xaml_check_menu_item_impl : xaml_menu_item_implement<xaml_check_menu_item_impl, xaml_check_menu_item>
@@ -137,6 +148,8 @@ struct xaml_check_menu_item_impl : xaml_menu_item_implement<xaml_check_menu_item
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
     virtual xaml_result XAML_CALL draw_checked() noexcept;
+
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 struct xaml_radio_menu_item_impl : xaml_menu_item_implement<xaml_radio_menu_item_impl, xaml_radio_menu_item>
@@ -148,6 +161,9 @@ struct xaml_radio_menu_item_impl : xaml_menu_item_implement<xaml_radio_menu_item
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
     virtual xaml_result XAML_CALL draw_checked() noexcept;
+    virtual xaml_result XAML_CALL draw_group() noexcept;
+
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 struct xaml_separator_menu_item_impl : xaml_menu_item_implement<xaml_separator_menu_item_impl, xaml_separator_menu_item>

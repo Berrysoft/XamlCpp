@@ -59,6 +59,7 @@ xaml_result xaml_radio_box_impl::draw_group() noexcept
             XAML_FOREACH_END();
         }
     }
+    return XAML_S_OK;
 }
 #endif // !XAML_UI_GTK3
 
