@@ -1,3 +1,4 @@
+#include <shared/menu_item.hpp>
 #include <xaml/ui/controls/menu_item.h>
 #include <xaml/ui/menu_bar.h>
 

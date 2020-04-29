@@ -1,146 +1,107 @@
+#include <atomic>
+#include <optional>
+#include <shared/menu_item.hpp>
 #include <wil/result_macros.h>
-#include <xaml/ui/controls/menu_item.hpp>
-#include <xaml/ui/controls/native_menu_item.hpp>
-#include <xaml/ui/menu_bar.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_menu_bar.hpp>
+#include <xaml/ui/controls/menu_item.h>
+#include <xaml/ui/menu_bar.h>
 
 using namespace std;
 
-namespace xaml
+static atomic<UINT> s_menu_item_id{ 0 };
+
+xaml_result XAML_CALL xaml_win32_menu_item_generate_id(UINT* pid) noexcept
 {
-    optional<intptr_t> menu_item::__wnd_proc(window_message const& msg)
-    {
-        switch (msg.Msg)
-        {
-        case WM_COMMAND:
-        {
-            if (get_menu() && LOWORD(msg.wParam) == get_menu()->handle)
-            {
-                m_click(shared_from_this<menu_item>());
-            }
-            break;
-        }
-        }
-        return nullopt;
-    }
+    return ++s_menu_item_id;
+}
 
-    static UINT menu_id{ 0 };
+xaml_result xaml_menu_item_impl::draw(xaml_rectangle const&) noexcept
+{
+    return draw_impl(MF_STRING);
+}
 
-    void menu_item::__draw_impl(uint32_t flags)
+xaml_result xaml_popup_menu_item_impl::draw(xaml_rectangle const&) noexcept
+{
+    return draw_impl(MF_STRING | MF_POPUP);
+}
+
+xaml_result xaml_popup_menu_item_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept
+{
+    std::optional<LPARAM> result;
+    XAML_FOREACH_START(c, m_submenu);
     {
-        auto sparent = get_parent().lock();
-        HMENU hpmenu = nullptr;
-        if (sparent)
+        xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
+        if (win32_control)
         {
-            if (auto ppmenu = sparent->query<popup_menu_item>())
-            {
-                hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu.get();
-            }
-            else if (auto pmenu = sparent->query<menu_bar>())
-            {
-                hpmenu = pmenu->get_menu()->handle.get();
-            }
-        }
-        if (hpmenu)
-        {
-            set_handle(sparent->get_handle());
-            if (!get_menu())
-            {
-                draw_append(hpmenu, flags);
-            }
-            else if (hpmenu != get_menu()->parent)
-            {
-                THROW_IF_WIN32_BOOL_FALSE(DeleteMenu(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND));
-                get_menu()->parent = hpmenu;
-                draw_append(hpmenu, flags);
-            }
+            LPARAM res;
+            if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
         }
     }
-
-    void menu_item::__draw(rectangle const& region)
+    XAML_FOREACH_END();
+    if (result)
     {
-        __draw_impl(MF_STRING);
+        *pres = *result;
+        return XAML_S_OK;
     }
+    else
+        return XAML_E_NOTIMPL;
+}
 
-    void menu_item::draw_append(void* pmenu, uint32_t flags)
+xaml_result xaml_popup_menu_item_impl::draw_submenu() noexcept
+{
+    XAML_FOREACH_START(child, m_submenu);
     {
-        if (!get_menu())
-        {
-            auto m = make_shared<native_menu_item>();
-            m->parent = (HMENU)pmenu;
-            m->handle = menu_id++;
-            set_menu(m);
-        }
-        THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, get_menu()->handle, flags, get_menu()->handle, m_text.c_str()));
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
 
-    optional<intptr_t> popup_menu_item::__wnd_proc(window_message const& msg)
+xaml_result xaml_popup_menu_item_impl::draw_append(HMENU pmenu, UINT flags) noexcept
+{
+    if (!m_menu_id)
     {
-        optional<std::intptr_t> result = nullopt;
-        for (auto& c : m_submenu)
-        {
-            auto r = c->__wnd_proc(msg);
-            if (r) result = r;
-        }
-        return result;
+        m_menu_parent = pmenu;
+        XAML_RETURN_IF_FAILED(xaml_win32_menu_item_generate_id(&m_menu_id));
+        m_menu.reset(CreateMenu());
+        XAML_RETURN_IF_FAILED(draw_submenu());
     }
+    xaml_char_t const* data;
+    XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, (UINT_PTR)m_menu.get(), data));
+    return XAML_S_OK;
+}
 
-    void popup_menu_item::__draw(rectangle const& region)
-    {
-        __draw_impl(MF_STRING | MF_POPUP);
-    }
+xaml_result xaml_check_menu_item_impl::draw(xaml_rectangle const&) noexcept
+{
+    return draw_impl(MF_STRING | MF_UNCHECKED);
+}
 
-    void popup_menu_item::draw_submenu()
-    {
-        for (auto& child : m_submenu)
-        {
-            child->__draw({});
-        }
-    }
+xaml_result xaml_check_menu_item_impl::draw_checked() noexcept
+{
+    CheckMenuItem(m_menu_parent, m_menu_id, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
+    return XAML_S_OK;
+}
 
-    void popup_menu_item::draw_append(void* pmenu, uint32_t flags)
-    {
-        if (!get_menu())
-        {
-            auto m = make_shared<native_popup_menu_item>();
-            m->parent = (HMENU)pmenu;
-            m->handle = menu_id++;
-            m->menu.reset(CreateMenu());
-            set_menu(m);
-            draw_submenu();
-        }
-        auto pm = static_pointer_cast<native_popup_menu_item>(get_menu());
-        THROW_IF_WIN32_BOOL_FALSE(InsertMenu(get_menu()->parent, pm->handle, flags, (UINT_PTR)pm->menu.get(), get_text().data()));
-    }
+xaml_result xaml_radio_menu_item_impl::draw(xaml_rectangle const& region) noexcept
+{
+    XAML_RETURN_IF_FAILED(draw_impl(MF_STRING | MF_UNCHECKED));
+    MENUITEMINFO info;
+    info.cbSize = sizeof(MENUITEMINFO);
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(GetMenuItemInfo(m_menu_parent, m_menu_id, FALSE, &info));
+    info.fType |= MFT_RADIOCHECK;
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(SetMenuItemInfo(m_menu_parent, m_menu_id, FALSE, &info));
+    return XAML_S_OK;
+}
 
-    void check_menu_item::__draw(rectangle const& region)
-    {
-        __draw_impl(MF_STRING | MF_UNCHECKED);
-    }
+xaml_result xaml_radio_menu_item_impl::draw_checked() noexcept
+{
+    CheckMenuItem(m_menu_parent, m_menu_id, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
+    return XAML_S_OK;
+}
 
-    void check_menu_item::draw_checked()
-    {
-        CheckMenuItem(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
-    }
-
-    void radio_menu_item::__draw(rectangle const& region)
-    {
-        __draw_impl(MF_STRING | MF_UNCHECKED);
-        MENUITEMINFO info;
-        info.cbSize = sizeof(MENUITEMINFO);
-        THROW_IF_WIN32_BOOL_FALSE(GetMenuItemInfo(get_menu()->parent, get_menu()->handle, FALSE, &info));
-        info.fType |= MFT_RADIOCHECK;
-        THROW_IF_WIN32_BOOL_FALSE(SetMenuItemInfo(get_menu()->parent, get_menu()->handle, FALSE, &info));
-    }
-
-    void radio_menu_item::draw_checked()
-    {
-        CheckMenuItem(get_menu()->parent, get_menu()->handle, MF_BYCOMMAND | (m_is_checked ? MF_CHECKED : MF_UNCHECKED));
-    }
-
-    void separator_menu_item::__draw(rectangle const& region)
-    {
-        __draw_impl(MF_SEPARATOR);
-    }
-} // namespace xaml
+xaml_result xaml_separator_menu_item_impl::draw(xaml_rectangle const& region) noexcept
+{
+    return draw_impl(MF_SEPARATOR);
+}

@@ -56,28 +56,24 @@ public:
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
     {
-        try
+        std::optional<LPARAM> result;
+        XAML_FOREACH_START(c, m_children);
         {
-            std::optional<LPARAM> result;
-            XAML_FOREACH_START(c, m_children);
+            xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
+            if (win32_control)
             {
-                xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
-                if (win32_control)
-                {
-                    LPARAM res;
-                    if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
-                }
+                LPARAM res;
+                if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
             }
-            XAML_FOREACH_END();
-            if (result)
-            {
-                *pres = *result;
-                return XAML_S_OK;
-            }
-            else
-                return XAML_E_NOTIMPL;
         }
-        XAML_CATCH_RETURN()
+        XAML_FOREACH_END();
+        if (result)
+        {
+            *pres = *result;
+            return XAML_S_OK;
+        }
+        else
+            return XAML_E_NOTIMPL;
     }
 #endif // XAML_UI_WINDOWS
 
