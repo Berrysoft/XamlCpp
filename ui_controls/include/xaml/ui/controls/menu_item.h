@@ -5,9 +5,10 @@
 
 XAML_CLASS(xaml_menu_item, { 0xbaa16b2b, 0x1cca, 0x4a7c, { 0x8b, 0xbe, 0x96, 0x2b, 0x56, 0x95, 0x67, 0x7f } })
 
-#define XAML_MENU_ITEM_VTBL(type)               \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type)); \
-    XAML_PROP(text, type, xaml_string**, xaml_string*)
+#define XAML_MENU_ITEM_VTBL(type)                       \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));         \
+    XAML_PROP(text, type, xaml_string**, xaml_string*); \
+    XAML_EVENT(click, type)
 
 XAML_DECL_INTERFACE_(xaml_menu_item, xaml_control)
 {

@@ -89,3 +89,110 @@ xaml_result xaml_radio_menu_item_impl::draw_group() noexcept
     return XAML_S_OK;
 }
 #endif // !XAML_UI_GTK3
+
+xaml_result XAML_CALL xaml_menu_item_new(xaml_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_control_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP(text);
+    XAML_TYPE_INFO_ADD_EVENT(click);
+    XAML_TYPE_INFO_ADD_DEF_PROP(text);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_new(xaml_popup_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_popup_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_popup_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_popup_menu_item_new);
+    XAML_TYPE_INFO_ADD_CPROP(submenu);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_popup_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_popup_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_new(xaml_check_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_check_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_check_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_check_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_check_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_check_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_new(xaml_radio_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_radio_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_radio_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_radio_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
+    XAML_TYPE_INFO_ADD_PROP(group);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_radio_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_radio_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_new(xaml_separator_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_separator_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_separator_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_separator_menu_item_new);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_separator_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_separator_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
