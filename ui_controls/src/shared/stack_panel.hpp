@@ -2,7 +2,7 @@
 #define XAML_UI_CONTROLS_SHARED_STACK_PANEL_HPP
 
 #include <shared/layout_base.hpp>
-#include <xaml/ui/controls/stack_panel.hpp>
+#include <xaml/ui/controls/stack_panel.h>
 
 struct xaml_stack_panel_impl : xaml_layout_base_implement<xaml_stack_panel_impl, xaml_stack_panel>
 {

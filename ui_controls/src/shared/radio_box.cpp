@@ -27,6 +27,7 @@ xaml_result xaml_radio_box_impl::init() noexcept
         },
         &token)));
 #endif // XAML_UI_COCOA
+    return XAML_S_OK;
 }
 
 #ifndef XAML_UI_GTK3

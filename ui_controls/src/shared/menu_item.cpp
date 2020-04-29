@@ -20,6 +20,14 @@ xaml_result xaml_popup_menu_item_impl::remove_submenu(xaml_menu_item* child) noe
     return XAML_E_NOTIMPL;
 }
 
+xaml_result xaml_popup_menu_item_impl::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_menu_item_implement::init());
+
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_submenu));
+    return XAML_S_OK;
+}
+
 xaml_result xaml_check_menu_item_impl::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_menu_item_implement::init());

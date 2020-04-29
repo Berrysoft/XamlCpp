@@ -26,7 +26,7 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Base..., xaml_menu_i
         {
         case WM_COMMAND:
         {
-            if (LOWORD(msg.wParam) == *m_menu_id)
+            if (LOWORD(msg.wParam) == m_menu_id)
             {
                 XAML_RETURN_IF_FAILED(on_click(this));
             }
@@ -89,7 +89,6 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Base..., xaml_menu_i
     {
         XAML_RETURN_IF_FAILED(xaml_control_implement::init());
 
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
         return XAML_S_OK;
     }
@@ -119,7 +118,7 @@ public:
 
 #ifdef XAML_UI_WINDOWS
 protected:
-    wil::unique_hmenu m_menu;
+    wil::unique_hmenu m_menu{ nullptr };
 
 public:
     xaml_result XAML_CALL get_menu(HMENU* pvalue) noexcept

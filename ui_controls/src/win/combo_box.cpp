@@ -112,6 +112,7 @@ xaml_result xaml_combo_box_impl::draw_editable() noexcept
         XAML_RETURN_IF_FAILED(draw_text());
         XAML_RETURN_IF_FAILED(draw_visible());
     }
+    return XAML_S_OK;
 }
 
 xaml_result xaml_combo_box_impl::size_to_fit() noexcept

@@ -155,7 +155,7 @@ unordered_map<xaml_control*, xaml_grid_index> s_grid_indecies{};
 
 static inline double real_length_plus(double lhs, tuple<double, double> const& rhs) { return lhs + get<0>(rhs); }
 
-xaml_result xaml_grid_impl::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func)
+xaml_result xaml_grid_impl::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_layout_base_implement::draw_impl(region, func));
     xaml_rectangle real = region - m_margin;
@@ -190,8 +190,8 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
     using self_type = xaml_grid;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_grid_new);
-    XAML_TYPE_INFO_ADD_METHOD(get_columns);
-    XAML_TYPE_INFO_ADD_METHOD(get_rows);
+    XAML_TYPE_INFO_ADD_PROP_RD(columns);
+    XAML_TYPE_INFO_ADD_PROP_RD(rows);
     XAML_TYPE_INFO_ADD_CPROP(column);
     XAML_TYPE_INFO_ADD_CPROP(row);
     return XAML_S_OK;

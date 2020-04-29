@@ -21,6 +21,7 @@ xaml_result xaml_progress_impl::init() noexcept
             return XAML_S_OK;
         },
         &token)));
+    return XAML_S_OK;
 }
 
 xaml_result XAML_CALL xaml_progress_new(xaml_progress** ptr) noexcept

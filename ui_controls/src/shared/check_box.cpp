@@ -24,6 +24,7 @@ xaml_result xaml_check_box_impl::init() noexcept
         },
         &token)));
 #endif // XAML_UI_COCOA
+    return XAML_S_OK;
 }
 
 xaml_result XAML_CALL xaml_check_box_new(xaml_check_box** ptr) noexcept

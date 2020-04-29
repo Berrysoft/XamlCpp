@@ -4,6 +4,10 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/entry.h>
 
+#ifdef XAML_UI_WINDOWS
+#include <windowsx.h>
+#endif // XAML_UI_WINDOWS
+
 template <typename T, typename... Base>
 struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
 {
@@ -54,7 +58,7 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT*) noexcept override
     {
         switch (msg.Msg)
         {

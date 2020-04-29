@@ -56,6 +56,7 @@ xaml_result xaml_check_box_impl::draw(xaml_rectangle const& region) noexcept
 xaml_result xaml_check_box_impl::draw_checked() noexcept
 {
     Button_SetCheck(m_handle, m_is_checked ? BST_CHECKED : BST_UNCHECKED);
+    return XAML_S_OK;
 }
 
 xaml_result xaml_check_box_impl::size_to_fit() noexcept

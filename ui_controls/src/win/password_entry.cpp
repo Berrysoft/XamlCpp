@@ -9,7 +9,7 @@ using namespace std;
 
 static xaml_char_t default_char{ U('*') };
 
-xaml_result xaml_password_entry_impl::draw(xaml_rectangle const& region)
+xaml_result xaml_password_entry_impl::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {

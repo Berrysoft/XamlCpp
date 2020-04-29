@@ -21,7 +21,7 @@ struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml
     xaml_result XAML_CALL insert_item(std::int32_t index, xaml_ptr<xaml_object> const& value) noexcept override;
     xaml_result XAML_CALL remove_item(std::int32_t index) noexcept override;
     xaml_result XAML_CALL clear_items() noexcept override;
-    xaml_result XAML_CALL replace_item(std::int32_t index, xaml_ptr<xaml_object> const& value) override;
+    xaml_result XAML_CALL replace_item(std::int32_t index, xaml_ptr<xaml_object> const& value) noexcept override;
 
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;

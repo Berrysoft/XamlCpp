@@ -18,6 +18,7 @@ xaml_result xaml_password_entry_impl::init() noexcept
             return XAML_S_OK;
         },
         &token)));
+    return XAML_S_OK;
 }
 
 xaml_result XAML_CALL xaml_password_entry_new(xaml_password_entry** ptr) noexcept

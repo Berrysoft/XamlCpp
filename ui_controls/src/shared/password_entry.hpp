@@ -13,10 +13,6 @@ struct xaml_password_entry_impl : xaml_entry_implement<xaml_password_entry_impl,
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
-#ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
-#endif // XAML_UI_WINDOWS
-
     xaml_result XAML_CALL init() noexcept override;
 };
 

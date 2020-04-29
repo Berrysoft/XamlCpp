@@ -98,9 +98,10 @@ struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
         XAML_RETURN_IF_FAILED((m_is_default_changed->add_noexcept<xaml_ptr<xaml_button>, bool>(
             [this](xaml_ptr<xaml_button>, bool) -> xaml_result {
                 if (m_handle) XAML_RETURN_IF_FAILED(draw_default());
-                XAML_S_OK;
+                return XAML_S_OK;
             },
             &token)));
+        return XAML_S_OK;
     }
 };
 
