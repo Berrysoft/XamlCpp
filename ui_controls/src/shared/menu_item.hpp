@@ -17,6 +17,33 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Base..., xaml_menu_i
     XAML_EVENT_IMPL(click)
 
 #ifdef XAML_UI_WINDOWS
+    template <typename T, typename D, typename Base>
+    struct xaml_win32_menu_item_implement : xaml_inner_implement<T, D, Base>
+    {
+        xaml_result XAML_CALL get_id(UINT* pvalue) noexcept override { return m_outer->get_menu_id(pvalue); }
+        xaml_result XAML_CALL set_id(UINT value) noexcept override { return m_outer->set_menu_id(value); }
+        xaml_result XAML_CALL get_parent_handle(HMENU* pvalue) noexcept override { return m_outer->get_menu_parent(pvalue); }
+        xaml_result XAML_CALL set_parent_handle(HMENU value) noexcept override { return m_outer->set_menu_parent(value); }
+    };
+
+    struct xaml_win32_menu_item_impl : xaml_win32_menu_item_implement<xaml_win32_menu_item_impl, T, xaml_win32_menu_item>
+    {
+    } m_native_menu_item;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_win32_menu_item>)
+        {
+            add_ref();
+            *ptr = static_cast<xaml_win32_menu_item*>(&m_native_menu_item);
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_control_implement::query(type, ptr);
+        }
+    }
+
     XAML_PROP_IMPL(menu_id, UINT, UINT*, UINT)
     XAML_PROP_IMPL(menu_parent, HMENU, HMENU*, HMENU)
 
@@ -117,6 +144,26 @@ public:
     virtual xaml_result XAML_CALL draw_submenu() noexcept;
 
 #ifdef XAML_UI_WINDOWS
+    struct xaml_win32_popup_menu_item_impl : xaml_win32_menu_item_implement<xaml_win32_popup_menu_item_impl, xaml_popup_menu_item_impl, xaml_win32_popup_menu_item>
+    {
+        xaml_result XAML_CALL get_handle(HMENU* pvalue) noexcept override { return m_outer->get_menu(pvalue); }
+        xaml_result XAML_CALL set_handle(HMENU value) noexcept override { return m_outer->set_menu(value); }
+    } m_native_popup_menu_item;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_win32_popup_menu_item>)
+        {
+            add_ref();
+            *ptr = static_cast<xaml_win32_popup_menu_item*>(&m_native_popup_menu_item);
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_menu_item_implement::query(type, ptr);
+        }
+    }
+
 protected:
     wil::unique_hmenu m_menu{ nullptr };
 
