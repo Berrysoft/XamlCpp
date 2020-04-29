@@ -27,6 +27,8 @@ struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
     xaml_result XAML_CALL size_to_fit() noexcept override;
 #endif // XAML_UI_WINDOWS
+
+    xaml_result XAML_CALL init() noexcept override;
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_COMBO_BOX_HPP

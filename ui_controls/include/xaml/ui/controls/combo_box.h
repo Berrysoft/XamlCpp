@@ -17,4 +17,8 @@ XAML_DECL_INTERFACE_(xaml_combo_box, xaml_items_base)
     XAML_DECL_VTBL(xaml_combo_box, XAML_COMBO_BOX_VTBL);
 };
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_combo_box_new(xaml_combo_box**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_combo_box_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_combo_box_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CONTROLS_COMBO_BOX_H
