@@ -30,7 +30,7 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
         }
         else
         {
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, U("")));
+            XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, nullptr));
         }
         return XAML_S_OK;
     }

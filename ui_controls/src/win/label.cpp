@@ -40,7 +40,7 @@ xaml_result xaml_label_impl::draw_text() noexcept
     }
     else
     {
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(Static_SetText(m_handle, U("")));
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(Static_SetText(m_handle, nullptr));
     }
     return XAML_S_OK;
 }
