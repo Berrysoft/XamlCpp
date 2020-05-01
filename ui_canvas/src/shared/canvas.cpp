@@ -1,3 +1,4 @@
+#include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
 
 using namespace std;

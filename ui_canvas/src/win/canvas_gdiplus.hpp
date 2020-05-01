@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <optional>
 #include <wil/resource.h>
-#include <xaml/ui/controls/native_canvas.hpp>
+#include <win/canvas.hpp>
 #include <xaml/ui/native_drawing.hpp>
 
 #include <gdiplus.h>
