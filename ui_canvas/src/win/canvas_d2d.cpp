@@ -159,7 +159,7 @@ xaml_result xaml_drawing_context_d2d_impl::draw_string(xaml_drawing_brush const&
     wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
     XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
     auto fsize = (FLOAT)font.size;
-    if (fsize <= 0) return;
+    if (fsize <= 0) return XAML_S_OK;
     wil::com_ptr_t<IDWriteTextFormat, wil::err_returncode_policy> format;
     XAML_RETURN_IF_FAILED(dwrite->CreateTextFormat(
         font.font_family, nullptr,

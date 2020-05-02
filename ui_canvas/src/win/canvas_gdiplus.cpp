@@ -128,7 +128,7 @@ static xaml_result rounded_rect(GraphicsPath& path, RectF bounds, SizeF size) no
     if (size.Width == 0 && size.Height == 0)
     {
         check_status(path.AddRectangle(bounds));
-        return;
+        return XAML_S_OK;
     }
     // top left arc
     check_status(path.AddArc(arc, 180, 90));
@@ -184,7 +184,7 @@ xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush co
 {
     auto b = get_Brush(brush);
     auto f = get_Font(font, dpi);
-    if (f.GetSize() <= 0) return;
+    if (f.GetSize() <= 0) return XAML_S_OK;
     StringFormat fmt{};
     auto a = get_Align(font.halign);
     check_status(fmt.SetAlignment(a));

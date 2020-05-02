@@ -45,5 +45,3 @@ endif()
 target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
-
-add_subdirectory(meta)

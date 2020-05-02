@@ -5,6 +5,8 @@
 #include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
 
+#include <CommCtrl.h>
+
 template <typename T, typename... Base>
 struct xaml_win32_canvas_implement : xaml_canvas_implement<T, Base...>
 {
@@ -23,7 +25,7 @@ struct xaml_win32_canvas_implement : xaml_canvas_implement<T, Base...>
                 params.y = 0;
                 params.width = 100;
                 params.height = 50;
-                params.parent = sparent.get();
+                params.parent = m_parent;
                 XAML_RETURN_IF_FAILED(create(params));
                 XAML_RETURN_IF_FAILED(draw_visible());
             }

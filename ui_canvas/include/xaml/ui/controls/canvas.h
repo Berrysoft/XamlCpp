@@ -57,5 +57,7 @@ XAML_DECL_INTERFACE_(xaml_canvas, xaml_control)
 };
 
 EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_canvas_new(xaml_canvas**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_canvas_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_canvas_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CANVAS_CANVAS_H
