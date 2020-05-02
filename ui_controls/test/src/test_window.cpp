@@ -400,9 +400,9 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     auto cx = csize.width / 2;
     auto cy = csize.height / 2;
     auto r = (min)(cx, cy) - 2;
-    XAML_RETURN_IF_FAILED(dc->draw_arc({ is_dark ? colors::white : colors::black }, { cx - r, cy - r, r * 2, r * 2 }, pi, 2 * pi));
-    XAML_RETURN_IF_FAILED(dc->draw_line({ is_dark ? colors::white : colors::black }, { cx - r, cy }, { cx + r, cy }));
-    XAML_RETURN_IF_FAILED(dc->draw_round_rect({ colors::sky_blue }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
+    XAML_RETURN_IF_FAILED(dc->draw_arc({ is_dark ? colors::white : colors::black, 1 }, { cx - r, cy - r, r * 2, r * 2 }, pi, 2 * pi));
+    XAML_RETURN_IF_FAILED(dc->draw_line({ is_dark ? colors::white : colors::black, 1 }, { cx - r, cy }, { cx + r, cy }));
+    XAML_RETURN_IF_FAILED(dc->draw_round_rect({ colors::sky_blue, 1 }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
     XAML_RETURN_IF_FAILED(dc->draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text.get()));
