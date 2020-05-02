@@ -168,6 +168,12 @@ xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... 
     }
     XAML_CATCH_RETURN()
 }
+
+template <typename T, typename Return, typename... Args>
+constexpr decltype(auto) xaml_mem_fn(Return (T::*f)(Args...), T* obj) noexcept
+{
+    return [obj](Args... args) -> Return { return obj->f(std::forward<Args>(args)...); };
+}
 #endif // __cplusplus
 
 #endif // !XAML_DELEGATE_H
