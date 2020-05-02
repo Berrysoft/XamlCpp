@@ -110,6 +110,8 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Base..., xaml_menu_i
         XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, m_menu_id, data));
         return XAML_S_OK;
     }
+
+    xaml_menu_item_implement() noexcept : xaml_control_implement() { m_native_menu_item.m_outer = static_cast<T*>(this); }
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override
@@ -181,6 +183,8 @@ public:
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept override;
     xaml_result XAML_CALL draw_append(HMENU pmenu, UINT flags) noexcept override;
+
+    xaml_popup_menu_item_impl() noexcept : xaml_menu_item_implement() { m_native_popup_menu_item.m_outer = this; }
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

@@ -310,21 +310,39 @@ xaml_result xaml_test_window_impl::init() noexcept
         xaml_grid_set_column(panel.get(), 2);
         xaml_grid_set_row(panel.get(), 3);
     }
-    //{
-    //    auto mbar = make_shared<menu_bar>();
-    //    {
-    //        auto mfile = make_shared<popup_menu_item>();
-    //        mfile->set_text(U("File"));
-    //        {
-    //            auto mquit = make_shared<menu_item>();
-    //            mquit->set_text(U("Close"));
-    //            mquit->add_click([this](shared_ptr<menu_item>) { close(); });
-    //            mfile->add_submenu(mquit);
-    //        }
-    //        mbar->add_child(mfile);
-    //    }
-    //    set_menu_bar(mbar);
-    //}
+    {
+        xaml_ptr<xaml_menu_bar> mbar;
+        XAML_RETURN_IF_FAILED(xaml_menu_bar_new(&mbar));
+        {
+            xaml_ptr<xaml_popup_menu_item> mfile;
+            XAML_RETURN_IF_FAILED(xaml_popup_menu_item_new(&mfile));
+            {
+                xaml_ptr<xaml_string> text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(U("File"), &text));
+                XAML_RETURN_IF_FAILED(mfile->set_text(text.get()));
+            }
+            {
+                xaml_ptr<xaml_menu_item> mquit;
+                XAML_RETURN_IF_FAILED(xaml_menu_item_new(&mquit));
+                {
+                    xaml_ptr<xaml_string> text;
+                    XAML_RETURN_IF_FAILED(xaml_string_new(U("Close"), &text));
+                    XAML_RETURN_IF_FAILED(mquit->set_text(text.get()));
+                }
+                {
+                    xaml_ptr<xaml_delegate> callback;
+                    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_menu_item>>(
+                        [this](xaml_ptr<xaml_menu_item>) -> xaml_result { return m_window->close(); },
+                        &callback)));
+                    int32_t token;
+                    XAML_RETURN_IF_FAILED(mquit->add_click(callback.get(), &token));
+                }
+                mfile->add_submenu(mquit.get());
+            }
+            mbar->add_child(mfile.get());
+        }
+        m_window->set_menu_bar(mbar.get());
+    }
     return XAML_S_OK;
 }
 

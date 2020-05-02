@@ -52,6 +52,11 @@ public:
         return XAML_S_OK;
     }
 #endif // XAML_UI_WINDOWS
+
+    xaml_menu_bar_impl() noexcept : xaml_multicontainer_implement()
+    {
+        m_native_menu_bar.m_outer = this;
+    }
 };
 
 #endif // !XAML_UI_SHARED_MENU_BAR_HPP

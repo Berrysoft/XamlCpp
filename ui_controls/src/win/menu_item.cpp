@@ -11,7 +11,8 @@ static atomic<UINT> s_menu_item_id{ 0 };
 
 xaml_result XAML_CALL xaml_win32_menu_item_generate_id(UINT* pid) noexcept
 {
-    return ++s_menu_item_id;
+    *pid = ++s_menu_item_id;
+    return XAML_S_OK;
 }
 
 xaml_result xaml_menu_item_impl::draw(xaml_rectangle const&) noexcept

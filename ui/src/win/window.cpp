@@ -85,8 +85,8 @@ xaml_result XAML_CALL xaml_window_from_native(HWND hWnd, xaml_window** ptr) noex
 
 xaml_window_impl::~xaml_window_impl()
 {
-    close();
     window_map.erase(m_handle);
+    close();
 }
 
 xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
@@ -318,7 +318,14 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
                 if (XAML_SUCCEEDED(native_control->wnd_proc(msg, presult))) return XAML_S_OK;
             }
         }
-        //if (!result && get_menu_bar()) result = get_menu_bar()->__wnd_proc(msg);
+        if (m_menu_bar)
+        {
+            xaml_ptr<xaml_win32_control> native_control = m_menu_bar.query<xaml_win32_control>();
+            if (native_control)
+            {
+                if (XAML_SUCCEEDED(native_control->wnd_proc(msg, presult))) return XAML_S_OK;
+            }
+        }
     }
     return XAML_E_NOTIMPL;
 }
