@@ -56,4 +56,6 @@ XAML_DECL_INTERFACE_(xaml_canvas, xaml_control)
     XAML_DECL_VTBL(xaml_canvas, XAML_CANVAS_VTBL);
 };
 
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_canvas_new(xaml_canvas**) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CANVAS_CANVAS_H
