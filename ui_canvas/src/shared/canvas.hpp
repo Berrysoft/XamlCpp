@@ -4,31 +4,31 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/canvas.h>
 
-#ifdef XAML_UI_WINDOWS
-#include <memory>
-#include <win/canvas.hpp>
-#endif // XAML_UI_WINDOWS
-
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>
 {
-#ifdef XAML_UI_WINDOWS
-    std::unique_ptr<native_drawing_context> m_native_dc{ nullptr };
-#endif // XAML_UI_WINDOWS
+    xaml_result draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept override;
+    xaml_result fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept override;
+    xaml_result draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept override;
+    xaml_result draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept override;
+    xaml_result fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept override;
+    xaml_result draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
 };
 
-struct xaml_canvas_impl : xaml_control_implement<xaml_canvas_impl, xaml_canvas>
+template <typename T, typename... Base>
+struct xaml_canvas_implement : xaml_control_implement<T, Base..., xaml_canvas>
 {
     XAML_EVENT_IMPL(redraw)
 
-    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
-
-#ifdef XAML_UI_WINDOWS
-    std::unique_ptr<native_canvas> m_native_canvas{ nullptr };
-
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
-#endif // XAML_UI_WINDOWS
-
-    xaml_result XAML_CALL init() noexcept override;
+    xaml_result XAML_CALL init() noexcept override
+    {
+        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_redraw));
+        return XAML_S_OK;
+    }
 };
 
 #endif // !XAML_UI_CANVAS_SHARED_CANVAS_HPP
