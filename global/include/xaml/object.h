@@ -74,7 +74,7 @@ public:
     std::int32_t XAML_CALL release() noexcept override
     {
         std::int32_t res = --m_ref_count;
-        if (!res)
+        if (res <= 0)
         {
             delete static_cast<T*>(this);
             return 0;

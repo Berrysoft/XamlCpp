@@ -26,7 +26,11 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
     {
     }
 
-    xaml_timer_impl(std::int32_t interval) noexcept : m_interval(interval) {}
+    xaml_timer_impl(std::int32_t interval) noexcept : m_interval(interval)
+    {
+    }
+
+    xaml_result XAML_CALL init() noexcept;
 };
 
 #endif // !XMAL_UI_SHARED_TIMER_HPP

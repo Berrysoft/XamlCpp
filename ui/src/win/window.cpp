@@ -27,46 +27,49 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
 {
     xaml_win32_window_message msg = { hWnd, Msg, wParam, lParam };
     auto wnd = window_map[hWnd];
-    xaml_ptr<xaml_win32_control> native_control;
-    if (XAML_SUCCEEDED(wnd->query(&native_control)))
+    if (wnd)
     {
-        LPARAM result;
-        xaml_result hr = native_control->wnd_proc(msg, &result);
-        switch (msg.Msg)
+        xaml_ptr<xaml_win32_control> native_control;
+        if (XAML_SUCCEEDED(wnd->query(&native_control)))
         {
-        case WM_NCCREATE:
-            if (hWnd) XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
-            break;
-        case WM_CTLCOLORSTATIC:
-            if (XAML_FAILED(hr))
+            LPARAM result;
+            xaml_result hr = native_control->wnd_proc(msg, &result);
+            switch (msg.Msg)
             {
-                bool dark = XamlIsDarkModeAllowedForApp();
-                HDC hDC = (HDC)wParam;
-                SetBkMode(hDC, TRANSPARENT);
-                if (dark)
+            case WM_NCCREATE:
+                if (hWnd) XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
+                break;
+            case WM_CTLCOLORSTATIC:
+                if (XAML_FAILED(hr))
                 {
+                    bool dark = XamlIsDarkModeAllowedForApp();
+                    HDC hDC = (HDC)wParam;
+                    SetBkMode(hDC, TRANSPARENT);
+                    if (dark)
+                    {
+                        SetTextColor(hDC, white_color);
+                        SetBkColor(hDC, black_color);
+                    }
+                    return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+                }
+                break;
+            case WM_CTLCOLOREDIT:
+                if (XAML_FAILED(hr) && XamlIsDarkModeAllowedForApp())
+                {
+                    HDC hDC = (HDC)wParam;
+                    HWND hEdit = (HWND)lParam;
                     SetTextColor(hDC, white_color);
                     SetBkColor(hDC, black_color);
+                    POINT p;
+                    XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
+                    XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
+                    bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
+                    return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
                 }
-                return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+                break;
             }
-            break;
-        case WM_CTLCOLOREDIT:
-            if (XAML_FAILED(hr) && XamlIsDarkModeAllowedForApp())
-            {
-                HDC hDC = (HDC)wParam;
-                HWND hEdit = (HWND)lParam;
-                SetTextColor(hDC, white_color);
-                SetBkColor(hDC, black_color);
-                POINT p;
-                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
-                XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
-                bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
-                return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
-            }
-            break;
+            if (XAML_SUCCEEDED(hr)) return result;
         }
-        if (XAML_SUCCEEDED(hr)) return result;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }

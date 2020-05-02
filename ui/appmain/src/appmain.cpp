@@ -17,6 +17,7 @@ static int xaml_main_end(xaml_result hr) noexcept
     else
     {
         cerr << "Unhandled exception: 0x" << hex << hr << endl;
+        return (int)hr;
     }
 }
 

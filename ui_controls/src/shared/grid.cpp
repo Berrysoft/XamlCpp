@@ -7,6 +7,7 @@ using namespace std;
 
 xaml_result xaml_grid_impl::init() noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_layout_base_implement::init());
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_columns));
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_rows));
     return XAML_S_OK;

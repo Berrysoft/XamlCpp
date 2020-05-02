@@ -170,9 +170,9 @@ xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... 
 }
 
 template <typename T, typename Return, typename... Args>
-constexpr decltype(auto) xaml_mem_fn(Return (T::*f)(Args...), T* obj) noexcept
+constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...), T* obj) noexcept
 {
-    return [obj](Args... args) -> Return { return obj->f(std::forward<Args>(args)...); };
+    return [=](Args... args) -> Return { return (obj->*f)(std::forward<Args>(args)...); };
 }
 #endif // __cplusplus
 

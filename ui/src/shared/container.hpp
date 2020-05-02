@@ -18,9 +18,16 @@ struct xaml_container_implement : xaml_control_implement<T, Base..., xaml_contai
         if (m_child.get() != value)
         {
             m_child = value;
-            m_child->set_parent(this);
+            XAML_RETURN_IF_FAILED(m_child->set_parent(this));
             return on_child_changed(this, m_child);
         }
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL init() noexcept override
+    {
+        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+        XAML_RETURN_IF_FAILED(xaml_event_new(&m_child_changed));
         return XAML_S_OK;
     }
 };

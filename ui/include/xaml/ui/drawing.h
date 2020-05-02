@@ -170,6 +170,8 @@ struct __xaml_converter<T, std::enable_if_t<__can_stot2d_v<T>>> : __xaml_tuple_c
 };
 #endif // __cplusplus
 
+typedef struct xaml_rectangle xaml_rectangle;
+
 struct xaml_rectangle
 {
     double x, y;
@@ -200,6 +202,8 @@ constexpr xaml_rectangle operator/(xaml_rectangle const& lhs, double rhs) { retu
 #endif // __cplusplus
 
 XAML_TYPE(xaml_rectangle, { 0xf54e02a0, 0xfb1e, 0x4081, { 0xa0, 0xd6, 0xae, 0x72, 0xbc, 0x8c, 0x78, 0x00 } })
+
+typedef struct xaml_margin xaml_margin;
 
 struct xaml_margin
 {
@@ -306,12 +310,12 @@ struct xaml_color
 #endif // __cplusplus
 };
 
-#ifndef __cpp_impl_three_way_comparison
+#if defined(__cplusplus) && !defined(__cpp_impl_three_way_comparison)
 constexpr bool operator==(xaml_color lhs, xaml_color rhs)
 {
     return (std::uint32_t)lhs == (std::uint32_t)rhs;
 }
 constexpr bool operator!=(xaml_color lhs, xaml_color rhs) { return !(lhs == rhs); }
-#endif // !__cpp_impl_three_way_comparison
+#endif // __cplusplus && !__cpp_impl_three_way_comparison
 
 #endif // !XAML_UI_DRAWING_H

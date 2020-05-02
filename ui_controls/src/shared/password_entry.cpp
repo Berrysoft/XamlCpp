@@ -5,6 +5,8 @@ using namespace std;
 
 xaml_result xaml_password_entry_impl::init() noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_entry_implement::init());
+
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_password_char_changed));
 
     int32_t token;

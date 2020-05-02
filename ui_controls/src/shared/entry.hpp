@@ -92,6 +92,8 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
 
     xaml_result XAML_CALL init() noexcept override
     {
+        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
 
         int32_t token;
