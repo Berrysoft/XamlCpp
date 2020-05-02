@@ -84,6 +84,21 @@ public:                                                   \
         return XAML_S_OK;                                  \
     }
 
+#define XAML_PROP_STRING_EVENT_IMPL(name)                           \
+    XAML_PROP_PTR_IMPL_BASE(name, xaml_string)                      \
+    xaml_result XAML_CALL set_##name(xaml_string* value) noexcept   \
+    {                                                               \
+        bool equal = false;                                         \
+        if (m_##name)                                               \
+            XAML_RETURN_IF_FAILED(m_##name->equals(value, &equal)); \
+        if (!equal)                                                 \
+        {                                                           \
+            m_##name = value;                                       \
+            return on_##name##_changed(this, m_##name);             \
+        }                                                           \
+        return XAML_S_OK;                                           \
+    }
+
 #define XAML_EVENT_IMPL(name)                                                                      \
 protected:                                                                                         \
     xaml_ptr<xaml_event> m_##name;                                                                 \

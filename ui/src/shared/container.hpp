@@ -63,7 +63,7 @@ public:
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
     {
-        std::optional<LPARAM> result;
+        std::optional<LPARAM> result{ std::nullopt };
         XAML_FOREACH_START(c, m_children);
         {
             xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();

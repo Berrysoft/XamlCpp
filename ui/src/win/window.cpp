@@ -105,8 +105,8 @@ xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
         XAML_RETURN_IF_FAILED(xaml_application_current(&app));
         XAML_RETURN_IF_FAILED(app->window_added(this));
         window_map[m_handle] = this;
-        draw_resizable();
-        draw_title();
+        XAML_RETURN_IF_FAILED(draw_resizable());
+        XAML_RETURN_IF_FAILED(draw_title());
     }
     XAML_RETURN_IF_FAILED(draw_size());
     XAML_RETURN_IF_FAILED(draw_menu_bar());
@@ -281,7 +281,8 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
             XAML_RETURN_IF_FAILED(xaml_unbox_value(handled.get(), value));
             if (value)
             {
-                return 0;
+                *presult = 0;
+                return XAML_S_OK;
             }
             break;
         }

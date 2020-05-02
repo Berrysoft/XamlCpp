@@ -12,7 +12,7 @@ template <typename T, typename... Base>
 struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
 {
     XAML_EVENT_IMPL(text_changed)
-    XAML_PROP_PTR_EVENT_IMPL(text, xaml_string)
+    XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_PROP_IMPL(text_halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
 
@@ -76,8 +76,9 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
                     Edit_GetText(m_handle, t.data(), len + 1);
                     DWORD start, end;
                     SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
-                    m_text = nullptr;
-                    XAML_RETURN_IF_FAILED(xaml_string_new(move(t), &m_text));
+                    xaml_ptr<xaml_string> text;
+                    XAML_RETURN_IF_FAILED(xaml_string_new(move(t), &text));
+                    XAML_RETURN_IF_FAILED(set_text(text.get()));
                     SetFocus(m_handle);
                     Edit_SetSel(m_handle, start, end);
                     break;
@@ -86,7 +87,7 @@ struct xaml_entry_implement : xaml_control_implement<T, Base..., xaml_entry>
             }
         }
         }
-        return XAML_S_OK;
+        return XAML_E_NOTIMPL;
     }
 #endif // XAML_UI_WINDOWS
 

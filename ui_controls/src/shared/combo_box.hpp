@@ -7,7 +7,7 @@
 struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml_combo_box>
 {
     XAML_EVENT_IMPL(text_changed)
-    XAML_PROP_PTR_EVENT_IMPL(text, xaml_string)
+    XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_EVENT_IMPL(is_editable_changed)
     XAML_PROP_EVENT_IMPL(is_editable, bool, bool*, bool)

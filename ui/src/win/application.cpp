@@ -16,19 +16,22 @@ using namespace std;
 static LOGFONT s_default_font;
 static map<UINT, wil::unique_hfont> s_dpi_fonts;
 
-static BOOL take_over_message(MSG& msg)
+static xaml_result take_over_message(BOOL* pres) noexcept
 {
+    MSG msg;
     BOOL bRet = GetMessage(&msg, nullptr, 0, 0);
-    THROW_LAST_ERROR_IF(bRet < 0);
-    if (bRet > 0)
+    if (bRet < 0)
+        return HRESULT_FROM_WIN32(GetLastError());
+    else if (bRet > 0)
     {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    return bRet;
+    *pres = bRet;
+    return XAML_S_OK;
 }
 
-static BOOL register_window_class()
+static BOOL register_window_class() noexcept
 {
     WNDCLASSEX cls = {};
     cls.cbSize = sizeof(WNDCLASSEX);
@@ -61,21 +64,15 @@ xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
-    try
+    while (true)
     {
-        MSG msg;
-        while (take_over_message(msg))
-        {
-            if (!m_main_wnd) PostQuitMessage(m_quit_value);
-        }
-        *pvalue = m_quit_value;
-        return XAML_S_OK;
+        BOOL res;
+        XAML_RETURN_IF_FAILED(take_over_message(&res));
+        if (!res) break;
+        if (!m_main_wnd) PostQuitMessage(m_quit_value);
     }
-    catch (wil::ResultException const& e)
-    {
-        return e.GetErrorCode();
-    }
-    XAML_CATCH_RETURN()
+    *pvalue = m_quit_value;
+    return XAML_S_OK;
 }
 
 xaml_result xaml_application_impl::quit(int value) noexcept
@@ -83,13 +80,7 @@ xaml_result xaml_application_impl::quit(int value) noexcept
     m_quit_value = value;
     if (m_main_wnd)
     {
-        xaml_ptr<xaml_win32_control> native_control = m_main_wnd.query<xaml_win32_control>();
-        if (native_control)
-        {
-            HWND hWnd;
-            XAML_RETURN_IF_FAILED(native_control->get_handle(&hWnd));
-            DestroyWindow(hWnd);
-        }
+        PostQuitMessage(value);
     }
     return XAML_S_OK;
 }

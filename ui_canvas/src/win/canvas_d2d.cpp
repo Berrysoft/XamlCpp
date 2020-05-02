@@ -25,7 +25,7 @@ static HRESULT get_Brush(ID2D1RenderTarget* target, xaml_color c, ID2D1Brush** p
 {
     wil::com_ptr_t<ID2D1SolidColorBrush, wil::err_returncode_policy> brush;
     RETURN_IF_FAILED(target->CreateSolidColorBrush(get_COLOR(c), &brush));
-    return brush.try_copy_to(ptr);
+    return brush.copy_to(ptr);
 }
 
 static D2D1_ELLIPSE get_ELLIPSE(xaml_rectangle const& region) noexcept
@@ -57,7 +57,7 @@ static HRESULT get_arc_geo(wil::com_ptr_t<ID2D1Factory, wil::err_returncode_poli
     sink->AddArc(D2D1::ArcSegment(xaml_to_native<D2D1_POINT_2F>(endp), xaml_to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
     sink->EndFigure(close ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
     RETURN_IF_FAILED(sink->Close());
-    return geo.try_copy_to(ptr);
+    return geo.copy_to(ptr);
 }
 
 xaml_result xaml_drawing_context_d2d_impl::draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept

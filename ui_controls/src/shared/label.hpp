@@ -7,7 +7,7 @@
 struct xaml_label_impl : xaml_control_implement<xaml_label_impl, xaml_label>
 {
     XAML_EVENT_IMPL(text_changed)
-    XAML_PROP_PTR_EVENT_IMPL(text, xaml_string)
+    XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_PROP_IMPL(text_halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
 

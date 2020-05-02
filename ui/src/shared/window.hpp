@@ -63,7 +63,7 @@ public:
     }
 
     XAML_EVENT_IMPL(title_changed)
-    XAML_PROP_PTR_EVENT_IMPL(title, xaml_string)
+    XAML_PROP_STRING_EVENT_IMPL(title)
 
     XAML_EVENT_IMPL(closing)
 

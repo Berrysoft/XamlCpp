@@ -53,7 +53,7 @@ struct xaml_test_window_impl : xaml_implement<xaml_test_window_impl, xaml_test_w
 xaml_result xaml_test_window_impl::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_window_new(&m_window));
-    XAML_RETURN_IF_FAILED(xaml_timer_new_interval(1s, &m_timer));
+    XAML_RETURN_IF_FAILED(xaml_timer_new_interval(2s, &m_timer));
     XAML_RETURN_IF_FAILED(xaml_observable_vector_new(&m_combo_source));
     {
         xaml_ptr<xaml_string> item;
@@ -197,7 +197,7 @@ xaml_result xaml_test_window_impl::init() noexcept
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("123456"), &text));
         et->set_text(text.get());
-        et->set_halignment(xaml_halignment_left);
+        et->set_halignment(xaml_halignment_stretch);
         et->set_valignment(xaml_valignment_center);
         g->add_child(et.get());
         xaml_grid_set_column(et.get(), 1);

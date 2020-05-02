@@ -72,5 +72,6 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
     }
     int result;
     XAML_RETURN_IF_FAILED(TaskDialogIndirect(&config, &result, nullptr, nullptr));
-    return (xaml_msgbox_result)result;
+    *presult = (xaml_msgbox_result)result;
+    return XAML_S_OK;
 }

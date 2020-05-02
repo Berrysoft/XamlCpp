@@ -13,7 +13,7 @@ template <typename T, typename... Base>
 struct xaml_button_implement : xaml_control_implement<T, Base..., xaml_button>
 {
     XAML_EVENT_IMPL(text_changed)
-    XAML_PROP_PTR_EVENT_IMPL(text, xaml_string)
+    XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_EVENT_IMPL(is_default_changed)
     XAML_PROP_EVENT_IMPL(is_default, bool, bool*, bool)
