@@ -81,41 +81,46 @@ xaml_result xaml_drawing_context_gdiplus_impl::fill_pie(xaml_drawing_brush const
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::draw_ellipse(drawing_pen const& pen, rectangle const& region)
+xaml_result xaml_drawing_context_gdiplus_impl::draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept
 {
     CHECK_SIZE(region);
     auto p = get_Pen(pen, dpi);
     check_status(handle->DrawEllipse(&p, get_RectF(region, dpi)));
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::fill_ellipse(drawing_brush const& brush, rectangle const& region)
+xaml_result xaml_drawing_context_gdiplus_impl::fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept
 {
     CHECK_SIZE(region);
     auto b = get_Brush(brush);
     check_status(handle->FillEllipse(&b, get_RectF(region, dpi)));
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::draw_line(drawing_pen const& pen, point startp, point endp)
+xaml_result xaml_drawing_context_gdiplus_impl::draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept
 {
     auto p = get_Pen(pen, dpi);
     check_status(handle->DrawLine(&p, get_PointF(startp, dpi), get_PointF(endp, dpi)));
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::draw_rect(drawing_pen const& pen, rectangle const& rect)
+xaml_result xaml_drawing_context_gdiplus_impl::draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept
 {
     CHECK_SIZE(rect);
     auto p = get_Pen(pen, dpi);
     check_status(handle->DrawRectangle(&p, get_RectF(rect, dpi)));
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::fill_rect(drawing_brush const& brush, rectangle const& rect)
+xaml_result xaml_drawing_context_gdiplus_impl::fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept
 {
     CHECK_SIZE(rect);
     auto b = get_Brush(brush);
     check_status(handle->FillRectangle(&b, get_RectF(rect, dpi)));
+    return XAML_S_OK;
 }
 
-static void rounded_rect(GraphicsPath& path, RectF bounds, SizeF size)
+static xaml_result rounded_rect(GraphicsPath& path, RectF bounds, SizeF size) noexcept
 {
     PointF ori_loc;
     bounds.GetLocation(&ori_loc);
@@ -137,42 +142,45 @@ static void rounded_rect(GraphicsPath& path, RectF bounds, SizeF size)
     arc.X = bounds.X;
     check_status(path.AddArc(arc, 90, 90));
     check_status(path.CloseFigure());
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
+xaml_result xaml_drawing_context_gdiplus_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     CHECK_SIZE(rect);
     CHECK_SIZE(round);
     auto p = get_Pen(pen, dpi);
     GraphicsPath path{};
-    rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
+    XAML_RETURN_IF_FAILED(rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi)));
     check_status(handle->DrawPath(&p, &path));
+    return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
+xaml_result xaml_drawing_context_gdiplus_impl::fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     CHECK_SIZE(rect);
     CHECK_SIZE(round);
     auto b = get_Brush(brush);
     GraphicsPath path{};
-    rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi));
+    XAML_RETURN_IF_FAILED(rounded_rect(path, get_RectF(rect, dpi), get_SizeF(round, dpi)));
     check_status(handle->FillPath(&b, &path));
+    return XAML_S_OK;
 }
 
-static constexpr StringAlignment get_Align(halignment_t align)
+static constexpr StringAlignment get_Align(xaml_halignment align) noexcept
 {
     switch (align)
     {
-    case halignment_t::center:
+    case xaml_halignment_center:
         return StringAlignmentCenter;
-    case halignment_t::right:
+    case xaml_halignment_right:
         return StringAlignmentFar;
     default:
         return StringAlignmentNear;
     }
 }
 
-xaml_result xaml_drawing_context_gdiplus_impl::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
+xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
     auto b = get_Brush(brush);
     auto f = get_Font(font, dpi);
@@ -182,20 +190,25 @@ xaml_result xaml_drawing_context_gdiplus_impl::draw_string(drawing_brush const& 
     check_status(fmt.SetAlignment(a));
     check_status(fmt.SetLineAlignment(a));
     auto pf = get_PointF(p, dpi);
+    xaml_char_t const* data;
+    XAML_RETURN_IF_FAILED(str->get_data(&data));
+    int32_t length;
+    XAML_RETURN_IF_FAILED(str->get_length(&length));
     RectF r;
-    check_status(handle->MeasureString(str.data(), (INT)str.length(), &f, pf, &fmt, &r));
+    check_status(handle->MeasureString(data, length, &f, pf, &fmt, &r));
     switch (font.valign)
     {
-    case valignment_t::center:
+    case xaml_valignment_center:
         pf.Y -= r.Height / 2;
         break;
-    case valignment_t::bottom:
+    case xaml_valignment_bottom:
         pf.Y -= r.Height;
         break;
     default:
         break;
     }
-    check_status(handle->DrawString(str.data(), (INT)str.length(), &f, pf, &fmt, &b));
+    check_status(handle->DrawString(data, length, &f, pf, &fmt, &b));
+    return XAML_S_OK;
 }
 
 xaml_canvas_gdiplus_impl::~xaml_canvas_gdiplus_impl()
@@ -203,27 +216,41 @@ xaml_canvas_gdiplus_impl::~xaml_canvas_gdiplus_impl()
     if (m_token) GdiplusShutdown(*m_token);
 }
 
-bool canvas_gdiplus::create(HWND wnd) noexcept
+xaml_result xaml_canvas_gdiplus_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
-    GdiplusStartupInput gdiplusStartupInput{};
-    ULONG_PTR token;
-    if (GdiplusStartup(&token, &gdiplusStartupInput, NULL) == Status::Ok)
+    switch (msg.Msg)
     {
-        m_token = token;
-        return true;
+    case WM_DRAWITEM:
+    {
+        DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
+        if (ds->hwndItem == m_handle)
+        {
+            UINT dpi = XamlGetDpiForWindow(m_handle);
+            Graphics g{ m_handle };
+            Color background_color = XamlIsDarkModeAllowedForApp() ? Color::Black : Color::White;
+            check_status(g.Clear(background_color));
+            xaml_ptr<xaml_drawing_context> dc;
+            XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_gdiplus_impl>(&dc, &g, (double)dpi));
+            XAML_RETURN_IF_FAILED(on_redraw(this, dc));
+        }
+        *presult = TRUE;
+        return XAML_S_OK;
     }
-    return false;
+    }
+    return XAML_E_NOTIMPL;
 }
 
-void canvas_gdiplus::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)
+xaml_result xaml_canvas_gdiplus_impl::init() noexcept
 {
-    UINT dpi = XamlGetDpiForWindow(wnd);
-    Graphics g{ wnd };
-    Color background_color = XamlIsDarkModeAllowedForApp() ? Color::Black : Color::White;
-    check_status(g.Clear(background_color));
-    drawing_context_gdiplus ctx{};
-    ctx.handle = &g;
-    ctx.dpi = (double)dpi;
-    auto dc = make_shared<drawing_context>(&ctx);
-    paint_func(dc);
+    XAML_RETURN_IF_FAILED(xaml_canvas_implement::init());
+    GdiplusStartupInput input{};
+    ULONG_PTR token;
+    check_status(GdiplusStartup(&token, &input, nullptr));
+    m_token = token;
+    return XAML_S_OK;
+}
+
+xaml_result xaml_canvas_gdiplus_impl::draw_impl() noexcept
+{
+    return XAML_S_OK;
 }

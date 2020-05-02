@@ -15,6 +15,8 @@ struct xaml_drawing_context_gdiplus_impl : xaml_implement<xaml_drawing_context_g
     double dpi{ USER_DEFAULT_SCREEN_DPI };
     Gdiplus::Graphics* handle{ nullptr };
 
+    xaml_drawing_context_gdiplus_impl(Gdiplus::Graphics* handle, double dpi) noexcept : handle(handle), dpi(dpi) {}
+
     xaml_result draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
     xaml_result fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
     xaml_result draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept override;
