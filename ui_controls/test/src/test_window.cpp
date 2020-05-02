@@ -222,49 +222,94 @@ xaml_result xaml_test_window_impl::init() noexcept
         xaml_grid_set_column(cv.get(), 0);
         xaml_grid_set_row(cv.get(), 3);
     }
-    //{
-    //    auto box = make_shared<combo_box>();
-    //    box->set_halignment(halignment_t::center);
-    //    box->set_valignment(valignment_t::top);
-    //    box->set_margin({ 10, 10, 10, 10 });
-    //    box->set_items(combo_source);
-    //    box->set_sel_id(1);
-    //    g->add_child(box);
-    //    xaml_grid_set_column(*box, 1);
-    //    xaml_grid_set_row(*box, 3);
+    {
+        xaml_ptr<xaml_combo_box> box;
+        XAML_RETURN_IF_FAILED(xaml_combo_box_new(&box));
+        box->set_halignment(xaml_halignment_center);
+        box->set_valignment(xaml_valignment_top);
+        box->set_margin({ 10, 10, 10, 10 });
+        box->set_items(m_combo_source.get());
+        box->set_sel_id(1);
+        g->add_child(box.get());
+        xaml_grid_set_column(box.get(), 1);
+        xaml_grid_set_row(box.get(), 3);
 
-    //    auto panel = make_shared<stack_panel>();
-    //    panel->set_orientation(orientation::vertical);
-    //    panel->set_margin({ 5, 5, 5, 5 });
-    //    {
-    //        auto btn = make_shared<button>();
-    //        btn->set_margin({ 5, 5, 5, 5 });
-    //        btn->set_text(U("Push"));
-    //        btn->add_click([this](shared_ptr<button>) { combo_source.push_back(U("DDDD")); });
-    //        panel->add_child(btn);
-    //    }
-    //    {
-    //        auto btn = make_shared<button>();
-    //        btn->set_margin({ 5, 5, 5, 5 });
-    //        btn->set_text(U("Pop"));
-    //        btn->add_click([this](shared_ptr<button>) { combo_source.pop_back(); });
-    //        panel->add_child(btn);
-    //    }
-    //    {
-    //        auto btn = make_shared<button>();
-    //        btn->set_margin({ 5, 5, 5, 5 });
-    //        btn->set_text(U("Show"));
-    //        btn->add_click([this, box](shared_ptr<button>) {
-    //            int32_t sel = box->get_sel_id();
-    //            if (sel >= 0 && sel < combo_source.size())
-    //                msgbox(shared_from_this<window>(), combo_source[sel].get(), U("Show selected item"));
-    //        });
-    //        panel->add_child(btn);
-    //    }
-    //    g->add_child(panel);
-    //    xaml_grid_set_column(*panel, 2);
-    //    xaml_grid_set_row(*panel, 3);
-    //}
+        xaml_ptr<xaml_stack_panel> panel;
+        XAML_RETURN_IF_FAILED(xaml_stack_panel_new(&panel));
+        panel->set_orientation(xaml_orientation_vertical);
+        panel->set_margin({ 5, 5, 5, 5 });
+        {
+            xaml_ptr<xaml_button> btn;
+            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+            btn->set_margin({ 5, 5, 5, 5 });
+            xaml_ptr<xaml_string> text;
+            XAML_RETURN_IF_FAILED(xaml_string_new(U("Push"), &text));
+            btn->set_text(text.get());
+            xaml_ptr<xaml_delegate> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                [this](xaml_ptr<xaml_button>) -> xaml_result {
+                    xaml_ptr<xaml_string> item;
+                    XAML_RETURN_IF_FAILED(xaml_string_new(U("DDDD"), &item));
+                    return m_combo_source->append(item.get());
+                },
+                &callback)));
+            int32_t token;
+            btn->add_click(callback.get(), &token);
+            panel->add_child(btn.get());
+        }
+        {
+            xaml_ptr<xaml_button> btn;
+            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+            btn->set_margin({ 5, 5, 5, 5 });
+            xaml_ptr<xaml_string> text;
+            XAML_RETURN_IF_FAILED(xaml_string_new(U("Pop"), &text));
+            btn->set_text(text.get());
+            xaml_ptr<xaml_delegate> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                [this](xaml_ptr<xaml_button>) -> xaml_result {
+                    return m_combo_source->remove_at(0);
+                },
+                &callback)));
+            int32_t token;
+            btn->add_click(callback.get(), &token);
+            panel->add_child(btn.get());
+        }
+        {
+            xaml_ptr<xaml_button> btn;
+            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+            btn->set_margin({ 5, 5, 5, 5 });
+            xaml_ptr<xaml_string> text;
+            XAML_RETURN_IF_FAILED(xaml_string_new(U("Show"), &text));
+            btn->set_text(text.get());
+            xaml_ptr<xaml_delegate> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                [this, box](xaml_ptr<xaml_button>) -> xaml_result {
+                    int32_t sel;
+                    XAML_RETURN_IF_FAILED(box->get_sel_id(&sel));
+                    int32_t size;
+                    XAML_RETURN_IF_FAILED(m_combo_source->get_size(&size));
+                    if (sel >= 0 && sel < size)
+                    {
+                        xaml_ptr<xaml_object> item;
+                        XAML_RETURN_IF_FAILED(m_combo_source->get_at(sel, &item));
+                        xaml_ptr<xaml_string> str;
+                        XAML_RETURN_IF_FAILED(item->query(&str));
+                        xaml_ptr<xaml_string> title;
+                        XAML_RETURN_IF_FAILED(xaml_string_new(U("Show selected item"), &title));
+                        xaml_msgbox_result res;
+                        XAML_RETURN_IF_FAILED(xaml_msgbox(m_window.get(), str.get(), title.get(), nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
+                    }
+                    return XAML_S_OK;
+                },
+                &callback)));
+            int32_t token;
+            btn->add_click(callback.get(), &token);
+            panel->add_child(btn.get());
+        }
+        g->add_child(panel.get());
+        xaml_grid_set_column(panel.get(), 2);
+        xaml_grid_set_row(panel.get(), 3);
+    }
     //{
     //    auto mbar = make_shared<menu_bar>();
     //    {

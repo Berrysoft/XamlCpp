@@ -33,7 +33,7 @@ xaml_result xaml_combo_box_impl::wnd_proc(xaml_win32_window_message const& msg, 
         }
     }
     }
-    return XAML_S_OK;
+    return XAML_E_NOTIMPL;
 }
 
 xaml_result xaml_combo_box_impl::draw(xaml_rectangle const& region) noexcept

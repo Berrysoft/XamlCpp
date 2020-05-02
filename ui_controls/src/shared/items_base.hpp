@@ -38,7 +38,7 @@ struct xaml_items_base_implement : xaml_control_implement<T, Base..., xaml_items
             {
                 xaml_ptr<xaml_object> item;
                 XAML_RETURN_IF_FAILED(new_items->get_at(i, &item));
-                XAML_RETURN_IF_FAILED(insert_item(i, item));
+                XAML_RETURN_IF_FAILED(insert_item(i + new_index, item));
             }
             break;
         }
@@ -50,7 +50,7 @@ struct xaml_items_base_implement : xaml_control_implement<T, Base..., xaml_items
             XAML_RETURN_IF_FAILED(old_items->get_size(&size));
             std::int32_t old_index;
             XAML_RETURN_IF_FAILED(args->get_old_index(&old_index));
-            for (std::int32_t i = 0; i < size; i++)
+            for (std::int32_t i = old_index; i < size + old_index; i++)
             {
                 XAML_RETURN_IF_FAILED(remove_item(i + old_index));
             }
