@@ -2,7 +2,7 @@
 #define XAML_UI_WIN_CONTROL_H
 
 #include <Windows.h>
-#include <xaml/object.h>
+#include <xaml/ui/control.h>
 #include <xaml/ui/drawing.h>
 
 typedef struct xaml_win32_window_message

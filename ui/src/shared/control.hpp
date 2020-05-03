@@ -8,6 +8,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/control.h>
+#elif defined(XAML_UI_GTK3)
+#include <xaml/ui/gtk3/control.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_control_internal
@@ -98,6 +100,8 @@ struct xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const&) noexcept;
     XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin*) noexcept;
     XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const&) noexcept;
+#elif defined(XAML_UI_GTK3)
+    XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
 
     xaml_control_internal() noexcept : m_is_visible(true)
@@ -178,6 +182,33 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     XAML_PROP_INTERNAL_IMPL(real_margin, xaml_margin*, xaml_margin const&)
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
+#elif defined(XAML_UI_GTK3)
+    XAML_PROP_INTERNAL_IMPL(handle, GtkWidget**, GtkWidget*)
+
+    template <typename T, typename D, typename Base>
+    struct xaml_gtk3_control_implement : xaml_inner_implement<T, D, Base>
+    {
+        xaml_result XAML_CALL get_handle(GtkWidget** pvalue) noexcept override { return m_outer->get_handle(pvalue); }
+        xaml_result XAML_CALL set_handle(GtkWidget* value) noexcept override { return m_outer->set_handle(value); }
+    };
+
+    struct xaml_gtk3_control_impl : xaml_gtk3_control_implement<xaml_gtk3_control_impl, T, xaml_gtk3_control>
+    {
+    } m_native_control;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_gtk3_control>)
+        {
+            add_ref();
+            *ptr = static_cast<xaml_gtk3_control*>(&m_native_control);
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_implement::query(type, ptr);
+        }
+    }
 #endif // XAML_UI_WINDOWS
 
     xaml_control_implement() noexcept : xaml_implement()

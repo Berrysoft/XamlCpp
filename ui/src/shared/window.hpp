@@ -7,6 +7,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/window.h>
+#elif defined(XAML_UI_GTK3)
+#include <xaml/ui/gtk3/window.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_window_internal : xaml_container_internal
@@ -81,6 +83,10 @@ public:
     xaml_result XAML_CALL set_real_location(xaml_point const&) noexcept;
 
     xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
+#elif defined(XAML_UI_GTK3)
+    XAML_PROP_IMPL(window_handle, GtkWidget*, GtkWidget**, GtkWidget*)
+    XAML_PROP_IMPL(vbox_handle, GtkWidget*, GtkWidget**, GtkWidget*)
+    XAML_PROP_IMPL(menu_bar_handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
 
     xaml_window_internal() noexcept : xaml_container_internal(), m_is_resizable(true)
@@ -140,6 +146,29 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
             return xaml_container_implement::query(type, ptr);
         }
     }
+#elif defined(XAML_UI_GTK3)
+    XAML_PROP_INTERNAL_IMPL(window_handle, GtkWidget**, GtkWidget*)
+    XAML_PROP_INTERNAL_IMPL(vbox_handle, GtkWidget**, GtkWidget*)
+    XAML_PROP_INTERNAL_IMPL(menu_bar_handle, GtkWidget**, GtkWidget*)
+
+    struct xaml_gtk3_window_impl : xaml_gtk3_control_implement<xaml_gtk3_window_impl, xaml_window_impl, xaml_gtk3_window>
+    {
+    } m_native_window;
+
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
+    {
+        if (type == xaml_type_guid_v<xaml_gtk3_window>)
+        {
+            add_ref();
+            *ptr = static_cast<xaml_gtk3_window*>(&m_native_window);
+            return XAML_S_OK;
+        }
+        else
+        {
+            return xaml_container_implement::query(type, ptr);
+        }
+    }
+
 #endif // XAML_UI_WINDOWS
 
     xaml_window_impl() noexcept : xaml_container_implement()
