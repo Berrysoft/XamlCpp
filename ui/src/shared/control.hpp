@@ -83,17 +83,17 @@ struct xaml_control_internal
 
     XAML_UI_API xaml_result XAML_CALL create(xaml_win32_window_create_params const&) noexcept;
 
-    XAML_UI_API xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept;
+    XAML_UI_API xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const&, xaml_size const&, xaml_size*) noexcept;
 
     virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
     {
         return XAML_E_NOTIMPL;
     }
 
-    XAML_UI_API xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept;
-    XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept;
-    XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept;
-    XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_real_size(xaml_size*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const&) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const&) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_control_internal() noexcept : m_is_visible(true)
@@ -103,9 +103,40 @@ struct xaml_control_internal
     XAML_UI_API virtual xaml_result XAML_CALL init() noexcept;
 };
 
-template <typename T, typename... Base>
+template <typename T, typename Internal, typename... Base>
 struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_object>
 {
+    Internal m_internal;
+
+    XAML_EVENT_INTERNAL_IMPL(parent_changed)
+    XAML_PROP_INTERNAL_IMPL(parent, xaml_control**, xaml_control*)
+
+    XAML_EVENT_INTERNAL_IMPL(size_changed)
+    XAML_PROP_INTERNAL_IMPL(size, xaml_size*, xaml_size const&)
+
+    XAML_PROP_INTERNAL_IMPL(width, double*, double)
+    XAML_PROP_INTERNAL_IMPL(height, double*, double)
+
+    XAML_EVENT_INTERNAL_IMPL(margin_changed)
+    XAML_PROP_INTERNAL_IMPL(margin, xaml_margin*, xaml_margin const&)
+
+    XAML_EVENT_INTERNAL_IMPL(halignment_changed)
+    XAML_PROP_INTERNAL_IMPL(halignment, xaml_halignment*, xaml_halignment)
+
+    XAML_EVENT_INTERNAL_IMPL(valignment_changed)
+    XAML_PROP_INTERNAL_IMPL(valignment, xaml_valignment*, xaml_valignment)
+
+    XAML_EVENT_INTERNAL_IMPL(is_visible_changed)
+    XAML_PROP_INTERNAL_IMPL(is_visible, bool*, bool)
+
+    xaml_result XAML_CALL parent_redraw() noexcept override { return m_internal.parent_redraw(); }
+
+    xaml_result XAML_CALL set_size_noevent(xaml_size const& value) noexcept override { return m_internal.set_size_noevent(value); }
+
+    xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override { return m_internal.draw(region); }
+
+    xaml_result XAML_CALL size_to_fit() noexcept override { return m_internal.size_to_fit(); }
+
 #ifdef XAML_UI_WINDOWS
     template <typename T, typename D, typename Base>
     struct xaml_win32_control_implement : xaml_inner_implement<T, D, Base>
@@ -137,6 +168,12 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         }
     }
 
+    XAML_PROP_INTERNAL_IMPL(handle, HWND*, HWND)
+
+    XAML_PROP_INTERNAL_IMPL(real_size, xaml_size*, xaml_size const&)
+    XAML_PROP_INTERNAL_IMPL(real_margin, xaml_margin*, xaml_margin const&)
+
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
 #endif // XAML_UI_WINDOWS
 };
 

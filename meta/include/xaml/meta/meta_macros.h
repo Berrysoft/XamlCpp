@@ -54,6 +54,19 @@ public:                                                  \
         return XAML_S_OK;                                  \
     }
 
+#define XAML_PROP_INTERNAL_IMPL_BASE(name, gtype)        \
+    xaml_result XAML_CALL get_##name(gtype ptr) noexcept \
+    {                                                    \
+        return m_internal.get_##name(ptr);               \
+    }
+
+#define XAML_PROP_INTERNAL_IMPL(name, gtype, stype)        \
+    XAML_PROP_INTERNAL_IMPL_BASE(name, gtype)              \
+    xaml_result XAML_CALL set_##name(stype value) noexcept \
+    {                                                      \
+        return m_internal.set_##name(value);               \
+    }
+
 #define XAML_PROP_PTR_IMPL_BASE(name, type)               \
 protected:                                                \
     xaml_ptr<type> m_##name{ nullptr };                   \
@@ -83,6 +96,10 @@ public:                                                   \
         }                                                  \
         return XAML_S_OK;                                  \
     }
+
+#define XAML_PROP_PTR_INTERNAL_IMPL_BASE(name, type) XAML_PROP_INTERNAL_IMPL_BASE(name, type**)
+
+#define XAML_PROP_PTR_INTERNAL_IMPL(name, type) XAML_PROP_INTERNAL_IMPL(name, type**, type*)
 
 #define XAML_PROP_STRING_EVENT_IMPL(name)                           \
     XAML_PROP_PTR_IMPL_BASE(name, xaml_string)                      \
@@ -119,6 +136,21 @@ public:                                                                         
     xaml_result XAML_CALL remove_##name(std::int32_t token) noexcept                               \
     {                                                                                              \
         return m_##name->remove(token);                                                            \
+    }
+
+#define XAML_EVENT_INTERNAL_IMPL(name)                                                      \
+    template <typename... Args>                                                             \
+    xaml_result XAML_CALL on_##name(Args&&... args) noexcept                                \
+    {                                                                                       \
+        return m_internal.on_##name(std::forward<Args>(args)...);                           \
+    }                                                                                       \
+    xaml_result XAML_CALL add_##name(xaml_delegate* handler, std::int32_t* ptoken) noexcept \
+    {                                                                                       \
+        return m_internal.add_##name(handler, ptoken);                                      \
+    }                                                                                       \
+    xaml_result XAML_CALL remove_##name(std::int32_t token) noexcept                        \
+    {                                                                                       \
+        return m_internal.remove_##name(token);                                             \
     }
 
 #define XAML_TYPE_INFO_NEW(type, file)                                \
