@@ -3,6 +3,34 @@
 
 using namespace std;
 
+xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
+{
+    XAML_FOREACH_START(c, m_children);
+    {
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(c->query(&cc));
+#ifdef XAML_UI_WINDOWS
+        xaml_ptr<xaml_win32_control> native_control;
+#endif // XAML_UI_WINDOWS
+        if (XAML_SUCCEEDED(cc->query(&native_control)))
+        {
+#ifdef XAML_UI_WINDOWS
+            HWND handle;
+#endif // XAML_UI_WINDOWS
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
+            if (!handle)
+            {
+                xaml_margin margin;
+                XAML_RETURN_IF_FAILED(cc->get_margin(&margin));
+                XAML_RETURN_IF_FAILED(cc->draw(xaml_rectangle{} + margin));
+            }
+        }
+        XAML_RETURN_IF_FAILED(cc->size_to_fit());
+    }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
+
 xaml_result XAML_CALL xaml_layout_base_members(xaml_type_info_registration* __info) noexcept
 {
     return xaml_multicontainer_members(__info);

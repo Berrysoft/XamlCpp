@@ -5,9 +5,9 @@
 
 using namespace std;
 
-xaml_result xaml_grid_impl::init() noexcept
+xaml_result xaml_grid_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_layout_base_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_layout_base_internal::init());
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_columns));
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_rows));
     return XAML_S_OK;
@@ -156,9 +156,9 @@ unordered_map<xaml_control*, xaml_grid_index> s_grid_indecies{};
 
 static inline double real_length_plus(double lhs, tuple<double, double> const& rhs) { return lhs + get<0>(rhs); }
 
-xaml_result xaml_grid_impl::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
+xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_layout_base_implement::draw_impl(region, func));
+    XAML_RETURN_IF_FAILED(xaml_layout_base_internal::draw_impl(region, func));
     xaml_rectangle real = region - m_margin;
     vector<tuple<double, double>> columns, rows;
     XAML_RETURN_IF_FAILED(get_real_length(m_columns, m_children, real.width, false, &columns));

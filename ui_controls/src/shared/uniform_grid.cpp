@@ -4,13 +4,13 @@
 
 using namespace std;
 
-xaml_result xaml_uniform_grid_impl::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
+xaml_result xaml_uniform_grid_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
 {
     int32_t size;
     XAML_RETURN_IF_FAILED(m_children->get_size(&size));
     if (size)
     {
-        XAML_RETURN_IF_FAILED(xaml_layout_base_implement::draw_impl(region, func));
+        XAML_RETURN_IF_FAILED(xaml_layout_base_internal::draw_impl(region, func));
         xaml_rectangle real = region - m_margin;
         int32_t cs = m_columns;
         int32_t rs = m_rows;
@@ -93,7 +93,7 @@ xaml_result xaml_uniform_grid_impl::draw_impl(xaml_rectangle const& region, func
     return XAML_S_OK;
 }
 
-xaml_result xaml_uniform_grid_impl::size_to_fit() noexcept
+xaml_result xaml_uniform_grid_internal::size_to_fit() noexcept
 {
     int32_t cs, rs;
     int32_t n;

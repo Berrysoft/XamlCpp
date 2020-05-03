@@ -5,9 +5,9 @@
 
 using namespace std;
 
-xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
+xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_layout_base_implement::draw_impl(region, func));
+    XAML_RETURN_IF_FAILED(xaml_layout_base_internal::draw_impl(region, func));
     xaml_rectangle real = region - m_margin;
     if (m_orientation == xaml_orientation_vertical)
     {
@@ -50,7 +50,7 @@ xaml_result xaml_stack_panel_impl::draw_impl(xaml_rectangle const& region, funct
     return XAML_S_OK;
 }
 
-xaml_result xaml_stack_panel_impl::size_to_fit() noexcept
+xaml_result xaml_stack_panel_internal::size_to_fit() noexcept
 {
     if (m_orientation == xaml_orientation_vertical)
     {
