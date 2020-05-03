@@ -4,7 +4,7 @@
 #include <shared/items_base.hpp>
 #include <xaml/ui/controls/combo_box.h>
 
-struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml_combo_box>
+struct xaml_combo_box_internal : xaml_items_base_internal
 {
     XAML_EVENT_IMPL(text_changed)
     XAML_PROP_STRING_EVENT_IMPL(text)
@@ -29,6 +29,15 @@ struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_combo_box_impl : xaml_items_base_implement<xaml_combo_box_impl, xaml_combo_box_internal, xaml_combo_box>
+{
+    XAML_EVENT_INTERNAL_IMPL(text_changed)
+    XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
+
+    XAML_EVENT_INTERNAL_IMPL(is_editable_changed)
+    XAML_PROP_INTERNAL_IMPL(is_editable, bool*, bool)
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_COMBO_BOX_HPP

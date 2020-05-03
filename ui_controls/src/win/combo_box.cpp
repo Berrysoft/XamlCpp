@@ -1,13 +1,14 @@
 #include <algorithm>
 #include <shared/combo_box.hpp>
 #include <windowsx.h>
+#include <xaml/result_win32.h>
 #include <xaml/ui/controls/combo_box.h>
 
 #include <CommCtrl.h>
 
 using namespace std;
 
-xaml_result xaml_combo_box_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+xaml_result xaml_combo_box_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
     switch (msg.Msg)
     {
@@ -36,7 +37,7 @@ xaml_result xaml_combo_box_impl::wnd_proc(xaml_win32_window_message const& msg, 
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_combo_box_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {
@@ -49,7 +50,7 @@ xaml_result xaml_combo_box_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::draw_text() noexcept
+xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
     if (m_text)
     {
@@ -64,7 +65,7 @@ xaml_result xaml_combo_box_impl::draw_text() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::draw_items() noexcept
+xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
     XAML_FOREACH_START(item, m_items);
     {
@@ -80,13 +81,13 @@ xaml_result xaml_combo_box_impl::draw_items() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::draw_sel() noexcept
+xaml_result xaml_combo_box_internal::draw_sel() noexcept
 {
     ComboBox_SetCurSel(m_handle, m_sel_id);
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::draw_editable() noexcept
+xaml_result xaml_combo_box_internal::draw_editable() noexcept
 {
     if (m_parent)
     {
@@ -115,7 +116,7 @@ xaml_result xaml_combo_box_impl::draw_editable() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::size_to_fit() noexcept
+xaml_result xaml_combo_box_internal::size_to_fit() noexcept
 {
     double fw = 0.0, fh = 0.0;
     XAML_FOREACH_START(item, m_items);
@@ -133,7 +134,7 @@ xaml_result xaml_combo_box_impl::size_to_fit() noexcept
     return set_size_noevent({ fw, fh });
 }
 
-xaml_result xaml_combo_box_impl::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
 {
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
@@ -145,19 +146,19 @@ xaml_result xaml_combo_box_impl::insert_item(int32_t index, xaml_ptr<xaml_object
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::remove_item(int32_t index) noexcept
+xaml_result xaml_combo_box_internal::remove_item(int32_t index) noexcept
 {
     ComboBox_DeleteString(m_handle, index);
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::clear_items() noexcept
+xaml_result xaml_combo_box_internal::clear_items() noexcept
 {
     ComboBox_ResetContent(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_combo_box_impl::replace_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
 {
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)

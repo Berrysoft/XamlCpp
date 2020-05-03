@@ -3,9 +3,9 @@
 
 using namespace std;
 
-xaml_result xaml_combo_box_impl::init() noexcept
+xaml_result xaml_combo_box_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_items_base_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_items_base_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_editable_changed));
