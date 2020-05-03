@@ -3,6 +3,20 @@
 
 using namespace std;
 
+xaml_result xaml_container_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_child_changed));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_multicontainer_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_children));
+    return XAML_S_OK;
+}
+
 xaml_result XAML_CALL xaml_container_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_container;

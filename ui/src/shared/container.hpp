@@ -8,51 +8,51 @@
 #include <optional>
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename... Base>
-struct xaml_container_implement : xaml_control_implement<T, Base..., xaml_container>
+struct xaml_container_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(child_changed)
     XAML_PROP_PTR_IMPL_BASE(child, xaml_control)
-    xaml_result XAML_CALL set_child(xaml_control* value) noexcept override
+    xaml_result XAML_CALL set_child(xaml_control* value) noexcept
     {
         if (m_child.get() != value)
         {
             m_child = value;
-            XAML_RETURN_IF_FAILED(m_child->set_parent(this));
-            return on_child_changed(this, m_child);
+            XAML_RETURN_IF_FAILED(m_child->set_parent(static_cast<xaml_control*>(m_outer_this)));
+            return on_child_changed(m_outer_this, m_child);
         }
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL init() noexcept override
-    {
-        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_child_changed));
-        return XAML_S_OK;
-    }
+    XAML_UI_API xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename... Base>
-struct xaml_multicontainer_implement : xaml_control_implement<T, Base..., xaml_multicontainer>
+template <typename T, typename Internal, typename... Base>
+struct xaml_container_implement : xaml_control_implement<T, Internal, Base..., xaml_container>
+{
+    XAML_EVENT_INTERNAL_IMPL(child_changed)
+    XAML_PROP_PTR_INTERNAL_IMPL(child, xaml_control)
+};
+
+struct xaml_multicontainer_internal : xaml_control_internal
 {
 protected:
     xaml_ptr<xaml_vector> m_children;
 
 public:
-    xaml_result XAML_CALL get_children(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_children(xaml_vector_view** ptr) noexcept
     {
         return m_children->query(ptr);
     }
 
-    xaml_result XAML_CALL add_child(xaml_control* child) noexcept override
+    xaml_result XAML_CALL add_child(xaml_control* child) noexcept
     {
-        child->set_parent(this);
+        child->set_parent(static_cast<xaml_control*>(m_outer_this));
         XAML_RETURN_IF_FAILED(m_children->append(child));
         if (m_handle) XAML_RETURN_IF_FAILED(parent_redraw());
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL remove_child(xaml_control* child) noexcept override
+    xaml_result XAML_CALL remove_child(xaml_control* child) noexcept
     {
         child->set_parent(nullptr);
         // TODO
@@ -61,35 +61,17 @@ public:
     }
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* pres) noexcept override
-    {
-        std::optional<LPARAM> result{ std::nullopt };
-        XAML_FOREACH_START(c, m_children);
-        {
-            xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
-            if (win32_control)
-            {
-                LPARAM res;
-                if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
-            }
-        }
-        XAML_FOREACH_END();
-        if (result)
-        {
-            *pres = *result;
-            return XAML_S_OK;
-        }
-        else
-            return XAML_E_NOTIMPL;
-    }
+    XAML_UI_API xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept override;
 #endif // XAML_UI_WINDOWS
 
-    xaml_result XAML_CALL init() noexcept override
-    {
-        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
-        XAML_RETURN_IF_FAILED(xaml_vector_new(&m_children));
-        return XAML_S_OK;
-    }
+    XAML_UI_API xaml_result XAML_CALL init() noexcept override;
+};
+
+template <typename T, typename Internal, typename... Base>
+struct xaml_multicontainer_implement : xaml_control_implement<T, Internal, Base..., xaml_multicontainer>
+{
+    XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view**)
+    XAML_CPROP_INTERNAL_IMPL(child, xaml_control*, xaml_control*)
 };
 
 #endif // !XAML_UI_SHARED_CONTAINER_HPP

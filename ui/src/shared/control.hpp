@@ -12,6 +12,10 @@
 
 struct xaml_control_internal
 {
+    xaml_object* m_outer_this{ nullptr };
+
+    virtual ~xaml_control_internal() {}
+
     XAML_EVENT_IMPL(parent_changed)
     XAML_PROP_EVENT_IMPL(parent, xaml_control*, xaml_control**, xaml_control*)
 
@@ -68,7 +72,7 @@ struct xaml_control_internal
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
+    virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
 
     xaml_result XAML_CALL size_to_fit() noexcept;
 
@@ -85,7 +89,7 @@ struct xaml_control_internal
 
     XAML_UI_API xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const&, xaml_size const&, xaml_size*) noexcept;
 
-    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
+    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept
     {
         return XAML_E_NOTIMPL;
     }
@@ -173,8 +177,19 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     XAML_PROP_INTERNAL_IMPL(real_size, xaml_size*, xaml_size const&)
     XAML_PROP_INTERNAL_IMPL(real_margin, xaml_margin*, xaml_margin const&)
 
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
 #endif // XAML_UI_WINDOWS
+
+    xaml_control_implement() noexcept : xaml_implement()
+    {
+        m_internal.m_outer_this = this;
+        m_native_control.m_outer = this;
+    }
+
+    virtual xaml_result init() noexcept
+    {
+        return m_internal.init();
+    }
 };
 
 #endif // !XAML_UI_SHARED_CONTROL_HPP

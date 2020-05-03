@@ -6,6 +6,8 @@
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/win/font_provider.h>
 
+using namespace std;
+
 xaml_result xaml_control_internal::draw_size() noexcept
 {
     xaml_size real_size;
