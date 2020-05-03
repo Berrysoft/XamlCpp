@@ -4,11 +4,9 @@
 
 using namespace std;
 
-xaml_result xaml_window_impl::init() noexcept
+xaml_result xaml_window_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_container_implement::init());
-
-    m_is_resizable = true;
+    XAML_RETURN_IF_FAILED(xaml_container_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_resizable_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_location_changed));

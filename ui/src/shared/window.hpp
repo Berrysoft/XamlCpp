@@ -82,11 +82,44 @@ public:
 
     xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
 #endif // XAML_UI_WINDOWS
+
+    xaml_window_internal() noexcept : xaml_container_internal(), m_is_resizable(true)
+    {
+    }
+
+    XAML_UI_API ~xaml_window_internal();
 };
 
 struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window_internal, xaml_window>
 {
+    XAML_PROP_PTR_INTERNAL_IMPL(menu_bar, xaml_control)
+
+    xaml_result XAML_CALL show() noexcept override { return m_internal.show(); }
+    xaml_result XAML_CALL close() noexcept override { return m_internal.close(); }
+    xaml_result XAML_CALL hide() noexcept override { return m_internal.hide(); }
+
+    XAML_EVENT_INTERNAL_IMPL(is_resizable_changed)
+    XAML_PROP_INTERNAL_IMPL(is_resizable, bool*, bool)
+
+    XAML_EVENT_INTERNAL_IMPL(location_changed)
+    XAML_PROP_INTERNAL_IMPL(location, xaml_point*, xaml_point const&)
+
+    XAML_PROP_INTERNAL_IMPL(x, double*, double)
+    XAML_PROP_INTERNAL_IMPL(y, double*, double)
+
+    XAML_EVENT_INTERNAL_IMPL(title_changed)
+    XAML_PROP_PTR_INTERNAL_IMPL(title, xaml_string)
+
+    XAML_EVENT_INTERNAL_IMPL(closing)
+
+    XAML_PROP_INTERNAL_IMPL_BASE(client_region, xaml_rectangle*)
+    XAML_PROP_INTERNAL_IMPL_BASE(dpi, double*)
+
 #ifdef XAML_UI_WINDOWS
+    XAML_PROP_INTERNAL_IMPL(real_location, xaml_point*, xaml_point const&)
+
+    XAML_PROP_INTERNAL_IMPL_BASE(real_client_region, xaml_rectangle*)
+
     struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, xaml_window_impl, xaml_win32_window>
     {
         xaml_result XAML_CALL get_real_location(xaml_point* pvalue) noexcept override { return m_outer->get_real_location(pvalue); }

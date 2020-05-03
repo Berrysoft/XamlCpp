@@ -8,6 +8,7 @@
 #include <xaml/ui/win/control.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
+#include <xaml/ui/win/font_provider.h>
 #include <xaml/ui/win/window.h>
 #include <xaml/ui/window.h>
 
@@ -17,7 +18,7 @@
 
 using namespace std;
 
-static unordered_map<HWND, xaml_window*> window_map;
+static unordered_map<HWND, xaml_window_internal*> window_map;
 
 static wil::unique_hbrush edit_normal_back{ CreateSolidBrush(RGB(33, 33, 33)) };
 constexpr COLORREF black_color{ RGB(0, 0, 0) };
@@ -29,47 +30,43 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
     auto wnd = window_map[hWnd];
     if (wnd)
     {
-        xaml_ptr<xaml_win32_control> native_control;
-        if (XAML_SUCCEEDED(wnd->query(&native_control)))
+        LPARAM result;
+        xaml_result hr = wnd->wnd_proc(msg, &result);
+        switch (msg.Msg)
         {
-            LPARAM result;
-            xaml_result hr = native_control->wnd_proc(msg, &result);
-            switch (msg.Msg)
+        case WM_NCCREATE:
+            if (hWnd) XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
+            break;
+        case WM_CTLCOLORSTATIC:
+            if (XAML_FAILED(hr))
             {
-            case WM_NCCREATE:
-                if (hWnd) XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
-                break;
-            case WM_CTLCOLORSTATIC:
-                if (XAML_FAILED(hr))
+                bool dark = XamlIsDarkModeAllowedForApp();
+                HDC hDC = (HDC)wParam;
+                SetBkMode(hDC, TRANSPARENT);
+                if (dark)
                 {
-                    bool dark = XamlIsDarkModeAllowedForApp();
-                    HDC hDC = (HDC)wParam;
-                    SetBkMode(hDC, TRANSPARENT);
-                    if (dark)
-                    {
-                        SetTextColor(hDC, white_color);
-                        SetBkColor(hDC, black_color);
-                    }
-                    return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
-                }
-                break;
-            case WM_CTLCOLOREDIT:
-                if (XAML_FAILED(hr) && XamlIsDarkModeAllowedForApp())
-                {
-                    HDC hDC = (HDC)wParam;
-                    HWND hEdit = (HWND)lParam;
                     SetTextColor(hDC, white_color);
                     SetBkColor(hDC, black_color);
-                    POINT p;
-                    XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
-                    XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
-                    bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
-                    return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
                 }
-                break;
+                return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
             }
-            if (XAML_SUCCEEDED(hr)) return result;
+            break;
+        case WM_CTLCOLOREDIT:
+            if (XAML_FAILED(hr) && XamlIsDarkModeAllowedForApp())
+            {
+                HDC hDC = (HDC)wParam;
+                HWND hEdit = (HWND)lParam;
+                SetTextColor(hDC, white_color);
+                SetBkColor(hDC, black_color);
+                POINT p;
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
+                bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
+                return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
+            }
+            break;
         }
+        if (XAML_SUCCEEDED(hr)) return result;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
@@ -78,18 +75,19 @@ xaml_result XAML_CALL xaml_window_from_native(HWND hWnd, xaml_window** ptr) noex
 {
     if (auto wnd = window_map[hWnd])
     {
-        return wnd->query(ptr);
+        xaml_ptr<xaml_object> obj = wnd->m_outer_this;
+        return obj->query(ptr);
     }
     return XAML_E_KEYNOTFOUND;
 }
 
-xaml_window_impl::~xaml_window_impl()
+xaml_window_internal::~xaml_window_internal()
 {
     window_map.erase(m_handle);
     close();
 }
 
-xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_window_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
@@ -103,7 +101,7 @@ xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
         XAML_RETURN_IF_FAILED(create(params));
         xaml_ptr<xaml_application> app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&app));
-        XAML_RETURN_IF_FAILED(app->window_added(this));
+        XAML_RETURN_IF_FAILED(app->window_added(static_cast<xaml_window*>(m_outer_this)));
         window_map[m_handle] = this;
         XAML_RETURN_IF_FAILED(draw_resizable());
         XAML_RETURN_IF_FAILED(draw_title());
@@ -115,7 +113,7 @@ xaml_result xaml_window_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_size() noexcept
+xaml_result xaml_window_internal::draw_size() noexcept
 {
     xaml_atomic_guard guard(m_resizing);
     if (!guard.test_and_set())
@@ -129,7 +127,7 @@ xaml_result xaml_window_impl::draw_size() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_title() noexcept
+xaml_result xaml_window_internal::draw_title() noexcept
 {
     xaml_char_t const* title;
     XAML_RETURN_IF_FAILED(m_title->get_data(&title));
@@ -137,7 +135,7 @@ xaml_result xaml_window_impl::draw_title() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_child() noexcept
+xaml_result xaml_window_internal::draw_child() noexcept
 {
     if (m_child)
     {
@@ -148,7 +146,7 @@ xaml_result xaml_window_impl::draw_child() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_resizable() noexcept
+xaml_result xaml_window_internal::draw_resizable() noexcept
 {
     LONG_PTR style = GetWindowLongPtr(m_handle, GWL_STYLE);
     if (m_is_resizable)
@@ -159,17 +157,17 @@ xaml_result xaml_window_impl::draw_resizable() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::draw_menu_bar() noexcept
+xaml_result xaml_window_internal::draw_menu_bar() noexcept
 {
     if (m_menu_bar)
     {
-        XAML_RETURN_IF_FAILED(m_menu_bar->set_parent(this));
+        XAML_RETURN_IF_FAILED(m_menu_bar->set_parent(static_cast<xaml_control*>(m_outer_this)));
         XAML_RETURN_IF_FAILED(m_menu_bar->draw({}));
     }
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::show() noexcept
+xaml_result xaml_window_internal::show() noexcept
 {
     XAML_RETURN_IF_FAILED(draw({}));
     ShowWindow(m_handle, SW_SHOWNORMAL);
@@ -178,18 +176,18 @@ xaml_result xaml_window_impl::show() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::close() noexcept
+xaml_result xaml_window_internal::close() noexcept
 {
     SendMessage(m_handle, WM_CLOSE, 0, 0);
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::hide() noexcept
+xaml_result xaml_window_internal::hide() noexcept
 {
     return set_is_visible(false);
 }
 
-xaml_result xaml_window_impl::get_client_region(xaml_rectangle* pregion) noexcept
+xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
     xaml_rectangle real_region;
     XAML_RETURN_IF_FAILED(get_real_client_region(&real_region));
@@ -197,7 +195,7 @@ xaml_result xaml_window_impl::get_client_region(xaml_rectangle* pregion) noexcep
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::get_real_client_region(xaml_rectangle* pregion) noexcept
+xaml_result xaml_window_internal::get_real_client_region(xaml_rectangle* pregion) noexcept
 {
     RECT r = {};
     XAML_RETURN_IF_WIN32_BOOL_FALSE(GetClientRect(m_handle, &r));
@@ -205,7 +203,7 @@ xaml_result xaml_window_impl::get_real_client_region(xaml_rectangle* pregion) no
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPARAM* presult) noexcept
+xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg, LPARAM* presult) noexcept
 {
     if (m_handle && msg.hWnd == m_handle)
     {
@@ -306,7 +304,7 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
         {
             xaml_ptr<xaml_application> app;
             XAML_RETURN_IF_FAILED(xaml_application_current(&app));
-            XAML_RETURN_IF_FAILED(app->window_removed(this));
+            XAML_RETURN_IF_FAILED(app->window_removed(static_cast<xaml_window*>(m_outer_this)));
             break;
         }
         }
@@ -330,18 +328,18 @@ xaml_result xaml_window_impl::wnd_proc(xaml_win32_window_message const& msg, LPA
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_window_impl::get_real_location(xaml_point* plocation) noexcept
+xaml_result xaml_window_internal::get_real_location(xaml_point* plocation) noexcept
 {
     *plocation = m_location * XamlGetDpiForWindow(m_handle) / USER_DEFAULT_SCREEN_DPI;
     return XAML_S_OK;
 }
 
-xaml_result xaml_window_impl::set_real_location(xaml_point const& value) noexcept
+xaml_result xaml_window_internal::set_real_location(xaml_point const& value) noexcept
 {
     return set_location(value * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(m_handle));
 }
 
-xaml_result xaml_window_impl::get_dpi(double* pvalue) noexcept
+xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
 {
     *pvalue = (double)XamlGetDpiForWindow(m_handle);
     return XAML_S_OK;

@@ -9,14 +9,34 @@
 #include <wil/resource.h>
 #endif // XAML_UI_WINDOWS
 
-struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xaml_menu_bar>
+struct xaml_menu_bar_internal : xaml_multicontainer_internal
 {
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
     virtual xaml_result XAML_CALL draw_submenu() noexcept;
     xaml_result XAML_CALL draw_visible() noexcept override;
 
+protected:
+    wil::unique_hmenu m_menu{};
+
+public:
+    xaml_result XAML_CALL get_menu(HMENU* pvalue) noexcept
+    {
+        *pvalue = m_menu.get();
+        return XAML_S_OK;
+    }
+    xaml_result XAML_CALL set_menu(HMENU value) noexcept
+    {
+        m_menu.reset(value);
+        return XAML_S_OK;
+    }
+};
+
+struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xaml_menu_bar_internal, xaml_menu_bar>
+{
 #ifdef XAML_UI_WINDOWS
+    XAML_PROP_INTERNAL_IMPL(menu, HMENU*, HMENU)
+
     struct xaml_win32_menu_bar_impl : xaml_inner_implement<xaml_win32_menu_bar_impl, xaml_menu_bar_impl, xaml_win32_menu_bar>
     {
         xaml_result XAML_CALL get_handle(HMENU* pvalue) noexcept override { return m_outer->get_menu(pvalue); }
@@ -35,21 +55,6 @@ struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xa
         {
             return xaml_multicontainer_implement::query(type, ptr);
         }
-    }
-
-protected:
-    wil::unique_hmenu m_menu{};
-
-public:
-    xaml_result XAML_CALL get_menu(HMENU* pvalue) noexcept
-    {
-        *pvalue = m_menu.get();
-        return XAML_S_OK;
-    }
-    xaml_result XAML_CALL set_menu(HMENU value) noexcept
-    {
-        m_menu.reset(value);
-        return XAML_S_OK;
     }
 #endif // XAML_UI_WINDOWS
 

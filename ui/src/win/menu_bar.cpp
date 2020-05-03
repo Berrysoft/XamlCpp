@@ -1,11 +1,12 @@
 #include <shared/menu_bar.hpp>
 #include <wil/result_macros.h>
+#include <xaml/result_win32.h>
 #include <xaml/ui/menu_bar.h>
 #include <xaml/ui/window.h>
 
 using namespace std;
 
-xaml_result xaml_menu_bar_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
 {
     xaml_control* parent;
     XAML_RETURN_IF_FAILED(get_parent(&parent));
@@ -24,7 +25,7 @@ xaml_result xaml_menu_bar_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_menu_bar_impl::draw_submenu() noexcept
+xaml_result xaml_menu_bar_internal::draw_submenu() noexcept
 {
     XAML_FOREACH_START(child, m_children);
     {
@@ -36,7 +37,7 @@ xaml_result xaml_menu_bar_impl::draw_submenu() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_menu_bar_impl::draw_visible() noexcept
+xaml_result xaml_menu_bar_internal::draw_visible() noexcept
 {
     if (m_is_visible)
         XAML_RETURN_IF_WIN32_BOOL_FALSE(SetMenu(m_handle, m_menu.get()));
