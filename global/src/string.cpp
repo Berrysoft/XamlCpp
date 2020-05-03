@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <codecvt>
 #include <xaml/object.h>
 #include <xaml/string.h>
 
@@ -76,3 +77,41 @@ xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t str, xaml_string** 
 {
     return xaml_object_init<xaml_string_impl>(ptr, str);
 }
+
+#ifdef UNICODE
+static wstring to_wstring(string_view str) noexcept
+{
+    wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
+    return conv.from_bytes(str.data(), str.data() + str.length());
+}
+
+xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(to_wstring(str), ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_utf8(string&& str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(to_wstring(move(str)), ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(to_wstring(str), ptr);
+}
+#else
+xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(str, ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_utf8(string&& str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(move(str), ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(str, ptr);
+}
+#endif // UNICODE

@@ -24,7 +24,7 @@ using namespace std;
 int main()
 {
     xaml_ptr<xaml_string> str;
-    XAML_THROW_IF_FAILED(xaml_string_new(U("Hello world!"), &str));
+    XAML_THROW_IF_FAILED(xaml_string_new_utf8("Hello world!", &str));
     _tcout << to_string_view_t(str) << endl;
 
     xaml_ptr<xaml_observable_vector> vec;
