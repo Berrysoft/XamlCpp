@@ -7,16 +7,10 @@
 #include <xaml/ui/native_drawing.hpp>
 
 #ifdef XAML_UI_WINDOWS
-#include <wil/resource.h>
-#include <xaml/result_win32.h>
 #include <xaml/ui/win/control.h>
-#include <xaml/ui/win/dark_mode.h>
-#include <xaml/ui/win/dpi.h>
-#include <xaml/ui/win/font_provider.h>
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename... Base>
-struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_object>
+struct xaml_control_internal
 {
     XAML_EVENT_IMPL(parent_changed)
     XAML_PROP_EVENT_IMPL(parent, xaml_control*, xaml_control**, xaml_control*)
@@ -24,12 +18,12 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     XAML_EVENT_IMPL(size_changed)
     XAML_PROP_EVENT_IMPL(size, xaml_size, xaml_size*, xaml_size const&)
 
-    xaml_result XAML_CALL get_width(double* pvalue) noexcept override
+    xaml_result XAML_CALL get_width(double* pvalue) noexcept
     {
         *pvalue = m_size.width;
         return XAML_S_OK;
     }
-    xaml_result XAML_CALL set_width(double value) noexcept override
+    xaml_result XAML_CALL set_width(double value) noexcept
     {
         if (m_size.width != value)
         {
@@ -39,12 +33,12 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_height(double* pvalue) noexcept override
+    xaml_result XAML_CALL get_height(double* pvalue) noexcept
     {
         *pvalue = m_size.height;
         return XAML_S_OK;
     }
-    xaml_result XAML_CALL set_height(double value) noexcept override
+    xaml_result XAML_CALL set_height(double value) noexcept
     {
         if (m_size.height != value)
         {
@@ -66,20 +60,52 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     XAML_EVENT_IMPL(is_visible_changed)
     XAML_PROP_EVENT_IMPL(is_visible, bool, bool*, bool)
 
-    xaml_result XAML_CALL parent_redraw() noexcept override
-    {
-        if (m_parent)
-            return m_parent->parent_redraw();
-        else
-            return draw({});
-    }
+    XAML_UI_API xaml_result XAML_CALL parent_redraw() noexcept;
 
-    xaml_result XAML_CALL set_size_noevent(xaml_size const& value) noexcept override
+    xaml_result XAML_CALL set_size_noevent(xaml_size const& value) noexcept
     {
         m_size = value;
         return XAML_S_OK;
     }
 
+    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
+
+    xaml_result XAML_CALL size_to_fit() noexcept;
+
+    XAML_UI_API virtual xaml_result XAML_CALL draw_size() noexcept;
+
+    XAML_UI_API virtual xaml_result XAML_CALL draw_visible() noexcept;
+
+    xaml_result XAML_CALL set_rect(xaml_rectangle const&) noexcept;
+
+#ifdef XAML_UI_WINDOWS
+    XAML_PROP_IMPL(handle, HWND, HWND*, HWND)
+
+    XAML_UI_API xaml_result XAML_CALL create(xaml_win32_window_create_params const&) noexcept;
+
+    XAML_UI_API xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept;
+
+    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
+    {
+        return XAML_E_NOTIMPL;
+    }
+
+    XAML_UI_API xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept;
+#endif // XAML_UI_WINDOWS
+
+    xaml_control_internal() noexcept : m_is_visible(true)
+    {
+    }
+
+    XAML_UI_API virtual xaml_result XAML_CALL init() noexcept;
+};
+
+template <typename T, typename... Base>
+struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_object>
+{
 #ifdef XAML_UI_WINDOWS
     template <typename T, typename D, typename Base>
     struct xaml_win32_control_implement : xaml_inner_implement<T, D, Base>
@@ -111,149 +137,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         }
     }
 
-    xaml_result XAML_CALL size_to_fit() noexcept override
-    {
-        return XAML_S_OK;
-    }
-
-    XAML_PROP_IMPL(handle, HWND, HWND*, HWND)
-
-    xaml_result XAML_CALL create(xaml_win32_window_create_params const& params) noexcept
-    {
-        HWND parent = nullptr;
-        if (params.parent)
-        {
-            xaml_ptr<xaml_win32_control> native_parent;
-            if (XAML_SUCCEEDED(params.parent->query(&native_parent)))
-            {
-                XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent));
-            }
-        }
-        HWND handle = CreateWindowEx(
-            params.ex_style, params.class_name, params.window_name,
-            params.style, params.x, params.y, params.width, params.height,
-            parent, nullptr, GetModuleHandle(nullptr), nullptr);
-        if (!handle) return HRESULT_FROM_WIN32(GetLastError());
-        m_handle = handle;
-        xaml_ptr<xaml_application> current_app;
-        XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));
-        xaml_ptr<xaml_win32_font_provider> provider = current_app.query<xaml_win32_font_provider>();
-        if (provider)
-        {
-            HFONT font;
-            XAML_RETURN_IF_FAILED(provider->get_default_font(XamlGetDpiForWindow(m_handle), &font));
-            SendMessage(m_handle, WM_SETFONT, (WPARAM)font, TRUE);
-        }
-        XamlControlUseDarkMode(m_handle);
-        return XAML_S_OK;
-    }
-
-    xaml_result XAML_CALL set_rect(xaml_rectangle const& region) noexcept
-    {
-        xaml_rectangle real = region - m_margin;
-        UINT udpi = XamlGetDpiForWindow(m_handle);
-        xaml_rectangle real_real = real * udpi / USER_DEFAULT_SCREEN_DPI;
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowPos(m_handle, nullptr, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
-        return set_size_noevent({ real.width, real.height });
-    }
-
-    xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const& str, xaml_size offset, xaml_size* pvalue) noexcept
-    {
-        wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
-        if (hDC)
-        {
-            xaml_std_string_view_t view;
-            XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
-            SIZE s = {};
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), view.data(), (int)view.length(), &s));
-            *pvalue = xaml_from_native(s) + offset;
-        }
-        else
-        {
-            *pvalue = {};
-        }
-        return XAML_S_OK;
-    }
-
-    virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LPARAM*) noexcept
-    {
-        return XAML_E_NOTIMPL;
-    }
-
-    xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept
-    {
-        UINT udpi = XamlGetDpiForWindow(m_handle);
-        *pvalue = m_size * udpi / USER_DEFAULT_SCREEN_DPI;
-        return XAML_S_OK;
-    }
-
-    xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept
-    {
-        UINT udpi = XamlGetDpiForWindow(m_handle);
-        return set_size(value * USER_DEFAULT_SCREEN_DPI / udpi);
-    }
-
-    xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept
-    {
-        UINT udpi = XamlGetDpiForWindow(m_handle);
-        *pvalue = m_margin * udpi / USER_DEFAULT_SCREEN_DPI;
-        return XAML_S_OK;
-    }
-
-    xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept
-    {
-        UINT udpi = XamlGetDpiForWindow(m_handle);
-        return set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
-    }
-
-    virtual xaml_result XAML_CALL draw_size() noexcept
-    {
-        xaml_size real_size;
-        XAML_RETURN_IF_FAILED(get_real_size(&real_size));
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowPos(m_handle, nullptr, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-        return XAML_S_OK;
-    }
-
-    virtual xaml_result XAML_CALL draw_visible() noexcept
-    {
-        ShowWindow(m_handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
-        return XAML_S_OK;
-    }
 #endif // XAML_UI_WINDOWS
-
-    xaml_control_implement() noexcept : m_is_visible(true)
-    {
-        m_native_control.m_outer = static_cast<T*>(this);
-    }
-
-    virtual xaml_result XAML_CALL init() noexcept
-    {
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_parent_changed));
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_size_changed));
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_margin_changed));
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_halignment_changed));
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_valignment_changed));
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_visible_changed));
-
-        std::int32_t token;
-        XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_control>, xaml_size>(
-            [this](xaml_ptr<xaml_control>, xaml_size) -> xaml_result {
-                if (m_handle)
-                {
-                    XAML_RETURN_IF_FAILED(draw_size());
-                    XAML_RETURN_IF_FAILED(parent_redraw());
-                }
-                return XAML_S_OK;
-            },
-            &token)));
-        XAML_RETURN_IF_FAILED((m_is_visible_changed->add_noexcept<xaml_ptr<xaml_control>, bool>(
-            [this](xaml_ptr<xaml_control>, bool) -> xaml_result {
-                if (m_handle) XAML_RETURN_IF_FAILED(draw_visible());
-                return XAML_S_OK;
-            },
-            &token)));
-        return XAML_S_OK;
-    }
 };
 
 #endif // !XAML_UI_SHARED_CONTROL_HPP
