@@ -3,9 +3,9 @@
 
 using namespace std;
 
-xaml_result xaml_label_impl::init() noexcept
+xaml_result xaml_label_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
 

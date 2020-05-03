@@ -4,7 +4,7 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/label.h>
 
-struct xaml_label_impl : xaml_control_implement<xaml_label_impl, xaml_label>
+struct xaml_label_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(text_changed)
     XAML_PROP_STRING_EVENT_IMPL(text)
@@ -18,6 +18,14 @@ struct xaml_label_impl : xaml_control_implement<xaml_label_impl, xaml_label>
     xaml_result XAML_CALL size_to_fit() noexcept override;
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_label_impl : xaml_control_implement<xaml_label_impl, xaml_label_internal, xaml_label>
+{
+    XAML_EVENT_INTERNAL_IMPL(text_changed)
+    XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
+
+    XAML_PROP_INTERNAL_IMPL(text_halignment, xaml_halignment*, xaml_halignment)
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_LABEL_HPP

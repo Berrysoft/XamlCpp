@@ -1,12 +1,13 @@
 #include <shared/label.hpp>
 #include <windowsx.h>
+#include <xaml/result_win32.h>
 #include <xaml/ui/controls/label.h>
 
 #include <CommCtrl.h>
 
 using namespace std;
 
-xaml_result xaml_label_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {
@@ -30,7 +31,7 @@ xaml_result xaml_label_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_label_impl::draw_text() noexcept
+xaml_result xaml_label_internal::draw_text() noexcept
 {
     if (m_text)
     {
@@ -45,7 +46,7 @@ xaml_result xaml_label_impl::draw_text() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_label_impl::draw_alignment() noexcept
+xaml_result xaml_label_internal::draw_alignment() noexcept
 {
     LONG_PTR style = WS_CHILD | WS_VISIBLE;
     switch (m_text_halignment)
@@ -64,7 +65,7 @@ xaml_result xaml_label_impl::draw_alignment() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_label_impl::size_to_fit() noexcept
+xaml_result xaml_label_internal::size_to_fit() noexcept
 {
     xaml_size res;
     XAML_RETURN_IF_FAILED(measure_string(m_text, {}, &res));
