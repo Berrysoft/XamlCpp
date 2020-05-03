@@ -4,7 +4,7 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/progress.h>
 
-struct xaml_progress_impl : xaml_control_implement<xaml_progress_impl, xaml_progress>
+struct xaml_progress_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(value_changed)
     XAML_PROP_EVENT_IMPL(value, std::int32_t, std::int32_t*, std::int32_t)
@@ -25,6 +25,18 @@ struct xaml_progress_impl : xaml_control_implement<xaml_progress_impl, xaml_prog
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_progress_impl : xaml_control_implement<xaml_progress_impl, xaml_progress_internal, xaml_progress>
+{
+    XAML_EVENT_INTERNAL_IMPL(value_changed)
+    XAML_PROP_INTERNAL_IMPL(value, std::int32_t*, std::int32_t)
+
+    XAML_PROP_INTERNAL_IMPL(minimum, std::int32_t*, std::int32_t)
+    XAML_PROP_INTERNAL_IMPL(maximum, std::int32_t*, std::int32_t)
+
+    XAML_EVENT_INTERNAL_IMPL(is_indeterminate_changed)
+    XAML_PROP_INTERNAL_IMPL(is_indeterminate, bool*, bool)
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_PROGRESS_HPP

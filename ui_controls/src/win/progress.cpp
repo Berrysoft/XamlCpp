@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result xaml_progress_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {
@@ -29,14 +29,14 @@ xaml_result xaml_progress_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_progress_impl::draw_progress() noexcept
+xaml_result xaml_progress_internal::draw_progress() noexcept
 {
     SendMessage(m_handle, PBM_SETRANGE32, m_minimum, m_maximum);
     SendMessage(m_handle, PBM_SETPOS, m_value, 0);
     return XAML_S_OK;
 }
 
-xaml_result xaml_progress_impl::draw_indeterminate() noexcept
+xaml_result xaml_progress_internal::draw_indeterminate() noexcept
 {
     auto style = GetWindowLongPtr(m_handle, GWL_STYLE);
     if (m_is_indeterminate)
@@ -49,7 +49,7 @@ xaml_result xaml_progress_impl::draw_indeterminate() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_progress_impl::size_to_fit() noexcept
+xaml_result xaml_progress_internal::size_to_fit() noexcept
 {
     static int cyVScroll = XamlGetSystemMetricsForDpi(SM_CYVSCROLL, USER_DEFAULT_SCREEN_DPI);
     return set_size_noevent({ m_size.width, (double)cyVScroll });

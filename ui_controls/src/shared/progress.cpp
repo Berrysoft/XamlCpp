@@ -3,9 +3,9 @@
 
 using namespace std;
 
-xaml_result xaml_progress_impl::init() noexcept
+xaml_result xaml_progress_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_control_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_value_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_indeterminate_changed));

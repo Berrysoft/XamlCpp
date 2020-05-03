@@ -29,7 +29,7 @@ xaml_result xaml_menu_item_internal::wnd_proc(xaml_win32_window_message const& m
     {
         if (LOWORD(msg.wParam) == m_menu_id)
         {
-            XAML_RETURN_IF_FAILED(on_click(this));
+            XAML_RETURN_IF_FAILED(on_click(m_outer_this));
         }
         break;
     }
