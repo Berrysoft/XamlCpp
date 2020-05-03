@@ -3,6 +3,34 @@
 
 using namespace std;
 
+xaml_result xaml_button_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_default_changed));
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
+
+    int32_t token;
+    XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
+        [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) -> xaml_result {
+            if (m_handle)
+            {
+                XAML_RETURN_IF_FAILED(draw_text());
+                XAML_RETURN_IF_FAILED(parent_redraw());
+            }
+            return XAML_S_OK;
+        },
+        &token)));
+    XAML_RETURN_IF_FAILED((m_is_default_changed->add_noexcept<xaml_ptr<xaml_button>, bool>(
+        [this](xaml_ptr<xaml_button>, bool) -> xaml_result {
+            if (m_handle) XAML_RETURN_IF_FAILED(draw_default());
+            return XAML_S_OK;
+        },
+        &token)));
+    return XAML_S_OK;
+}
+
 xaml_result XAML_CALL xaml_button_new(xaml_button** ptr) noexcept
 {
     return xaml_object_init<xaml_button_impl>(ptr);

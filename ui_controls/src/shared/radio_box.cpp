@@ -4,9 +4,9 @@
 
 using namespace std;
 
-xaml_result xaml_radio_box_impl::init() noexcept
+xaml_result xaml_radio_box_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_button_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_button_internal::init());
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
@@ -31,7 +31,7 @@ xaml_result xaml_radio_box_impl::init() noexcept
 }
 
 #ifndef XAML_UI_GTK3
-xaml_result xaml_radio_box_impl::draw_group() noexcept
+xaml_result xaml_radio_box_internal::draw_group() noexcept
 {
     if (m_parent && m_is_checked)
     {
@@ -44,7 +44,7 @@ xaml_result xaml_radio_box_impl::draw_group() noexcept
             {
                 if (auto rc = c.query<xaml_radio_box>())
                 {
-                    if (rc.get() != this)
+                    if (rc.get() != static_cast<xaml_radio_box*>(m_outer_this))
                     {
                         xaml_ptr<xaml_string> group;
                         XAML_RETURN_IF_FAILED(rc->get_group(&group));

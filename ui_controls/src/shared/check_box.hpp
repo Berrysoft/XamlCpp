@@ -4,7 +4,7 @@
 #include <shared/button.hpp>
 #include <xaml/ui/controls/check_box.h>
 
-struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_check_box>
+struct xaml_check_box_internal : xaml_button_internal
 {
     XAML_EVENT_IMPL(is_checked_changed)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
@@ -19,6 +19,12 @@ struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_che
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_check_box_internal, xaml_check_box>
+{
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_CHECK_BOX_HPP

@@ -3,9 +3,9 @@
 
 using namespace std;
 
-xaml_result xaml_check_box_impl::init() noexcept
+xaml_result xaml_check_box_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_button_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_button_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 

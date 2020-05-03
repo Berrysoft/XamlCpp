@@ -4,7 +4,7 @@
 #include <shared/button.hpp>
 #include <xaml/ui/controls/radio_box.h>
 
-struct xaml_radio_box_impl : xaml_button_implement<xaml_radio_box_impl, xaml_radio_box>
+struct xaml_radio_box_internal : xaml_button_internal
 {
     XAML_EVENT_IMPL(is_checked_changed)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
@@ -22,6 +22,14 @@ struct xaml_radio_box_impl : xaml_button_implement<xaml_radio_box_impl, xaml_rad
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_radio_box_impl : xaml_button_implement<xaml_radio_box_impl, xaml_radio_box_internal, xaml_radio_box>
+{
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
+
+    XAML_PROP_PTR_INTERNAL_IMPL(group, xaml_string)
 };
 
 #endif // !XAML_UI_CONTROLS_SHARED_RADIO_BOX_HPP

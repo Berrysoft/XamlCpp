@@ -72,15 +72,15 @@ struct xaml_control_internal
         return XAML_S_OK;
     }
 
-    virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
+    XAML_UI_API virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
 
-    xaml_result XAML_CALL size_to_fit() noexcept;
+    XAML_UI_API virtual xaml_result XAML_CALL size_to_fit() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL draw_size() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL draw_visible() noexcept;
 
-    xaml_result XAML_CALL set_rect(xaml_rectangle const&) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_rect(xaml_rectangle const&) noexcept;
 
 #ifdef XAML_UI_WINDOWS
     XAML_PROP_IMPL(handle, HWND, HWND*, HWND)

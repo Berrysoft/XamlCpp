@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result xaml_radio_box_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+xaml_result xaml_radio_box_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
     switch (msg.Msg)
     {
@@ -28,7 +28,7 @@ xaml_result xaml_radio_box_impl::wnd_proc(xaml_win32_window_message const& msg, 
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_radio_box_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {
@@ -54,13 +54,13 @@ xaml_result xaml_radio_box_impl::draw(xaml_rectangle const& region) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_box_impl::draw_checked() noexcept
+xaml_result xaml_radio_box_internal::draw_checked() noexcept
 {
     Button_SetCheck(m_handle, m_is_checked ? BST_CHECKED : BST_UNCHECKED);
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_box_impl::size_to_fit() noexcept
+xaml_result xaml_radio_box_internal::size_to_fit() noexcept
 {
     xaml_size res;
     XAML_RETURN_IF_FAILED(measure_string(m_text, { 0, 5 }, &res));
