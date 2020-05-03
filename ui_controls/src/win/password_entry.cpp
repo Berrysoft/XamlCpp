@@ -9,7 +9,7 @@ using namespace std;
 
 static xaml_char_t default_char{ U('*') };
 
-xaml_result xaml_password_entry_impl::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (m_parent)
     {
@@ -36,7 +36,7 @@ xaml_result xaml_password_entry_impl::draw(xaml_rectangle const& region) noexcep
     return XAML_S_OK;
 }
 
-xaml_result xaml_password_entry_impl::draw_password_char() noexcept
+xaml_result xaml_password_entry_internal::draw_password_char() noexcept
 {
     Edit_SetPasswordChar(m_handle, m_password_char ? m_password_char : default_char);
     return XAML_S_OK;

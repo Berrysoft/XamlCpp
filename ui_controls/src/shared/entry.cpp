@@ -3,6 +3,26 @@
 
 using namespace std;
 
+xaml_result XAML_CALL xaml_entry_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
+
+    int32_t token;
+    XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>>(
+        [this](xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>) -> xaml_result {
+            if (m_handle)
+            {
+                XAML_RETURN_IF_FAILED(draw_text());
+                XAML_RETURN_IF_FAILED(parent_redraw());
+            }
+            return XAML_S_OK;
+        },
+        &token)));
+    return XAML_S_OK;
+}
+
 xaml_result XAML_CALL xaml_entry_new(xaml_entry** ptr) noexcept
 {
     return xaml_object_init<xaml_entry_impl>(ptr);

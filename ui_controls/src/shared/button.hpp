@@ -4,11 +4,6 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/button.h>
 
-#ifdef XAML_UI_WINDOWS
-#include <Windows.h>
-#include <windowsx.h>
-#endif // XAML_UI_WINDOWS
-
 struct xaml_button_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(text_changed)
