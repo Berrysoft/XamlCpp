@@ -18,17 +18,17 @@ struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xam
     xaml_result XAML_CALL draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
 };
 
-template <typename T, typename... Base>
-struct xaml_canvas_implement : xaml_control_implement<T, Base..., xaml_canvas>
+struct xaml_canvas_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(redraw)
 
-    xaml_result XAML_CALL init() noexcept override
-    {
-        XAML_RETURN_IF_FAILED(xaml_control_implement::init());
-        XAML_RETURN_IF_FAILED(xaml_event_new(&m_redraw));
-        return XAML_S_OK;
-    }
+    xaml_result XAML_CALL init() noexcept override;
+};
+
+template <typename T, typename Internal, typename... Base>
+struct xaml_canvas_implement : xaml_control_implement<T, Internal, Base..., xaml_canvas>
+{
+    XAML_EVENT_INTERNAL_IMPL(redraw)
 };
 
 #endif // !XAML_UI_CANVAS_SHARED_CANVAS_HPP

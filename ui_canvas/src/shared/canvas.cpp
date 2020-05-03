@@ -3,6 +3,13 @@
 
 using namespace std;
 
+xaml_result xaml_canvas_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_redraw));
+    return XAML_S_OK;
+}
+
 #ifndef XAML_UI_WINDOWS
 xaml_result XAML_CALL xaml_canvas_new(xaml_canvas** ptr) noexcept
 {

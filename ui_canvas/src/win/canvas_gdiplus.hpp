@@ -29,16 +29,20 @@ struct xaml_drawing_context_gdiplus_impl : xaml_implement<xaml_drawing_context_g
     xaml_result XAML_CALL draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
 };
 
-struct xaml_canvas_gdiplus_impl : xaml_win32_canvas_implement<xaml_canvas_gdiplus_impl>
+struct xaml_canvas_gdiplus_internal : xaml_win32_canvas_internal
 {
     std::optional<ULONG_PTR> m_token{};
 
-    ~xaml_canvas_gdiplus_impl();
+    ~xaml_canvas_gdiplus_internal();
 
     xaml_result XAML_CALL draw_impl() noexcept override;
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_canvas_gdiplus_impl : xaml_win32_canvas_implement<xaml_canvas_gdiplus_impl, xaml_canvas_gdiplus_internal>
+{
 };
 
 inline xaml_size xaml_from_native(Gdiplus::SizeF const& s) noexcept

@@ -38,7 +38,7 @@ struct xaml_drawing_context_d2d_impl : xaml_implement<xaml_drawing_context_d2d_i
     xaml_result XAML_CALL draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
 };
 
-struct xaml_canvas_d2d_impl : xaml_win32_canvas_implement<xaml_canvas_d2d_impl>
+struct xaml_canvas_d2d_internal : xaml_win32_canvas_internal
 {
     wil::com_ptr_t<ID2D1HwndRenderTarget, wil::err_returncode_policy> target{ nullptr };
     wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
@@ -48,6 +48,10 @@ struct xaml_canvas_d2d_impl : xaml_win32_canvas_implement<xaml_canvas_d2d_impl>
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 
     xaml_result XAML_CALL init() noexcept override;
+};
+
+struct xaml_canvas_d2d_impl : xaml_win32_canvas_implement<xaml_canvas_d2d_impl, xaml_canvas_d2d_internal>
+{
 };
 
 inline xaml_size xaml_from_native(D2D1_SIZE_F const& s) noexcept

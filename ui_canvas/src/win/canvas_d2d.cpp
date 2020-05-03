@@ -202,7 +202,7 @@ xaml_result xaml_drawing_context_d2d_impl::draw_string(xaml_drawing_brush const&
     return XAML_S_OK;
 }
 
-xaml_result xaml_canvas_d2d_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+xaml_result xaml_canvas_d2d_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
     switch (msg.Msg)
     {
@@ -223,7 +223,7 @@ xaml_result xaml_canvas_d2d_impl::wnd_proc(xaml_win32_window_message const& msg,
             XAML_RETURN_IF_FAILED(target.query_to(&ctx_target));
             xaml_ptr<xaml_drawing_context> dc;
             XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_d2d_impl>(&dc, ctx_target, d2d, dwrite));
-            XAML_RETURN_IF_FAILED(on_redraw(this, dc));
+            XAML_RETURN_IF_FAILED(on_redraw(m_outer_this, dc));
             XAML_RETURN_IF_FAILED(target->EndDraw());
         }
         *presult = TRUE;
@@ -233,15 +233,15 @@ xaml_result xaml_canvas_d2d_impl::wnd_proc(xaml_win32_window_message const& msg,
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_canvas_d2d_impl::init() noexcept
+xaml_result xaml_canvas_d2d_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_canvas_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_canvas_internal::init());
     XAML_RETURN_IF_FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
     XAML_RETURN_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
     return XAML_S_OK;
 }
 
-xaml_result xaml_canvas_d2d_impl::draw_impl() noexcept
+xaml_result xaml_canvas_d2d_internal::draw_impl() noexcept
 {
     if (!target)
     {

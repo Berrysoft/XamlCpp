@@ -211,12 +211,12 @@ xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush co
     return XAML_S_OK;
 }
 
-xaml_canvas_gdiplus_impl::~xaml_canvas_gdiplus_impl()
+xaml_canvas_gdiplus_internal::~xaml_canvas_gdiplus_internal()
 {
     if (m_token) GdiplusShutdown(*m_token);
 }
 
-xaml_result xaml_canvas_gdiplus_impl::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+xaml_result xaml_canvas_gdiplus_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
     switch (msg.Msg)
     {
@@ -231,7 +231,7 @@ xaml_result xaml_canvas_gdiplus_impl::wnd_proc(xaml_win32_window_message const& 
             check_status(g.Clear(background_color));
             xaml_ptr<xaml_drawing_context> dc;
             XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_gdiplus_impl>(&dc, &g, (double)dpi));
-            XAML_RETURN_IF_FAILED(on_redraw(this, dc));
+            XAML_RETURN_IF_FAILED(on_redraw(m_outer_this, dc));
         }
         *presult = TRUE;
         return XAML_S_OK;
@@ -240,9 +240,9 @@ xaml_result xaml_canvas_gdiplus_impl::wnd_proc(xaml_win32_window_message const& 
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_canvas_gdiplus_impl::init() noexcept
+xaml_result xaml_canvas_gdiplus_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_canvas_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_canvas_internal::init());
     GdiplusStartupInput input{};
     ULONG_PTR token;
     check_status(GdiplusStartup(&token, &input, nullptr));
@@ -250,7 +250,7 @@ xaml_result xaml_canvas_gdiplus_impl::init() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_canvas_gdiplus_impl::draw_impl() noexcept
+xaml_result xaml_canvas_gdiplus_internal::draw_impl() noexcept
 {
     return XAML_S_OK;
 }
