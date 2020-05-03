@@ -4,33 +4,41 @@
 
 using namespace std;
 
-xaml_result xaml_popup_menu_item_impl::add_submenu(xaml_menu_item* child) noexcept
+xaml_result xaml_menu_item_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_popup_menu_item_internal::add_submenu(xaml_menu_item* child) noexcept
 {
     if (child)
     {
-        child->set_parent(this);
+        child->set_parent(static_cast<xaml_control*>(m_outer_this));
         XAML_RETURN_IF_FAILED(m_submenu->append(child));
         XAML_RETURN_IF_FAILED(parent_redraw());
     }
     return XAML_S_OK;
 }
 
-xaml_result xaml_popup_menu_item_impl::remove_submenu(xaml_menu_item* child) noexcept
+xaml_result xaml_popup_menu_item_internal::remove_submenu(xaml_menu_item* child) noexcept
 {
     return XAML_E_NOTIMPL;
 }
 
-xaml_result xaml_popup_menu_item_impl::init() noexcept
+xaml_result xaml_popup_menu_item_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_menu_item_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_submenu));
     return XAML_S_OK;
 }
 
-xaml_result xaml_check_menu_item_impl::init() noexcept
+xaml_result xaml_check_menu_item_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_menu_item_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
@@ -44,9 +52,9 @@ xaml_result xaml_check_menu_item_impl::init() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_menu_item_impl::init() noexcept
+xaml_result xaml_radio_menu_item_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_menu_item_implement::init());
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
@@ -65,7 +73,7 @@ xaml_result xaml_radio_menu_item_impl::init() noexcept
 }
 
 #ifndef XAML_UI_GTK3
-xaml_result xaml_radio_menu_item_impl::draw_group() noexcept
+xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
 {
     if (m_parent && m_is_checked)
     {
@@ -78,7 +86,7 @@ xaml_result xaml_radio_menu_item_impl::draw_group() noexcept
             {
                 if (auto rc = c.query<xaml_radio_menu_item>())
                 {
-                    if (rc.get() != this)
+                    if (rc.get() != static_cast<xaml_control*>(m_outer_this))
                     {
                         xaml_ptr<xaml_string> group;
                         XAML_RETURN_IF_FAILED(rc->get_group(&group));

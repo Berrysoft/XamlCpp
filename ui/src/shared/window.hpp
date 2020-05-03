@@ -40,7 +40,7 @@ public:
         if (m_location.x != value)
         {
             m_location.x = value;
-            return on_location_changed(this, m_location);
+            return on_location_changed(m_outer_this, m_location);
         }
         return XAML_S_OK;
     }
@@ -56,7 +56,7 @@ public:
         if (m_location.y != value)
         {
             m_location.y = value;
-            return on_location_changed(this, m_location);
+            return on_location_changed(m_outer_this, m_location);
         }
         return XAML_S_OK;
     }

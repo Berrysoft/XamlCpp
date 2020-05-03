@@ -1,4 +1,5 @@
 #include <shared/button.hpp>
+#include <windowsx.h>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/button.h>
 #include <xaml/ui/win/control.h>

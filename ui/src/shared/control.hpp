@@ -32,7 +32,7 @@ struct xaml_control_internal
         if (m_size.width != value)
         {
             m_size.width = value;
-            return on_size_changed(this, m_size);
+            return on_size_changed(m_outer_this, m_size);
         }
         return XAML_S_OK;
     }
@@ -47,7 +47,7 @@ struct xaml_control_internal
         if (m_size.height != value)
         {
             m_size.height = value;
-            return on_size_changed(this, m_size);
+            return on_size_changed(m_outer_this, m_size);
         }
         return XAML_S_OK;
     }
@@ -72,9 +72,9 @@ struct xaml_control_internal
         return XAML_S_OK;
     }
 
-    XAML_UI_API virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept;
+    virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept { return XAML_S_OK; }
 
-    XAML_UI_API virtual xaml_result XAML_CALL size_to_fit() noexcept;
+    virtual xaml_result XAML_CALL size_to_fit() noexcept { return XAML_S_OK; }
 
     XAML_UI_API virtual xaml_result XAML_CALL draw_size() noexcept;
 
@@ -183,7 +183,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     xaml_control_implement() noexcept : xaml_implement()
     {
         m_internal.m_outer_this = this;
-        m_native_control.m_outer = this;
+        m_native_control.m_outer = static_cast<T*>(this);
     }
 
     virtual xaml_result init() noexcept
