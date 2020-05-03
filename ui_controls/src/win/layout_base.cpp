@@ -1,4 +1,4 @@
-#include <shared/layout_base.cpp>
+#include <shared/layout_base.hpp>
 #include <xaml/ui/win/dpi.h>
 #include <xaml/ui/win/font_provider.h>
 
