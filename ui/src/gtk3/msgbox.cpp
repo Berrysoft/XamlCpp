@@ -1,69 +1,70 @@
 #include <gtk/gtk.h>
+#include <xaml/ui/gtk3/window.h>
 #include <xaml/ui/msgbox.h>
 
 using namespace std;
 
-namespace xaml
+static GtkMessageType get_style(xaml_msgbox_style style) noexcept
 {
-    static GtkMessageType get_style(msgbox_style style)
+    switch (style)
     {
-        switch (style)
-        {
-        case msgbox_style::info:
-            return GTK_MESSAGE_INFO;
-        case msgbox_style::warning:
-            return GTK_MESSAGE_WARNING;
-        case msgbox_style::question:
-            return GTK_MESSAGE_QUESTION;
-        case msgbox_style::error:
-            return GTK_MESSAGE_ERROR;
-        default:
-            return GTK_MESSAGE_OTHER;
-        }
+    case xaml_msgbox_info:
+        return GTK_MESSAGE_INFO;
+    case xaml_msgbox_warning:
+        return GTK_MESSAGE_WARNING;
+    case xaml_msgbox_question:
+        return GTK_MESSAGE_QUESTION;
+    case xaml_msgbox_error:
+        return GTK_MESSAGE_ERROR;
+    default:
+        return GTK_MESSAGE_OTHER;
     }
+}
 
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+{
+    GtkWidget* parent_handle = nullptr;
+    if (parent)
     {
-        GtkWidget* dialog = gtk_message_dialog_new(parent && parent->get_handle() ? GTK_WINDOW(parent->get_window()->window) : NULL, GTK_DIALOG_DESTROY_WITH_PARENT, get_style(style), GTK_BUTTONS_NONE, "%s", instruction.empty() ? message.data() : instruction.data());
-        if (!title.empty()) gtk_window_set_title(GTK_WINDOW(dialog), title.data());
-        if (!instruction.empty()) gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", message.data());
-        for (auto& button : buttons)
+        xaml_ptr<xaml_gtk3_window> native_control;
+        if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            switch (button.index())
-            {
-            case 0:
-                switch (get<msgbox_common_button>(button))
-                {
-                case msgbox_common_button::ok:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_OK"), (gint)msgbox_result::ok);
-                    break;
-                case msgbox_common_button::yes:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Yes"), (gint)msgbox_result::yes);
-                    break;
-                case msgbox_common_button::no:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_No"), (gint)msgbox_result::no);
-                    break;
-                case msgbox_common_button::cancel:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Cancel"), (gint)msgbox_result::cancel);
-                    break;
-                case msgbox_common_button::retry:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Retry"), (gint)msgbox_result::retry);
-                    break;
-                case msgbox_common_button::close:
-                    gtk_dialog_add_button(GTK_DIALOG(dialog), U("_Close"), (gint)msgbox_result::cancel);
-                    break;
-                }
-                break;
-            case 1:
-            {
-                msgbox_custom_button const& b = get<msgbox_custom_button>(button);
-                gtk_dialog_add_button(GTK_DIALOG(dialog), b.text.data(), (gint)b.result);
-                break;
-            }
-            }
+            XAML_RETURN_IF_FAILED(native_control->get_window(&parent_handle));
         }
-        msgbox_result result = (msgbox_result)gtk_dialog_run(GTK_DIALOG(dialog));
-        gtk_widget_destroy(dialog);
-        return result;
     }
-} // namespace xaml
+    char const* msg_data;
+    if (instruction)
+    {
+        XAML_RETURN_IF_FAILED(instruction->get_data(&msg_data));
+    }
+    else
+    {
+        XAML_RETURN_IF_FAILED(message->get_data(&msg_data));
+    }
+    GtkWidget* dialog = gtk_message_dialog_new(GTK_WINDOW(parent_handle), GTK_DIALOG_DESTROY_WITH_PARENT, get_style(style), GTK_BUTTONS_NONE, "%s", msg_data);
+    if (title)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(title->get_data(&data));
+        gtk_window_set_title(GTK_WINDOW(dialog), data);
+    }
+    if (!instruction)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(message->get_data(&data));
+        gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", data);
+    }
+    XAML_FOREACH_START(b, buttons);
+    {
+        xaml_ptr<xaml_box> box;
+        XAML_RETURN_IF_FAILED(b->query(&box));
+        xaml_msgbox_custom_button const* button;
+        XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
+        gtk_dialog_add_button(GTK_DIALOG(dialog), button->text, (gint)button->result);
+    }
+    XAML_FOREACH_END();
+    xaml_msgbox_result result = (xaml_msgbox_result)gtk_dialog_run(GTK_DIALOG(dialog));
+    gtk_widget_destroy(dialog);
+    *presult = result;
+    return XAML_S_OK;
+}
