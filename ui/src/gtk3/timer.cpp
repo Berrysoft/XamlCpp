@@ -16,9 +16,11 @@ xaml_result xaml_timer_impl::start() noexcept
     {
         g_timeout_add((guint)m_interval, (GSourceFunc)xaml_timer_impl::on_timeout, this);
     }
+    return XAML_S_OK;
 }
 
 xaml_result xaml_timer_impl::stop() noexcept
 {
     m_is_enabled = false;
+    return XAML_S_OK;
 }
