@@ -23,18 +23,9 @@
     XAML_METHOD(remove_##name, type, XAML_CSTD int32_t)
 
 #ifdef __cplusplus
-struct xaml_internal
-{
-    virtual ~xaml_internal() {}
-
-    void* m_outer_this;
-};
-
 #define XAML_PROP_IMPL_BASE(name, vtype, gtype)          \
-protected:                                               \
     vtype m_##name{};                                    \
                                                          \
-public:                                                  \
     xaml_result XAML_CALL get_##name(gtype ptr) noexcept \
     {                                                    \
         *ptr = m_##name;                                 \
@@ -75,10 +66,8 @@ public:                                                  \
     }
 
 #define XAML_PROP_PTR_IMPL_BASE(name, type)               \
-protected:                                                \
     xaml_ptr<type> m_##name{ nullptr };                   \
                                                           \
-public:                                                   \
     xaml_result XAML_CALL get_##name(type** ptr) noexcept \
     {                                                     \
         return m_##name->query(ptr);                      \
@@ -134,10 +123,8 @@ public:                                                   \
     }
 
 #define XAML_EVENT_IMPL(name)                                                                      \
-protected:                                                                                         \
     xaml_ptr<xaml_event> m_##name;                                                                 \
                                                                                                    \
-public:                                                                                            \
     template <typename... Args>                                                                    \
     xaml_result XAML_CALL on_##name(Args&&... args) noexcept                                       \
     {                                                                                              \

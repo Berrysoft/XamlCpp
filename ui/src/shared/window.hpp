@@ -13,10 +13,8 @@
 
 struct xaml_window_internal : xaml_container_internal
 {
-protected:
     std::atomic<bool> m_resizing;
 
-public:
     xaml_result XAML_CALL init() noexcept override;
 
     XAML_PROP_PTR_IMPL(menu_bar, xaml_control)
@@ -87,6 +85,10 @@ public:
     XAML_PROP_IMPL(window_handle, GtkWidget*, GtkWidget**, GtkWidget*)
     XAML_PROP_IMPL(vbox_handle, GtkWidget*, GtkWidget**, GtkWidget*)
     XAML_PROP_IMPL(menu_bar_handle, GtkWidget*, GtkWidget**, GtkWidget*)
+
+    static void on_destroy(GtkWidget*, xaml_window_internal*) noexcept;
+    static gboolean on_delete_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
+    static gboolean on_configure_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_window_internal() noexcept : xaml_container_internal(), m_is_resizable(true)

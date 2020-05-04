@@ -1,5 +1,6 @@
 #include <gtk3/resources.hpp>
 #include <shared/atomic_guard.hpp>
+#include <shared/window.hpp>
 #include <xaml/ui/application.h>
 #include <xaml/ui/gtk3/xamlfixed.h>
 #include <xaml/ui/menu_bar.h>
@@ -8,158 +9,187 @@
 
 using namespace std;
 
-window::~window()
+xaml_window_internal::~xaml_window_internal()
 {
-    if (get_handle() && !gtk_widget_in_destruction(get_window()->window))
+    if (m_handle && !gtk_widget_in_destruction(m_window_handle))
     {
-        gtk_widget_destroy(get_window()->window);
+        gtk_widget_destroy(m_window_handle);
     }
 }
 
-void window::__draw(rectangle const& region)
+xaml_result xaml_window_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (!get_handle())
+    if (!m_handle)
     {
-        auto w = make_shared<native_window>();
-        w->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-        w->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
-        set_window(w);
-        auto h = make_shared<native_control>();
-        h->handle = xaml_fixed_new();
-        set_handle(h);
-        gtk_container_add(GTK_CONTAINER(get_window()->window), get_window()->vbox);
-        gtk_box_pack_end(GTK_BOX(get_window()->vbox), h->handle, TRUE, TRUE, 0);
-        application::current()->window_added(shared_from_this<window>());
-        g_signal_connect(G_OBJECT(get_window()->window), "destroy", G_CALLBACK(window::on_destroy), this);
-        g_signal_connect(G_OBJECT(get_window()->window), "delete-event", G_CALLBACK(window::on_delete_event), this);
-        g_signal_connect(G_OBJECT(get_window()->window), "configure-event", G_CALLBACK(window::on_configure_event), this);
-        draw_title();
-        draw_resizable();
+        m_window_handle = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        m_vbox_handle = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+        m_handle = xaml_fixed_new();
+        gtk_container_add(GTK_CONTAINER(m_window_handle), m_vbox_handle);
+        gtk_box_pack_end(GTK_BOX(m_vbox_handle), m_handle, TRUE, TRUE, 0);
+        xaml_ptr<xaml_application> app;
+        XAML_RETURN_IF_FAILED(xaml_application_current(&app));
+        XAML_RETURN_IF_FAILED(app->window_added(static_cast<xaml_window*>(m_outer_this)));
+        g_signal_connect(G_OBJECT(m_window_handle), "destroy", G_CALLBACK(xaml_window_internal::on_destroy), this);
+        g_signal_connect(G_OBJECT(m_window_handle), "delete-event", G_CALLBACK(xaml_window_internal::on_delete_event), this);
+        g_signal_connect(G_OBJECT(m_window_handle), "configure-event", G_CALLBACK(xaml_window_internal::on_configure_event), this);
+        XAML_RETURN_IF_FAILED(draw_title());
+        XAML_RETURN_IF_FAILED(draw_resizable());
     }
-    draw_size();
-    draw_child();
-    draw_menu_bar();
+    XAML_RETURN_IF_FAILED(draw_size());
+    XAML_RETURN_IF_FAILED(draw_child());
+    XAML_RETURN_IF_FAILED(draw_menu_bar());
+    return XAML_S_OK;
 }
 
-void window::__parent_redraw()
+xaml_result xaml_window_internal::draw_size() noexcept
 {
-    if (get_handle())
-        __draw({});
-}
-
-void window::draw_size()
-{
-    atomic_guard guard{ m_resizing };
+    xaml_atomic_guard guard{ m_resizing };
     if (!guard.test_and_set())
     {
-        auto [rw, rh] = to_native<tuple<gint, gint>>(get_size());
-        gtk_window_resize(GTK_WINDOW(get_window()->window), rw, rh);
-        gtk_window_set_default_size(GTK_WINDOW(get_window()->window), rw, rh);
-        gtk_window_move(GTK_WINDOW(get_window()->window), (gint)get_x(), (gint)get_y());
+        auto [rw, rh] = xaml_to_native<tuple<gint, gint>>(m_size);
+        gtk_window_resize(GTK_WINDOW(m_window_handle), rw, rh);
+        gtk_window_set_default_size(GTK_WINDOW(m_window_handle), rw, rh);
+        gtk_window_move(GTK_WINDOW(m_window_handle), (gint)m_location.x, (gint)m_location.y);
     }
+    return XAML_S_OK;
 }
 
-void window::draw_title()
+xaml_result xaml_window_internal::draw_title() noexcept
 {
-    gtk_window_set_title(GTK_WINDOW(get_window()->window), m_title.data());
+    xaml_char_t const* title;
+    XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+    gtk_window_set_title(GTK_WINDOW(m_window_handle), title);
+    return XAML_S_OK;
 }
 
-void window::draw_child()
+xaml_result xaml_window_internal::draw_child() noexcept
 {
-    if (get_child())
-        get_child()->__draw(get_client_region());
-}
-
-void window::draw_resizable()
-{
-    gtk_window_set_resizable(GTK_WINDOW(get_window()->window), m_resizable ? TRUE : FALSE);
-}
-
-void window::draw_menu_bar()
-{
-    if (m_menu_bar)
+    if (m_child)
     {
-        m_menu_bar->set_parent_window(shared_from_this<window>());
-        m_menu_bar->__draw({});
-        g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
-        if (!g_list_find(list.get(), m_menu_bar->get_handle()->handle))
-        {
-            gtk_box_pack_start(GTK_BOX(get_window()->vbox), m_menu_bar->get_handle()->handle, FALSE, FALSE, 0);
-        }
+        xaml_rectangle region;
+        XAML_RETURN_IF_FAILED(get_client_region(&region));
+        return m_child->draw(region);
     }
+    return XAML_S_OK;
 }
 
-void window::show()
+xaml_result xaml_window_internal::draw_resizable() noexcept
 {
-    __draw({});
-    gtk_widget_show_all(get_window()->window);
-    set_is_visible(true);
+    gtk_window_set_resizable(GTK_WINDOW(m_window_handle), m_is_resizable);
+    return XAML_S_OK;
 }
 
-void window::close()
+xaml_result xaml_window_internal::draw_menu_bar() noexcept
 {
-    gtk_window_close(GTK_WINDOW(get_window()->window));
+    //if (m_menu_bar)
+    //{
+    //    m_menu_bar->set_parent_window(shared_from_this<window>());
+    //    m_menu_bar->__draw({});
+    //    g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
+    //    if (!g_list_find(list.get(), m_menu_bar->get_handle()->handle))
+    //    {
+    //        gtk_box_pack_start(GTK_BOX(get_window()->vbox), m_menu_bar->get_handle()->handle, FALSE, FALSE, 0);
+    //    }
+    //}
+    return XAML_S_OK;
 }
 
-void window::hide()
+xaml_result xaml_window_internal::show() noexcept
 {
-    gtk_widget_hide(get_window()->window);
-    set_is_visible(false);
+    XAML_RETURN_IF_FAILED(draw({}));
+    gtk_widget_show_all(m_window_handle);
+    return set_is_visible(true);
 }
 
-rectangle window::get_client_region() const
+xaml_result xaml_window_internal::close() noexcept
+{
+    gtk_window_close(GTK_WINDOW(m_window_handle));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_window_internal::hide() noexcept
+{
+    gtk_widget_hide(m_window_handle);
+    return set_is_visible(false);
+}
+
+xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
     gint width, height;
-    gtk_window_get_size(GTK_WINDOW(get_window()->window), &width, &height);
-    if (get_menu_bar() && get_menu_bar()->get_handle())
+    gtk_window_get_size(GTK_WINDOW(m_window_handle), &width, &height);
+    //if (m_menu_bar && get_menu_bar()->get_handle())
+    //{
+    //    gint mheight = gtk_widget_get_allocated_height(get_menu_bar()->get_handle()->handle);
+    //    height -= mheight;
+    //}
+    *pregion = { 0, 0, (double)width, (double)height };
+    return XAML_S_OK;
+}
+
+static xaml_result xaml_window_internal_on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
+{
+    xaml_ptr<xaml_application> app;
+    XAML_RETURN_IF_FAILED(xaml_application_current(&app));
+    XAML_RETURN_IF_FAILED(app->window_removed(static_cast<xaml_window*>(self->m_outer_this)));
+    return self->set_handle(nullptr);
+}
+
+void xaml_window_internal::on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCESS(xaml_window_internal_on_destroy(widget, self));
+}
+
+static xaml_result xaml_window_internal_on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self, gboolean* pres) noexcept
+{
+    auto handled = xaml_box_value(false);
+    XAML_RETURN_IF_FAILED(self->on_closing(self->m_outer_this, handled));
+    bool value;
+    XAML_RETURN_IF_FAILED(xaml_unbox_value(handled.get(), value));
+    *pres = value;
+    return XAML_S_OK;
+}
+
+gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
+{
+    gboolean res;
+    XAML_ASSERT_SUCCESS(xaml_window_internal_on_delete_event(widget, event, self, &res));
+    return res;
+}
+
+static xaml_result xaml_window_internal_on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self, gboolean* pres) noexcept
+{
+    if (event->type == GDK_CONFIGURE && self->m_handle)
     {
-        gint mheight = gtk_widget_get_allocated_height(get_menu_bar()->get_handle()->handle);
-        height -= mheight;
-    }
-    return { 0, 0, (double)width, (double)height };
-}
-
-void window::on_destroy(void* widget, void* data)
-{
-    window* self = (window*)data;
-    application::current()->window_removed(self->shared_from_this<window>());
-    self->set_handle(nullptr);
-}
-
-int window::on_delete_event(void* widget, void* event, void* data)
-{
-    window* self = (window*)data;
-    auto handled = box_value(false);
-    self->m_closing(self->shared_from_this<window>(), handled);
-    return *handled;
-}
-
-int window::on_configure_event(void* widget, void* event, void* data)
-{
-    window* self = (window*)data;
-    if (((GdkEvent*)event)->type == GDK_CONFIGURE && self->get_handle())
-    {
-        atomic_guard guard{ self->m_resizing };
+        xaml_atomic_guard guard{ self->m_resizing };
         if (!guard.test_and_set())
         {
             gint x, y;
-            gtk_window_get_position(GTK_WINDOW(self->get_window()->window), &x, &y);
-            self->set_location({ (double)x, (double)y });
+            gtk_window_get_position(GTK_WINDOW(self->m_window_handle), &x, &y);
+            XAML_RETURN_IF_FAILED(self->set_location({ (double)x, (double)y }));
             gint width, height;
-            gtk_window_get_size(GTK_WINDOW(self->get_window()->window), &width, &height);
-            self->set_size({ (double)width, (double)height });
-            self->__draw({});
+            gtk_window_get_size(GTK_WINDOW(self->m_window_handle), &width, &height);
+            XAML_RETURN_IF_FAILED(self->set_size({ (double)width, (double)height }));
+            XAML_RETURN_IF_FAILED(self->draw({}));
         }
     }
-    return FALSE;
+    *pres = FALSE;
+    return XAML_S_OK;
 }
 
-double window::get_dpi() const
+gboolean xaml_window_internal::on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
 {
-    GdkScreen* screen = gtk_window_get_screen(GTK_WINDOW(get_window()->window));
+    gboolean res;
+    XAML_ASSERT_SUCCESS(xaml_window_internal_on_configure_event(widget, event, self, &res));
+    return res;
+}
+
+xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
+{
+    GdkScreen* screen = gtk_window_get_screen(GTK_WINDOW(m_window_handle));
     gdouble res = gdk_screen_get_resolution(screen);
     if (res < 0)
-        return 96.0;
+        *pvalue = 96.0;
     else
-        return res;
+        *pvalue = res;
+    return XAML_S_OK;
 }
