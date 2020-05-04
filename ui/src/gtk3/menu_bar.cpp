@@ -1,31 +1,37 @@
-#include <xaml/ui/menu_bar.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/window.hpp>
+#include <shared/menu_bar.hpp>
+#include <xaml/ui/menu_bar.h>
+#include <xaml/ui/window.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void menu_bar::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            auto pwnd = get_parent_window().lock();
-            auto h = make_shared<native_control>();
-            h->handle = gtk_menu_bar_new();
-            set_handle(h);
-            draw_visible();
-            draw_submenu();
-            gtk_widget_show_all(get_handle()->handle);
-        }
+        m_handle = gtk_menu_bar_new();
+        m_menu = GTK_MENU_BAR(m_handle);
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_submenu());
+        gtk_widget_show_all(m_handle);
     }
+    return XAML_S_OK;
+}
 
-    void menu_bar::draw_submenu()
+xaml_result xaml_menu_bar_internal::draw_submenu() noexcept
+{
+    XAML_FOREACH_START(child, m_children);
     {
-        for (auto& c : get_children())
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
+        xaml_ptr<xaml_gtk3_control> native_control = cc.query<xaml_gtk3_control>();
+        if (native_control)
         {
-            c->__draw({});
-            gtk_menu_shell_append(GTK_MENU_SHELL(get_handle()->handle), c->get_handle()->handle);
+            GtkWidget* native_handle;
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&native_handle));
+            gtk_menu_shell_append(GTK_MENU_SHELL(m_handle), native_handle);
         }
     }
-} // namespace xaml
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
