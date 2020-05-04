@@ -1,6 +1,5 @@
 #include <gtk/gtk.h>
-#include <xaml/ui/msgbox.hpp>
-#include <xaml/ui/native_window.hpp>
+#include <xaml/ui/msgbox.h>
 
 using namespace std;
 

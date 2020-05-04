@@ -2,17 +2,31 @@
 #include <xaml/event.h>
 #include <xaml/meta/meta_macros.h>
 
-struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator, xaml_object>
+struct xaml_test_calculator_internal
 {
-public:
-    xaml_result init() noexcept
+    xaml_object* m_outer_this;
+
+    XAML_EVENT_IMPL(value_changed)
+    XAML_PROP_EVENT_IMPL(value, int, int*, int);
+
+    xaml_result XAML_CALL init() noexcept
     {
         XAML_RETURN_IF_FAILED(xaml_event_new(&m_value_changed));
         return XAML_S_OK;
     }
+};
 
-    XAML_EVENT_IMPL(value_changed)
-    XAML_PROP_EVENT_IMPL(value, int, int*, int);
+struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator, xaml_object>
+{
+    xaml_test_calculator_internal m_internal;
+
+    xaml_test_calculator_impl() noexcept : xaml_implement() { m_internal.m_outer_this = this; }
+
+    XAML_EVENT_INTERNAL_IMPL(value_changed)
+
+    XAML_PROP_INTERNAL_IMPL(value, int*, int)
+
+    xaml_result XAML_CALL init() noexcept { return m_internal.init(); }
 
     xaml_result XAML_CALL plus(int x, int y) noexcept override
     {
