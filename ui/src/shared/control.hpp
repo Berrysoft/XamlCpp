@@ -76,7 +76,7 @@ struct xaml_control_internal
 
     virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept { return XAML_S_OK; }
 
-    virtual xaml_result XAML_CALL size_to_fit() noexcept { return XAML_S_OK; }
+    XAML_UI_API virtual xaml_result XAML_CALL size_to_fit() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL draw_size() noexcept;
 

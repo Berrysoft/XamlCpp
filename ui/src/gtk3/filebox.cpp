@@ -22,11 +22,11 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     GtkWidget* handle;
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {
-        h->handle = gtk_file_chooser_dialog_new(title, parent_handle, GTK_FILE_CHOOSER_ACTION_OPEN, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Open"), GTK_RESPONSE_ACCEPT, nullptr);
+        handle = gtk_file_chooser_dialog_new(title, GTK_WINDOW(parent_handle), GTK_FILE_CHOOSER_ACTION_OPEN, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Open"), GTK_RESPONSE_ACCEPT, nullptr);
     }
     else
     {
-        h->handle = gtk_file_chooser_dialog_new(title, parent_handle, GTK_FILE_CHOOSER_ACTION_SAVE, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Save"), GTK_RESPONSE_ACCEPT, nullptr);
+        handle = gtk_file_chooser_dialog_new(title, GTK_WINDOW(parent_handle), GTK_FILE_CHOOSER_ACTION_SAVE, U("_Cancel"), GTK_RESPONSE_CANCEL, U("_Save"), GTK_RESPONSE_ACCEPT, nullptr);
     }
     if (m_filename)
     {
@@ -49,7 +49,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));
     if (m_multiple)
     {
-        g_slist_free_unique_ptr list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(m_handle->handle)) };
+        g_slist_free_unique_ptr list{ gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(handle)) };
         while (list)
         {
             g_free_unique_ptr<gchar> name{ (gchar*)list->data };
@@ -61,7 +61,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     }
     else
     {
-        g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(m_handle->handle)) };
+        g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(handle)) };
         xaml_ptr<xaml_string> xaml_name;
         XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
         XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));

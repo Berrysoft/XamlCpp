@@ -155,6 +155,12 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
 
     struct xaml_gtk3_window_impl : xaml_gtk3_control_implement<xaml_gtk3_window_impl, xaml_window_impl, xaml_gtk3_window>
     {
+        xaml_result XAML_CALL get_window(GtkWidget** pvalue) noexcept override { return m_outer->get_window_handle(pvalue); }
+        xaml_result XAML_CALL set_window(GtkWidget* value) noexcept override { return m_outer->set_window_handle(value); }
+        xaml_result XAML_CALL get_vbox(GtkWidget** pvalue) noexcept override { return m_outer->get_vbox_handle(pvalue); }
+        xaml_result XAML_CALL set_vbox(GtkWidget* value) noexcept override { return m_outer->set_vbox_handle(value); }
+        xaml_result XAML_CALL get_menu_bar(GtkWidget** pvalue) noexcept override { return m_outer->get_menu_bar_handle(pvalue); }
+        xaml_result XAML_CALL set_menu_bar(GtkWidget* value) noexcept override { return m_outer->set_menu_bar_handle(value); }
     } m_native_window;
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override

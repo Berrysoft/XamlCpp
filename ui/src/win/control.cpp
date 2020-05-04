@@ -61,6 +61,11 @@ xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexce
     return set_size_noevent({ real.width, real.height });
 }
 
+xaml_result xaml_control_internal::size_to_fit() noexcept
+{
+    return XAML_S_OK;
+}
+
 xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept
 {
     wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
