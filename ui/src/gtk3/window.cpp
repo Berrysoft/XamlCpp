@@ -81,16 +81,22 @@ xaml_result xaml_window_internal::draw_resizable() noexcept
 
 xaml_result xaml_window_internal::draw_menu_bar() noexcept
 {
-    //if (m_menu_bar)
-    //{
-    //    m_menu_bar->set_parent_window(shared_from_this<window>());
-    //    m_menu_bar->__draw({});
-    //    g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(get_window()->vbox)) };
-    //    if (!g_list_find(list.get(), m_menu_bar->get_handle()->handle))
-    //    {
-    //        gtk_box_pack_start(GTK_BOX(get_window()->vbox), m_menu_bar->get_handle()->handle, FALSE, FALSE, 0);
-    //    }
-    //}
+    if (m_menu_bar)
+    {
+        XAML_RETURN_IF_FAILED(m_menu_bar->set_parent(static_cast<xaml_control*>(m_outer_this)));
+        XAML_RETURN_IF_FAILED(m_menu_bar->draw({}));
+        xaml_ptr<xaml_gtk3_control> native_menu_bar = m_menu_bar.query<xaml_gtk3_control>();
+        if (native_menu_bar)
+        {
+            GtkWidget* menu_bar_handle;
+            XAML_RETURN_IF_FAILED(native_menu_bar->get_handle(&menu_bar_handle));
+            g_list_free_unique_ptr list{ gtk_container_get_children(GTK_CONTAINER(m_vbox_handle)) };
+            if (!g_list_find(list.get(), menu_bar_handle))
+            {
+                gtk_box_pack_start(GTK_BOX(m_vbox_handle), menu_bar_handle, FALSE, FALSE, 0);
+            }
+        }
+    }
     return XAML_S_OK;
 }
 
