@@ -24,7 +24,7 @@ typedef XAML_CSTD uint32_t xaml_result;
         if (XAML_FAILED(hr)) return hr; \
     } while (0)
 
-#define XAML_ASSERT_SUCCESS(expr)   \
+#define XAML_ASSERT_SUCCEEDED(expr) \
     do                              \
     {                               \
         xaml_result hr = (expr);    \
@@ -66,7 +66,7 @@ public:
     catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }  \
     catch (...) { return XAML_E_FAIL; }
 #else
-#define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCESS(expr)
+#define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCEEDED(expr)
 #endif // __cplusplus
 
 #endif // !XAML_RESULT_H

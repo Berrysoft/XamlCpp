@@ -17,9 +17,9 @@
 void print_string(xaml_string* str)
 {
     xaml_char_t const* data;
-    XAML_ASSERT_SUCCESS(str->vtbl->get_data(str, &data));
+    XAML_ASSERT_SUCCEEDED(str->vtbl->get_data(str, &data));
     int32_t length;
-    XAML_ASSERT_SUCCESS(str->vtbl->get_length(str, &length));
+    XAML_ASSERT_SUCCEEDED(str->vtbl->get_length(str, &length));
     _tprintf(U("%*s "), (int)length, data);
 }
 
@@ -103,16 +103,16 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
 int main()
 {
     xaml_string* str;
-    XAML_ASSERT_SUCCESS(xaml_string_new(U("Hello world!"), &str));
+    XAML_ASSERT_SUCCEEDED(xaml_string_new(U("Hello world!"), &str));
     xaml_observable_vector* vec;
-    XAML_ASSERT_SUCCESS(xaml_observable_vector_new(&vec));
+    XAML_ASSERT_SUCCEEDED(xaml_observable_vector_new(&vec));
     xaml_delegate* callback;
-    XAML_ASSERT_SUCCESS(xaml_delegate_new(observable_vector_changed_callback, &callback));
+    XAML_ASSERT_SUCCEEDED(xaml_delegate_new(observable_vector_changed_callback, &callback));
     int32_t token;
-    XAML_ASSERT_SUCCESS(vec->vtbl->add_vector_changed(vec, callback, &token));
+    XAML_ASSERT_SUCCEEDED(vec->vtbl->add_vector_changed(vec, callback, &token));
     callback->vtbl->release(callback);
-    XAML_ASSERT_SUCCESS(vec->vtbl->append(vec, (xaml_object*)str));
-    XAML_ASSERT_SUCCESS(vec->vtbl->remove_at(vec, 0));
+    XAML_ASSERT_SUCCEEDED(vec->vtbl->append(vec, (xaml_object*)str));
+    XAML_ASSERT_SUCCEEDED(vec->vtbl->remove_at(vec, 0));
     vec->vtbl->release(vec);
     str->vtbl->release(str);
 }

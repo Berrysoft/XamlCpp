@@ -136,7 +136,7 @@ static xaml_result xaml_window_internal_on_destroy(GtkWidget* widget, xaml_windo
 
 void xaml_window_internal::on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCESS(xaml_window_internal_on_destroy(widget, self));
+    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_destroy(widget, self));
 }
 
 static xaml_result xaml_window_internal_on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self, gboolean* pres) noexcept
@@ -152,7 +152,7 @@ static xaml_result xaml_window_internal_on_delete_event(GtkWidget* widget, GdkEv
 gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
 {
     gboolean res;
-    XAML_ASSERT_SUCCESS(xaml_window_internal_on_delete_event(widget, event, self, &res));
+    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_delete_event(widget, event, self, &res));
     return res;
 }
 
@@ -179,7 +179,7 @@ static xaml_result xaml_window_internal_on_configure_event(GtkWidget* widget, Gd
 gboolean xaml_window_internal::on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
 {
     gboolean res;
-    XAML_ASSERT_SUCCESS(xaml_window_internal_on_configure_event(widget, event, self, &res));
+    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_configure_event(widget, event, self, &res));
     return res;
 }
 

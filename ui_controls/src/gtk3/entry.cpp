@@ -1,57 +1,68 @@
-#include <xaml/ui/controls/entry.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/entry.hpp>
+#include <xaml/ui/controls/entry.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void entry::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            auto h = make_shared<native_control>();
-            h->handle = gtk_entry_new();
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "changed", G_CALLBACK(entry::on_changed), this);
-            draw_visible();
-            draw_text();
-            draw_alignment();
-        }
-        __set_rect(region);
+        m_handle = gtk_entry_new();
+        g_signal_connect(G_OBJECT(m_handle), "changed", G_CALLBACK(xaml_entry_internal::on_changed), this);
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_alignment());
     }
+    return set_rect(region);
+}
 
-    void entry::draw_text()
+xaml_result xaml_entry_internal::draw_text() noexcept
+{
+    xaml_char_t const* data = nullptr;
+    if (m_text)
     {
-        gtk_entry_set_text(GTK_ENTRY(get_handle()->handle), m_text.c_str());
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
     }
+    gtk_entry_set_text(GTK_ENTRY(m_handle), data);
+    return XAML_S_OK;
+}
 
-    void entry::draw_alignment()
+xaml_result xaml_entry_internal::draw_alignment() noexcept
+{
+    gfloat align;
+    switch (m_text_halignment)
     {
-        gfloat align;
-        switch (m_text_halignment)
-        {
-        case halignment_t::center:
-            align = 0.5;
-            break;
-        case halignment_t::right:
-            align = 1.0;
-            break;
-        default:
-            align = 0;
-            break;
-        }
-        gtk_entry_set_alignment(GTK_ENTRY(get_handle()->handle), align);
+    case xaml_halignment_center:
+        align = 0.5;
+        break;
+    case xaml_halignment_right:
+        align = 1.0;
+        break;
+    default:
+        align = 0;
+        break;
     }
+    gtk_entry_set_alignment(GTK_ENTRY(m_handle), align);
+    return XAML_S_OK;
+}
 
-    void entry::on_changed(void*, void* data)
-    {
-        entry* self = (entry*)data;
-        self->set_text(gtk_entry_get_text(GTK_ENTRY(self->get_handle()->handle)));
-    }
+static xaml_result xaml_entry_internal_on_changed(GtkWidget*, xaml_entry_internal* self) noexcept
+{
+    gchar const* data = gtk_entry_get_text(GTK_ENTRY(self->m_handle));
+    xaml_ptr<xaml_string> text;
+    XAML_RETURN_IF_FAILED(xaml_string_new(data, &text));
+    return self->set_text(text.get());
+}
 
-    void entry::__size_to_fit()
-    {
-        gtk_entry_set_width_chars(GTK_ENTRY(get_handle()->handle), (gint)m_text.length());
-        control::__size_to_fit();
-    }
-} // namespace xaml
+void xaml_entry_internal::on_changed(GtkWidget* widget, xaml_entry_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(xaml_entry_internal_on_changed(widget, self));
+}
+
+xaml_result xaml_entry_internal::size_to_fit() noexcept
+{
+    int32_t length;
+    XAML_RETURN_IF_FAILED(m_text->get_length(&length));
+    gtk_entry_set_width_chars(GTK_ENTRY(m_handle), length);
+    return xaml_control_internal::size_to_fit();
+}

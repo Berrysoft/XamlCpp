@@ -24,5 +24,5 @@ xaml_result xaml_check_box_internal::draw_checked() noexcept
 
 void xaml_check_box_internal::on_toggled(GtkWidget*, xaml_check_box_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCESS(self->set_is_checked(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->m_handle))));
+    XAML_ASSERT_SUCCEEDED(self->set_is_checked(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->m_handle))));
 }
