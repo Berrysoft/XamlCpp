@@ -35,7 +35,7 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
     {
         int32_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Add item at %zu: "), index);
+        _tprintf(U("Add item at %d: "), index);
         xaml_vector_view* new_items;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_items(e, &new_items));
         int32_t size;
@@ -58,7 +58,7 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
     {
         int32_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Erase item at %zu: "), index);
+        _tprintf(U("Erase item at %d: "), index);
         xaml_vector_view* old_items;
         XAML_RETURN_IF_FAILED(e->vtbl->get_old_items(e, &old_items));
         int32_t size;
@@ -81,14 +81,14 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
     {
         int32_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Move item at %zu\n"), index);
+        _tprintf(U("Move item at %d\n"), index);
         break;
     }
     case xaml_vector_changed_replace:
     {
         int32_t index;
         XAML_RETURN_IF_FAILED(e->vtbl->get_new_index(e, &index));
-        _tprintf(U("Replace item at %zu\n"), index);
+        _tprintf(U("Replace item at %d\n"), index);
         break;
     }
     case xaml_vector_changed_reset:
