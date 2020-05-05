@@ -27,6 +27,8 @@ struct xaml_menu_item_internal : xaml_control_internal
     virtual xaml_result XAML_CALL draw_impl(UINT flags) noexcept;
 
     virtual xaml_result XAML_CALL draw_append(HMENU pmenu, UINT flags) noexcept;
+#elif defined(XAML_UI_GTK3)
+    static void on_activate(GtkWidget*, xaml_menu_item_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
