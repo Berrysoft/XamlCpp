@@ -1,112 +1,160 @@
-#include <xaml/ui/controls/combo_box.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/combo_box.hpp>
+#include <xaml/ui/controls/combo_box.h>
 #include <xaml/ui/native_drawing.hpp>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void combo_box::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            draw_editable();
-        }
-        __set_rect(region);
+        XAML_RETURN_IF_FAILED(draw_editable());
     }
+    return set_rect(region);
+}
 
-    void combo_box::draw_text()
+xaml_result xaml_combo_box_internal::draw_text() noexcept
+{
+    if (m_is_editable)
     {
-        if (m_is_editable)
+        auto entry = gtk_bin_get_child(GTK_BIN(m_handle));
+        if (m_text)
         {
-            auto entry = gtk_bin_get_child(GTK_BIN(get_handle()->handle));
-            if (m_text)
+            xaml_char_t const* data;
+            XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+            gtk_entry_set_text(GTK_ENTRY(entry), data);
+        }
+        else
+        {
+            int32_t size;
+            XAML_RETURN_IF_FAILED(m_items->get_size(&size));
+            if (m_sel_id < 0 || m_sel_id >= size)
             {
-                gtk_entry_set_text(GTK_ENTRY(entry), m_text->get().data());
+                gtk_entry_set_text(GTK_ENTRY(entry), "");
             }
             else
             {
-                if (get_sel_id() < 0 || get_sel_id() >= get_items().size())
+                xaml_ptr<xaml_object> item;
+                XAML_RETURN_IF_FAILED(m_items->get_at(m_sel_id, &item));
+                if (auto str = item.query<xaml_string>())
                 {
-                    gtk_entry_set_text(GTK_ENTRY(entry), "");
-                }
-                else
-                {
-                    gtk_entry_set_text(GTK_ENTRY(entry), get_items()[get_sel_id()].get().c_str());
+                    xaml_char_t const* data;
+                    XAML_RETURN_IF_FAILED(str->get_data(&data));
+                    gtk_entry_set_text(GTK_ENTRY(entry), data);
                 }
             }
         }
     }
+    return XAML_S_OK;
+}
 
-    void combo_box::draw_items()
+xaml_result xaml_combo_box_internal::draw_items() noexcept
+{
+    XAML_FOREACH_START(item, m_items);
     {
-        for (auto item : get_items())
+        xaml_ptr<xaml_string> s = item.query<xaml_string>();
+        if (s)
         {
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(get_handle()->handle), item.get().c_str());
+            xaml_char_t const* data;
+            XAML_RETURN_IF_FAILED(s->get_data(&data));
+            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(m_handle), data);
         }
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
 
-    void combo_box::draw_sel()
+xaml_result xaml_combo_box_internal::draw_sel() noexcept
+{
+    gtk_combo_box_set_active(GTK_COMBO_BOX(m_handle), m_sel_id);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_combo_box_internal::draw_editable() noexcept
+{
+    if (m_is_editable)
     {
-        gtk_combo_box_set_active(GTK_COMBO_BOX(get_handle()->handle), (gint)get_sel_id());
+        m_handle = gtk_combo_box_text_new_with_entry();
     }
-
-    void combo_box::draw_editable()
+    else
     {
-        auto h = make_shared<native_control>();
-        if (m_is_editable)
+        m_handle = gtk_combo_box_text_new();
+    }
+    g_signal_connect(G_OBJECT(m_handle), "changed", G_CALLBACK(xaml_combo_box_internal::on_changed), this);
+    XAML_RETURN_IF_FAILED(draw_visible());
+    XAML_RETURN_IF_FAILED(draw_items());
+    XAML_RETURN_IF_FAILED(draw_sel());
+    XAML_RETURN_IF_FAILED(draw_text());
+    return XAML_S_OK;
+}
+
+static xaml_result xaml_combo_box_internal_on_changed(GtkWidget*, xaml_combo_box_internal* self) noexcept
+{
+    XAML_RETURN_IF_FAILED(self->set_sel_id(gtk_combo_box_get_active(GTK_COMBO_BOX(self->m_handle))));
+    if (self->m_is_editable)
+    {
+        auto entry = gtk_bin_get_child(GTK_BIN(self->m_handle));
+        xaml_ptr<xaml_string> text;
+        XAML_RETURN_IF_FAILED(xaml_string_new(gtk_entry_get_text(GTK_ENTRY(entry)), &text));
+        return self->set_text(text.get());
+    }
+    else
+    {
+        int32_t size;
+        XAML_RETURN_IF_FAILED(self->m_items->get_size(&size));
+        if (self->m_sel_id < 0 || self->m_sel_id >= size)
         {
-            h->handle = gtk_combo_box_text_new_with_entry();
+            return self->set_text(nullptr);
         }
         else
         {
-            h->handle = gtk_combo_box_text_new();
-        }
-        set_handle(h);
-        g_signal_connect(G_OBJECT(get_handle()->handle), "changed", G_CALLBACK(combo_box::on_changed), this);
-        draw_visible();
-        draw_items();
-        draw_sel();
-        draw_text();
-    }
-
-    void combo_box::on_changed(void* widget, void* data)
-    {
-        combo_box* self = (combo_box*)data;
-        self->set_sel_id(gtk_combo_box_get_active(GTK_COMBO_BOX(self->get_handle()->handle)));
-        if (self->get_is_editable())
-        {
-            auto entry = gtk_bin_get_child(GTK_BIN(self->get_handle()->handle));
-            self->set_text(box_value(gtk_entry_get_text(GTK_ENTRY(entry))));
-        }
-        else if (self->get_sel_id() < 0 || self->get_sel_id() >= self->get_items().size())
-        {
-            self->set_text({});
-        }
-        else
-        {
-            self->set_text(box_value(self->get_items()[self->get_sel_id()].get()));
+            xaml_ptr<xaml_object> item;
+            XAML_RETURN_IF_FAILED(self->m_items->get_at(self->m_sel_id, &item));
+            if (auto str = item.query<xaml_string>())
+            {
+                xaml_char_t const* data;
+                XAML_RETURN_IF_FAILED(str->get_data(&data));
+                xaml_ptr<xaml_string> text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(data, &text));
+                return self->set_text(text.get());
+            }
+            return XAML_S_OK;
         }
     }
+}
 
-    void combo_box::insert_item(int32_t index, string_t const& value)
-    {
-        gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(get_handle()->handle), (gint)index, value.c_str());
-    }
+void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(xaml_combo_box_internal_on_changed(widget, self));
+}
 
-    void combo_box::remove_item(int32_t index)
+xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+{
+    xaml_ptr<xaml_string> s = value.query<xaml_string>();
+    if (s)
     {
-        gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(get_handle()->handle), (gint)index);
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(s->get_data(&data));
+        gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(m_handle), index, data);
     }
+    return XAML_S_OK;
+}
 
-    void combo_box::clear_items()
-    {
-        gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(get_handle()->handle));
-    }
+xaml_result xaml_combo_box_internal::remove_item(int32_t index) noexcept
+{
+    gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(m_handle), index);
+    return XAML_S_OK;
+}
 
-    void combo_box::replace_item(int32_t index, string_t const& value)
-    {
-        remove_item(index);
-        insert_item(index, value);
-    }
-} // namespace xaml
+xaml_result xaml_combo_box_internal::clear_items() noexcept
+{
+    gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(m_handle));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+{
+    XAML_RETURN_IF_FAILED(remove_item(index));
+    XAML_RETURN_IF_FAILED(insert_item(index, value));
+    return XAML_S_OK;
+}

@@ -52,16 +52,12 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
+    xaml_char_t const* data = nullptr;
     if (m_text)
     {
-        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data));
     }
-    else
-    {
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, nullptr));
-    }
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data));
     return XAML_S_OK;
 }
 
