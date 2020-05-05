@@ -123,11 +123,14 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
 {
     gint width, height;
     gtk_window_get_size(GTK_WINDOW(m_window_handle), &width, &height);
-    //if (m_menu_bar && get_menu_bar()->get_handle())
-    //{
-    //    gint mheight = gtk_widget_get_allocated_height(get_menu_bar()->get_handle()->handle);
-    //    height -= mheight;
-    //}
+    xaml_ptr<xaml_gtk3_control> native_menu_bar = m_menu_bar.query<xaml_gtk3_control>();
+    if (native_menu_bar)
+    {
+        GtkWidget* menu_bar_handle;
+        XAML_RETURN_IF_FAILED(native_menu_bar->get_handle(&menu_bar_handle));
+        gint mheight = gtk_widget_get_allocated_height(menu_bar_handle);
+        height -= mheight;
+    }
     *pregion = { 0, 0, (double)width, (double)height };
     return XAML_S_OK;
 }

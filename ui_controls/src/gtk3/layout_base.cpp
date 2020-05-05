@@ -16,16 +16,19 @@ xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexce
         {
             GtkWidget* handle;
             XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
-            xaml_margin margin;
-            XAML_RETURN_IF_FAILED(c->get_margin(&margin));
-            xaml_rectangle subreal = subrect - margin;
-            if (!m_put_map[c])
+            if (handle != m_handle)
             {
-                gtk_container_add(GTK_CONTAINER(m_handle), handle);
-                m_put_map[c] = true;
+                xaml_margin margin;
+                XAML_RETURN_IF_FAILED(c->get_margin(&margin));
+                xaml_rectangle subreal = subrect - margin;
+                if (!m_put_map[c])
+                {
+                    gtk_container_add(GTK_CONTAINER(m_handle), handle);
+                    m_put_map[c] = true;
+                }
+                GtkAllocation alloc = xaml_to_native<GtkAllocation>(subreal);
+                xaml_fixed_child_size_allocate(XAML_FIXED(m_handle), handle, &alloc);
             }
-            GtkAllocation alloc = xaml_to_native<GtkAllocation>(subreal);
-            xaml_fixed_child_size_allocate(XAML_FIXED(m_handle), handle, &alloc);
         }
         return XAML_S_OK;
     });
