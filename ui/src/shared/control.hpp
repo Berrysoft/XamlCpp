@@ -146,35 +146,23 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     xaml_result XAML_CALL size_to_fit() noexcept override { return m_internal.size_to_fit(); }
 
 #ifdef XAML_UI_WINDOWS
-    template <typename T, typename D, typename Base>
-    struct xaml_win32_control_implement : xaml_inner_implement<T, D, Base>
+    template <typename T2, typename D, typename Base2>
+    struct xaml_win32_control_implement : xaml_inner_implement<T2, D, Base2>
     {
-        xaml_result XAML_CALL get_handle(HWND* pvalue) noexcept override { return m_outer->get_handle(pvalue); }
-        xaml_result XAML_CALL set_handle(HWND value) noexcept override { return m_outer->set_handle(value); }
-        xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* res) noexcept override { return m_outer->wnd_proc(msg, res); }
-        xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept override { return m_outer->get_real_size(pvalue); }
-        xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept override { return m_outer->set_real_size(value); }
-        xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept override { return m_outer->get_real_margin(pvalue); }
-        xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept override { return m_outer->set_real_margin(value); }
+        xaml_result XAML_CALL get_handle(HWND* pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+        xaml_result XAML_CALL set_handle(HWND value) noexcept override { return this->m_outer->set_handle(value); }
+        xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LPARAM* res) noexcept override { return this->m_outer->wnd_proc(msg, res); }
+        xaml_result XAML_CALL get_real_size(xaml_size* pvalue) noexcept override { return this->m_outer->get_real_size(pvalue); }
+        xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept override { return this->m_outer->set_real_size(value); }
+        xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept override { return this->m_outer->get_real_margin(pvalue); }
+        xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept override { return this->m_outer->set_real_margin(value); }
     };
 
     struct xaml_win32_control_impl : xaml_win32_control_implement<xaml_win32_control_impl, T, xaml_win32_control>
     {
     } m_native_control;
 
-    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
-    {
-        if (type == xaml_type_guid_v<xaml_win32_control>)
-        {
-            add_ref();
-            *ptr = static_cast<xaml_win32_control*>(&m_native_control);
-            return XAML_S_OK;
-        }
-        else
-        {
-            return xaml_implement::query(type, ptr);
-        }
-    }
+    using native_control_type = xaml_win32_control;
 
     XAML_PROP_INTERNAL_IMPL(handle, HWND*, HWND)
 
@@ -185,33 +173,35 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_INTERNAL_IMPL(handle, GtkWidget**, GtkWidget*)
 
-    template <typename T, typename D, typename Base>
-    struct xaml_gtk3_control_implement : xaml_inner_implement<T, D, Base>
+    template <typename T2, typename D, typename Base2>
+    struct xaml_gtk3_control_implement : xaml_inner_implement<T2, D, Base2>
     {
-        xaml_result XAML_CALL get_handle(GtkWidget** pvalue) noexcept override { return m_outer->get_handle(pvalue); }
-        xaml_result XAML_CALL set_handle(GtkWidget* value) noexcept override { return m_outer->set_handle(value); }
+        xaml_result XAML_CALL get_handle(GtkWidget** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+        xaml_result XAML_CALL set_handle(GtkWidget* value) noexcept override { return this->m_outer->set_handle(value); }
     };
 
     struct xaml_gtk3_control_impl : xaml_gtk3_control_implement<xaml_gtk3_control_impl, T, xaml_gtk3_control>
     {
     } m_native_control;
 
+    using native_control_type = xaml_gtk3_control;
+#endif // XAML_UI_WINDOWS
+
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
     {
-        if (type == xaml_type_guid_v<xaml_gtk3_control>)
+        if (type == xaml_type_guid_v<native_control_type>)
         {
-            add_ref();
-            *ptr = static_cast<xaml_gtk3_control*>(&m_native_control);
+            this->add_ref();
+            *ptr = static_cast<native_control_type*>(&m_native_control);
             return XAML_S_OK;
         }
         else
         {
-            return xaml_implement::query(type, ptr);
+            return xaml_implement<T, Base..., xaml_control, xaml_object>::query(type, ptr);
         }
     }
-#endif // XAML_UI_WINDOWS
 
-    xaml_control_implement() noexcept : xaml_implement()
+    xaml_control_implement() noexcept
     {
         m_internal.m_outer_this = this;
         m_native_control.m_outer = static_cast<T*>(this);

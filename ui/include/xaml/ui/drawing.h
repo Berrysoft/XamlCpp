@@ -15,7 +15,7 @@
 #endif // __cplusplus
 
 #ifdef __cplusplus
-template <typename T, typename TTuple, std::int32_t... Indicies>
+template <typename T, typename TTuple, std::size_t... Indicies>
 T __intialize_from_tuple_impl(TTuple&& t, std::index_sequence<Indicies...>) noexcept
 {
     return T{ std::get<Indicies>(std::forward<TTuple>(t))... };

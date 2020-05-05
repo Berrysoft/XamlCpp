@@ -41,8 +41,8 @@ xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noe
     DWORD count = GetEnvironmentVariable("GTK_THEME", theme.data(), (DWORD)theme.length());
     theme.resize(count);
 #else
-    char* ptheme = getenv("GTK_THEME");
-    string_view theme = ptheme ? ptheme : string_view{};
+    char* theme_buffer = getenv("GTK_THEME");
+    string_view theme = theme_buffer ? theme_buffer : string_view{};
 #endif // WIN32 || __MINGW32__
 
     *ptheme = theme.ends_with(":dark") ? xaml_application_theme_dark : xaml_application_theme_light;
