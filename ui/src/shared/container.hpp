@@ -10,6 +10,8 @@
 
 struct xaml_container_internal : xaml_control_internal
 {
+    XAML_UI_API ~xaml_container_internal();
+
     XAML_EVENT_IMPL(child_changed)
     XAML_PROP_PTR_IMPL_BASE(child, xaml_control)
     xaml_result XAML_CALL set_child(xaml_control* value) noexcept
@@ -35,10 +37,10 @@ struct xaml_container_implement : xaml_control_implement<T, Internal, Base..., x
 
 struct xaml_multicontainer_internal : xaml_control_internal
 {
-protected:
+    XAML_UI_API ~xaml_multicontainer_internal();
+
     xaml_ptr<xaml_vector> m_children;
 
-public:
     xaml_result XAML_CALL get_children(xaml_vector_view** ptr) noexcept
     {
         return m_children->query(ptr);

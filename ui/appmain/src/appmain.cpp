@@ -45,6 +45,6 @@ static xaml_result xaml_main_begin(int argc, xaml_char_t** argv, int* pcode) noe
 int main(int argc, char** argv)
 {
     int code;
-    return xaml_main_end(xaml_main_begin(&code), &code);
+    return xaml_main_end(xaml_main_begin(argc, argv, &code), &code);
 }
 #endif // XAML_WIN32

@@ -16,7 +16,7 @@ struct xaml_control_internal
 {
     xaml_object* m_outer_this{ nullptr };
 
-    virtual ~xaml_control_internal() {}
+    XAML_UI_API virtual ~xaml_control_internal();
 
     XAML_EVENT_IMPL(parent_changed)
     XAML_PROP_EVENT_IMPL(parent, xaml_control*, xaml_control**, xaml_control*)
