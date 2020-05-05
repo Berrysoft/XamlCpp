@@ -1,27 +1,32 @@
-#include <xaml/ui/controls/layout_base.hpp>
+#include <shared/layout_base.hpp>
+#include <xaml/ui/controls/layout_base.h>
 #include <xaml/ui/gtk3/xamlfixed.h>
-#include <xaml/ui/native_control.hpp>
 #include <xaml/ui/native_drawing.hpp>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void layout_base::__draw(rectangle const& region)
-    {
-        set_handle(get_parent().lock()->get_handle());
-        __draw_impl(region, [this](shared_ptr<control> c, rectangle const& subrect) {
-            if (c->get_handle() && c->get_handle() != get_handle())
+    xaml_ptr<xaml_gtk3_control> native_parent;
+    XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+    XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
+    draw_impl(region, [this](xaml_control* c, xaml_rectangle const& subrect) -> xaml_result {
+        xaml_ptr<xaml_gtk3_control> native_control;
+        if (XAML_SUCCEEDED(c->query(&native_control)))
+        {
+            GtkWidget* handle;
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
+            xaml_margin margin;
+            XAML_RETURN_IF_FAILED(c->get_margin(&margin));
+            xaml_rectangle subreal = subrect - margin;
+            if (!m_put_map[c])
             {
-                rectangle subreal = subrect - c->get_margin();
-                if (!m_put_map[c])
-                {
-                    gtk_container_add(GTK_CONTAINER(get_handle()->handle), c->get_handle()->handle);
-                    m_put_map[c] = true;
-                }
-                GtkAllocation alloc = to_native<GtkAllocation>(subreal);
-                xaml_fixed_child_size_allocate(XAML_FIXED(get_handle()->handle), c->get_handle()->handle, &alloc);
+                gtk_container_add(GTK_CONTAINER(m_handle), handle);
+                m_put_map[c] = true;
             }
-        });
-    }
-} // namespace xaml
+            GtkAllocation alloc = xaml_to_native<GtkAllocation>(subreal);
+            xaml_fixed_child_size_allocate(XAML_FIXED(m_handle), handle, &alloc);
+        }
+        return XAML_S_OK;
+    });
+}
