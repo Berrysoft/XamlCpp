@@ -13,7 +13,7 @@
 
 struct xaml_window_internal : xaml_container_internal
 {
-    std::atomic<bool> m_resizing;
+    std::atomic<bool> m_resizing{ false };
 
     xaml_result XAML_CALL init() noexcept override;
 
@@ -123,6 +123,8 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
     XAML_PROP_INTERNAL_IMPL_BASE(client_region, xaml_rectangle*)
     XAML_PROP_INTERNAL_IMPL_BASE(dpi, double*)
 
+    xaml_result XAML_CALL size_to_fit() noexcept override { return XAML_S_OK; }
+
 #ifdef XAML_UI_WINDOWS
     XAML_PROP_INTERNAL_IMPL(real_location, xaml_point*, xaml_point const&)
 
@@ -135,19 +137,7 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
         xaml_result XAML_CALL get_real_client_region(xaml_rectangle* pvalue) noexcept override { return m_outer->get_real_client_region(pvalue); }
     } m_native_window;
 
-    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
-    {
-        if (type == xaml_type_guid_v<xaml_win32_window>)
-        {
-            add_ref();
-            *ptr = static_cast<xaml_win32_window*>(&m_native_window);
-            return XAML_S_OK;
-        }
-        else
-        {
-            return xaml_container_implement::query(type, ptr);
-        }
-    }
+    using native_window_type = xaml_win32_window;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_INTERNAL_IMPL(window_handle, GtkWidget**, GtkWidget*)
     XAML_PROP_INTERNAL_IMPL(vbox_handle, GtkWidget**, GtkWidget*)
@@ -163,12 +153,15 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
         xaml_result XAML_CALL set_menu_bar(GtkWidget* value) noexcept override { return m_outer->set_menu_bar_handle(value); }
     } m_native_window;
 
+    using native_window_type = xaml_gtk3_window;
+#endif // XAML_UI_WINDOWS
+
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
     {
-        if (type == xaml_type_guid_v<xaml_gtk3_window>)
+        if (type == xaml_type_guid_v<native_window_type>)
         {
             add_ref();
-            *ptr = static_cast<xaml_gtk3_window*>(&m_native_window);
+            *ptr = static_cast<native_window_type*>(&m_native_window);
             return XAML_S_OK;
         }
         else
@@ -176,8 +169,6 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
             return xaml_container_implement::query(type, ptr);
         }
     }
-
-#endif // XAML_UI_WINDOWS
 
     xaml_window_impl() noexcept : xaml_container_implement()
     {

@@ -56,8 +56,11 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    xaml_char_t const* title;
-    XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+    xaml_char_t const* title = nullptr;
+    if (m_title)
+    {
+        XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+    }
     gtk_window_set_title(GTK_WINDOW(m_window_handle), title);
     return XAML_S_OK;
 }
