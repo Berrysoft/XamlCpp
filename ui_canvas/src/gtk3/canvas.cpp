@@ -75,18 +75,20 @@ static void path_rect(cairo_t* handle, xaml_rectangle const& rect) noexcept
     cairo_rectangle(handle, rect.x, rect.y, rect.width, rect.height);
 }
 
-void xaml_drawing_context_impl::draw_rect(drawing_pen const& pen, rectangle const& rect)
+xaml_result xaml_drawing_context_impl::draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept
 {
-    path_rect(rect);
-    set_pen(pen);
-    cairo_stroke(m_handle->handle);
+    path_rect(m_handle, rect);
+    set_pen(m_handle, pen);
+    cairo_stroke(m_handle);
+    return XAML_S_OK;
 }
 
-void xaml_drawing_context_impl::fill_rect(drawing_brush const& brush, const rectangle& rect)
+xaml_result xaml_drawing_context_impl::fill_rect(xaml_drawing_brush const& brush, const xaml_rectangle& rect) noexcept
 {
-    path_rect(rect);
-    set_brush(brush);
-    cairo_stroke(m_handle->handle);
+    path_rect(m_handle, rect);
+    set_brush(m_handle, brush);
+    cairo_stroke(m_handle);
+    return XAML_S_OK;
 }
 
 static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_size const& round) noexcept
@@ -103,72 +105,82 @@ static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_si
     cairo_set_matrix(handle, &save_matrix);
 }
 
-void xaml_drawing_context_impl::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
+xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
-    path_round_rect(rect, round);
-    set_pen(pen);
-    cairo_stroke(m_handle->handle);
+    path_round_rect(m_handle, rect, round);
+    set_pen(m_handle, pen);
+    cairo_stroke(m_handle);
+    return XAML_S_OK;
 }
 
-void xaml_drawing_context_impl::fill_round_rect(drawing_brush const& brush, const rectangle& rect, size round)
+xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
-    path_round_rect(rect, round);
-    set_brush(brush);
-    cairo_stroke(m_handle->handle);
+    path_round_rect(m_handle, rect, round);
+    set_brush(m_handle, brush);
+    cairo_stroke(m_handle);
+    return XAML_S_OK;
 }
 
-void xaml_drawing_context_impl::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
+xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
-    set_brush(brush);
-    cairo_select_font_face(m_handle->handle, font.font_family.c_str(), font.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
-    cairo_set_font_size(m_handle->handle, font.size);
+    set_brush(m_handle, brush);
+    cairo_select_font_face(m_handle, font.font_family, font.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_set_font_size(m_handle, font.size);
+    char const* data;
+    XAML_RETURN_IF_FAILED(str->get_data(&data));
     cairo_text_extents_t extent;
-    cairo_text_extents(m_handle->handle, str.data(), &extent);
+    cairo_text_extents(m_handle, data, &extent);
+    auto [x, y] = p;
     switch (font.halign)
     {
-    case halignment_t::center:
-        p.x -= extent.width / 2;
+    case xaml_halignment_center:
+        x -= extent.width / 2;
         break;
-    case halignment_t::right:
-        p.x -= extent.width;
+    case xaml_halignment_right:
+        x -= extent.width;
         break;
     default:
         break;
     }
     switch (font.valign)
     {
-    case valignment_t::center:
-        p.y += extent.height / 2;
+    case xaml_valignment_center:
+        y += extent.height / 2;
         break;
-    case valignment_t::top:
-        p.y += extent.height;
+    case xaml_valignment_top:
+        y += extent.height;
         break;
     default:
         break;
     }
-    cairo_move_to(m_handle->handle, p.x, p.y);
-    cairo_show_text(m_handle->handle, str.data());
+    cairo_move_to(m_handle, x, y);
+    cairo_show_text(m_handle, data);
+    return XAML_S_OK;
 }
 
-void canvas::__draw(const rectangle& region)
+xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
 {
-    if (!get_handle())
+    if (!m_handle)
     {
-        auto h = make_shared<native_control>();
-        h->handle = gtk_drawing_area_new();
-        set_handle(h);
-        g_signal_connect(G_OBJECT(get_handle()->handle), "draw", G_CALLBACK(canvas::on_draw), this);
-        draw_visible();
+        m_handle = gtk_drawing_area_new();
+        g_signal_connect(G_OBJECT(m_handle), "draw", G_CALLBACK(xaml_canvas_internal::on_draw), this);
+        XAML_RETURN_IF_FAILED(draw_visible());
     }
-    __set_rect(region);
+    return set_rect(region);
 }
 
-int canvas::on_draw(void* widget, void* cr, void* data)
+static xaml_result xaml_canvas_internal_on_draw(GtkWidget*, cairo_t* cr, xaml_canvas_internal* self, gboolean* pres) noexcept
 {
-    canvas* self = (canvas*)data;
-    native_drawing_context ctx{};
-    ctx.handle = (cairo_t*)cr;
-    auto dc = make_shared<drawing_context>(&ctx);
-    self->m_redraw(self->shared_from_this<canvas>(), dc);
-    return FALSE;
+    xaml_ptr<xaml_drawing_context> dc;
+    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));
+    XAML_RETURN_IF_FAILED(self->on_redraw(self->m_outer_this, dc));
+    *pres = FALSE;
+    return XAML_S_OK;
+}
+
+gboolean xaml_canvas_internal::on_draw(GtkWidget* widget, cairo_t* cr, xaml_canvas_internal* self) noexcept
+{
+    gboolean res;
+    XAML_ASSERT_SUCCEEDED(xaml_canvas_internal_on_draw(widget, cr, self, &res));
+    return res;
 }

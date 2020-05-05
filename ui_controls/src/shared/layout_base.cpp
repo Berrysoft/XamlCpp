@@ -5,17 +5,23 @@ using namespace std;
 
 xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
 {
+#ifdef XAML_UI_WINDOWS
+    using native_control_type = xaml_win32_control;
+#elif defined(XAML_UI_GTK3)
+    using native_control_type = xaml_gtk3_control;
+#endif // XAML_UI_WINDOWS
+
     XAML_FOREACH_START(c, m_children);
     {
         xaml_ptr<xaml_control> cc;
         XAML_RETURN_IF_FAILED(c->query(&cc));
-#ifdef XAML_UI_WINDOWS
-        xaml_ptr<xaml_win32_control> native_control;
-#endif // XAML_UI_WINDOWS
+        xaml_ptr<native_control_type> native_control;
         if (XAML_SUCCEEDED(cc->query(&native_control)))
         {
 #ifdef XAML_UI_WINDOWS
             HWND handle;
+#elif defined(XAML_UI_GTK3)
+            GtkWidget* handle;
 #endif // XAML_UI_WINDOWS
             XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
             if (!handle)

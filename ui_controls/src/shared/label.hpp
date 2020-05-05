@@ -15,7 +15,10 @@ struct xaml_label_internal : xaml_control_internal
     virtual xaml_result XAML_CALL draw_alignment() noexcept;
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
+
+#ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL size_to_fit() noexcept override;
+#endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
 };

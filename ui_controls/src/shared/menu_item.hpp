@@ -70,12 +70,12 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
 
     XAML_PROP_INTERNAL_IMPL(menu_id, UINT*, UINT)
     XAML_PROP_INTERNAL_IMPL(menu_parent, HMENU*, HMENU)
-#endif // XAML_UI_WINDOWS
 
     xaml_menu_item_implement() noexcept : xaml_control_implement()
     {
         m_native_menu_item.m_outer = static_cast<T*>(this);
     }
+#endif // XAML_UI_WINDOWS
 };
 
 struct xaml_menu_item_impl : xaml_menu_item_implement<xaml_menu_item_impl, xaml_menu_item_internal>
@@ -150,12 +150,12 @@ struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item
     }
 
     XAML_PROP_INTERNAL_IMPL(menu, HMENU*, HMENU)
-#endif // XAML_UI_WINDOWS
 
     xaml_popup_menu_item_impl() noexcept : xaml_menu_item_implement()
     {
         m_native_popup_menu_item.m_outer = this;
     }
+#endif // XAML_UI_WINDOWS
 };
 
 struct xaml_check_menu_item_internal : xaml_menu_item_internal

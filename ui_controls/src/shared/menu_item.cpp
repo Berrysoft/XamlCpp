@@ -43,13 +43,17 @@ xaml_result xaml_check_menu_item_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_menu_item>, bool>(
+    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_menu_item>, bool>(
         [this](xaml_ptr<xaml_check_menu_item>, bool) -> xaml_result {
-            if (m_menu_id) XAML_RETURN_IF_FAILED(draw_checked());
+#ifdef XAML_UI_WINDOWS
+            if (m_menu_id)
+#elif defined(XAML_UI_GTK3)
+            if (m_handle)
+#endif // XAML_UI_WINDOWS
+                XAML_RETURN_IF_FAILED(draw_checked());
             return XAML_S_OK;
         },
-        &token)));
-    return XAML_S_OK;
+        &token);
 }
 
 xaml_result xaml_radio_menu_item_internal::init() noexcept
@@ -59,17 +63,20 @@ xaml_result xaml_radio_menu_item_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_menu_item>, bool>(
+    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_menu_item>, bool>(
         [this](xaml_ptr<xaml_radio_menu_item>, bool) -> xaml_result {
+#ifdef XAML_UI_WINDOWS
             if (m_menu_id)
+#elif defined(XAML_UI_GTK3)
+            if (m_handle)
+#endif // XAML_UI_WINDOWS
             {
                 XAML_RETURN_IF_FAILED(draw_checked());
                 XAML_RETURN_IF_FAILED(draw_group());
             }
             return XAML_S_OK;
         },
-        &token)));
-    return XAML_S_OK;
+        &token);
 }
 
 #ifndef XAML_UI_GTK3

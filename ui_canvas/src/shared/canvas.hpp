@@ -32,6 +32,15 @@ struct xaml_canvas_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(redraw)
 
+#ifndef XAML_UI_WINDOWS
+    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
+
+#ifdef XAML_UI_GTK3
+    static gboolean on_draw(GtkWidget*, cairo_t*, xaml_canvas_internal*) noexcept;
+#endif // XAML_UI_GTK3
+
+#endif // !XAML_UI_WINDOWS
+
     xaml_result XAML_CALL init() noexcept override;
 };
 
@@ -40,5 +49,11 @@ struct xaml_canvas_implement : xaml_control_implement<T, Internal, Base..., xaml
 {
     XAML_EVENT_INTERNAL_IMPL(redraw)
 };
+
+#ifndef XAML_UI_WINDOWS
+struct xaml_canvas_impl : xaml_canvas_implement<xaml_canvas_impl, xaml_canvas_internal>
+{
+};
+#endif // !XAML_UI_WINDOWS
 
 #endif // !XAML_UI_CANVAS_SHARED_CANVAS_HPP
