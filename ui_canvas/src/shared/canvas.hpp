@@ -4,8 +4,18 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/canvas.h>
 
+#ifdef XAML_UI_GTK3
+#include <cairo.h>
+#endif // XAML_UI_GTK3
+
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>
 {
+#ifdef XAML_UI_GTK3
+    cairo_t* m_handle;
+
+    xaml_drawing_context_impl(cairo_t* handle) noexcept : m_handle(handle) {}
+#endif // XAML_UI_GTK3
+
     xaml_result XAML_CALL draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
     xaml_result XAML_CALL fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
     xaml_result XAML_CALL draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept override;
