@@ -5,6 +5,10 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/webview.h>
 
+#ifdef XAML_UI_WINDOWS
+#include <win/webview.hpp>
+#endif // XAML_UI_WINDOWS
+
 struct xaml_webview_internal : xaml_control_internal
 {
     std::atomic_bool m_navigating{ false };
@@ -23,6 +27,19 @@ struct xaml_webview_internal : xaml_control_internal
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
     virtual xaml_result XAML_CALL draw_uri() noexcept;
+
+#ifdef XAML_UI_WINDOWS
+    std::unique_ptr<xaml_win32_webview> m_webview{ nullptr };
+    std::atomic_bool m_created{ false };
+
+    xaml_result XAML_CALL create_edge2(xaml_rectangle const&) noexcept;
+    xaml_result XAML_CALL create_edge(xaml_rectangle const&) noexcept;
+    xaml_result XAML_CALL create_ie(xaml_rectangle const&) noexcept;
+
+    virtual xaml_result XAML_CALL draw_create() noexcept;
+    xaml_result XAML_CALL draw_size() noexcept override;
+    xaml_result XAML_CALL draw_visible() noexcept override;
+#endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
 };

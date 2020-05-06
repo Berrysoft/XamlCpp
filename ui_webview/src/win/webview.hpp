@@ -3,13 +3,12 @@
 
 #include <Windows.h>
 #include <functional>
-#include <shared/webview.h>
 #include <xaml/ui/controls/webview.h>
 
 struct xaml_win32_webview
 {
 public:
-    virtual ~native_webview() {}
+    virtual ~xaml_win32_webview() {}
     virtual xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback = {}) noexcept = 0;
     virtual operator bool() const noexcept = 0;
     virtual xaml_result navigate(xaml_char_t const* uri) noexcept = 0;
