@@ -85,8 +85,6 @@ endif()
 
 install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/controls)
 
-add_subdirectory(meta)
-
 if(${BUILD_TESTS})
     add_subdirectory(test)
 endif()
