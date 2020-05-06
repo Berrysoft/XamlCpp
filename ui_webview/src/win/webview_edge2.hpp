@@ -5,7 +5,7 @@
 struct xaml_webview_edge2 : xaml_win32_webview
 {
     wil::com_ptr_t<ICoreWebView2Environment, wil::err_returncode_policy> m_env{ nullptr };
-    wil::com_ptr_t<ICoreWebView2Host, wil::err_returncode_policy> m_host{ nullptr };
+    wil::com_ptr_t<ICoreWebView2Controller, wil::err_returncode_policy> m_host{ nullptr };
     wil::com_ptr_t<ICoreWebView2, wil::err_returncode_policy> m_view{ nullptr };
 
     xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) noexcept override;

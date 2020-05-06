@@ -29,7 +29,7 @@ struct xaml_webview_internal : xaml_control_internal
     virtual xaml_result XAML_CALL draw_uri() noexcept;
 
 #ifdef XAML_UI_WINDOWS
-    std::unique_ptr<xaml_win32_webview> m_webview{ nullptr };
+    std::shared_ptr<xaml_win32_webview> m_webview{ nullptr };
     std::atomic_bool m_created{ false };
 
     xaml_result XAML_CALL create_edge2(xaml_rectangle const&) noexcept;

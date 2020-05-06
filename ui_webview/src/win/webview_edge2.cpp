@@ -16,10 +16,10 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
             [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
                 RETURN_IF_FAILED(result);
                 m_env = env;
-                RETURN_IF_FAILED(env->CreateCoreWebView2Host(
+                RETURN_IF_FAILED(env->CreateCoreWebView2Controller(
                     parent,
-                    Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
-                        [=](HRESULT result, ICoreWebView2Host* webview) -> HRESULT {
+                    Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+                        [=](HRESULT result, ICoreWebView2Controller* webview) -> HRESULT {
                             RETURN_IF_FAILED(result);
                             m_host = webview;
                             RETURN_IF_FAILED(m_host->put_Bounds(xaml_to_native<RECT>(rect)));
@@ -34,7 +34,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                     })
                                     .Get(),
                                 &token));
-                            RETURN_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", CORE_WEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
+                            RETURN_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
                             RETURN_IF_FAILED(m_view->add_WebResourceRequested(
                                 Callback<ICoreWebView2WebResourceRequestedEventHandler>(
                                     [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {

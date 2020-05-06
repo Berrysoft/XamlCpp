@@ -17,7 +17,7 @@ using namespace std;
 xaml_result xaml_webview_internal::create_edge2(xaml_rectangle const& real) noexcept
 {
 #ifdef XAML_UI_WEBVIEW_WEBVIEW2
-    m_webview = make_unique<xaml_webview_edge2>();
+    m_webview = make_shared<xaml_webview_edge2>();
     return m_webview->create_async(m_handle, real, [this, real]() -> xaml_result {
         if (!*m_webview)
         {
@@ -36,7 +36,7 @@ xaml_result xaml_webview_internal::create_edge2(xaml_rectangle const& real) noex
 xaml_result xaml_webview_internal::create_edge(xaml_rectangle const& real) noexcept
 {
 #ifdef XAML_UI_WEBVIEW_EDGE
-    m_webview = make_unique<xaml_webview_edge>();
+    m_webview = make_shared<xaml_webview_edge>();
     return m_webview->create_async(m_handle, real, [this, real]() -> xaml_result {
         if (!*m_webview)
         {
@@ -54,7 +54,7 @@ xaml_result xaml_webview_internal::create_edge(xaml_rectangle const& real) noexc
 
 xaml_result xaml_webview_internal::create_ie(xaml_rectangle const& real) noexcept
 {
-    m_webview = make_unique<xaml_webview_ie>();
+    m_webview = make_shared<xaml_webview_ie>();
     return m_webview->create_async(m_handle, real, [this]() -> xaml_result {
         if (!*m_webview)
         {
