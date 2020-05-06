@@ -12,7 +12,11 @@
 
 #include <xaml/utility.h>
 
-typedef XAML_CSTD uint32_t xaml_result;
+#if defined(XAML_WIN32) && !defined(XAML_MINGW)
+typedef long xaml_result;
+#else
+typedef XAML_CSTD int32_t xaml_result;
+#endif // XAML_WIN32 && !XAML_MINGW
 
 #define XAML_SUCCEEDED(expr) (!(expr))
 #define XAML_FAILED(expr) (expr)

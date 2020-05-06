@@ -22,7 +22,7 @@ XAML_DECL_INTERFACE_(xaml_webview, xaml_control)
 };
 
 EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_new(xaml_webview**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_members(xaml_reflection_info*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_webview_web_request, { 0xa1c28b95, 0x1a77, 0x4cb4, { 0xa3, 0xbd, 0xd4, 0x3a, 0x71, 0x47, 0x94, 0xc4 } })

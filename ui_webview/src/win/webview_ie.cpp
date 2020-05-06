@@ -55,12 +55,14 @@ STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
         {
             pDispParams->rgvarg[0].pvarVal->boolVal = VARIANT_TRUE;
             wil::com_ptr_t<IDispatch, wil::err_returncode_policy> pDisp = pDispParams->rgvarg[6].pdispVal;
-            wil::com_ptr_t<IWebBrowser2, wil::err_returncode_policy> browser = pDisp.query<IWebBrowser2>();
+            wil::com_ptr_t<IWebBrowser2, wil::err_returncode_policy> browser;
+            RETURN_IF_FAILED(pDisp.query_to(&browser));
             RETURN_IF_FAILED(browser->Stop());
             RETURN_IF_FAILED(m_webview->navigate(U("about:blank")));
             wil::com_ptr_t<IDispatch, wil::err_returncode_policy> doc;
             RETURN_IF_FAILED(browser->get_Document(&doc));
-            wil::com_ptr_t<IPersistStreamInit, wil::err_returncode_policy> psi = doc.query<IPersistStreamInit>();
+            wil::com_ptr_t<IPersistStreamInit, wil::err_returncode_policy> psi;
+            RETURN_IF_FAILED(doc.query_to(&psi));
             xaml_ptr<xaml_buffer> buffer;
             RETURN_IF_FAILED(args_res->get_data(&buffer));
             uint8_t* data;

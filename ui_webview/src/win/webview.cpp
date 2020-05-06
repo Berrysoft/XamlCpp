@@ -83,7 +83,7 @@ xaml_result xaml_webview_internal::draw(xaml_rectangle const& region) noexcept
             XAML_RETURN_IF_FAILED(create_edge2(real_real));
         }
         XAML_RETURN_IF_FAILED(set_size_noevent({ real.width, real.height }));
-        if (m_webview) m_webview->set_rect(real_real);
+        if (m_created) m_webview->set_rect(real_real);
     }
     return XAML_S_OK;
 }
