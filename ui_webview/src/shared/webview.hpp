@@ -7,6 +7,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <win/webview.hpp>
+#elif defined(XAML_UI_GTK3)
+#include <webkit2/webkit2.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_webview_internal : xaml_control_internal
@@ -39,6 +41,8 @@ struct xaml_webview_internal : xaml_control_internal
     virtual xaml_result XAML_CALL draw_create() noexcept;
     xaml_result XAML_CALL draw_size() noexcept override;
     xaml_result XAML_CALL draw_visible() noexcept override;
+#elif defined(XAML_UI_GTK3)
+    static void on_load_changed(WebKitWebView*, WebKitLoadEvent, xaml_webview_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
