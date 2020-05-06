@@ -1,105 +1,98 @@
 #include <atomic>
 #include <wil/com.h>
-#include <xaml/ui/controls/native_webview.hpp>
+#include <win/webview.hpp>
 
 #include <ExDisp.h>
 #include <atlbase.h>
 #include <atlwin.h>
 
-namespace xaml
+struct xaml_webview_ie;
+
+class WebBrowserSink : public DWebBrowserEvents2
 {
-    class webview_ie;
+protected:
+    std::atomic<ULONG> m_ref;
+    xaml_webview_ie* m_webview;
+    BOOL m_can_go_forward;
+    BOOL m_can_go_back;
 
-    class WebBrowserSink : public DWebBrowserEvents2
+public:
+    WebBrowserSink(xaml_webview_ie* view) : m_ref(0), m_webview(view) {}
+    ~WebBrowserSink() {}
+
+    STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
+
+    ULONG STDMETHODCALLTYPE AddRef() override
     {
-    protected:
-        std::atomic<ULONG> m_ref;
-        webview_ie* m_webview;
-        BOOL m_can_go_forward;
-        BOOL m_can_go_back;
+        return ++m_ref;
+    }
 
-    public:
-        WebBrowserSink(xaml::webview_ie* view) : m_ref(0), m_webview(view) {}
-        ~WebBrowserSink() {}
-
-        STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
-
-        ULONG STDMETHODCALLTYPE AddRef() override
-        {
-            return ++m_ref;
-        }
-
-        ULONG STDMETHODCALLTYPE Release() override
-        {
-            if (--m_ref)
-            {
-                return m_ref;
-            }
-            else
-            {
-                delete this;
-                return 0;
-            }
-        }
-
-        STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
-        {
-            *pctinfo = 0;
-            return S_OK;
-        }
-
-        STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) override
-        {
-            *ppTInfo = NULL;
-            return E_NOTIMPL;
-        }
-
-        STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId)
-        {
-            return E_NOTIMPL;
-        }
-
-        STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) override;
-
-        STDMETHODIMP get_CanGoForward(BOOL* pbValue)
-        {
-            *pbValue = m_can_go_forward;
-            return S_OK;
-        }
-
-        STDMETHODIMP get_CanGoBack(BOOL* pbValue)
-        {
-            *pbValue = m_can_go_back;
-            return S_OK;
-        }
-    };
-
-    class webview_ie : public native_webview
+    ULONG STDMETHODCALLTYPE Release() override
     {
-    private:
-        CAxWindow m_container{};
-        wil::com_ptr<IWebBrowser2> m_browser{ nullptr };
-        wil::com_ptr<WebBrowserSink> m_sink{ nullptr };
+        if (--m_ref)
+        {
+            return m_ref;
+        }
+        else
+        {
+            delete this;
+            return 0;
+        }
+    }
 
-    public:
-        ~webview_ie() override {}
+    STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
+    {
+        *pctinfo = 0;
+        return S_OK;
+    }
 
-        void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback) override;
+    STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) override
+    {
+        *ppTInfo = NULL;
+        return E_NOTIMPL;
+    }
 
-        operator bool() const override { return (bool)m_browser; }
+    STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId)
+    {
+        return E_NOTIMPL;
+    }
 
-        void navigate(string_view_t uri) override;
+    STDMETHODIMP Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr) override;
 
-        void set_visible(bool vis) override;
+    STDMETHODIMP get_CanGoForward(BOOL* pbValue)
+    {
+        *pbValue = m_can_go_forward;
+        return S_OK;
+    }
 
-        void set_location(point p) override;
-        void set_size(size s) override;
-        void set_rect(rectangle const& rect) override;
+    STDMETHODIMP get_CanGoBack(BOOL* pbValue)
+    {
+        *pbValue = m_can_go_back;
+        return S_OK;
+    }
+};
 
-        void go_forward() override;
-        void go_back() override;
+struct xaml_webview_ie : xaml_win32_webview
+{
+    CAxWindow m_container{};
+    wil::com_ptr_t<IWebBrowser2, wil::err_returncode_policy> m_browser{ nullptr };
+    wil::com_ptr_t<WebBrowserSink, wil::err_returncode_policy> m_sink{ nullptr };
 
-        bool get_can_go_forward() override;
-        bool get_can_go_back() override;
-    };
-} // namespace xaml
+    xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) override;
+
+    operator bool() const noexcept override { return (bool)m_browser; }
+
+    xaml_result navigate(xaml_char_t const* uri) override;
+
+    xaml_result set_visible(bool vis) override;
+
+    xaml_result set_location(xaml_point const& p) override;
+    xaml_result set_size(xaml_size const& s) override;
+    xaml_result set_rect(xaml_rectangle const& rect) override;
+
+    xaml_result XAML_CALL go_forward() override;
+    xaml_result XAML_CALL go_back() override;
+
+    xaml_result get_can_go_forward(bool*) override;
+    xaml_result get_can_go_back(bool*) override;
+};

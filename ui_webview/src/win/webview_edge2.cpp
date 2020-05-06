@@ -45,7 +45,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         RETURN_IF_FAILED(xaml_webview_web_request_new(&args_req));
                                         RETURN_IF_FAILED(args->set_request(args_req.get()));
 
-                                        wil::com_ptr<ICoreWebView2WebResourceRequest> req;
+                                        wil::com_ptr_t<ICoreWebView2WebResourceRequest, wil::err_returncode_policy> req;
                                         RETURN_IF_FAILED(e->get_Request(&req));
 
                                         wil::unique_cotaskmem_string method;
@@ -60,7 +60,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         RETURN_IF_FAILED(xaml_string_new(uri.get(), &uri_str));
                                         RETURN_IF_FAILED(args_req->set_uri(uri_str.get()));
 
-                                        wil::com_ptr<IStream> stream;
+                                        wil::com_ptr_t<IStream, wil::err_returncode_policy> stream;
                                         RETURN_IF_FAILED(req->get_Content(&stream));
                                         if (stream)
                                         {
@@ -86,12 +86,12 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                             RETURN_IF_FAILED(buffer->get_data(&data));
                                             int32_t size;
                                             RETURN_IF_FAILED(buffer->get_size(&size));
-                                            wil::com_ptr<IStream> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
+                                            wil::com_ptr_t<IStream, wil::err_returncode_policy> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
                                             xaml_ptr<xaml_string> ct_str;
                                             RETURN_IF_FAILED(args_res->get_content_type(&ct_str));
                                             xaml_char_t const* ct;
                                             RETURN_IF_FAILED(ct_str->get_data(&ct));
-                                            wil::com_ptr<ICoreWebView2WebResourceResponse> response;
+                                            wil::com_ptr_t<ICoreWebView2WebResourceResponse, wil::err_returncode_policy> response;
                                             RETURN_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (xaml_std_string_t)ct).c_str(), &response));
                                             RETURN_IF_FAILED(e->put_Response(response.get()));
                                         }

@@ -10,6 +10,8 @@ struct xaml_webview_edge2 : xaml_win32_webview
 
     xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) override;
 
+    operator bool() const noexcept override { return (bool)m_view; }
+
     xaml_result navigate(xaml_char_t const* uri) override;
 
     xaml_result set_visible(bool vis) override;
