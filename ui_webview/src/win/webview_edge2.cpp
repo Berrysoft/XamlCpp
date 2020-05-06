@@ -15,7 +15,6 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
                 RETURN_IF_FAILED(result);
-                m_env = env;
                 RETURN_IF_FAILED(env->CreateCoreWebView2Controller(
                     parent,
                     Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
@@ -37,7 +36,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                             RETURN_IF_FAILED(m_view->AddWebResourceRequestedFilter(L"*", COREWEBVIEW2_WEB_RESOURCE_CONTEXT_ALL));
                             RETURN_IF_FAILED(m_view->add_WebResourceRequested(
                                 Callback<ICoreWebView2WebResourceRequestedEventHandler>(
-                                    [this](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
+                                    [=](ICoreWebView2*, ICoreWebView2WebResourceRequestedEventArgs* e) -> HRESULT {
                                         xaml_ptr<xaml_webview_resource_requested_args> args;
                                         RETURN_IF_FAILED(xaml_webview_resource_requested_args_new(&args));
 
@@ -92,7 +91,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                             xaml_char_t const* ct;
                                             RETURN_IF_FAILED(ct_str->get_data(&ct));
                                             wil::com_ptr_t<ICoreWebView2WebResourceResponse, wil::err_returncode_policy> response;
-                                            RETURN_IF_FAILED(m_env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (xaml_std_string_t)ct).c_str(), &response));
+                                            RETURN_IF_FAILED(env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + (xaml_std_string_t)ct).c_str(), &response));
                                             RETURN_IF_FAILED(e->put_Response(response.get()));
                                         }
                                         return S_OK;
