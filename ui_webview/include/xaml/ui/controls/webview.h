@@ -56,9 +56,9 @@ EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_web_response_new
 
 XAML_CLASS(xaml_webview_resource_requested_args, { 0x507c59c1, 0x5775, 0x484e, { 0x9c, 0xe5, 0xbc, 0x34, 0x23, 0x85, 0x5a, 0x0b } })
 
-#define XAML_WEBVIEW_RESOURCE_REQUESTED_ARGS_VTBL(type)         \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                  \
-    XAML_METHOD(get_request, type, xaml_webview_web_request**); \
+#define XAML_WEBVIEW_RESOURCE_REQUESTED_ARGS_VTBL(type)                              \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                       \
+    XAML_PROP(request, type, xaml_webview_web_request**, xaml_webview_web_request*); \
     XAML_PROP(response, type, xaml_webview_web_response**, xaml_webview_web_response*)
 
 XAML_DECL_INTERFACE_(xaml_webview_resource_requested_args, xaml_object)
