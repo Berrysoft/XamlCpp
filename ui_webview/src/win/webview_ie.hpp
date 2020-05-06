@@ -90,8 +90,8 @@ struct xaml_webview_ie : xaml_win32_webview
     xaml_result set_size(xaml_size const& s) override;
     xaml_result set_rect(xaml_rectangle const& rect) override;
 
-    xaml_result XAML_CALL go_forward() override;
-    xaml_result XAML_CALL go_back() override;
+    xaml_result go_forward() override;
+    xaml_result go_back() override;
 
     xaml_result get_can_go_forward(bool*) override;
     xaml_result get_can_go_back(bool*) override;
