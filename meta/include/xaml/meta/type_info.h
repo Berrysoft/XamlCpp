@@ -14,7 +14,7 @@ XAML_CLASS(xaml_type_info, { 0x3de3b2c1, 0x09d6, 0x433c, { 0xbf, 0x40, 0x40, 0x2
 #define XAML_TYPE_INFO_VTBL(type)                                                              \
     XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                                        \
     XAML_METHOD(get_attributes, type, xaml_map_view**);                                        \
-    XAML_METHOD(get_attribute, type, xaml_guid XAML_CONST_REF, xaml_object**);                 \
+    XAML_METHOD(get_attribute, type, xaml_guid XAML_CONST_REF, void**);                        \
     XAML_METHOD(get_constructor, type, xaml_delegate**);                                       \
     XAML_METHOD(get_methods, type, xaml_map_view**);                                           \
     XAML_METHOD(get_method, type, xaml_string*, xaml_method_info**);                           \
@@ -33,7 +33,7 @@ XAML_DECL_INTERFACE_(xaml_type_info, xaml_reflection_info)
     template <typename T>
     xaml_result XAML_CALL get_attribute(T * *ptr) noexcept
     {
-        return get_attribute(xaml_type_guid_v<T>, (xaml_object**)ptr);
+        return get_attribute(xaml_type_guid_v<T>, (void**)ptr);
     }
 
     xaml_result XAML_CALL construct(xaml_object * *ptr) noexcept

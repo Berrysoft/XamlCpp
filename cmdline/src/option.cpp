@@ -97,51 +97,131 @@ xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcep
     return xaml_object_init<xaml_cmdline_option_entry_impl>(ptr);
 }
 
-xaml_result XAML_CALL xaml_cmdline_option_print(FILE*, xaml_cmdline_option* opt) noexcept
+#ifdef UNICODE
+#define _tfprintf fwprintf
+#else
+#define _tfprintf fprintf
+#endif // UNICODE
+
+static inline void xaml_print(FILE* stream, size_t length) noexcept
 {
-    return XAML_E_NOTIMPL;
+    _tfprintf(stream, U("%*s"), (int)length, U(""));
 }
 
-xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+static inline void xaml_print(basic_ostream<xaml_char_t>& stream, size_t length) noexcept
 {
-    constexpr int32_t offset = 2;
-    constexpr int32_t spacing = 24;
-    for (auto& prop : m_entries)
+    stream << xaml_std_string_t(length, U(' '));
+}
+
+static inline void xaml_print(FILE* stream, xaml_char_t const* str) noexcept
+{
+    _tfprintf(stream, U("%s"), str);
+}
+
+static inline void xaml_print(basic_ostream<xaml_char_t>& stream, xaml_char_t const* str) noexcept
+{
+    stream << str;
+}
+
+static inline void xaml_print(FILE* stream, xaml_char_t c) noexcept
+{
+    _tfprintf(stream, U("%c"), c);
+}
+
+static inline void xaml_print(basic_ostream<xaml_char_t>& stream, xaml_char_t c) noexcept
+{
+    stream << c;
+}
+
+static inline void xaml_println(FILE* stream) noexcept
+{
+    _tfprintf(stream, U("\n"));
+}
+
+static inline void xaml_println(basic_ostream<xaml_char_t>& stream) noexcept
+{
+    stream << endl;
+}
+
+template <typename Stream>
+xaml_result XAML_CALL xaml_cmdline_option_print_impl(Stream&& stream, xaml_cmdline_option* opt) noexcept
+{
+    constexpr size_t offset = 2;
+    constexpr size_t spacing = 24;
+    xaml_ptr<xaml_map_view> entries;
+    XAML_RETURN_IF_FAILED(opt->get_entries(&entries));
+    XAML_FOREACH_START(p, entries);
     {
-        int32_t count = offset;
-        stream << string_t(offset, U(' '));
-        auto& entry = prop.second;
-        if (entry.short_arg)
+        xaml_ptr<xaml_key_value_pair> prop;
+        XAML_RETURN_IF_FAILED(p->query(&prop));
+        size_t count = offset;
+        xaml_print(stream, offset);
+        xaml_ptr<xaml_object> value;
+        XAML_RETURN_IF_FAILED(prop->get_value(&value));
+        xaml_ptr<xaml_cmdline_option_entry> entry;
+        XAML_RETURN_IF_FAILED(value->query(&entry));
+        xaml_char_t short_arg;
+        XAML_RETURN_IF_FAILED(entry->get_short_arg(&short_arg));
+        if (short_arg)
         {
-            stream << '-' << entry.short_arg;
+            xaml_print(stream, U("-"));
+            xaml_print(stream, short_arg);
             count += 2;
         }
-        if (!entry.long_arg.empty())
+        xaml_ptr<xaml_string> long_arg;
+        XAML_RETURN_IF_FAILED(entry->get_long_arg(&long_arg));
+        int32_t long_arg_length = 0;
+        if (long_arg)
+            XAML_RETURN_IF_FAILED(long_arg->get_length(&long_arg_length));
+        if (long_arg_length)
         {
-            if (entry.short_arg)
+            if (short_arg)
             {
-                stream << ", ";
+                xaml_print(stream, U(", "));
                 count += 2;
             }
             else
             {
-                stream << string_t(4, U(' '));
+                xaml_print(stream, size_t(4));
                 count += 4;
             }
-            stream << "--" << entry.long_arg;
-            count += 2 + entry.long_arg.length();
+            xaml_char_t const* data;
+            XAML_RETURN_IF_FAILED(long_arg->get_data(&data));
+            xaml_print(stream, U("--"));
+            xaml_print(stream, data);
+            count += 2 + long_arg_length;
         }
-        if (!entry.short_arg && entry.long_arg.empty())
+        if (!short_arg && !long_arg_length)
         {
-            stream << "[default]";
+            xaml_print(stream, U("[default]"));
             count += 9;
         }
         if (count < spacing)
         {
-            stream << string_t(spacing - count, U(' '));
+            xaml_print(stream, spacing - count);
         }
-        stream << entry.help_text;
-        stream << endl;
+        {
+            xaml_ptr<xaml_string> help_text;
+            XAML_RETURN_IF_FAILED(entry->get_help_text(&help_text));
+            if (help_text)
+            {
+                xaml_char_t const* help_data;
+                XAML_RETURN_IF_FAILED(help_text->get_data(&help_data));
+                xaml_print(stream, help_data);
+            }
+        }
+        xaml_println(stream);
     }
+    XAML_FOREACH_END();
     return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_cmdline_option_print(FILE* stream, xaml_cmdline_option* opt) noexcept
+{
+    return xaml_cmdline_option_print_impl(stream, opt);
+}
+
+xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+{
+    return xaml_cmdline_option_print_impl(stream, opt);
 }

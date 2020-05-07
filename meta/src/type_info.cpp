@@ -36,11 +36,13 @@ public:
         return m_attr_map->query(ptr);
     }
 
-    xaml_result XAML_CALL get_attribute(xaml_guid const& type, xaml_object** ptr) noexcept override
+    xaml_result XAML_CALL get_attribute(xaml_guid const& type, void** ptr) noexcept override
     {
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        return m_attr_map->lookup(key.get(), ptr);
+        xaml_ptr<xaml_object> item;
+        XAML_RETURN_IF_FAILED(m_attr_map->lookup(key.get(), ptr));
+        return item->query(type, ptr);
     }
 
     xaml_result XAML_CALL add_attribute(xaml_guid const& type, xaml_object* attr) noexcept override
