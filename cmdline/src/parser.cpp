@@ -14,17 +14,13 @@ struct xaml_cmdline_options_impl : xaml_implement<xaml_cmdline_options_impl, xam
 
 #undef m_outer_this
 
-template <typename S1, typename S2>
-static xaml_result props_insert(xaml_ptr<xaml_map> const& props, S1&& str, xaml_ptr<xaml_property_info> const& info, S2&& value) noexcept
+template <typename S2>
+static xaml_result props_insert(xaml_ptr<xaml_map> const& props, xaml_ptr<xaml_property_info> const& info, S2&& value) noexcept
 {
     xaml_ptr<xaml_object> value_str;
     XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<S2>(value), &value_str));
-    xaml_ptr<xaml_key_value_pair> pair;
-    XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(info.get(), value_str.get(), &pair));
-    xaml_ptr<xaml_object> key_str;
-    XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<S1>(str), &key_str));
     bool replaced;
-    return props->insert(key_str.get(), pair.get(), &replaced);
+    return props->insert(info.get(), value_str.get(), &replaced);
 }
 
 template <typename S>
@@ -99,7 +95,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                     {
                         if (!maybe_value.empty())
                         {
-                            XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, maybe_value));
+                            XAML_RETURN_IF_FAILED(props_insert(props, prop, maybe_value));
                         }
                         else
                         {
@@ -107,14 +103,14 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             XAML_RETURN_IF_FAILED(prop->get_type(&t));
                             if (t == xaml_type_guid_v<bool>)
                             {
-                                XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, U("true")));
+                                XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
                             }
                             else
                             {
                                 i++;
                                 xaml_ptr<xaml_object> new_item;
                                 XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
-                                XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, new_item));
+                                XAML_RETURN_IF_FAILED(props_insert(props, prop, new_item));
                             }
                         }
                     }
@@ -161,7 +157,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                     XAML_RETURN_IF_FAILED(prop->get_type(&t));
                     if (t == xaml_type_guid_v<bool>)
                     {
-                        XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, U("true")));
+                        XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
                         for (xaml_char_t other_short_arg : switches_or_value)
                         {
                             xaml_ptr<xaml_string> pprop;
@@ -169,7 +165,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             xaml_ptr<xaml_property_info> prop;
                             if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
                             {
-                                XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, U("true")));
+                                XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
                             }
                         }
                     }
@@ -180,11 +176,11 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             i++;
                             xaml_ptr<xaml_object> new_item;
                             XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
-                            XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, new_item));
+                            XAML_RETURN_IF_FAILED(props_insert(props, prop, new_item));
                         }
                         else
                         {
-                            XAML_RETURN_IF_FAILED(props_insert(props, pprop, prop, switches_or_value));
+                            XAML_RETURN_IF_FAILED(props_insert(props, prop, switches_or_value));
                         }
                     }
                 }
@@ -221,7 +217,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
             xaml_ptr<xaml_property_info> prop;
             if (XAML_SUCCEEDED(type->get_property(pdef_prop.get(), &prop)))
             {
-                XAML_RETURN_IF_FAILED(props_insert(props, pdef_prop, prop, arg_item));
+                XAML_RETURN_IF_FAILED(props_insert(props, prop, arg_item));
             }
             else
             {

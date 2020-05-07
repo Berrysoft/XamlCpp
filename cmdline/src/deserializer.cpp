@@ -12,12 +12,8 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
     {
         xaml_ptr<xaml_key_value_pair> p;
         XAML_RETURN_IF_FAILED(prop_pair->query(&p));
-        xaml_ptr<xaml_object> item;
-        XAML_RETURN_IF_FAILED(p->get_value(&item));
-        xaml_ptr<xaml_key_value_pair> pp;
-        XAML_RETURN_IF_FAILED(item->query(&pp));
         xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(pp->get_key(&key));
+        XAML_RETURN_IF_FAILED(p->get_key(&key));
         xaml_ptr<xaml_property_info> info;
         XAML_RETURN_IF_FAILED(key->query(&info));
         bool can_write;
@@ -25,7 +21,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
         if (can_write)
         {
             xaml_ptr<xaml_object> value;
-            XAML_RETURN_IF_FAILED(pp->get_value(&value));
+            XAML_RETURN_IF_FAILED(p->get_value(&value));
             XAML_RETURN_IF_FAILED(info->set(result.get(), value.get()));
         }
     }

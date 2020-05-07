@@ -13,7 +13,7 @@ EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_register(xaml_meta_
 
 XAML_CLASS(xaml_cmdline_options, { 0x5f579fe2, 0xde22, 0x4dee, { 0x95, 0xe0, 0xaf, 0xc5, 0x4d, 0xe8, 0x6f, 0x62 } })
 
-// properties: xaml_map<xaml_string, xaml_key_value_pair<xaml_property_info, xaml_string>>
+// properties: xaml_map<xaml_property_info, xaml_string>
 // collection_properties: xaml_map<xaml_string, xaml_key_value_pair<xaml_collection_property_info, xaml_vector<xaml_string>>>
 
 #define XAML_CMDLINE_OPTIONS_VTBL(type)                      \
