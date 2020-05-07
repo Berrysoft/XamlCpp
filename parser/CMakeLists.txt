@@ -16,7 +16,7 @@ target_include_directories(xaml_parser
 )
 
 if(${BUILD_SHARED_LIBS})
-    target_compile_definitions(xaml_parser PRIVATE "XAML_API=__XAML_EXPORT")
+    target_compile_definitions(xaml_parser PRIVATE "XAML_PARSER_API=__XAML_EXPORT")
 endif()
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml)

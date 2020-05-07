@@ -15,6 +15,8 @@ typedef enum xaml_binding_mode
     xaml_binding_two_way = xaml_binding_one_way | xaml_binding_one_way_to_source
 } xaml_binding_mode;
 
+XAML_TYPE(xaml_binding_mode, { 0x01f3d35e, 0x73cc, 0x4abd, { 0xbc, 0xa9, 0xe5, 0x07, 0x70, 0x9e, 0x06, 0x9a } })
+
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
 #define XAML_META_CONTEXT_VTBL(type)                                               \
