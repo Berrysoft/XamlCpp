@@ -35,7 +35,7 @@ XAML_CLASS(xaml_markup_node, { 0xa45401da, 0xa28d, 0x48bd, { 0x90, 0x4f, 0x7c, 0
 
 #define XAML_MARKUP_NODE_VTBL(type)               \
     XAML_VTBL_INHERIT(XAML_NODE_BASE_VTBL(type)); \
-    XAML_PROP(properties, type, xaml_vector_view**, xaml_vector*)
+    XAML_PROP(properties, type, xaml_vector**, xaml_vector*)
 
 XAML_DECL_INTERFACE_(xaml_markup_node, xaml_node_base)
 {
@@ -46,12 +46,16 @@ EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_markup_node_new(xaml_type_in
 
 XAML_CLASS(xaml_node, { 0x85ad34c8, 0x3cba, 0x44eb, { 0x98, 0x1c, 0x67, 0xf7, 0x13, 0xd3, 0xe5, 0xeb } })
 
-#define XAML_NODE_VTBL(type)                                           \
-    XAML_VTBL_INHERIT(XAML_NODE_BASE_VTBL(type));                      \
-    XAML_PROP(map_class, type, xaml_string**, xaml_string*);           \
-    XAML_PROP(properties, type, xaml_vector_view**, xaml_vector*);     \
-    XAML_PROP(collection_properties, type, xaml_map_view**, xaml_map); \
-    XAML_PROP(events, type, xaml_vector_view**, xaml_vector*)
+// properties: xaml_vector<xaml_attribute_property>
+// collection_properties: xaml_map<xaml_string, xaml_attribute_collection_property>
+// events: xaml_vector<xaml_attribute_event>
+
+#define XAML_NODE_VTBL(type)                                      \
+    XAML_VTBL_INHERIT(XAML_NODE_BASE_VTBL(type));                 \
+    XAML_PROP(map_class, type, xaml_string**, xaml_string*);      \
+    XAML_PROP(properties, type, xaml_vector**, xaml_vector*);     \
+    XAML_PROP(collection_properties, type, xaml_map**, xaml_map); \
+    XAML_PROP(events, type, xaml_vector**, xaml_vector*)
 
 XAML_DECL_INTERFACE_(xaml_node, xaml_node_base)
 {
