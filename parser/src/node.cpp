@@ -100,6 +100,32 @@ xaml_result XAML_CALL xaml_attribute_event_new(xaml_event_info* info, xaml_strin
 
 struct xaml_attribute_property_impl : xaml_implement<xaml_attribute_property_impl, xaml_attribute_property, xaml_object>
 {
+    XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
+    XAML_PROP_PTR_IMPL_BASE(info, xaml_property_info)
+    XAML_PROP_PTR_IMPL_BASE(value, xaml_node_base)
+
+    xaml_attribute_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_property_info> const& info, xaml_ptr<xaml_node_base> const& value) noexcept
+        : m_type(type), m_info(info), m_value(value) {}
 };
+
+xaml_result XAML_CALL xaml_attribute_property_new(xaml_type_info* type, xaml_property_info* info, xaml_node_base* value, xaml_attribute_property** ptr) noexcept
+{
+    return xaml_object_new<xaml_attribute_property_impl>(ptr, type, info, value);
+}
+
+struct xaml_attribute_collection_property_impl : xaml_implement<xaml_attribute_collection_property_impl, xaml_attribute_collection_property, xaml_object>
+{
+    XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
+    XAML_PROP_PTR_IMPL_BASE(info, xaml_collection_property_info)
+    XAML_PROP_PTR_IMPL_BASE(values, xaml_vector_view)
+
+    xaml_attribute_collection_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_collection_property_info> const& info, xaml_ptr<xaml_vector_view> const& values) noexcept
+        : m_type(type), m_info(info), m_values(values) {}
+};
+
+xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* type, xaml_collection_property_info* info, xaml_vector_view* values, xaml_attribute_collection_property** ptr) noexcept
+{
+    return xaml_object_new<xaml_attribute_collection_property_impl>(ptr, type, info, values);
+}
 
 #undef m_outer_this

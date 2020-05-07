@@ -95,9 +95,9 @@ EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_attribute_property_new(xaml_
 
 XAML_CLASS(xaml_attribute_collection_property, { 0x9e34786c, 0x06f8, 0x493c, { 0xa5, 0xb4, 0x39, 0x8f, 0x28, 0x70, 0x04, 0x79 } })
 
-#define XAML_ATTRIBUTE_COLLECTION_PROPERTY_VTBL(type)  \
-    XAML_METHOD(get_type, type, xaml_type_info**);     \
-    XAML_METHOD(get_info, type, xaml_property_info**); \
+#define XAML_ATTRIBUTE_COLLECTION_PROPERTY_VTBL(type)             \
+    XAML_METHOD(get_type, type, xaml_type_info**);                \
+    XAML_METHOD(get_info, type, xaml_collection_property_info**); \
     XAML_METHOD(get_values, type, xaml_vector_view**)
 
 XAML_DECL_INTERFACE_(xaml_attribute_collection_property, xaml_object)
@@ -105,6 +105,6 @@ XAML_DECL_INTERFACE_(xaml_attribute_collection_property, xaml_object)
     XAML_DECL_VTBL(xaml_attribute_collection_property, XAML_ATTRIBUTE_COLLECTION_PROPERTY_VTBL);
 };
 
-EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info*, xaml_property_info*, xaml_vector_view*, xaml_attribute_collection_property**) XAML_NOEXCEPT;
+EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info*, xaml_collection_property_info*, xaml_vector_view*, xaml_attribute_collection_property**) XAML_NOEXCEPT;
 
 #endif // !XAML_PARSER_NODE_H
