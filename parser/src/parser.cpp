@@ -2,11 +2,18 @@
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <sstream>
+#include <xaml/markup/binding.h>
 #include <xaml/parser/parser.h>
 
 using namespace std;
-using namespace std::filesystem;
 using namespace rapidxml;
+
+xaml_result XAML_CALL xaml_parser_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_binding_register(ctx));
+    // binding_mode
+    return XAML_S_OK;
+}
 
 static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_string** ptr) noexcept
 {
@@ -28,14 +35,6 @@ struct parser_impl
     xaml_ptr<xaml_vector> headers{};
     xml_document doc{};
 
-    xaml_result load_file(path const& p) noexcept
-    try
-    {
-        doc.load_file(p);
-        return XAML_S_OK;
-    }
-    XAML_CATCH_RETURN()
-
     xaml_result load_string(string_view s) noexcept
     try
     {
@@ -45,6 +44,14 @@ struct parser_impl
     XAML_CATCH_RETURN()
 
     xaml_result load_stream(istream& stream) noexcept
+    try
+    {
+        doc.load_stream(stream);
+        return XAML_S_OK;
+    }
+    XAML_CATCH_RETURN()
+
+    xaml_result load_stream(FILE* stream) noexcept
     try
     {
         doc.load_stream(stream);

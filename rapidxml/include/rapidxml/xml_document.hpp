@@ -1,7 +1,6 @@
 #ifndef RAPID_XML_DOCUMENT_HPP
 #define RAPID_XML_DOCUMENT_HPP
 
-#include <filesystem>
 #include <optional>
 #include <rapidxml/xml_node.hpp>
 #include <vector>
@@ -167,11 +166,9 @@ namespace rapidxml
             return pmr::polymorphic_allocator<T>{ &m_pool };
         }
 
-        RAPIDXML_API void load_file(std::filesystem::path const& file, parse_flag flags = parse_flag::default_flag);
-
         RAPIDXML_API void load_string(std::string_view str, parse_flag flags = parse_flag::default_flag);
-
-        RAPIDXML_API void load_stream(std::istream& stream, parse_flag flag = parse_flag::default_flag);
+        RAPIDXML_API void load_stream(std::istream& stream, parse_flag flags = parse_flag::default_flag);
+        RAPIDXML_API void load_stream(std::FILE* stream, parse_flag flags = parse_flag::default_flag);
 
     private:
         //! Parses zero-terminated XML string according to given flags.
