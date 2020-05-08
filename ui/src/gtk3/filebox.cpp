@@ -1,3 +1,4 @@
+#include <gtk3/gstring.hpp>
 #include <gtk3/resources.hpp>
 #include <shared/filebox.hpp>
 #include <xaml/ui/filebox.h>
@@ -54,7 +55,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
         {
             g_free_unique_ptr<gchar> name{ (gchar*)list->data };
             xaml_ptr<xaml_string> xaml_name;
-            XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
+            XAML_RETURN_IF_FAILED(xaml_string_new_gstring(move(name), &xaml_name));
             XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
             list.reset(list->next);
         }
@@ -63,7 +64,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     {
         g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(handle)) };
         xaml_ptr<xaml_string> xaml_name;
-        XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
+        XAML_RETURN_IF_FAILED(xaml_string_new_gstring(move(name), &xaml_name));
         XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
     }
     gtk_widget_destroy(handle);

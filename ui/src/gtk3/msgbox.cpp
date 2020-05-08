@@ -48,7 +48,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         XAML_RETURN_IF_FAILED(title->get_data(&data));
         gtk_window_set_title(GTK_WINDOW(dialog), data);
     }
-    if (!instruction)
+    if (instruction)
     {
         char const* data;
         XAML_RETURN_IF_FAILED(message->get_data(&data));
