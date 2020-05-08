@@ -6,7 +6,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
 {
     xaml_ptr<xaml_object> result;
     XAML_RETURN_IF_FAILED(type->construct(&result));
-    xaml_ptr<xaml_map_view> props;
+    xaml_ptr<xaml_map> props;
     XAML_RETURN_IF_FAILED(opts->get_properties(&props));
     XAML_FOREACH_START(prop_pair, props);
     {
@@ -26,7 +26,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
         }
     }
     XAML_FOREACH_END();
-    xaml_ptr<xaml_map_view> cprops;
+    xaml_ptr<xaml_map> cprops;
     XAML_RETURN_IF_FAILED(opts->get_collection_properties(&cprops));
     XAML_FOREACH_START(prop_pair, cprops);
     {

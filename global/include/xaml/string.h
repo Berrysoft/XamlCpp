@@ -54,6 +54,8 @@ XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t, xaml
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string&&, xaml_string**) noexcept;
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string_view, xaml_string**) noexcept;
 
+XAML_API std::string to_string_utf8(xaml_ptr<xaml_string> const&) noexcept;
+
 inline xaml_ptr<xaml_string> to_xaml_string(xaml_char_t const* str)
 {
     xaml_ptr<xaml_string> res;

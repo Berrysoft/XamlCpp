@@ -78,7 +78,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
             {
                 if (arg.size() == 2) return XAML_E_FAIL;
                 xaml_std_string_view_t long_arg = arg.substr(2);
-                int32_t index = long_arg.find_first_of('=');
+                size_t index = long_arg.find_first_of('=');
                 xaml_std_string_view_t maybe_value = {};
                 if (index != xaml_std_string_view_t::npos)
                 {

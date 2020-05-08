@@ -111,9 +111,27 @@ xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t str, xaml_stri
 
 #ifdef UNICODE
 static wstring to_wstring(string_view str) noexcept
+try
 {
     wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
     return conv.from_bytes(str.data(), str.data() + str.length());
+}
+catch (...)
+{
+    return {};
+}
+
+string to_string_utf8(xaml_ptr<xaml_string> const& str) noexcept
+try
+{
+    xaml_char_t const* data;
+    XAML_THROW_IF_FAILED(str->get_data(&data));
+    wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
+    return conv.to_bytes(data);
+}
+catch (...)
+{
+    return {};
 }
 
 xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
@@ -131,6 +149,16 @@ xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) n
     return xaml_string_new(to_wstring(str), ptr);
 }
 #else
+string to_string_utf8(xaml_ptr<xaml_string> const& str) noexcept
+try
+{
+    return to_string_t(str);
+}
+catch (...)
+{
+    return {};
+}
+
 xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
 {
     return xaml_string_new(str, ptr);

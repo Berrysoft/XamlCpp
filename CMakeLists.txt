@@ -107,7 +107,7 @@ if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
-    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
+    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
@@ -130,6 +130,8 @@ if(${BUILD_WINDOWS})
 elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
+
+find_package(Boost REQUIRED iostreams)
 
 option(BUILD_TESTS "Build tests." ON)
 option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" ON)

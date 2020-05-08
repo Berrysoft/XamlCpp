@@ -16,10 +16,10 @@ XAML_CLASS(xaml_cmdline_options, { 0x5f579fe2, 0xde22, 0x4dee, { 0x95, 0xe0, 0xa
 // properties: xaml_map<xaml_property_info, xaml_string>
 // collection_properties: xaml_map<xaml_string, xaml_key_value_pair<xaml_collection_property_info, xaml_vector<xaml_string>>>
 
-#define XAML_CMDLINE_OPTIONS_VTBL(type)                      \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));               \
-    XAML_PROP(properties, type, xaml_map_view**, xaml_map*); \
-    XAML_PROP(collection_properties, type, xaml_map_view**, xaml_map*)
+#define XAML_CMDLINE_OPTIONS_VTBL(type)                 \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));          \
+    XAML_PROP(properties, type, xaml_map**, xaml_map*); \
+    XAML_PROP(collection_properties, type, xaml_map**, xaml_map*)
 
 XAML_DECL_INTERFACE_(xaml_cmdline_options, xaml_object)
 {
