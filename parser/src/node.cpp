@@ -14,11 +14,9 @@ struct xaml_node_base_implement : xaml_implement<T, Base..., xaml_node_base, xam
 {
     Internal m_internal;
 
-    xaml_node_base_implement(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_string> const& name) noexcept
+    xaml_node_base_implement() noexcept
     {
         m_internal.m_outer_this = this;
-        m_internal.m_type = type;
-        m_internal.m_name = name;
     }
 
     XAML_PROP_PTR_INTERNAL_IMPL_BASE(type, xaml_type_info)
@@ -32,14 +30,12 @@ struct xaml_string_node_internal : xaml_node_base_internal
 
 struct xaml_string_node_impl : xaml_node_base_implement<xaml_string_node_impl, xaml_string_node_internal, xaml_string_node>
 {
-    using xaml_node_base_implement::xaml_node_base_implement;
-
     XAML_PROP_PTR_INTERNAL_IMPL(value, xaml_string)
 };
 
-xaml_result XAML_CALL xaml_string_node_new(xaml_type_info* type, xaml_string* name, xaml_string_node** ptr) noexcept
+xaml_result XAML_CALL xaml_string_node_new(xaml_string_node** ptr) noexcept
 {
-    return xaml_object_new<xaml_string_node_impl>(ptr, type, name);
+    return xaml_object_new<xaml_string_node_impl>(ptr);
 }
 
 struct xaml_markup_node_internal : xaml_node_base_internal
@@ -49,14 +45,12 @@ struct xaml_markup_node_internal : xaml_node_base_internal
 
 struct xaml_markup_node_impl : xaml_node_base_implement<xaml_markup_node_impl, xaml_markup_node_internal, xaml_markup_node>
 {
-    using xaml_node_base_implement::xaml_node_base_implement;
-
     XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector)
 };
 
-xaml_result XAML_CALL xaml_markup_node_new(xaml_type_info* type, xaml_string* name, xaml_markup_node** ptr) noexcept
+xaml_result XAML_CALL xaml_markup_node_new(xaml_markup_node** ptr) noexcept
 {
-    return xaml_object_new<xaml_markup_node_impl>(ptr, type, name);
+    return xaml_object_new<xaml_markup_node_impl>(ptr);
 }
 
 struct xaml_node_internal : xaml_node_base_internal
@@ -69,17 +63,15 @@ struct xaml_node_internal : xaml_node_base_internal
 
 struct xaml_node_impl : xaml_node_base_implement<xaml_node_impl, xaml_node_internal, xaml_node>
 {
-    using xaml_node_base_implement::xaml_node_base_implement;
-
     XAML_PROP_PTR_INTERNAL_IMPL(map_class, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector)
     XAML_PROP_PTR_INTERNAL_IMPL(collection_properties, xaml_map)
     XAML_PROP_PTR_INTERNAL_IMPL(events, xaml_vector)
 };
 
-xaml_result XAML_CALL xaml_node_new(xaml_type_info* type, xaml_string* name, xaml_node** ptr) noexcept
+xaml_result XAML_CALL xaml_node_new(xaml_node** ptr) noexcept
 {
-    return xaml_object_new<xaml_node_impl>(ptr, type, name);
+    return xaml_object_new<xaml_node_impl>(ptr);
 }
 
 #define m_outer_this this
@@ -117,13 +109,13 @@ struct xaml_attribute_collection_property_impl : xaml_implement<xaml_attribute_c
 {
     XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
     XAML_PROP_PTR_IMPL_BASE(info, xaml_collection_property_info)
-    XAML_PROP_PTR_IMPL_BASE(values, xaml_vector_view)
+    XAML_PROP_PTR_IMPL_BASE(values, xaml_vector)
 
-    xaml_attribute_collection_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_collection_property_info> const& info, xaml_ptr<xaml_vector_view> const& values) noexcept
+    xaml_attribute_collection_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_collection_property_info> const& info, xaml_ptr<xaml_vector> const& values) noexcept
         : m_type(type), m_info(info), m_values(values) {}
 };
 
-xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* type, xaml_collection_property_info* info, xaml_vector_view* values, xaml_attribute_collection_property** ptr) noexcept
+xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* type, xaml_collection_property_info* info, xaml_vector* values, xaml_attribute_collection_property** ptr) noexcept
 {
     return xaml_object_new<xaml_attribute_collection_property_impl>(ptr, type, info, values);
 }

@@ -19,14 +19,18 @@ XAML_TYPE(xaml_binding_mode, { 0x01f3d35e, 0x73cc, 0x4abd, { 0xbc, 0xa9, 0xe5, 0
 
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
-#define XAML_META_CONTEXT_VTBL(type)                                               \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                     \
-    XAML_METHOD(get_modules, type, xaml_vector_view**);                            \
-    XAML_METHOD(add_module, type, xaml_module*);                                   \
-    XAML_METHOD(get_types, type, xaml_map_view**);                                 \
-    XAML_METHOD(get_type, type, xaml_guid XAML_CONST_REF, xaml_reflection_info**); \
-    XAML_METHOD(get_type_by_name, type, xaml_string*, xaml_reflection_info**);     \
-    XAML_METHOD(add_type, type, xaml_reflection_info*);                            \
+#define XAML_META_CONTEXT_VTBL(type)                                                                   \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                                         \
+    XAML_METHOD(get_modules, type, xaml_vector_view**);                                                \
+    XAML_METHOD(add_module, type, xaml_module*);                                                       \
+    XAML_METHOD(get_namespace, type, xaml_string*, xaml_string**);                                     \
+    XAML_METHOD(add_namespace, type, xaml_string*, xaml_string*);                                      \
+    XAML_METHOD(get_types, type, xaml_map_view**);                                                     \
+    XAML_METHOD(get_type, type, xaml_guid XAML_CONST_REF, xaml_reflection_info**);                     \
+    XAML_METHOD(get_type_by_name, type, xaml_string*, xaml_reflection_info**);                         \
+    XAML_METHOD(get_type_by_namespace_name, type, xaml_string*, xaml_string*, xaml_reflection_info**); \
+    XAML_METHOD(get_name_by_namespace_name, type, xaml_string*, xaml_string*, xaml_string**);          \
+    XAML_METHOD(add_type, type, xaml_reflection_info*);                                                \
     XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode)
 
 XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)

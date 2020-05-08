@@ -8,50 +8,6 @@ using namespace std;
 using namespace std::filesystem;
 using namespace rapidxml;
 
-//
-//namespace xaml
-//{
-//    void init_parser(meta_context& ctx) noexcept
-//    {
-//        register_class<binding>(ctx);
-//        REGISTER_ENUM(xaml, binding_mode, "xaml/markup/binding.hpp");
-//    }
-//
-//    static string get_no_default_constructor_error(reflection_info const* t)
-//    {
-//        auto& [ns, name] = t->get_type_name();
-//        ostringstream oss;
-//        oss << "Type \"" << ns << "::" << name << "\" doesn't have a default constructor.";
-//        return oss.str();
-//    }
-//
-//    xaml_no_default_constructor::xaml_no_default_constructor(reflection_info const* t) : logic_error(get_no_default_constructor_error(t))
-//    {
-//    }
-//
-//    static string get_bad_type_error(string_view ns, string_view name)
-//    {
-//        ostringstream oss;
-//        oss << "Cannot find type named \"" << name << "\" in namespace \"" << ns << "\".";
-//        return oss.str();
-//    }
-//
-//    xaml_bad_type::xaml_bad_type(string_view ns, string_view name) : logic_error(get_bad_type_error(ns, name))
-//    {
-//    }
-//
-//    static string get_xaml_no_member(reflection_info const* type, string_view name)
-//    {
-//        auto& [ns, n] = type->get_type_name();
-//        ostringstream oss;
-//        oss << "There's no member named " << name << " in type \"" << ns << "::" << n << "\".";
-//        return oss.str();
-//    }
-//
-//    xaml_no_member::xaml_no_member(reflection_info const* type, string_view name) : logic_error(get_xaml_no_member(type, name))
-//    {
-//    }
-//
 static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_string** ptr) noexcept
 {
     static size_t index = 0;
@@ -127,10 +83,14 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         }
     }
     if (ns.empty()) ns = "xaml";
-    xaml_ptr<xaml_string> full_name;
-    XAML_RETURN_IF_FAILED(xaml_string_new_utf8((string)ns + "_" + (string)name, &full_name));
     xaml_ptr<xaml_reflection_info> info;
-    XAML_RETURN_IF_FAILED(ctx->get_type_by_name(full_name.get(), &info));
+    {
+        xaml_ptr<xaml_string> ns_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+        xaml_ptr<xaml_string> name_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+    }
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(info->query(&t));
     xaml_ptr<xaml_string> include_file;
@@ -140,7 +100,11 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     xaml_ptr<xaml_string> node_name;
     XAML_RETURN_IF_FAILED(get_random_name(t, &node_name));
     xaml_ptr<xaml_markup_node> node;
-    XAML_RETURN_IF_FAILED(xaml_markup_node_new(t.get(), node_name.get(), &node));
+    XAML_RETURN_IF_FAILED(xaml_markup_node_new(&node));
+    XAML_RETURN_IF_FAILED(node->set_type(t.get()));
+    XAML_RETURN_IF_FAILED(node->set_name(node_name.get()));
+    xaml_ptr<xaml_vector> props;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&props));
     while (i < value.length())
     {
         while (i < value.length() && isspace(value[i])) i++;
@@ -164,31 +128,66 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         }
         string_view prop_value = value.substr(start_index, i - start_index);
         while (i < value.length() && value[i] == ',') i++;
+        xaml_ptr<xaml_string> prop_name_str;
         if (prop_name.empty())
         {
-            auto def_attr = t->get_attribute<default_property>();
-            if (def_attr)
+            xaml_ptr<xaml_default_property> def_attr;
+            if (XAML_SUCCEEDED(t->get_attribute(&def_attr)))
             {
-                prop_name = def_attr->get_property_name();
+                XAML_RETURN_IF_FAILED(def_attr->get_default_property(&prop_name_str));
             }
-        }
-        auto prop = t->get_property(prop_name);
-        if (prop && prop->can_write())
-        {
-            node.properties.push_back({ t, prop, (string)prop_value });
         }
         else
         {
-            throw xaml_no_member(t, prop_name);
+            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
+        }
+        xaml_ptr<xaml_property_info> prop;
+        XAML_RETURN_IF_FAILED(t->get_property(prop_name_str.get(), &prop));
+        bool can_write;
+        XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+        if (can_write)
+        {
+            xaml_ptr<xaml_string> prop_value_str;
+            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_value, &prop_value_str));
+            xaml_ptr<xaml_string_node> node;
+            XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
+            XAML_RETURN_IF_FAILED(node->set_value(prop_value_str.get()));
+            xaml_ptr<xaml_attribute_property> prop_item;
+            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t.get(), prop.get(), node.get(), &prop_item));
+            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
         }
     }
-    return node;
+    XAML_RETURN_IF_FAILED(node->set_properties(props.get()));
+    return node->query(ptr);
 }
 
 static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
 
-void parser_impl::parse_members(xaml_node& mc, xml_node& node)
+xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& node) noexcept
 {
+    xaml_ptr<xaml_vector> props;
+    XAML_RETURN_IF_FAILED(mc->get_properties(&props));
+    if (!props)
+    {
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&props));
+        XAML_RETURN_IF_FAILED(mc->set_properties(props.get()));
+    }
+    xaml_ptr<xaml_map> cprops;
+    XAML_RETURN_IF_FAILED(mc->get_collection_properties(&cprops));
+    if (!cprops)
+    {
+        xaml_ptr<xaml_hasher> hasher;
+        XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher.get(), &cprops));
+        XAML_RETURN_IF_FAILED(mc->set_collection_properties(cprops.get()));
+    }
+    xaml_ptr<xaml_vector> events;
+    XAML_RETURN_IF_FAILED(mc->get_events(&events));
+    if (!events)
+    {
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&events));
+        XAML_RETURN_IF_FAILED(mc->set_events(events.get()));
+    }
     switch (node.type())
     {
     case node_type::element:
@@ -209,24 +208,15 @@ void parser_impl::parse_members(xaml_node& mc, xml_node& node)
                 string_view attr_value = attr.value();
                 if (attr_name == "name")
                 {
-                    mc.name = attr_value;
+                    xaml_ptr<xaml_string> attr_value_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
+                    XAML_RETURN_IF_FAILED(mc->set_name(attr_value_str.get()));
                 }
                 else if (attr_name == "class")
                 {
-                    auto index = attr_value.find_last_of(':');
-                    if (index != string_view::npos)
-                    {
-                        if (index > 0 && attr_value[index - 1] == ':' && index + 1 < attr_value.length())
-                        {
-                            string_view map_ns = attr_value.substr(0, index - 1);
-                            string_view map_name = attr_value.substr(index + 1);
-                            mc.map_class = make_optional(make_tuple<string, string>((string)map_ns, (string)map_name));
-                        }
-                    }
-                    else
-                    {
-                        mc.map_class = make_optional(make_tuple<string, string>({}, (string)attr_value));
-                    }
+                    xaml_ptr<xaml_string> full_map_name;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &full_map_name));
+                    XAML_RETURN_IF_FAILED(mc->set_map_class(full_map_name.get()));
                 }
             }
             else
@@ -236,51 +226,83 @@ void parser_impl::parse_members(xaml_node& mc, xml_node& node)
                 {
                     string_view class_name = attr_name.substr(0, dm_index);
                     string_view attach_prop_name = attr_name.substr(dm_index + 1);
-                    auto t = ctx->get_type(attr_ns, class_name);
-                    if (t)
+                    xaml_ptr<xaml_reflection_info> info;
                     {
-                        if (!t->get_include_file().empty())
-                            headers.emplace(t->get_include_file());
-                        auto prop = t->get_property(attach_prop_name);
-                        if (prop && prop->can_write())
-                        {
-                            string_view attr_value = attr.value();
-                            mc.properties.push_back({ t, prop, (string)attr_value });
-                        }
+
+                        xaml_ptr<xaml_string> attr_ns_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_ns, &attr_ns_str));
+                        xaml_ptr<xaml_string> class_name_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(class_name, &class_name_str));
+                        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(attr_ns_str.get(), class_name_str.get(), &info));
                     }
-                    else
+                    xaml_ptr<xaml_type_info> t;
+                    XAML_RETURN_IF_FAILED(info->query(&t));
+                    xaml_ptr<xaml_string> include_file;
+                    XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
+                    if (include_file)
+                        headers->append(include_file.get());
+                    xaml_ptr<xaml_property_info> prop;
                     {
-                        throw xaml_bad_type(attr_ns, class_name);
+                        xaml_ptr<xaml_string> aprop_name_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attach_prop_name, &aprop_name_str));
+                        XAML_RETURN_IF_FAILED(t->get_property(aprop_name_str.get(), &prop));
+                    }
+                    bool can_write;
+                    XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                    if (can_write)
+                    {
+                        xaml_ptr<xaml_string> attr_value_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr.value(), &attr_value_str));
+                        xaml_ptr<xaml_string_node> node;
+                        XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
+                        XAML_RETURN_IF_FAILED(node->set_value(attr_value_str.get()));
+                        xaml_ptr<xaml_attribute_property> prop_item;
+                        XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t.get(), prop.get(), node.get(), &prop_item));
+                        XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
                     }
                 }
                 else
                 {
-                    auto prop = mc.type->get_property(attr_name);
-                    if (prop && prop->can_write())
+                    xaml_ptr<xaml_type_info> type;
+                    XAML_RETURN_IF_FAILED(mc->get_type(&type));
+                    xaml_ptr<xaml_property_info> prop;
+                    xaml_ptr<xaml_string> attr_name_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_name, &attr_name_str));
+                    XAML_RETURN_IF_FAILED(type->get_property(attr_name_str.get(), &prop));
+                    bool can_write;
+                    XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                    if (can_write)
                     {
                         string_view attr_value = attr.value();
                         if (attr_value.front() == '{' && attr_value.back() == '}')
                         {
-                            auto ex = parse_markup(attr_value.substr(1, attr_value.length() - 2));
-                            mc.properties.push_back({ mc.type, prop, ex });
+                            xaml_ptr<xaml_markup_node> ex;
+                            XAML_RETURN_IF_FAILED(parse_markup(attr_value.substr(1, attr_value.length() - 2), &ex));
+                            xaml_ptr<xaml_attribute_property> prop_item;
+                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), ex.get(), &prop_item));
+                            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
                         }
                         else
                         {
-                            mc.properties.push_back({ mc.type, prop, (string)attr_value });
+                            xaml_ptr<xaml_string> attr_value_str;
+                            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
+                            xaml_ptr<xaml_string_node> node;
+                            XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
+                            XAML_RETURN_IF_FAILED(node->set_value(attr_value_str.get()));
+                            xaml_ptr<xaml_attribute_property> prop_item;
+                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), node.get(), &prop_item));
+                            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
                         }
                     }
                     else
                     {
-                        auto ev = mc.type->get_event(attr_name);
-                        if (ev && ev->can_add())
-                        {
-                            string_view attr_value = attr.value();
-                            mc.events.push_back({ ev, (string)attr_value });
-                        }
-                        else
-                        {
-                            throw xaml_no_member(mc.type, attr_name);
-                        }
+                        xaml_ptr<xaml_event_info> ev;
+                        XAML_RETURN_IF_FAILED(type->get_event(attr_name_str.get(), &ev));
+                        xaml_ptr<xaml_string> attr_value_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr.value(), &attr_value_str));
+                        xaml_ptr<xaml_attribute_event> ev_item;
+                        XAML_RETURN_IF_FAILED(xaml_attribute_event_new(ev.get(), attr_value_str.get(), &ev_item));
+                        XAML_RETURN_IF_FAILED(events->append(ev_item.get()));
                     }
                 }
             }
@@ -290,18 +312,27 @@ void parser_impl::parse_members(xaml_node& mc, xml_node& node)
     case node_type::data:
     case node_type::cdata:
     {
-        auto def_attr = mc.type->get_attribute<default_property>();
-        if (def_attr)
+        xaml_ptr<xaml_type_info> type;
+        XAML_RETURN_IF_FAILED(mc->get_type(&type));
+        xaml_ptr<xaml_default_property> def_attr;
+        if (XAML_SUCCEEDED(type->get_attribute(&def_attr)))
         {
-            string_view prop_name = def_attr->get_property_name();
-            auto prop = mc.type->get_property(prop_name);
-            if (prop && prop->can_write())
+            xaml_ptr<xaml_string> prop_name;
+            XAML_RETURN_IF_FAILED(def_attr->get_default_property(&prop_name));
+            xaml_ptr<xaml_property_info> prop;
+            XAML_RETURN_IF_FAILED(type->get_property(prop_name.get(), &prop));
+            bool can_write;
+            XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+            if (can_write)
             {
-                mc.properties.push_back({ mc.type, prop, (string)node.value() });
-            }
-            else
-            {
-                throw xaml_no_member(mc.type, prop_name);
+                xaml_ptr<xaml_string> node_value_str;
+                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(node.value(), &node_value_str));
+                xaml_ptr<xaml_string_node> node;
+                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
+                XAML_RETURN_IF_FAILED(node->set_value(node_value_str.get()));
+                xaml_ptr<xaml_attribute_property> prop_item;
+                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), node.get(), &prop_item));
+                XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
             }
         }
         break;
@@ -309,100 +340,138 @@ void parser_impl::parse_members(xaml_node& mc, xml_node& node)
     default:
         break;
     }
+    xaml_ptr<xaml_type_info> type;
+    XAML_RETURN_IF_FAILED(mc->get_type(&type));
     for (auto& c : node.nodes())
     {
         if (c.type() == node_type::element)
         {
             auto ns = c.namespace_uri();
+            xaml_ptr<xaml_string> ns_str;
+            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
             auto name = c.local_name();
             int32_t dm_index = name.find_first_of('.');
             if (dm_index != string_view::npos)
             {
                 string_view class_name = name.substr(0, dm_index);
                 string_view prop_name = name.substr(dm_index + 1);
-                auto t = ctx->get_type(ns, class_name);
-                if (t)
+                xaml_ptr<xaml_reflection_info> info;
                 {
-                    if (!t->get_include_file().empty())
-                        headers.emplace(t->get_include_file());
-                    auto child = parse_impl(c, t);
-                    if (mc.type->get_type() == t->get_type())
-                    {
-                        auto prop = mc.type->get_property(prop_name);
-                        if (prop && prop->can_write())
-                        {
-                            mc.properties.push_back({ mc.type, prop, move(child) });
-                        }
-                    }
-                    else
-                    {
-                        auto prop = t->get_property(prop_name);
-                        if (prop && prop->can_write())
-                        {
-                            mc.properties.push_back({ t, prop, move(child) });
-                        }
-                    }
+                    xaml_ptr<xaml_string> class_name_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(class_name, &class_name_str));
+                    XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), class_name_str.get(), &info));
                 }
-                else
+                xaml_ptr<xaml_type_info> t;
+                XAML_RETURN_IF_FAILED(info->query(&t));
+                xaml_ptr<xaml_string> include_file;
+                XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
+                if (include_file)
+                    headers->append(include_file.get());
+                xaml_ptr<xaml_node> child;
+                XAML_RETURN_IF_FAILED(parse_impl(c, t, &child));
+                xaml_ptr<xaml_property_info> prop;
                 {
-                    throw xaml_bad_type(ns, class_name);
+                    xaml_ptr<xaml_string> prop_name_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
+                    XAML_RETURN_IF_FAILED(t->get_property(prop_name_str.get(), &prop));
+                }
+                bool can_write;
+                XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                if (can_write)
+                {
+                    xaml_ptr<xaml_attribute_property> prop_item;
+                    XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), child.get(), &prop_item));
+                    XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
                 }
             }
             else
             {
-                auto t = ctx->get_type(ns, name);
-                if (t)
+                xaml_ptr<xaml_reflection_info> info;
                 {
-                    auto child = parse_impl(c, t);
-                    auto def_attr = mc.type->get_attribute<default_property>();
-                    if (def_attr)
+                    xaml_ptr<xaml_string> name_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+                    XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+                }
+                xaml_ptr<xaml_type_info> t;
+                XAML_RETURN_IF_FAILED(info->query(&t));
+                xaml_ptr<xaml_node> child;
+                XAML_RETURN_IF_FAILED(parse_impl(c, t, &child));
+                xaml_ptr<xaml_default_property> def_attr;
+                if (XAML_SUCCEEDED(type->get_attribute(&def_attr)))
+                {
+                    xaml_ptr<xaml_string> prop_name;
+                    XAML_RETURN_IF_FAILED(def_attr->get_default_property(&prop_name));
+                    xaml_ptr<xaml_property_info> prop;
+                    if (XAML_SUCCEEDED(type->get_property(prop_name.get(), &prop)))
                     {
-                        string_view prop_name = def_attr->get_property_name();
-                        auto prop = mc.type->get_property(prop_name);
-                        if (prop && prop->can_write())
+                        bool can_write;
+                        XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                        if (can_write)
                         {
-                            mc.properties.push_back({ mc.type, prop, move(child) });
-                        }
-                        else
-                        {
-                            auto info = mc.type->get_collection_property(prop_name);
-                            if (info && info->can_add())
-                            {
-                                auto& prop = mc.collection_properties[(string)info->name()];
-                                prop.host_type = mc.type;
-                                prop.info = info;
-                                prop.values.push_back(move(child));
-                            }
+                            xaml_ptr<xaml_attribute_property> prop_item;
+                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), child.get(), &prop_item));
+                            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
                         }
                     }
-                }
-                else
-                {
-                    throw xaml_bad_type(ns, name);
+                    else
+                    {
+                        xaml_ptr<xaml_collection_property_info> info;
+                        XAML_RETURN_IF_FAILED(type->get_collection_property(prop_name.get(), &info));
+                        bool can_add;
+                        XAML_RETURN_IF_FAILED(info->get_can_add(&can_add));
+                        if (can_add)
+                        {
+                            xaml_ptr<xaml_string> name;
+                            XAML_RETURN_IF_FAILED(info->get_name(&name));
+                            xaml_ptr<xaml_attribute_collection_property> cprop;
+                            xaml_ptr<xaml_vector> values;
+                            xaml_ptr<xaml_object> item;
+                            if (XAML_SUCCEEDED(cprops->lookup(name.get(), &item)))
+                            {
+                                XAML_RETURN_IF_FAILED(item->query(&cprop));
+                            }
+                            else
+                            {
+                                XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
+                                XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type.get(), info.get(), values.get(), &cprop));
+                                bool replaced;
+                                XAML_RETURN_IF_FAILED(cprops->insert(name.get(), item.get(), &replaced));
+                            }
+                            XAML_RETURN_IF_FAILED(values->append(child.get()));
+                        }
+                    }
                 }
             }
         }
         else
         {
-            parse_members(mc, c);
+            XAML_RETURN_IF_FAILED(parse_members(mc, c));
         }
     }
-    if (mc.name.empty())
+    xaml_ptr<xaml_string> name;
+    XAML_RETURN_IF_FAILED(mc->get_name(&name));
+    if (!name)
     {
-        mc.name = get_random_name(mc.type);
+        XAML_RETURN_IF_FAILED(get_random_name(type, &name));
+        XAML_RETURN_IF_FAILED(mc->set_name(name.get()));
     }
+    return XAML_S_OK;
 }
 
-xaml_node parser_impl::parse_impl(xml_node& node, reflection_info const* t)
+xaml_result parser_impl::parse_impl(xml_node& node, xaml_ptr<xaml_type_info> const& t, xaml_node** ptr) noexcept
 {
-    if (!t->get_include_file().empty())
-        headers.emplace(t->get_include_file());
-    xaml_node mc{ t };
-    parse_members(mc, node);
-    return mc;
+    xaml_ptr<xaml_string> include_file;
+    XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
+    if (include_file)
+        headers->append(include_file.get());
+    xaml_ptr<xaml_node> mc;
+    XAML_RETURN_IF_FAILED(xaml_node_new(&mc));
+    XAML_RETURN_IF_FAILED(mc->set_type(t.get()));
+    XAML_RETURN_IF_FAILED(parse_members(mc, node));
+    return mc->query(ptr);
 }
 
-xaml_node parser_impl::parse()
+xaml_result parser_impl::parse(xaml_node** ptr) noexcept
 {
     auto& root_nodes = doc.node().nodes();
     auto it = find_if(root_nodes.begin(), root_nodes.end(), [](xml_node& node) { return node.type() == node_type::element; });
@@ -410,42 +479,15 @@ xaml_node parser_impl::parse()
     auto& root_node = *it;
     auto ns = root_node.namespace_uri();
     auto name = root_node.local_name();
-    auto t = ctx->get_type(ns, name);
-    if (t)
+    xaml_ptr<xaml_reflection_info> info;
     {
-        return parse_impl(root_node, t);
+        xaml_ptr<xaml_string> ns_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+        xaml_ptr<xaml_string> name_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
     }
-    else
-    {
-        throw xaml_bad_type(ns, name);
-    }
+    xaml_ptr<xaml_type_info> t;
+    XAML_RETURN_IF_FAILED(info->query(&t));
+    return parse_impl(root_node, t, ptr);
 }
-//
-//    static tuple<xaml_node, set<string>> parse_impl(meta_context& ctx, parser_impl& impl)
-//    {
-//        impl.ctx = &ctx;
-//        xaml_node result = impl.parse();
-//        return make_tuple(move(result), move(impl.headers));
-//    }
-//
-//    tuple<xaml_node, set<string>> parse_file(meta_context& ctx, path const& file)
-//    {
-//        parser_impl impl{};
-//        impl.load_file(file);
-//        return parse_impl(ctx, impl);
-//    }
-//
-//    tuple<xaml_node, set<string>> parse_string(meta_context& ctx, string_view xml)
-//    {
-//        parser_impl impl{};
-//        impl.load_string(xml);
-//        return parse_impl(ctx, impl);
-//    }
-//
-//    tuple<xaml_node, set<string>> parse_stream(meta_context& ctx, istream& stream)
-//    {
-//        parser_impl impl{};
-//        impl.load_stream(stream);
-//        return parse_impl(ctx, impl);
-//    }
-//} // namespace xaml
