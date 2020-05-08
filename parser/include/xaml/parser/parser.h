@@ -10,7 +10,7 @@ EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_parser_parse_string(xaml_met
 EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context*, XAML_CSTD FILE*, xaml_node**, xaml_vector_view**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_PARSER_API xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context*, std::istream& stream, xaml_node**, xaml_vector_view**) noexcept;
+XAML_PARSER_API xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context*, std::istream&, xaml_node**, xaml_vector_view**) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_PARSER_PARSER_H

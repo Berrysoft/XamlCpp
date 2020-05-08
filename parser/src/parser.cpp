@@ -498,3 +498,31 @@ xaml_result parser_impl::parse(xaml_node** ptr) noexcept
     XAML_RETURN_IF_FAILED(info->query(&t));
     return parse_impl(root_node, t, ptr);
 }
+
+static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_meta_context* ctx, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+{
+    parser.ctx = ctx;
+    XAML_RETURN_IF_FAILED(parser.parse(ptr));
+    return parser.headers->query(pheaders);
+}
+
+xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, char const* str, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+{
+    parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.load_string(str));
+    return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
+}
+
+xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+{
+    parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.load_stream(stream));
+    return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
+}
+
+xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, istream& stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+{
+    parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.load_stream(stream));
+    return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
+}
