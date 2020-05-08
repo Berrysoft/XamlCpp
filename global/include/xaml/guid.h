@@ -11,6 +11,9 @@
 #endif // __has_include(<compare>)
 #else
 #include <assert.h>
+#if defined(_MSC_VER) && defined(__clang__)
+#define static_assert _Static_assert
+#endif // _MSC_VER && __clang__
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>

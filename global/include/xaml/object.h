@@ -65,10 +65,10 @@ XAML_DECL_INTERFACE(xaml_object)
 template <typename T, typename D, typename... Base>
 struct xaml_implement : D
 {
-protected:
     std::atomic<std::int32_t> m_ref_count{ 1 };
 
-public:
+    virtual ~xaml_implement() {}
+
     std::int32_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
 
     std::int32_t XAML_CALL release() noexcept override
