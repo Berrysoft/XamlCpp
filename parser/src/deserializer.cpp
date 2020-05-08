@@ -33,6 +33,8 @@ struct deserializer_impl
     xaml_ptr<xaml_meta_context> m_ctx;
     xaml_ptr<xaml_map> symbols;
 
+    deserializer_impl(xaml_ptr<xaml_meta_context> const& ctx) noexcept : m_ctx(ctx) {}
+
     xaml_result init() noexcept
     {
         xaml_ptr<xaml_hasher> hasher;
@@ -265,4 +267,29 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& nod
         XAML_FOREACH_END();
     }
     return ex->query(ptr);
+}
+
+xaml_result XAML_CALL xaml_parser_deserialize(xaml_meta_context* ctx, xaml_node* node, xaml_object** ptr) noexcept
+{
+    deserializer_impl des{ ctx };
+    XAML_RETURN_IF_FAILED(des.init());
+    return des.deserialize(node, ptr);
+}
+
+xaml_result XAML_CALL xaml_parser_deserialize_inplace(xaml_meta_context* ctx, xaml_node* node, xaml_object* mc, xaml_guid const& type) noexcept
+{
+    deserializer_impl des{ ctx };
+    XAML_RETURN_IF_FAILED(des.init());
+    xaml_ptr<xaml_reflection_info> info;
+    XAML_RETURN_IF_FAILED(ctx->get_type(type, &info));
+    xaml_ptr<xaml_type_info> t;
+    XAML_RETURN_IF_FAILED(info->query(&t));
+    return des.deserialize(node, mc, t);
+}
+
+xaml_result XAML_CALL xaml_parser_deserialize_markup(xaml_meta_context* ctx, xaml_markup_node* node, xaml_markup_extension** ptr) noexcept
+{
+    deserializer_impl des{ ctx };
+    XAML_RETURN_IF_FAILED(des.init());
+    return des.deserialize(node, ptr);
 }
