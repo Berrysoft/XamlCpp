@@ -29,7 +29,7 @@ static xaml_result xaml_main_begin(int* pcode) noexcept
     return xaml_main(app.get(), pcode);
 }
 
-int APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, INT)
+int APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
     int code;
     return xaml_main_end(xaml_main_begin(&code), &code);
