@@ -41,7 +41,7 @@ public:
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         xaml_ptr<xaml_object> item;
-        XAML_RETURN_IF_FAILED(m_attr_map->lookup(key.get(), ptr));
+        XAML_RETURN_IF_FAILED(m_attr_map->lookup(key.get(), &item));
         return item->query(type, ptr);
     }
 

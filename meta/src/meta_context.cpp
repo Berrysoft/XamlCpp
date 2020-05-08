@@ -36,7 +36,7 @@ public:
     {
         xaml_ptr<xaml_object> item;
         XAML_RETURN_IF_FAILED(m_namespace->lookup(xml_ns, &item));
-        return item->query(&ptr);
+        return item->query(ptr);
     }
 
     xaml_result XAML_CALL add_namespace(xaml_string* xml_ns, xaml_string* ns) noexcept override

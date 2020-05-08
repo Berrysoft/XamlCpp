@@ -30,11 +30,9 @@ struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
     xaml_result XAML_CALL equals(xaml_string* str, bool* pres) noexcept override
     {
         int32_t rhs_length;
-        xaml_result hr = str->get_length(&rhs_length);
-        if (XAML_FAILED(hr)) return hr;
+        XAML_RETURN_IF_FAILED(str->get_length(&rhs_length));
         xaml_char_t const* rhs_data;
-        hr = str->get_data(&rhs_data);
-        if (XAML_FAILED(hr)) return hr;
+        XAML_RETURN_IF_FAILED(str->get_data(&rhs_data));
         *pres = equal(m_str.begin(), m_str.end(), rhs_data, rhs_data + rhs_length, char_traits<xaml_char_t>::eq);
         return XAML_S_OK;
     }
