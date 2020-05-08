@@ -101,12 +101,28 @@ struct __xaml_box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
     xaml_result box(T* value, xaml_object** ptr) const noexcept
     {
-        return value->xaml_object::query(ptr);
+        if (value)
+        {
+            return value->xaml_object::query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
     }
 
     xaml_result unbox(xaml_object* obj, T*& value) const noexcept
     {
-        return obj->query(&value);
+        if (obj)
+        {
+            return obj->query(&value);
+        }
+        else
+        {
+            value = nullptr;
+            return XAML_S_OK;
+        }
     }
 };
 
@@ -115,12 +131,28 @@ struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_obje
 {
     xaml_result box(xaml_ptr<T> const& value, xaml_object** ptr) const noexcept
     {
-        return value->xaml_object::query(ptr);
+        if (value)
+        {
+            return value->xaml_object::query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
     }
 
     xaml_result unbox(xaml_object* obj, xaml_ptr<T>& value) const noexcept
     {
-        return obj->query(&value);
+        if (obj)
+        {
+            return obj->query(&value);
+        }
+        else
+        {
+            value = nullptr;
+            return XAML_S_OK;
+        }
     }
 };
 

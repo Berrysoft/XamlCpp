@@ -110,8 +110,10 @@
     xaml_result XAML_CALL set_##name(xaml_string* value) noexcept   \
     {                                                               \
         bool equal = false;                                         \
-        if (m_##name)                                               \
+        if (m_##name && value)                                      \
             XAML_RETURN_IF_FAILED(m_##name->equals(value, &equal)); \
+        else                                                        \
+            equal = (!m_##name) && (!value);                        \
         if (!equal)                                                 \
         {                                                           \
             m_##name = value;                                       \
