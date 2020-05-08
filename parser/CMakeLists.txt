@@ -1,7 +1,7 @@
 project(XamlParser CXX)
 
-file(GLOB XAML_HEADERS "include/xaml/*.hpp")
-file(GLOB XAML_MARKUP_HEADERS "include/xaml/markup/*.hpp")
+file(GLOB XAML_HEADERS "include/xaml/parser/*.h")
+file(GLOB XAML_MARKUP_HEADERS "include/xaml/markup/*.h")
 file(GLOB XAML_SOURCES "src/*.cpp")
 
 add_library(xaml_parser ${XAML_SOURCES})
@@ -19,5 +19,5 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_parser PRIVATE "XAML_PARSER_API=__XAML_EXPORT")
 endif()
 
-install(FILES ${XAML_HEADERS} DESTINATION include/xaml)
+install(FILES ${XAML_HEADERS} DESTINATION include/xaml/parser)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)

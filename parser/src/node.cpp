@@ -5,8 +5,8 @@ struct xaml_node_base_internal
     xaml_object* m_outer_this;
     virtual ~xaml_node_base_internal() {}
 
-    XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
-    XAML_PROP_PTR_IMPL_BASE(name, xaml_string)
+    XAML_PROP_PTR_IMPL(type, xaml_type_info)
+    XAML_PROP_PTR_IMPL(name, xaml_string)
 };
 
 template <typename T, typename Internal, typename... Base>
@@ -19,8 +19,8 @@ struct xaml_node_base_implement : xaml_implement<T, Base..., xaml_node_base, xam
         m_internal.m_outer_this = this;
     }
 
-    XAML_PROP_PTR_INTERNAL_IMPL_BASE(type, xaml_type_info)
-    XAML_PROP_PTR_INTERNAL_IMPL_BASE(name, xaml_string)
+    XAML_PROP_PTR_INTERNAL_IMPL(type, xaml_type_info)
+    XAML_PROP_PTR_INTERNAL_IMPL(name, xaml_string)
 };
 
 struct xaml_string_node_internal : xaml_node_base_internal
