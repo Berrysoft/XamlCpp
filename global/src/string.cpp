@@ -33,7 +33,14 @@ struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
         XAML_RETURN_IF_FAILED(str->get_length(&rhs_length));
         xaml_char_t const* rhs_data;
         XAML_RETURN_IF_FAILED(str->get_data(&rhs_data));
-        *pres = equal(m_str.begin(), m_str.end(), rhs_data, rhs_data + rhs_length, char_traits<xaml_char_t>::eq);
+        if ((int32_t)m_str.size() != rhs_length)
+        {
+            *pres = false;
+        }
+        else
+        {
+            *pres = char_traits<xaml_char_t>::compare(m_str.data(), rhs_data, m_str.size()) == 0;
+        }
         return XAML_S_OK;
     }
 };

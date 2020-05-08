@@ -2,6 +2,7 @@
 
 #include <Shlwapi.h>
 #include <wil/result_macros.h>
+#include <win/cotaskmem_string.hpp>
 #include <win/webview_edge2.hpp>
 #include <wrl/event.h>
 #include <xaml/ui/native_drawing.hpp>
@@ -50,13 +51,13 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         wil::unique_cotaskmem_string method;
                                         RETURN_IF_FAILED(req->get_Method(&method));
                                         xaml_ptr<xaml_string> method_str;
-                                        RETURN_IF_FAILED(xaml_string_new_view(method.get(), &method_str));
+                                        RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(method), &method_str));
                                         RETURN_IF_FAILED(args_req->set_method(method_str.get()));
 
                                         wil::unique_cotaskmem_string uri;
                                         RETURN_IF_FAILED(req->get_Uri(&uri));
                                         xaml_ptr<xaml_string> uri_str;
-                                        RETURN_IF_FAILED(xaml_string_new_view(uri.get(), &uri_str));
+                                        RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(uri), &uri_str));
                                         RETURN_IF_FAILED(args_req->set_uri(uri_str.get()));
 
                                         wil::com_ptr_t<IStream, wil::err_returncode_policy> stream;

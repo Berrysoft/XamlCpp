@@ -1,4 +1,4 @@
-#include <win/string.hpp>
+#include <win/cotaskmem_string.hpp>
 
 using namespace std;
 
@@ -29,9 +29,15 @@ struct xaml_string_cotaskmem_impl : xaml_implement<xaml_string_cotaskmem_impl, x
         XAML_RETURN_IF_FAILED(str->get_length(&rhs_length));
         xaml_char_t const* rhs_data;
         XAML_RETURN_IF_FAILED(str->get_data(&rhs_data));
-        int32_t lhs_length;
-        XAML_RETURN_IF_FAILED(get_length(&lhs_length));
-        *pres = equal(m_str.get(), m_str.get() + lhs_length, rhs_data, rhs_data + rhs_length, char_traits<xaml_char_t>::eq);
+        int32_t lhs_length = lstrlen(m_str.get());
+        if (lhs_length != rhs_length)
+        {
+            *pres = false;
+        }
+        else
+        {
+            *pres = char_traits<xaml_char_t>::compare(m_str.get(), rhs_data, (size_t)rhs_length) == 0;
+        }
         return XAML_S_OK;
     }
 };

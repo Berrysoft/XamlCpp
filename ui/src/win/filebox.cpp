@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <shared/filebox.hpp>
 #include <wil/com.h>
-#include <win/string.hpp>
+#include <win/cotaskmem_string.hpp>
 #include <xaml/ui/filebox.h>
 #include <xaml/ui/win/control.h>
 
