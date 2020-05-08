@@ -220,6 +220,16 @@
         XAML_RETURN_IF_FAILED(__info->add_property(__prop_info.get()));                                         \
     } while (0)
 
+#define XAML_TYPE_INFO_ADD_APROP(type, prop)                                                                                  \
+    do                                                                                                                        \
+    {                                                                                                                         \
+        xaml_ptr<xaml_string> __prop_name;                                                                                    \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                       \
+        xaml_ptr<xaml_property_info> __prop_info;                                                                             \
+        XAML_RETURN_IF_FAILED(xaml_property_info_new(__prop_name.get(), type##_get_##prop, type##_set_##prop, &__prop_info)); \
+        XAML_RETURN_IF_FAILED(__info->add_property(__prop_info.get()));                                                       \
+    } while (0)
+
 #define XAML_TYPE_INFO_ADD_CPROP(prop)                                                                                                                \
     do                                                                                                                                                \
     {                                                                                                                                                 \

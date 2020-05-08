@@ -195,6 +195,10 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
     XAML_TYPE_INFO_ADD_PROP_RD(rows);
     XAML_TYPE_INFO_ADD_CPROP(column);
     XAML_TYPE_INFO_ADD_CPROP(row);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column_span);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row_span);
     return XAML_S_OK;
 }
 
