@@ -1,6 +1,6 @@
 project(XamlCmdLine CXX)
 
-file(GLOB CMDLINE_HEADERS "include/xaml/cmdline/*.hpp")
+file(GLOB CMDLINE_HEADERS "include/xaml/cmdline/*.h")
 file(GLOB CMDLINE_SOURCES "src/*.cpp")
 
 add_library(xaml_cmdline ${CMDLINE_SOURCES})

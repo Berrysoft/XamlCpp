@@ -1,6 +1,6 @@
 project(XamlWebView CXX)
 
-file(GLOB WV_HEADERS "include/xaml/ui/controls/*.hpp")
+file(GLOB WV_HEADERS "include/xaml/ui/controls/*.h")
 
 if(${BUILD_WINDOWS})
     file(GLOB WV_SOURCE "src/win/*.cpp")

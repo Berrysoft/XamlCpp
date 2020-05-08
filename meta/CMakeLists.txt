@@ -1,6 +1,6 @@
 project(XamlMeta CXX)
 
-file(GLOB META_HEADERS "include/xaml/meta/*.hpp")
+file(GLOB META_HEADERS "include/xaml/meta/*.h*")
 file(GLOB META_SOURCES "src/*.cpp")
 
 add_library(xaml_meta ${META_SOURCES})

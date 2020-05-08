@@ -1,6 +1,6 @@
 project(XamlCanvas CXX)
 
-file(GLOB CV_HEADERS "include/xaml/ui/controls/*.hpp")
+file(GLOB CV_HEADERS "include/xaml/ui/controls/*.h")
 
 if(${BUILD_WINDOWS})
     option(BUILD_DIRECT2D "Build against Direct2D instead of GDI+" ON)
