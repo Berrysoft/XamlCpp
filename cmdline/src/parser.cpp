@@ -86,7 +86,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                     long_arg = long_arg.substr(0, index);
                 }
                 xaml_ptr<xaml_string> long_arg_str;
-                XAML_RETURN_IF_FAILED(xaml_string_new(long_arg, &long_arg_str));
+                XAML_RETURN_IF_FAILED(xaml_string_new_view(long_arg, &long_arg_str));
                 xaml_ptr<xaml_string> pprop;
                 if (XAML_SUCCEEDED(popt->find_long_arg(long_arg_str.get(), &pprop)))
                 {

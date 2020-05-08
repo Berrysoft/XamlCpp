@@ -69,10 +69,10 @@ try
                 check_hresult(args->set_request(args_req.get()));
 
                 xaml_ptr<xaml_string> method_str;
-                check_hresult(xaml_string_new(method, &method_str));
+                check_hresult(xaml_string_new_view(method, &method_str));
                 check_hresult(args_req->set_method(method_str.get()));
                 xaml_ptr<xaml_string> uri_str;
-                check_hresult(xaml_string_new(uri, &uri_str));
+                check_hresult(xaml_string_new_view(uri, &uri_str));
                 check_hresult(args_req->set_uri(uri_str.get()));
                 check_hresult(invoke_resource_requested(args));
 

@@ -103,7 +103,7 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
 int main()
 {
     xaml_string* str;
-    XAML_ASSERT_SUCCEEDED(xaml_string_new(U("Hello world!"), &str));
+    XAML_ASSERT_SUCCEEDED(xaml_string_new_view(U("Hello world!"), &str));
     xaml_observable_vector* vec;
     XAML_ASSERT_SUCCEEDED(xaml_observable_vector_new(&vec));
     xaml_delegate* callback;

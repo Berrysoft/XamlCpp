@@ -5,32 +5,12 @@
 
 using namespace std;
 
-struct xaml_string_impl : xaml_implement<xaml_string_impl, xaml_string, xaml_object>
+template <typename T, typename String>
+struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
 {
-private:
-    xaml_std_string_t m_str{};
+    String m_str{};
 
-public:
-    xaml_string_impl() noexcept {}
-    xaml_result XAML_CALL init(xaml_char_t const* str)
-    {
-        try
-        {
-            m_str = str;
-            return XAML_S_OK;
-        }
-        XAML_CATCH_RETURN()
-    }
-    xaml_string_impl(xaml_std_string_t&& str) : m_str(move(str)) {}
-    xaml_result XAML_CALL init(xaml_std_string_view_t str)
-    {
-        try
-        {
-            m_str = str;
-            return XAML_S_OK;
-        }
-        XAML_CATCH_RETURN()
-    }
+    xaml_string_implement() noexcept {}
 
     xaml_result XAML_CALL get_length(int32_t* psize) noexcept override
     {
@@ -43,7 +23,7 @@ public:
         if (m_str.empty())
             *ptr = nullptr;
         else
-            *ptr = m_str.c_str();
+            *ptr = m_str.data();
         return XAML_S_OK;
     }
 
@@ -60,12 +40,51 @@ public:
     }
 };
 
+struct xaml_string_impl : xaml_string_implement<xaml_string_impl, xaml_std_string_t>
+{
+    xaml_string_impl() noexcept {}
+    xaml_result XAML_CALL init(xaml_char_t const* str)
+    {
+        try
+        {
+            m_str = str;
+            return XAML_S_OK;
+        }
+        XAML_CATCH_RETURN()
+    }
+    xaml_string_impl(xaml_std_string_t&& str) noexcept { m_str = move(str); }
+    xaml_result XAML_CALL init(xaml_std_string_view_t str)
+    {
+        try
+        {
+            m_str = str;
+            return XAML_S_OK;
+        }
+        XAML_CATCH_RETURN()
+    }
+};
+
+struct xaml_string_view_impl : xaml_string_implement<xaml_string_view_impl, xaml_std_string_view_t>
+{
+    xaml_string_view_impl() noexcept {}
+    xaml_string_view_impl(xaml_char_t const* str) noexcept { m_str = str; }
+    xaml_string_view_impl(xaml_std_string_view_t str) noexcept { m_str = str; }
+};
+
 xaml_result XAML_CALL xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
 {
     if (str)
         return xaml_object_init<xaml_string_impl>(ptr, str);
     else
         return xaml_object_new<xaml_string_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const* str, xaml_string** ptr) noexcept
+{
+    if (str)
+        return xaml_object_new<xaml_string_view_impl>(ptr, str);
+    else
+        return xaml_object_new<xaml_string_view_impl>(ptr);
 }
 
 xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr) noexcept
@@ -76,6 +95,11 @@ xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr
 xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t str, xaml_string** ptr) noexcept
 {
     return xaml_object_init<xaml_string_impl>(ptr, str);
+}
+
+xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t str, xaml_string** ptr) noexcept
+{
+    return xaml_object_new<xaml_string_view_impl>(ptr, str);
 }
 
 #ifdef UNICODE
