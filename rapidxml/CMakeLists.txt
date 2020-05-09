@@ -16,7 +16,6 @@ target_include_directories(xaml_rapidxml
 target_link_libraries(xaml_rapidxml PUBLIC xaml_global)
 
 if(APPLE)
-    find_package(Boost REQUIRED container)
     target_link_libraries(xaml_rapidxml PUBLIC Boost::container)
 endif()
 

@@ -131,7 +131,9 @@ elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
 
-find_package(Boost REQUIRED iostreams)
+if(APPLE)
+    find_package(Boost REQUIRED iostreams container)
+endif()
 
 option(BUILD_TESTS "Build tests." ON)
 option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" ON)

@@ -1,10 +1,20 @@
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
 #include <xaml/cmdline/option.h>
 #include <xaml/map.h>
 
+#ifdef _MSC_VER
+#include <fstream>
+#elif defined(XAML_APPLE)
+#include <boost/iostreams/device/file_descriptor.hpp>
+#include <boost/iostreams/stream.hpp>
+#else
+#include <ext/stdio_filebuf.h>
+#endif // _MSC_VER
+
 using namespace std;
+
+#ifdef XAML_APPLE
 using namespace boost::iostreams;
+#endif // XAML_APPLE
 
 #define m_outer_this this
 
@@ -103,14 +113,18 @@ xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcep
 xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept
 {
 #ifdef _MSC_VER
-#define fileno _fileno
-#endif // _MSC_VER
+    basic_filebuf<xaml_char_t> buf{ file };
+#elif defined(XAML_APPLE)
     stream_buffer<file_descriptor_sink> buf{ fileno(file), never_close_handle };
-    ostream stream{ &buf };
+#else
+    __gnu_cxx::stdio_filebuf<xaml_char_t> buf{ file, ios_base::out };
+#endif // _MSC_VER
+
+    basic_ostream<xaml_char_t> stream{ &buf };
     return xaml_cmdline_option_print(stream, opt);
 }
 
-xaml_result XAML_CALL xaml_cmdline_option_print(ostream& stream, xaml_cmdline_option* opt) noexcept
+xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
 {
     constexpr size_t offset = 2;
     constexpr size_t spacing = 24;
@@ -121,7 +135,7 @@ xaml_result XAML_CALL xaml_cmdline_option_print(ostream& stream, xaml_cmdline_op
         xaml_ptr<xaml_key_value_pair> prop;
         XAML_RETURN_IF_FAILED(p->query(&prop));
         size_t count = offset;
-        stream << string(count, ' ');
+        stream << xaml_std_string_t(count, ' ');
         xaml_ptr<xaml_object> value;
         XAML_RETURN_IF_FAILED(prop->get_value(&value));
         xaml_ptr<xaml_cmdline_option_entry> entry;
@@ -130,7 +144,7 @@ xaml_result XAML_CALL xaml_cmdline_option_print(ostream& stream, xaml_cmdline_op
         XAML_RETURN_IF_FAILED(entry->get_short_arg(&short_arg));
         if (short_arg)
         {
-            stream << '-' << (char)short_arg;
+            stream << U('-') << short_arg;
             count += 2;
         }
         xaml_ptr<xaml_string> long_arg;
@@ -142,32 +156,36 @@ xaml_result XAML_CALL xaml_cmdline_option_print(ostream& stream, xaml_cmdline_op
         {
             if (short_arg)
             {
-                stream << ", ";
+                stream << U(", ");
                 count += 2;
             }
             else
             {
-                stream << string(4, ' ');
+                stream << xaml_std_string_t(4, ' ');
                 count += 4;
             }
-            stream << "--" << to_string_utf8(long_arg);
+            xaml_char_t const* long_arg_data;
+            XAML_RETURN_IF_FAILED(long_arg->get_data(&long_arg_data));
+            stream << U("--") << long_arg_data;
             count += 2 + long_arg_length;
         }
         if (!short_arg && !long_arg_length)
         {
-            stream << "[default]";
+            stream << U("[default]");
             count += 9;
         }
         if (count < spacing)
         {
-            stream << string(spacing - count, ' ');
+            stream << xaml_std_string_t(spacing - count, ' ');
         }
         {
             xaml_ptr<xaml_string> help_text;
             XAML_RETURN_IF_FAILED(entry->get_help_text(&help_text));
             if (help_text)
             {
-                stream << to_string_utf8(help_text);
+                xaml_char_t const* help_text_data;
+                XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
+                stream << help_text_data;
             }
         }
         stream << endl;

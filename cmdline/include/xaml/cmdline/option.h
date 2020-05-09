@@ -44,7 +44,7 @@ EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmd
 EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(XAML_CSTD FILE*, xaml_cmdline_option*) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(std::ostream&, xaml_cmdline_option*) noexcept;
+XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(std::basic_ostream<xaml_char_t>&, xaml_cmdline_option*) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_CMDLINE_OPTION_H
