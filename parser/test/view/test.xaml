@@ -1,4 +1,4 @@
-<window x:class="xaml::test::test_window"
+<window x:class="xaml_test_window"
         xmlns="https://github.com/Berrysoft/XamlCpp/"
         xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
         title="Test Window" location="200, 100" size="800, 600">

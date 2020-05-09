@@ -26,8 +26,8 @@ XAML_CLASS(xaml_grid, { 0x72737dd1, 0x7c10, 0x46e6, { 0x82, 0x38, 0x06, 0x2f, 0x
 
 #define XAML_GRID_VTBL(type)                                                                    \
     XAML_VTBL_INHERIT(XAML_LAYOUT_BASE_VTBL(type));                                             \
-    XAML_METHOD(get_columns, type, xaml_vector_view**);                                         \
-    XAML_METHOD(get_rows, type, xaml_vector_view**);                                            \
+    XAML_PROP(columns, type, xaml_vector**, xaml_vector*);                                      \
+    XAML_PROP(rows, type, xaml_vector**, xaml_vector*);                                         \
     XAML_CPROP(column, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF); \
     XAML_CPROP(row, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF)
 

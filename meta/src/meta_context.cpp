@@ -29,6 +29,9 @@ public:
 
     xaml_result XAML_CALL add_module(xaml_module* mod) noexcept override
     {
+        xaml_result (*pregister)(xaml_meta_context*) noexcept;
+        XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", (void**)&pregister));
+        XAML_RETURN_IF_FAILED(pregister(this));
         return m_modules->append(mod);
     }
 

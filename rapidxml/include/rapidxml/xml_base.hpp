@@ -42,13 +42,13 @@ namespace rapidxml
     class parse_error : public std::logic_error
     {
     private:
-        std::int32_t m_where;
-        std::int32_t m_row;
-        std::int32_t m_col;
+        std::size_t m_where;
+        std::size_t m_row;
+        std::size_t m_col;
 
     public:
         //! Constructs parse error
-        parse_error(const char* what, std::int32_t where, std::int32_t row, std::int32_t col) noexcept
+        parse_error(const char* what, std::size_t where, std::size_t row, std::size_t col) noexcept
             : logic_error(what), m_where(where), m_row(row), m_col(col)
         {
         }
@@ -58,11 +58,11 @@ namespace rapidxml
         //! Gets pointer to character data where error happened.
         //! char should be the same as char type of xml_document that produced the error.
         //! \return Pointer to location within the parsed string where error occured.
-        constexpr std::int32_t where() const noexcept { return m_where; }
+        constexpr std::size_t where() const noexcept { return m_where; }
 
-        constexpr std::int32_t row() const noexcept { return m_row; }
+        constexpr std::size_t row() const noexcept { return m_row; }
 
-        constexpr std::int32_t col() const noexcept { return m_row; }
+        constexpr std::size_t col() const noexcept { return m_row; }
     };
 
     //! Enumeration listing all node types produced by the parser.

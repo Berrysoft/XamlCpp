@@ -25,6 +25,7 @@ typedef XAML_CSTD int32_t xaml_result;
     do                                  \
     {                                   \
         xaml_result hr = (expr);        \
+        assert(XAML_SUCCEEDED(hr));     \
         if (XAML_FAILED(hr)) return hr; \
     } while (0)
 

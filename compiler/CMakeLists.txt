@@ -19,7 +19,3 @@ if(${BUILD_SHARED_LIBS})
 endif()
 
 install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml/compiler)
-
-if(${BUILD_TESTS})
-    add_subdirectory(test)
-endif()

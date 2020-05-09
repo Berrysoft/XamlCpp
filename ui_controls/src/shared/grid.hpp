@@ -6,13 +6,8 @@
 
 struct xaml_grid_internal : xaml_layout_base_internal
 {
-protected:
-    xaml_ptr<xaml_vector> m_columns;
-    xaml_ptr<xaml_vector> m_rows;
-
-public:
-    xaml_result XAML_CALL get_columns(xaml_vector_view** ptr) noexcept { return m_columns->query(ptr); }
-    xaml_result XAML_CALL get_rows(xaml_vector_view** ptr) noexcept { return m_rows->query(ptr); }
+    XAML_PROP_PTR_IMPL(columns, xaml_vector)
+    XAML_PROP_PTR_IMPL(rows, xaml_vector)
 
     xaml_result XAML_CALL add_column(xaml_grid_length const& length) noexcept
     {
@@ -39,8 +34,8 @@ public:
 
 struct xaml_grid_impl : xaml_layout_base_implement<xaml_grid_impl, xaml_grid_internal, xaml_grid>
 {
-    XAML_PROP_INTERNAL_IMPL_BASE(columns, xaml_vector_view**)
-    XAML_PROP_INTERNAL_IMPL_BASE(rows, xaml_vector_view**)
+    XAML_PROP_PTR_INTERNAL_IMPL(columns, xaml_vector)
+    XAML_PROP_PTR_INTERNAL_IMPL(rows, xaml_vector)
 
     XAML_CPROP_INTERNAL_IMPL(column, xaml_grid_length const&, xaml_grid_length const&)
     XAML_CPROP_INTERNAL_IMPL(row, xaml_grid_length const&, xaml_grid_length const&)

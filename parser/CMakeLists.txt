@@ -21,3 +21,7 @@ endif()
 
 install(FILES ${XAML_HEADERS} DESTINATION include/xaml/parser)
 install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
+
+if(${BUILD_TESTS})
+    add_subdirectory(test)
+endif()

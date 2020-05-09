@@ -1,6 +1,7 @@
 #ifndef XAML_PARSER_DESERIALIZER_H
 #define XAML_PARSER_DESERIALIZER_H
 
+#include <xaml/markup/markup_extension.h>
 #include <xaml/meta/meta_context.h>
 #include <xaml/parser/node.h>
 

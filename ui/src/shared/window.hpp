@@ -15,14 +15,14 @@ struct xaml_window_internal : xaml_container_internal
 {
     std::atomic<bool> m_resizing{ false };
 
-    xaml_result XAML_CALL init() noexcept override;
+    XAML_UI_API xaml_result XAML_CALL init() noexcept override;
 
     XAML_PROP_PTR_IMPL(menu_bar, xaml_control)
 
-    xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
-    xaml_result XAML_CALL show() noexcept;
-    xaml_result XAML_CALL close() noexcept;
-    xaml_result XAML_CALL hide() noexcept;
+    XAML_UI_API xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
+    XAML_UI_API xaml_result XAML_CALL show() noexcept;
+    XAML_UI_API xaml_result XAML_CALL close() noexcept;
+    XAML_UI_API xaml_result XAML_CALL hide() noexcept;
 
     XAML_EVENT_IMPL(is_resizable_changed)
     XAML_PROP_EVENT_IMPL(is_resizable, bool, bool*, bool)
@@ -66,21 +66,23 @@ struct xaml_window_internal : xaml_container_internal
 
     XAML_EVENT_IMPL(closing)
 
-    xaml_result XAML_CALL get_client_region(xaml_rectangle*) noexcept;
-    xaml_result XAML_CALL get_dpi(double*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_client_region(xaml_rectangle*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_dpi(double*) noexcept;
 
-    xaml_result XAML_CALL draw_size() noexcept override;
-    virtual xaml_result XAML_CALL draw_title() noexcept;
-    virtual xaml_result XAML_CALL draw_child() noexcept;
-    virtual xaml_result XAML_CALL draw_resizable() noexcept;
-    virtual xaml_result XAML_CALL draw_menu_bar() noexcept;
+    XAML_UI_API xaml_result XAML_CALL draw_size() noexcept override;
+    XAML_UI_API virtual xaml_result XAML_CALL draw_title() noexcept;
+    XAML_UI_API virtual xaml_result XAML_CALL draw_child() noexcept;
+    XAML_UI_API virtual xaml_result XAML_CALL draw_resizable() noexcept;
+    XAML_UI_API virtual xaml_result XAML_CALL draw_menu_bar() noexcept;
+
+    xaml_result XAML_CALL size_to_fit() noexcept override { return XAML_S_OK; }
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
+    XAML_UI_API xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 
-    xaml_result XAML_CALL get_real_location(xaml_point*) noexcept;
-    xaml_result XAML_CALL set_real_location(xaml_point const&) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_real_location(xaml_point*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL set_real_location(xaml_point const&) noexcept;
 
-    xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(window_handle, GtkWidget*, GtkWidget**, GtkWidget*)
     XAML_PROP_IMPL(vbox_handle, GtkWidget*, GtkWidget**, GtkWidget*)
@@ -98,7 +100,8 @@ struct xaml_window_internal : xaml_container_internal
     XAML_UI_API ~xaml_window_internal();
 };
 
-struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window_internal, xaml_window>
+template <typename T, typename Internal, typename... Base>
+struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xaml_window>
 {
     XAML_PROP_PTR_INTERNAL_IMPL(menu_bar, xaml_control)
 
@@ -122,15 +125,12 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
 
     XAML_PROP_INTERNAL_IMPL_BASE(client_region, xaml_rectangle*)
     XAML_PROP_INTERNAL_IMPL_BASE(dpi, double*)
-
-    xaml_result XAML_CALL size_to_fit() noexcept override { return XAML_S_OK; }
-
 #ifdef XAML_UI_WINDOWS
     XAML_PROP_INTERNAL_IMPL(real_location, xaml_point*, xaml_point const&)
 
     XAML_PROP_INTERNAL_IMPL_BASE(real_client_region, xaml_rectangle*)
 
-    struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, xaml_window_impl, xaml_win32_window>
+    struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, T, xaml_win32_window>
     {
         xaml_result XAML_CALL get_real_location(xaml_point* pvalue) noexcept override { return m_outer->get_real_location(pvalue); }
         xaml_result XAML_CALL set_real_location(xaml_point const& value) noexcept override { return m_outer->set_real_location(value); }
@@ -143,7 +143,7 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
     XAML_PROP_INTERNAL_IMPL(vbox_handle, GtkWidget**, GtkWidget*)
     XAML_PROP_INTERNAL_IMPL(menu_bar_handle, GtkWidget**, GtkWidget*)
 
-    struct xaml_gtk3_window_impl : xaml_gtk3_control_implement<xaml_gtk3_window_impl, xaml_window_impl, xaml_gtk3_window>
+    struct xaml_gtk3_window_impl : xaml_gtk3_control_implement<xaml_gtk3_window_impl, T, xaml_gtk3_window>
     {
         xaml_result XAML_CALL get_window(GtkWidget** pvalue) noexcept override { return m_outer->get_window_handle(pvalue); }
         xaml_result XAML_CALL set_window(GtkWidget* value) noexcept override { return m_outer->set_window_handle(value); }
@@ -170,10 +170,14 @@ struct xaml_window_impl : xaml_container_implement<xaml_window_impl, xaml_window
         }
     }
 
-    xaml_window_impl() noexcept : xaml_container_implement()
+    xaml_window_implement() noexcept : xaml_container_implement()
     {
-        m_native_window.m_outer = this;
+        m_native_window.m_outer = static_cast<T*>(this);
     }
+};
+
+struct xaml_window_impl : xaml_window_implement<xaml_window_impl, xaml_window_internal>
+{
 };
 
 #endif // !XAML_UI_SHARED_WINDOW_HPP

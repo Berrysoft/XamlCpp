@@ -191,8 +191,8 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
     using self_type = xaml_grid;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_grid_new);
-    XAML_TYPE_INFO_ADD_PROP_RD(columns);
-    XAML_TYPE_INFO_ADD_PROP_RD(rows);
+    XAML_TYPE_INFO_ADD_PROP(columns);
+    XAML_TYPE_INFO_ADD_PROP(rows);
     XAML_TYPE_INFO_ADD_CPROP(column);
     XAML_TYPE_INFO_ADD_CPROP(row);
     XAML_TYPE_INFO_ADD_APROP(xaml_grid, column);

@@ -228,7 +228,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
             }
             else
             {
-                int32_t dm_index = attr_name.find_first_of('.');
+                size_t dm_index = attr_name.find_first_of('.');
                 if (dm_index != string_view::npos)
                 {
                     string_view class_name = attr_name.substr(0, dm_index);
@@ -275,30 +275,32 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     xaml_ptr<xaml_property_info> prop;
                     xaml_ptr<xaml_string> attr_name_str;
                     XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_name, &attr_name_str));
-                    XAML_RETURN_IF_FAILED(type->get_property(attr_name_str.get(), &prop));
-                    bool can_write;
-                    XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
-                    if (can_write)
+                    if (XAML_SUCCEEDED(type->get_property(attr_name_str.get(), &prop)))
                     {
-                        string_view attr_value = attr.value();
-                        if (attr_value.front() == '{' && attr_value.back() == '}')
+                        bool can_write;
+                        XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                        if (can_write)
                         {
-                            xaml_ptr<xaml_markup_node> ex;
-                            XAML_RETURN_IF_FAILED(parse_markup(attr_value.substr(1, attr_value.length() - 2), &ex));
-                            xaml_ptr<xaml_attribute_property> prop_item;
-                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), ex.get(), &prop_item));
-                            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
-                        }
-                        else
-                        {
-                            xaml_ptr<xaml_string> attr_value_str;
-                            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
-                            xaml_ptr<xaml_string_node> node;
-                            XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
-                            XAML_RETURN_IF_FAILED(node->set_value(attr_value_str.get()));
-                            xaml_ptr<xaml_attribute_property> prop_item;
-                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), node.get(), &prop_item));
-                            XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
+                            string_view attr_value = attr.value();
+                            if (attr_value.front() == '{' && attr_value.back() == '}')
+                            {
+                                xaml_ptr<xaml_markup_node> ex;
+                                XAML_RETURN_IF_FAILED(parse_markup(attr_value.substr(1, attr_value.length() - 2), &ex));
+                                xaml_ptr<xaml_attribute_property> prop_item;
+                                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), ex.get(), &prop_item));
+                                XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
+                            }
+                            else
+                            {
+                                xaml_ptr<xaml_string> attr_value_str;
+                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
+                                xaml_ptr<xaml_string_node> node;
+                                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
+                                XAML_RETURN_IF_FAILED(node->set_value(attr_value_str.get()));
+                                xaml_ptr<xaml_attribute_property> prop_item;
+                                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), node.get(), &prop_item));
+                                XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
+                            }
                         }
                     }
                     else
@@ -357,7 +359,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
             xaml_ptr<xaml_string> ns_str;
             XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
             auto name = c.local_name();
-            int32_t dm_index = name.find_first_of('.');
+            size_t dm_index = name.find_first_of('.');
             if (dm_index != string_view::npos)
             {
                 string_view class_name = name.substr(0, dm_index);
@@ -436,13 +438,14 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             if (XAML_SUCCEEDED(cprops->lookup(name.get(), &item)))
                             {
                                 XAML_RETURN_IF_FAILED(item->query(&cprop));
+                                XAML_RETURN_IF_FAILED(cprop->get_values(&values));
                             }
                             else
                             {
                                 XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
                                 XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type.get(), info.get(), values.get(), &cprop));
                                 bool replaced;
-                                XAML_RETURN_IF_FAILED(cprops->insert(name.get(), item.get(), &replaced));
+                                XAML_RETURN_IF_FAILED(cprops->insert(name.get(), cprop.get(), &replaced));
                             }
                             XAML_RETURN_IF_FAILED(values->append(child.get()));
                         }
@@ -509,6 +512,7 @@ static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_met
 xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, char const* str, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
 {
     parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.init());
     XAML_RETURN_IF_FAILED(parser.load_string(str));
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
@@ -516,6 +520,7 @@ xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, char cons
 xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
 {
     parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.init());
     XAML_RETURN_IF_FAILED(parser.load_stream(stream));
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
@@ -523,6 +528,7 @@ xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* str
 xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, istream& stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
 {
     parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.init());
     XAML_RETURN_IF_FAILED(parser.load_stream(stream));
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
