@@ -23,4 +23,12 @@ XAML_DECL_INTERFACE_(xaml_enum_info, xaml_reflection_info)
 
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_enum_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_map_view*, xaml_enum_info**) XAML_NOEXCEPT;
 
+#ifdef __cplusplus
+template <typename T>
+xaml_result XAML_CALL xaml_enum_info_new(xaml_string* name, xaml_string* file, xaml_map_view* map, xaml_enum_info** ptr) noexcept
+{
+    return xaml_enum_info_new(xaml_type_guid_v<T>, name, file, map, ptr);
+}
+#endif // __cplusplus
+
 #endif // !XAML_META_ENUM_INFO_H

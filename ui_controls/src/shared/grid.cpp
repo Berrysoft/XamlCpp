@@ -181,6 +181,59 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
     return XAML_S_OK;
 }
 
+template <>
+struct __xaml_converter<xaml_ptr<xaml_vector>, void>
+{
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_ptr<xaml_vector>& value) const noexcept
+    {
+        if (auto vec = obj.query<xaml_vector>())
+        {
+            value = vec;
+            return XAML_S_OK;
+        }
+        else if (auto s = obj.query<xaml_string>())
+        {
+            xaml_std_string_view_t str;
+            XAML_RETURN_IF_FAILED(to_string_view_t(s, str));
+            constexpr xaml_char_t __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
+            constexpr xaml_char_t __auto[] = { 'a', 'u', 't', 'o', '\0' };
+            xaml_ptr<xaml_vector> result;
+            XAML_RETURN_IF_FAILED(xaml_vector_new(&result));
+            std::size_t offset = 0;
+            do
+            {
+                std::size_t index = str.find_first_of(__delimeter, offset);
+                xaml_std_string_view_t lenstr = str.substr(offset, index - offset);
+                xaml_grid_length len;
+                if (lenstr == __auto)
+                {
+                    len = { 0, xaml_grid_layout_auto };
+                }
+                else if (lenstr.back() == '*')
+                {
+                    double rate = __stof<double, xaml_char_t>(lenstr.substr(0, lenstr.length() - 1));
+                    len = { rate, xaml_grid_layout_star };
+                }
+                else
+                {
+                    double value = __stof<double, xaml_char_t>(lenstr);
+                    len = { value, xaml_grid_layout_abs };
+                }
+                xaml_ptr<xaml_object> obj;
+                XAML_RETURN_IF_FAILED(xaml_box_value(len, &obj));
+                XAML_RETURN_IF_FAILED(result->append(obj.get()));
+                offset = str.find_first_not_of(__delimeter, index);
+            } while (offset != xaml_std_string_view_t::npos);
+            value = result;
+            return XAML_S_OK;
+        }
+        else
+        {
+            return XAML_E_INVALIDARG;
+        }
+    }
+};
+
 xaml_result XAML_CALL xaml_grid_new(xaml_grid** ptr) noexcept
 {
     return xaml_object_init<xaml_grid_impl>(ptr);

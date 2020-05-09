@@ -17,6 +17,8 @@ typedef enum xaml_halignment
 
 XAML_TYPE(xaml_halignment, { 0x65614483, 0x6bb3, 0x407d, { 0x89, 0xda, 0x41, 0x2f, 0xfd, 0x99, 0xcf, 0xa8 } })
 
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_halignment_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 typedef enum xaml_valignment
 {
     xaml_valignment_stretch,
@@ -26,6 +28,8 @@ typedef enum xaml_valignment
 } xaml_valignment;
 
 XAML_TYPE(xaml_valignment, { 0x71173440, 0xcbf1, 0x4fe9, { 0xbd, 0x93, 0x27, 0x0b, 0x73, 0x8b, 0x44, 0x65 } })
+
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_valignment_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 

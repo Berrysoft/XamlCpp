@@ -4,6 +4,7 @@
 #include <xaml/delegate.h>
 #include <xaml/meta/collection_property_info.h>
 #include <xaml/meta/default_property.h>
+#include <xaml/meta/enum_info.h>
 #include <xaml/meta/event_info.h>
 #include <xaml/meta/method_info.h>
 #include <xaml/meta/property_info.h>
@@ -263,6 +264,38 @@
         XAML_RETURN_IF_FAILED(xaml_default_property_new(__prop_name.get(), &__def_prop)); \
         XAML_RETURN_IF_FAILED(__info->add_attribute(__def_prop.get()));                   \
     } while (0)
+
+#define XAML_ENUM_INFO_NEW(type, file)                                \
+    using self_type = type;                                           \
+    xaml_ptr<xaml_string> __type_name;                                \
+    XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__type_name));   \
+    xaml_ptr<xaml_string> __include_file;                             \
+    XAML_RETURN_IF_FAILED(xaml_string_new(U(file), &__include_file)); \
+    xaml_ptr<xaml_enum_info> __info;                                  \
+    XAML_RETURN_IF_FAILED(xaml_enum_info_new<type>(__type_name.get(), __include_file.get(), __map.get(), &__info))
+
+#define XAML_ENUM_INFO_MAP_NEW()                                                 \
+    xaml_ptr<xaml_map> __map;                                                    \
+    do                                                                           \
+    {                                                                            \
+        xaml_ptr<xaml_hasher> __hasher;                                          \
+        XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&__hasher));            \
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(__hasher.get(), &__map)); \
+    } while (0)
+
+#define XAML_ENUM_INFO_ADD(name, value)                                             \
+    do                                                                              \
+    {                                                                               \
+        xaml_ptr<xaml_string> __name;                                               \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(name), &__name));                   \
+        xaml_ptr<xaml_object> __box;                                                \
+        XAML_RETURN_IF_FAILED(xaml_box_value(value, &__box));                       \
+        bool replaced;                                                              \
+        XAML_RETURN_IF_FAILED(__map->insert(__name.get(), __box.get(), &replaced)); \
+    } while (0)
+
+#define XAML_ENUM_INFO_ADD2(type, name) XAML_ENUM_INFO_ADD(#name, type##_##name)
+
 #endif // __cplusplus
 
 #endif // !XAML_META_META_MACROS_HPP

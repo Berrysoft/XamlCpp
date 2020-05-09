@@ -58,8 +58,7 @@ public:
         if (m_begin == m_end) return XAML_E_FAIL;
         xaml_ptr<xaml_key_value_pair> pair;
         XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(m_begin->first.get(), m_begin->second.get(), &pair));
-        *ptr = pair.get();
-        return XAML_S_OK;
+        return pair->query(ptr);
     }
 };
 

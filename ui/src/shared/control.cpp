@@ -1,4 +1,5 @@
 #include <shared/control.hpp>
+#include <xaml/meta/enum_info.h>
 #include <xaml/ui/control.h>
 
 using namespace std;
@@ -58,5 +59,27 @@ xaml_result XAML_CALL xaml_control_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_control, "xaml/ui/control.h");
     XAML_RETURN_IF_FAILED(xaml_control_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_halignment_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_ENUM_INFO_MAP_NEW();
+    XAML_ENUM_INFO_ADD2(xaml_halignment, stretch);
+    XAML_ENUM_INFO_ADD2(xaml_halignment, left);
+    XAML_ENUM_INFO_ADD2(xaml_halignment, center);
+    XAML_ENUM_INFO_ADD2(xaml_halignment, right);
+    XAML_ENUM_INFO_NEW(xaml_halignment, "xaml/ui/control.h");
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_valignment_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_ENUM_INFO_MAP_NEW();
+    XAML_ENUM_INFO_ADD2(xaml_valignment, stretch);
+    XAML_ENUM_INFO_ADD2(xaml_valignment, top);
+    XAML_ENUM_INFO_ADD2(xaml_valignment, center);
+    XAML_ENUM_INFO_ADD2(xaml_valignment, bottom);
+    XAML_ENUM_INFO_NEW(xaml_valignment, "xaml/ui/control.h");
     return ctx->add_type(__info.get());
 }
