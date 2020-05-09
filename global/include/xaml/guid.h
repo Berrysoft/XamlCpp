@@ -6,9 +6,6 @@
 #include <cstdint>
 #include <functional>
 #include <version>
-#if __cpp_impl_three_way_comparison
-#include <compare>
-#endif // __has_include(<compare>)
 #else
 #include <assert.h>
 #if defined(_MSC_VER) && defined(__clang__)
@@ -29,19 +26,15 @@ struct xaml_guid
     XAML_CSTD uint16_t data2;
     XAML_CSTD uint16_t data3;
     XAML_CSTD uint8_t data4[8];
-
-#ifdef __cpp_impl_three_way_comparison
-    auto operator<=>(xaml_guid const&) const = default;
-#endif // __cpp_impl_three_way_comparison
 };
 
-#if defined(__cplusplus) && !defined(__cpp_impl_three_way_comparison)
+#ifdef __cplusplus
 constexpr bool operator==(xaml_guid const& lhs, xaml_guid const& rhs)
 {
     return lhs.data1 == rhs.data1 && lhs.data2 == rhs.data2 && lhs.data3 == rhs.data3 && std::equal(std::begin(lhs.data4), std::end(lhs.data4), std::begin(rhs.data4), std::end(rhs.data4));
 }
 constexpr bool operator!=(xaml_guid const& lhs, xaml_guid const& rhs) { return !(lhs == rhs); }
-#endif // __cplusplus && !__cpp_impl_three_way_comparison
+#endif // __cplusplus
 
 #ifndef __cplusplus
 inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
