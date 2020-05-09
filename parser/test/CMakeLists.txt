@@ -8,6 +8,11 @@ if(WIN32)
 endif()
 
 target_link_libraries(xaml_test xaml_ui_controls xaml_ui_canvas xaml_parser xaml_ui_appmain)
+if(${BUILD_WINDOWS})
+    target_link_libraries(xaml_test wil)
+elseif(${BUILD_GTK3})
+    target_link_libraries(xaml_test gtk3)
+endif()
 
 target_include_directories(xaml_test PUBLIC include)
 

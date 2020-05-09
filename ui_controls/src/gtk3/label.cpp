@@ -7,8 +7,11 @@ xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        char const* text;
-        XAML_RETURN_IF_FAILED(m_text->get_data(&text));
+        char const* text = nullptr;
+        if (m_text)
+        {
+            XAML_RETURN_IF_FAILED(m_text->get_data(&text));
+        }
         m_handle = gtk_label_new(text);
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
