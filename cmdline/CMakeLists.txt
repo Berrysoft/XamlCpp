@@ -4,11 +4,7 @@ file(GLOB CMDLINE_HEADERS "include/xaml/cmdline/*.h")
 file(GLOB CMDLINE_SOURCES "src/*.cpp")
 
 add_library(xaml_cmdline ${CMDLINE_SOURCES})
-target_link_libraries(xaml_cmdline PUBLIC xaml_meta)
-
-if(APPLE)
-    target_link_libraries(xaml_cmdline PRIVATE Boost::iostreams)
-endif()
+target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers)
 
 target_include_directories(xaml_cmdline
     PUBLIC 

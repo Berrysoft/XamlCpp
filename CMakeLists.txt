@@ -149,6 +149,7 @@ set(_XAML_TARGETS
 )
 
 add_subdirectory(global)
+add_subdirectory(helpers)
 add_subdirectory(meta)
 add_subdirectory(rapidxml)
 add_subdirectory(parser)

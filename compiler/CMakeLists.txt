@@ -1,10 +1,10 @@
 project(XamlC CXX)
 
-file(GLOB XAMLC_HEADERS "include/xaml/*.hpp")
+file(GLOB XAMLC_HEADERS "include/xaml/compiler/*.h")
 file(GLOB XAMLC_SOURCES "src/*.cpp")
 
 add_library(xaml_compiler ${XAMLC_SOURCES})
-target_link_libraries(xaml_compiler PUBLIC xaml_parser)
+target_link_libraries(xaml_compiler PUBLIC xaml_parser PRIVATE xaml_helpers)
 
 target_include_directories(xaml_compiler
     PUBLIC 
@@ -18,7 +18,7 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_compiler PRIVATE "XAML_COMPILER_API=__XAML_EXPORT")
 endif()
 
-install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml)
+install(FILES ${XAMLC_HEADERS} DESTINATION include/xaml/compiler)
 
 if(${BUILD_TESTS})
     add_subdirectory(test)

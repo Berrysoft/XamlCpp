@@ -1,20 +1,8 @@
 #include <xaml/cmdline/option.h>
+#include <xaml/internal/stream.hpp>
 #include <xaml/map.h>
 
-#ifdef _MSC_VER
-#include <fstream>
-#elif defined(XAML_APPLE)
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
-#else
-#include <ext/stdio_filebuf.h>
-#endif // _MSC_VER
-
 using namespace std;
-
-#ifdef XAML_APPLE
-using namespace boost::iostreams;
-#endif // XAML_APPLE
 
 #define m_outer_this this
 
@@ -110,21 +98,7 @@ xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcep
     return xaml_object_init<xaml_cmdline_option_impl>(ptr);
 }
 
-xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept
-{
-#ifdef _MSC_VER
-    basic_filebuf<xaml_char_t> buf{ file };
-#elif defined(XAML_APPLE)
-    stream_buffer<file_descriptor_sink> buf{ fileno(file), never_close_handle };
-#else
-    __gnu_cxx::stdio_filebuf<xaml_char_t> buf{ file, ios_base::out };
-#endif // _MSC_VER
-
-    basic_ostream<xaml_char_t> stream{ &buf };
-    return xaml_cmdline_option_print(stream, opt);
-}
-
-xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
 {
     constexpr size_t offset = 2;
     constexpr size_t spacing = 24;
@@ -192,4 +166,14 @@ xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stre
     }
     XAML_FOREACH_END();
     return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept
+{
+    return call_with_file_to_stream(xaml_cmdline_option_print_impl, file, opt);
+}
+
+xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+{
+    return xaml_cmdline_option_print_impl(stream, opt);
 }

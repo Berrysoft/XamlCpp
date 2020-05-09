@@ -1,4 +1,4 @@
-project(XamlUI CXX)
+project(XamlUI)
 
 file(GLOB UI_HEADERS "include/xaml/ui/*.h*")
 file(GLOB UI_WINDOWS_HEADERS "include/xaml/ui/win/*.h")
