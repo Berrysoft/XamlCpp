@@ -4,6 +4,7 @@
 #include <xaml/map.h>
 #include <xaml/meta/module.h>
 #include <xaml/meta/reflection_info.h>
+#include <xaml/meta/type_info.h>
 #include <xaml/object.h>
 #include <xaml/vector.h>
 

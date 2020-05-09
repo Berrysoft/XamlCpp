@@ -317,10 +317,12 @@ xaml_result XAML_CALL xaml_parser_deserialize(xaml_meta_context* ctx, xaml_node*
     return des.deserialize(node, ptr);
 }
 
-xaml_result XAML_CALL xaml_parser_deserialize_inplace(xaml_meta_context* ctx, xaml_node* node, xaml_object* mc, xaml_guid const& type) noexcept
+xaml_result XAML_CALL xaml_parser_deserialize_inplace(xaml_meta_context* ctx, xaml_node* node, xaml_object* mc) noexcept
 {
     deserializer_impl des{ ctx };
     XAML_RETURN_IF_FAILED(des.init());
+    xaml_guid type;
+    XAML_RETURN_IF_FAILED(mc->get_guid(&type));
     xaml_ptr<xaml_reflection_info> info;
     XAML_RETURN_IF_FAILED(ctx->get_type(type, &info));
     xaml_ptr<xaml_type_info> t;

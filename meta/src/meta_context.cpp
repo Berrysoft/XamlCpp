@@ -105,9 +105,81 @@ public:
         return m_name_info_map->insert(name.get(), info, &replaced);
     }
 
-    xaml_result XAML_CALL bind(xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode = xaml_binding_one_time) noexcept override
+    static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept
     {
-        // TODO
+        xaml_std_string_view_t name_view;
+        XAML_RETURN_IF_FAILED(to_string_view_t(name, name_view));
+        return xaml_string_new((xaml_std_string_t)name_view + U("_changed"), ptr);
+    }
+
+    xaml_result XAML_CALL bind(xaml_object* target, xaml_string* target_prop, xaml_object* source, xaml_string* source_prop, xaml_binding_mode mode) noexcept override
+    {
+        xaml_ptr<xaml_type_info> target_type;
+        {
+            xaml_guid id;
+            XAML_RETURN_IF_FAILED(target->get_guid(&id));
+            xaml_ptr<xaml_reflection_info> info;
+            XAML_RETURN_IF_FAILED(get_type(id, &info));
+            XAML_RETURN_IF_FAILED(info->query(&target_type));
+        }
+        xaml_ptr<xaml_type_info> source_type;
+        {
+            xaml_guid id;
+            XAML_RETURN_IF_FAILED(source->get_guid(&id));
+            xaml_ptr<xaml_reflection_info> info;
+            XAML_RETURN_IF_FAILED(get_type(id, &info));
+            XAML_RETURN_IF_FAILED(info->query(&source_type));
+        }
+        xaml_ptr<xaml_property_info> targetp;
+        XAML_RETURN_IF_FAILED(target_type->get_property(target_prop, &targetp));
+        xaml_ptr<xaml_event_info> targete;
+        {
+            xaml_ptr<xaml_string> name;
+            XAML_RETURN_IF_FAILED(get_property_changed_event_name(target_prop, &name));
+            XAML_RETURN_IF_FAILED(target_type->get_event(name.get(), &targete));
+        }
+        xaml_ptr<xaml_property_info> sourcep;
+        XAML_RETURN_IF_FAILED(source_type->get_property(source_prop, &sourcep));
+        xaml_ptr<xaml_event_info> sourcee;
+        {
+            xaml_ptr<xaml_string> name;
+            XAML_RETURN_IF_FAILED(get_property_changed_event_name(source_prop, &name));
+            XAML_RETURN_IF_FAILED(source_type->get_event(name.get(), &sourcee));
+        }
+        if (mode & xaml_binding_one_way)
+        {
+            xaml_ptr<xaml_object> value;
+            XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
+            XAML_RETURN_IF_FAILED(targetp->set(target, value.get()));
+            xaml_ptr<xaml_delegate> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
+                [source, sourcep, target, targetp]() -> xaml_result {
+                    xaml_ptr<xaml_object> value;
+                    XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
+                    XAML_RETURN_IF_FAILED(targetp->set(target, value.get()));
+                    return XAML_S_OK;
+                },
+                &callback)));
+            int32_t token;
+            XAML_RETURN_IF_FAILED(sourcee->add(source, callback.get(), &token));
+        }
+        if (mode & xaml_binding_one_way_to_source)
+        {
+            xaml_ptr<xaml_object> value;
+            XAML_RETURN_IF_FAILED(targetp->get(target, &value));
+            XAML_RETURN_IF_FAILED(sourcep->set(source, value.get()));
+            xaml_ptr<xaml_delegate> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
+                [source, sourcep, target, targetp]() -> xaml_result {
+                    xaml_ptr<xaml_object> value;
+                    XAML_RETURN_IF_FAILED(targetp->get(target, &value));
+                    XAML_RETURN_IF_FAILED(sourcep->set(source, value.get()));
+                    return XAML_S_OK;
+                },
+                &callback)));
+            int32_t token;
+            XAML_RETURN_IF_FAILED(targete->add(target, callback.get(), &token));
+        }
         return XAML_S_OK;
     }
 };

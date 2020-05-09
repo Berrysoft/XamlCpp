@@ -37,15 +37,17 @@ struct xaml_test_window_impl : xaml_window_implement<xaml_test_window_impl, xaml
 };
 
 xaml_result xaml_test_window_internal::init() noexcept
+try
 {
     XAML_RETURN_IF_FAILED(xaml_window_internal::init());
     ifstream stream{ "test.xaml" };
     xaml_ptr<xaml_node> node;
     xaml_ptr<xaml_vector_view> headers;
     XAML_RETURN_IF_FAILED(xaml_parser_parse_stream(m_ctx.get(), stream, &node, &headers));
-    XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx.get(), node.get(), m_outer_this, xaml_type_guid_v<xaml_test_window>));
+    XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx.get(), node.get(), m_outer_this));
     return XAML_S_OK;
 }
+XAML_CATCH_RETURN()
 
 xaml_result xaml_test_window_internal::on_button_click(xaml_button* btn) noexcept
 {
