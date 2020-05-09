@@ -105,9 +105,9 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
 {
     XAML_PROP_PTR_INTERNAL_IMPL(menu_bar, xaml_control)
 
-    xaml_result XAML_CALL show() noexcept override { return m_internal.show(); }
-    xaml_result XAML_CALL close() noexcept override { return m_internal.close(); }
-    xaml_result XAML_CALL hide() noexcept override { return m_internal.hide(); }
+    xaml_result XAML_CALL show() noexcept override { return this->m_internal.show(); }
+    xaml_result XAML_CALL close() noexcept override { return this->m_internal.close(); }
+    xaml_result XAML_CALL hide() noexcept override { return this->m_internal.hide(); }
 
     XAML_EVENT_INTERNAL_IMPL(is_resizable_changed)
     XAML_PROP_INTERNAL_IMPL(is_resizable, bool*, bool)
@@ -132,9 +132,9 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
 
     struct xaml_win32_window_impl : xaml_win32_control_implement<xaml_win32_window_impl, T, xaml_win32_window>
     {
-        xaml_result XAML_CALL get_real_location(xaml_point* pvalue) noexcept override { return m_outer->get_real_location(pvalue); }
-        xaml_result XAML_CALL set_real_location(xaml_point const& value) noexcept override { return m_outer->set_real_location(value); }
-        xaml_result XAML_CALL get_real_client_region(xaml_rectangle* pvalue) noexcept override { return m_outer->get_real_client_region(pvalue); }
+        xaml_result XAML_CALL get_real_location(xaml_point* pvalue) noexcept override { return this->m_outer->get_real_location(pvalue); }
+        xaml_result XAML_CALL set_real_location(xaml_point const& value) noexcept override { return this->m_outer->set_real_location(value); }
+        xaml_result XAML_CALL get_real_client_region(xaml_rectangle* pvalue) noexcept override { return this->m_outer->get_real_client_region(pvalue); }
     } m_native_window;
 
     using native_window_type = xaml_win32_window;
@@ -145,12 +145,12 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
 
     struct xaml_gtk3_window_impl : xaml_gtk3_control_implement<xaml_gtk3_window_impl, T, xaml_gtk3_window>
     {
-        xaml_result XAML_CALL get_window(GtkWidget** pvalue) noexcept override { return m_outer->get_window_handle(pvalue); }
-        xaml_result XAML_CALL set_window(GtkWidget* value) noexcept override { return m_outer->set_window_handle(value); }
-        xaml_result XAML_CALL get_vbox(GtkWidget** pvalue) noexcept override { return m_outer->get_vbox_handle(pvalue); }
-        xaml_result XAML_CALL set_vbox(GtkWidget* value) noexcept override { return m_outer->set_vbox_handle(value); }
-        xaml_result XAML_CALL get_menu_bar(GtkWidget** pvalue) noexcept override { return m_outer->get_menu_bar_handle(pvalue); }
-        xaml_result XAML_CALL set_menu_bar(GtkWidget* value) noexcept override { return m_outer->set_menu_bar_handle(value); }
+        xaml_result XAML_CALL get_window(GtkWidget** pvalue) noexcept override { return this->m_outer->get_window_handle(pvalue); }
+        xaml_result XAML_CALL set_window(GtkWidget* value) noexcept override { return this->m_outer->set_window_handle(value); }
+        xaml_result XAML_CALL get_vbox(GtkWidget** pvalue) noexcept override { return this->m_outer->get_vbox_handle(pvalue); }
+        xaml_result XAML_CALL set_vbox(GtkWidget* value) noexcept override { return this->m_outer->set_vbox_handle(value); }
+        xaml_result XAML_CALL get_menu_bar(GtkWidget** pvalue) noexcept override { return this->m_outer->get_menu_bar_handle(pvalue); }
+        xaml_result XAML_CALL set_menu_bar(GtkWidget* value) noexcept override { return this->m_outer->set_menu_bar_handle(value); }
     } m_native_window;
 
     using native_window_type = xaml_gtk3_window;
@@ -160,17 +160,17 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
     {
         if (type == xaml_type_guid_v<native_window_type>)
         {
-            add_ref();
+            this->add_ref();
             *ptr = static_cast<native_window_type*>(&m_native_window);
             return XAML_S_OK;
         }
         else
         {
-            return xaml_container_implement::query(type, ptr);
+            return xaml_container_implement<T, Internal, Base..., xaml_window>::query(type, ptr);
         }
     }
 
-    xaml_window_implement() noexcept : xaml_container_implement()
+    xaml_window_implement() noexcept
     {
         m_native_window.m_outer = static_cast<T*>(this);
     }

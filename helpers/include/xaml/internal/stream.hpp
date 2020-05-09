@@ -21,7 +21,7 @@ decltype(auto) call_with_file_to_stream(F&& f, std::FILE* file, Args&&... args) 
 #elif defined(XAML_APPLE)
     boost::iostreams::stream_buffer<boost::iostreams::file_descriptor_sink> buf{ fileno(file), never_close_handle };
 #else
-    __gnu_cxx::stdio_filebuf<Char> buf{ file, ios_base::out };
+    __gnu_cxx::stdio_filebuf<Char> buf{ file, std::ios_base::out };
 #endif // _MSC_VER
 
     std::basic_ostream<Char> stream{ &buf };

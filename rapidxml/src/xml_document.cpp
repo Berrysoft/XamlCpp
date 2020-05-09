@@ -5,7 +5,6 @@
 #include <vector>
 
 using namespace std;
-using std::filesystem::path;
 
 namespace rapidxml
 {
