@@ -8,6 +8,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/control.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/control.h>
 #elif defined(XAML_UI_GTK3)
 #include <xaml/ui/gtk3/control.h>
 #endif // XAML_UI_WINDOWS
@@ -100,6 +102,8 @@ struct xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const&) noexcept;
     XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin*) noexcept;
     XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const&) noexcept;
+#elif defined(XAML_UI_COCOA)
+    XAML_PROP_IMPL(handle, OBJC_OBJECT(NSView), OBJC_OBJECT(NSView) *, OBJC_OBJECT(NSView))
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
@@ -122,6 +126,13 @@ struct xaml_win32_control_implement : xaml_inner_implement<T2, D, Base2>
     xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept override { return this->m_outer->set_real_size(value); }
     xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept override { return this->m_outer->get_real_margin(pvalue); }
     xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept override { return this->m_outer->set_real_margin(value); }
+};
+#elif defined(XAML_UI_COCOA)
+template <typename T2, typename D, typename Base2>
+struct xaml_cocoa_control_implement : xaml_inner_implement<T2, D, Base2>
+{
+    xaml_result XAML_CALL get_handle(OBJC_OBJECT(NSView) * pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+    xaml_result XAML_CALL set_handle(OBJC_OBJECT(NSView) value) noexcept override { return this->m_outer->set_handle(value); }
 };
 #elif defined(XAML_UI_GTK3)
 template <typename T2, typename D, typename Base2>
@@ -179,6 +190,14 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     XAML_PROP_INTERNAL_IMPL(real_margin, xaml_margin*, xaml_margin const&)
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
+#elif defined(XAML_UI_COCOA)
+    XAML_PROP_INTERNAL_IMPL(handle, OBJC_OBJECT(NSView) *, OBJC_OBJECT(NSView))
+
+    struct xaml_cocoa_control_impl : xaml_cocoa_control_implement<xaml_cocoa_control_impl, T, xaml_cocoa_control>
+    {
+    } m_native_control;
+
+    using native_control_type = xaml_cocoa_control;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_INTERNAL_IMPL(handle, GtkWidget**, GtkWidget*)
 
