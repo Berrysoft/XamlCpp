@@ -141,11 +141,11 @@ option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
-    xaml_meta xaml_parser xaml_compiler
+    xaml_meta xaml_parser #xaml_compiler
     xaml_ui xaml_ui_appmain
     xaml_ui_controls
     xaml_ui_canvas
-    xaml_cmdline
+    #xaml_cmdline
 )
 
 add_subdirectory(global)
@@ -153,7 +153,6 @@ add_subdirectory(helpers)
 add_subdirectory(meta)
 add_subdirectory(rapidxml)
 add_subdirectory(parser)
-add_subdirectory(compiler)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
 add_subdirectory(ui_canvas)
@@ -166,7 +165,6 @@ if(${BUILD_WEBVIEW})
     endif()
 endif()
 add_subdirectory(cmdline)
-add_subdirectory(xamlcpp)
 
 install(
     TARGETS ${_XAML_TARGETS}
