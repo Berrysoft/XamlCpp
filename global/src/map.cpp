@@ -157,7 +157,12 @@ public:
 
     xaml_result XAML_CALL has_key(xaml_object* key, bool* pb) noexcept override
     {
+#ifdef XAML_APPLE
+        auto it = m_map.find(key);
+        *pb = it != m_map.end();
+#else
         *pb = m_map.contains(key);
+#endif // XAML_APPLE
         return XAML_S_OK;
     }
 

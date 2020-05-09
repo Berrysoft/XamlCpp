@@ -2,6 +2,7 @@
 #define XAML_META_GUID_HPP
 
 #ifdef __cplusplus
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
 #include <functional>
