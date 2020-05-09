@@ -35,6 +35,7 @@ xaml_result XAML_CALL xaml_entry_members(xaml_type_info_registration* __info) no
     XAML_TYPE_INFO_ADD_CTOR(xaml_entry_new);
     XAML_TYPE_INFO_ADD_PROP_EVENT(text, xaml_string);
     XAML_TYPE_INFO_ADD_PROP(text_halignment, xaml_halignment);
+    XAML_TYPE_INFO_ADD_DEF_PROP(text);
     return XAML_S_OK;
 }
 

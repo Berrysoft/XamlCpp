@@ -113,6 +113,7 @@ xaml_result xaml_uniform_grid_internal::size_to_fit() noexcept
     {
         xaml_ptr<xaml_control> cc;
         XAML_RETURN_IF_FAILED(c->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->size_to_fit());
         xaml_size csize;
         XAML_RETURN_IF_FAILED(cc->get_size(&csize));
         xaml_margin cmargin;

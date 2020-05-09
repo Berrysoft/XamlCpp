@@ -18,8 +18,10 @@ xaml_result xaml_radio_box_internal::wnd_proc(xaml_win32_window_message const& m
             switch (HIWORD(msg.wParam))
             {
             case BN_CLICKED:
-                XAML_RETURN_IF_FAILED(set_is_checked(Button_GetCheck(m_handle) == BST_CHECKED));
+            {
+                XAML_RETURN_IF_FAILED(set_is_checked(true));
                 break;
+            }
             }
         }
         break;

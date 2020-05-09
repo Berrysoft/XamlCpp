@@ -18,7 +18,7 @@ xaml_result xaml_check_box_internal::wnd_proc(xaml_win32_window_message const& m
             switch (HIWORD(msg.wParam))
             {
             case BN_CLICKED:
-                XAML_RETURN_IF_FAILED(set_is_checked(Button_GetCheck(m_handle) == BST_CHECKED));
+                XAML_RETURN_IF_FAILED(set_is_checked(!m_is_checked));
                 break;
             }
         }
@@ -36,7 +36,7 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
         {
             xaml_win32_window_create_params params = {};
             params.class_name = WC_BUTTON;
-            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_AUTOCHECKBOX;
+            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_CHECKBOX;
             params.x = 0;
             params.y = 0;
             params.width = 50;
