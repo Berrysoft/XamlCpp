@@ -31,7 +31,7 @@ xaml_result XAML_CALL xaml_webview_new(xaml_webview** ptr) noexcept
 xaml_result XAML_CALL xaml_webview_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_webview;
-    XAML_TYPE_INFO_ADD_PROP_EVENT(uri);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(uri, xaml_string);
     XAML_TYPE_INFO_ADD_EVENT(resource_requested);
     return XAML_S_OK;
 }

@@ -57,11 +57,11 @@ decltype(auto) __xaml_wrapper_get(__xaml_wrapper_t<T> const& value) noexcept
     return __xaml_wrapper<T>::get(value);
 }
 
-template <typename T, typename TValueGet, typename TValueSet = TValueGet>
+template <typename TValue, typename T, typename TValueGet, typename TValueSet = TValueGet>
 xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
-        name, xaml_type_guid_v<T>,
+        name, xaml_type_guid_v<TValue>,
         [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
@@ -79,11 +79,11 @@ xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAM
         ptr);
 }
 
-template <typename T, typename TValueGet, typename TValueSet = TValueGet>
+template <typename TValue, typename T, typename TValueGet, typename TValueSet = TValueGet>
 xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result(XAML_CALL* getter)(T*, TValueGet*) noexcept, xaml_result(XAML_CALL* setter)(T*, TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
-        name, xaml_type_guid_v<T>,
+        name, xaml_type_guid_v<TValue>,
         [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
@@ -101,11 +101,11 @@ xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result(XAML
         ptr);
 }
 
-template <typename T, typename TValueGet>
+template <typename TValue, typename T, typename TValueGet>
 xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
-        name, xaml_type_guid_v<T>,
+        name, xaml_type_guid_v<TValue>,
         [getter](xaml_object* target, xaml_object** ptr) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));

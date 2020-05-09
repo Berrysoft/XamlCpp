@@ -12,6 +12,8 @@ typedef enum xaml_grid_layout
 
 XAML_TYPE(xaml_grid_layout, { 0x61521be2, 0x02fd, 0x40b8, { 0xb2, 0xa2, 0x5f, 0x60, 0xd9, 0x6b, 0x5c, 0x39 } })
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_layout_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 typedef struct xaml_grid_length xaml_grid_length;
 
 struct xaml_grid_length

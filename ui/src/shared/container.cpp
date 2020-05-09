@@ -25,7 +25,7 @@ xaml_result XAML_CALL xaml_container_members(xaml_type_info_registration* __info
 {
     using self_type = xaml_container;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
-    XAML_TYPE_INFO_ADD_PROP_EVENT(child);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(child, xaml_control);
     XAML_TYPE_INFO_ADD_DEF_PROP(child);
     return XAML_S_OK;
 }
@@ -41,7 +41,7 @@ xaml_result XAML_CALL xaml_multicontainer_members(xaml_type_info_registration* _
 {
     using self_type = xaml_multicontainer;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
-    XAML_TYPE_INFO_ADD_CPROP(child);
+    XAML_TYPE_INFO_ADD_CPROP(child, xaml_control);
     XAML_TYPE_INFO_ADD_DEF_PROP(child);
     return XAML_S_OK;
 }

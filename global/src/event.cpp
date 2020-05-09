@@ -38,8 +38,7 @@ public:
         for (auto& pair : m_callbacks)
         {
             xaml_ptr<xaml_object> obj;
-            xaml_result hr = pair.second->invoke(args, &obj);
-            if (XAML_FAILED(hr)) return hr;
+            XAML_RETURN_IF_FAILED(pair.second->invoke(args, &obj));
         }
         *ptr = nullptr;
         return XAML_S_OK;

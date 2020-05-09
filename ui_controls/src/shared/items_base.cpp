@@ -101,8 +101,8 @@ xaml_result XAML_CALL xaml_items_base_members(xaml_type_info_registration* __inf
 {
     using self_type = xaml_items_base;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
-    XAML_TYPE_INFO_ADD_PROP_EVENT(items);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(sel_id);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(items, xaml_observable_vector);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(sel_id, int32_t);
     return XAML_S_OK;
 }
 

@@ -96,7 +96,7 @@ xaml_result XAML_CALL xaml_stack_panel_members(xaml_type_info_registration* __in
     using self_type = xaml_stack_panel;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_stack_panel_new);
-    XAML_TYPE_INFO_ADD_PROP(orientation);
+    XAML_TYPE_INFO_ADD_PROP(orientation, xaml_orientation);
     return XAML_S_OK;
 }
 

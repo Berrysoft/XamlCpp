@@ -33,8 +33,8 @@ xaml_result XAML_CALL xaml_label_members(xaml_type_info_registration* __info) no
     using self_type = xaml_label;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_label_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(text);
-    XAML_TYPE_INFO_ADD_PROP(text_halignment);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(text, xaml_string);
+    XAML_TYPE_INFO_ADD_PROP(text_halignment, xaml_halignment);
     return XAML_S_OK;
 }
 

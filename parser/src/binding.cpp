@@ -32,9 +32,10 @@ xaml_result XAML_CALL xaml_binding_new(xaml_binding** ptr) noexcept
 xaml_result XAML_CALL xaml_binding_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_binding;
-    XAML_TYPE_INFO_ADD_PROP(element);
-    XAML_TYPE_INFO_ADD_PROP(path);
-    XAML_TYPE_INFO_ADD_PROP(mode);
+    XAML_TYPE_INFO_ADD_CTOR(xaml_binding_new);
+    XAML_TYPE_INFO_ADD_PROP(element, xaml_string);
+    XAML_TYPE_INFO_ADD_PROP(path, xaml_string);
+    XAML_TYPE_INFO_ADD_PROP(mode, xaml_binding_mode);
     XAML_TYPE_INFO_ADD_DEF_PROP(path);
     return XAML_S_OK;
 }
@@ -43,5 +44,16 @@ xaml_result XAML_CALL xaml_binding_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_binding, "xaml/markup/binding.h");
     XAML_RETURN_IF_FAILED(xaml_binding_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_binding_mode_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_ENUM_INFO_MAP_NEW();
+    XAML_ENUM_INFO_ADD2(xaml_binding, one_time);
+    XAML_ENUM_INFO_ADD2(xaml_binding, one_way);
+    XAML_ENUM_INFO_ADD2(xaml_binding, one_way_to_source);
+    XAML_ENUM_INFO_ADD2(xaml_binding, two_way);
+    XAML_ENUM_INFO_NEW(xaml_binding_mode, "xaml/meta/meta_context.h");
     return ctx->add_type(__info.get());
 }

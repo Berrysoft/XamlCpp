@@ -123,7 +123,7 @@ xaml_result XAML_CALL xaml_menu_item_members(xaml_type_info_registration* __info
     using self_type = xaml_menu_item;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_menu_item_new);
-    XAML_TYPE_INFO_ADD_PROP(text);
+    XAML_TYPE_INFO_ADD_PROP(text, xaml_string);
     XAML_TYPE_INFO_ADD_EVENT(click);
     XAML_TYPE_INFO_ADD_DEF_PROP(text);
     return XAML_S_OK;
@@ -146,7 +146,7 @@ xaml_result XAML_CALL xaml_popup_menu_item_members(xaml_type_info_registration* 
     using self_type = xaml_popup_menu_item;
     XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_popup_menu_item_new);
-    XAML_TYPE_INFO_ADD_CPROP(submenu);
+    XAML_TYPE_INFO_ADD_CPROP(submenu, xaml_menu_item);
     return XAML_S_OK;
 }
 
@@ -167,7 +167,7 @@ xaml_result XAML_CALL xaml_check_menu_item_members(xaml_type_info_registration* 
     using self_type = xaml_check_menu_item;
     XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_check_menu_item_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
     return XAML_S_OK;
 }
 
@@ -188,8 +188,8 @@ xaml_result XAML_CALL xaml_radio_menu_item_members(xaml_type_info_registration* 
     using self_type = xaml_radio_menu_item;
     XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_radio_menu_item_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
-    XAML_TYPE_INFO_ADD_PROP(group);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
+    XAML_TYPE_INFO_ADD_PROP(group, xaml_string);
     return XAML_S_OK;
 }
 

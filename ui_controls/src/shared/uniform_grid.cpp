@@ -136,9 +136,9 @@ xaml_result XAML_CALL xaml_uniform_grid_members(xaml_type_info_registration* __i
     using self_type = xaml_uniform_grid;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_uniform_grid_new);
-    XAML_TYPE_INFO_ADD_PROP(columns);
-    XAML_TYPE_INFO_ADD_PROP(rows);
-    XAML_TYPE_INFO_ADD_PROP(orientation);
+    XAML_TYPE_INFO_ADD_PROP(columns, int32_t);
+    XAML_TYPE_INFO_ADD_PROP(rows, int32_t);
+    XAML_TYPE_INFO_ADD_PROP(orientation, xaml_orientation);
     return XAML_S_OK;
 }
 

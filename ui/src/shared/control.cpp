@@ -46,12 +46,12 @@ xaml_result xaml_control_internal::init() noexcept
 xaml_result XAML_CALL xaml_control_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_control;
-    XAML_TYPE_INFO_ADD_PROP_EVENT(size);
-    XAML_TYPE_INFO_ADD_PROP(width);
-    XAML_TYPE_INFO_ADD_PROP(height);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(margin);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(halignment);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(valignment);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(size, xaml_size);
+    XAML_TYPE_INFO_ADD_PROP(width, double);
+    XAML_TYPE_INFO_ADD_PROP(height, double);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(margin, xaml_margin);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(halignment, xaml_halignment);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(valignment, xaml_valignment);
     return XAML_S_OK;
 }
 

@@ -11,6 +11,8 @@ typedef enum xaml_orientation
 
 XAML_TYPE(xaml_orientation, { 0xbf0f301a, 0xeac7, 0x45a8, { 0x8c, 0xf2, 0x95, 0x69, 0x83, 0xea, 0x18, 0xf3 } })
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_orientation_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 XAML_CLASS(xaml_layout_base, { 0x11aee394, 0x31f8, 0x40ac, { 0xb3, 0x8f, 0x69, 0xb8, 0x86, 0x36, 0x68, 0x22 } })
 
 #define XAML_LAYOUT_BASE_VTBL(type) XAML_VTBL_INHERIT(XAML_MULTICONTAINER_VTBL(type))

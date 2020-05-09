@@ -69,7 +69,7 @@ xaml_result xaml_control_internal::size_to_fit() noexcept
 xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept
 {
     wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
-    if (hDC)
+    if (hDC && str)
     {
         xaml_std_string_view_t view;
         XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
@@ -79,7 +79,7 @@ xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& s
     }
     else
     {
-        *pvalue = {};
+        *pvalue = offset;
     }
     return XAML_S_OK;
 }

@@ -11,7 +11,7 @@ using namespace rapidxml;
 xaml_result XAML_CALL xaml_parser_register(xaml_meta_context* ctx) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_binding_register(ctx));
-    // binding_mode
+    XAML_RETURN_IF_FAILED(xaml_binding_mode_register(ctx));
     return XAML_S_OK;
 }
 

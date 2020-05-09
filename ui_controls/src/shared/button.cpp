@@ -41,8 +41,8 @@ xaml_result XAML_CALL xaml_button_members(xaml_type_info_registration* __info) n
     using self_type = xaml_button;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_button_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(text);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_default);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(text, xaml_string);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_default, bool);
     XAML_TYPE_INFO_ADD_EVENT(click);
     XAML_TYPE_INFO_ADD_DEF_PROP(text);
     return XAML_S_OK;

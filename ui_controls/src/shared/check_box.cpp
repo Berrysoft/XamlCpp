@@ -37,7 +37,7 @@ xaml_result XAML_CALL xaml_check_box_members(xaml_type_info_registration* __info
     using self_type = xaml_check_box;
     XAML_RETURN_IF_FAILED(xaml_button_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_check_box_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
     return XAML_S_OK;
 }
 

@@ -33,7 +33,7 @@ xaml_result XAML_CALL xaml_password_entry_members(xaml_type_info_registration* _
     using self_type = xaml_password_entry;
     XAML_RETURN_IF_FAILED(xaml_entry_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_password_entry_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(password_char);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(password_char, xaml_char_t);
     return XAML_S_OK;
 }
 

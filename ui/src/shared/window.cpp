@@ -45,13 +45,13 @@ xaml_result XAML_CALL xaml_window_members(xaml_type_info_registration* __info) n
     using self_type = xaml_window;
     XAML_RETURN_IF_FAILED(xaml_container_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_window_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(title);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(location);
-    XAML_TYPE_INFO_ADD_PROP(x);
-    XAML_TYPE_INFO_ADD_PROP(y);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(title, xaml_string);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(location, xaml_point);
+    XAML_TYPE_INFO_ADD_PROP(x, double);
+    XAML_TYPE_INFO_ADD_PROP(y, double);
     XAML_TYPE_INFO_ADD_EVENT(closing);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_resizable);
-    XAML_TYPE_INFO_ADD_PROP(menu_bar);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_resizable, bool);
+    XAML_TYPE_INFO_ADD_PROP(menu_bar, xaml_control);
     return XAML_S_OK;
 }
 

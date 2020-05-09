@@ -4,6 +4,8 @@
 #include <xaml/markup/markup_extension.h>
 #include <xaml/meta/meta_macros.h>
 
+EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_binding_mode_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 XAML_CLASS(xaml_binding, { 0x9b0c4424, 0x93f5, 0x45e7, { 0xb8, 0xcf, 0x60, 0x24, 0x27, 0x2d, 0x03, 0x4e } })
 
 #define XAML_BINDING_VTBL(type)                            \

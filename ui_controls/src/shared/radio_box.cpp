@@ -8,6 +8,8 @@ xaml_result xaml_radio_box_internal::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_button_internal::init());
 
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
+
     int32_t token;
     XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
         [this](xaml_ptr<xaml_radio_box>, bool) -> xaml_result {
@@ -74,8 +76,8 @@ xaml_result XAML_CALL xaml_radio_box_members(xaml_type_info_registration* __info
     using self_type = xaml_radio_box;
     XAML_RETURN_IF_FAILED(xaml_button_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_radio_box_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked);
-    XAML_TYPE_INFO_ADD_PROP(group);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
+    XAML_TYPE_INFO_ADD_PROP(group, xaml_string);
     return XAML_S_OK;
 }
 

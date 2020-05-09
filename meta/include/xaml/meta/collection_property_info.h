@@ -35,11 +35,11 @@ EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(x
 #ifdef __cplusplus
 XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
 
-template <typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
+template <typename TValue, typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
 inline xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_collection_property_info_new(
-        name, xaml_type_guid_v<T>,
+        name, xaml_type_guid_v<TValue>,
         [adder](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));

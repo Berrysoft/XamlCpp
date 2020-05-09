@@ -127,34 +127,26 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void(std::function<xa
 template <typename Return, typename... Args, typename F>
 inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate** ptr) noexcept
 {
-    if constexpr (std::is_same_v<Return, void>)
-    {
-        return xaml_delegate_new(
-            std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
-                [func = std::function<xaml_result(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
-                    std::int32_t size;
-                    XAML_RETURN_IF_FAILED(args->get_size(&size));
-                    if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+    return xaml_delegate_new(
+        std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
+            [func = std::function<xaml_result(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+                std::int32_t size;
+                XAML_RETURN_IF_FAILED(args->get_size(&size));
+                if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                if constexpr (std::is_same_v<Return, void>)
+                {
                     XAML_RETURN_IF_FAILED(__xaml_delegate_noexcept_impl_invoke_void(func, args));
                     *ptr = nullptr;
                     return XAML_S_OK;
-                } },
-            ptr);
-    }
-    else
-    {
-        return xaml_delegate_new(
-            std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
-                [func = std::function<xaml_result(Args..., Return*)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
-                    std::int32_t size;
-                    XAML_RETURN_IF_FAILED(args->get_size(&size));
-                    if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                }
+                else
+                {
                     Return result;
                     XAML_RETURN_IF_FAILED(__xaml_delegate_noexcept_impl_invoke(&result, func, args));
                     return xaml_box_value(result, ptr);
-                } },
-            ptr);
-    }
+                }
+            } },
+        ptr);
 }
 
 template <typename... Args>

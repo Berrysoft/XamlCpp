@@ -244,14 +244,14 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
     using self_type = xaml_grid;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_grid_new);
-    XAML_TYPE_INFO_ADD_PROP(columns);
-    XAML_TYPE_INFO_ADD_PROP(rows);
-    XAML_TYPE_INFO_ADD_CPROP(column);
-    XAML_TYPE_INFO_ADD_CPROP(row);
-    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column);
-    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row);
-    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column_span);
-    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row_span);
+    XAML_TYPE_INFO_ADD_PROP(columns, xaml_vector);
+    XAML_TYPE_INFO_ADD_PROP(rows, xaml_vector);
+    XAML_TYPE_INFO_ADD_CPROP(column, xaml_grid_length);
+    XAML_TYPE_INFO_ADD_CPROP(row, xaml_grid_length);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column, int32_t);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row, int32_t);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, column_span, int32_t);
+    XAML_TYPE_INFO_ADD_APROP(xaml_grid, row_span, int32_t);
     return XAML_S_OK;
 }
 
@@ -308,4 +308,14 @@ xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control* c, XAML_CSTD int32_t 
 {
     s_grid_indecies[c].row_span = value;
     return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_grid_layout_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_ENUM_INFO_MAP_NEW();
+    XAML_ENUM_INFO_ADD2(xaml_grid_layout, abs);
+    XAML_ENUM_INFO_ADD2(xaml_grid_layout, star);
+    XAML_ENUM_INFO_ADD2(xaml_grid_layout, auto);
+    XAML_ENUM_INFO_NEW(xaml_grid_layout, "xaml/ui/controls/grid.h");
+    return ctx->add_type(__info.get());
 }

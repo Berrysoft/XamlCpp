@@ -47,9 +47,9 @@ xaml_result XAML_CALL xaml_progress_members(xaml_type_info_registration* __info)
     using self_type = xaml_progress;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_progress_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(value);
-    XAML_TYPE_INFO_ADD_PROP(minimum);
-    XAML_TYPE_INFO_ADD_PROP(maximum);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(value, int32_t);
+    XAML_TYPE_INFO_ADD_PROP(minimum, int32_t);
+    XAML_TYPE_INFO_ADD_PROP(maximum, int32_t);
     return XAML_S_OK;
 }
 

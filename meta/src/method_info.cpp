@@ -18,9 +18,9 @@ public:
 
     xaml_result XAML_CALL invoke(xaml_vector_view* args, xaml_object** ptr) noexcept override
     {
-        xaml_result hr = m_func(args);
-        if (XAML_SUCCEEDED(hr)) *ptr = nullptr;
-        return hr;
+        XAML_RETURN_IF_FAILED(m_func(args));
+        *ptr = nullptr;
+        return XAML_S_OK;
     }
 };
 
