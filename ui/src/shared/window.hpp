@@ -95,7 +95,7 @@ struct xaml_window_internal : xaml_container_internal
 
     void on_did_resize() noexcept;
     void on_did_move() noexcept;
-    void on_should_close() noexcept;
+    bool on_should_close() noexcept;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(window_handle, GtkWidget*, GtkWidget**, GtkWidget*)
     XAML_PROP_IMPL(vbox_handle, GtkWidget*, GtkWidget**, GtkWidget*)

@@ -28,7 +28,7 @@ void xaml_timer_impl::on_tick() noexcept
 
 xaml_result xaml_timer_impl::start() noexcept
 {
-    if (!m_enabled.exchange(true))
+    if (!m_is_enabled.exchange(true))
     {
         XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
         NSTimer* timer = [delegate newTimer:m_interval / 1000.0];
@@ -39,7 +39,7 @@ xaml_result xaml_timer_impl::start() noexcept
 
 xaml_result xaml_timer_impl::stop() noexcept
 {
-    if (m_enabled.exchange(false))
+    if (m_is_enabled.exchange(false))
     {
         [m_handle invalidate];
         m_handle = nil;

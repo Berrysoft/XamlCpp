@@ -14,7 +14,7 @@ xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
         NSMenu* menu_bar;
         XAML_RETURN_IF_FAILED(native_parent->get_menu_bar(&menu_bar));
         m_menu = menu_bar;
-        XMAL_RETURN_IF_FAILED(draw_submenu());
+        XAML_RETURN_IF_FAILED(draw_submenu());
     }
     return XAML_S_OK;
 }

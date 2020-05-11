@@ -51,7 +51,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         char const* data;
         XAML_RETURN_IF_FAILED(instruction->get_data(&data));
         [alert setMessageText:[NSString stringWithUTF8String:data]];
-        if (!message.empty())
+        if (message)
         {
             char const* msg_data;
             XAML_RETURN_IF_FAILED(message->get_data(&msg_data));

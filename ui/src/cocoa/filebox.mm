@@ -1,4 +1,6 @@
+#import <Cocoa/Cocoa.h>
 #include <shared/filebox.hpp>
+#include <xaml/ui/cocoa/window.h>
 #include <xaml/ui/filebox.h>
 
 using namespace std;
@@ -8,7 +10,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
 {
     using native_handle_type = conditional_t<is_same_v<I, xaml_open_filebox>, NSOpenPanel*, NSSavePanel*>;
     native_handle_type handle;
-    if constexpr (is_save_v<I, xaml_open_filebox>)
+    if constexpr (is_same_v<I, xaml_open_filebox>)
     {
         handle = [NSOpenPanel openPanel];
         handle.canChooseFiles = YES;
@@ -51,7 +53,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     {
         xaml_filebox_filter ff;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), ff));
-        [filters addObject:[NSString stringWithUTF8String:f.pattern]];
+        [filters addObject:[NSString stringWithUTF8String:ff.pattern]];
     }
     XAML_FOREACH_END();
     handle.allowedFileTypes = filters;
