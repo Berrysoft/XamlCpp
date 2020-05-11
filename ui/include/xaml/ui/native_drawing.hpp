@@ -2,10 +2,11 @@
 #define XAML_UI_NATIVE_DRAWING_HPP
 
 #include <xaml/ui/drawing.h>
-#include <xaml/ui/objc.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS

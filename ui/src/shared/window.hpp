@@ -7,6 +7,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/window.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/window.h>
 #elif defined(XAML_UI_GTK3)
 #include <xaml/ui/gtk3/window.h>
 #endif // XAML_UI_WINDOWS
@@ -83,6 +85,17 @@ struct xaml_window_internal : xaml_container_internal
     XAML_UI_API xaml_result XAML_CALL set_real_location(xaml_point const&) noexcept;
 
     XAML_UI_API xaml_result XAML_CALL get_real_client_region(xaml_rectangle*) noexcept;
+#elif defined(XAML_UI_COCOA)
+    XAML_PROP_IMPL(window_handle, OBJC_OBJECT(NSWindow), OBJC_OBJECT(NSWindow) *, OBJC_OBJECT(NSWindow))
+    XAML_PROP_IMPL(menu_bar_handle, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu) *, OBJC_OBJECT(NSMenu))
+    XAML_PROP_IMPL(default_menu_item_handle, OBJC_OBJECT(NSMenuItem), OBJC_OBJECT(NSMenuItem) *, OBJC_OBJECT(NSMenuItem))
+    XAML_PROP_IMPL(default_menu_item_menu_handle, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu) *, OBJC_OBJECT(NSMenu))
+
+    XAML_UI_API xaml_result XAML_CALL draw_visible() noexcept override;
+
+    void on_did_resize();
+    void on_did_move();
+    void on_should_close();
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(window_handle, GtkWidget*, GtkWidget**, GtkWidget*)
     XAML_PROP_IMPL(vbox_handle, GtkWidget*, GtkWidget**, GtkWidget*)
@@ -138,6 +151,21 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
     } m_native_window;
 
     using native_window_type = xaml_win32_window;
+#elif defined(XAML_UI_COCOA)
+    XAML_PROP_INTERNAL_IMPL(window_handle, OBJC_OBJECT(NSWindow) *, OBJC_OBJECT(NSWindow))
+    XAML_PROP_INTERNAL_IMPL(menu_bar_handle, OBJC_OBJECT(NSMenu) *, OBJC_OBJECT(NSMenu))
+    XAML_PROP_INTERNAL_IMPL(default_menu_item_handle, OBJC_OBJECT(NSMenuItem) *, OBJC_OBJECT(NSMenuItem))
+    XAML_PROP_INTERNAL_IMPL(default_menu_item_menu_handle, OBJC_OBJECT(NSMenu) *, OBJC_OBJECT(NSMenu))
+
+    struct xaml_cocoa_window_impl : xaml_cocoa_control_implement<xaml_cocoa_window_impl, T, xaml_cocoa_window>
+    {
+        xaml_result XAML_CALL get_window(OBJC_OBJECT(NSWindow) * pvalue) noexcept override { return this->m_outer->get_window_handle(pvalue); }
+        xaml_result XAML_CALL set_window(OBJC_OBJECT(NSWindow) value) noexcept override { return this->m_outer->set_window_handle(value); }
+        xaml_result XAML_CALL get_menu_bar(OBJC_OBJECT(NSMenu) * pvalue) noexcept override { return this->m_outer->get_menu_bar_handle(pvalue); }
+        xaml_result XAML_CALL set_menu_bar(OBJC_OBJECT(NSMenu) value) noexcept override { return this->m_outer->set_menu_bar_handle(value); }
+    } m_native_window;
+
+    using native_window_type = xaml_cocoa_window;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_INTERNAL_IMPL(window_handle, GtkWidget**, GtkWidget*)
     XAML_PROP_INTERNAL_IMPL(vbox_handle, GtkWidget**, GtkWidget*)
