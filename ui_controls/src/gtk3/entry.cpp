@@ -46,17 +46,12 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
     return XAML_S_OK;
 }
 
-static xaml_result xaml_entry_internal_on_changed(GtkWidget*, xaml_entry_internal* self) noexcept
+void xaml_entry_internal::on_changed(GtkWidget* widget, xaml_entry_internal* self) noexcept
 {
     gchar const* data = gtk_entry_get_text(GTK_ENTRY(self->m_handle));
     xaml_ptr<xaml_string> text;
-    XAML_RETURN_IF_FAILED(xaml_string_new(data, &text));
-    return self->set_text(text.get());
-}
-
-void xaml_entry_internal::on_changed(GtkWidget* widget, xaml_entry_internal* self) noexcept
-{
-    XAML_ASSERT_SUCCEEDED(xaml_entry_internal_on_changed(widget, self));
+    XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
+    XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
 }
 
 xaml_result xaml_entry_internal::size_to_fit() noexcept

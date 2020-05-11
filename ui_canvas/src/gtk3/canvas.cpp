@@ -169,18 +169,10 @@ xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
     return set_rect(region);
 }
 
-static xaml_result xaml_canvas_internal_on_draw(GtkWidget*, cairo_t* cr, xaml_canvas_internal* self, gboolean* pres) noexcept
-{
-    xaml_ptr<xaml_drawing_context> dc;
-    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));
-    XAML_RETURN_IF_FAILED(self->on_redraw(self->m_outer_this, dc));
-    *pres = FALSE;
-    return XAML_S_OK;
-}
-
 gboolean xaml_canvas_internal::on_draw(GtkWidget* widget, cairo_t* cr, xaml_canvas_internal* self) noexcept
 {
-    gboolean res;
-    XAML_ASSERT_SUCCEEDED(xaml_canvas_internal_on_draw(widget, cr, self, &res));
-    return res;
+    xaml_ptr<xaml_drawing_context> dc;
+    XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));
+    XAML_ASSERT_SUCCEEDED(self->on_redraw(self->m_outer_this, dc));
+    return FALSE;
 }

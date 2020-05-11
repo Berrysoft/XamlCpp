@@ -27,7 +27,7 @@ xaml_result xaml_webview_internal::draw_uri() noexcept
     return XAML_S_OK;
 }
 
-static xaml_result xaml_webview_internal_on_load_changed(WebKitWebView*, WebKitLoadEvent load_event, xaml_webview_internal* self) noexcept
+void xaml_webview_internal::on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, xaml_webview_internal* self) noexcept
 {
     if (load_event == WEBKIT_LOAD_COMMITTED)
     {
@@ -35,16 +35,10 @@ static xaml_result xaml_webview_internal_on_load_changed(WebKitWebView*, WebKitL
         if (!guard.test_and_set())
         {
             xaml_ptr<xaml_string> uri;
-            XAML_RETURN_IF_FAILED(xaml_string_new(webkit_web_view_get_uri(WEBKIT_WEB_VIEW(self->m_handle)), &uri));
-            XAML_RETURN_IF_FAILED(self->set_uri(uri.get()));
+            XAML_ASSERT_SUCCEEDED(xaml_string_new(webkit_web_view_get_uri(WEBKIT_WEB_VIEW(self->m_handle)), &uri));
+            XAML_ASSERT_SUCCEEDED(self->set_uri(uri.get()));
         }
     }
-    return XAML_S_OK;
-}
-
-void xaml_webview_internal::on_load_changed(WebKitWebView* web_view, WebKitLoadEvent load_event, xaml_webview_internal* self) noexcept
-{
-    XAML_ASSERT_SUCCEEDED(xaml_webview_internal_on_load_changed(web_view, load_event, self));
 }
 
 xaml_result xaml_webview_internal::go_forward() noexcept

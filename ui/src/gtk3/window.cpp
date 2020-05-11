@@ -138,37 +138,24 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
     return XAML_S_OK;
 }
 
-static xaml_result xaml_window_internal_on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
-{
-    xaml_ptr<xaml_application> app;
-    XAML_RETURN_IF_FAILED(xaml_application_current(&app));
-    XAML_RETURN_IF_FAILED(app->window_removed(static_cast<xaml_window*>(self->m_outer_this)));
-    return self->set_handle(nullptr);
-}
-
 void xaml_window_internal::on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_destroy(widget, self));
-}
-
-static xaml_result xaml_window_internal_on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self, gboolean* pres) noexcept
-{
-    auto handled = xaml_box_value(false);
-    XAML_RETURN_IF_FAILED(self->on_closing(self->m_outer_this, handled));
-    bool value;
-    XAML_RETURN_IF_FAILED(xaml_unbox_value(handled.get(), value));
-    *pres = value;
-    return XAML_S_OK;
+    xaml_ptr<xaml_application> app;
+    XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
+    XAML_ASSERT_SUCCEEDED(app->window_removed(static_cast<xaml_window*>(self->m_outer_this)));
+    XAML_ASSERT_SUCCEEDED(self->set_handle(nullptr));
 }
 
 gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
 {
-    gboolean res;
-    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_delete_event(widget, event, self, &res));
-    return res;
+    auto handled = xaml_box_value(false);
+    XAML_ASSERT_SUCCEEDED(self->on_closing(self->m_outer_this, handled));
+    bool value;
+    XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled.get(), value));
+    return value;
 }
 
-static xaml_result xaml_window_internal_on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self, gboolean* pres) noexcept
+gboolean xaml_window_internal::on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
 {
     if (event->type == GDK_CONFIGURE && self->m_handle)
     {
@@ -177,22 +164,14 @@ static xaml_result xaml_window_internal_on_configure_event(GtkWidget* widget, Gd
         {
             gint x, y;
             gtk_window_get_position(GTK_WINDOW(self->m_window_handle), &x, &y);
-            XAML_RETURN_IF_FAILED(self->set_location({ (double)x, (double)y }));
+            XAML_ASSERT_SUCCEEDED(self->set_location({ (double)x, (double)y }));
             gint width, height;
             gtk_window_get_size(GTK_WINDOW(self->m_window_handle), &width, &height);
-            XAML_RETURN_IF_FAILED(self->set_size({ (double)width, (double)height }));
-            XAML_RETURN_IF_FAILED(self->draw({}));
+            XAML_ASSERT_SUCCEEDED(self->set_size({ (double)width, (double)height }));
+            XAML_ASSERT_SUCCEEDED(self->draw({}));
         }
     }
-    *pres = FALSE;
-    return XAML_S_OK;
-}
-
-gboolean xaml_window_internal::on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
-{
-    gboolean res;
-    XAML_ASSERT_SUCCEEDED(xaml_window_internal_on_configure_event(widget, event, self, &res));
-    return res;
+    return FALSE;
 }
 
 xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept

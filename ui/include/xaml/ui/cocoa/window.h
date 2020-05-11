@@ -3,8 +3,7 @@
 
 #include <xaml/ui/cocoa/control.h>
 
-// TODO: change guid
-XAML_CLASS(xaml_cocoa_window, { 0xd062e63e, 0x6c5a, 0x4543, { 0xa7, 0x47, 0x1f, 0x31, 0x19, 0x7d, 0xfb, 0x82 } })
+XAML_CLASS(xaml_cocoa_window, { 0x6f0d30d7, 0x3c5d, 0x4868, { 0xbb, 0xce, 0x6d, 0x4f, 0x0b, 0x75, 0xfa, 0xda } })
 
 #define XAML_COCOA_WINDOW_VTBL(type)                                        \
     XAML_VTBL_INHERIT(XAML_COCOA_CONTROL_VTBL(type));                       \

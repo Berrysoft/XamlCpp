@@ -1,12 +1,10 @@
 #ifndef XAML_UI_OBJC_H
 #define XAML_UI_OBJC_H
 
-#ifdef XAML_UI_COCOA
 #include <objc/objc.h>
 #ifdef __OBJC__
 #import <Cocoa/Cocoa.h>
 #endif // __OBJC__
-#endif // XAML_UI_COCOA
 
 #ifndef OBJC_OBJECT
 #ifdef __OBJC__

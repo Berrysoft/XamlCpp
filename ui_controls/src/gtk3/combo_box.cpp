@@ -88,44 +88,38 @@ xaml_result xaml_combo_box_internal::draw_editable() noexcept
     return XAML_S_OK;
 }
 
-static xaml_result xaml_combo_box_internal_on_changed(GtkWidget*, xaml_combo_box_internal* self) noexcept
+void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_internal* self) noexcept
 {
-    XAML_RETURN_IF_FAILED(self->set_sel_id(gtk_combo_box_get_active(GTK_COMBO_BOX(self->m_handle))));
+    XAML_ASSERT_SUCCEEDED(self->set_sel_id(gtk_combo_box_get_active(GTK_COMBO_BOX(self->m_handle))));
     if (self->m_is_editable)
     {
         auto entry = gtk_bin_get_child(GTK_BIN(self->m_handle));
         xaml_ptr<xaml_string> text;
-        XAML_RETURN_IF_FAILED(xaml_string_new(gtk_entry_get_text(GTK_ENTRY(entry)), &text));
-        return self->set_text(text.get());
+        XAML_ASSERT_SUCCEEDED(xaml_string_new(gtk_entry_get_text(GTK_ENTRY(entry)), &text));
+        XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
     }
     else
     {
         int32_t size;
-        XAML_RETURN_IF_FAILED(self->m_items->get_size(&size));
+        XAML_ASSERT_SUCCEEDED(self->m_items->get_size(&size));
         if (self->m_sel_id < 0 || self->m_sel_id >= size)
         {
-            return self->set_text(nullptr);
+            XAML_ASSERT_SUCCEEDED(self->set_text(nullptr));
         }
         else
         {
             xaml_ptr<xaml_object> item;
-            XAML_RETURN_IF_FAILED(self->m_items->get_at(self->m_sel_id, &item));
+            XAML_ASSERT_SUCCEEDED(self->m_items->get_at(self->m_sel_id, &item));
             if (auto str = item.query<xaml_string>())
             {
                 xaml_char_t const* data;
-                XAML_RETURN_IF_FAILED(str->get_data(&data));
+                XAML_ASSERT_SUCCEEDED(str->get_data(&data));
                 xaml_ptr<xaml_string> text;
-                XAML_RETURN_IF_FAILED(xaml_string_new(data, &text));
-                return self->set_text(text.get());
+                XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
+                XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
             }
-            return XAML_S_OK;
         }
     }
-}
-
-void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_internal* self) noexcept
-{
-    XAML_ASSERT_SUCCEEDED(xaml_combo_box_internal_on_changed(widget, self));
 }
 
 xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
