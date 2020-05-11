@@ -1,89 +1,78 @@
 #import <Cocoa/Cocoa.h>
 #include <vector>
-#include <xaml/ui/msgbox.hpp>
+#include <xaml/ui/cocoa/window.h>
+#include <xaml/ui/msgbox.h>
 
 using namespace std;
 
-namespace xaml
+static NSAlertStyle get_style(xaml_msgbox_style style) noexcept
 {
-    static NSAlertStyle get_style(msgbox_style style)
+    switch (style)
     {
-        switch (style)
-        {
-        case msgbox_style::warning:
-        case msgbox_style::error:
-            return NSAlertStyleCritical;
-        case msgbox_style::info:
-            return NSAlertStyleInformational;
-        default:
-            return NSAlertStyleWarning;
-        }
+    case xaml_msgbox_warning:
+    case xaml_msgbox_error:
+        return NSAlertStyleCritical;
+    case xaml_msgbox_info:
+        return NSAlertStyleInformational;
+    default:
+        return NSAlertStyleWarning;
     }
+}
 
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+{
+    NSWindow* parent_handle = nullptr;
+    if (parent)
     {
-        NSAlert* alert = [NSAlert new];
-        if (!title.empty())
-            alert.window.title = [NSString stringWithUTF8String:title.data()];
-        if (instruction.empty())
+        xaml_ptr<xaml_cocoa_window> native_control;
+        if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            if (!message.empty())
-                [alert setMessageText:[NSString stringWithUTF8String:message.data()]];
+            XAML_RETURN_IF_FAILED(native_control->get_window(&parent_handle));
         }
-        else
-        {
-            [alert setMessageText:[NSString stringWithUTF8String:instruction.data()]];
-            if (!message.empty())
-                [alert setInformativeText:[NSString stringWithUTF8String:message.data()]];
-        }
-        alert.alertStyle = get_style(style);
-        vector<msgbox_result> res;
-        for (auto& button : buttons)
-        {
-            switch (button.index())
-            {
-            case 0:
-                switch (get<msgbox_common_button>(button))
-                {
-                case msgbox_common_button::ok:
-                    [alert addButtonWithTitle:@"OK"];
-                    res.push_back(msgbox_result::ok);
-                    break;
-                case msgbox_common_button::yes:
-                    [alert addButtonWithTitle:@"Yes"];
-                    res.push_back(msgbox_result::yes);
-                    break;
-                case msgbox_common_button::no:
-                    [alert addButtonWithTitle:@"No"];
-                    res.push_back(msgbox_result::no);
-                    break;
-                case msgbox_common_button::cancel:
-                    [alert addButtonWithTitle:@"Cancel"];
-                    res.push_back(msgbox_result::cancel);
-                    break;
-                case msgbox_common_button::retry:
-                    [alert addButtonWithTitle:@"Retry"];
-                    res.push_back(msgbox_result::retry);
-                    break;
-                case msgbox_common_button::close:
-                    [alert addButtonWithTitle:@"Close"];
-                    res.push_back(msgbox_result::cancel);
-                    break;
-                }
-                break;
-            case 1:
-            {
-                msgbox_custom_button const& b = get<msgbox_custom_button>(button);
-                [alert addButtonWithTitle:[NSString stringWithUTF8String:b.text.data()]];
-                res.push_back(b.result);
-                break;
-            }
-            }
-        }
-        auto ret = (ptrdiff_t)[alert runModal] - (ptrdiff_t)NSAlertFirstButtonReturn;
-        if (ret < 0 || ret >= (ptrdiff_t)res.size())
-            return msgbox_result::error_result;
-        else
-            return res[ret];
     }
+    NSAlert* alert = [NSAlert new];
+    if (title)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(title->get_data(&data));
+        alert.window.title = [NSString stringWithUTF8String:data];
+    }
+    if (!instruction)
+    {
+        if (!message)
+        {
+            char const* data;
+            XAML_RETURN_IF_FAILED(message->get_data(&data));
+            [alert setMessageText:[NSString stringWithUTF8String:data]];
+        }
+    }
+    else
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(instruction->get_data(&data));
+        [alert setMessageText:[NSString stringWithUTF8String:data]];
+        if (!message.empty())
+        {
+            char const* msg_data;
+            XAML_RETURN_IF_FAILED(message->get_data(&msg_data));
+            [alert setInformativeText:[NSString stringWithUTF8String:msg_data]];
+        }
+    }
+    alert.alertStyle = get_style(style);
+    vector<xaml_msgbox_result> res;
+    XAML_FOREACH_START(b, buttons);
+    {
+        xaml_ptr<xaml_box> box;
+        XAML_RETURN_IF_FAILED(b->query(&box));
+        xaml_msgbox_custom_button const* button;
+        XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
+        res.push_back(button->result);
+        [alert addButtonWithTitle:[NSString stringWithUTF8String:button->text]];
+    }
+    XAML_FOREACH_END();
+    auto ret = (ptrdiff_t)[alert runModal] - (ptrdiff_t)NSAlertFirstButtonReturn;
+    if (ret < 0 || ret >= (ptrdiff_t)res.size())
+        return xaml_msgbox_result_error;
+    else
+        return res[ret];
 }
