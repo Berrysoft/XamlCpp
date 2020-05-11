@@ -1,6 +1,6 @@
 #import <cocoa/XamlTimerDelegate.h>
-#include <xaml/ui/native_timer.hpp>
-#include <xaml/ui/timer.hpp>
+#include <shared/timer.hpp>
+#include <xaml/ui/timer.h>
 
 @implementation XamlTimerDelegate : XamlDelegate
 - (NSTimer*)newTimer:(NSTimeInterval)interval
@@ -14,36 +14,35 @@
 
 - (void)onTick:(NSTimer*)sender
 {
-    xaml::timer* t = (xaml::timer*)self.classPointer;
-    t->__on_tick();
+    xaml_timer_impl* t = (xaml_timer_impl*)self.classPointer;
+    t->on_tick();
 }
 @end
 
 using namespace std;
 
-namespace xaml
+void xaml_timer_impl::on_tick() noexcept
 {
-    void timer::__on_tick()
-    {
-        m_tick(*this);
-    }
+    XAML_ASSERT_SUCCEEDED(on_tick(this));
+}
 
-    void timer::start()
+xaml_result xaml_timer_impl::start() noexcept
+{
+    if (!m_enabled.exchange(true))
     {
-        if (!m_enabled.exchange(true))
-        {
-            XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
-            NSTimer* timer = [delegate newTimer:m_interval.count() / 1000.0];
-            get_handle()->handle = timer;
-        }
+        XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
+        NSTimer* timer = [delegate newTimer:m_interval / 1000.0];
+        m_handle = timer;
     }
+    return XAML_S_OK;
+}
 
-    void timer::stop()
+xaml_result xaml_timer_impl::stop() noexcept
+{
+    if (m_enabled.exchange(false))
     {
-        if (m_enabled.exchange(false))
-        {
-            [get_handle()->handle invalidate];
-            get_handle()->handle = nil;
-        }
+        [m_handle invalidate];
+        m_handle = nil;
     }
+    return XAML_S_OK;
 }

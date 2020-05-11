@@ -22,10 +22,6 @@
 {
     xaml_window_internal* window = (xaml_window_internal*)self.classPointer;
     BOOL close = window->on_should_close();
-    // if (close)
-    // {
-    //     xaml::application::current()->window_removed(window->shared_from_this<xaml::window>());
-    // }
     return close;
 }
 
@@ -146,74 +142,83 @@ xaml_result xaml_window_internal::draw_resizable() noexcept
     return XAML_S_OK;
 }
 
-void window::draw_menu_bar()
+xaml_result xaml_window_internal::draw_menu_bar() noexcept
 {
-    if (get_menu_bar())
+    if (m_menu_bar)
     {
-        get_menu_bar()->set_parent_window(shared_from_this<window>());
-        get_menu_bar()->__draw({});
+        XAML_RETURN_IF_FAILED(m_menu_bar->set_parent(static_cast<xaml_control*>(m_outer_this)));
+        XAML_RETURN_IF_FAILED(m_menu_bar->draw({}));
     }
-    [NSApp setMainMenu:get_window()->menu_bar];
+    [NSApp setMainMenu:m_menu_bar_handle];
+    return XAML_S_OK;
 }
 
-void window::show()
+xaml_result xaml_window_internal::show() noexcept
 {
-    __draw({});
-    set_is_visible(true);
-    NSWindow* window = get_window()->window;
-    [window makeKeyAndOrderFront:nil];
+    XAML_RETURN_IF_FAILED(draw({}));
+    XAML_RETURN_IF_FAILED(set_is_visible(true));
+    [m_window_handle makeKeyAndOrderFront:nil];
+    return XAML_S_OK;
 }
 
-void window::close()
+xaml_result xaml_window_internal::close() noexcept
 {
-    NSWindow* window = get_window()->window;
-    [window performClose:nil];
+    [m_window_handle performClose:nil];
+    return XAML_S_OK;
 }
 
-void window::hide()
+xaml_result xaml_window_internal::hide() noexcept
 {
-    set_is_visible(false);
+    return set_is_visible(false);
 }
 
-rectangle window::get_client_region() const
+xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
-    NSWindow* window = get_window()->window;
-    NSRect frame = [[window contentView] frame];
-    return from_native(frame);
+    NSRect const& frame = m_window_handle.contentView.frame;
+    *pregion = xaml_from_native(frame);
+    return XAML_S_OK;
 }
 
-void window::__on_did_resize()
+void xaml_window_internal::on_did_resize() noexcept
 {
-    NSWindow* window = get_window()->window;
-    NSRect frame = window.frame;
-    atomic_guard guard{ m_resizing };
+    NSRect const& frame = m_window_handle.frame;
+    xaml_atomic_guard guard{ m_resizing };
     if (!guard.test_and_set())
     {
-        set_size(from_native(frame.size));
-        __draw({});
+        XAML_ASSERT_SUCCEEDED(set_size(xaml_from_native(frame.size)));
+        XAML_ASSERT_SUCCEEDED(draw({}));
     }
 }
 
-void window::__on_did_move()
+void xaml_window_internal::on_did_move() noexcept
 {
-    NSWindow* window = get_window()->window;
-    NSRect frame = window.frame;
-    atomic_guard guard{ m_resizing };
+    NSRect const& frame = m_window_handle.frame;
+    xaml_atomic_guard guard{ m_resizing };
     if (!guard.test_and_set())
     {
-        set_location(from_native(frame.origin));
-        __draw({});
+        XAML_ASSERT_SUCCEEDED(set_location(xaml_from_native(frame.origin)));
+        XAML_ASSERT_SUCCEEDED(draw({}));
     }
 }
 
-bool window::__on_should_close()
+bool xaml_window_internal::on_should_close() noexcept
 {
-    auto handled = box_value(false);
-    m_closing(shared_from_this<window>(), handled);
-    return !*handled;
+    xaml_ptr<xaml_object> handled;
+    XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
+    XAML_ASSERT_SUCCEEDED(on_closing(m_outer_this, handled));
+    bool value;
+    XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled.get(), value));
+    if (!value)
+    {
+        xaml_ptr<xaml_application> app;
+        XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
+        XAML_ASSERT_SUCCEEDED(app->window_removed(static_cast<xaml_window*>(m_outer_this)));
+    }
+    return !value;
 }
 
-double window::get_dpi() const
+xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
 {
-    return 72.0;
+    *pvalue = 72.0;
+    return XAML_S_OK;
 }

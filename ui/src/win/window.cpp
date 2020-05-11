@@ -273,7 +273,8 @@ xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg,
         }
         case WM_CLOSE:
         {
-            auto handled = xaml_box_value(false);
+            xaml_ptr<xaml_object> handled;
+            XAML_RETURN_IF_FAILED(xaml_box_value(false, &handled));
             XAML_RETURN_IF_FAILED(on_closing(m_outer_this, handled));
             bool value;
             XAML_RETURN_IF_FAILED(xaml_unbox_value(handled.get(), value));

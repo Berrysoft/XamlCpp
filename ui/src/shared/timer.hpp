@@ -7,6 +7,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS
@@ -22,6 +24,12 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
 
 #ifdef XAML_UI_WINDOWS
     UINT_PTR m_id{};
+#elif defined(XAML_UI_COCOA)
+    using native_timer_type = OBJC_OBJECT(NSTimer);
+
+    native_timer_type m_handle;
+
+    void on_tick() noexcept;
 #elif defined(XAML_UI_GTK3)
     static gboolean on_timeout(xaml_timer_impl* self) noexcept;
 #endif // XAML_UI_WINDOWS
