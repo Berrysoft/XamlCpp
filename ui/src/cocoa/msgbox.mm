@@ -21,7 +21,7 @@ static NSAlertStyle get_style(xaml_msgbox_style style) noexcept
 
 xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
 {
-    NSWindow* parent_handle = nullptr;
+    NSWindow* parent_handle = nil;
     if (parent)
     {
         xaml_ptr<xaml_cocoa_window> native_control;

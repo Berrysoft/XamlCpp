@@ -1,70 +1,81 @@
-#include <xaml/ui/filebox.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_filebox.hpp>
-#include <xaml/ui/native_window.hpp>
+#include <shared/filebox.hpp>
+#include <xaml/ui/filebox.h>
 
 using namespace std;
 
-namespace xaml
+template <typename I>
+xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
 {
-    bool filebox::show(shared_ptr<window> owner)
+    using native_handle_type = conditional_t<is_same_v<I, xaml_open_filebox>, NSOpenPanel*, NSSavePanel*>;
+    native_handle_type handle;
+    if constexpr (is_save_v<I, xaml_open_filebox>)
     {
-        if (m_handle)
+        handle = [NSOpenPanel openPanel];
+        handle.canChooseFiles = YES;
+        handle.canChooseDirectories = NO;
+        handle.resolvesAliases = NO;
+    }
+    else
+    {
+        handle = [NSSavePanel savePanel];
+    }
+    handle.canCreateDirectories = YES;
+    handle.showsHiddenFiles = YES;
+    handle.extensionHidden = NO;
+    handle.canSelectHiddenExtension = NO;
+    handle.treatsFilePackagesAsDirectories = YES;
+    if (owner)
+    {
+        xaml_ptr<xaml_cocoa_window> native_control;
+        if (XAML_SUCCEEDED(owner->query(&native_control)))
         {
-            m_handle->handle.canCreateDirectories = YES;
-            m_handle->handle.showsHiddenFiles = YES;
-            m_handle->handle.extensionHidden = NO;
-            m_handle->handle.canSelectHiddenExtension = NO;
-            m_handle->handle.treatsFilePackagesAsDirectories = YES;
-            if (owner && owner->get_window()) m_handle->handle.parentWindow = owner->get_window()->window;
-            m_handle->handle.title = [NSString stringWithUTF8String:m_title.c_str()];
-            m_handle->handle.nameFieldStringValue = [NSString stringWithUTF8String:m_filename.c_str()];
-            NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
-            for (auto& f : m_filters)
-            {
-                [filters addObject:[NSString stringWithUTF8String:f.pattern.c_str()]];
-            }
-            m_handle->handle.allowedFileTypes = filters;
-            if (m_multiple) ((NSOpenPanel*)m_handle->handle).allowsMultipleSelection = YES;
-            auto res = [m_handle->handle runModal];
-            if (res == NSModalResponseOK)
-            {
-                if (m_multiple)
-                {
-                    m_results.clear();
-                    for (NSURL* url in [(NSOpenPanel*)m_handle->handle URLs])
-                    {
-                        m_results.push_back([url.path UTF8String]);
-                    }
-                }
-                else
-                {
-                    m_results = { [m_handle->handle.URL.path UTF8String] };
-                }
-                return true;
-            }
+            NSWindow* parent_handle;
+            XAML_RETURN_IF_FAILED(native_control->get_window(&parent_handle));
+            handle.parentWindow = parent_handle;
         }
-        return false;
     }
-
-    bool open_filebox::show(shared_ptr<window> owner)
+    if (m_title)
     {
-        NSOpenPanel* panel = [NSOpenPanel openPanel];
-        panel.canChooseFiles = YES;
-        panel.canChooseDirectories = NO;
-        panel.resolvesAliases = NO;
-        auto h = make_shared<native_filebox>();
-        h->handle = panel;
-        set_handle(h);
-        return filebox::show(owner);
+        char const* title;
+        XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+        handle.title = [NSString stringWithUTF8String:title];
     }
-
-    bool save_filebox::show(shared_ptr<window> owner)
+    if (m_filename)
     {
-        NSSavePanel* panel = [NSSavePanel savePanel];
-        auto h = make_shared<native_filebox>();
-        h->handle = panel;
-        set_handle(h);
-        return filebox::show(owner);
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_filename->get_data(&data));
+        handle.nameFieldStringValue = [NSString stringWithUTF8String:data];
     }
+    NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
+    XAML_FOREACH_START(f, m_filters);
+    {
+        xaml_filebox_filter ff;
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), ff));
+        [filters addObject:[NSString stringWithUTF8String:f.pattern]];
+    }
+    XAML_FOREACH_END();
+    handle.allowedFileTypes = filters;
+    if (m_multiple) ((NSOpenPanel*)handle).allowsMultipleSelection = YES;
+    auto res = [handle runModal];
+    if (res != NSModalResponseOK) return XAML_E_FAIL;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));
+    if (m_multiple)
+    {
+        for (NSURL* url in [(NSOpenPanel*)handle URLs])
+        {
+            xaml_ptr<xaml_string> str;
+            XAML_RETURN_IF_FAILED(xaml_string_new(url.path.UTF8String, &str));
+            XAML_RETURN_IF_FAILED(m_results->append(str.get()));
+        }
+    }
+    else
+    {
+        xaml_ptr<xaml_string> str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(handle.URL.path.UTF8String, &str));
+        XAML_RETURN_IF_FAILED(m_results->append(str.get()));
+    }
+    return XAML_S_OK;
 }
+
+template struct xaml_filebox_impl<xaml_open_filebox>;
+template struct xaml_filebox_impl<xaml_save_filebox>;

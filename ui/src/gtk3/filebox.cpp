@@ -9,8 +9,11 @@ using namespace std;
 template <typename I>
 xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
 {
-    char const* title;
-    XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+    char const* title = nullptr;
+    if (m_title)
+    {
+        XAML_RETURN_IF_FAILED(m_title->get_data(&title));
+    }
     GtkWidget* parent_handle = nullptr;
     if (owner)
     {
