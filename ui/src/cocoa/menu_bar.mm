@@ -1,35 +1,37 @@
-#include <xaml/ui/application.hpp>
-#include <xaml/ui/menu_bar.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_menu_bar.hpp>
-#include <xaml/ui/native_window.hpp>
-#include <xaml/ui/window.hpp>
+#include <shared/menu_bar.hpp>
+#include <xaml/ui/cocoa/window.h>
+#include <xaml/ui/menu_bar.h>
+#include <xaml/ui/window.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void menu_bar::__draw(rectangle const& region)
+    if (m_parent && !m_menu)
     {
-        if (!get_menu())
-        {
-            auto pwnd = get_parent_window().lock();
-            auto m = make_shared<native_menu_bar>();
-            m->handle = pwnd->get_window()->menu_bar;
-            set_menu(m);
-            draw_submenu();
-        }
-    }
+        xaml_ptr<xaml_cocoa_window> native_parent;
+        XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+        NSMenu* menu_bar;
+        XAML_RETURN_IF_FAILED(native_parent->get_menu_bar(&menu_bar));
+        m_menu = menu_bar;
+        XMAL_RETURN_IF_FAILED(draw_submenu());
+	}
+    return XAML_S_OK;
+}
 
-    void menu_bar::draw_visible()
-    {
-    }
+xaml_result xaml_menu_bar_internal::draw_visible() noexcept
+{
+    return XAML_S_OK;
+}
 
-    void menu_bar::draw_submenu()
+xaml_result xaml_menu_bar_internal::draw_submenu() noexcept
+{
+    XAML_FOREACH_START(child, m_children);
     {
-        for (auto& c : get_children())
-        {
-            c->__draw({});
-        }
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
 }

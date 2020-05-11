@@ -2,7 +2,8 @@
 #define XAML_UI_GTK3_MENU_BAR_H
 
 #include <gtk/gtk.h>
-#include <xaml/ui/control.h>
+#include <xaml/meta/meta_macros.h>
+#include <xaml/object.h>
 
 XAML_CLASS(xaml_gtk3_menu_bar, { 0xe04ca998, 0x56bd, 0x45bd, { 0xa3, 0x87, 0x4e, 0x80, 0x5b, 0xcd, 0x8c, 0xe3 } })
 
