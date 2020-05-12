@@ -1,6 +1,6 @@
+#include <cocoa/nsstring.hpp>
 #include <shared/label.hpp>
 #include <xaml/ui/controls/label.h>
-#include <cocoa/nsstring.hpp>
 
 using namespace std;
 

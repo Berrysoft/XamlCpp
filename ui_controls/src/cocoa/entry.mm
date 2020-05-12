@@ -1,7 +1,7 @@
 #import <cocoa/XamlEntryDelegate.h>
+#include <cocoa/nsstring.hpp>
 #include <shared/entry.hpp>
 #include <xaml/ui/controls/entry.h>
-#include <cocoa/nsstring.hpp>
 
 @implementation XamlEntryDelegate
 - (void)controlTextDidChange:(NSNotification*)obj
