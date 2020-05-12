@@ -142,7 +142,7 @@ static NSBezierPath* path_round_rect(xaml_size const& base_size, xaml_rectangle 
                                            yRadius:round.height / 2];
 }
 
-xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const&round) noexcept
+xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
     set_pen(path, pen);

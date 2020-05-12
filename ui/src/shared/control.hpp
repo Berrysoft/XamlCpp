@@ -104,6 +104,7 @@ struct xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const&) noexcept;
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_IMPL(handle, OBJC_OBJECT(NSView), OBJC_OBJECT(NSView) *, OBJC_OBJECT(NSView))
+    XAML_PROP_IMPL(delegate, OBJC_OBJECT(XamlDelegate), OBJC_OBJECT(XamlDelegate) *, OBJC_OBJECT(XamlDelegate))
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
@@ -131,6 +132,8 @@ struct xaml_cocoa_control_implement : xaml_inner_implement<T2, D, Base2>
 {
     xaml_result XAML_CALL get_handle(OBJC_OBJECT(NSView) * pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
     xaml_result XAML_CALL set_handle(OBJC_OBJECT(NSView) value) noexcept override { return this->m_outer->set_handle(value); }
+    xaml_result XAML_CALL get_delegate(OBJC_OBJECT(XamlDelegate) * pvalue) noexcept override { return this->m_outer->get_delegate(pvalue); }
+    xaml_result XAML_CALL set_delegate(OBJC_OBJECT(XamlDelegate) value) noexcept override { return this->m_outer->set_delegate(value); }
 };
 #elif defined(XAML_UI_GTK3)
 template <typename T2, typename D, typename Base2>
@@ -190,6 +193,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_INTERNAL_IMPL(handle, OBJC_OBJECT(NSView) *, OBJC_OBJECT(NSView))
+    XAML_PROP_INTERNAL_IMPL(delegate, OBJC_OBJECT(XamlDelegate) *, OBJC_OBJECT(XamlDelegate))
 
     struct xaml_cocoa_control_impl : xaml_cocoa_control_implement<xaml_cocoa_control_impl, T, xaml_cocoa_control>
     {

@@ -1,83 +1,92 @@
 #import <cocoa/XamlButtonDelegate.h>
-#include <xaml/ui/controls/button.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/button.hpp>
+#include <xaml/ui/controls/button.h>
 #include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
 - (void)onAction
 {
-    xaml::button* ptr = (xaml::button*)self.classPointer;
-    ptr->__on_action();
+    xaml_button_internal* ptr = (xaml_button_internal*)self.classPointer;
+    ptr->on_action();
 }
 @end
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void button::__draw(const rectangle& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            XamlButtonDelegate* delegate = [[XamlButtonDelegate alloc] initWithClassPointer:this];
-            NSButtonCell* button = [NSButtonCell new];
-            button.target = delegate;
-            button.action = @selector(onAction);
-            [button setBezelStyle:NSBezelStyleRounded];
-            NSMatrix* matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)
-                                                          mode:NSTrackModeMatrix
-                                                     prototype:(NSCell*)button
-                                                  numberOfRows:1
-                                               numberOfColumns:1];
-            matrix.autorecalculatesCellSize = YES;
-            auto h = make_shared<native_control>();
-            h->handle = matrix;
-            h->delegate = delegate;
-            set_handle(h);
-            draw_visible();
-            draw_text();
-            draw_default();
-        }
-        __set_rect(region);
-        NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        matrix.cellSize = matrix.frame.size;
+        XamlButtonDelegate* delegate = [[XamlButtonDelegate alloc] initWithClassPointer:this];
+        NSButtonCell* button = [NSButtonCell new];
+        button.target = delegate;
+        button.action = @selector(onAction);
+        [button setBezelStyle:NSBezelStyleRounded];
+        NSMatrix* matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 0, 1, 1)
+                                                      mode:NSTrackModeMatrix
+                                                 prototype:(NSCell*)button
+                                              numberOfRows:1
+                                           numberOfColumns:1];
+        matrix.autorecalculatesCellSize = YES;
+        m_handle = matrix;
+        m_delegate = delegate;
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_default());
     }
+    XAML_RETURN_IF_FAILED(set_rect(region));
+    NSMatrix* matrix = (NSMatrix*)m_handle;
+    matrix.cellSize = matrix.frame.size;
+    return XAML_S_OK;
+}
 
-    void button::draw_text()
+xaml_result xaml_button_internal::draw_text() noexcept
+{
+    NSMatrix* matrix = (NSMatrix*)m_handle;
+    NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
+    NSString* ns_title;
+    if (m_text)
     {
-        NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
-        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
-        button.title = ns_title;
-    }
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        ns_title = [NSString stringWithUTF8String:data];
+	}
+    else
+    {
+        ns_title = @"";
+	}
+    button.title = ns_title;
+    return XAML_S_OK;
+}
 
-    void button::draw_size()
-    {
-        NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSRect frame = matrix.frame;
-        frame.size = to_native<NSSize>(get_size());
-        matrix.frame = frame;
-        matrix.cellSize = frame.size;
-    }
+xaml_result xaml_button_internal::draw_size() noexcept
+{
+    NSMatrix* matrix = (NSMatrix*)m_handle;
+    NSRect frame = matrix.frame;
+    frame.size = xaml_to_native<NSSize>(m_size);
+    matrix.frame = frame;
+    matrix.cellSize = frame.size;
+    return XAML_S_OK;
+}
 
-    void button::draw_default()
+xaml_result xaml_button_internal::draw_default() noexcept
+{
+    NSMatrix* matrix = (NSMatrix*)m_handle;
+    NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
+    if (m_is_default)
     {
-        NSMatrix* matrix = (NSMatrix*)get_handle()->handle;
-        NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
-        if (m_is_default)
-        {
-            button.keyEquivalent = @"\r";
-            button.highlighted = YES;
-        }
-        else
-        {
-            button.keyEquivalent = @"";
-            button.highlighted = NO;
-        }
+        button.keyEquivalent = @"\r";
+        button.highlighted = YES;
     }
+    else
+    {
+        button.keyEquivalent = @"";
+        button.highlighted = NO;
+    }
+    return XAML_S_OK;
+}
 
-    void button::__on_action()
-    {
-        m_click(shared_from_this<button>());
-    }
+void xaml_button_internal::on_action() noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
 }
