@@ -1,7 +1,9 @@
 project(XamlUIControls CXX)
 
 file(GLOB UIC_HEADERS "include/xaml/ui/controls/*.h")
-file(GLOB UIC_WINDOWS_HEADERS "include/xaml/ui/win/*.h")
+file(GLOB UIC_WINDOWS_HEADERS "include/xaml/ui/win/controls/*.h")
+file(GLOB UIC_COCOA_HEADERS "include/xaml/ui/cocoa/controls/*.h")
+file(GLOB UIC_GTK3_HEADERS "include/xaml/ui/gtk3/controls/*.h")
 
 if(${BUILD_WINDOWS})
     file(GLOB UIC_SOURCE "src/win/*.cpp")
@@ -35,7 +37,9 @@ elseif(${BUILD_GTK3})
 endif()
 
 install(FILES ${UIC_HEADERS} DESTINATION include/xaml/ui/controls)
-install(FILES ${UIC_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win)
+install(FILES ${UIC_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win/controls)
+install(FILES ${UIC_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa/controls)
+install(FILES ${UIC_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3/controls)
 
 if(${BUILD_TESTS})
     add_subdirectory(test)
