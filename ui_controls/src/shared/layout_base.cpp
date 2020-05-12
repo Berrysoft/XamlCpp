@@ -5,35 +5,17 @@ using namespace std;
 
 xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
 {
-#ifdef XAML_UI_WINDOWS
-    using native_control_type = xaml_win32_control;
-#elif defined(XAML_UI_COCOA)
-    using native_control_type = xaml_cocoa_control;
-#elif defined(XAML_UI_GTK3)
-    using native_control_type = xaml_gtk3_control;
-#endif // XAML_UI_WINDOWS
-
     XAML_FOREACH_START(c, m_children);
     {
         xaml_ptr<xaml_control> cc;
         XAML_RETURN_IF_FAILED(c->query(&cc));
-        xaml_ptr<native_control_type> native_control;
-        if (XAML_SUCCEEDED(cc->query(&native_control)))
+        bool inited;
+        XAML_RETURN_IF_FAILED(cc->get_is_initialized(&inited));
+        if (!inited)
         {
-#ifdef XAML_UI_WINDOWS
-            HWND handle;
-#elif defined(XAML_UI_COCOA)
-            id handle;
-#elif defined(XAML_UI_GTK3)
-            GtkWidget* handle;
-#endif // XAML_UI_WINDOWS
-            XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
-            if (!handle)
-            {
-                xaml_margin margin;
-                XAML_RETURN_IF_FAILED(cc->get_margin(&margin));
-                XAML_RETURN_IF_FAILED(cc->draw(xaml_rectangle{} + margin));
-            }
+            xaml_margin margin;
+            XAML_RETURN_IF_FAILED(cc->get_margin(&margin));
+            XAML_RETURN_IF_FAILED(cc->draw(xaml_rectangle{} + margin));
         }
         XAML_RETURN_IF_FAILED(cc->size_to_fit());
     }

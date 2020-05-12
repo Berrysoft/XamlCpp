@@ -109,6 +109,12 @@ struct xaml_control_internal
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
 
+    xaml_result XAML_CALL get_is_initialized(bool* pvalue) noexcept
+    {
+        *pvalue = m_handle;
+        return XAML_S_OK;
+    }
+
     XAML_UI_API xaml_control_internal() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL init() noexcept;
@@ -169,6 +175,8 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
 
     XAML_EVENT_INTERNAL_IMPL(is_visible_changed)
     XAML_PROP_INTERNAL_IMPL(is_visible, bool*, bool)
+
+    XAML_PROP_INTERNAL_IMPL_BASE(is_initialized, bool*)
 
     xaml_result XAML_CALL parent_redraw() noexcept override { return m_internal.parent_redraw(); }
 
