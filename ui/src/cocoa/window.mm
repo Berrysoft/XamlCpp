@@ -113,12 +113,16 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    char const* data = nullptr;
     if (m_title)
     {
+        char const* data = nullptr;
         XAML_RETURN_IF_FAILED(m_title->get_data(&data));
+        m_window_handle.title = [NSString stringWithUTF8String:data];
     }
-    m_window_handle.title = [NSString stringWithUTF8String:data];
+    else
+    {
+        m_window_handle.title = @"";
+	}
     return XAML_S_OK;
 }
 

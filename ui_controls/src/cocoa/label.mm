@@ -1,55 +1,63 @@
-#include <xaml/ui/controls/label.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/label.hpp>
+#include <xaml/ui/controls/label.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void label::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            NSTextField* textField = [NSTextField new];
-            textField.bezeled = NO;
-            textField.drawsBackground = NO;
-            textField.editable = NO;
-            textField.selectable = NO;
-            auto h = make_shared<native_control>();
-            h->handle = textField;
-            set_handle(h);
-            draw_visible();
-            draw_text();
-            draw_alignment();
-        }
-        __set_rect(region);
+        NSTextField* textField = [NSTextField new];
+        textField.bezeled = NO;
+        textField.drawsBackground = NO;
+        textField.editable = NO;
+        textField.selectable = NO;
+        m_handle = textField;
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_alignment());
     }
+    XAML_RETURN_IF_FAILED(set_rect(region));
+    return XAML_S_OK;
+}
 
-    void label::draw_text()
+xaml_result xaml_label_internal::draw_text() noexcept
+{
+    NSTextField* textField = (NSTextField*)m_handle;
+    NSString* ns_title;
+    if (m_text)
     {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
-        textField.stringValue = ns_title;
-    }
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        ns_title = [NSString stringWithUTF8String:data];
+	}
+    else
+    {
+        ns_title = @"";
+	}
+    textField.stringValue = ns_title;
+    return XAML_S_OK;
+}
 
-    void label::draw_alignment()
+xaml_result xaml_label_internal::draw_alignment() noexcept
+{
+    NSTextField* textField = (NSTextField*)m_handle;
+    NSTextAlignment align;
+    switch (m_text_halignment)
     {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSTextAlignment align;
-        switch (m_text_halignment)
-        {
-        case halignment_t::left:
-            align = NSTextAlignmentLeft;
-            break;
-        case halignment_t::center:
-            align = NSTextAlignmentCenter;
-            break;
-        case halignment_t::right:
-            align = NSTextAlignmentRight;
-            break;
-        default:
-            align = NSTextAlignmentNatural;
-            break;
-        }
-        textField.alignment = align;
+    case xaml_halignment_left:
+        align = NSTextAlignmentLeft;
+        break;
+    case xaml_halignment_center:
+        align = NSTextAlignmentCenter;
+        break;
+    case xaml_halignment_right:
+        align = NSTextAlignmentRight;
+        break;
+    default:
+        align = NSTextAlignmentNatural;
+        break;
     }
+    textField.alignment = align;
+    return XAML_S_OK;
 }
