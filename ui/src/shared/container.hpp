@@ -10,6 +10,7 @@
 
 struct xaml_container_internal : xaml_control_internal
 {
+    XAML_UI_API xaml_container_internal() noexcept;
     XAML_UI_API ~xaml_container_internal();
 
     XAML_EVENT_IMPL(child_changed)
@@ -37,6 +38,7 @@ struct xaml_container_implement : xaml_control_implement<T, Internal, Base..., x
 
 struct xaml_multicontainer_internal : xaml_control_internal
 {
+    XAML_UI_API xaml_multicontainer_internal() noexcept;
     XAML_UI_API ~xaml_multicontainer_internal();
 
     xaml_ptr<xaml_vector> m_children;

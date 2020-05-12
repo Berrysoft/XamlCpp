@@ -106,10 +106,7 @@ struct xaml_window_internal : xaml_container_internal
     static gboolean on_configure_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
-    xaml_window_internal() noexcept : xaml_container_internal(), m_is_resizable(true)
-    {
-    }
-
+    XAML_UI_API xaml_window_internal() noexcept;
     XAML_UI_API ~xaml_window_internal();
 };
 

@@ -4,6 +4,10 @@
 
 using namespace std;
 
+xaml_window_internal::xaml_window_internal() noexcept : xaml_container_internal(), m_is_resizable(true)
+{
+}
+
 xaml_result xaml_window_internal::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_container_internal::init());

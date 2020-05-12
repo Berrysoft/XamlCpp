@@ -3,6 +3,8 @@
 
 using namespace std;
 
+xaml_container_internal::xaml_container_internal() noexcept : xaml_control_internal() {}
+
 xaml_container_internal::~xaml_container_internal() {}
 
 xaml_result xaml_container_internal::init() noexcept
@@ -11,6 +13,8 @@ xaml_result xaml_container_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_child_changed));
     return XAML_S_OK;
 }
+
+xaml_multicontainer_internal::xaml_multicontainer_internal() noexcept : xaml_control_internal() {}
 
 xaml_multicontainer_internal::~xaml_multicontainer_internal() {}
 
