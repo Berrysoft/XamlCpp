@@ -30,11 +30,11 @@ xaml_result xaml_label_internal::draw_text() noexcept
         char const* data;
         XAML_RETURN_IF_FAILED(m_text->get_data(&data));
         ns_title = [NSString stringWithUTF8String:data];
-	}
+    }
     else
     {
         ns_title = @"";
-	}
+    }
     textField.stringValue = ns_title;
     return XAML_S_OK;
 }

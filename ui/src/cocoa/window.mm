@@ -122,7 +122,7 @@ xaml_result xaml_window_internal::draw_title() noexcept
     else
     {
         m_window_handle.title = @"";
-	}
+    }
     return XAML_S_OK;
 }
 
