@@ -33,6 +33,9 @@ jobs:
   pool:
     vmImage: $(imageName)
 
+  variables:
+    macLLVMPath: /usr/local/opt/llvm/bin
+
   steps:
   - script: |
       vcpkg install wil:x64-windows
@@ -55,8 +58,8 @@ jobs:
     condition: eq(variables.rid, 'linux')
 
   - script: |
-      brew install ninja boost
-    displayName: 'Install ninja & boost'
+      brew install ninja boost llvm
+    displayName: 'Install ninja & boost & llvm'
     condition: eq(variables.plat, 'mac')
 
   - script: |
@@ -83,9 +86,15 @@ jobs:
 
   - task: CMake@1
     displayName: 'Configure all projects'
-    condition: ne(variables.plat, 'win')
+    condition: eq(variables.plat, 'linux')
     inputs:
       cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+
+  - task: CMake@1
+    displayName: 'Configure all projects'
+    condition: eq(variables.plat, 'mac')
+    inputs:
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
