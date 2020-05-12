@@ -1,4 +1,5 @@
 #import <cocoa/XamlButtonDelegate.h>
+#include <cocoa/nsstring.hpp>
 #include <shared/button.hpp>
 #include <xaml/ui/controls/button.h>
 #include <xaml/ui/native_drawing.hpp>
@@ -45,16 +46,7 @@ xaml_result xaml_button_internal::draw_text() noexcept
     NSMatrix* matrix = (NSMatrix*)m_handle;
     NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
     NSString* ns_title;
-    if (m_text)
-    {
-        char const* data;
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-        ns_title = [NSString stringWithUTF8String:data];
-    }
-    else
-    {
-        ns_title = @"";
-    }
+    XAML_RETURN_IF_FAILED(get_NSString(m_text, &ns_title));
     button.title = ns_title;
     return XAML_S_OK;
 }

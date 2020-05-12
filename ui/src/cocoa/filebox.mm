@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#include <cocoa/nsstring.hpp>
 #include <shared/filebox.hpp>
 #include <xaml/ui/cocoa/window.h>
 #include <xaml/ui/filebox.h>
@@ -36,24 +37,20 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
             handle.parentWindow = parent_handle;
         }
     }
-    if (m_title)
-    {
-        char const* title;
-        XAML_RETURN_IF_FAILED(m_title->get_data(&title));
-        handle.title = [NSString stringWithUTF8String:title];
-    }
-    if (m_filename)
-    {
-        char const* data;
-        XAML_RETURN_IF_FAILED(m_filename->get_data(&data));
-        handle.nameFieldStringValue = [NSString stringWithUTF8String:data];
-    }
+    NSString* title;
+    XAML_RETURN_IF_FAILED(get_NSString(m_title, &title));
+    handle.title = title;
+    NSString* filename;
+    XAML_RETURN_IF_FAILED(get_NSString(m_filename, &filename));
+    handle.nameFieldStringValue = filename;
     NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
     XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter ff;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), ff));
-        [filters addObject:[NSString stringWithUTF8String:ff.pattern]];
+        NSString* pattern;
+        XAML_RETURN_IF_FAILED(get_NSString(ff.pattern, &pattern));
+        [filters addObject:pattern];
     }
     XAML_FOREACH_END();
     handle.allowedFileTypes = filters;

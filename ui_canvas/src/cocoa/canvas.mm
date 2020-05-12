@@ -1,5 +1,6 @@
 #include <cmath>
 #import <cocoa/XamlCanvasView.h>
+#include <cocoa/nsstring.hpp>
 #include <functional>
 #include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
@@ -160,7 +161,9 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_drawing_brush const&
 
 xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
-    NSFontDescriptor* fontdes = [NSFontDescriptor fontDescriptorWithName:[NSString stringWithUTF8String:font.font_family]
+    NSString* font_name;
+    XAML_RETURN_IF_FAILED(get_NSString(font.font_family, &font_name));
+    NSFontDescriptor* fontdes = [NSFontDescriptor fontDescriptorWithName:font_name
                                                                     size:font.size];
     NSFontDescriptorSymbolicTraits traits = 0;
     if (font.italic) traits |= NSFontDescriptorTraitItalic;
@@ -174,9 +177,9 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& bru
         NSFontAttributeName : nfont,
         NSForegroundColorAttributeName : get_NSColor(brush.fill)
     };
-    char const* data;
-    XAML_RETURN_IF_FAILED(str->get_data(&data));
-    NSAttributedString* astr = [[NSAttributedString alloc] initWithString:[NSString stringWithUTF8String:data]
+    NSString* data;
+    XAML_RETURN_IF_FAILED(get_NSString(str, &data));
+    NSAttributedString* astr = [[NSAttributedString alloc] initWithString:data
                                                                attributes:attrs];
     NSSize str_size = astr.size;
     NSPoint location = NSMakePoint(p.x, m_size.height - p.y - str_size.height);

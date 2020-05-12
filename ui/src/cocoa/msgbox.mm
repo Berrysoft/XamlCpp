@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#include <cocoa/nsstring.hpp>
 #include <vector>
 #include <xaml/ui/cocoa/window.h>
 #include <xaml/ui/msgbox.h>
@@ -31,32 +32,21 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         }
     }
     NSAlert* alert = [NSAlert new];
-    if (title)
-    {
-        char const* data;
-        XAML_RETURN_IF_FAILED(title->get_data(&data));
-        alert.window.title = [NSString stringWithUTF8String:data];
-    }
+    NSString* title_str;
+    XAML_RETURN_IF_FAILED(get_NSString(title, &title_str));
+    alert.window.title = title_str;
+    NSString* msg;
+    XAML_RETURN_IF_FAILED(get_NSString(message, &msg));
     if (!instruction)
     {
-        if (!message)
-        {
-            char const* data;
-            XAML_RETURN_IF_FAILED(message->get_data(&data));
-            [alert setMessageText:[NSString stringWithUTF8String:data]];
-        }
+        [alert setMessageText:msg];
     }
     else
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(instruction->get_data(&data));
-        [alert setMessageText:[NSString stringWithUTF8String:data]];
-        if (message)
-        {
-            char const* msg_data;
-            XAML_RETURN_IF_FAILED(message->get_data(&msg_data));
-            [alert setInformativeText:[NSString stringWithUTF8String:msg_data]];
-        }
+        NSString* ins;
+        XAML_RETURN_IF_FAILED(get_NSString(instruction, &ins));
+        [alert setMessageText:ins];
+        [alert setInformativeText:msg];
     }
     alert.alertStyle = get_style(style);
     vector<xaml_msgbox_result> res;
@@ -67,12 +57,15 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         xaml_msgbox_custom_button const* button;
         XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
         res.push_back(button->result);
-        [alert addButtonWithTitle:[NSString stringWithUTF8String:button->text]];
+        NSString* text;
+        XAML_RETURN_IF_FAILED(get_NSString(button->text, &text));
+        [alert addButtonWithTitle:text];
     }
     XAML_FOREACH_END();
     auto ret = (ptrdiff_t)[alert runModal] - (ptrdiff_t)NSAlertFirstButtonReturn;
     if (ret < 0 || ret >= (ptrdiff_t)res.size())
-        return xaml_msgbox_result_error;
+        *presult = xaml_msgbox_result_error;
     else
-        return res[ret];
+        *presult = res[ret];
+    return XAML_S_OK;
 }

@@ -1,4 +1,5 @@
 #import <cocoa/XamlWindowDelegate.h>
+#include <cocoa/nsstring.hpp>
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
 #include <xaml/ui/application.h>
@@ -113,16 +114,9 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    if (m_title)
-    {
-        char const* data = nullptr;
-        XAML_RETURN_IF_FAILED(m_title->get_data(&data));
-        m_window_handle.title = [NSString stringWithUTF8String:data];
-    }
-    else
-    {
-        m_window_handle.title = @"";
-    }
+    NSString* title;
+    XAML_RETURN_IF_FAILED(get_NSString(m_title, &title));
+    m_window_handle.title = title;
     return XAML_S_OK;
 }
 

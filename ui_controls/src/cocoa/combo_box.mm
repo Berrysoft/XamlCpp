@@ -1,112 +1,139 @@
 #import <cocoa/XamlComboBoxDelegate.h>
-#include <xaml/ui/controls/combo_box.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <cocoa/nsstring.hpp>
+#include <shared/combo_box.hpp>
+#include <xaml/ui/controls/combo_box.h>
 #include <xaml/ui/native_drawing.hpp>
 
 @implementation XamlComboBoxDelegate
 - (void)comboBoxSelectionDidChange:(NSNotification*)obj
 {
-    xaml::combo_box* ptr = (xaml::combo_box*)self.classPointer;
-    ptr->__on_changed();
+    xaml_combo_box_internal* ptr = (xaml_combo_box_internal*)self.classPointer;
+    ptr->on_changed();
 }
 @end
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void combo_box::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            NSComboBox* combo = [NSComboBox new];
-            combo.bezeled = YES;
-            XamlComboBoxDelegate* delegate = [[XamlComboBoxDelegate alloc] initWithClassPointer:this];
-            combo.delegate = delegate;
-            auto h = make_shared<native_control>();
-            h->handle = combo;
-            h->delegate = delegate;
-            set_handle(h);
-            draw_visible();
-            draw_items();
-            draw_sel();
-            draw_editable();
-        }
-        __set_rect(region);
+        NSComboBox* combo = [NSComboBox new];
+        combo.bezeled = YES;
+        XamlComboBoxDelegate* delegate = [[XamlComboBoxDelegate alloc] initWithClassPointer:this];
+        combo.delegate = delegate;
+        m_handle = combo;
+        m_delegate = delegate;
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_items());
+        XAML_RETURN_IF_FAILED(draw_sel());
+        XAML_RETURN_IF_FAILED(draw_editable());
     }
+    return set_rect(region);
+}
 
-    void combo_box::draw_text()
+xaml_result xaml_combo_box_internal::draw_text() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    if (m_text)
     {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        if (m_text)
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        combo.stringValue = [NSString stringWithUTF8String:data];
+    }
+    else
+    {
+        int32_t size;
+        XAML_RETURN_IF_FAILED(m_items->get_size(&size));
+        if (m_sel_id < 0 || m_sel_id >= size)
         {
-            combo.stringValue = [NSString stringWithUTF8String:m_text->get().data()];
+            combo.stringValue = @"";
         }
         else
         {
-            if (get_sel_id() < 0 || get_sel_id() >= get_items().size())
+            xaml_ptr<xaml_object> item;
+            XAML_RETURN_IF_FAILED(m_items->get_at(m_sel_id, &item));
+            if (auto str = item.query<xaml_string>())
             {
-                combo.stringValue = @"";
-            }
-            else
-            {
-                combo.stringValue = [NSString stringWithUTF8String:get_items()[get_sel_id()].get().c_str()];
+                xaml_char_t const* data;
+                XAML_RETURN_IF_FAILED(str->get_data(&data));
+                combo.stringValue = [NSString stringWithUTF8String:data];
             }
         }
     }
+    return XAML_S_OK;
+}
 
-    void combo_box::draw_items()
+xaml_result xaml_combo_box_internal::draw_items() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    XAML_FOREACH_START(item, m_items);
     {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        for (auto item : get_items())
+        xaml_ptr<xaml_string> s = item.query<xaml_string>();
+        if (s)
         {
-            [combo addItemWithObjectValue:[NSString stringWithUTF8String:item.get().c_str()]];
+            xaml_char_t const* data;
+            XAML_RETURN_IF_FAILED(s->get_data(&data));
+            [combo addItemWithObjectValue:[NSString stringWithUTF8String:data]];
         }
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
 
-    void combo_box::draw_sel()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        [combo selectItemAtIndex:(NSInteger)get_sel_id()];
-    }
+xaml_result xaml_combo_box_internal::draw_sel() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    [combo selectItemAtIndex:(NSInteger)m_sel_id];
+    return XAML_S_OK;
+}
 
-    void combo_box::draw_editable()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        combo.drawsBackground = m_is_editable;
-        combo.editable = m_is_editable;
-        combo.selectable = m_is_editable;
-    }
+xaml_result xaml_combo_box_internal::draw_editable() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    combo.drawsBackground = m_is_editable;
+    combo.editable = m_is_editable;
+    combo.selectable = m_is_editable;
+    return XAML_S_OK;
+}
 
-    void combo_box::__on_changed()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        set_sel_id(combo.indexOfSelectedItem);
-        set_text(box_value(combo.stringValue.UTF8String));
-    }
+void xaml_combo_box_internal::on_changed() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    XAML_ASSERT_SUCCEEDED(set_sel_id(combo.indexOfSelectedItem));
+    xaml_ptr<xaml_string> str;
+    XAML_ASSERT_SUCCEEDED(xaml_string_new(combo.stringValue.UTF8String, &str));
+    XAML_ASSERT_SUCCEEDED(set_text(str.get()));
+}
 
-    void combo_box::insert_item(int32_t index, string_t const& value)
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        [combo insertItemWithObjectValue:[NSString stringWithUTF8String:value.c_str()]
-                                 atIndex:(NSInteger)index];
-    }
+xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    xaml_ptr<xaml_string> s = value.query<xaml_string>();
+    NSString* text;
+    XAML_RETURN_IF_FAILED(get_NSString(s, &text));
+    [combo insertItemWithObjectValue:text
+                             atIndex:(NSInteger)index];
+    return XAML_S_OK;
+}
 
-    void combo_box::remove_item(int32_t index)
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        [combo removeItemAtIndex:(NSInteger)index];
-    }
+xaml_result xaml_combo_box_internal::remove_item(int32_t index) noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    [combo removeItemAtIndex:(NSInteger)index];
+    return XAML_S_OK;
+}
 
-    void combo_box::clear_items()
-    {
-        NSComboBox* combo = (NSComboBox*)get_handle()->handle;
-        [combo removeAllItems];
-    }
+xaml_result xaml_combo_box_internal::clear_items() noexcept
+{
+    NSComboBox* combo = (NSComboBox*)m_handle;
+    [combo removeAllItems];
+    return XAML_S_OK;
+}
 
-    void combo_box::replace_item(int32_t index, string_t const& value)
-    {
-        remove_item(index);
-        insert_item(index, value);
-    }
+xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
+{
+    XAML_RETURN_IF_FAILED(remove_item(index));
+    XAML_RETURN_IF_FAILED(insert_item(index, value));
+    return XAML_S_OK;
 }

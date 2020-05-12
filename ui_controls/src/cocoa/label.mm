@@ -1,5 +1,6 @@
 #include <shared/label.hpp>
 #include <xaml/ui/controls/label.h>
+#include <cocoa/nsstring.hpp>
 
 using namespace std;
 
@@ -25,16 +26,7 @@ xaml_result xaml_label_internal::draw_text() noexcept
 {
     NSTextField* textField = (NSTextField*)m_handle;
     NSString* ns_title;
-    if (m_text)
-    {
-        char const* data;
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-        ns_title = [NSString stringWithUTF8String:data];
-    }
-    else
-    {
-        ns_title = @"";
-    }
+    XAML_RETURN_IF_FAILED(get_NSString(m_text, &ns_title));
     textField.stringValue = ns_title;
     return XAML_S_OK;
 }
