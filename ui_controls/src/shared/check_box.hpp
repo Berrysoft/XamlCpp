@@ -16,6 +16,8 @@ struct xaml_check_box_internal : xaml_button_internal
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
     xaml_result XAML_CALL size_to_fit() noexcept override;
+#elif defined(XAML_UI_COCOA)
+    xaml_result XAML_CALL on_state_changed() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_toggled(GtkWidget*, xaml_check_box_internal*) noexcept;
 #endif // XAML_UI_WINDOWS

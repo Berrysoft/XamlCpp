@@ -23,9 +23,13 @@ xaml_result xaml_radio_box_internal::init() noexcept
         &token)));
 
 #ifdef XAML_UI_COCOA
-    XAML_RETURN_IF_FAILED((m_click->add_noexcept<xaml_ptr<xaml_check_box>>(
-        [this](xaml_ptr<xaml_check_box>) -> xaml_result {
-            // TODO
+    XAML_RETURN_IF_FAILED((m_click->add_noexcept<xaml_ptr<xaml_radio_box>>(
+        [this](xaml_ptr<xaml_radio_box>) -> xaml_result {
+            if (m_handle)
+            {
+                XAML_RETURN_IF_FAILED(on_state_changed());
+            }
+            return XAML_S_OK;
         },
         &token)));
 #endif // XAML_UI_COCOA
