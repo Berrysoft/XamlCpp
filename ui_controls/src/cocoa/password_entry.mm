@@ -1,35 +1,31 @@
 #import <cocoa/XamlEntryDelegate.h>
-#include <xaml/ui/controls/password_entry.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/password_entry.hpp>
+#include <xaml/ui/controls/password_entry.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void password_entry::__draw(const rectangle& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            NSSecureTextField* textField = [NSSecureTextField new];
-            textField.bezeled = YES;
-            textField.drawsBackground = YES;
-            textField.editable = YES;
-            textField.selectable = YES;
-            XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
-            textField.delegate = delegate;
-            auto h = make_shared<native_control>();
-            h->handle = textField;
-            h->delegate = delegate;
-            set_handle(h);
-            draw_visible();
-            draw_password_char();
-            draw_text();
-            draw_alignment();
-        }
-        entry::__draw(region);
+        NSSecureTextField* textField = [NSSecureTextField new];
+        textField.bezeled = YES;
+        textField.drawsBackground = YES;
+        textField.editable = YES;
+        textField.selectable = YES;
+        XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
+        textField.delegate = delegate;
+        m_handle = textField;
+        m_delegate = delegate;
+        XAML_RETURN_IF_FAILED(draw_password_char());
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_alignment());
     }
+    return xaml_entry_internal::draw(region);
+}
 
-    void password_entry::draw_password_char()
-    {
-    }
+xaml_result xaml_password_entry_internal::draw_password_char() noexcept
+{
+    return XAML_S_OK;
 }

@@ -20,6 +20,8 @@ struct xaml_entry_internal : xaml_control_internal
     xaml_result XAML_CALL size_to_fit() noexcept override;
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
+#elif defined(XAML_UI_COCOA)
+    void on_changed() noexcept;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL size_to_fit() noexcept override;
 
