@@ -23,6 +23,8 @@ struct xaml_progress_internal : xaml_control_internal
 
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL size_to_fit() noexcept override;
+#elif defined(XAML_UI_COCOA)
+    xaml_result XAML_CALL size_to_fit() noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_ptr<xaml_timer> m_pulse_timer;
 
