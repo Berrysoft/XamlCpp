@@ -110,9 +110,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-inconsistent-missing-override")
 endif()
 
-if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
-    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
-endif()
+# Enable MSVC new preprocessor
+#if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+#    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
+#endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 

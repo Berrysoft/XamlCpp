@@ -24,8 +24,8 @@
 #define XAML_DECL_INTERFACE(name) struct name
 #define XAML_DECL_INTERFACE_(name, base) struct name
 #define XAML_ARGS(type, ...) (type* const, ##__VA_ARGS__)
-#define XAML_METHOD_(type, name, tname, ...) type(XAML_CALL* name) XAML_ARGS(tname, __VA_ARGS__)
-#define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, __VA_ARGS__)
+#define XAML_METHOD_(type, name, ...) type(XAML_CALL* name) XAML_ARGS(__VA_ARGS__)
+#define XAML_METHOD(name, ...) XAML_METHOD_(xaml_result, name, __VA_ARGS__)
 #define XAML_VTBL_INHERIT(x) x
 #define XAML_DECL_VTBL(type, vname) \
     struct                          \
