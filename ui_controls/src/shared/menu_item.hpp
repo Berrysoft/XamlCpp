@@ -48,17 +48,17 @@ struct xaml_menu_item_internal : xaml_control_internal
 template <typename T, typename D, typename Base>
 struct xaml_win32_menu_item_implement : xaml_inner_implement<T, D, Base>
 {
-    xaml_result XAML_CALL get_id(UINT* pvalue) noexcept override { return m_outer->get_menu_id(pvalue); }
-    xaml_result XAML_CALL set_id(UINT value) noexcept override { return m_outer->set_menu_id(value); }
-    xaml_result XAML_CALL get_parent_handle(HMENU* pvalue) noexcept override { return m_outer->get_menu_parent(pvalue); }
-    xaml_result XAML_CALL set_parent_handle(HMENU value) noexcept override { return m_outer->set_menu_parent(value); }
+    xaml_result XAML_CALL get_id(UINT* pvalue) noexcept override { return this->m_outer->get_menu_id(pvalue); }
+    xaml_result XAML_CALL set_id(UINT value) noexcept override { return this->m_outer->set_menu_id(value); }
+    xaml_result XAML_CALL get_parent_handle(HMENU* pvalue) noexcept override { return this->m_outer->get_menu_parent(pvalue); }
+    xaml_result XAML_CALL set_parent_handle(HMENU value) noexcept override { return this->m_outer->set_menu_parent(value); }
 };
 #elif defined(XAML_UI_COCOA)
 template <typename T, typename D, typename Base>
 struct xaml_cocoa_menu_item_implement : xaml_inner_implement<T, D, Base>
 {
-    xaml_result XAML_CALL get_menu(OBJC_OBJECT(NSMenuItem) * pvalue) noexcept override { return m_outer->get_menu(pvalue); }
-    xaml_result XAML_CALL set_menu(OBJC_OBJECT(NSMenuItem) value) noexcept override { return m_outer->set_menu(value); }
+    xaml_result XAML_CALL get_menu(OBJC_OBJECT(NSMenuItem) * pvalue) noexcept override { return this->m_outer->get_menu(pvalue); }
+    xaml_result XAML_CALL set_menu(OBJC_OBJECT(NSMenuItem) value) noexcept override { return this->m_outer->set_menu(value); }
 };
 #endif // XAML_UI_WINDOWS
 
@@ -92,7 +92,7 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
     {
         if (type == xaml_type_guid_v<native_menu_item_type>)
         {
-            add_ref();
+            this->add_ref();
             *ptr = static_cast<native_menu_item_type*>(&m_native_menu_item);
             return XAML_S_OK;
         }
@@ -102,7 +102,7 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
         }
     }
 
-    xaml_menu_item_implement() noexcept : xaml_control_implement()
+    xaml_menu_item_implement() noexcept
     {
         m_native_menu_item.m_outer = static_cast<T*>(this);
     }
@@ -147,7 +147,7 @@ public:
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept override;
     xaml_result XAML_CALL draw_append(HMENU pmenu, UINT flags) noexcept override;
 #elif defined(XAML_UI_COCOA)
-    XAML_PROP_IMPL(menu_handle, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu) *, OBJC_OBJET(NSMenu))
+    XAML_PROP_IMPL(menu_handle, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu) *, OBJC_OBJECT(NSMenu))
 
     xaml_result XAML_CALL draw_append(OBJC_OBJECT(NSMenu)) noexcept override;
 #endif // XAML_UI_WINDOWS
@@ -198,7 +198,7 @@ struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item
         }
     }
 
-    xaml_popup_menu_item_impl() noexcept : xaml_menu_item_implement()
+    xaml_popup_menu_item_impl() noexcept
     {
         m_native_popup_menu_item.m_outer = this;
     }

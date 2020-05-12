@@ -7,6 +7,8 @@ xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, s
 {
 #ifdef XAML_UI_WINDOWS
     using native_control_type = xaml_win32_control;
+#elif defined(XAML_UI_COCOA)
+    using native_control_type = xaml_cocoa_control;
 #elif defined(XAML_UI_GTK3)
     using native_control_type = xaml_gtk3_control;
 #endif // XAML_UI_WINDOWS
@@ -20,6 +22,8 @@ xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, s
         {
 #ifdef XAML_UI_WINDOWS
             HWND handle;
+#elif defined(XAML_UI_COCOA)
+            id handle;
 #elif defined(XAML_UI_GTK3)
             GtkWidget* handle;
 #endif // XAML_UI_WINDOWS

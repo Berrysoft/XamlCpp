@@ -1,6 +1,7 @@
 #import <cocoa/XamlMenuItemDelegate.h>
 #include <cocoa/nsstring.hpp>
 #include <shared/menu_item.hpp>
+#include <xaml/ui/cocoa/menu_bar.h>
 #include <xaml/ui/controls/menu_item.h>
 #include <xaml/ui/menu_bar.h>
 
@@ -19,7 +20,7 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
     NSMenu* hpmenu = nil;
     if (m_parent)
     {
-        xaml_ptr<xaml_win32_popup_menu_item> native_menu_item;
+        xaml_ptr<xaml_cocoa_popup_menu_item> native_menu_item;
         if (XAML_SUCCEEDED(m_parent->query(&native_menu_item)))
         {
             XAML_RETURN_IF_FAILED(native_menu_item->get_handle(&hpmenu));
@@ -68,7 +69,7 @@ void xaml_menu_item_internal::on_action() noexcept
     XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
 }
 
-xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const&) noexcept
+xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
 {
     return xaml_menu_item_internal::draw(region);
 }
@@ -100,7 +101,7 @@ xaml_result xaml_popup_menu_item_internal::draw_append(NSMenu* pmenu) noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const&) noexcept
+xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const& region) noexcept
 {
     return xaml_menu_item_internal::draw(region);
 }
