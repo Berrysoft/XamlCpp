@@ -87,7 +87,7 @@ namespace rapidxml
     class xml_base
     {
     protected:
-        std::int32_t m_local_name{ 0 }; // Pointer into m_name where local part begins
+        std::size_t m_local_name{ 0 }; // Pointer into m_name where local part begins
         std::string_view m_name{}; // Name of node
         std::string_view m_value{}; // Value of node
         std::string_view m_namespace_uri{};
@@ -117,7 +117,7 @@ namespace rapidxml
 
         constexpr std::string_view local_name() const noexcept { return m_name.substr(m_local_name); }
 
-        constexpr std::int32_t local_offset() const noexcept { return m_local_name; }
+        constexpr std::size_t local_offset() const noexcept { return m_local_name; }
 
         //! Gets namespace prefix.
         //! "Note that the prefix functions only as a placeholder for a namespace name. Applications
@@ -159,7 +159,7 @@ namespace rapidxml
         }
 
         //! Sets QName as PrefixedName or UnprefixedName where local_part points in QName string
-        void qname(std::string_view qname, std::int32_t local_part) noexcept
+        void qname(std::string_view qname, std::size_t local_part) noexcept
         {
             m_name = qname;
             m_local_name = local_part;
