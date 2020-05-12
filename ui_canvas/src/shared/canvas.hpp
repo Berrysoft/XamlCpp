@@ -4,13 +4,19 @@
 #include <shared/control.hpp>
 #include <xaml/ui/controls/canvas.h>
 
-#ifdef XAML_UI_GTK3
+#ifdef XAML_UI_COCOA
+#include <xaml/ui/cocoa/objc.h>
+#elif defined(XAML_UI_GTK3)
 #include <cairo.h>
 #endif // XAML_UI_GTK3
 
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>
 {
-#ifdef XAML_UI_GTK3
+#ifdef XAML_UI_COCOA
+    xaml_size m_size;
+
+    xaml_drawing_context_impl(xaml_size const& size) noexcept : m_size(size) {}
+#elif defined(XAML_UI_GTK3)
     cairo_t* m_handle;
 
     xaml_drawing_context_impl(cairo_t* handle) noexcept : m_handle(handle) {}
@@ -35,10 +41,11 @@ struct xaml_canvas_internal : xaml_control_internal
 #ifndef XAML_UI_WINDOWS
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
-#ifdef XAML_UI_GTK3
+#ifdef XAML_UI_COCOA
+    void on_draw_rect() noexcept;
+#elif defined(XAML_UI_GTK3)
     static gboolean on_draw(GtkWidget*, cairo_t*, xaml_canvas_internal*) noexcept;
 #endif // XAML_UI_GTK3
-
 #endif // !XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

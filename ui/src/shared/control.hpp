@@ -108,9 +108,7 @@ struct xaml_control_internal
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 #endif // XAML_UI_WINDOWS
 
-    xaml_control_internal() noexcept : m_is_visible(true)
-    {
-    }
+    XAML_UI_API xaml_control_internal() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL init() noexcept;
 };

@@ -4,6 +4,10 @@
 
 using namespace std;
 
+xaml_control_internal::xaml_control_internal() noexcept : m_is_visible(true)
+{
+}
+
 xaml_control_internal::~xaml_control_internal() {}
 
 xaml_result xaml_control_internal::parent_redraw() noexcept
