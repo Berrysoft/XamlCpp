@@ -65,7 +65,7 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
     return XAML_S_OK;
 }
 
-void xaml_entry_internal::on_changed()
+void xaml_entry_internal::on_changed() noexcept
 {
     NSTextField* textField = (NSTextField*)m_handle;
     xaml_ptr<xaml_string> str;

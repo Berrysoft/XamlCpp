@@ -25,7 +25,7 @@ xaml_result xaml_radio_box_internal::draw_checked() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_box_internal::on_state_changed()
+xaml_result xaml_radio_box_internal::on_state_changed() noexcept
 {
     NSMatrix* matrix = (NSMatrix*)m_handle;
     NSButtonCell* button = (NSButtonCell*)[matrix.cells objectAtIndex:0];
