@@ -2,7 +2,7 @@
 #define XAML_UI_CONTROLS_WIN_MENU_ITEM_H
 
 #include <Windows.h>
-#include <xaml/object.h>
+#include <xaml/meta/meta_macros.h>
 
 XAML_CLASS(xaml_win32_menu_item, { 0xefcf6c10, 0xef77, 0x48cf, { 0xa0, 0xc0, 0xbb, 0xfa, 0xdc, 0xb0, 0x05, 0x22 } })
 

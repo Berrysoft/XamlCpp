@@ -47,6 +47,8 @@ xaml_result xaml_check_menu_item_internal::init() noexcept
         [this](xaml_ptr<xaml_check_menu_item>, bool) -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
+#elif defined(XAML_UI_COCOA)
+            if (m_menu)
 #elif defined(XAML_UI_GTK3)
             if (m_handle)
 #endif // XAML_UI_WINDOWS
@@ -67,6 +69,8 @@ xaml_result xaml_radio_menu_item_internal::init() noexcept
         [this](xaml_ptr<xaml_radio_menu_item>, bool) -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
+#elif defined(XAML_UI_COCOA)
+            if (m_menu)
 #elif defined(XAML_UI_GTK3)
             if (m_handle)
 #endif // XAML_UI_WINDOWS
