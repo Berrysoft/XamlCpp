@@ -6,7 +6,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
-#include <version>
 #else
 #include <assert.h>
 #if defined(_MSC_VER) && defined(__clang__)

@@ -3,13 +3,10 @@
 
 #ifdef __cplusplus
 #include <algorithm>
+#include <compare>
 #include <cstdint>
 #include <tuple>
-#include <version>
 #include <xaml/meta/conv.hpp>
-#if __has_include(<compare>)
-#include <compare>
-#endif // __has_include(<compare>)
 #else
 #include <stdint.h>
 #endif // __cplusplus
@@ -70,20 +67,12 @@ struct xaml_size
     double width;
     double height;
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef __cplusplus
     auto operator<=>(xaml_size const&) const = default;
-#endif // __cpp_impl_three_way_comparison
+#endif // __cplusplus
 };
 
 #ifdef __cplusplus
-#ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(xaml_size lhs, xaml_size rhs)
-{
-    return lhs.width == rhs.width && lhs.height == rhs.height;
-}
-constexpr bool operator!=(xaml_size lhs, xaml_size rhs) { return !(lhs == rhs); }
-#endif // !__cpp_impl_three_way_comparison
-
 constexpr xaml_size operator+(xaml_size lhs, xaml_size rhs)
 {
     return { lhs.width + rhs.width, lhs.height + rhs.height };
@@ -104,20 +93,12 @@ struct xaml_point
     double x;
     double y;
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef __cplusplus
     auto operator<=>(xaml_point const&) const = default;
-#endif // __cpp_impl_three_way_comparison
+#endif // __cplusplus
 };
 
 #ifdef __cplusplus
-#ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(xaml_point lhs, xaml_point rhs)
-{
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-}
-constexpr bool operator!=(xaml_point lhs, xaml_point rhs) { return !(lhs == rhs); }
-#endif // !__cpp_impl_three_way_comparison
-
 constexpr xaml_point operator+(xaml_point lhs, xaml_point rhs)
 {
     return { lhs.x + rhs.x, lhs.y + rhs.y };
@@ -177,20 +158,12 @@ struct xaml_rectangle
     double x, y;
     double width, height;
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef __cplusplus
     auto operator<=>(xaml_rectangle const&) const = default;
-#endif // __cpp_impl_three_way_comparison
+#endif // __cplusplus
 };
 
 #ifdef __cplusplus
-#ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(xaml_rectangle const& lhs, xaml_rectangle const& rhs)
-{
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.width == rhs.width && lhs.height == rhs.height;
-}
-constexpr bool operator!=(xaml_rectangle const& lhs, xaml_rectangle const& rhs) { return !(lhs == rhs); }
-#endif // !__cpp_impl_three_way_comparison
-
 constexpr xaml_rectangle operator+(xaml_point lhs, xaml_size rhs)
 {
     return { lhs.x, lhs.y, rhs.width, rhs.height };
@@ -212,20 +185,12 @@ struct xaml_margin
     double right;
     double bottom;
 
-#ifdef __cpp_impl_three_way_comparison
+#ifdef __cplusplus
     auto operator<=>(xaml_margin const&) const = default;
-#endif // __cpp_impl_three_way_comparison
+#endif // __cplusplus
 };
 
 #ifdef __cplusplus
-#ifndef __cpp_impl_three_way_comparison
-constexpr bool operator==(xaml_margin const& lhs, xaml_margin const& rhs)
-{
-    return lhs.left == rhs.left && lhs.top == rhs.top && lhs.right == rhs.right && lhs.bottom == rhs.bottom;
-}
-constexpr bool operator!=(xaml_margin const& lhs, xaml_margin const& rhs) { return !(lhs == rhs); }
-#endif // !__cpp_impl_three_way_comparison
-
 constexpr xaml_rectangle operator+(xaml_rectangle const& lhs, xaml_margin const& rhs)
 {
     return { lhs.x - rhs.left, lhs.y - rhs.top, lhs.width + rhs.left + rhs.right, lhs.height + rhs.top + rhs.bottom };
@@ -304,18 +269,8 @@ struct xaml_color
     }
     static constexpr xaml_color from_argb(std::uint32_t v) noexcept { return { (std::uint8_t)((v >> 24) & 0xFF), (std::uint8_t)((v >> 16) & 0xFF), (std::uint8_t)((v >> 8) & 0xFF), (std::uint8_t)(v & 0xFF) }; }
 
-#ifdef __cpp_impl_three_way_comparison
     auto operator<=>(xaml_color const&) const = default;
-#endif // __cpp_impl_three_way_comparison
 #endif // __cplusplus
 };
-
-#if defined(__cplusplus) && !defined(__cpp_impl_three_way_comparison)
-constexpr bool operator==(xaml_color lhs, xaml_color rhs)
-{
-    return (std::uint32_t)lhs == (std::uint32_t)rhs;
-}
-constexpr bool operator!=(xaml_color lhs, xaml_color rhs) { return !(lhs == rhs); }
-#endif // __cplusplus && !__cpp_impl_three_way_comparison
 
 #endif // !XAML_UI_DRAWING_H
