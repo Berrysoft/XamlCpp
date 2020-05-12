@@ -11,8 +11,6 @@
 #include <xaml/ui/win/menu_bar.h>
 #elif defined(XAML_UI_COCOA)
 #include <xaml/ui/cocoa/controls/menu_item.h>
-#elif defined(XAML_UI_GTK3)
-#include <xaml/ui/gtk3/controls/menu_item.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_menu_item_internal : xaml_control_internal
