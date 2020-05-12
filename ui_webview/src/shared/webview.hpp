@@ -41,6 +41,8 @@ struct xaml_webview_internal : xaml_control_internal
     virtual xaml_result XAML_CALL draw_create() noexcept;
     xaml_result XAML_CALL draw_size() noexcept override;
     xaml_result XAML_CALL draw_visible() noexcept override;
+#elif defined(XAML_UI_COCOA)
+    void on_navigated() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_load_changed(WebKitWebView*, WebKitLoadEvent, xaml_webview_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
