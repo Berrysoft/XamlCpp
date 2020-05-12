@@ -29,6 +29,13 @@ typedef XAML_CSTD int32_t xaml_result;
         if (XAML_FAILED(hr)) return hr; \
     } while (0)
 
+#define XAML_GOTO_IF_FAILED(expr, label) \
+    do                                   \
+    {                                    \
+        hr = (expr);                     \
+        if (XAML_FAILED(hr)) goto label; \
+    } while (0)
+
 #define XAML_ASSERT_SUCCEEDED(expr) \
     do                              \
     {                               \

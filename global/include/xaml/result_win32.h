@@ -8,8 +8,22 @@
     do                                                 \
     {                                                  \
         BOOL res = (expr);                             \
+        assert(res);                                   \
         if (!res)                                      \
             return HRESULT_FROM_WIN32(GetLastError()); \
+    } while (0)
+
+#define XAML_GOTO_IF_WIN32_BOOL_FALSE(expr, label)   \
+    do                                               \
+    {                                                \
+        BOOL res = (expr);                           \
+        if (res)                                     \
+            hr = XAML_S_OK;                          \
+        else                                         \
+        {                                            \
+            hr = HRESULT_FROM_WIN32(GetLastError()); \
+            goto label;                              \
+        }                                            \
     } while (0)
 
 #define XAML_ASSERT_WIN32_BOOL(expr) \
