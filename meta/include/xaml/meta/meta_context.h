@@ -37,6 +37,24 @@ XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 
 XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
 {
     XAML_DECL_VTBL(xaml_meta_context, XAML_META_CONTEXT_VTBL);
+
+#ifdef __cplusplus
+    template <typename T>
+    xaml_result XAML_CALL get_type(xaml_reflection_info * *ptr) noexcept
+    {
+        return get_type(xaml_type_guid_v<T>, ptr);
+    }
+
+    xaml_result XAML_CALL add_module(xaml_std_string_view_t path) noexcept
+    {
+        xaml_ptr<xaml_module> m;
+        XAML_RETURN_IF_FAILED(xaml_module_new(&m));
+        xaml_ptr<xaml_string> path_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(path, &path_str));
+        XAML_RETURN_IF_FAILED(m->open(path_str.get()));
+        return add_module(m.get());
+    }
+#endif // __cplusplus
 };
 
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_meta_context_new(xaml_meta_context**) XAML_NOEXCEPT;
