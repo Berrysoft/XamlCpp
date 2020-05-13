@@ -62,8 +62,6 @@ struct xaml_webview_impl : xaml_control_implement<xaml_webview_impl, xaml_webvie
     xaml_result XAML_CALL go_back() noexcept override { return m_internal.go_back(); }
 };
 
-#define m_outer_this this
-
 struct xaml_webview_web_request_impl : xaml_implement<xaml_webview_web_request_impl, xaml_webview_web_request, xaml_object>
 {
     XAML_PROP_PTR_IMPL(method, xaml_string)
@@ -82,7 +80,5 @@ struct xaml_webview_resource_requested_args_impl : xaml_implement<xaml_webview_r
     XAML_PROP_PTR_IMPL(request, xaml_webview_web_request)
     XAML_PROP_PTR_IMPL(response, xaml_webview_web_response)
 };
-
-#undef m_outer_this
 
 #endif // !XAML_UI_WEBVIEW_SHARED_WEBVIEW_HPP

@@ -4,16 +4,12 @@
 
 using namespace std;
 
-#define m_outer_this this
-
 struct xaml_cmdline_option_entry_impl : xaml_implement<xaml_cmdline_option_entry_impl, xaml_cmdline_option_entry, xaml_object>
 {
     XAML_PROP_IMPL(short_arg, xaml_char_t, xaml_char_t*, xaml_char_t)
     XAML_PROP_PTR_IMPL(long_arg, xaml_string)
     XAML_PROP_PTR_IMPL(help_text, xaml_string)
 };
-
-#undef m_outer_this
 
 struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_cmdline_option, xaml_object>
 {

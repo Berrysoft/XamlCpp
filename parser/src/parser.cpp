@@ -377,7 +377,22 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 if (include_file)
                     headers->append(include_file.get());
                 xaml_ptr<xaml_node> child;
-                XAML_RETURN_IF_FAILED(parse_impl(c, t, &child));
+                {
+                    xml_node& cnode = c.nodes().front();
+                    auto ns = cnode.namespace_uri();
+                    auto name = cnode.local_name();
+                    xaml_ptr<xaml_reflection_info> info;
+                    {
+                        xaml_ptr<xaml_string> ns_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+                        xaml_ptr<xaml_string> name_str;
+                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+                        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+                    }
+                    xaml_ptr<xaml_type_info> t;
+                    XAML_RETURN_IF_FAILED(info->query(&t));
+                    XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
+                }
                 xaml_ptr<xaml_property_info> prop;
                 {
                     xaml_ptr<xaml_string> prop_name_str;

@@ -14,6 +14,7 @@ xaml_result XAML_CALL xaml_main(xaml_application* app, int* pcode) noexcept
     XAML_RETURN_IF_FAILED(ctx->add_module(U("xaml_ui_controls")));
     XAML_RETURN_IF_FAILED(ctx->add_module(U("xaml_ui_canvas")));
     XAML_RETURN_IF_FAILED(xaml_test_window_register(ctx.get()));
+    XAML_RETURN_IF_FAILED(xaml_test_model_register(ctx.get()));
     xaml_ptr<xaml_test_window> wnd;
     XAML_RETURN_IF_FAILED(xaml_test_window_new(ctx.get(), &wnd));
     XAML_RETURN_IF_FAILED(wnd->show());

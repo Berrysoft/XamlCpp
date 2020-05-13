@@ -55,13 +55,23 @@ public:
 
     xaml_result XAML_CALL get_constructor(xaml_delegate** ptr) noexcept override
     {
-        return m_ctor->query(ptr);
+        if (m_ctor)
+        {
+            return m_ctor->query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
     }
+
     xaml_result XAML_CALL set_constructor(xaml_delegate* d) noexcept override
     {
         m_ctor = d;
         return XAML_S_OK;
     }
+
     xaml_result XAML_CALL get_methods(xaml_map_view** ptr) noexcept override
     {
         return m_method_map->query(ptr);

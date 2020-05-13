@@ -20,6 +20,8 @@ struct xaml_test_window_internal : xaml_window_internal
 
     xaml_result XAML_CALL init() noexcept;
 
+    XAML_PROP_PTR_IMPL(model, xaml_test_model)
+
     xaml_result XAML_CALL on_button_click(xaml_button*) noexcept;
     xaml_result XAML_CALL on_canvas_redraw(xaml_canvas*, xaml_drawing_context*) noexcept;
 };
@@ -31,6 +33,8 @@ struct xaml_test_window_impl : xaml_window_implement<xaml_test_window_impl, xaml
         m_internal.m_ctx = ctx;
         return m_internal.init();
     }
+
+    XAML_PROP_PTR_INTERNAL_IMPL(model, xaml_test_model)
 
     xaml_result XAML_CALL on_button_click(xaml_button* btn) noexcept override { return m_internal.on_button_click(btn); }
     xaml_result XAML_CALL on_canvas_redraw(xaml_canvas* cv, xaml_drawing_context* dc) noexcept override { return m_internal.on_canvas_redraw(cv, dc); }
@@ -53,7 +57,7 @@ xaml_result xaml_test_window_internal::on_button_click(xaml_button* btn) noexcep
 {
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
-    XAML_RETURN_IF_FAILED(btn->set_text(text.get()));
+    XAML_RETURN_IF_FAILED(m_model->set_text(text.get()));
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &title));
     xaml_ptr<xaml_string> des;
@@ -94,6 +98,8 @@ xaml_result XAML_CALL xaml_test_window_new(xaml_meta_context* ctx, xaml_test_win
 xaml_result XAML_CALL xaml_test_window_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_test_window, "test.xaml.h");
+    XAML_RETURN_IF_FAILED(xaml_window_members(__info.get()));
+    XAML_TYPE_INFO_ADD_PROP(model, xaml_test_model);
     XAML_TYPE_INFO_ADD_METHOD(on_button_click);
     XAML_TYPE_INFO_ADD_METHOD(on_canvas_redraw);
     return ctx->add_type(__info.get());

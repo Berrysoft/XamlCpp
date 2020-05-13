@@ -2,8 +2,6 @@
 
 using namespace std;
 
-#define m_outer_this this
-
 struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding, xaml_markup_extension, xaml_object>
 {
     XAML_PROP_PTR_IMPL(element, xaml_string)
@@ -21,8 +19,6 @@ struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding, xaml_
         return ctx->bind(current_element.get(), current_property.get(), element.get(), m_path.get(), m_mode);
     }
 };
-
-#undef m_outer_this
 
 xaml_result XAML_CALL xaml_binding_new(xaml_binding** ptr) noexcept
 {

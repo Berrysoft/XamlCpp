@@ -1,7 +1,10 @@
-<window x:class="xaml_test_window"
+<test_window x:class="xaml_test_window"
         xmlns="https://github.com/Berrysoft/XamlCpp/"
         xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
         title="Test Window" location="200, 100" size="800, 600">
+  <test_window.model>
+    <test_model x:name="model" text="&#x1f923;"/>
+  </test_window.model>
   <grid margin="10" columns="1*, 1*, 0.8*" rows="auto, auto, 0.5*, 0.8*">
     <label margin="10" text_halignment="right" valignment="center">Username:</label>
     <entry grid.column="1" margin="0, 5" valignment="center">John</entry>
@@ -14,8 +17,8 @@
       <radio_box margin="5, 0" group="b" is_checked="true">Radio 4 in another group</radio_box>
       <radio_box margin="5, 0" group="b">Radio 5 in another group</radio_box>
     </stack_panel>
-    <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=mybutton,mode=one_way}"/>
-    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click">&#x1f923;</button>
+    <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=model,mode=one_way}"/>
+    <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click" text="{binding text,element=model,mode=one_way}"/>
     <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
     <uniform_grid grid.column="1" grid.row="3" margin="5" valignment="top">
       <check_box margin="5">Check 1</check_box>
@@ -25,4 +28,4 @@
       <check_box margin="5">Check 5</check_box>
     </uniform_grid>
   </grid>
-</window>
+</test_window>

@@ -4,15 +4,11 @@
 
 using namespace std;
 
-#define m_outer_this this
-
 struct xaml_cmdline_options_impl : xaml_implement<xaml_cmdline_options_impl, xaml_cmdline_options, xaml_object>
 {
     XAML_PROP_PTR_IMPL(properties, xaml_map)
     XAML_PROP_PTR_IMPL(collection_properties, xaml_map)
 };
-
-#undef m_outer_this
 
 template <typename S2>
 static xaml_result props_insert(xaml_ptr<xaml_map> const& props, xaml_ptr<xaml_property_info> const& info, S2&& value) noexcept

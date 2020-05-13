@@ -74,8 +74,6 @@ xaml_result XAML_CALL xaml_node_new(xaml_node** ptr) noexcept
     return xaml_object_new<xaml_node_impl>(ptr);
 }
 
-#define m_outer_this this
-
 struct xaml_attribute_event_impl : xaml_implement<xaml_attribute_event_impl, xaml_attribute_event, xaml_object>
 {
     XAML_PROP_PTR_IMPL_BASE(info, xaml_event_info)
@@ -119,5 +117,3 @@ xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* typ
 {
     return xaml_object_new<xaml_attribute_collection_property_impl>(ptr, type, info, values);
 }
-
-#undef m_outer_this
