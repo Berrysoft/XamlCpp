@@ -27,5 +27,6 @@ XAML_DECL_INTERFACE_(xaml_cmdline_options, xaml_object)
 };
 
 EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info*, xaml_vector_view*, xaml_cmdline_options**) XAML_NOEXCEPT;
+EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info*, int, xaml_char_t**, xaml_cmdline_options**) XAML_NOEXCEPT;
 
 #endif // !XAML_CMDLINE_PARSER_H

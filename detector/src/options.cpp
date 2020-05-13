@@ -1,0 +1,34 @@
+#include <options.h>
+#include <xaml/cmdline/option.h>
+
+struct xaml_detector_options_impl : xaml_implement<xaml_detector_options_impl, xaml_detector_options, xaml_object>
+{
+    XAML_PROP_IMPL(help, bool, bool*, bool)
+    XAML_PROP_IMPL(verbose, bool, bool*, bool)
+    XAML_PROP_IMPL(no_logo, bool, bool*, bool)
+    XAML_PROP_PTR_IMPL(path, xaml_string)
+};
+
+xaml_result XAML_CALL xaml_detector_options_new(xaml_detector_options** ptr) noexcept
+{
+    return xaml_object_new<xaml_detector_options_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_detector_options, "options.h");
+    XAML_TYPE_INFO_ADD_CTOR(xaml_detector_options_new);
+    XAML_TYPE_INFO_ADD_PROP(help, bool);
+    XAML_TYPE_INFO_ADD_PROP(verbose, bool);
+    XAML_TYPE_INFO_ADD_PROP(no_logo, bool);
+    XAML_TYPE_INFO_ADD_PROP(path, xaml_string);
+    XAML_TYPE_INFO_ADD_DEF_PROP(path);
+    xaml_ptr<xaml_cmdline_option> opt;
+    XAML_RETURN_IF_FAILED(xaml_cmdline_option_new(&opt));
+    XAML_RETURN_IF_FAILED(opt->add_arg(U('h'), U("help"), U("help"), U("Print help message")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(U('v'), U("verbose"), U("verbose"), U("Show detailed output")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright infomation")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("path"), U("Library path")));
+    XAML_RETURN_IF_FAILED(__info->add_attribute(opt.get()));
+    return ctx->add_type(__info.get());
+}

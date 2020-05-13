@@ -1,18 +1,8 @@
 #include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <map>
-#include <optional>
-#include <sstream>
-#include <string>
-#include <string_view>
-#include <tuple>
-#include <vector>
+#include <options.h>
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
-#include <xaml/meta/meta_macros.h>
-#include <xaml/meta/module.h>
-#include <xaml/version.h>
 
 #ifdef UNICODE
 #ifndef _tmain
@@ -20,7 +10,7 @@
 #endif // !_tmain
 
 #ifndef _tcout
-#define _tcout wcout
+#define _tcout ::std::wcout
 #endif // !_tcout
 #else
 #ifndef _tmain
@@ -28,241 +18,140 @@
 #endif // !_tmain
 
 #ifndef _tcout
-#define _tcout cout
+#define _tcout ::std::cout
 #endif // !_tcout
 #endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
-using namespace xaml;
 
-namespace xaml
+int _tmain(int argc, xaml_char_t** argv)
 {
-    namespace xamlcpp
+    xaml_ptr<xaml_detector_options> options;
+    xaml_ptr<xaml_meta_context> cmdline_ctx;
+    XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
+    XAML_THROW_IF_FAILED(xaml_detector_options_register(cmdline_ctx.get()));
+    xaml_ptr<xaml_reflection_info> info;
+    XAML_THROW_IF_FAILED(cmdline_ctx->get_type<xaml_detector_options>(&info));
+    xaml_ptr<xaml_type_info> t;
+    XAML_THROW_IF_FAILED(info->query(&t));
+    xaml_ptr<xaml_cmdline_options> opts;
+
+    XAML_THROW_IF_FAILED(xaml_cmdline_parse_argv(t.get(), argc, argv, &opts));
+    xaml_ptr<xaml_object> obj;
+    XAML_THROW_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
+    XAML_THROW_IF_FAILED(obj->query(&options));
+
+    path exe{ argv[0] };
+    bool no_logo;
+    XAML_THROW_IF_FAILED(options->get_no_logo(&no_logo));
+    if (!no_logo)
     {
-        struct xamlcpp_options;
-    }
-
-    template <>
-    struct type_guid<xamlcpp::xamlcpp_options>
-    {
-        static constexpr guid value{ 0xd1e430b3, 0xb91f, 0x4cba, { 0x87, 0x81, 0xda, 0x1d, 0x48, 0x59, 0xef, 0x7e } };
-    };
-} // namespace xaml
-
-namespace xaml::xamlcpp
-{
-    struct xamlcpp_options : public meta_class
-    {
-        META_CLASS_IMPL(meta_class)
-
-        xamlcpp_options() : meta_class() {}
-        ~xamlcpp_options() override {}
-
-        PROP_CONSTEXPR(help, bool)
-        PROP_CONSTEXPR(fake, bool)
-        PROP_CONSTEXPR(verbose, bool)
-        PROP_CONSTEXPR(no_logo, bool)
-        PROP_STRING(input)
-        PROP_STRING(output)
-        PROP_CONSTEXPR(input_stdin, bool)
-        PROP_CONSTEXPR(output_stdout, bool)
-
-    private:
-        vector<string_t> m_lib_paths{};
-
-    public:
-        void add_lib_path(string_view_t p) { m_lib_paths.emplace_back(p); }
-        void remove_lib_path(string_view_t p) {}
-        array_view<string_t> get_lib_paths() const noexcept { return m_lib_paths; }
-
-        REGISTER_CLASS_DECL_NOFILE(xaml::xamlcpp, xamlcpp_options)
-        {
-            ADD_CTOR();
-
-            ADD_PROP(help);
-            ADD_PROP(fake);
-            ADD_PROP(verbose);
-            ADD_PROP(no_logo);
-            ADD_PROP(input);
-            ADD_PROP(output);
-            ADD_PROP(input_stdin);
-            ADD_PROP(output_stdout);
-            ADD_COLLECTION_PROP(lib_path, string_view_t);
-
-            ADD_ATTR(
-                make_shared<cmdline::option>()
-                    ->add_arg(U('h'), U("help"), "help", U("Print help message"))
-                    ->add_arg(U('f'), U("fake"), "fake", U("Generate deserialize code"))
-                    ->add_arg(U('v'), U("verbose"), "verbose", U("Show detailed output"))
-                    ->add_arg(0, U("no-logo"), "no_logo", U("Cancellation to show copyright infomation"))
-                    ->add_arg(U('i'), U("input-file"), "input", U("Input XAML file"))
-                    ->add_arg(0, {}, "input")
-                    ->add_arg(U('o'), U("output-file"), "output", U("Output C++ file"))
-                    ->add_arg(0, U("stdin"), "input_stdin", U("Input from stdin stream"))
-                    ->add_arg(0, U("stdout"), "output_stdout", U("Output to stdout stream"))
-                    ->add_arg(U('L'), U("library-path"), "lib_path", U("Search library path")));
-        }
-        REGISTER_CLASS_END()
-    };
-} // namespace xaml::xamlcpp
-
-optional<version> is_later(map<path, tuple<path, version>> const& modules, path const& new_module)
-{
-    try
-    {
-        module m{ new_module };
-        auto pxaml_version = (void (*)(version*) noexcept)m.get_method("xaml_version");
-        if (pxaml_version)
-        {
-            auto it = modules.find(new_module.filename());
-            version ver;
-            pxaml_version(&ver);
-            if (it == modules.end())
-                return ver;
-            else if (ver > get<1>(it->second))
-                return ver;
-            else
-                return nullopt;
-        }
-        else
-        {
-            return nullopt;
-        }
-    }
-    catch (system_error const&)
-    {
-        return nullopt;
-    }
-}
-
-using namespace xaml::xamlcpp;
-
-int _tmain(int argc, char_t const* const* argv)
-{
-    try
-    {
-        meta_context cmdline_ctx{};
-        cmdline::init_parser(cmdline_ctx);
-        register_class<xamlcpp::xamlcpp_options>(cmdline_ctx);
-        auto refl = cmdline_ctx.get_type(type_guid_v<xamlcpp_options>);
-        auto nodes = cmdline::parse(refl, argc, argv);
-        auto opts = cmdline::deserialize(refl, nodes)->query<xamlcpp_options>();
-
-        path exe{ argv[0] };
-        if (!opts->get_no_logo())
-        {
-            _tcout << exe.filename().string<char_t>() << U(" ") XAML_VERSION;
+        _tcout << exe.filename().string<xaml_char_t>() << U(" ") XAML_VERSION;
 #ifdef XAML_COMMIT_HASH
-            constexpr string_view_t hash{ U("") XAML_COMMIT_HASH };
-            _tcout << U('-') << hash.substr(0, 8);
+        constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
+        _tcout << U('-') << hash.substr(0, 8);
 #endif // XAML_COMMIT_HASH
-            _tcout << U('\n')
-                   << U("Copyright (c) 2019-2020 Berrysoft") << U('\n')
-                   << endl;
-        }
-
-        if (opts->get_help() || argc <= 1)
-        {
-            auto popt = refl->get_attribute<cmdline::option>();
-            popt->print_help(_tcout);
-            return 1;
-        }
-
-        bool verbose = opts->get_verbose();
-
-        path inf = opts->get_input();
-        if (!inf.empty() || opts->get_input_stdin())
-        {
-            path ouf_path = opts->get_output();
-            if (ouf_path.empty())
-            {
-                if (inf.empty() && !opts->get_output_stdout())
-                {
-                    _tcout << U("Output path must be specified when input from stdin.") << endl;
-                    return 1;
-                }
-                if (!inf.empty())
-                    ouf_path = inf.string<char_t>() + U(".g.cpp");
-            }
-            map<path, tuple<path, version>> modules;
-            array_view<string_t> lib_dirs = opts->get_lib_paths();
-            for (path dir : lib_dirs)
-            {
-                if (verbose) _tcout << U("Searching ") << dir << U("...") << endl;
-                for (auto& en : directory_iterator{ dir })
-                {
-                    if (en.is_regular_file())
-                    {
-                        auto& p = en.path();
-                        if (verbose) _tcout << U("Determining ") << p << U("...") << endl;
-                        if (p.has_extension() && p.extension() == module_extension)
-                        {
-                            if (auto pver = is_later(modules, p))
-                            {
-                                if (verbose) _tcout << U("Select ") << p.filename() << U('(') << *pver << U(") at ") << p << endl;
-                                modules.emplace(p.filename(), make_tuple(p, *pver));
-                            }
-                        }
-                    }
-                }
-            }
-            meta_context ctx{};
-            for (auto& m : modules)
-            {
-                ctx.add_module(get<0>(m.second));
-            }
-            init_parser(ctx);
-            if (verbose)
-            {
-                _tcout << U("Registered types:") << endl;
-                for (auto& pair : ctx.get_types())
-                {
-                    auto ns = pair.first;
-                    for (auto& p : pair.second)
-                    {
-                        auto name = p.first;
-                        cout << ns << "::" << name << endl;
-                    }
-                }
-            }
-            auto [node, headers] = opts->get_input_stdin() ? parse_stream(ctx, cin) : parse_file(ctx, inf);
-            compiler c{ ctx };
-            bool fake = opts->get_fake();
-            if (opts->get_output_stdout())
-            {
-                if (fake)
-                {
-                    c.compile_fake(cout, node, inf);
-                }
-                else
-                {
-                    c.compile(cout, node, inf, headers);
-                }
-            }
-            else
-            {
-                ofstream stream{ ouf_path };
-                if (fake)
-                {
-                    c.compile_fake(stream, node, inf);
-                }
-                else
-                {
-                    c.compile(stream, node, inf, headers);
-                }
-            }
-        }
-        else
-        {
-            _tcout << U("Input file must be specified") << endl;
-            return 1;
-        }
+        _tcout << U("\nCopyright (c) 2019-2020 Berrysoft\n") << endl;
     }
-    catch (exception const& e)
+
+    bool help;
+    XAML_THROW_IF_FAILED(options->get_help(&help));
+    if (help || argc <= 1)
     {
-        cout << e.what() << endl;
+        xaml_ptr<xaml_cmdline_option> opt;
+        XAML_THROW_IF_FAILED(t->get_attribute(&opt));
+        XAML_THROW_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
         return 1;
     }
+
+    bool verbose;
+    XAML_THROW_IF_FAILED(options->get_verbose(&verbose));
+
+    xaml_ptr<xaml_string> path_str;
+    XAML_THROW_IF_FAILED(options->get_path(&path_str));
+
+    xaml_ptr<xaml_module> module;
+    XAML_THROW_IF_FAILED(xaml_module_new(&module));
+    XAML_THROW_IF_FAILED(module->open(path_str.get()));
+
+    xaml_ptr<xaml_meta_context> ctx;
+    XAML_THROW_IF_FAILED(xaml_meta_context_new(&ctx));
+    XAML_THROW_IF_FAILED(ctx->add_module(module.get()));
+
+    _tcout << U("Types of module ") << quoted(to_string_view_t(path_str)) << U(':') << endl;
+
+    xaml_ptr<xaml_map_view> types;
+    XAML_THROW_IF_FAILED(ctx->get_types(&types));
+
+    for (auto item : types)
+    {
+        xaml_ptr<xaml_key_value_pair> pair = item.query<xaml_key_value_pair>();
+        xaml_ptr<xaml_object> second;
+        XAML_THROW_IF_FAILED(pair->get_value(&second));
+        xaml_ptr<xaml_reflection_info> info = second.query<xaml_reflection_info>();
+        xaml_ptr<xaml_string> name;
+        XAML_THROW_IF_FAILED(info->get_name(&name));
+        xaml_ptr<xaml_string> include_file;
+        XAML_THROW_IF_FAILED(info->get_include_file(&include_file));
+        if (auto t = info.query<xaml_type_info>())
+        {
+            _tcout << U("class ") << to_string_view_t(name) << endl;
+            _tcout << U("  included in <") << to_string_view_t(include_file) << U('>') << endl;
+            {
+                xaml_ptr<xaml_map_view> props;
+                XAML_THROW_IF_FAILED(t->get_properties(&props));
+                for (auto item2 : props)
+                {
+                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_object> key;
+                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    _tcout << U("    P: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                }
+            }
+            {
+                xaml_ptr<xaml_map_view> props;
+                XAML_THROW_IF_FAILED(t->get_collection_properties(&props));
+                for (auto item2 : props)
+                {
+                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_object> key;
+                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    _tcout << U("    C: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                }
+            }
+            {
+                xaml_ptr<xaml_map_view> props;
+                XAML_THROW_IF_FAILED(t->get_events(&props));
+                for (auto item2 : props)
+                {
+                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_object> key;
+                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    _tcout << U("    E: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                }
+            }
+        }
+        else if (auto t = info.query<xaml_enum_info>())
+        {
+            _tcout << U("enum ") << to_string_view_t(name) << endl;
+            _tcout << U("  included in <") << to_string_view_t(include_file) << U('>') << endl;
+            xaml_ptr<xaml_map_view> values;
+            XAML_THROW_IF_FAILED(t->get_values(&values));
+            for (auto item2 : values)
+            {
+                xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                xaml_ptr<xaml_object> key;
+                XAML_THROW_IF_FAILED(pair->get_key(&key));
+                xaml_ptr<xaml_object> value;
+                XAML_THROW_IF_FAILED(pair->get_value(&value));
+                xaml_ptr<xaml_box> box = value.query<xaml_box>();
+                int const* pvalue;
+                XAML_THROW_IF_FAILED(box->get_data((void const**)&pvalue));
+                _tcout << U("    ") << to_string_view_t(key.query<xaml_string>()) << U(" = ") << *pvalue << endl;
+            }
+        }
+    }
+
     return 0;
 }

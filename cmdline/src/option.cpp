@@ -59,34 +59,35 @@ xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_stri
 
 xaml_result xaml_cmdline_option_impl::add_arg(xaml_char_t short_name, xaml_string* long_name, xaml_string* prop_name, xaml_string* help_text) noexcept
 {
-    if (short_name || !long_name)
+    int32_t long_name_length = 0;
+    if (long_name)
     {
-        bool replaced;
-        xaml_ptr<xaml_cmdline_option_entry> entry;
-        XAML_RETURN_IF_FAILED(xaml_object_new<xaml_cmdline_option_entry_impl>(&entry));
-        if (short_name)
-        {
-            xaml_ptr<xaml_object> key;
-            XAML_RETURN_IF_FAILED(xaml_box_value(short_name, &key));
-            XAML_RETURN_IF_FAILED(m_short_args->insert(key.get(), prop_name, &replaced));
-            XAML_RETURN_IF_FAILED(entry->set_short_arg(short_name));
-        }
-        if (long_name)
-        {
-            XAML_RETURN_IF_FAILED(m_long_args->insert(long_name, prop_name, &replaced));
-            XAML_RETURN_IF_FAILED(entry->set_long_arg(long_name));
-        }
-        if (help_text)
-        {
-            XAML_RETURN_IF_FAILED(entry->set_help_text(help_text));
-        }
-        XAML_RETURN_IF_FAILED(m_entries->insert(prop_name, entry.get(), &replaced));
+        XAML_RETURN_IF_FAILED(long_name->get_length(&long_name_length));
     }
-    else
+    bool replaced;
+    xaml_ptr<xaml_cmdline_option_entry> entry;
+    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_cmdline_option_entry_impl>(&entry));
+    if (short_name)
+    {
+        xaml_ptr<xaml_object> key;
+        XAML_RETURN_IF_FAILED(xaml_box_value(short_name, &key));
+        XAML_RETURN_IF_FAILED(m_short_args->insert(key.get(), prop_name, &replaced));
+        XAML_RETURN_IF_FAILED(entry->set_short_arg(short_name));
+    }
+    if (long_name_length)
+    {
+        XAML_RETURN_IF_FAILED(m_long_args->insert(long_name, prop_name, &replaced));
+        XAML_RETURN_IF_FAILED(entry->set_long_arg(long_name));
+    }
+    if (!short_name && !long_name_length)
     {
         m_default_prop = prop_name;
     }
-    return XAML_S_OK;
+    if (help_text)
+    {
+        XAML_RETURN_IF_FAILED(entry->set_help_text(help_text));
+    }
+    return m_entries->insert(prop_name, entry.get(), &replaced);
 }
 
 xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcept

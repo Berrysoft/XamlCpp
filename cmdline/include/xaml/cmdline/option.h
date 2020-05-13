@@ -38,6 +38,19 @@ XAML_CLASS(xaml_cmdline_option, { 0x240bec4e, 0xefc2, 0x45ed, { 0xa5, 0x01, 0x04
 XAML_DECL_INTERFACE_(xaml_cmdline_option, xaml_object)
 {
     XAML_DECL_VTBL(xaml_cmdline_option, XAML_CMDLINE_OPTION_VTBL);
+
+#ifdef __cplusplus
+    xaml_result XAML_CALL add_arg(xaml_char_t short_arg, xaml_std_string_view_t long_arg, xaml_std_string_view_t prop, xaml_std_string_view_t help_text) noexcept
+    {
+        xaml_ptr<xaml_string> long_arg_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(long_arg, &long_arg_str));
+        xaml_ptr<xaml_string> prop_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(prop, &prop_str));
+        xaml_ptr<xaml_string> help_text_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(help_text, &help_text_str));
+        return add_arg(short_arg, long_arg_str.get(), prop_str.get(), help_text_str.get());
+    }
+#endif // __cplusplus
 };
 
 EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option**) XAML_NOEXCEPT;

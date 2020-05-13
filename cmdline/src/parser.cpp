@@ -233,3 +233,16 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
     XAML_RETURN_IF_FAILED(result->set_collection_properties(cprops.get()));
     return result->query(ptr);
 }
+
+xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info* type, int argc, xaml_char_t** argv, xaml_cmdline_options** ptr) noexcept
+{
+    xaml_ptr<xaml_vector> args;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
+    for (int i = 1; i < argc; i++)
+    {
+        xaml_ptr<xaml_string> arg;
+        XAML_RETURN_IF_FAILED(xaml_string_new_view(argv[i], &arg));
+        XAML_RETURN_IF_FAILED(args->append(arg.get()));
+    }
+    return xaml_cmdline_parse(type, args.get(), ptr);
+}
