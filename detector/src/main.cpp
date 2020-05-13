@@ -3,6 +3,7 @@
 #include <options.h>
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
+#include <xaml/version.h>
 
 #ifdef UNICODE
 #ifndef _tmain
@@ -79,7 +80,13 @@ int _tmain(int argc, xaml_char_t** argv)
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&ctx));
     XAML_THROW_IF_FAILED(ctx->add_module(module.get()));
 
-    _tcout << U("Types of module ") << quoted(to_string_view_t(path_str)) << U(':') << endl;
+    xaml_result (*pget_version)(xaml_version*);
+    XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", (void**)&pget_version));
+
+    xaml_version ver;
+    XAML_THROW_IF_FAILED(pget_version(&ver));
+
+    _tcout << U("Module ") << quoted(to_string_view_t(path_str)) << U(" (") << ver << U(')') << endl;
 
     xaml_ptr<xaml_map_view> types;
     XAML_THROW_IF_FAILED(ctx->get_types(&types));
