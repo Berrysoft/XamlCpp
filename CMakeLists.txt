@@ -146,11 +146,11 @@ option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
-    xaml_meta xaml_parser #xaml_compiler
+    xaml_meta xaml_parser
     xaml_ui xaml_ui_appmain
     xaml_ui_controls
     xaml_ui_canvas
-    #xaml_cmdline
+    xaml_cmdline
 )
 
 add_subdirectory(global)
