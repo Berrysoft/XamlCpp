@@ -22,5 +22,9 @@ EXTERN_C XAML_UI_API xaml_result xaml_module_register(xaml_meta_context* ctx) no
     XAML_RETURN_IF_FAILED(xaml_menu_bar_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_halignment_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_valignment_register(ctx));
+    XAML_META_CONTEXT_ADD_BASIC_TYPE(xaml_size);
+    XAML_META_CONTEXT_ADD_BASIC_TYPE(xaml_point);
+    XAML_META_CONTEXT_ADD_BASIC_TYPE(xaml_rectangle);
+    XAML_META_CONTEXT_ADD_BASIC_TYPE(xaml_margin);
     return XAML_S_OK;
 }

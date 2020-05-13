@@ -39,5 +39,6 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_module_register(xaml_meta_context
     XAML_RETURN_IF_FAILED(xaml_separator_menu_item_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_orientation_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_grid_layout_register(ctx));
+    XAML_META_CONTEXT_ADD_BASIC_TYPE(xaml_grid_length);
     return XAML_S_OK;
 }

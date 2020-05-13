@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <iostream>
 #include <options.h>
+#include <unordered_map>
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
 #include <xaml/version.h>
@@ -25,6 +26,29 @@
 
 using namespace std;
 using namespace std::filesystem;
+
+xaml_std_string_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
+{
+    xaml_ptr<xaml_reflection_info> info;
+    if (XAML_SUCCEEDED(ctx->get_type(type, &info)))
+    {
+        xaml_ptr<xaml_string> name;
+        XAML_THROW_IF_FAILED(info->get_name(&name));
+        return to_string_t(name);
+    }
+    else
+    {
+        xaml_ptr<xaml_string> name;
+        if (XAML_SUCCEEDED(ctx->get_basic_type(type, &name)))
+        {
+            return to_string_t(name);
+        }
+        else
+        {
+            return U("Unknown-type");
+        }
+    }
+}
 
 int _tmain(int argc, xaml_char_t** argv)
 {
@@ -113,7 +137,12 @@ int _tmain(int argc, xaml_char_t** argv)
                     xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
                     XAML_THROW_IF_FAILED(pair->get_key(&key));
-                    _tcout << U("    P: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                    xaml_ptr<xaml_object> value;
+                    XAML_THROW_IF_FAILED(pair->get_value(&value));
+                    xaml_ptr<xaml_property_info> info = value.query<xaml_property_info>();
+                    xaml_guid type;
+                    XAML_THROW_IF_FAILED(info->get_type(&type));
+                    _tcout << U("    P: ") << to_string_view_t(key.query<xaml_string>()) << U('\t') << get_type_name(ctx, type) << endl;
                 }
             }
             {
@@ -124,7 +153,12 @@ int _tmain(int argc, xaml_char_t** argv)
                     xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
                     XAML_THROW_IF_FAILED(pair->get_key(&key));
-                    _tcout << U("    C: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                    xaml_ptr<xaml_object> value;
+                    XAML_THROW_IF_FAILED(pair->get_value(&value));
+                    xaml_ptr<xaml_collection_property_info> info = value.query<xaml_collection_property_info>();
+                    xaml_guid type;
+                    XAML_THROW_IF_FAILED(info->get_type(&type));
+                    _tcout << U("    C: ") << to_string_view_t(key.query<xaml_string>()) << U('\t') << get_type_name(ctx, type) << endl;
                 }
             }
             {

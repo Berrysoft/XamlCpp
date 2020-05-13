@@ -6,6 +6,7 @@ private:
     xaml_ptr<xaml_vector> m_modules;
     xaml_ptr<xaml_map> m_namespace;
     xaml_ptr<xaml_map> m_type_info_map;
+    xaml_ptr<xaml_map> m_basic_type_info_map;
     xaml_ptr<xaml_map> m_name_info_map;
 
 public:
@@ -15,10 +16,37 @@ public:
         xaml_ptr<xaml_hasher> guid_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_type_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_basic_type_info_map));
         xaml_ptr<xaml_hasher> string_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_namespace));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_name_info_map));
+
+#define AT(type)                                                                      \
+    do                                                                                \
+    {                                                                                 \
+        xaml_ptr<xaml_string> __name;                                                 \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                    \
+        XAML_RETURN_IF_FAILED(xaml_meta_context::add_basic_type<type>(__name.get())); \
+    } while (0)
+
+        AT(xaml_object);
+        AT(xaml_string);
+        AT(bool);
+        AT(xaml_char_t);
+        AT(int8_t);
+        AT(int16_t);
+        AT(int32_t);
+        AT(int64_t);
+        AT(uint8_t);
+        AT(uint16_t);
+        AT(uint32_t);
+        AT(uint64_t);
+        AT(float);
+        AT(double);
+        AT(xaml_guid);
+
+#undef AT
         return XAML_S_OK;
     }
 
@@ -57,7 +85,9 @@ public:
     {
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        return m_type_info_map->lookup(key.get(), (xaml_object**)ptr);
+        xaml_ptr<xaml_object> value;
+        XAML_RETURN_IF_FAILED(m_type_info_map->lookup(key.get(), &value));
+        return value->query(ptr);
     }
 
     xaml_result XAML_CALL get_type_by_name(xaml_string* name, xaml_reflection_info** ptr) noexcept override
@@ -103,6 +133,23 @@ public:
         bool replaced;
         XAML_RETURN_IF_FAILED(m_type_info_map->insert(key.get(), info, &replaced));
         return m_name_info_map->insert(name.get(), info, &replaced);
+    }
+
+    xaml_result XAML_CALL get_basic_type(xaml_guid const& type, xaml_string** ptr) noexcept
+    {
+        xaml_ptr<xaml_object> key;
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
+        xaml_ptr<xaml_object> value;
+        XAML_RETURN_IF_FAILED(m_basic_type_info_map->lookup(key.get(), &value));
+        return value->query(ptr);
+    }
+
+    xaml_result XAML_CALL add_basic_type(xaml_guid const& type, xaml_string* name) noexcept
+    {
+        xaml_ptr<xaml_object> key;
+        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
+        bool replaced;
+        return m_basic_type_info_map->insert(key.get(), name, &replaced);
     }
 
     static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept

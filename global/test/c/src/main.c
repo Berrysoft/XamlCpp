@@ -27,8 +27,10 @@ xaml_result XAML_CALL print_string(xaml_string* str)
 xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args, xaml_object** ptr)
 {
     xaml_result hr;
+    xaml_object* e_obj;
+    XAML_GOTO_IF_FAILED(args->vtbl->get_at(args, 1, &e_obj), exit);
     xaml_vector_changed_args* e;
-    XAML_GOTO_IF_FAILED(args->vtbl->get_at(args, 1, (xaml_object**)&e), exit);
+    XAML_GOTO_IF_FAILED(e_obj->vtbl->query(e_obj, &xaml_guid_xaml_vector_changed_args, (void**)&e), clean_e_obj);
     xaml_vector_changed_action action;
     XAML_GOTO_IF_FAILED(e->vtbl->get_action(e, &action), clean_e);
     switch (action)
@@ -118,6 +120,8 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_vector_view* args,
     *ptr = NULL;
 clean_e:
     e->vtbl->release(e);
+clean_e_obj:
+    e_obj->vtbl->release(e_obj);
 exit:
     return hr;
 }

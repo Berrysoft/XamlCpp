@@ -8,7 +8,6 @@
     do                                                 \
     {                                                  \
         BOOL res = (expr);                             \
-        assert(res);                                   \
         if (!res)                                      \
             return HRESULT_FROM_WIN32(GetLastError()); \
     } while (0)
