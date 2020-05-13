@@ -8,13 +8,11 @@
 #include <string_view>
 #include <tuple>
 #include <vector>
-#include <xaml/cmdline/deserializer.hpp>
-#include <xaml/cmdline/option.hpp>
-#include <xaml/compiler.hpp>
-#include <xaml/meta/meta_macro.hpp>
-#include <xaml/meta/module.hpp>
-#include <xaml/parser.hpp>
-#include <xaml/version.hpp>
+#include <xaml/cmdline/deserializer.h>
+#include <xaml/cmdline/option.h>
+#include <xaml/meta/meta_macros.h>
+#include <xaml/meta/module.h>
+#include <xaml/version.h>
 
 #ifdef UNICODE
 #ifndef _tmain
