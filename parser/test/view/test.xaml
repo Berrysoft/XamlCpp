@@ -1,7 +1,6 @@
-<test_window x:class="xaml_test_window"
-        xmlns="https://github.com/Berrysoft/XamlCpp/"
-        xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
-        title="Test Window" location="200, 100" size="800, 600">
+<test_window xmlns="https://github.com/Berrysoft/XamlCpp/"
+             xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
+             title="Test Window" location="200, 100" size="800, 600">
   <test_window.model>
     <test_model x:name="model" text="&#x1f923;"/>
   </test_window.model>

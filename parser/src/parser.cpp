@@ -376,36 +376,81 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
                 if (include_file)
                     headers->append(include_file.get());
-                xaml_ptr<xaml_node> child;
-                {
-                    xml_node& cnode = c.nodes().front();
-                    auto ns = cnode.namespace_uri();
-                    auto name = cnode.local_name();
-                    xaml_ptr<xaml_reflection_info> info;
-                    {
-                        xaml_ptr<xaml_string> ns_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
-                        xaml_ptr<xaml_string> name_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
-                        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
-                    }
-                    xaml_ptr<xaml_type_info> t;
-                    XAML_RETURN_IF_FAILED(info->query(&t));
-                    XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
-                }
+                xaml_ptr<xaml_string> prop_name_str;
+                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
                 xaml_ptr<xaml_property_info> prop;
+                if (XAML_SUCCEEDED(t->get_property(prop_name_str.get(), &prop)))
                 {
-                    xaml_ptr<xaml_string> prop_name_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
-                    XAML_RETURN_IF_FAILED(t->get_property(prop_name_str.get(), &prop));
+                    bool can_write;
+                    XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                    if (can_write)
+                    {
+                        xaml_ptr<xaml_node> child;
+                        {
+                            xml_node& cnode = c.nodes().front();
+                            auto ns = cnode.namespace_uri();
+                            auto name = cnode.local_name();
+                            xaml_ptr<xaml_reflection_info> info;
+                            {
+                                xaml_ptr<xaml_string> ns_str;
+                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+                                xaml_ptr<xaml_string> name_str;
+                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+                                XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+                            }
+                            xaml_ptr<xaml_type_info> t;
+                            XAML_RETURN_IF_FAILED(info->query(&t));
+                            XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
+                        }
+                        xaml_ptr<xaml_attribute_property> prop_item;
+                        XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), child.get(), &prop_item));
+                        XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
+                    }
                 }
-                bool can_write;
-                XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
-                if (can_write)
+                else
                 {
-                    xaml_ptr<xaml_attribute_property> prop_item;
-                    XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), child.get(), &prop_item));
-                    XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
+                    xaml_ptr<xaml_collection_property_info> cprop;
+                    if (XAML_SUCCEEDED(t->get_collection_property(prop_name_str.get(), &cprop)))
+                    {
+                        bool can_add;
+                        XAML_RETURN_IF_FAILED(cprop->get_can_add(&can_add));
+                        if (can_add)
+                        {
+                            xaml_ptr<xaml_attribute_collection_property> cprop_item;
+                            xaml_ptr<xaml_vector> values;
+                            xaml_ptr<xaml_object> item;
+                            if (XAML_SUCCEEDED(cprops->lookup(prop_name_str.get(), &item)))
+                            {
+                                XAML_RETURN_IF_FAILED(item->query(&cprop_item));
+                                XAML_RETURN_IF_FAILED(cprop_item->get_values(&values));
+                            }
+                            else
+                            {
+                                XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
+                                XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type.get(), cprop.get(), values.get(), &cprop_item));
+                                bool replaced;
+                                XAML_RETURN_IF_FAILED(cprops->insert(prop_name_str.get(), cprop_item.get(), &replaced));
+                            }
+                            for (auto& cnode : c.nodes())
+                            {
+                                auto ns = cnode.namespace_uri();
+                                auto name = cnode.local_name();
+                                xaml_ptr<xaml_reflection_info> info;
+                                {
+                                    xaml_ptr<xaml_string> ns_str;
+                                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+                                    xaml_ptr<xaml_string> name_str;
+                                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+                                    XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+                                }
+                                xaml_ptr<xaml_type_info> t;
+                                XAML_RETURN_IF_FAILED(info->query(&t));
+                                xaml_ptr<xaml_node> child;
+                                XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
+                                XAML_RETURN_IF_FAILED(values->append(child.get()));
+                            }
+                        }
+                    }
                 }
             }
             else
