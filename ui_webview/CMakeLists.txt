@@ -1,6 +1,6 @@
 project(XamlWebView CXX)
 
-file(GLOB WV_HEADERS "include/xaml/ui/controls/*.hpp")
+file(GLOB WV_HEADERS "include/xaml/ui/controls/*.h")
 
 if(${BUILD_WINDOWS})
     file(GLOB WV_SOURCE "src/win/*.cpp")
@@ -38,7 +38,7 @@ if(${BUILD_WINDOWS})
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
             message(STATUS "Download WebView2...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.430 ${CMAKE_BINARY_DIR}/webview2.nupkg)
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.488 ${CMAKE_BINARY_DIR}/webview2.nupkg)
             message(STATUS "WebView2 downloaded")
         endif()
 
@@ -84,8 +84,6 @@ elseif(${BUILD_GTK3})
 endif()
 
 install(FILES ${WV_HEADERS} DESTINATION include/xaml/ui/controls)
-
-add_subdirectory(meta)
 
 if(${BUILD_TESTS})
     add_subdirectory(test)

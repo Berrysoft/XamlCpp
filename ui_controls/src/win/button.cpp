@@ -1,76 +1,83 @@
-#include <wil/result_macros.h>
+#include <shared/button.hpp>
 #include <windowsx.h>
-#include <xaml/ui/controls/button.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <xaml/result_win32.h>
+#include <xaml/ui/controls/button.h>
+#include <xaml/ui/win/control.h>
 
 #include <CommCtrl.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
-    optional<std::intptr_t> button::__wnd_proc(window_message const& msg)
+    if (m_parent)
     {
-        switch (msg.Msg)
+        if (!m_handle)
         {
-        case WM_COMMAND:
+            xaml_win32_window_create_params params = {};
+            params.class_name = WC_BUTTON;
+            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
+            params.x = 0;
+            params.y = 0;
+            params.width = 50;
+            params.height = 14;
+            params.parent = m_parent;
+            XAML_RETURN_IF_FAILED(create(params));
+            XAML_RETURN_IF_FAILED(draw_visible());
+            XAML_RETURN_IF_FAILED(draw_text());
+            XAML_RETURN_IF_FAILED(draw_default());
+        }
+        XAML_RETURN_IF_FAILED(set_rect(region));
+    }
+    return XAML_S_OK;
+}
+
+xaml_result xaml_button_internal::draw_text() noexcept
+{
+    xaml_char_t const* data = nullptr;
+    if (m_text)
+    {
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+    }
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(Button_SetText(m_handle, data));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_button_internal::draw_default() noexcept
+{
+    auto style = GetWindowLongPtr(m_handle, GWL_STYLE);
+    if (m_is_default)
+        style |= BS_DEFPUSHBUTTON;
+    else
+        style &= ~BS_DEFPUSHBUTTON;
+    Button_SetStyle(m_handle, style, FALSE);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_button_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT*) noexcept
+{
+    switch (msg.Msg)
+    {
+    case WM_COMMAND:
+    {
+        HWND h = (HWND)msg.lParam;
+        if (m_handle == h)
         {
-            HWND h = (HWND)msg.lParam;
-            if (get_handle() && get_handle()->handle == h)
+            switch (HIWORD(msg.wParam))
             {
-                switch (HIWORD(msg.wParam))
-                {
-                case BN_CLICKED:
-                    m_click(shared_from_this<button>());
-                    break;
-                }
+            case BN_CLICKED:
+                on_click(static_cast<xaml_button*>(m_outer_this));
+                break;
             }
         }
-        }
-        return nullopt;
     }
+    }
+    return XAML_E_NOTIMPL;
+}
 
-    void button::__draw(rectangle const& region)
-    {
-        if (auto sparent = get_parent().lock())
-        {
-            if (!get_handle())
-            {
-                window_create_params params = {};
-                params.class_name = WC_BUTTON;
-                params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON;
-                params.x = 0;
-                params.y = 0;
-                params.width = 50;
-                params.height = 14;
-                params.parent = sparent.get();
-                this->__create(params);
-                draw_visible();
-                draw_text();
-                draw_default();
-                SetParent(get_handle()->handle, sparent->get_handle()->handle);
-            }
-            __set_rect(region);
-        }
-    }
-
-    void button::draw_text()
-    {
-        THROW_IF_WIN32_BOOL_FALSE(Button_SetText(get_handle()->handle, m_text.c_str()));
-    }
-
-    void button::draw_default()
-    {
-        auto style = GetWindowLongPtr(get_handle()->handle, GWL_STYLE);
-        if (m_is_default)
-            style |= BS_DEFPUSHBUTTON;
-        else
-            style &= ~BS_DEFPUSHBUTTON;
-        Button_SetStyle(get_handle()->handle, style, FALSE);
-    }
-
-    void button::__size_to_fit()
-    {
-        __set_size_noevent(__measure_text_size(m_text, { 5, 5 }));
-    }
-} // namespace xaml
+xaml_result xaml_button_internal::size_to_fit() noexcept
+{
+    xaml_size res;
+    XAML_RETURN_IF_FAILED(measure_string(m_text, { 5, 5 }, &res));
+    return set_size_noevent(res);
+}

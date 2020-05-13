@@ -1,12 +1,20 @@
-#include <xaml/ui/native_timer.hpp>
-#include <xaml/ui/timer.hpp>
+#include <shared/timer.hpp>
+#include <xaml/ui/timer.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_timer_impl::init() noexcept
 {
-    timer::timer(chrono::milliseconds interval) : m_interval(interval)
-    {
-        m_handle = make_shared<native_timer>();
-    }
-} // namespace xaml
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_tick));
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_timer_new(xaml_timer** ptr) noexcept
+{
+    return xaml_object_new_and_init<xaml_timer_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_timer_new_interval(int32_t interval, xaml_timer** ptr) noexcept
+{
+    return xaml_object_new_and_init<xaml_timer_impl>(ptr, interval);
+}

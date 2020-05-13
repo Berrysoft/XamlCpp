@@ -1,87 +1,111 @@
-#include <Windows.h>
-#include <map>
+#include <shared/control.hpp>
 #include <wil/resource.h>
-#include <wil/result_macros.h>
-#include <xaml/ui/application.hpp>
-#include <xaml/ui/container.hpp>
-#include <xaml/ui/control.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/result_win32.h>
+#include <xaml/ui/win/control.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
+#include <xaml/ui/win/font_provider.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_control_internal::draw_size() noexcept
 {
-    void control::__create(window_create_params const& params)
-    {
-        auto h = make_shared<native_control>();
-        h->handle = THROW_IF_NULL_ALLOC(CreateWindowEx(
-            params.ex_style, params.class_name.c_str(), params.window_name.c_str(),
-            params.style, params.x, params.y, params.width, params.height,
-            params.parent ? params.parent->get_handle()->handle : nullptr,
-            nullptr, GetModuleHandle(nullptr), nullptr));
-        set_handle(h);
-        SendMessage(get_handle()->handle, WM_SETFONT, (WPARAM)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle)), TRUE);
-        XamlControlUseDarkMode(get_handle()->handle);
-    }
+    xaml_size real_size;
+    XAML_RETURN_IF_FAILED(get_real_size(&real_size));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowPos(m_handle, nullptr, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
+    return XAML_S_OK;
+}
 
-    void control::__set_rect(rectangle const& region)
-    {
-        rectangle real = region - get_margin();
-        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        rectangle real_real = real * udpi / USER_DEFAULT_SCREEN_DPI;
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
-        __set_size_noevent({ real.width, real.height });
-    }
+xaml_result xaml_control_internal::draw_visible() noexcept
+{
+    ShowWindow(m_handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
+    return XAML_S_OK;
+}
 
-    size control::__measure_text_size(string_view_t str, size offset) const
+xaml_result xaml_control_internal::create(xaml_win32_window_create_params const& params) noexcept
+{
+    HWND parent = nullptr;
+    if (params.parent)
     {
-        wil::unique_hdc_window hDC = wil::GetWindowDC(get_handle()->handle);
-        if (hDC)
+        xaml_ptr<xaml_win32_control> native_parent;
+        if (XAML_SUCCEEDED(params.parent->query(&native_parent)))
         {
-            SIZE s = {};
-            THROW_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), str.data(), (int)str.length(), &s));
-            return from_native(s) + offset;
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent));
         }
-        return {};
     }
-
-    size control::__get_real_size() const
+    HWND handle = CreateWindowEx(
+        params.ex_style, params.class_name, params.window_name,
+        params.style, params.x, params.y, params.width, params.height,
+        parent, nullptr, GetModuleHandle(nullptr), nullptr);
+    if (!handle) return HRESULT_FROM_WIN32(GetLastError());
+    m_handle = handle;
+    xaml_ptr<xaml_application> current_app;
+    XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));
+    xaml_ptr<xaml_win32_font_provider> provider = current_app.query<xaml_win32_font_provider>();
+    if (provider)
     {
-        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        return get_size() * udpi / USER_DEFAULT_SCREEN_DPI;
+        HFONT font;
+        XAML_RETURN_IF_FAILED(provider->get_default_font(XamlGetDpiForWindow(m_handle), &font));
+        SendMessage(m_handle, WM_SETFONT, (WPARAM)font, TRUE);
     }
+    XamlControlUseDarkMode(m_handle);
+    return XAML_S_OK;
+}
 
-    void control::__set_real_size(size value)
+xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexcept
+{
+    xaml_rectangle real = region - m_margin;
+    UINT udpi = XamlGetDpiForWindow(m_handle);
+    xaml_rectangle real_real = real * udpi / USER_DEFAULT_SCREEN_DPI;
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowPos(m_handle, nullptr, (int)real_real.x, (int)real_real.y, (int)real_real.width, (int)real_real.height, SWP_NOZORDER));
+    return set_size_noevent({ real.width, real.height });
+}
+
+xaml_result xaml_control_internal::size_to_fit() noexcept
+{
+    return XAML_S_OK;
+}
+
+xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept
+{
+    wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
+    if (hDC && str)
     {
-        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        set_size(value * USER_DEFAULT_SCREEN_DPI / udpi);
+        xaml_std_string_view_t view;
+        XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
+        SIZE s = {};
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), view.data(), (int)view.length(), &s));
+        *pvalue = xaml_from_native(s) + offset;
     }
-
-    margin control::__get_real_margin() const
+    else
     {
-        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        return get_margin() * udpi / USER_DEFAULT_SCREEN_DPI;
+        *pvalue = offset;
     }
+    return XAML_S_OK;
+}
 
-    void control::__set_real_margin(margin const& value)
-    {
-        UINT udpi = XamlGetDpiForWindow(get_handle()->handle);
-        set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
-    }
+xaml_result xaml_control_internal::get_real_size(xaml_size* pvalue) noexcept
+{
+    UINT udpi = XamlGetDpiForWindow(m_handle);
+    *pvalue = m_size * udpi / USER_DEFAULT_SCREEN_DPI;
+    return XAML_S_OK;
+}
 
-    void control::draw_size()
-    {
-        auto real_size = __get_real_size();
-        THROW_IF_WIN32_BOOL_FALSE(SetWindowPos(get_handle()->handle, HWND_TOP, 0, 0, (int)real_size.width, (int)real_size.height, SWP_NOZORDER | SWP_NOMOVE));
-    }
+xaml_result xaml_control_internal::set_real_size(xaml_size const& value) noexcept
+{
+    UINT udpi = XamlGetDpiForWindow(m_handle);
+    return set_size(value * USER_DEFAULT_SCREEN_DPI / udpi);
+}
 
-    void control::draw_visible()
-    {
-        ShowWindow(get_handle()->handle, m_is_visible ? SW_SHOWNORMAL : SW_HIDE);
-    }
+xaml_result xaml_control_internal::get_real_margin(xaml_margin* pvalue) noexcept
+{
+    UINT udpi = XamlGetDpiForWindow(m_handle);
+    *pvalue = m_margin * udpi / USER_DEFAULT_SCREEN_DPI;
+    return XAML_S_OK;
+}
 
-    void control::__size_to_fit() {}
-} // namespace xaml
+xaml_result xaml_control_internal::set_real_margin(xaml_margin const& value) noexcept
+{
+    UINT udpi = XamlGetDpiForWindow(m_handle);
+    return set_margin(value * USER_DEFAULT_SCREEN_DPI / udpi);
+}

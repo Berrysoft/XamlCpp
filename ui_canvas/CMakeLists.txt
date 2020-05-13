@@ -1,6 +1,6 @@
 project(XamlCanvas CXX)
 
-file(GLOB CV_HEADERS "include/xaml/ui/controls/*.hpp")
+file(GLOB CV_HEADERS "include/xaml/ui/controls/*.h")
 
 if(${BUILD_WINDOWS})
     option(BUILD_DIRECT2D "Build against Direct2D instead of GDI+" ON)
@@ -45,5 +45,3 @@ endif()
 target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
-
-add_subdirectory(meta)

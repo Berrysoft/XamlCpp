@@ -1,111 +1,109 @@
 #ifndef XAML_UI_NATIVE_DRAWING_HPP
 #define XAML_UI_NATIVE_DRAWING_HPP
 
-#include <xaml/ui/drawing.hpp>
-#include <xaml/ui/objc.hpp>
+#include <xaml/ui/drawing.h>
 
 #ifdef XAML_UI_WINDOWS
 #include <Windows.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
 #include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS
 
-namespace xaml
-{
-    template <typename To, typename From>
-    inline To to_native(From) noexcept = delete;
+template <typename To, typename From>
+inline To xaml_to_native(From const&) noexcept = delete;
 
 #ifdef XAML_UI_WINDOWS
-    constexpr size from_native(SIZE s) noexcept
-    {
-        return { (double)s.cx, (double)s.cy };
-    }
-    template <>
-    constexpr SIZE to_native<SIZE, size>(size s) noexcept
-    {
-        return { (LONG)s.width, (LONG)s.height };
-    }
+constexpr xaml_size xaml_from_native(SIZE const& s) noexcept
+{
+    return { (double)s.cx, (double)s.cy };
+}
+template <>
+constexpr SIZE xaml_to_native<SIZE, xaml_size>(xaml_size const& s) noexcept
+{
+    return { (LONG)s.width, (LONG)s.height };
+}
 
-    constexpr point from_native(POINT p) noexcept
-    {
-        return { (double)p.x, (double)p.y };
-    }
-    template <>
-    constexpr POINT to_native<POINT, point>(point p) noexcept
-    {
-        return { (LONG)p.x, (LONG)p.y };
-    }
+constexpr xaml_point xaml_from_native(POINT const& p) noexcept
+{
+    return { (double)p.x, (double)p.y };
+}
+template <>
+constexpr POINT xaml_to_native<POINT, xaml_point>(xaml_point const& p) noexcept
+{
+    return { (LONG)p.x, (LONG)p.y };
+}
 
-    constexpr rectangle from_native(RECT r) noexcept
-    {
-        return { (double)r.left, (double)r.top, (double)r.right - r.left, (double)r.bottom - r.top };
-    }
-    template <>
-    constexpr RECT to_native<RECT, rectangle>(rectangle r) noexcept
-    {
-        return { (LONG)r.x, (LONG)r.y, (LONG)(r.x + r.width), (LONG)(r.y + r.height) };
-    }
+constexpr xaml_rectangle xaml_from_native(RECT const& r) noexcept
+{
+    return { (double)r.left, (double)r.top, (double)r.right - r.left, (double)r.bottom - r.top };
+}
+template <>
+constexpr RECT xaml_to_native<RECT, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { (LONG)r.x, (LONG)r.y, (LONG)(r.x + r.width), (LONG)(r.y + r.height) };
+}
 #elif defined(XAML_UI_GTK3)
-    constexpr size from_native(gint width, gint height) noexcept
-    {
-        return { (double)width, (double)height };
-    }
-    template <>
-    inline std::tuple<gint, gint> to_native<std::tuple<gint, gint>, size>(size s) noexcept
-    {
-        return std::make_tuple((std::max)(0, (int)s.width), (std::max)(1, (int)s.height));
-    }
+constexpr xaml_size xaml_from_native(gint width, gint height) noexcept
+{
+    return { (double)width, (double)height };
+}
+template <>
+inline std::tuple<gint, gint> xaml_to_native<std::tuple<gint, gint>, xaml_size>(xaml_size const& s) noexcept
+{
+    return std::make_tuple((std::max)(0, (int)s.width), (std::max)(1, (int)s.height));
+}
 
-    constexpr point from_native(GdkPoint p) noexcept
-    {
-        return { (double)p.x, (double)p.y };
-    }
-    template <>
-    constexpr GdkPoint to_native<GdkPoint, point>(point p) noexcept
-    {
-        return { (int)p.x, (int)p.y };
-    }
+constexpr xaml_point xaml_from_native(GdkPoint const& p) noexcept
+{
+    return { (double)p.x, (double)p.y };
+}
+template <>
+constexpr GdkPoint xaml_to_native<GdkPoint, xaml_point>(xaml_point const& p) noexcept
+{
+    return { (int)p.x, (int)p.y };
+}
 
-    constexpr rectangle from_native(GdkRectangle const& r) noexcept
-    {
-        return { (double)r.x, (double)r.y, (double)r.width, (double)r.height };
-    }
-    template <>
-    constexpr GdkRectangle to_native<GdkRectangle, rectangle>(rectangle r) noexcept
-    {
-        return { (int)r.x, (int)r.y, (int)r.width, (int)r.height };
-    }
+constexpr xaml_rectangle xaml_from_native(GdkRectangle const& r) noexcept
+{
+    return { (double)r.x, (double)r.y, (double)r.width, (double)r.height };
+}
+template <>
+constexpr GdkRectangle xaml_to_native<GdkRectangle, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { (int)r.x, (int)r.y, (int)r.width, (int)r.height };
+}
 #elif defined(XAML_UI_COCOA) && defined(__OBJC__)
-    constexpr size from_native(NSSize s) noexcept
-    {
-        return { s.width, s.height };
-    }
-    template <>
-    constexpr NSSize to_native<NSSize, size>(size s) noexcept
-    {
-        return { s.width, s.height };
-    }
+constexpr xaml_size xaml_from_native(NSSize const& s) noexcept
+{
+    return { s.width, s.height };
+}
+template <>
+constexpr NSSize xaml_to_native<NSSize, xaml_size>(xaml_size const& s) noexcept
+{
+    return { s.width, s.height };
+}
 
-    constexpr point from_native(NSPoint p) noexcept
-    {
-        return { p.x, p.y };
-    }
-    template <>
-    constexpr NSPoint to_native<NSPoint, point>(point p) noexcept
-    {
-        return { p.x, p.y };
-    }
+constexpr xaml_point xaml_from_native(NSPoint const& p) noexcept
+{
+    return { p.x, p.y };
+}
+template <>
+constexpr NSPoint xaml_to_native<NSPoint, xaml_point>(xaml_point const& p) noexcept
+{
+    return { p.x, p.y };
+}
 
-    constexpr rectangle from_native(NSRect const& r) noexcept
-    {
-        return { r.origin.x, r.origin.y, r.size.width, r.size.height };
-    }
-    template <>
-    constexpr NSRect to_native<NSRect, rectangle>(rectangle r) noexcept
-    {
-        return { { r.x, r.y }, { r.width, r.height } };
-    }
+constexpr xaml_rectangle xaml_from_native(NSRect const& r) noexcept
+{
+    return { r.origin.x, r.origin.y, r.size.width, r.size.height };
+}
+template <>
+constexpr NSRect xaml_to_native<NSRect, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { { r.x, r.y }, { r.width, r.height } };
+}
 #endif // XAML_UI_WINDOWS
-} // namespace xaml
 
 #endif // !XAML_UI_NATIVE_DRAWING_HPP

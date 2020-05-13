@@ -1,10 +1,9 @@
 #ifdef XAML_UI_CANVAS_DIRECT2D
 
+#include <shared/canvas.hpp>
 #include <tuple>
 #include <wil/result_macros.h>
 #include <win/canvas_d2d.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_window.hpp>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
@@ -17,211 +16,238 @@ inline constexpr double pi = M_PI;
 
 using namespace std;
 
-namespace xaml
+static inline D2D1::ColorF get_COLOR(xaml_color c) noexcept
 {
-    drawing_context_d2d::~drawing_context_d2d() {}
+    return (uint32_t)c;
+}
 
-    static inline D2D1::ColorF get_COLOR(color c) noexcept
-    {
-        return (uint32_t)c;
-    }
+static HRESULT get_Brush(ID2D1RenderTarget* target, xaml_color c, ID2D1Brush** ptr) noexcept
+{
+    wil::com_ptr_t<ID2D1SolidColorBrush, wil::err_returncode_policy> brush;
+    RETURN_IF_FAILED(target->CreateSolidColorBrush(get_COLOR(c), &brush));
+    return brush.copy_to(ptr);
+}
 
-    static wil::com_ptr<ID2D1Brush> get_Brush(ID2D1RenderTarget* target, color c)
-    {
-        wil::com_ptr<ID2D1SolidColorBrush> brush;
-        THROW_IF_FAILED(target->CreateSolidColorBrush(get_COLOR(c), &brush));
-        return brush;
-    }
-
-    static D2D1_ELLIPSE get_ELLIPSE(rectangle const& region) noexcept
-    {
-        return D2D1::Ellipse(D2D1::Point2F((FLOAT)(region.x + region.width / 2), (FLOAT)(region.y + region.height / 2)), (FLOAT)(region.width / 2), (FLOAT)(region.height / 2));
-    }
+static D2D1_ELLIPSE get_ELLIPSE(xaml_rectangle const& region) noexcept
+{
+    return D2D1::Ellipse(D2D1::Point2F((FLOAT)(region.x + region.width / 2), (FLOAT)(region.y + region.height / 2)), (FLOAT)(region.width / 2), (FLOAT)(region.height / 2));
+}
 
 #define CHECK_SIZE(r) \
-    if ((r).width < 1 || (r).height < 1) return
+    if ((r).width < 1 || (r).height < 1) return XAML_S_OK
 
-    static constexpr tuple<size, point, point, point> get_arc(rectangle const& region, double start_angle, double end_angle) noexcept
+static constexpr tuple<xaml_size, xaml_point, xaml_point, xaml_point> get_arc(xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+{
+    xaml_size radius = { region.width / 2, region.height / 2 };
+    xaml_point centerp = { region.x + radius.width, region.y + radius.height };
+    xaml_point startp = centerp + xaml_point{ radius.width * cos(start_angle), radius.height * sin(start_angle) };
+    xaml_point endp = centerp + xaml_point{ radius.width * cos(end_angle), radius.height * sin(end_angle) };
+    return make_tuple(radius, centerp, startp, endp);
+}
+
+static HRESULT get_arc_geo(wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> const& d2d, xaml_rectangle const& region, double start_angle, double end_angle, bool close, ID2D1PathGeometry** ptr) noexcept
+{
+    wil::com_ptr_t<ID2D1PathGeometry, wil::err_returncode_policy> geo;
+    RETURN_IF_FAILED(d2d->CreatePathGeometry(&geo));
+    wil::com_ptr_t<ID2D1GeometrySink, wil::err_returncode_policy> sink;
+    RETURN_IF_FAILED(geo->Open(&sink));
+    auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
+    sink->BeginFigure(xaml_to_native<D2D1_POINT_2F>(startp), D2D1_FIGURE_BEGIN_HOLLOW);
+    if (close) sink->AddLine(xaml_to_native<D2D1_POINT_2F>(startp));
+    sink->AddArc(D2D1::ArcSegment(xaml_to_native<D2D1_POINT_2F>(endp), xaml_to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+    sink->EndFigure(close ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
+    RETURN_IF_FAILED(sink->Close());
+    return geo.copy_to(ptr);
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+{
+    CHECK_SIZE(region);
+    wil::com_ptr_t<ID2D1PathGeometry, wil::err_returncode_policy> geo;
+    XAML_RETURN_IF_FAILED(get_arc_geo(d2d, region, start_angle, end_angle, false, &geo));
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), pen.stroke, &b));
+    target->DrawGeometry(geo.get(), b.get(), (FLOAT)pen.width);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+{
+    CHECK_SIZE(region);
+    wil::com_ptr_t<ID2D1PathGeometry, wil::err_returncode_policy> geo;
+    XAML_RETURN_IF_FAILED(get_arc_geo(d2d, region, start_angle, end_angle, false, &geo));
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
+    target->FillGeometry(geo.get(), b.get());
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept
+{
+    CHECK_SIZE(region);
+    auto e = get_ELLIPSE(region);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), pen.stroke, &b));
+    target->DrawEllipse(e, b.get(), (FLOAT)pen.width);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept
+{
+    CHECK_SIZE(region);
+    auto e = get_ELLIPSE(region);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
+    target->FillEllipse(e, b.get());
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept
+{
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), pen.stroke, &b));
+    target->DrawLine(xaml_to_native<D2D1_POINT_2F>(startp), xaml_to_native<D2D1_POINT_2F>(endp), b.get(), (FLOAT)pen.width);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept
+{
+    CHECK_SIZE(rect);
+    auto r = xaml_to_native<D2D1_RECT_F>(rect);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), pen.stroke, &b));
+    target->DrawRectangle(r, b.get(), (FLOAT)pen.width);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept
+{
+    CHECK_SIZE(rect);
+    auto r = xaml_to_native<D2D1_RECT_F>(rect);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
+    target->FillRectangle(r, b.get());
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
+{
+    CHECK_SIZE(rect);
+    CHECK_SIZE(round);
+    auto r = xaml_to_native<D2D1_RECT_F>(rect);
+    auto s = xaml_to_native<D2D1_SIZE_F>(round);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), pen.stroke, &b));
+    target->DrawRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get(), (FLOAT)pen.width);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
+{
+    CHECK_SIZE(rect);
+    CHECK_SIZE(round);
+    auto r = xaml_to_native<D2D1_RECT_F>(rect);
+    auto s = xaml_to_native<D2D1_SIZE_F>(round);
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
+    target->FillRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get());
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_d2d_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+{
+    wil::com_ptr_t<ID2D1Brush, wil::err_returncode_policy> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush.fill, &b));
+    auto fsize = (FLOAT)font.size;
+    if (fsize <= 0) return XAML_S_OK;
+    wil::com_ptr_t<IDWriteTextFormat, wil::err_returncode_policy> format;
+    XAML_RETURN_IF_FAILED(dwrite->CreateTextFormat(
+        font.font_family, nullptr,
+        font.bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL,
+        font.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
+        DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
+    auto size = target->GetSize();
+    auto region = xaml_to_native<D2D1_RECT_F, xaml_rectangle>({ p.x, p.y, p.x, p.y });
+    xaml_char_t const* data;
+    XAML_RETURN_IF_FAILED(str->get_data(&data));
+    int32_t length;
+    XAML_RETURN_IF_FAILED(str->get_length(&length));
+    wil::com_ptr_t<IDWriteTextLayout, wil::err_returncode_policy> layout;
+    XAML_RETURN_IF_FAILED(dwrite->CreateTextLayout(data, (UINT32)length, format.get(), size.width, size.height, &layout));
+    DWRITE_TEXT_METRICS metrics;
+    XAML_RETURN_IF_FAILED(layout->GetMetrics(&metrics));
+    switch (font.halign)
     {
-        size radius = { region.width / 2, region.height / 2 };
-        point centerp = { region.x + radius.width, region.y + radius.height };
-        point startp = centerp + point{ radius.width * cos(start_angle), radius.height * sin(start_angle) };
-        point endp = centerp + point{ radius.width * cos(end_angle), radius.height * sin(end_angle) };
-        return make_tuple(radius, centerp, startp, endp);
+    case xaml_halignment_center:
+        region.left -= metrics.width / 2;
+        break;
+    case xaml_halignment_right:
+        region.left -= metrics.width;
+        break;
+    default:
+        break;
     }
-
-    static wil::com_ptr<ID2D1PathGeometry> get_arc_geo(wil::com_ptr<ID2D1Factory> const& d2d, rectangle const& region, double start_angle, double end_angle, bool close)
+    switch (font.valign)
     {
-        wil::com_ptr<ID2D1PathGeometry> geo;
-        THROW_IF_FAILED(d2d->CreatePathGeometry(&geo));
-        wil::com_ptr<ID2D1GeometrySink> sink;
-        THROW_IF_FAILED(geo->Open(&sink));
-        auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
-        sink->BeginFigure(to_native<D2D1_POINT_2F>(startp), D2D1_FIGURE_BEGIN_HOLLOW);
-        if (close) sink->AddLine(to_native<D2D1_POINT_2F>(startp));
-        sink->AddArc(D2D1::ArcSegment(to_native<D2D1_POINT_2F>(endp), to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
-        sink->EndFigure(close ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
-        THROW_IF_FAILED(sink->Close());
-        return geo;
+    case xaml_valignment_center:
+        region.top -= metrics.height / 2;
+        break;
+    case xaml_valignment_bottom:
+        region.top -= metrics.height;
+        break;
+    default:
+        break;
     }
+    target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
+    return XAML_S_OK;
+}
 
-    void drawing_context_d2d::draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle)
+xaml_result xaml_canvas_d2d_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+{
+    switch (msg.Msg)
     {
-        CHECK_SIZE(region);
-        wil::com_ptr<ID2D1PathGeometry> geo = get_arc_geo(d2d, region, start_angle, end_angle, false);
-        auto b = get_Brush(target.get(), pen.stroke);
-        target->DrawGeometry(geo.get(), b.get(), (FLOAT)pen.width);
-    }
-
-    void drawing_context_d2d::fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle)
+    case WM_DRAWITEM:
     {
-        CHECK_SIZE(region);
-        wil::com_ptr<ID2D1PathGeometry> geo = get_arc_geo(d2d, region, start_angle, end_angle, true);
-        auto b = get_Brush(target.get(), brush.fill);
-        target->FillGeometry(geo.get(), b.get());
-    }
-
-    void drawing_context_d2d::draw_ellipse(drawing_pen const& pen, rectangle const& region)
-    {
-        CHECK_SIZE(region);
-        auto e = get_ELLIPSE(region);
-        auto b = get_Brush(target.get(), pen.stroke);
-        target->DrawEllipse(e, b.get(), (FLOAT)pen.width);
-    }
-
-    void drawing_context_d2d::fill_ellipse(drawing_brush const& brush, rectangle const& region)
-    {
-        CHECK_SIZE(region);
-        auto e = get_ELLIPSE(region);
-        auto b = get_Brush(target.get(), brush.fill);
-        target->FillEllipse(e, b.get());
-    }
-
-    void drawing_context_d2d::draw_line(drawing_pen const& pen, point startp, point endp)
-    {
-        auto b = get_Brush(target.get(), pen.stroke);
-        target->DrawLine(to_native<D2D1_POINT_2F>(startp), to_native<D2D1_POINT_2F>(endp), b.get(), (FLOAT)pen.width);
-    }
-
-    void drawing_context_d2d::draw_rect(drawing_pen const& pen, rectangle const& rect)
-    {
-        CHECK_SIZE(rect);
-        auto r = to_native<D2D1_RECT_F>(rect);
-        auto b = get_Brush(target.get(), pen.stroke);
-        target->DrawRectangle(r, b.get(), (FLOAT)pen.width);
-    }
-
-    void drawing_context_d2d::fill_rect(drawing_brush const& brush, rectangle const& rect)
-    {
-        CHECK_SIZE(rect);
-        auto r = to_native<D2D1_RECT_F>(rect);
-        auto b = get_Brush(target.get(), brush.fill);
-        target->FillRectangle(r, b.get());
-    }
-
-    void drawing_context_d2d::draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round)
-    {
-        CHECK_SIZE(rect);
-        CHECK_SIZE(round);
-        auto r = to_native<D2D1_RECT_F>(rect);
-        auto s = to_native<D2D1_SIZE_F>(round);
-        auto b = get_Brush(target.get(), pen.stroke);
-        target->DrawRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get(), (FLOAT)pen.width);
-    }
-
-    void drawing_context_d2d::fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round)
-    {
-        CHECK_SIZE(rect);
-        CHECK_SIZE(round);
-        auto r = to_native<D2D1_RECT_F>(rect);
-        auto s = to_native<D2D1_SIZE_F>(round);
-        auto b = get_Brush(target.get(), brush.fill);
-        target->FillRoundedRectangle(D2D1::RoundedRect(r, s.width, s.height), b.get());
-    }
-
-    void drawing_context_d2d::draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str)
-    {
-        auto b = get_Brush(target.get(), brush.fill);
-        auto fsize = (FLOAT)font.size;
-        if (fsize <= 0) return;
-        wil::com_ptr<IDWriteTextFormat> format;
-        THROW_IF_FAILED(dwrite->CreateTextFormat(
-            font.font_family.c_str(), nullptr,
-            font.bold ? DWRITE_FONT_WEIGHT_BOLD : DWRITE_FONT_WEIGHT_NORMAL,
-            font.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
-            DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
-        auto size = target->GetSize();
-        auto region = to_native<D2D1_RECT_F, rectangle>({ p.x, p.y, p.x, p.y });
-        wil::com_ptr<IDWriteTextLayout> layout;
-        THROW_IF_FAILED(dwrite->CreateTextLayout(str.data(), (UINT32)str.length(), format.get(), size.width, size.height, &layout));
-        DWRITE_TEXT_METRICS metrics;
-        THROW_IF_FAILED(layout->GetMetrics(&metrics));
-        switch (font.halign)
+        DRAWITEMSTRUCT* ds = (DRAWITEMSTRUCT*)msg.lParam;
+        if (ds->hwndItem == m_handle)
         {
-        case halignment_t::center:
-            region.left -= metrics.width / 2;
-            break;
-        case halignment_t::right:
-            region.left -= metrics.width;
-            break;
-        default:
-            break;
+            UINT dpi = XamlGetDpiForWindow(m_handle);
+            xaml_size region = m_size * dpi / USER_DEFAULT_SCREEN_DPI;
+            CHECK_SIZE(region);
+            target->Resize(D2D1::SizeU((UINT32)region.width, (UINT32)region.height));
+            target->BeginDraw();
+            target->SetDpi((FLOAT)dpi, (FLOAT)dpi);
+            D2D1_COLOR_F background_color = XamlIsDarkModeAllowedForApp() ? D2D1::ColorF(D2D1::ColorF::Black) : D2D1::ColorF(D2D1::ColorF::White);
+            target->Clear(background_color);
+            wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> ctx_target;
+            XAML_RETURN_IF_FAILED(target.query_to(&ctx_target));
+            xaml_ptr<xaml_drawing_context> dc;
+            XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_d2d_impl>(&dc, ctx_target, d2d, dwrite));
+            XAML_RETURN_IF_FAILED(on_redraw(m_outer_this, dc));
+            XAML_RETURN_IF_FAILED(target->EndDraw());
         }
-        switch (font.valign)
-        {
-        case valignment_t::center:
-            region.top -= metrics.height / 2;
-            break;
-        case valignment_t::bottom:
-            region.top -= metrics.height;
-            break;
-        default:
-            break;
-        }
-        target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
+        *presult = TRUE;
+        return XAML_S_OK;
     }
+    }
+    return XAML_E_NOTIMPL;
+}
 
-    canvas_d2d::canvas_d2d() noexcept {}
+xaml_result xaml_canvas_d2d_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_canvas_internal::init());
+    XAML_RETURN_IF_FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
+    XAML_RETURN_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
+    return XAML_S_OK;
+}
 
-    canvas_d2d::~canvas_d2d() {}
-
-    bool canvas_d2d::create(HWND wnd) noexcept
+xaml_result xaml_canvas_d2d_internal::draw_impl() noexcept
+{
+    if (!target)
     {
-        if (!d2d)
-        {
-            try
-            {
-                THROW_IF_FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
-                THROW_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(wnd), &target));
-                THROW_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
-                return true;
-            }
-            catch (wil::ResultException const&)
-            {
-                return false;
-            }
-        }
-        return false;
+        XAML_RETURN_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_handle), &target));
     }
-
-    void canvas_d2d::begin_paint(HWND wnd, size real, function<void(shared_ptr<drawing_context>)> paint_func)
-    {
-        UINT dpi = XamlGetDpiForWindow(wnd);
-        size region = real * dpi / USER_DEFAULT_SCREEN_DPI;
-        CHECK_SIZE(region);
-        target->Resize(D2D1::SizeU((UINT32)region.width, (UINT32)region.height));
-        target->BeginDraw();
-        target->SetDpi((FLOAT)dpi, (FLOAT)dpi);
-        D2D1_COLOR_F background_color = XamlIsDarkModeAllowedForApp() ? D2D1::ColorF(D2D1::ColorF::Black) : D2D1::ColorF(D2D1::ColorF::White);
-        target->Clear(background_color);
-        drawing_context_d2d ctx{};
-        ctx.d2d = d2d.copy<ID2D1Factory>();
-        ctx.target = target.query<ID2D1RenderTarget>();
-        ctx.dwrite = dwrite.copy<IDWriteFactory>();
-        auto dc = make_shared<drawing_context>(&ctx);
-        paint_func(dc);
-        THROW_IF_FAILED(target->EndDraw());
-    }
-} // namespace xaml
+    return XAML_S_OK;
+}
 
 #endif // XAML_UI_CANVAS_DIRECT2D

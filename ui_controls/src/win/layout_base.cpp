@@ -1,21 +1,36 @@
-#include <xaml/ui/application.hpp>
-#include <xaml/ui/controls/layout_base.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/layout_base.hpp>
 #include <xaml/ui/win/dpi.h>
+#include <xaml/ui/win/font_provider.h>
 
-using namespace std;
-
-namespace xaml
+xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void layout_base::__draw(rectangle const& region)
+    if (m_parent)
     {
-        if (auto sparent = get_parent().lock())
+        xaml_ptr<xaml_win32_control> native_parent;
+        XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+        XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
+        xaml_ptr<xaml_application> current_app;
+        XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));
+        xaml_ptr<xaml_win32_font_provider> provider = current_app.query<xaml_win32_font_provider>();
+        if (provider)
         {
-            set_handle(sparent->get_handle());
-            HFONT def_font = (HFONT)application::current()->__default_font(XamlGetDpiForWindow(get_handle()->handle));
-            __draw_impl(region, [def_font](shared_ptr<control> c, rectangle const& region) {
-                SendMessage(c->get_handle()->handle, WM_SETFONT, (WPARAM)def_font, FALSE);
+            HFONT font;
+            XAML_RETURN_IF_FAILED(provider->get_default_font(XamlGetDpiForWindow(m_handle), &font));
+            return draw_impl(region, [font](xaml_control* c, xaml_rectangle const& region) -> xaml_result {
+                xaml_ptr<xaml_win32_control> native_control;
+                if (XAML_SUCCEEDED(c->query(&native_control)))
+                {
+                    HWND handle;
+                    XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
+                    SendMessage(handle, WM_SETFONT, (WPARAM)font, FALSE);
+                }
+                return XAML_S_OK;
             });
         }
+        else
+        {
+            return draw_impl(region, {});
+        }
     }
-} // namespace xaml
+    return XAML_S_OK;
+}

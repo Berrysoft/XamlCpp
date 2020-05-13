@@ -1,5 +1,5 @@
 #import <Cocoa/Cocoa.h>
-#include <xaml/utility.hpp>
+#include <xaml/utility.h>
 
 XAML_UI_API
 @interface XamlDelegate : NSObject

@@ -1,121 +1,159 @@
-#include <xaml/ui/controls/menu_item.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/menu_item.hpp>
+#include <xaml/ui/controls/menu_item.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
-    void menu_item::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        m_handle = gtk_menu_item_new_with_label(data);
+        g_signal_connect(G_OBJECT(m_handle), "activate", G_CALLBACK(xaml_menu_item_internal::on_activate), this);
+        XAML_RETURN_IF_FAILED(draw_visible());
+    }
+    return XAML_S_OK;
+}
+
+void xaml_menu_item_internal::on_activate(GtkWidget*, xaml_menu_item_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(self->on_click(self->m_outer_this));
+}
+
+xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    if (!m_handle)
+    {
+        XAML_RETURN_IF_FAILED(xaml_menu_item_internal::draw(region));
+        XAML_RETURN_IF_FAILED(draw_submenu());
+    }
+    return XAML_S_OK;
+}
+
+xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
+{
+    GtkWidget* subm = gtk_menu_new();
+    XAML_FOREACH_START(child, m_submenu);
+    {
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
+        xaml_ptr<xaml_gtk3_control> native_control;
+        XAML_RETURN_IF_FAILED(cc->query(&native_control));
+        GtkWidget* native_handle;
+        XAML_RETURN_IF_FAILED(native_control->get_handle(&native_handle));
+        gtk_menu_shell_append(GTK_MENU_SHELL(subm), native_handle);
+    }
+    XAML_FOREACH_END();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(m_handle), subm);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    if (!m_handle)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        m_handle = gtk_check_menu_item_new_with_label(data);
+        g_signal_connect(G_OBJECT(m_handle), "activate", G_CALLBACK(xaml_menu_item_internal::on_activate), this);
         {
-            auto sparent = get_parent().lock();
-            auto h = make_shared<native_control>();
-            h->handle = gtk_menu_item_new_with_label(m_text.c_str());
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "activate", G_CALLBACK(menu_item::on_activate), this);
-            draw_visible();
+            xaml_ptr<xaml_gtk3_control> native_parent;
+            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            GtkWidget* parent_handle;
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
+            gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);
         }
+        XAML_RETURN_IF_FAILED(draw_checked());
     }
+    return XAML_S_OK;
+}
 
-    void menu_item::on_activate(void* m, void* data)
-    {
-        menu_item* self = (menu_item*)data;
-        self->m_click(self->shared_from_this<menu_item>());
-    }
+xaml_result xaml_check_menu_item_internal::draw_checked() noexcept
+{
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(m_handle), m_is_checked);
+    return XAML_S_OK;
+}
 
-    void popup_menu_item::__draw(rectangle const& region)
+xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    if (!m_handle)
     {
-        if (!get_handle())
+        char const* data;
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        m_handle = gtk_radio_menu_item_new_with_label(nullptr, data);
+        g_signal_connect(G_OBJECT(m_handle), "activate", G_CALLBACK(xaml_menu_item_internal::on_activate), this);
         {
-            menu_item::__draw(region);
-            draw_submenu();
+            xaml_ptr<xaml_gtk3_control> native_parent;
+            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            GtkWidget* parent_handle;
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
+            gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);
         }
+        XAML_RETURN_IF_FAILED(draw_checked());
+        XAML_RETURN_IF_FAILED(draw_group());
     }
+    return XAML_S_OK;
+}
 
-    void popup_menu_item::draw_submenu()
+xaml_result xaml_radio_menu_item_internal::draw_checked() noexcept
+{
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(m_handle), m_is_checked);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
+{
+    if (m_parent)
     {
-        GtkWidget* subm = gtk_menu_new();
-        for (auto& m : m_submenu)
+        xaml_ptr<xaml_popup_menu_item> multic;
+        if (XAML_SUCCEEDED(m_parent->query(&multic)))
         {
-            m->__draw({});
-            gtk_menu_shell_append(GTK_MENU_SHELL(subm), m->get_handle()->handle);
-        }
-        gtk_menu_item_set_submenu(GTK_MENU_ITEM(get_handle()->handle), subm);
-    }
-
-    void check_menu_item::__draw(rectangle const& region)
-    {
-        if (!get_handle())
-        {
-            auto sparent = get_parent().lock();
-            auto h = make_shared<native_control>();
-            h->handle = gtk_check_menu_item_new_with_label(get_text().data());
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "activate", G_CALLBACK(menu_item::on_activate), this);
-            gtk_menu_shell_append(GTK_MENU_SHELL(sparent->get_handle()->handle), get_handle()->handle);
-            draw_checked();
-        }
-    }
-
-    void check_menu_item::draw_checked()
-    {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(get_handle()->handle), m_is_checked ? TRUE : FALSE);
-    }
-
-    void radio_menu_item::__draw(rectangle const& region)
-    {
-        if (!get_handle())
-        {
-            auto sparent = get_parent().lock();
-            auto h = make_shared<native_control>();
-            h->handle = gtk_radio_menu_item_new_with_label(nullptr, get_text().data());
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "activate", G_CALLBACK(menu_item::on_activate), this);
-            gtk_menu_shell_append(GTK_MENU_SHELL(sparent->get_handle()->handle), get_handle()->handle);
-            draw_checked();
-            draw_group();
-        }
-    }
-
-    void radio_menu_item::draw_checked()
-    {
-        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(get_handle()->handle), m_is_checked ? TRUE : FALSE);
-    }
-
-    void radio_menu_item::draw_group()
-    {
-        if (auto sparent = get_parent().lock())
-        {
-            if (auto multic = sparent->query<popup_menu_item>())
+            xaml_ptr<xaml_vector_view> children;
+            XAML_RETURN_IF_FAILED(multic->get_submenu(&children));
+            XAML_FOREACH_START(c, children);
             {
-                for (auto& c : multic->get_submenu())
+                if (auto rc = c.query<xaml_radio_menu_item>())
                 {
-                    if (c)
+                    if (rc.get() != static_cast<xaml_control*>(m_outer_this))
                     {
-                        if (auto rc = c->query<radio_menu_item>())
+                        xaml_ptr<xaml_string> group;
+                        XAML_RETURN_IF_FAILED(rc->get_group(&group));
+                        bool equals;
+                        XAML_RETURN_IF_FAILED(group->equals(m_group.get(), &equals));
+                        if (equals)
                         {
-                            if (c != shared_from_this<radio_menu_item>() && c->get_handle() && rc->get_group() == get_group())
+                            xaml_ptr<xaml_gtk3_control> native_control = rc.query<xaml_gtk3_control>();
+                            if (native_control)
                             {
-                                gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(get_handle()->handle), GTK_RADIO_MENU_ITEM(c->get_handle()->handle));
+                                GtkWidget* native_handle;
+                                XAML_RETURN_IF_FAILED(native_control->get_handle(&native_handle));
+                                gtk_radio_menu_item_join_group(GTK_RADIO_MENU_ITEM(m_handle), GTK_RADIO_MENU_ITEM(native_handle));
                                 break;
                             }
                         }
                     }
                 }
             }
+            XAML_FOREACH_END();
         }
     }
+    return XAML_S_OK;
+}
 
-    void separator_menu_item::__draw(rectangle const& region)
+xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    if (!m_handle)
     {
-        if (!get_handle())
+        m_handle = gtk_separator_menu_item_new();
         {
-            auto sparent = get_parent().lock();
-            auto h = make_shared<native_control>();
-            h->handle = gtk_separator_menu_item_new();
-            set_handle(h);
-            gtk_menu_shell_append(GTK_MENU_SHELL(sparent->get_handle()->handle), get_handle()->handle);
+            xaml_ptr<xaml_gtk3_control> native_parent;
+            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            GtkWidget* parent_handle;
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
+            gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);
         }
     }
-} // namespace xaml
+    return XAML_S_OK;
+}

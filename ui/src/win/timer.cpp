@@ -1,38 +1,38 @@
+#include <Windows.h>
+#include <shared/timer.hpp>
 #include <unordered_map>
-#include <wil/result_macros.h>
-#include <xaml/ui/native_timer.hpp>
-#include <xaml/ui/timer.hpp>
+#include <xaml/result_win32.h>
+#include <xaml/ui/timer.h>
 
 using namespace std;
 
-namespace xaml
+static unordered_map<UINT_PTR, xaml_timer_impl*> timer_map;
+
+static void CALLBACK on_win32_timer_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
 {
-    static unordered_map<UINT_PTR, timer*> timer_map;
-
-    void native_timer::on_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
+    auto self = timer_map[nIdEvent];
+    if (self)
     {
-        auto self = timer_map[nIdEvent];
-        if (self)
-        {
-            self->m_tick(*self);
-        }
+        self->on_tick(self);
     }
+}
 
-    void timer::start()
+xaml_result xaml_timer_impl::start() noexcept
+{
+    if (!m_is_enabled.exchange(true))
     {
-        if (!m_enabled.exchange(true))
-        {
-            get_handle()->id = SetTimer(NULL, 0, (UINT)m_interval.count(), native_timer::on_tick);
-            timer_map[get_handle()->id] = this;
-        }
+        m_id = SetTimer(nullptr, 0, (UINT)m_interval, on_win32_timer_tick);
+        timer_map[m_id] = this;
     }
+    return XAML_S_OK;
+}
 
-    void timer::stop()
+xaml_result xaml_timer_impl::stop() noexcept
+{
+    if (m_is_enabled.exchange(false))
     {
-        if (m_enabled.exchange(false))
-        {
-            THROW_IF_WIN32_BOOL_FALSE(KillTimer(NULL, get_handle()->id));
-            timer_map.erase(get_handle()->id);
-        }
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(KillTimer(nullptr, m_id));
+        timer_map.erase(m_id);
     }
-} // namespace xaml
+    return XAML_S_OK;
+}

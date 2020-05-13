@@ -1,17 +1,12 @@
-#include <xaml/ui/filebox.hpp>
-#include <xaml/ui/native_filebox.hpp>
+#include <shared/filebox.hpp>
+#include <xaml/ui/filebox.h>
 
-namespace xaml
+xaml_result XAML_CALL xaml_open_filebox_new(xaml_open_filebox** ptr) noexcept
 {
-    filebox::filebox() {}
+    return xaml_object_new<xaml_filebox_impl<xaml_open_filebox>>(ptr);
+}
 
-    filebox::~filebox() {}
-
-    open_filebox::open_filebox() : filebox() {}
-
-    open_filebox::~open_filebox() {}
-
-    save_filebox::save_filebox() : filebox() {}
-
-    save_filebox::~save_filebox() {}
-} // namespace xaml
+xaml_result XAML_CALL xaml_save_filebox_new(xaml_save_filebox** ptr) noexcept
+{
+    return xaml_object_new<xaml_filebox_impl<xaml_save_filebox>>(ptr);
+}

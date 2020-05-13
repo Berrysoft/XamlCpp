@@ -1,17 +1,25 @@
-#include <xaml/ui/container.hpp>
+#include <shared/container.hpp>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_multicontainer_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept
 {
-    optional<std::intptr_t> multicontainer::__wnd_proc(window_message const& msg)
+    optional<LPARAM> result{ nullopt };
+    XAML_FOREACH_START(c, m_children);
     {
-        optional<std::intptr_t> result = nullopt;
-        for (auto& c : m_children)
+        xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
+        if (win32_control)
         {
-            auto r = c->__wnd_proc(msg);
-            if (r) result = r;
+            LPARAM res;
+            if (XAML_SUCCEEDED(win32_control->wnd_proc(msg, &res))) result = res;
         }
-        return result;
     }
-} // namespace xaml
+    XAML_FOREACH_END();
+    if (result)
+    {
+        *pres = *result;
+        return XAML_S_OK;
+    }
+    else
+        return XAML_E_NOTIMPL;
+}

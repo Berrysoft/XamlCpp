@@ -3,7 +3,7 @@
 
 #include <glib-object.h>
 #include <gtk/gtk.h>
-#include <xaml/utility.hpp>
+#include <xaml/utility.h>
 
 G_BEGIN_DECLS
 

@@ -1,27 +1,26 @@
 #include <gtk/gtk.h>
-#include <xaml/ui/timer.hpp>
+#include <shared/timer.hpp>
+#include <xaml/ui/timer.h>
 
 using namespace std;
 
-namespace xaml
+gboolean xaml_timer_impl::on_timeout(xaml_timer_impl* self) noexcept
 {
-    int timer::on_timeout(void* data)
-    {
-        timer* self = (timer*)data;
-        self->m_tick(*self);
-        return self->m_enabled ? TRUE : FALSE;
-    }
+    XAML_ASSERT_SUCCEEDED(self->on_tick(self));
+    return self->m_is_enabled;
+}
 
-    void timer::start()
+xaml_result xaml_timer_impl::start() noexcept
+{
+    if (!m_is_enabled.exchange(true))
     {
-        if (!m_enabled.exchange(true))
-        {
-            g_timeout_add((guint)m_interval.count(), timer::on_timeout, this);
-        }
+        g_timeout_add((guint)m_interval, (GSourceFunc)xaml_timer_impl::on_timeout, this);
     }
+    return XAML_S_OK;
+}
 
-    void timer::stop()
-    {
-        m_enabled = false;
-    }
-} // namespace xaml
+xaml_result xaml_timer_impl::stop() noexcept
+{
+    m_is_enabled = false;
+    return XAML_S_OK;
+}

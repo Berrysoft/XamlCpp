@@ -1,47 +1,44 @@
-#include <xaml/ui/controls/progress.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/progress.hpp>
+#include <xaml/ui/controls/progress.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void progress::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            NSProgressIndicator* prog = [NSProgressIndicator new];
-            prog.indeterminate = NO;
-            prog.usesThreadedAnimation = NO;
-            auto h = make_shared<native_control>();
-            h->handle = prog;
-            set_handle(h);
-            draw_visible();
-            draw_progress();
-            draw_indeterminate();
-        }
-        __set_rect(region);
+        NSProgressIndicator* prog = [NSProgressIndicator new];
+        prog.indeterminate = NO;
+        prog.usesThreadedAnimation = NO;
+        m_handle = prog;
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_progress());
+        XAML_RETURN_IF_FAILED(draw_indeterminate());
     }
+    return set_rect(region);
+}
 
-    void progress::draw_progress()
-    {
-        NSProgressIndicator* prog = (NSProgressIndicator*)get_handle()->handle;
-        prog.minValue = (double)m_minimum;
-        prog.maxValue = (double)m_maximum;
-        prog.doubleValue = (double)m_value;
-    }
+xaml_result xaml_progress_internal::draw_progress() noexcept
+{
+    NSProgressIndicator* prog = (NSProgressIndicator*)m_handle;
+    prog.minValue = (double)m_minimum;
+    prog.maxValue = (double)m_maximum;
+    prog.doubleValue = (double)m_value;
+    return XAML_S_OK;
+}
 
-    void progress::draw_indeterminate()
-    {
-        NSProgressIndicator* prog = (NSProgressIndicator*)get_handle()->handle;
-        prog.indeterminate = m_is_indeterminate;
-        if (m_is_indeterminate)
-            [prog startAnimation:nil];
-        else
-            [prog stopAnimation:nil];
-    }
+xaml_result xaml_progress_internal::draw_indeterminate() noexcept
+{
+    NSProgressIndicator* prog = (NSProgressIndicator*)m_handle;
+    prog.indeterminate = m_is_indeterminate;
+    if (m_is_indeterminate)
+        [prog startAnimation:nil];
+    else
+        [prog stopAnimation:nil];
+    return XAML_S_OK;
+}
 
-    void progress::__size_to_fit()
-    {
-        __set_size_noevent({ get_width(), 20 });
-    }
+xaml_result xaml_progress_internal::size_to_fit() noexcept
+{
+    return set_size_noevent({ m_size.width, 20 });
 }

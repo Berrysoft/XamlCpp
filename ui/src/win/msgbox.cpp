@@ -1,61 +1,77 @@
 #include <vector>
 #include <wil/result_macros.h>
-#include <xaml/ui/msgbox.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/msgbox.h>
+#include <xaml/ui/win/control.h>
 
 #include <CommCtrl.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
 {
-    msgbox_result msgbox(shared_ptr<window> parent, string_view_t message, string_view_t title, string_view_t instruction, msgbox_style style, array_view<msgbox_button> buttons)
+    TASKDIALOGCONFIG config{};
+    config.cbSize = sizeof(TASKDIALOGCONFIG);
+    if (parent)
     {
-        TASKDIALOGCONFIG config{};
-        config.cbSize = sizeof(TASKDIALOGCONFIG);
-        if (parent) config.hwndParent = parent->get_handle()->handle;
-        config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_SIZE_TO_CONTENT;
-        config.pszWindowTitle = title.data();
-        config.pszMainInstruction = instruction.data();
-        config.pszContent = message.data();
-        TASKDIALOG_COMMON_BUTTON_FLAGS flags = 0;
-        vector<TASKDIALOG_BUTTON> cbs;
-        for (auto& button : buttons)
+        xaml_ptr<xaml_win32_control> native_control;
+        if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            switch (button.index())
-            {
-            case 0:
-                flags |= (TASKDIALOG_COMMON_BUTTON_FLAGS)get<msgbox_common_button>(button);
-                break;
-            case 1:
-            {
-                msgbox_custom_button const& b = get<msgbox_custom_button>(button);
-                cbs.push_back({ (int)b.result, b.text.data() });
-                break;
-            }
-            }
+            HWND handle;
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
+            config.hwndParent = handle;
         }
-        config.dwCommonButtons = flags;
-        config.cButtons = (UINT)cbs.size();
-        config.pButtons = cbs.data();
-        switch (style)
-        {
-        case msgbox_style::info:
-        case msgbox_style::question:
-            config.pszMainIcon = TD_INFORMATION_ICON;
-            break;
-        case msgbox_style::warning:
-            config.pszMainIcon = TD_WARNING_ICON;
-            break;
-        case msgbox_style::error:
-            config.pszMainIcon = TD_ERROR_ICON;
-            break;
-        default:
-            config.pszMainIcon = nullptr;
-            break;
-        }
-        int result;
-        THROW_IF_FAILED(TaskDialogIndirect(&config, &result, nullptr, nullptr));
-        return (msgbox_result)result;
     }
-} // namespace xaml
+    config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_SIZE_TO_CONTENT;
+    if (title)
+    {
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(title->get_data(&data));
+        config.pszWindowTitle = data;
+    }
+    if (instruction)
+    {
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(instruction->get_data(&data));
+        config.pszMainInstruction = data;
+    }
+    if (message)
+    {
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(message->get_data(&data));
+        config.pszContent = data;
+    }
+    TASKDIALOG_COMMON_BUTTON_FLAGS flags = 0;
+    vector<TASKDIALOG_BUTTON> cbs;
+    XAML_FOREACH_START(b, buttons);
+    {
+        xaml_ptr<xaml_box> box;
+        XAML_RETURN_IF_FAILED(b->query(&box));
+        xaml_msgbox_custom_button const* button;
+        XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
+        cbs.push_back({ (int)button->result, button->text });
+    }
+    XAML_FOREACH_END();
+    config.dwCommonButtons = flags;
+    config.cButtons = (UINT)cbs.size();
+    config.pButtons = cbs.data();
+    switch (style)
+    {
+    case xaml_msgbox_info:
+    case xaml_msgbox_question:
+        config.pszMainIcon = TD_INFORMATION_ICON;
+        break;
+    case xaml_msgbox_warning:
+        config.pszMainIcon = TD_WARNING_ICON;
+        break;
+    case xaml_msgbox_error:
+        config.pszMainIcon = TD_ERROR_ICON;
+        break;
+    default:
+        config.pszMainIcon = nullptr;
+        break;
+    }
+    int result;
+    XAML_RETURN_IF_FAILED(TaskDialogIndirect(&config, &result, nullptr, nullptr));
+    *presult = (xaml_msgbox_result)result;
+    return XAML_S_OK;
+}

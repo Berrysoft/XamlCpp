@@ -3,9 +3,12 @@
 
 #include <d2d1.h>
 #include <dwrite.h>
+#include <shared/canvas.hpp>
 #include <wil/com.h>
 #include <wil/resource.h>
-#include <xaml/ui/controls/native_canvas.hpp>
+#include <win/canvas.hpp>
+#include <xaml/object.h>
+#include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/native_drawing.hpp>
 
 template <typename Factory>
@@ -14,72 +17,71 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
     return DWriteCreateFactory(factoryType, __uuidof(Factory), reinterpret_cast<IUnknown**>(factory));
 }
 
-namespace xaml
+struct xaml_drawing_context_d2d_impl : xaml_implement<xaml_drawing_context_d2d_impl, xaml_drawing_context, xaml_object>
 {
-    struct drawing_context_d2d : native_drawing_context
-    {
-        wil::com_ptr<ID2D1RenderTarget> target{ nullptr };
-        wil::com_ptr<ID2D1Factory> d2d{ nullptr };
-        wil::com_ptr<IDWriteFactory> dwrite{ nullptr };
+    wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> target{ nullptr };
+    wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
+    wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> dwrite{ nullptr };
 
-        ~drawing_context_d2d() override;
+    xaml_drawing_context_d2d_impl(wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> const& target, wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> const& d2d, wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> const& dwrite) noexcept
+        : target(target), d2d(d2d), dwrite(dwrite) {}
 
-        void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle) override;
-        void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle) override;
-        void draw_ellipse(drawing_pen const& pen, rectangle const& region) override;
-        void fill_ellipse(drawing_brush const& brush, rectangle const& region) override;
-        void draw_line(drawing_pen const& pen, point startp, point endp) override;
-        void draw_rect(drawing_pen const& pen, rectangle const& rect) override;
-        void fill_rect(drawing_brush const& brush, rectangle const& rect) override;
-        void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round) override;
-        void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round) override;
-        void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str) override;
-    };
+    xaml_result XAML_CALL draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result XAML_CALL fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result XAML_CALL draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept override;
+    xaml_result XAML_CALL fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept override;
+    xaml_result XAML_CALL draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept override;
+    xaml_result XAML_CALL draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept override;
+    xaml_result XAML_CALL fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept override;
+    xaml_result XAML_CALL draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result XAML_CALL fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result XAML_CALL draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
+};
 
-    class canvas_d2d : public native_canvas
-    {
-    private:
-        wil::com_ptr<ID2D1HwndRenderTarget> target{ nullptr };
-        wil::com_ptr<ID2D1Factory> d2d{ nullptr };
-        wil::com_ptr<IDWriteFactory> dwrite{ nullptr };
+struct xaml_canvas_d2d_internal : xaml_win32_canvas_internal
+{
+    wil::com_ptr_t<ID2D1HwndRenderTarget, wil::err_returncode_policy> target{ nullptr };
+    wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
+    wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> dwrite{ nullptr };
 
-    public:
-        canvas_d2d() noexcept;
-        ~canvas_d2d() override;
+    xaml_result XAML_CALL draw_impl() noexcept override;
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 
-        bool create(HWND wnd) noexcept override;
-        void begin_paint(HWND wnd, size real, std::function<void(std::shared_ptr<drawing_context>)> paint_func) override;
-    };
+    xaml_result XAML_CALL init() noexcept override;
+};
 
-    inline size from_native(D2D1_SIZE_F s) noexcept
-    {
-        return { (double)s.width, (double)s.height };
-    }
-    template <>
-    inline D2D1_SIZE_F to_native<D2D1_SIZE_F, size>(size s) noexcept
-    {
-        return { (float)s.width, (float)s.height };
-    }
+struct xaml_canvas_d2d_impl : xaml_win32_canvas_implement<xaml_canvas_d2d_impl, xaml_canvas_d2d_internal>
+{
+};
 
-    inline point from_native(D2D1_POINT_2F p) noexcept
-    {
-        return { (double)p.x, (double)p.y };
-    }
-    template <>
-    inline D2D1_POINT_2F to_native<D2D1_POINT_2F, point>(point p) noexcept
-    {
-        return { (float)p.x, (float)p.y };
-    }
+inline xaml_size xaml_from_native(D2D1_SIZE_F const& s) noexcept
+{
+    return { (double)s.width, (double)s.height };
+}
+template <>
+inline D2D1_SIZE_F xaml_to_native<D2D1_SIZE_F, xaml_size>(xaml_size const& s) noexcept
+{
+    return { (float)s.width, (float)s.height };
+}
 
-    inline rectangle from_native(D2D1_RECT_F r) noexcept
-    {
-        return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) };
-    }
-    template <>
-    inline D2D1_RECT_F to_native<D2D1_RECT_F, rectangle>(rectangle r) noexcept
-    {
-        return { (float)r.x, (float)r.y, (float)(r.x + r.width), (float)(r.y + r.height) };
-    }
-} // namespace xaml
+inline xaml_point xaml_from_native(D2D1_POINT_2F const& p) noexcept
+{
+    return { (double)p.x, (double)p.y };
+}
+template <>
+inline D2D1_POINT_2F xaml_to_native<D2D1_POINT_2F, xaml_point>(xaml_point const& p) noexcept
+{
+    return { (float)p.x, (float)p.y };
+}
+
+inline xaml_rectangle xaml_from_native(D2D1_RECT_F const& r) noexcept
+{
+    return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) };
+}
+template <>
+inline D2D1_RECT_F xaml_to_native<D2D1_RECT_F, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { (float)r.x, (float)r.y, (float)(r.x + r.width), (float)(r.y + r.height) };
+}
 
 #endif // !XAML_UI_CANVAS_D2D1_HPP

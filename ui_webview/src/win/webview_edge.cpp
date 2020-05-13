@@ -5,6 +5,7 @@
 #include "winrt/Windows.Web.Http.h"
 #include "winrt/Windows.Web.UI.h"
 #include <robuffer.h>
+#include <win/hstring.hpp>
 #include <win/webview_edge.hpp>
 
 using namespace std;
@@ -15,116 +16,159 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Web::UI;
 using namespace winrt::Windows::Web::UI::Interop;
 
-namespace xaml
+#define XAML_CATCH_RETURN_WINRT()         \
+    catch (winrt::hresult_error const& e) \
+    {                                     \
+        return e.code();                  \
+    }                                     \
+    XAML_CATCH_RETURN()
+
+struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage::Streams::IBufferByteAccess>
 {
-    struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage::Streams::IBufferByteAccess>
+    xaml_ptr<xaml_buffer> m_buffer;
+
+    ArrayViewBuffer(xaml_ptr<xaml_buffer> const& buffer) : m_buffer(buffer) {}
+
+    uint32_t Length() const
     {
-        array_view<std::byte> m_buffer;
+        int32_t size;
+        check_hresult(m_buffer->get_size(&size));
+        return (uint32_t)size;
+    }
 
-        ArrayViewBuffer(array_view<std::byte> buffer) : m_buffer(buffer) {}
+    uint32_t Capacity() const { return Length(); }
 
-        uint32_t Capacity() const { return (uint32_t)m_buffer.size(); }
+    void Length(uint32_t value) { throw hresult_invalid_argument(); }
 
-        uint32_t Length() const { return (uint32_t)m_buffer.size(); }
-
-        void Length(uint32_t value) { throw hresult_invalid_argument(); }
-
-        HRESULT __stdcall Buffer(uint8_t** value)
-        {
-            *value = (uint8_t*)m_buffer.data();
-            return S_OK;
-        }
-    };
-
-    void webview_edge::create_async(HWND parent, rectangle const& rect, function<void()>&& callback)
+    STDMETHODIMP Buffer(uint8_t** value)
     {
-        try
+        return m_buffer->get_data(value);
+    }
+};
+
+xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
+try
+{
+    WebViewControlProcess process;
+    auto task = process.CreateWebViewControlAsync((int64_t)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
+    task.Completed([this, callback](IAsyncOperation<WebViewControl> operation, AsyncStatus status) {
+        if (status == AsyncStatus::Completed)
         {
-            WebViewControlProcess process;
-            auto task = process.CreateWebViewControlAsync((int64_t)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
-            task.Completed([this, callback](IAsyncOperation<WebViewControl> operation, AsyncStatus status) {
-                if (status == AsyncStatus::Completed)
+            m_view = operation.GetResults();
+            m_view.NavigationCompleted([this](IWebViewControl const&, WebViewControlNavigationCompletedEventArgs const& args) {
+                check_hresult(invoke_navigated(args.Uri().AbsoluteUri().data()));
+            });
+            m_view.WebResourceRequested([this](IWebViewControl const&, WebViewControlWebResourceRequestedEventArgs const e) {
+                auto deferral = e.GetDeferral();
+                auto req = e.Request();
+                auto method = req.Method().ToString();
+                auto uri = req.RequestUri().AbsoluteUri();
+                xaml_ptr<xaml_webview_resource_requested_args> args;
+                check_hresult(xaml_webview_resource_requested_args_new(&args));
+                xaml_ptr<xaml_webview_web_request> args_req;
+                check_hresult(xaml_webview_web_request_new(&args_req));
+                check_hresult(args->set_request(args_req.get()));
+
+                xaml_ptr<xaml_string> method_str;
+                check_hresult(xaml_string_new_hstring(method, &method_str));
+                check_hresult(args_req->set_method(method_str.get()));
+                xaml_ptr<xaml_string> uri_str;
+                check_hresult(xaml_string_new_hstring(uri, &uri_str));
+                check_hresult(args_req->set_uri(uri_str.get()));
+                check_hresult(invoke_resource_requested(args));
+
+                xaml_ptr<xaml_webview_web_response> args_res;
+                check_hresult(args->get_response(&args_res));
+                if (args_res)
                 {
-                    m_view = operation.GetResults();
-                    m_view.NavigationCompleted([this](IWebViewControl const&, WebViewControlNavigationCompletedEventArgs const& args) {
-                        invoke_navigated(args.Uri().AbsoluteUri());
-                    });
-                    m_view.WebResourceRequested([this](IWebViewControl const&, WebViewControlWebResourceRequestedEventArgs const e) {
-                        auto deferral = e.GetDeferral();
-                        auto req = e.Request();
-                        auto method = req.Method().ToString();
-                        auto uri = req.RequestUri().AbsoluteUri();
-                        auto args = make_shared<resource_requested_args>();
-                        args->request.method = method;
-                        args->request.uri = uri;
-                        invoke_resource_requested(args);
-                        if (args->response)
-                        {
-                            auto& res = *args->response;
-                            HttpResponseMessage message;
-                            auto buffer = make<ArrayViewBuffer>(res.data);
-                            message.Content(HttpBufferContent{ buffer });
-                            e.Response(message);
-                        }
-                        deferral.Complete();
-                    });
+                    xaml_ptr<xaml_buffer> b;
+                    check_hresult(args_res->get_data(&b));
+                    auto buffer = make<ArrayViewBuffer>(b);
+                    HttpResponseMessage message;
+                    message.Content(HttpBufferContent{ buffer });
+                    e.Response(message);
                 }
-                callback();
+                deferral.Complete();
             });
         }
-        catch (hresult_error const&)
-        {
-            m_view = nullptr;
-            callback();
-        }
-    }
+        check_hresult(callback());
+    });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::navigate(string_view_t uri)
-    {
-        m_view.Navigate(Uri{ uri });
-    }
+xaml_result xaml_webview_edge::navigate(xaml_char_t const* uri) noexcept
+try
+{
+    m_view.Navigate(Uri{ uri });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::set_visible(bool vis)
-    {
-        m_view.IsVisible(vis);
-    }
+xaml_result xaml_webview_edge::set_visible(bool vis) noexcept
+try
+{
+    m_view.IsVisible(vis);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::set_location(point p)
-    {
-        auto bounds = m_view.Bounds();
-        m_view.Bounds({ (float)p.x, (float)p.y, bounds.Width, bounds.Height });
-    }
+xaml_result xaml_webview_edge::set_location(xaml_point const& p) noexcept
+try
+{
+    auto bounds = m_view.Bounds();
+    m_view.Bounds({ (float)p.x, (float)p.y, bounds.Width, bounds.Height });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::set_size(size s)
-    {
-        auto bounds = m_view.Bounds();
-        m_view.Bounds({ bounds.X, bounds.Y, (float)s.width, (float)s.height });
-    }
+xaml_result xaml_webview_edge::set_size(xaml_size const& s) noexcept
+try
+{
+    auto bounds = m_view.Bounds();
+    m_view.Bounds({ bounds.X, bounds.Y, (float)s.width, (float)s.height });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::set_rect(rectangle const& rect)
-    {
-        m_view.Bounds({ (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
-    }
+xaml_result xaml_webview_edge::set_rect(xaml_rectangle const& rect) noexcept
+try
+{
+    m_view.Bounds({ (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::go_forward()
-    {
-        m_view.GoForward();
-    }
+xaml_result xaml_webview_edge::go_forward() noexcept
+try
+{
+    m_view.GoForward();
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    void webview_edge::go_back()
-    {
-        m_view.GoBack();
-    }
+xaml_result xaml_webview_edge::go_back() noexcept
+try
+{
+    m_view.GoBack();
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    bool webview_edge::get_can_go_forward()
-    {
-        return m_view.CanGoForward();
-    }
+xaml_result xaml_webview_edge::get_can_go_forward(bool* pvalue) noexcept
+try
+{
+    *pvalue = m_view.CanGoForward();
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
-    bool webview_edge::get_can_go_back()
-    {
-        return m_view.CanGoBack();
-    }
-} // namespace xaml
+xaml_result xaml_webview_edge::get_can_go_back(bool* pvalue) noexcept
+try
+{
+    *pvalue = m_view.CanGoBack();
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN_WINRT()
 
 #endif // XAML_UI_WEBVIEW_EDGE

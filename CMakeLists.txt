@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.14)
-project(XamlCpp VERSION 1.0.96 LANGUAGES CXX)
+project(XamlCpp VERSION 1.1.108 LANGUAGES C CXX)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_C_EXTENSIONS OFF)
+set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -31,13 +35,7 @@ if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
 endif()
 
 # Enable other languages.
-if(${BUILD_WINDOWS})
-    enable_language(C)
-    set(CMAKE_C_STANDARD 99)
-    set(CMAKE_C_STANDARD_REQUIRED ON)
-    set(CMAKE_C_EXTENSIONS OFF)
-    set(CMAKE_C_VISIBILITY_PRESET hidden)
-elseif(${BUILD_COCOA})
+if(${BUILD_COCOA})
     enable_language(OBJC OBJCXX)
     set(CMAKE_OBJC_STANDARD 11)
     set(CMAKE_OBJC_EXTENSIONS ON)
@@ -45,12 +43,6 @@ elseif(${BUILD_COCOA})
     set(CMAKE_OBJCXX_STANDARD 20)
     set(CMAKE_OBJCXX_EXTENSIONS ON)
     set(CMAKE_OBJCXX_VISIBILITY_PRESET hidden)
-elseif(${BUILD_GTK3})
-    enable_language(C)
-    set(CMAKE_C_STANDARD 99)
-    set(CMAKE_C_STANDARD_REQUIRED ON)
-    set(CMAKE_C_EXTENSIONS OFF)
-    set(CMAKE_C_VISIBILITY_PRESET hidden)
 endif()
 
 set(XAML_BUILD_DEFINITIONS "")
@@ -101,7 +93,7 @@ endif()
 option(XAML_NO_RTTI "Disable RTTI." ON)
 
 if(${XAML_NO_RTTI})
-    if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+    if(MSVC)
         string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         list(APPEND XAML_COMPILE_OPTIONS "/GR-")
     else()
@@ -114,10 +106,14 @@ if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-incompatible-ms-struct")
 endif()
 
-if(MSVC)
-    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5105")
-    list(APPEND XAML_BUILD_DEFINITIONS "_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING")
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    list(APPEND XAML_COMPILE_OPTIONS "-Wno-inconsistent-missing-override")
 endif()
+
+# Enable MSVC new preprocessor
+#if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+#    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
+#endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 
@@ -140,37 +136,41 @@ elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
 
+if(APPLE)
+    find_package(Boost REQUIRED iostreams container)
+endif()
+
 option(BUILD_TESTS "Build tests." ON)
 option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" ON)
 option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
-    xaml_meta xaml_parser xaml_compiler
-    xaml_ui xaml_ui_meta
-    xaml_ui_controls xaml_ui_controls_meta
-    xaml_ui_canvas xaml_ui_canvas_meta
+    xaml_meta xaml_parser
+    xaml_ui xaml_ui_appmain
+    xaml_ui_controls
+    xaml_ui_canvas
     xaml_cmdline
 )
 
 add_subdirectory(global)
+add_subdirectory(helpers)
 add_subdirectory(meta)
 add_subdirectory(rapidxml)
 add_subdirectory(parser)
-add_subdirectory(compiler)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
 add_subdirectory(ui_canvas)
 if(${BUILD_WEBVIEW})
     if(NOT ${BUILD_GTK3} OR (UNIX AND NOT APPLE))
         add_subdirectory(ui_webview)
-        list(APPEND _XAML_TARGETS xaml_ui_webview xaml_ui_webview_meta)
+        list(APPEND _XAML_TARGETS xaml_ui_webview)
     else()
         message(WARNING "webview won't be built because of unsupported platform.")
     endif()
 endif()
 add_subdirectory(cmdline)
-add_subdirectory(xamlcpp)
+add_subdirectory(detector)
 
 install(
     TARGETS ${_XAML_TARGETS}

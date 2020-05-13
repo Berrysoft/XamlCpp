@@ -1,43 +1,49 @@
+#include <shared/menu_bar.hpp>
 #include <wil/result_macros.h>
-#include <xaml/ui/menu_bar.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_menu_bar.hpp>
-#include <xaml/ui/window.hpp>
+#include <xaml/result_win32.h>
+#include <xaml/ui/menu_bar.h>
+#include <xaml/ui/window.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void menu_bar::__draw(rectangle const& region)
+    xaml_control* parent = m_parent;
+    xaml_ptr<xaml_win32_control> native_parent;
+    if (XAML_SUCCEEDED(parent->query(&native_parent)))
     {
-        set_handle(get_parent_window().lock()->get_handle());
-        if (!get_menu())
-        {
-            auto m = make_shared<native_menu_bar>();
-            m->handle.reset(CreateMenu());
-            set_menu(m);
-            draw_visible();
-        }
-        draw_submenu();
-        THROW_IF_WIN32_BOOL_FALSE(DrawMenuBar(get_handle()->handle));
+        XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
     }
+    if (!m_menu)
+    {
+        m_menu.reset(CreateMenu());
+        XAML_RETURN_IF_FAILED(draw_visible());
+    }
+    XAML_RETURN_IF_FAILED(draw_submenu());
+    if (m_handle) XAML_RETURN_IF_WIN32_BOOL_FALSE(DrawMenuBar(m_handle));
+    return XAML_S_OK;
+}
 
-    void menu_bar::draw_submenu()
+xaml_result xaml_menu_bar_internal::draw_submenu() noexcept
+{
+    XAML_FOREACH_START(child, m_children);
     {
-        for (auto& child : get_children())
-        {
-            child->__draw({});
-        }
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
 
-    void menu_bar::draw_visible()
+xaml_result xaml_menu_bar_internal::draw_visible() noexcept
+{
+    if (m_is_visible)
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(SetMenu(m_handle, m_menu.get()));
+    else
     {
-        if (get_is_visible())
-            THROW_IF_WIN32_BOOL_FALSE(SetMenu(get_handle()->handle, get_menu()->handle.get()));
-        else
-        {
-            if (GetMenu(get_handle()->handle) == get_menu()->handle.get())
-                THROW_IF_WIN32_BOOL_FALSE(SetMenu(get_handle()->handle, nullptr));
-        }
+        if (GetMenu(m_handle) == m_menu.get())
+            XAML_RETURN_IF_WIN32_BOOL_FALSE(SetMenu(m_handle, nullptr));
     }
-} // namespace xaml
+    return XAML_S_OK;
+}

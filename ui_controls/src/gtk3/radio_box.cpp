@@ -1,59 +1,67 @@
-#include <xaml/ui/container.hpp>
-#include <xaml/ui/controls/radio_box.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/radio_box.hpp>
+#include <xaml/ui/container.h>
+#include <xaml/ui/controls/radio_box.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void radio_box::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            auto h = make_shared<native_control>();
-            h->handle = gtk_radio_button_new(nullptr);
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "toggled", G_CALLBACK(radio_box::on_toggled), this);
-            draw_text();
-            draw_checked();
-            draw_group();
-        }
-        button::__draw(region);
+        m_handle = gtk_radio_button_new(nullptr);
+        g_signal_connect(G_OBJECT(m_handle), "clicked", G_CALLBACK(xaml_button_internal::on_clicked), this);
+        g_signal_connect(G_OBJECT(m_handle), "toggled", G_CALLBACK(xaml_radio_box_internal::on_toggled), this);
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_checked());
+        XAML_RETURN_IF_FAILED(draw_group());
     }
+    return set_rect(region);
+}
 
-    void radio_box::draw_checked()
-    {
-        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(get_handle()->handle), m_is_checked ? TRUE : FALSE);
-    }
+xaml_result xaml_radio_box_internal::draw_checked() noexcept
+{
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_handle), m_is_checked);
+    return XAML_S_OK;
+}
 
-    void radio_box::draw_group()
+xaml_result xaml_radio_box_internal::draw_group() noexcept
+{
+    if (m_parent)
     {
-        if (auto sparent = get_parent().lock())
+        xaml_ptr<xaml_multicontainer> multic;
+        if (XAML_SUCCEEDED(m_parent->query(&multic)))
         {
-            if (auto multic = sparent->query<multicontainer>())
+            xaml_ptr<xaml_vector_view> children;
+            XAML_RETURN_IF_FAILED(multic->get_children(&children));
+            XAML_FOREACH_START(c, children);
             {
-                for (auto& c : multic->get_children())
+                if (auto rc = c.query<xaml_radio_box>())
                 {
-                    if (c)
+                    if (rc.get() != static_cast<xaml_radio_box*>(m_outer_this))
                     {
-                        if (auto rc = c->query<radio_box>())
+                        xaml_ptr<xaml_string> group;
+                        XAML_RETURN_IF_FAILED(rc->get_group(&group));
+                        bool equals;
+                        XAML_RETURN_IF_FAILED(group->equals(m_group.get(), &equals));
+                        if (equals)
                         {
-                            if (c != shared_from_this<radio_box>() && c->get_handle() && rc->get_group() == get_group())
-                            {
-                                gtk_radio_button_join_group(GTK_RADIO_BUTTON(get_handle()->handle), GTK_RADIO_BUTTON(c->get_handle()->handle));
-                                break;
-                            }
+                            xaml_ptr<xaml_gtk3_control> native_control;
+                            XAML_RETURN_IF_FAILED(rc->query(&native_control));
+                            GtkWidget* native_handle;
+                            XAML_RETURN_IF_FAILED(native_control->get_handle(&native_handle));
+                            gtk_radio_button_join_group(GTK_RADIO_BUTTON(m_handle), GTK_RADIO_BUTTON(native_handle));
+                            break;
                         }
                     }
                 }
             }
+            XAML_FOREACH_END();
         }
     }
+    return XAML_S_OK;
+}
 
-    void radio_box::on_toggled(void*, void* data)
-    {
-        radio_box* s = (radio_box*)data;
-        s->set_is_checked(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(s->get_handle()->handle)));
-    }
-} // namespace xaml
+void xaml_radio_box_internal::on_toggled(GtkWidget*, xaml_radio_box_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(self->set_is_checked(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->m_handle))));
+}

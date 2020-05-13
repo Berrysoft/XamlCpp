@@ -1,14 +1,10 @@
-#include <test_window.hpp>
-#include <xaml/ui/appmain.hpp>
+#include <test_window.h>
+#include <xaml/ui/application.h>
 
-using namespace std;
-using namespace xaml;
-using namespace xaml::test;
-
-XAML_APP_MAIN_START()
+xaml_result XAML_CALL xaml_main(xaml_application* app, int* pcode) noexcept
 {
-    auto wnd = make_shared<test_window>();
-    wnd->init_components();
-    wnd->show();
+    xaml_ptr<xaml_test_window> wnd;
+    XAML_RETURN_IF_FAILED(xaml_test_window_new(&wnd));
+    XAML_RETURN_IF_FAILED(wnd->show());
+    return app->run(pcode);
 }
-XAML_APP_MAIN_END()

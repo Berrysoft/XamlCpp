@@ -11,12 +11,10 @@ target_include_directories(xaml_rapidxml
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     PRIVATE
         ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_SOURCE_DIR}/../global/include
 )
 
-target_link_libraries(xaml_rapidxml PUBLIC xaml_global)
-
 if(APPLE)
-    find_package(Boost REQUIRED container)
     target_link_libraries(xaml_rapidxml PUBLIC Boost::container)
 endif()
 

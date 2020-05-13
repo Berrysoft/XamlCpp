@@ -2,7 +2,7 @@
 #define XAML_UI_NATIVE_PINVOKE_HPP
 
 #include <Windows.h>
-#include <xaml/utility.hpp>
+#include <xaml/utility.h>
 
 EXTERN_C_START
 

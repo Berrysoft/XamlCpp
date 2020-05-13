@@ -1,57 +1,108 @@
 #include <algorithm>
 #include <numeric>
-#include <xaml/ui/controls/stack_panel.hpp>
+#include <shared/stack_panel.hpp>
+#include <xaml/ui/controls/stack_panel.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
 {
-    stack_panel::stack_panel() : layout_base() {}
-
-    stack_panel::~stack_panel() {}
-
-    void stack_panel::__draw_impl(rectangle const& region, function<void(shared_ptr<control>, rectangle const&)> func)
+    XAML_RETURN_IF_FAILED(xaml_layout_base_internal::draw_impl(region, func));
+    xaml_rectangle real = region - m_margin;
+    if (m_orientation == xaml_orientation_vertical)
     {
-        layout_base::__draw_impl(region, func);
-        rectangle real = region - get_margin();
-        if (get_orientation() == orientation::vertical)
+        double suby = real.y;
+        XAML_FOREACH_START(c, m_children);
         {
-            double suby = real.y;
-            for (auto& c : get_children())
-            {
-                margin cm = c->get_margin();
-                double subh = c->get_height() + cm.top + cm.bottom;
-                rectangle subrect = { real.x, suby, real.width, subh };
-                c->__draw(subrect);
-                if (func) func(c, subrect);
-                suby += subh;
-            }
+            xaml_ptr<xaml_control> cc;
+            XAML_RETURN_IF_FAILED(c->query(&cc));
+            xaml_margin cm;
+            XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
+            xaml_size cs;
+            XAML_RETURN_IF_FAILED(cc->get_size(&cs));
+            double subh = cs.height + cm.top + cm.bottom;
+            xaml_rectangle subrect = { real.x, suby, real.width, subh };
+            XAML_RETURN_IF_FAILED(cc->draw(subrect));
+            if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
+            suby += subh;
         }
-        else
-        {
-            double subx = real.x;
-            for (auto& c : get_children())
-            {
-                margin cm = c->get_margin();
-                double subw = c->get_width() + cm.left + cm.right;
-                rectangle subrect = { subx, real.y, subw, real.height };
-                c->__draw(subrect);
-                if (func) func(c, subrect);
-                subx += subw;
-            }
-        }
+        XAML_FOREACH_END();
     }
-
-    void stack_panel::__size_to_fit()
+    else
     {
-        auto children = get_children();
-        if (get_orientation() == orientation::vertical)
+        double subx = real.x;
+        XAML_FOREACH_START(c, m_children);
         {
-            __set_size_noevent({ get_width(), accumulate(children.begin(), children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_height() + rhs->get_margin().top + rhs->get_margin().bottom; }) });
+            xaml_ptr<xaml_control> cc;
+            XAML_RETURN_IF_FAILED(c->query(&cc));
+            xaml_margin cm;
+            XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
+            xaml_size cs;
+            XAML_RETURN_IF_FAILED(cc->get_size(&cs));
+            double subw = cs.width + cm.left + cm.right;
+            xaml_rectangle subrect = { subx, real.y, subw, real.height };
+            XAML_RETURN_IF_FAILED(cc->draw(subrect));
+            if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
+            subx += subw;
         }
-        else
-        {
-            __set_size_noevent({ accumulate(children.begin(), children.end(), 0.0, [](double lhs, shared_ptr<control> const& rhs) { return lhs + rhs->get_width() + rhs->get_margin().left + rhs->get_margin().right; }), get_height() });
-        }
+        XAML_FOREACH_END();
     }
-} // namespace xaml
+    return XAML_S_OK;
+}
+
+xaml_result xaml_stack_panel_internal::size_to_fit() noexcept
+{
+    if (m_orientation == xaml_orientation_vertical)
+    {
+        double height = 0;
+        XAML_FOREACH_START(c, m_children);
+        {
+            xaml_ptr<xaml_control> cc;
+            XAML_RETURN_IF_FAILED(c->query(&cc));
+            xaml_margin cm;
+            XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
+            xaml_size cs;
+            XAML_RETURN_IF_FAILED(cc->get_size(&cs));
+            height += cs.height + cm.top + cm.bottom;
+        }
+        XAML_FOREACH_END();
+        return set_size_noevent({ m_size.width, height });
+    }
+    else
+    {
+        double width = 0;
+        XAML_FOREACH_START(c, m_children);
+        {
+            xaml_ptr<xaml_control> cc;
+            XAML_RETURN_IF_FAILED(c->query(&cc));
+            xaml_margin cm;
+            XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
+            xaml_size cs;
+            XAML_RETURN_IF_FAILED(cc->get_size(&cs));
+            width += cs.width + cm.left + cm.right;
+        }
+        XAML_FOREACH_END();
+        return set_size_noevent({ width, m_size.height });
+    }
+}
+
+xaml_result XAML_CALL xaml_stack_panel_new(xaml_stack_panel** ptr) noexcept
+{
+    return xaml_object_init<xaml_stack_panel_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_stack_panel_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_stack_panel;
+    XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_stack_panel_new);
+    XAML_TYPE_INFO_ADD_PROP(orientation, xaml_orientation);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_stack_panel_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_stack_panel, "xaml/ui/controls/stack_panel.h");
+    XAML_RETURN_IF_FAILED(xaml_stack_panel_members(__info.get()));
+    return ctx->add_type(__info.get());
+}

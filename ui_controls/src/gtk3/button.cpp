@@ -1,34 +1,34 @@
-#include <xaml/ui/controls/button.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <shared/button.hpp>
+#include <xaml/ui/controls/button.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void button::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            auto h = make_shared<native_control>();
-            h->handle = gtk_button_new();
-            set_handle(h);
-            g_signal_connect(G_OBJECT(get_handle()->handle), "clicked", G_CALLBACK(button::on_clicked), this);
-            draw_visible();
-            draw_text();
-        }
-        __set_rect(region);
+        m_handle = gtk_button_new();
+        g_signal_connect(G_OBJECT(m_handle), "clicked", G_CALLBACK(xaml_button_internal::on_clicked), this);
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
     }
+    return set_rect(region);
+}
 
-    void button::draw_text()
+xaml_result xaml_button_internal::draw_text() noexcept
+{
+    xaml_char_t const* data = nullptr;
+    if (m_text)
     {
-        gtk_button_set_label(GTK_BUTTON(get_handle()->handle), m_text.c_str());
+        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
     }
+    gtk_button_set_label(GTK_BUTTON(m_handle), data);
+    return XAML_S_OK;
+}
 
-    void button::draw_default() {}
+xaml_result xaml_button_internal::draw_default() noexcept { return XAML_S_OK; }
 
-    void button::on_clicked(void*, void* data)
-    {
-        button* s = (button*)data;
-        s->m_click(s->shared_from_this<button>());
-    }
-} // namespace xaml
+void xaml_button_internal::on_clicked(GtkWidget*, xaml_button_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(self->on_click(self->m_outer_this));
+}

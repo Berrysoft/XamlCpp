@@ -1,36 +1,27 @@
-#include <wil/com.h>
-#include <xaml/ui/controls/native_webview.hpp>
-
 #include <WebView2.h>
+#include <wil/com.h>
+#include <win/webview.hpp>
 
-namespace xaml
+struct xaml_webview_edge2 : xaml_win32_webview
 {
-    class webview_edge2 : public native_webview
-    {
-    private:
-        wil::com_ptr<ICoreWebView2Environment> m_env{ nullptr };
-        wil::com_ptr<ICoreWebView2Host> m_host{ nullptr };
-        wil::com_ptr<ICoreWebView2> m_view{ nullptr };
+    wil::com_ptr_t<ICoreWebView2Controller, wil::err_returncode_policy> m_host{ nullptr };
+    wil::com_ptr_t<ICoreWebView2, wil::err_returncode_policy> m_view{ nullptr };
 
-    public:
-        ~webview_edge2() override {}
+    xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) noexcept override;
 
-        void create_async(HWND parent, rectangle const& rect, std::function<void()>&& callback) override;
+    operator bool() const noexcept override { return (bool)m_view; }
 
-        operator bool() const override { return (bool)m_view; }
+    xaml_result navigate(xaml_char_t const* uri) noexcept override;
 
-        void navigate(string_view_t uri) override;
+    xaml_result set_visible(bool vis) noexcept override;
 
-        void set_visible(bool vis) override;
+    xaml_result set_location(xaml_point const& p) noexcept override;
+    xaml_result set_size(xaml_size const& s) noexcept override;
+    xaml_result set_rect(xaml_rectangle const& rect) noexcept override;
 
-        void set_location(point p) override;
-        void set_size(size s) override;
-        void set_rect(rectangle const& rect) override;
+    xaml_result go_forward() noexcept override;
+    xaml_result go_back() noexcept override;
 
-        void go_forward() override;
-        void go_back() override;
-
-        bool get_can_go_forward() override;
-        bool get_can_go_back() override;
-    };
-} // namespace xaml
+    xaml_result get_can_go_forward(bool*) noexcept override;
+    xaml_result get_can_go_back(bool*) noexcept override;
+};

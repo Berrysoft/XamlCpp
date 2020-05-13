@@ -1,94 +1,225 @@
-#include <xaml/ui/controls/menu_item.hpp>
-#include <xaml/ui/menu_bar.hpp>
+#include <shared/menu_item.hpp>
+#include <xaml/ui/controls/menu_item.h>
+#include <xaml/ui/menu_bar.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_item_internal::init() noexcept
 {
-    menu_item::menu_item() : control() {}
+    XAML_RETURN_IF_FAILED(xaml_control_internal::init());
 
-    menu_item::~menu_item() {}
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_click));
+    return XAML_S_OK;
+}
 
-    popup_menu_item::popup_menu_item() : menu_item() {}
-
-    popup_menu_item::~popup_menu_item() {}
-
-    void popup_menu_item::add_submenu(shared_ptr<menu_item> const& child)
+xaml_result xaml_popup_menu_item_internal::add_submenu(xaml_menu_item* child) noexcept
+{
+    if (child)
     {
-        if (child)
-        {
-            auto it = find(m_submenu.begin(), m_submenu.end(), child);
-            if (it == m_submenu.end())
+        child->set_parent(static_cast<xaml_control*>(m_outer_this));
+        XAML_RETURN_IF_FAILED(m_submenu->append(child));
+        XAML_RETURN_IF_FAILED(parent_redraw());
+    }
+    return XAML_S_OK;
+}
+
+xaml_result xaml_popup_menu_item_internal::remove_submenu(xaml_menu_item* child) noexcept
+{
+    return XAML_E_NOTIMPL;
+}
+
+xaml_result xaml_popup_menu_item_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&m_submenu));
+    return XAML_S_OK;
+}
+
+xaml_result xaml_check_menu_item_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
+
+    int32_t token;
+    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_menu_item>, bool>(
+        [this](xaml_ptr<xaml_check_menu_item>, bool) -> xaml_result {
+#ifdef XAML_UI_WINDOWS
+            if (m_menu_id)
+#elif defined(XAML_UI_COCOA)
+            if (m_menu)
+#elif defined(XAML_UI_GTK3)
+            if (m_handle)
+#endif // XAML_UI_WINDOWS
+                XAML_RETURN_IF_FAILED(draw_checked());
+            return XAML_S_OK;
+        },
+        &token);
+}
+
+xaml_result xaml_radio_menu_item_internal::init() noexcept
+{
+    XAML_RETURN_IF_FAILED(xaml_menu_item_internal::init());
+
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
+
+    int32_t token;
+    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_menu_item>, bool>(
+        [this](xaml_ptr<xaml_radio_menu_item>, bool) -> xaml_result {
+#ifdef XAML_UI_WINDOWS
+            if (m_menu_id)
+#elif defined(XAML_UI_COCOA)
+            if (m_menu)
+#elif defined(XAML_UI_GTK3)
+            if (m_handle)
+#endif // XAML_UI_WINDOWS
             {
-                m_submenu.push_back(child);
-                child->set_parent(shared_from_this<control>());
-                __parent_redraw();
+                XAML_RETURN_IF_FAILED(draw_checked());
+                XAML_RETURN_IF_FAILED(draw_group());
             }
-        }
-    }
-
-    void popup_menu_item::remove_submenu(shared_ptr<menu_item> const& child)
-    {
-        auto it = find(m_submenu.begin(), m_submenu.end(), child);
-        if (it != m_submenu.end())
-        {
-            child->set_parent({});
-            m_submenu.erase(it);
-            __parent_redraw();
-        }
-    }
-
-    check_menu_item::check_menu_item() : menu_item()
-    {
-        add_is_checked_changed([this](shared_ptr<check_menu_item>, bool) { if(get_handle()) draw_checked(); });
-    }
-
-    check_menu_item::~check_menu_item() {}
-
-    radio_menu_item::radio_menu_item() : menu_item()
-    {
-        add_is_checked_changed([this](shared_ptr<radio_menu_item>, bool) {
-            if (get_handle())
-            {
-                draw_checked();
-                draw_group();
-            }
-        });
-    }
-
-    radio_menu_item::~radio_menu_item() {}
+            return XAML_S_OK;
+        },
+        &token);
+}
 
 #ifndef XAML_UI_GTK3
-    void radio_menu_item::draw_group()
+xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
+{
+    if (m_parent && m_is_checked)
     {
-        if (auto sparent = get_parent().lock())
+        xaml_ptr<xaml_menu_bar> multic;
+        if (XAML_SUCCEEDED(m_parent->query(&multic)))
         {
-            if (get_is_checked())
+            xaml_ptr<xaml_vector_view> children;
+            XAML_RETURN_IF_FAILED(multic->get_children(&children));
+            XAML_FOREACH_START(c, children);
             {
-                if (auto multic = sparent->query<menu_bar>())
+                if (auto rc = c.query<xaml_radio_menu_item>())
                 {
-                    for (auto& c : multic->get_children())
+                    if (rc.get() != static_cast<xaml_control*>(m_outer_this))
                     {
-                        if (c)
+                        xaml_ptr<xaml_string> group;
+                        XAML_RETURN_IF_FAILED(rc->get_group(&group));
+                        bool equals;
+                        XAML_RETURN_IF_FAILED(group->equals(m_group.get(), &equals));
+                        if (equals)
                         {
-                            if (auto rc = c->query<radio_menu_item>())
-                            {
-                                if (c != shared_from_this<radio_menu_item>() && rc->get_group() == get_group())
-                                {
-                                    rc->set_is_checked(false);
-                                }
-                            }
+                            XAML_RETURN_IF_FAILED(rc->set_is_checked(false));
                         }
                     }
                 }
             }
+            XAML_FOREACH_END();
         }
     }
+    return XAML_S_OK;
+}
 #endif // !XAML_UI_GTK3
 
-    separator_menu_item::separator_menu_item() : menu_item()
-    {
-    }
+xaml_result XAML_CALL xaml_menu_item_new(xaml_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_menu_item_impl>(ptr);
+}
 
-    separator_menu_item::~separator_menu_item() {}
-} // namespace xaml
+xaml_result XAML_CALL xaml_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_control_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP(text, xaml_string);
+    XAML_TYPE_INFO_ADD_EVENT(click);
+    XAML_TYPE_INFO_ADD_DEF_PROP(text);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_new(xaml_popup_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_popup_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_popup_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_popup_menu_item_new);
+    XAML_TYPE_INFO_ADD_CPROP(submenu, xaml_menu_item);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_popup_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_popup_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_popup_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_new(xaml_check_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_check_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_check_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_check_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_check_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_check_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_check_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_new(xaml_radio_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_radio_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_radio_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_radio_menu_item_new);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(is_checked, bool);
+    XAML_TYPE_INFO_ADD_PROP(group, xaml_string);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_radio_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_radio_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_radio_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_new(xaml_separator_menu_item** ptr) noexcept
+{
+    return xaml_object_init<xaml_separator_menu_item_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_members(xaml_type_info_registration* __info) noexcept
+{
+    using self_type = xaml_separator_menu_item;
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    XAML_TYPE_INFO_ADD_CTOR(xaml_separator_menu_item_new);
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_separator_menu_item_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_TYPE_INFO_NEW(xaml_separator_menu_item, "xaml/ui/controls/menu_item.h");
+    XAML_RETURN_IF_FAILED(xaml_separator_menu_item_members(__info.get()));
+    return ctx->add_type(__info.get());
+}

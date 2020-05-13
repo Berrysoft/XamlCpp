@@ -3,75 +3,76 @@
 
 #include <Windows.h>
 #include <optional>
+#include <shared/canvas.hpp>
 #include <wil/resource.h>
-#include <xaml/ui/controls/native_canvas.hpp>
+#include <win/canvas.hpp>
 #include <xaml/ui/native_drawing.hpp>
 
 #include <gdiplus.h>
 
-namespace xaml
+struct xaml_drawing_context_gdiplus_impl : xaml_implement<xaml_drawing_context_gdiplus_impl, xaml_drawing_context, xaml_object>
 {
-    struct drawing_context_gdiplus : native_drawing_context
-    {
-        double dpi{ USER_DEFAULT_SCREEN_DPI };
-        Gdiplus::Graphics* handle{ nullptr };
+    double dpi{ USER_DEFAULT_SCREEN_DPI };
+    Gdiplus::Graphics* handle{ nullptr };
 
-        ~drawing_context_gdiplus() override;
+    xaml_drawing_context_gdiplus_impl(Gdiplus::Graphics* handle, double dpi) noexcept : handle(handle), dpi(dpi) {}
 
-        void draw_arc(drawing_pen const& pen, rectangle const& region, double start_angle, double end_angle) override;
-        void fill_pie(drawing_brush const& brush, rectangle const& region, double start_angle, double end_angle) override;
-        void draw_ellipse(drawing_pen const& pen, rectangle const& region) override;
-        void fill_ellipse(drawing_brush const& brush, rectangle const& region) override;
-        void draw_line(drawing_pen const& pen, point startp, point endp) override;
-        void draw_rect(drawing_pen const& pen, rectangle const& rect) override;
-        void fill_rect(drawing_brush const& brush, rectangle const& rect) override;
-        void draw_round_rect(drawing_pen const& pen, rectangle const& rect, size round) override;
-        void fill_round_rect(drawing_brush const& brush, rectangle const& rect, size round) override;
-        void draw_string(drawing_brush const& brush, drawing_font const& font, point p, string_view_t str) override;
-    };
+    xaml_result XAML_CALL draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result XAML_CALL fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
+    xaml_result XAML_CALL draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept override;
+    xaml_result XAML_CALL fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept override;
+    xaml_result XAML_CALL draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept override;
+    xaml_result XAML_CALL draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept override;
+    xaml_result XAML_CALL fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept override;
+    xaml_result XAML_CALL draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result XAML_CALL fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
+    xaml_result XAML_CALL draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
+};
 
-    class canvas_gdiplus : public native_canvas
-    {
-    private:
-        std::optional<ULONG_PTR> m_token{};
+struct xaml_canvas_gdiplus_internal : xaml_win32_canvas_internal
+{
+    std::optional<ULONG_PTR> m_token{};
 
-    public:
-        canvas_gdiplus() noexcept;
-        ~canvas_gdiplus() override;
+    ~xaml_canvas_gdiplus_internal();
 
-        bool create(HWND wnd) noexcept override;
-        void begin_paint(HWND wnd, size real, std::function<void(std::shared_ptr<drawing_context>)> paint_func) override;
-    };
+    xaml_result XAML_CALL draw_impl() noexcept override;
+    xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 
-    inline size from_native(Gdiplus::SizeF s) noexcept
-    {
-        return { (double)s.Width, (double)s.Height };
-    }
-    template <>
-    inline Gdiplus::SizeF to_native<Gdiplus::SizeF, size>(size s) noexcept
-    {
-        return { (float)s.width, (float)s.height };
-    }
+    xaml_result XAML_CALL init() noexcept override;
+};
 
-    inline point from_native(Gdiplus::PointF p) noexcept
-    {
-        return { (double)p.X, (double)p.Y };
-    }
-    template <>
-    inline Gdiplus::PointF to_native<Gdiplus::PointF, point>(point p) noexcept
-    {
-        return { (float)p.x, (float)p.y };
-    }
+struct xaml_canvas_gdiplus_impl : xaml_win32_canvas_implement<xaml_canvas_gdiplus_impl, xaml_canvas_gdiplus_internal>
+{
+};
 
-    inline rectangle from_native(Gdiplus::RectF r) noexcept
-    {
-        return { (double)r.X, (double)r.Y, (double)r.Width, (double)r.Height };
-    }
-    template <>
-    inline Gdiplus::RectF to_native<Gdiplus::RectF, rectangle>(rectangle r) noexcept
-    {
-        return { (float)r.x, (float)r.y, (float)r.width, (float)r.height };
-    }
-} // namespace xaml
+inline xaml_size xaml_from_native(Gdiplus::SizeF const& s) noexcept
+{
+    return { (double)s.Width, (double)s.Height };
+}
+template <>
+inline Gdiplus::SizeF xaml_to_native<Gdiplus::SizeF, xaml_size>(xaml_size const& s) noexcept
+{
+    return { (float)s.width, (float)s.height };
+}
+
+inline xaml_point xaml_from_native(Gdiplus::PointF const& p) noexcept
+{
+    return { (double)p.X, (double)p.Y };
+}
+template <>
+inline Gdiplus::PointF xaml_to_native<Gdiplus::PointF, xaml_point>(xaml_point const& p) noexcept
+{
+    return { (float)p.x, (float)p.y };
+}
+
+inline xaml_rectangle xaml_from_native(Gdiplus::RectF const& r) noexcept
+{
+    return { (double)r.X, (double)r.Y, (double)r.Width, (double)r.Height };
+}
+template <>
+inline Gdiplus::RectF xaml_to_native<Gdiplus::RectF, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { (float)r.x, (float)r.y, (float)r.width, (float)r.height };
+}
 
 #endif // !XAML_UI_CANVAS_GDIPLUS_HPP

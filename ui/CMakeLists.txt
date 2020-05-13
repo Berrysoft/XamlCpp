@@ -1,16 +1,16 @@
-project(XamlUI CXX)
+project(XamlUI)
 
-file(GLOB UI_HEADERS "include/xaml/ui/*.hpp")
+file(GLOB UI_HEADERS "include/xaml/ui/*.h*")
 file(GLOB UI_WINDOWS_HEADERS "include/xaml/ui/win/*.h")
 file(GLOB UI_COCOA_HEADERS "include/xaml/ui/cocoa/*.h")
 file(GLOB UI_GTK3_HEADERS "include/xaml/ui/gtk3/*.h")
 
 if(${BUILD_WINDOWS})
-    file(GLOB UI_SOURCE "src/win/*.c" "src/win/*.cpp")
+    file(GLOB UI_SOURCE "src/win/*.c*")
 elseif(${BUILD_COCOA})
-    file(GLOB UI_SOURCE "src/cocoa/*.m" "src/cocoa/*.mm")
+    file(GLOB UI_SOURCE "src/cocoa/*.m*")
 elseif(${BUILD_GTK3})
-    file(GLOB UI_SOURCE "src/gtk3/*.c" "src/gtk3/*.cpp")
+    file(GLOB UI_SOURCE "src/gtk3/*.c*")
 endif()
 
 file(GLOB UI_SHARED_SOURCE "src/shared/*.cpp")
@@ -42,4 +42,4 @@ install(FILES ${UI_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win)
 install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)
 install(FILES ${UI_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3)
 
-add_subdirectory(meta)
+add_subdirectory(appmain)

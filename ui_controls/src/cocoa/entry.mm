@@ -1,73 +1,74 @@
 #import <cocoa/XamlEntryDelegate.h>
-#include <xaml/ui/controls/entry.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <cocoa/nsstring.hpp>
+#include <shared/entry.hpp>
+#include <xaml/ui/controls/entry.h>
 
 @implementation XamlEntryDelegate
 - (void)controlTextDidChange:(NSNotification*)obj
 {
-    xaml::entry* ptr = (xaml::entry*)self.classPointer;
-    ptr->__on_changed();
+    xaml_entry_internal* ptr = (xaml_entry_internal*)self.classPointer;
+    ptr->on_changed();
 }
 @end
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
-    void entry::__draw(rectangle const& region)
+    if (!m_handle)
     {
-        if (!get_handle())
-        {
-            NSTextField* textField = [NSTextField new];
-            textField.bezeled = YES;
-            textField.drawsBackground = YES;
-            textField.editable = YES;
-            textField.selectable = YES;
-            XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
-            textField.delegate = delegate;
-            auto h = make_shared<native_control>();
-            h->handle = textField;
-            h->delegate = delegate;
-            set_handle(h);
-            draw_visible();
-            draw_text();
-            draw_alignment();
-        }
-        __set_rect(region);
+        NSTextField* textField = [NSTextField new];
+        textField.bezeled = YES;
+        textField.drawsBackground = YES;
+        textField.editable = YES;
+        textField.selectable = YES;
+        XamlEntryDelegate* delegate = [[XamlEntryDelegate alloc] initWithClassPointer:this];
+        textField.delegate = delegate;
+        m_handle = textField;
+        m_delegate = delegate;
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_text());
+        XAML_RETURN_IF_FAILED(draw_alignment());
     }
+    return set_rect(region);
+}
 
-    void entry::draw_text()
-    {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSString* ns_title = [NSString stringWithUTF8String:m_text.c_str()];
-        textField.stringValue = ns_title;
-    }
+xaml_result xaml_entry_internal::draw_text() noexcept
+{
+    NSTextField* textField = (NSTextField*)m_handle;
+    NSString* ns_title;
+    XAML_RETURN_IF_FAILED(get_NSString(m_text, &ns_title));
+    textField.stringValue = ns_title;
+    return XAML_S_OK;
+}
 
-    void entry::draw_alignment()
+xaml_result xaml_entry_internal::draw_alignment() noexcept
+{
+    NSTextField* textField = (NSTextField*)m_handle;
+    NSTextAlignment align;
+    switch (m_text_halignment)
     {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        NSTextAlignment align;
-        switch (m_text_halignment)
-        {
-        case halignment_t::left:
-            align = NSTextAlignmentLeft;
-            break;
-        case halignment_t::center:
-            align = NSTextAlignmentCenter;
-            break;
-        case halignment_t::right:
-            align = NSTextAlignmentRight;
-            break;
-        default:
-            align = NSTextAlignmentNatural;
-            break;
-        }
-        textField.alignment = align;
+    case xaml_halignment_left:
+        align = NSTextAlignmentLeft;
+        break;
+    case xaml_halignment_center:
+        align = NSTextAlignmentCenter;
+        break;
+    case xaml_halignment_right:
+        align = NSTextAlignmentRight;
+        break;
+    default:
+        align = NSTextAlignmentNatural;
+        break;
     }
+    textField.alignment = align;
+    return XAML_S_OK;
+}
 
-    void entry::__on_changed()
-    {
-        NSTextField* textField = (NSTextField*)get_handle()->handle;
-        set_text([textField.stringValue UTF8String]);
-    }
+void xaml_entry_internal::on_changed() noexcept
+{
+    NSTextField* textField = (NSTextField*)m_handle;
+    xaml_ptr<xaml_string> str;
+    XAML_ASSERT_SUCCEEDED(xaml_string_new(textField.stringValue.UTF8String, &str));
+    XAML_ASSERT_SUCCEEDED(set_text(str.get()));
 }

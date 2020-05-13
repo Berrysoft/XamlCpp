@@ -1,68 +1,70 @@
+#include <shared/radio_box.hpp>
 #include <windowsx.h>
-#include <xaml/ui/controls/radio_box.hpp>
-#include <xaml/ui/native_control.hpp>
+#include <xaml/ui/controls/radio_box.h>
 
 #include <CommCtrl.h>
-#include <Uxtheme.h>
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_radio_box_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
 {
-    optional<std::intptr_t> radio_box::__wnd_proc(window_message const& msg)
+    switch (msg.Msg)
     {
-        switch (msg.Msg)
+    case WM_COMMAND:
+    {
+        HWND h = (HWND)msg.lParam;
+        if (m_handle == h)
         {
-        case WM_COMMAND:
-        {
-            HWND h = (HWND)msg.lParam;
-            if (get_handle() && get_handle()->handle == h)
+            switch (HIWORD(msg.wParam))
             {
-                switch (HIWORD(msg.wParam))
-                {
-                case BN_CLICKED:
-                    set_is_checked(true);
-                    break;
-                }
-            }
-            break;
-        }
-        }
-        return nullopt;
-    }
-
-    void radio_box::__draw(rectangle const& region)
-    {
-        if (auto sparent = get_parent().lock())
-        {
-            if (!get_handle())
+            case BN_CLICKED:
             {
-                window_create_params params = {};
-                params.class_name = WC_BUTTON;
-                params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON;
-                params.x = 0;
-                params.y = 0;
-                params.width = 50;
-                params.height = 14;
-                params.parent = sparent.get();
-                this->__create(params);
-                draw_visible();
-                draw_text();
-                draw_default();
-                draw_checked();
-                SetParent(get_handle()->handle, sparent->get_handle()->handle);
+                XAML_RETURN_IF_FAILED(set_is_checked(true));
+                break;
             }
-            __set_rect(region);
+            }
         }
+        break;
     }
+    }
+    return XAML_E_NOTIMPL;
+}
 
-    void radio_box::draw_checked()
+xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
+{
+    if (m_parent)
     {
-        Button_SetCheck(get_handle()->handle, m_is_checked ? BST_CHECKED : BST_UNCHECKED);
+        if (!m_handle)
+        {
+            xaml_win32_window_create_params params = {};
+            params.class_name = WC_BUTTON;
+            params.style = WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_RADIOBUTTON;
+            params.x = 0;
+            params.y = 0;
+            params.width = 50;
+            params.height = 14;
+            params.parent = m_parent;
+            XAML_RETURN_IF_FAILED(create(params));
+            XAML_RETURN_IF_FAILED(draw_visible());
+            XAML_RETURN_IF_FAILED(draw_text());
+            XAML_RETURN_IF_FAILED(draw_default());
+            XAML_RETURN_IF_FAILED(draw_group());
+            XAML_RETURN_IF_FAILED(draw_checked());
+        }
+        XAML_RETURN_IF_FAILED(set_rect(region));
     }
+    return XAML_S_OK;
+}
 
-    void radio_box::__size_to_fit()
-    {
-        __set_size_noevent(__measure_text_size(get_text(), { 0, 5 }));
-    }
-} // namespace xaml
+xaml_result xaml_radio_box_internal::draw_checked() noexcept
+{
+    Button_SetCheck(m_handle, m_is_checked ? BST_CHECKED : BST_UNCHECKED);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_radio_box_internal::size_to_fit() noexcept
+{
+    xaml_size res;
+    XAML_RETURN_IF_FAILED(measure_string(m_text, { 0, 5 }, &res));
+    return set_size_noevent(res);
+}

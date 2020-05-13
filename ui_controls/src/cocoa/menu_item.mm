@@ -1,141 +1,139 @@
 #import <cocoa/XamlMenuItemDelegate.h>
-#include <xaml/ui/controls/menu_item.hpp>
-#include <xaml/ui/controls/native_menu_item.hpp>
-#include <xaml/ui/menu_bar.hpp>
-#include <xaml/ui/native_control.hpp>
-#include <xaml/ui/native_menu_bar.hpp>
+#include <cocoa/nsstring.hpp>
+#include <shared/menu_item.hpp>
+#include <xaml/ui/cocoa/menu_bar.h>
+#include <xaml/ui/controls/menu_item.h>
+#include <xaml/ui/menu_bar.h>
 
 @implementation XamlMenuItemDelegate : XamlDelegate
 - (void)onAction
 {
-    xaml::menu_item* ptr = (xaml::menu_item*)self.classPointer;
-    ptr->__on_action();
+    xaml_menu_item_internal* ptr = (xaml_menu_item_internal*)self.classPointer;
+    ptr->on_action();
 }
 @end
 
 using namespace std;
 
-namespace xaml
+xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
-    void menu_item::__draw(rectangle const& region)
+    NSMenu* hpmenu = nil;
+    if (m_parent)
     {
-        auto sparent = get_parent().lock();
-        NSMenu* hpmenu = nil;
-        if (sparent)
+        xaml_ptr<xaml_cocoa_popup_menu_item> native_menu_item;
+        if (XAML_SUCCEEDED(m_parent->query(&native_menu_item)))
         {
-            if (auto ppmenu = sparent->query<popup_menu_item>())
-            {
-                hpmenu = static_pointer_cast<native_popup_menu_item>(ppmenu->get_menu())->menu;
-            }
-            else if (auto pmenu = sparent->query<menu_bar>())
-            {
-                hpmenu = pmenu->get_menu()->handle;
-            }
+            XAML_RETURN_IF_FAILED(native_menu_item->get_handle(&hpmenu));
         }
-        if (hpmenu)
+        else
         {
-            auto new_draw = !get_menu();
-            draw_append((__bridge void*)hpmenu);
-            if (new_draw)
+            xaml_ptr<xaml_cocoa_menu_bar> native_menu_bar;
+            if (XAML_SUCCEEDED(m_parent->query(&native_menu_bar)))
             {
-                XamlMenuItemDelegate* delegate = [[XamlMenuItemDelegate alloc] initWithClassPointer:this];
-                NSMenuItem* mitem = get_menu()->handle;
-                mitem.target = delegate;
-                mitem.action = @selector(onAction);
-                mitem.title = [NSString stringWithUTF8String:m_text.c_str()];
-                auto h = make_shared<native_control>();
-                h->delegate = delegate;
-                set_handle(h);
-                draw_visible();
+                XAML_RETURN_IF_FAILED(native_menu_bar->get_handle(&hpmenu));
             }
         }
     }
-
-    void menu_item::draw_visible()
+    if (hpmenu)
     {
-        NSMenuItem* item = (NSMenuItem*)get_menu()->handle;
-        item.hidden = !get_is_visible();
-    }
-
-    void menu_item::draw_append(void* pmenu)
-    {
-        if (!get_menu())
+        auto new_draw = !m_menu;
+        XAML_RETURN_IF_FAILED(draw_append(hpmenu));
+        if (new_draw)
         {
-            auto m = make_shared<native_menu_item>();
-            m->parent = (__bridge NSMenu*)pmenu;
-            m->handle = [NSMenuItem new];
-            set_menu(m);
-            [get_menu()->parent addItem:get_menu()->handle];
+            XamlMenuItemDelegate* delegate = [[XamlMenuItemDelegate alloc] initWithClassPointer:this];
+            NSMenuItem* mitem = m_menu;
+            mitem.target = delegate;
+            mitem.action = @selector(onAction);
+            NSString* title;
+            XAML_RETURN_IF_FAILED(get_NSString(m_text, &title));
+            mitem.title = title;
+            m_delegate = delegate;
+            XAML_RETURN_IF_FAILED(draw_visible());
         }
     }
+    return XAML_S_OK;
+}
 
-    void menu_item::__on_action()
+xaml_result xaml_menu_item_internal::draw_append(NSMenu* pmenu) noexcept
+{
+    if (!m_menu)
     {
-        m_click(shared_from_this<menu_item>());
+        m_menu = [NSMenuItem new];
+        [pmenu addItem:m_menu];
     }
+    return XAML_S_OK;
+}
 
-    void popup_menu_item::__draw(rectangle const& region)
-    {
-        menu_item::__draw(region);
-    }
+void xaml_menu_item_internal::on_action() noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
+}
 
-    void popup_menu_item::draw_submenu()
-    {
-        for (auto& child : m_submenu)
-        {
-            child->__draw({});
-        }
-    }
+xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    return xaml_menu_item_internal::draw(region);
+}
 
-    void popup_menu_item::draw_append(void* pmenu)
+xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
+{
+    XAML_FOREACH_START(child, m_submenu);
     {
-        if (!get_menu())
-        {
-            auto m = make_shared<native_popup_menu_item>();
-            m->parent = (__bridge NSMenu*)pmenu;
-            m->handle = [NSMenuItem new];
-            m->menu = [[NSMenu alloc] initWithTitle:[NSString stringWithUTF8String:get_text().data()]];
-            set_menu(m);
-            draw_submenu();
-            [get_menu()->parent addItem:get_menu()->handle];
-            get_menu()->handle.submenu = static_pointer_cast<native_popup_menu_item>(get_menu())->menu;
-        }
+        xaml_ptr<xaml_control> cc;
+        XAML_RETURN_IF_FAILED(child->query(&cc));
+        XAML_RETURN_IF_FAILED(cc->draw({}));
     }
+    XAML_FOREACH_END();
+    return XAML_S_OK;
+}
 
-    void check_menu_item::__draw(rectangle const& region)
+xaml_result xaml_popup_menu_item_internal::draw_append(NSMenu* pmenu) noexcept
+{
+    if (!m_menu)
     {
-        menu_item::__draw(region);
+        m_menu = [NSMenuItem new];
+        NSString* title;
+        XAML_RETURN_IF_FAILED(get_NSString(m_text, &title));
+        m_menu_handle = [[NSMenu alloc] initWithTitle:title];
+        XAML_RETURN_IF_FAILED(draw_submenu());
+        [pmenu addItem:m_menu];
+        m_menu.submenu = m_menu_handle;
     }
+    return XAML_S_OK;
+}
 
-    void check_menu_item::draw_checked()
-    {
-        get_menu()->handle.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
-    }
+xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    return xaml_menu_item_internal::draw(region);
+}
 
-    void radio_menu_item::__draw(rectangle const& region)
-    {
-        menu_item::__draw(region);
-    }
+xaml_result xaml_check_menu_item_internal::draw_checked() noexcept
+{
+    m_menu.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
+    return XAML_S_OK;
+}
 
-    void radio_menu_item::draw_checked()
-    {
-        get_menu()->handle.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
-    }
+xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    return xaml_menu_item_internal::draw(region);
+}
 
-    void separator_menu_item::__draw(rectangle const& region)
-    {
-        menu_item::__draw(region);
-    }
+xaml_result xaml_radio_menu_item_internal::draw_checked() noexcept
+{
+    m_menu.state = m_is_checked ? NSControlStateValueOn : NSControlStateValueOff;
+    return XAML_S_OK;
+}
 
-    void separator_menu_item::draw_append(void* pmenu)
+xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+{
+    return xaml_menu_item_internal::draw(region);
+}
+
+xaml_result xaml_separator_menu_item_internal::draw_append(NSMenu* pmenu) noexcept
+{
+    if (!m_menu)
     {
-        if (!get_menu())
-        {
-            auto m = make_shared<native_menu_item>();
-            m->parent = (__bridge NSMenu*)pmenu;
-            m->handle = [NSMenuItem separatorItem];
-            set_menu(m);
-            [get_menu()->parent addItem:get_menu()->handle];
-        }
+        m_menu = [NSMenuItem separatorItem];
+        [pmenu addItem:m_menu];
     }
+    return XAML_S_OK;
 }
