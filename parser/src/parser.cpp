@@ -67,6 +67,7 @@ struct parser_impl
 
     xaml_result parse_markup(string_view value, xaml_markup_node** ptr) noexcept;
     xaml_result parse_members(xaml_ptr<xaml_node> const& mc, xml_node& node) noexcept;
+    xaml_result parse_impl(xml_node& node, xaml_node** ptr) noexcept;
     xaml_result parse_impl(xml_node& node, xaml_ptr<xaml_type_info> const& t, xaml_node** ptr) noexcept;
     xaml_result parse(xaml_node** ptr) noexcept;
 };
@@ -385,23 +386,9 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
                     if (can_write)
                     {
+                        xml_node& cnode = c.nodes().front();
                         xaml_ptr<xaml_node> child;
-                        {
-                            xml_node& cnode = c.nodes().front();
-                            auto ns = cnode.namespace_uri();
-                            auto name = cnode.local_name();
-                            xaml_ptr<xaml_reflection_info> info;
-                            {
-                                xaml_ptr<xaml_string> ns_str;
-                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
-                                xaml_ptr<xaml_string> name_str;
-                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
-                                XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
-                            }
-                            xaml_ptr<xaml_type_info> t;
-                            XAML_RETURN_IF_FAILED(info->query(&t));
-                            XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
-                        }
+                        XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
                         xaml_ptr<xaml_attribute_property> prop_item;
                         XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type.get(), prop.get(), child.get(), &prop_item));
                         XAML_RETURN_IF_FAILED(props->append(prop_item.get()));
@@ -433,20 +420,8 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             }
                             for (auto& cnode : c.nodes())
                             {
-                                auto ns = cnode.namespace_uri();
-                                auto name = cnode.local_name();
-                                xaml_ptr<xaml_reflection_info> info;
-                                {
-                                    xaml_ptr<xaml_string> ns_str;
-                                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
-                                    xaml_ptr<xaml_string> name_str;
-                                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
-                                    XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
-                                }
-                                xaml_ptr<xaml_type_info> t;
-                                XAML_RETURN_IF_FAILED(info->query(&t));
                                 xaml_ptr<xaml_node> child;
-                                XAML_RETURN_IF_FAILED(parse_impl(cnode, t, &child));
+                                XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
                                 XAML_RETURN_IF_FAILED(values->append(child.get()));
                             }
                         }
@@ -528,6 +503,23 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
     return XAML_S_OK;
 }
 
+xaml_result parser_impl::parse_impl(xml_node& node, xaml_node** ptr) noexcept
+{
+    auto ns = node.namespace_uri();
+    auto name = node.local_name();
+    xaml_ptr<xaml_reflection_info> info;
+    {
+        xaml_ptr<xaml_string> ns_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+        xaml_ptr<xaml_string> name_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
+    }
+    xaml_ptr<xaml_type_info> t;
+    XAML_RETURN_IF_FAILED(info->query(&t));
+    return parse_impl(node, t, ptr);
+}
+
 xaml_result parser_impl::parse_impl(xml_node& node, xaml_ptr<xaml_type_info> const& t, xaml_node** ptr) noexcept
 {
     xaml_ptr<xaml_string> include_file;
@@ -547,19 +539,7 @@ xaml_result parser_impl::parse(xaml_node** ptr) noexcept
     auto it = find_if(root_nodes.begin(), root_nodes.end(), [](xml_node& node) { return node.type() == node_type::element; });
     if (it == root_nodes.end()) return {};
     auto& root_node = *it;
-    auto ns = root_node.namespace_uri();
-    auto name = root_node.local_name();
-    xaml_ptr<xaml_reflection_info> info;
-    {
-        xaml_ptr<xaml_string> ns_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
-        xaml_ptr<xaml_string> name_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
-        XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str.get(), name_str.get(), &info));
-    }
-    xaml_ptr<xaml_type_info> t;
-    XAML_RETURN_IF_FAILED(info->query(&t));
-    return parse_impl(root_node, t, ptr);
+    return parse_impl(root_node, ptr);
 }
 
 static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_meta_context* ctx, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
