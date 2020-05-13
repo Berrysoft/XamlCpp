@@ -19,6 +19,7 @@ decltype(auto) call_with_file_to_stream(F&& f, std::FILE* file, Args&&... args) 
 #ifdef _MSC_VER
     std::basic_filebuf<Char> buf{ file };
 #elif defined(XAML_APPLE)
+    static_assert(std::is_same_v<Char, char>);
     boost::iostreams::stream_buffer<boost::iostreams::file_descriptor_sink> buf{ fileno(file), boost::iostreams::never_close_handle };
 #else
     __gnu_cxx::stdio_filebuf<Char> buf{ file, std::ios_base::out };
