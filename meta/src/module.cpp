@@ -131,13 +131,36 @@ static path get_full_path(path const& name)
     return name;
 }
 
+static xaml_std_string_t get_module_name(path file)
+{
+    xaml_std_string_t result = file.filename().replace_extension().string<xaml_char_t>();
+    if constexpr (has_prefix)
+    {
+        result = result.substr(3);
+    }
+    return result;
+}
+
 struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_object>
 {
+    xaml_ptr<xaml_string> m_name;
+
+    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept
+    {
+        if (m_name)
+        {
+            return m_name->query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
+    }
+
 #ifdef XAML_WIN32
-private:
     HMODULE m_handle;
 
-public:
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {
         try
@@ -147,6 +170,7 @@ public:
                 XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
             }
             auto p = get_full_path(to_string_view_t(path));
+            XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = LoadLibraryW(p.c_str());
             if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
             return XAML_S_OK;
@@ -163,10 +187,8 @@ public:
         return XAML_S_OK;
     }
 #else
-private:
     void* m_handle;
 
-public:
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {
         try
@@ -177,6 +199,7 @@ public:
                 if (res) return XAML_E_FAIL;
             }
             auto p = get_full_path(to_string_view_t(path));
+            XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
             if (!m_handle) return XAML_E_FAIL;
             return XAML_S_OK;

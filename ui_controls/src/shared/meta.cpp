@@ -18,6 +18,13 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_module_version(xaml_version* pver
     return XAML_S_OK;
 }
 
+EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_module_dependencies(xaml_char_t const* const** parr) noexcept
+{
+    static xaml_char_t const* arr[] = { U("xaml_ui"), nullptr };
+    *parr = arr;
+    return XAML_S_OK;
+}
+
 EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_module_register(xaml_meta_context* ctx) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_layout_base_register(ctx));

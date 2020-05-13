@@ -5,8 +5,11 @@ struct xaml_detector_options_impl : xaml_implement<xaml_detector_options_impl, x
 {
     XAML_PROP_IMPL(help, bool, bool*, bool)
     XAML_PROP_IMPL(verbose, bool, bool*, bool)
+    XAML_PROP_IMPL(recursive, bool, bool*, bool)
     XAML_PROP_IMPL(no_logo, bool, bool*, bool)
     XAML_PROP_PTR_IMPL(path, xaml_string)
+
+    xaml_detector_options_impl() : m_recursive(true) {}
 };
 
 xaml_result XAML_CALL xaml_detector_options_new(xaml_detector_options** ptr) noexcept
@@ -27,6 +30,7 @@ xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noe
     XAML_RETURN_IF_FAILED(xaml_cmdline_option_new(&opt));
     XAML_RETURN_IF_FAILED(opt->add_arg(U('h'), U("help"), U("help"), U("Print help message")));
     XAML_RETURN_IF_FAILED(opt->add_arg(U('v'), U("verbose"), U("verbose"), U("Show detailed output")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(U('r'), U("recursive"), U("recursive"), U("Load modules recursively")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright infomation")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("path"), U("Library path")));
     XAML_RETURN_IF_FAILED(__info->add_attribute(opt.get()));

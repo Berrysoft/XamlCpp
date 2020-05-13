@@ -9,6 +9,7 @@ XAML_CLASS(xaml_detector_options, { 0xd1e430b3, 0xb91f, 0x4cba, { 0x87, 0x81, 0x
     XAML_VTBL_INHERIT(XAML_CMDLINE_OPTION_VTBL(type)); \
     XAML_PROP(help, type, bool*, bool);                \
     XAML_PROP(verbose, type, bool*, bool);             \
+    XAML_PROP(recursive, type, bool*, bool);           \
     XAML_PROP(no_logo, type, bool*, bool);             \
     XAML_PROP(path, type, xaml_string**, xaml_string*)
 

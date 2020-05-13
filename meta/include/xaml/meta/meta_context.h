@@ -24,6 +24,7 @@ XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                                         \
     XAML_METHOD(get_modules, type, xaml_vector_view**);                                                \
     XAML_METHOD(add_module, type, xaml_module*);                                                       \
+    XAML_METHOD(add_module_recursive, type, xaml_module*);                                             \
     XAML_METHOD(get_namespace, type, xaml_string*, xaml_string**);                                     \
     XAML_METHOD(add_namespace, type, xaml_string*, xaml_string*);                                      \
     XAML_METHOD(get_types, type, xaml_map_view**);                                                     \
@@ -67,6 +68,16 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         XAML_RETURN_IF_FAILED(xaml_string_new(path, &path_str));
         XAML_RETURN_IF_FAILED(m->open(path_str.get()));
         return add_module(m.get());
+    }
+
+    xaml_result XAML_CALL add_module_recursive(xaml_std_string_view_t path) noexcept
+    {
+        xaml_ptr<xaml_module> m;
+        XAML_RETURN_IF_FAILED(xaml_module_new(&m));
+        xaml_ptr<xaml_string> path_str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(path, &path_str));
+        XAML_RETURN_IF_FAILED(m->open(path_str.get()));
+        return add_module_recursive(m.get());
     }
 #endif // __cplusplus
 };

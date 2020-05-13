@@ -102,7 +102,13 @@ int _tmain(int argc, xaml_char_t** argv)
 
     xaml_ptr<xaml_meta_context> ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&ctx));
-    XAML_THROW_IF_FAILED(ctx->add_module(module.get()));
+
+    bool recursive;
+    XAML_THROW_IF_FAILED(options->get_recursive(&recursive));
+    if (recursive)
+        XAML_THROW_IF_FAILED(ctx->add_module_recursive(module.get()));
+    else
+        XAML_THROW_IF_FAILED(ctx->add_module(module.get()));
 
     xaml_result (*pget_version)(xaml_version*);
     XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", (void**)&pget_version));

@@ -3,7 +3,7 @@
 struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context, xaml_object>
 {
 private:
-    xaml_ptr<xaml_vector> m_modules;
+    xaml_ptr<xaml_map> m_modules;
     xaml_ptr<xaml_map> m_namespace;
     xaml_ptr<xaml_map> m_type_info_map;
     xaml_ptr<xaml_map> m_basic_type_info_map;
@@ -12,13 +12,13 @@ private:
 public:
     xaml_result init() noexcept
     {
-        XAML_RETURN_IF_FAILED(xaml_vector_new(&m_modules));
         xaml_ptr<xaml_hasher> guid_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_type_info_map));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_basic_type_info_map));
         xaml_ptr<xaml_hasher> string_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_modules));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_namespace));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_name_info_map));
 
@@ -57,10 +57,35 @@ public:
 
     xaml_result XAML_CALL add_module(xaml_module* mod) noexcept override
     {
-        xaml_result (*pregister)(xaml_meta_context*) noexcept;
-        XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", (void**)&pregister));
-        XAML_RETURN_IF_FAILED(pregister(this));
-        return m_modules->append(mod);
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(mod->get_name(&name));
+        bool contains;
+        XAML_RETURN_IF_FAILED(m_modules->has_key(name.get(), &contains));
+        if (!contains)
+        {
+            xaml_result (*pregister)(xaml_meta_context*) noexcept;
+            XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", (void**)&pregister));
+            XAML_RETURN_IF_FAILED(pregister(this));
+            bool replaced;
+            XAML_RETURN_IF_FAILED(m_modules->insert(name.get(), mod, &replaced));
+        }
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL add_module_recursive(xaml_module* mod) noexcept override
+    {
+        XAML_RETURN_IF_FAILED(add_module(mod));
+        xaml_result (*pdeps)(xaml_char_t const* const**) noexcept;
+        if (XAML_SUCCEEDED(mod->get_method("xaml_module_dependencies", (void**)&pdeps)))
+        {
+            xaml_char_t const* const* arr;
+            XAML_RETURN_IF_FAILED(pdeps(&arr));
+            for (size_t i = 0; arr[i]; i++)
+            {
+                XAML_RETURN_IF_FAILED(xaml_meta_context::add_module(arr[i]));
+            }
+        }
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_namespace(xaml_string* xml_ns, xaml_string** ptr) noexcept override
