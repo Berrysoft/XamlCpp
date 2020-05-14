@@ -4,6 +4,7 @@
 #include <test.xaml.h>
 #include <xaml/parser/deserializer.h>
 #include <xaml/parser/parser.h>
+#include <xaml/resource/resource.h>
 #include <xaml/ui/application.h>
 #include <xaml/ui/msgbox.h>
 

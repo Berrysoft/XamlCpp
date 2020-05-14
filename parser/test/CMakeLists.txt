@@ -7,7 +7,7 @@ if(WIN32)
     set_target_properties(xaml_test PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-target_link_libraries(xaml_test xaml_ui_controls xaml_ui_canvas xaml_parser xaml_ui_appmain)
+target_link_libraries(xaml_test xaml_ui_controls xaml_ui_canvas xaml_parser xaml_ui_appmain xaml_resource)
 if(${BUILD_WINDOWS})
     target_link_libraries(xaml_test wil)
 elseif(${BUILD_GTK3})

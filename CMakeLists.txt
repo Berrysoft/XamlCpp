@@ -171,6 +171,7 @@ if(${BUILD_WEBVIEW})
 endif()
 add_subdirectory(cmdline)
 add_subdirectory(detector)
+add_subdirectory(resource)
 
 install(
     TARGETS ${_XAML_TARGETS}

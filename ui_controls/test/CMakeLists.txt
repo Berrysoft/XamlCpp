@@ -1,4 +1,4 @@
-project(XamlUITest CXX)
+project(XamlUITest C CXX)
 
 file(GLOB TEST_SOURCE "src/*.c*")
 add_executable(ui_test ${TEST_SOURCE})
