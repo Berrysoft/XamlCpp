@@ -161,12 +161,4 @@ typedef wchar_t xaml_char_t;
 typedef char xaml_char_t;
 #endif // UNICODE
 
-#ifndef U
-#ifdef UNICODE
-#define U(x) L##x
-#else
-#define U(x) x
-#endif // UNICODE
-#endif // !U
-
 #endif // !XAML_UTILITY_HPP
