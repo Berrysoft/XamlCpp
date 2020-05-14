@@ -22,18 +22,40 @@ typedef XAML_CSTD int32_t xaml_result;
 #define XAML_SUCCEEDED(expr) (!(expr))
 #define XAML_FAILED(expr) (expr)
 
-#define XAML_RETURN_IF_FAILED(expr)     \
-    do                                  \
-    {                                   \
-        xaml_result hr = (expr);        \
-        if (XAML_FAILED(hr)) return hr; \
+EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t const*, XAML_CSTD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
+
+#ifdef UNICODE
+#define __XAML_FILE__ __FILEW__
+#define __XAML_FUNCTION__ __FUNCTIONW__
+#else
+#define __XAML_FILE__ __FILE__
+#define __XAML_FUNCTION__ __FUNCTION__
+#endif // UNICODE
+
+#ifdef NDEBUG
+#define xaml_result_raise(...)
+#endif // NDEBUG
+
+#define XAML_RETURN_IF_FAILED(expr)                                            \
+    do                                                                         \
+    {                                                                          \
+        xaml_result hr = (expr);                                               \
+        if (XAML_FAILED(hr))                                                   \
+        {                                                                      \
+            xaml_result_raise(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
+            return hr;                                                         \
+        }                                                                      \
     } while (0)
 
-#define XAML_GOTO_IF_FAILED(expr, label) \
-    do                                   \
-    {                                    \
-        hr = (expr);                     \
-        if (XAML_FAILED(hr)) goto label; \
+#define XAML_GOTO_IF_FAILED(expr, label)                                       \
+    do                                                                         \
+    {                                                                          \
+        hr = (expr);                                                           \
+        if (XAML_FAILED(hr))                                                   \
+        {                                                                      \
+            xaml_result_raise(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
+            goto label;                                                        \
+        }                                                                      \
     } while (0)
 
 #define XAML_ASSERT_SUCCEEDED(expr) \

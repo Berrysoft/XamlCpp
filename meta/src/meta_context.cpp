@@ -1,4 +1,5 @@
 #include <xaml/meta/meta_context.h>
+#include <xaml/observable_vector.h>
 
 struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context, xaml_object>
 {
@@ -36,6 +37,7 @@ public:
         AT(xaml_vector);
         AT(xaml_map_view);
         AT(xaml_map);
+        AT(xaml_observable_vector);
         AT(bool);
         AT(xaml_char_t);
         AT(int8_t);

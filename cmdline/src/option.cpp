@@ -50,10 +50,8 @@ xaml_result xaml_cmdline_option_impl::find_short_arg(xaml_char_t name, xaml_stri
 
 xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_string** ptr) noexcept
 {
-    xaml_ptr<xaml_object> key;
-    XAML_RETURN_IF_FAILED(xaml_box_value(name, &key));
     xaml_ptr<xaml_object> item;
-    XAML_RETURN_IF_FAILED(m_short_args->lookup(key.get(), &item));
+    XAML_RETURN_IF_FAILED(m_long_args->lookup(name, &item));
     return item->query(ptr);
 }
 

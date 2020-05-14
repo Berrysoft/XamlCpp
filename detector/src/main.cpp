@@ -4,24 +4,17 @@
 #include <unordered_map>
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
+#include <xaml/result_handler.h>
 #include <xaml/version.h>
 
 #ifdef UNICODE
-#ifndef _tmain
 #define _tmain wmain
-#endif // !_tmain
-
-#ifndef _tcout
 #define _tcout ::std::wcout
-#endif // !_tcout
+#define _tcerr ::std::wcerr
 #else
-#ifndef _tmain
 #define _tmain main
-#endif // !_tmain
-
-#ifndef _tcout
 #define _tcout ::std::cout
-#endif // !_tcout
+#define _tcerr ::std::cerr
 #endif // UNICODE
 
 using namespace std;
@@ -67,6 +60,19 @@ int _tmain(int argc, xaml_char_t** argv)
     XAML_THROW_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
     XAML_THROW_IF_FAILED(obj->query(&options));
 
+    bool verbose;
+    XAML_THROW_IF_FAILED(options->get_verbose(&verbose));
+
+    if (verbose)
+    {
+        int32_t token;
+        XAML_THROW_IF_FAILED(xaml_result_handler_add(
+            [](xaml_result hr, xaml_char_t const* msg) {
+                _tcerr << U("0x") << hex << hr << U(": ") << msg << endl;
+            },
+            &token));
+    }
+
     path exe{ argv[0] };
     bool no_logo;
     XAML_THROW_IF_FAILED(options->get_no_logo(&no_logo));
@@ -89,9 +95,6 @@ int _tmain(int argc, xaml_char_t** argv)
         XAML_THROW_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
         return 1;
     }
-
-    bool verbose;
-    XAML_THROW_IF_FAILED(options->get_verbose(&verbose));
 
     xaml_ptr<xaml_string> path_str;
     XAML_THROW_IF_FAILED(options->get_path(&path_str));

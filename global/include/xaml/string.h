@@ -11,20 +11,6 @@
 
 #include <xaml/object.h>
 
-#ifdef UNICODE
-typedef wchar_t xaml_char_t;
-#else
-typedef char xaml_char_t;
-#endif // UNICODE
-
-#ifndef U
-#ifdef UNICODE
-#define U(x) L##x
-#else
-#define U(x) x
-#endif // UNICODE
-#endif // !U
-
 XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } })
 
 #define XAML_STRING_VTBL(type)                         \

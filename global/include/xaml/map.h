@@ -98,7 +98,7 @@ private:
 
 public:
     __std_xaml_hasher() { XAML_THROW_IF_FAILED(xaml_hasher_default(&m_inner)); }
-    __std_xaml_hasher(xaml_ptr<xaml_hasher> const& hasher) : m_inner(std::move(hasher)) {}
+    __std_xaml_hasher(xaml_ptr<xaml_hasher> const& hasher) : m_inner(hasher) {}
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 
@@ -117,7 +117,7 @@ private:
 
 public:
     __std_xaml_eq() { XAML_THROW_IF_FAILED(xaml_hasher_default(&m_inner)); }
-    __std_xaml_eq(xaml_ptr<xaml_hasher> const& hasher) : m_inner(std::move(hasher)) {}
+    __std_xaml_eq(xaml_ptr<xaml_hasher> const& hasher) : m_inner(hasher) {}
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 

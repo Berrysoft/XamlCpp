@@ -8,8 +8,6 @@ struct xaml_detector_options_impl : xaml_implement<xaml_detector_options_impl, x
     XAML_PROP_IMPL(recursive, bool, bool*, bool)
     XAML_PROP_IMPL(no_logo, bool, bool*, bool)
     XAML_PROP_PTR_IMPL(path, xaml_string)
-
-    xaml_detector_options_impl() : m_recursive(true) {}
 };
 
 xaml_result XAML_CALL xaml_detector_options_new(xaml_detector_options** ptr) noexcept
@@ -23,6 +21,7 @@ xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noe
     XAML_TYPE_INFO_ADD_CTOR(xaml_detector_options_new);
     XAML_TYPE_INFO_ADD_PROP(help, bool);
     XAML_TYPE_INFO_ADD_PROP(verbose, bool);
+    XAML_TYPE_INFO_ADD_PROP(recursive, bool);
     XAML_TYPE_INFO_ADD_PROP(no_logo, bool);
     XAML_TYPE_INFO_ADD_PROP(path, xaml_string);
     XAML_TYPE_INFO_ADD_DEF_PROP(path);
