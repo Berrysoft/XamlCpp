@@ -97,15 +97,15 @@ private:
     xaml_ptr<xaml_hasher> m_inner;
 
 public:
-    __std_xaml_hasher() { XAML_THROW_IF_FAILED(xaml_hasher_default(&m_inner)); }
-    __std_xaml_hasher(xaml_ptr<xaml_hasher> const& hasher) : m_inner(hasher) {}
+    __std_xaml_hasher() noexcept { XAML_ASSERT_SUCCEEDED(xaml_hasher_default(&m_inner)); }
+    __std_xaml_hasher(xaml_ptr<xaml_hasher> const& hasher) noexcept : m_inner(hasher) {}
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 
-    std::int32_t operator()(xaml_ptr<xaml_object> const& obj) const
+    std::int32_t operator()(xaml_ptr<xaml_object> const& obj) const noexcept
     {
         std::int32_t hash;
-        XAML_THROW_IF_FAILED(m_inner->hash(obj.get(), &hash));
+        XAML_ASSERT_SUCCEEDED(m_inner->hash(obj.get(), &hash));
         return hash;
     }
 };
@@ -116,15 +116,15 @@ private:
     xaml_ptr<xaml_hasher> m_inner;
 
 public:
-    __std_xaml_eq() { XAML_THROW_IF_FAILED(xaml_hasher_default(&m_inner)); }
-    __std_xaml_eq(xaml_ptr<xaml_hasher> const& hasher) : m_inner(hasher) {}
+    __std_xaml_eq() noexcept { XAML_ASSERT_SUCCEEDED(xaml_hasher_default(&m_inner)); }
+    __std_xaml_eq(xaml_ptr<xaml_hasher> const& hasher) noexcept : m_inner(hasher) {}
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 
-    bool operator()(xaml_ptr<xaml_object> const& lhs, xaml_ptr<xaml_object> const& rhs) const
+    bool operator()(xaml_ptr<xaml_object> const& lhs, xaml_ptr<xaml_object> const& rhs) const noexcept
     {
         bool eq;
-        XAML_THROW_IF_FAILED(m_inner->equal(lhs.get(), rhs.get(), &eq));
+        XAML_ASSERT_SUCCEEDED(m_inner->equal(lhs.get(), rhs.get(), &eq));
         return eq;
     }
 };

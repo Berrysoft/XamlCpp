@@ -177,18 +177,12 @@
     xaml_ptr<xaml_type_info_registration> __info;                     \
     XAML_RETURN_IF_FAILED(xaml_type_info_registration_new<type>(__type_name.get(), __include_file.get(), &__info))
 
-#define XAML_TYPE_INFO_ADD_CTOR(ctor)                                 \
-    do                                                                \
-    {                                                                 \
-        xaml_ptr<xaml_delegate> __ctor;                               \
-        XAML_RETURN_IF_FAILED(xaml_delegate_new<xaml_ptr<self_type>>( \
-            []() -> xaml_ptr<self_type> {                             \
-                xaml_ptr<self_type> __res;                            \
-                XAML_THROW_IF_FAILED(ctor(&__res));                   \
-                return __res;                                         \
-            },                                                        \
-            &__ctor));                                                \
-        __info->set_constructor(__ctor.get());                        \
+#define XAML_TYPE_INFO_ADD_CTOR(ctor)                                                            \
+    do                                                                                           \
+    {                                                                                            \
+        xaml_ptr<xaml_delegate> __ctor;                                                          \
+        XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<xaml_ptr<self_type>>(ctor, &__ctor))); \
+        __info->set_constructor(__ctor.get());                                                   \
     } while (0)
 
 #define XAML_TYPE_INFO_ADD_METHOD(method)                                                                     \
