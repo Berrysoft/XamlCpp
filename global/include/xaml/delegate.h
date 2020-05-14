@@ -54,7 +54,7 @@ inline xaml_result XAML_CALL xaml_delegate_new(F&& func, xaml_delegate** ptr) no
             [func = std::function<Return(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
-                if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                if (size < sizeof...(Args)) return XAML_E_OUTOFBOUNDS;
                 try
                 {
                     if constexpr (std::is_same_v<Return, void>)
@@ -132,7 +132,7 @@ inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate*
             [func = std::function<xaml_result(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
-                if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                if (size < sizeof...(Args)) return XAML_E_OUTOFBOUNDS;
                 if constexpr (std::is_same_v<Return, void>)
                 {
                     XAML_RETURN_IF_FAILED(__xaml_delegate_noexcept_impl_invoke_void(func, args));

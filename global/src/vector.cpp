@@ -31,7 +31,7 @@ public:
 
     xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
     {
-        if (m_begin == m_end) return XAML_E_FAIL;
+        if (m_begin == m_end) return XAML_E_OUTOFBOUNDS;
         return (*m_begin)->query(ptr);
     }
 };
@@ -52,14 +52,14 @@ public:
 
     xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         auto& res = m_vec[index];
         return res->query(ptr);
     }
 
     xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         m_vec[index] = obj;
         return XAML_S_OK;
     }
@@ -76,7 +76,7 @@ public:
 
     xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_INVALIDARG;
+        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         m_vec.erase(m_vec.begin() + index);
         return XAML_S_OK;
     }

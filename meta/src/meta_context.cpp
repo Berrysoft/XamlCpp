@@ -32,6 +32,10 @@ public:
 
         AT(xaml_object);
         AT(xaml_string);
+        AT(xaml_vector_view);
+        AT(xaml_vector);
+        AT(xaml_map_view);
+        AT(xaml_map);
         AT(bool);
         AT(xaml_char_t);
         AT(int8_t);

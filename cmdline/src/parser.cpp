@@ -84,60 +84,54 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                 xaml_ptr<xaml_string> long_arg_str;
                 XAML_RETURN_IF_FAILED(xaml_string_new_view(long_arg, &long_arg_str));
                 xaml_ptr<xaml_string> pprop;
-                if (XAML_SUCCEEDED(popt->find_long_arg(long_arg_str.get(), &pprop)))
+                XAML_RETURN_IF_FAILED(popt->find_long_arg(long_arg_str.get(), &pprop));
+                xaml_ptr<xaml_property_info> prop;
+                if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
                 {
-                    xaml_ptr<xaml_property_info> prop;
-                    if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
+                    if (!maybe_value.empty())
                     {
-                        if (!maybe_value.empty())
-                        {
-                            XAML_RETURN_IF_FAILED(props_insert(props, prop, maybe_value));
-                        }
-                        else
-                        {
-                            xaml_guid t;
-                            XAML_RETURN_IF_FAILED(prop->get_type(&t));
-                            if (t == xaml_type_guid_v<bool>)
-                            {
-                                XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
-                            }
-                            else
-                            {
-                                i++;
-                                xaml_ptr<xaml_object> new_item;
-                                XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
-                                XAML_RETURN_IF_FAILED(props_insert(props, prop, new_item));
-                            }
-                        }
+                        XAML_RETURN_IF_FAILED(props_insert(props, prop, maybe_value));
                     }
                     else
                     {
-                        xaml_ptr<xaml_collection_property_info> cprop;
-                        if (XAML_SUCCEEDED(type->get_collection_property(pprop.get(), &cprop)))
+                        xaml_guid t;
+                        XAML_RETURN_IF_FAILED(prop->get_type(&t));
+                        if (t == xaml_type_guid_v<bool>)
                         {
-                            xaml_ptr<xaml_vector> values;
-                            XAML_RETURN_IF_FAILED(cprops_values(cprops, pprop, cprop, &values));
-                            if (!maybe_value.empty())
-                            {
-                                xaml_ptr<xaml_string> maybe_value_str;
-                                XAML_RETURN_IF_FAILED(xaml_string_new(maybe_value, &maybe_value_str));
-                                XAML_RETURN_IF_FAILED(values->append(maybe_value_str.get()));
-                            }
-                            else
-                            {
-                                i++;
-                                xaml_ptr<xaml_object> new_item;
-                                XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
-                                xaml_ptr<xaml_string> new_arg;
-                                XAML_RETURN_IF_FAILED(new_item->query(&new_arg));
-                                XAML_RETURN_IF_FAILED(values->append(new_arg.get()));
-                            }
+                            XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
+                        }
+                        else
+                        {
+                            i++;
+                            xaml_ptr<xaml_object> new_item;
+                            XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
+                            XAML_RETURN_IF_FAILED(props_insert(props, prop, new_item));
                         }
                     }
                 }
                 else
                 {
-                    return XAML_E_FAIL;
+                    xaml_ptr<xaml_collection_property_info> cprop;
+                    if (XAML_SUCCEEDED(type->get_collection_property(pprop.get(), &cprop)))
+                    {
+                        xaml_ptr<xaml_vector> values;
+                        XAML_RETURN_IF_FAILED(cprops_values(cprops, pprop, cprop, &values));
+                        if (!maybe_value.empty())
+                        {
+                            xaml_ptr<xaml_string> maybe_value_str;
+                            XAML_RETURN_IF_FAILED(xaml_string_new(maybe_value, &maybe_value_str));
+                            XAML_RETURN_IF_FAILED(values->append(maybe_value_str.get()));
+                        }
+                        else
+                        {
+                            i++;
+                            xaml_ptr<xaml_object> new_item;
+                            XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
+                            xaml_ptr<xaml_string> new_arg;
+                            XAML_RETURN_IF_FAILED(new_item->query(&new_arg));
+                            XAML_RETURN_IF_FAILED(values->append(new_arg.get()));
+                        }
+                    }
                 }
             }
             else

@@ -55,7 +55,7 @@ public:
 
     xaml_result XAML_CALL get_current(xaml_object** ptr) noexcept override
     {
-        if (m_begin == m_end) return XAML_E_FAIL;
+        if (m_begin == m_end) return XAML_E_OUTOFBOUNDS;
         xaml_ptr<xaml_key_value_pair> pair;
         XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(m_begin->first.get(), m_begin->second.get(), &pair));
         return pair->query(ptr);

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <cstdint>
 #include <exception>
+#include <stdexcept>
 #else
 #include <assert.h>
 #include <stdint.h>
@@ -50,6 +51,7 @@ typedef XAML_CSTD int32_t xaml_result;
 #define XAML_E_NOTIMPL 0x80004001
 #define XAML_E_OUTOFMEMORY 0x8007000E
 #define XAML_E_KEYNOTFOUND 0x80131577
+#define XAML_E_OUTOFBOUNDS 0x80028CA1
 
 #ifdef __cplusplus
 struct xaml_result_error : std::exception
@@ -59,7 +61,6 @@ private:
 
 public:
     xaml_result_error(xaml_result result) noexcept : exception() {}
-    ~xaml_result_error() override {}
 
     constexpr xaml_result get_result() const noexcept { return m_result; }
 };
@@ -72,9 +73,11 @@ public:
             throw xaml_result_error{ hr }; \
     } while (0)
 
-#define XAML_CATCH_RETURN()                                       \
-    catch (xaml_result_error const& e) { return e.get_result(); } \
-    catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }  \
+#define XAML_CATCH_RETURN()                                            \
+    catch (xaml_result_error const& e) { return e.get_result(); }      \
+    catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }       \
+    catch (std::out_of_range const&) { return XAML_E_OUTOFBOUNDS; }    \
+    catch (std::invalid_argument const&) { return XAML_E_INVALIDARG; } \
     catch (...) { return XAML_E_FAIL; }
 #else
 #define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCEEDED(expr)
