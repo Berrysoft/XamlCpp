@@ -33,29 +33,31 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t cons
 #endif // UNICODE
 
 #ifdef NDEBUG
-#define xaml_result_raise(...)
+#define XAML_RAISE(...)
+#else
+#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__)
 #endif // NDEBUG
 
-#define XAML_RETURN_IF_FAILED(expr)                                            \
-    do                                                                         \
-    {                                                                          \
-        xaml_result hr = (expr);                                               \
-        if (XAML_FAILED(hr))                                                   \
-        {                                                                      \
-            xaml_result_raise(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            return hr;                                                         \
-        }                                                                      \
+#define XAML_RETURN_IF_FAILED(expr)                                     \
+    do                                                                  \
+    {                                                                   \
+        xaml_result hr = (expr);                                        \
+        if (XAML_FAILED(hr))                                            \
+        {                                                               \
+            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
+            return hr;                                                  \
+        }                                                               \
     } while (0)
 
-#define XAML_GOTO_IF_FAILED(expr, label)                                       \
-    do                                                                         \
-    {                                                                          \
-        hr = (expr);                                                           \
-        if (XAML_FAILED(hr))                                                   \
-        {                                                                      \
-            xaml_result_raise(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            goto label;                                                        \
-        }                                                                      \
+#define XAML_GOTO_IF_FAILED(expr, label)                                \
+    do                                                                  \
+    {                                                                   \
+        hr = (expr);                                                    \
+        if (XAML_FAILED(hr))                                            \
+        {                                                               \
+            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
+            goto label;                                                 \
+        }                                                               \
     } while (0)
 
 #define XAML_ASSERT_SUCCEEDED(expr) \
