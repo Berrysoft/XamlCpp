@@ -58,7 +58,7 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
         xaml_ptr<xaml_object> lengths_item;
         XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_grid_length>(lengths_item.get(), &length));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item, &length));
         switch (length.layout)
         {
         case xaml_grid_layout_abs:
@@ -83,7 +83,7 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
         xaml_ptr<xaml_object> lengths_item;
         XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_grid_length>(lengths_item.get(), &length));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item, &length));
         if (length.layout == xaml_grid_layout_star)
         {
             get<0>(result[i]) = total_remain * length.value / total_star;

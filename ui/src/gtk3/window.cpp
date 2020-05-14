@@ -152,7 +152,7 @@ gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* even
     XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
     XAML_ASSERT_SUCCEEDED(self->on_closing(self->m_outer_this, handled));
     bool value;
-    XAML_ASSERT_SUCCEEDED(xaml_unbox_value<bool>(handled.get(), &value));
+    XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled, &value));
     return value;
 }
 

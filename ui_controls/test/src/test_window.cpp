@@ -412,7 +412,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
 xaml_result xaml_test_window_impl::on_window_closing(xaml_ptr<xaml_window> win, xaml_ptr<xaml_box> box) noexcept
 {
     bool handled;
-    XAML_RETURN_IF_FAILED(xaml_unbox_value<bool>(box.get(), &handled));
+    XAML_RETURN_IF_FAILED(xaml_unbox_value(box, &handled));
     xaml_ptr<xaml_string> msg;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Do you want to close this window?"), &msg));
     xaml_ptr<xaml_string> title;

@@ -145,9 +145,9 @@ public:
             XAML_RETURN_IF_FAILED(item->query(&real_ns));
         }
         xaml_std_string_view_t ns_view;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_std_string_view_t>(real_ns.get(), &ns_view));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(real_ns, &ns_view));
         xaml_std_string_view_t name_view;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_std_string_view_t>(name, &name_view));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value(name, &name_view));
         xaml_ptr<xaml_string> real_name;
         XAML_RETURN_IF_FAILED(xaml_string_new((xaml_std_string_t)ns_view + U("_") + (xaml_std_string_t)name_view, &real_name));
         return real_name->query(ptr);

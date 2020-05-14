@@ -124,5 +124,5 @@ int main()
     XAML_THROW_IF_FAILED(map->insert(xaml_box_value(2).get(), vec.get(), &replaced));
     xaml_ptr<xaml_object> obj1;
     XAML_THROW_IF_FAILED(map->lookup(xaml_box_value(1).get(), &obj1));
-    _tcout << to_string_view_t(xaml_unbox_value<xaml_ptr<xaml_string>>(obj1)) << endl;
+    _tcout << xaml_unbox_value<xaml_ptr<xaml_string>>(obj1) << endl;
 }

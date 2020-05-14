@@ -277,7 +277,7 @@ xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg,
             XAML_RETURN_IF_FAILED(xaml_box_value(false, &handled));
             XAML_RETURN_IF_FAILED(on_closing(m_outer_this, handled));
             bool value;
-            XAML_RETURN_IF_FAILED(xaml_unbox_value<bool>(handled.get(), &value));
+            XAML_RETURN_IF_FAILED(xaml_unbox_value(handled.get(), &value));
             if (value)
             {
                 *presult = 0;
