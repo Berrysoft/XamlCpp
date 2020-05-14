@@ -2,6 +2,7 @@
 #define XAML_STRING_H
 
 #ifdef __cplusplus
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <xaml/ptr.hpp>
@@ -48,28 +49,10 @@ XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t, xaml
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string&&, xaml_string**) noexcept;
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string_view, xaml_string**) noexcept;
 
-XAML_API std::string to_string_utf8(xaml_ptr<xaml_string> const&) noexcept;
+XAML_API std::string to_string(xaml_ptr<xaml_string> const&);
 
-inline xaml_ptr<xaml_string> to_xaml_string(xaml_char_t const* str)
-{
-    xaml_ptr<xaml_string> res;
-    XAML_THROW_IF_FAILED(xaml_string_new(str, &res));
-    return res;
-}
-
-inline xaml_ptr<xaml_string> to_xaml_string(xaml_std_string_t&& str)
-{
-    xaml_ptr<xaml_string> res;
-    XAML_THROW_IF_FAILED(xaml_string_new(std::move(str), &res));
-    return res;
-}
-
-inline xaml_ptr<xaml_string> to_xaml_string(xaml_std_string_view_t str)
-{
-    xaml_ptr<xaml_string> res;
-    XAML_THROW_IF_FAILED(xaml_string_new(str, &res));
-    return res;
-}
+XAML_API std::ostream& operator<<(std::ostream&, xaml_ptr<xaml_string> const&);
+XAML_API std::basic_ostream<xaml_char_t>& operator<<(std::basic_ostream<xaml_char_t>&, xaml_ptr<xaml_string> const&);
 
 inline xaml_std_string_view_t to_string_view_t(xaml_ptr<xaml_string> const& str)
 {

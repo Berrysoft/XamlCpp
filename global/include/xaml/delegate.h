@@ -91,7 +91,7 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_impl(decltype(&std::d
             [args](int32_t i, auto& arg) -> xaml_result {
                 xaml_ptr<xaml_object> item;
                 XAML_RETURN_IF_FAILED(args->get_at(i, &item));
-                return xaml_unbox_value<Args>(item.get(), arg);
+                return xaml_unbox_value<Args>(item.get(), &arg);
             },
             &hr, Indicies)...,
         presult));
@@ -112,7 +112,7 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void_impl(std::functi
         [args](int32_t i, auto& arg) -> xaml_result {
             xaml_ptr<xaml_object> item;
             XAML_RETURN_IF_FAILED(args->get_at(i, &item));
-            return xaml_unbox_value<Args>(item.get(), arg);
+            return xaml_unbox_value<Args>(item.get(), &arg);
         },
         &hr, Indicies)...));
     return hr;

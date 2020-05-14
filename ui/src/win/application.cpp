@@ -51,7 +51,9 @@ xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
     {
-        XAML_RETURN_IF_FAILED(m_cmd_lines->append(to_xaml_string(argv[i]).get()));
+        xaml_ptr<xaml_string> arg;
+        XAML_RETURN_IF_FAILED(xaml_string_new_view(argv[i], &arg));
+        XAML_RETURN_IF_FAILED(m_cmd_lines->append(arg.get()));
     }
     XamlInitializeDpiFunc();
     XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlSetProcessBestDpiAwareness());

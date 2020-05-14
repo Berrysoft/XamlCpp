@@ -13,7 +13,7 @@ private:
     using return_type = std::decay_t<T>;
 
 public:
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, return_type& value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, return_type* value) const noexcept
     {
         if (obj)
         {
@@ -29,16 +29,16 @@ public:
 template <typename T>
 struct __xaml_converter<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_ptr<T>& value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, T** value) const noexcept
     {
-        return obj ? obj->query(&value) : XAML_E_INVALIDARG;
+        return obj ? obj->query(value) : XAML_E_INVALIDARG;
     }
 };
 
 template <typename T, T (*func)(xaml_std_string_view_t) noexcept>
 struct __xaml_converter_helper
 {
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, T& value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, T* value) const noexcept
     {
         if (obj)
         {
@@ -50,7 +50,7 @@ struct __xaml_converter_helper
             {
                 xaml_std_string_view_t view;
                 XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
-                value = func(view);
+                *value = func(view);
                 return XAML_S_OK;
             }
         }

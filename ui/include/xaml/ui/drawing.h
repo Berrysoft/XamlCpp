@@ -27,19 +27,19 @@ T __initialize_from_tuple(TTuple&& t) noexcept
 template <typename T, typename TTuple, TTuple (*func)(xaml_std_string_view_t) noexcept>
 struct __xaml_tuple_converter_helper
 {
-    xaml_result __convert(xaml_ptr<xaml_object> const& obj, TTuple& value) const noexcept
+    xaml_result __convert(xaml_ptr<xaml_object> const& obj, TTuple* value) const noexcept
     {
         if (auto str = obj.query<xaml_string>())
         {
             xaml_std_string_view_t view;
             XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
-            value = func(view);
+            *value = func(view);
             return XAML_S_OK;
         }
         return XAML_E_INVALIDARG;
     }
 
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, T& value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, T* value) const noexcept
     {
         if (obj)
         {
@@ -50,8 +50,8 @@ struct __xaml_tuple_converter_helper
             else
             {
                 TTuple t;
-                XAML_RETURN_IF_FAILED(__convert(obj, t));
-                value = __initialize_from_tuple<T>(std::move(t));
+                XAML_RETURN_IF_FAILED(__convert(obj, &t));
+                *value = __initialize_from_tuple<T>(std::move(t));
                 return XAML_S_OK;
             }
         }

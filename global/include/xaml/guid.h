@@ -82,12 +82,23 @@ namespace std
 } // namespace std
 
 template <typename T>
-struct xaml_type_guid
+struct xaml_type_guid;
+
+template <typename T>
+inline constexpr xaml_guid xaml_type_guid_v = xaml_type_guid<T>::value;
+
+template <typename T, typename = void>
+struct xaml_type_has_guid : std::false_type
 {
 };
 
 template <typename T>
-inline constexpr xaml_guid xaml_type_guid_v = xaml_type_guid<T>::value;
+struct xaml_type_has_guid<T, std::void_t<decltype(xaml_type_guid<T>{})>> : std::true_type
+{
+};
+
+template <typename T>
+inline constexpr bool xaml_type_has_guid_v = xaml_type_has_guid<T>::value;
 #endif // __cplusplus
 
 #ifndef XAML_TYPE_NAME

@@ -47,7 +47,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter ff;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), ff));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_filebox_filter>(f.get(), &ff));
         NSString* pattern;
         XAML_RETURN_IF_FAILED(get_NSString(ff.pattern, &pattern));
         [filters addObject:pattern];

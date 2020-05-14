@@ -59,7 +59,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         xaml_ptr<xaml_box> box;
         XAML_RETURN_IF_FAILED(b->query(&box));
         xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
+        XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
         gtk_dialog_add_button(GTK_DIALOG(dialog), button->text, (gint)button->result);
     }
     XAML_FOREACH_END();

@@ -37,7 +37,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter filter;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(f.get(), filter));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_filebox_filter>(f.get(), &filter));
         types.push_back({ filter.name, filter.pattern });
     }
     XAML_FOREACH_END();

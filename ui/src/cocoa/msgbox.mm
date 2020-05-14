@@ -55,7 +55,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         xaml_ptr<xaml_box> box;
         XAML_RETURN_IF_FAILED(b->query(&box));
         xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(box->get_value_ptr(button));
+        XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
         res.push_back(button->result);
         NSString* text;
         XAML_RETURN_IF_FAILED(get_NSString(button->text, &text));

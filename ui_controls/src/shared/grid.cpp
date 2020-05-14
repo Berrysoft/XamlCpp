@@ -58,7 +58,7 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
         xaml_ptr<xaml_object> lengths_item;
         XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item.get(), length));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_grid_length>(lengths_item.get(), &length));
         switch (length.layout)
         {
         case xaml_grid_layout_abs:
@@ -83,7 +83,7 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
         xaml_ptr<xaml_object> lengths_item;
         XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item.get(), length));
+        XAML_RETURN_IF_FAILED(xaml_unbox_value<xaml_grid_length>(lengths_item.get(), &length));
         if (length.layout == xaml_grid_layout_star)
         {
             get<0>(result[i]) = total_remain * length.value / total_star;
@@ -184,12 +184,11 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
 template <>
 struct __xaml_converter<xaml_ptr<xaml_vector>, void>
 {
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_ptr<xaml_vector>& value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_vector** value) const noexcept
     {
         if (auto vec = obj.query<xaml_vector>())
         {
-            value = vec;
-            return XAML_S_OK;
+            return vec->query(value);
         }
         else if (auto s = obj.query<xaml_string>())
         {
@@ -224,8 +223,7 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                 XAML_RETURN_IF_FAILED(result->append(obj.get()));
                 offset = str.find_first_not_of(__delimeter, index);
             } while (offset != xaml_std_string_view_t::npos);
-            value = result;
-            return XAML_S_OK;
+            return result->query(value);
         }
         else
         {

@@ -6,9 +6,8 @@
 #include <xaml/result.h>
 
 template <typename T>
-class xaml_ptr
+struct xaml_ptr
 {
-private:
     T* m_ptr;
 
     constexpr void try_release() noexcept
@@ -16,7 +15,6 @@ private:
         if (m_ptr) m_ptr->release();
     }
 
-public:
     constexpr xaml_ptr() noexcept : m_ptr{ nullptr } {}
     constexpr xaml_ptr(std::nullptr_t) noexcept : m_ptr{ nullptr } {}
     constexpr xaml_ptr(T* ptr) noexcept : m_ptr{ ptr }

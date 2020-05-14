@@ -205,7 +205,7 @@ bool xaml_window_internal::on_should_close() noexcept
     XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
     XAML_ASSERT_SUCCEEDED(on_closing(m_outer_this, handled));
     bool value;
-    XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled.get(), value));
+    XAML_ASSERT_SUCCEEDED(xaml_unbox_value<bool>(handled.get(), &value));
     if (!value)
     {
         xaml_ptr<xaml_application> app;

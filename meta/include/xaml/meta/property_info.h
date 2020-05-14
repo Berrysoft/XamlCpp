@@ -73,7 +73,7 @@ xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAM
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             __xaml_wrapper_t<std::decay_t<TValueSet>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, value));
+            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
             return (self.get()->*setter)(__xaml_wrapper_get<std::decay_t<TValueSet>>(value));
         },
         ptr);
@@ -95,7 +95,7 @@ xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result(XAML
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             __xaml_wrapper_t<std::decay_t<TValueSet>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, value));
+            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
             return setter(self.get(), __xaml_wrapper_get<std::decay_t<TValueSet>>(value));
         },
         ptr);

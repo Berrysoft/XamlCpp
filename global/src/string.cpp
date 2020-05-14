@@ -121,17 +121,22 @@ catch (...)
     return {};
 }
 
-string to_string_utf8(xaml_ptr<xaml_string> const& str) noexcept
-try
+string to_string(xaml_ptr<xaml_string> const& str)
 {
     xaml_char_t const* data;
     XAML_THROW_IF_FAILED(str->get_data(&data));
     wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
     return conv.to_bytes(data);
 }
-catch (...)
+
+ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 {
-    return {};
+    return stream << to_string(str);
+}
+
+basic_ostream<xaml_char_t>& operator<<(basic_ostream<xaml_char_t>& stream, xaml_ptr<xaml_string> const& str)
+{
+    return stream << to_string_view_t(str);
 }
 
 xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
@@ -149,14 +154,14 @@ xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) n
     return xaml_string_new(to_wstring(str), ptr);
 }
 #else
-string to_string_utf8(xaml_ptr<xaml_string> const& str) noexcept
-try
+string to_string(xaml_ptr<xaml_string> const& str)
 {
     return to_string_t(str);
 }
-catch (...)
+
+ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 {
-    return {};
+    return stream << to_string_view_t(str);
 }
 
 xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept

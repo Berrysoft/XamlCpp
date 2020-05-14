@@ -30,7 +30,7 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
     }
 
     template <typename T>
-    xaml_result XAML_CALL get_value(T & value)
+    xaml_result XAML_CALL get_value(T * value)
     {
         xaml_guid type;
         XAML_RETURN_IF_FAILED(get_type(&type));
@@ -39,19 +39,19 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
         XAML_RETURN_IF_FAILED(get_data(&data));
         std::int32_t size;
         XAML_RETURN_IF_FAILED(get_size(&size));
-        std::memcpy(&value, data, size);
+        std::memcpy(value, data, size);
         return XAML_S_OK;
     }
 
     template <typename T>
-    xaml_result XAML_CALL get_value_ptr(T const*& ptr)
+    xaml_result XAML_CALL get_value_ptr(T const** ptr)
     {
         xaml_guid type;
         XAML_RETURN_IF_FAILED(get_type(&type));
         if (type != xaml_type_guid_v<T>) return XAML_E_NOINTERFACE;
         void const* data;
         XAML_RETURN_IF_FAILED(get_data(&data));
-        ptr = (T const*)data;
+        *ptr = (T const*)data;
         return XAML_S_OK;
     }
 #endif // __cplusplus
@@ -83,12 +83,15 @@ inline xaml_result XAML_CALL xaml_box_new(T const& value, xaml_box** ptr) noexce
 template <typename T, typename = void>
 struct __xaml_box_impl
 {
-    xaml_result box(T const& value, xaml_object** ptr) const noexcept
+    using boxed_type = xaml_box;
+    using unboxed_type = T;
+
+    xaml_result box(T const& value, xaml_box** ptr) const noexcept
     {
-        return xaml_box_new(value, (xaml_box**)ptr);
+        return xaml_box_new(value, ptr);
     }
 
-    xaml_result unbox(xaml_object* obj, T& value) const noexcept
+    xaml_result unbox(xaml_object* obj, T* value) const noexcept
     {
         xaml_ptr<xaml_box> box;
         XAML_RETURN_IF_FAILED(obj->query(&box));
@@ -99,7 +102,10 @@ struct __xaml_box_impl
 template <typename T>
 struct __xaml_box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
-    xaml_result box(T* value, xaml_object** ptr) const noexcept
+    using boxed_type = std::conditional_t<xaml_type_has_guid_v<T>, T, xaml_object>;
+    using unboxed_type = std::conditional_t<xaml_type_has_guid_v<T>, T, xaml_object>*;
+
+    xaml_result box(T* value, boxed_type** ptr) const noexcept
     {
         if (value)
         {
@@ -112,11 +118,11 @@ struct __xaml_box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
         }
     }
 
-    xaml_result unbox(xaml_object* obj, T*& value) const noexcept
+    xaml_result unbox(xaml_object* obj, unboxed_type* value) const noexcept
     {
         if (obj)
         {
-            return obj->query(&value);
+            return obj->query(value);
         }
         else
         {
@@ -129,7 +135,10 @@ struct __xaml_box_impl<T*, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 template <typename T>
 struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
 {
-    xaml_result box(xaml_ptr<T> const& value, xaml_object** ptr) const noexcept
+    using boxed_type = std::conditional_t<xaml_type_has_guid_v<T>, T, xaml_object>;
+    using unboxed_type = std::conditional_t<xaml_type_has_guid_v<T>, T, xaml_object>*;
+
+    xaml_result box(xaml_ptr<T> const& value, boxed_type** ptr) const noexcept
     {
         if (value)
         {
@@ -142,11 +151,11 @@ struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_obje
         }
     }
 
-    xaml_result unbox(xaml_object* obj, xaml_ptr<T>& value) const noexcept
+    xaml_result unbox(xaml_object* obj, unboxed_type* value) const noexcept
     {
         if (obj)
         {
-            return obj->query(&value);
+            return obj->query(value);
         }
         else
         {
@@ -159,12 +168,17 @@ struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_obje
 template <typename T>
 struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_view_t>>>
 {
-    xaml_result box(xaml_std_string_view_t value, xaml_object** ptr) const noexcept
+    using boxed_type = xaml_string;
+    using unboxed_type = xaml_std_string_view_t;
+
+    xaml_result box(xaml_std_string_view_t value, xaml_string** ptr) const noexcept
     {
-        return xaml_string_new(value, (xaml_string**)ptr);
+        xaml_ptr<xaml_string> str;
+        XAML_RETURN_IF_FAILED(xaml_string_new(value, &str));
+        return str->query(ptr);
     }
 
-    xaml_result unbox(xaml_object* obj, xaml_std_string_view_t& value) const noexcept
+    xaml_result unbox(xaml_object* obj, xaml_std_string_view_t* value) const noexcept
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(obj->query(&str));
@@ -172,27 +186,35 @@ struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_str
         XAML_RETURN_IF_FAILED(str->get_data(&data));
         std::int32_t length;
         XAML_RETURN_IF_FAILED(str->get_length(&length));
-        value = xaml_std_string_view_t(data, length);
+        *value = xaml_std_string_view_t(data, length);
         return XAML_S_OK;
     }
 };
 
 template <typename T>
+using __xaml_boxed_t = typename __xaml_box_impl<T>::boxed_type;
+
+template <typename T>
+using __xaml_unboxed_t = typename __xaml_box_impl<T>::unboxed_type;
+
+template <typename T>
 xaml_result xaml_box_value(T const& value, xaml_object** ptr) noexcept
 {
-    return __xaml_box_impl<T>{}.box(value, ptr);
+    xaml_ptr<__xaml_boxed_t<T>> obj;
+    XAML_RETURN_IF_FAILED(__xaml_box_impl<T>{}.box(value, &obj));
+    return obj->query(ptr);
 }
 
 template <typename T>
-xaml_ptr<xaml_object> xaml_box_value(T const& value)
+xaml_ptr<__xaml_boxed_t<T>> xaml_box_value(T const& value)
 {
-    xaml_ptr<xaml_object> obj;
-    XAML_THROW_IF_FAILED(xaml_box_value(value, &obj));
+    xaml_ptr<__xaml_boxed_t<T>> obj;
+    XAML_THROW_IF_FAILED(__xaml_box_impl<T>{}.box(value, &obj));
     return obj;
 }
 
 template <typename T>
-xaml_result xaml_unbox_value(xaml_object* obj, T& value) noexcept
+xaml_result xaml_unbox_value(xaml_object* obj, __xaml_unboxed_t<T>* value) noexcept
 {
     return __xaml_box_impl<T>{}.unbox(obj, value);
 }
@@ -201,7 +223,7 @@ template <typename T>
 T xaml_unbox_value(xaml_ptr<xaml_object> const& obj)
 {
     T value;
-    XAML_THROW_IF_FAILED(xaml_unbox_value(obj.get(), value));
+    XAML_THROW_IF_FAILED(xaml_unbox_value<T>(obj.get(), &value));
     return value;
 }
 #endif // __cplusplus
