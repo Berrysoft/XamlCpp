@@ -172,6 +172,7 @@ endif()
 add_subdirectory(cmdline)
 add_subdirectory(detector)
 add_subdirectory(resource)
+add_subdirectory(resource_compiler)
 
 install(
     TARGETS ${_XAML_TARGETS}

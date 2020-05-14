@@ -11,3 +11,5 @@ target_include_directories(xaml_resource
 )
 
 target_link_libraries(xaml_resource INTERFACE xaml_global)
+
+install(FILES ${XAML_RESOURCE_HEADERS} DESTINATION include/xaml/resource)
