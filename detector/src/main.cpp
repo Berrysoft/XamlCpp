@@ -45,20 +45,11 @@ xaml_std_string_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_gui
 
 int _tmain(int argc, xaml_char_t** argv)
 {
-    xaml_ptr<xaml_detector_options> options;
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
     XAML_THROW_IF_FAILED(xaml_detector_options_register(cmdline_ctx.get()));
-    xaml_ptr<xaml_reflection_info> info;
-    XAML_THROW_IF_FAILED(cmdline_ctx->get_type<xaml_detector_options>(&info));
-    xaml_ptr<xaml_type_info> t;
-    XAML_THROW_IF_FAILED(info->query(&t));
-    xaml_ptr<xaml_cmdline_options> opts;
-
-    XAML_THROW_IF_FAILED(xaml_cmdline_parse_argv(t.get(), argc, argv, &opts));
-    xaml_ptr<xaml_object> obj;
-    XAML_THROW_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
-    XAML_THROW_IF_FAILED(obj->query(&options));
+    xaml_ptr<xaml_detector_options> options;
+    XAML_THROW_IF_FAILED(xaml_cmdline_deserialize(cmdline_ctx.get(), argc, argv, &options));
 
     bool verbose;
     XAML_THROW_IF_FAILED(options->get_verbose(&verbose));
@@ -90,6 +81,10 @@ int _tmain(int argc, xaml_char_t** argv)
     XAML_THROW_IF_FAILED(options->get_help(&help));
     if (help || argc <= 1)
     {
+        xaml_ptr<xaml_reflection_info> info;
+        XAML_THROW_IF_FAILED(cmdline_ctx->get_type<xaml_detector_options>(&info));
+        xaml_ptr<xaml_type_info> t;
+        XAML_THROW_IF_FAILED(info->query(&t));
         xaml_ptr<xaml_cmdline_option> opt;
         XAML_THROW_IF_FAILED(t->get_attribute(&opt));
         XAML_THROW_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
