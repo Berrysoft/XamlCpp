@@ -28,7 +28,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_meta_context* ctx, int argc,
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(info->query(&t));
     xaml_ptr<xaml_cmdline_options> opts;
-    XAML_RETURN_IF_FAILED(xaml_cmdline_parse(t.get(), argc, argv, &opts));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_parse_argv(t.get(), argc, argv, &opts));
     xaml_ptr<xaml_object> obj;
     XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
     return obj->query(ptr);

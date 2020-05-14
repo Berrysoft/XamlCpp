@@ -36,8 +36,16 @@ xaml_result XAML_CALL xaml_cmdline_options_base_register(xaml_meta_context* ctx)
 
 xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, xaml_char_t** argv, void** ptr) noexcept
 {
+    xaml_ptr<xaml_reflection_info> info;
+    XAML_RETURN_IF_FAILED(ctx->get_type(id, &info));
+    xaml_ptr<xaml_type_info> t;
+    XAML_RETURN_IF_FAILED(info->query(&t));
+    xaml_ptr<xaml_cmdline_options> opts;
+    XAML_RETURN_IF_FAILED(xaml_cmdline_parse_argv(t.get(), argc, argv, &opts));
+    xaml_ptr<xaml_object> obj;
+    XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
     xaml_ptr<xaml_cmdline_options_base> options;
-    XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(ctx, argc, argv, &options));
+    XAML_RETURN_IF_FAILED(obj->query(&options));
 
     bool verbose;
     XAML_RETURN_IF_FAILED(options->get_verbose(&verbose));
@@ -69,10 +77,6 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_help(&help));
     if (help || argc <= 1)
     {
-        xaml_ptr<xaml_reflection_info> info;
-        XAML_RETURN_IF_FAILED(ctx->get_type(id, &info));
-        xaml_ptr<xaml_type_info> t;
-        XAML_RETURN_IF_FAILED(info->query(&t));
         xaml_ptr<xaml_cmdline_option> opt;
         XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
         XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));

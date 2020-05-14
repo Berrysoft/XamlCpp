@@ -1,12 +1,10 @@
 #include <options.h>
+#include <options_base.hpp>
 #include <xaml/cmdline/option.h>
 
-struct xaml_detector_options_impl : xaml_implement<xaml_detector_options_impl, xaml_detector_options, xaml_object>
+struct xaml_detector_options_impl : xaml_cmdline_options_base_implement<xaml_detector_options_impl, xaml_detector_options>
 {
-    XAML_PROP_IMPL(help, bool, bool*, bool)
-    XAML_PROP_IMPL(verbose, bool, bool*, bool)
     XAML_PROP_IMPL(recursive, bool, bool*, bool)
-    XAML_PROP_IMPL(no_logo, bool, bool*, bool)
     XAML_PROP_PTR_IMPL(path, xaml_string)
 };
 
@@ -19,10 +17,8 @@ xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noe
 {
     XAML_TYPE_INFO_NEW(xaml_detector_options, "options.h");
     XAML_TYPE_INFO_ADD_CTOR(xaml_detector_options_new);
-    XAML_TYPE_INFO_ADD_PROP(help, bool);
-    XAML_TYPE_INFO_ADD_PROP(verbose, bool);
+    XAML_RETURN_IF_FAILED(xaml_cmdline_options_base_members(__info.get()));
     XAML_TYPE_INFO_ADD_PROP(recursive, bool);
-    XAML_TYPE_INFO_ADD_PROP(no_logo, bool);
     XAML_TYPE_INFO_ADD_PROP(path, xaml_string);
     XAML_TYPE_INFO_ADD_DEF_PROP(path);
     xaml_ptr<xaml_cmdline_option> opt;
