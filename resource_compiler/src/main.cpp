@@ -99,7 +99,7 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
-        ofstream stream{ to_string_view_t(output) };
+        ofstream stream{ to_string_t(output) };
         compile(stream, inputs);
     }
     else
