@@ -7,7 +7,12 @@ if(WIN32)
     set_target_properties(xaml_test PROPERTIES WIN32_EXECUTABLE ON)
 endif()
 
-set(XAMLRC_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlrc CACHE STRING "Path of xamlrc executable")
+if("${CMAKE_GENERATOR}" MATCHES "Ninja Multi-Config")
+    set(XAMLRC_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/xamlrc CACHE STRING "Path of xamlrc executable")
+else()
+    set(XAMLRC_PATH ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/xamlrc CACHE STRING "Path of xamlrc executable")
+endif()
+
 set(XAMLRC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/parser/test)
 
 include(XamlResourceHelper)
