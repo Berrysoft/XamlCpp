@@ -75,8 +75,8 @@ struct parser_impl
 xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr) noexcept
 {
     string_view ns, name;
-    int32_t sep_index = 0;
-    int32_t i = 0;
+    size_t sep_index = 0;
+    size_t i = 0;
     for (; i < value.length(); i++)
     {
         if (!ns.empty() && value[i] == ':')
@@ -116,7 +116,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     while (i < value.length())
     {
         while (i < value.length() && isspace(value[i])) i++;
-        int32_t start_index = i;
+        size_t start_index = i;
         for (; i < value.length(); i++)
         {
             if (value[i] == ',')
