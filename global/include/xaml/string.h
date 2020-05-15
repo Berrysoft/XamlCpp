@@ -37,6 +37,10 @@ EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(xaml_char_t const*, xaml
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_utf8(char const*, xaml_string**) XAML_NOEXCEPT;
 
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_clone(xaml_string*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_concat(xaml_string*, xaml_string*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_substr(xaml_string*, XAML_CSTD int32_t, XAML_CSTD int32_t, xaml_string**) XAML_NOEXCEPT;
+
 #ifdef __cplusplus
 using xaml_std_string_t = std::basic_string<xaml_char_t>;
 using xaml_std_string_view_t = std::basic_string_view<xaml_char_t>;
@@ -46,7 +50,10 @@ XAML_API xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t, xaml_stri
 
 XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t, xaml_string**) noexcept;
 
+#ifndef UNICODE
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string&&, xaml_string**) noexcept;
+#endif // !UNICODE
+
 XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string_view, xaml_string**) noexcept;
 
 XAML_API std::string to_string(xaml_ptr<xaml_string> const&);
@@ -79,12 +86,14 @@ inline xaml_std_string_t to_string_t(xaml_ptr<xaml_string> const& str)
 }
 
 inline xaml_result to_string_t(xaml_ptr<xaml_string> const& str, xaml_std_string_t* s) noexcept
+try
 {
     xaml_std_string_view_t view;
     XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
-    *s = (xaml_std_string_t)view;
+    *s = view;
     return XAML_S_OK;
 }
+XAML_CATCH_RETURN()
 #endif // __cplusplus
 
 #endif // !XAML_STRING_H

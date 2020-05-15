@@ -144,11 +144,6 @@ xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) n
     return xaml_string_new(to_wstring(str), ptr);
 }
 
-xaml_result XAML_CALL xaml_string_new_utf8(string&& str, xaml_string** ptr) noexcept
-{
-    return xaml_string_new(to_wstring(move(str)), ptr);
-}
-
 xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) noexcept
 {
     return xaml_string_new(to_wstring(str), ptr);
@@ -179,3 +174,30 @@ xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) n
     return xaml_string_new(str, ptr);
 }
 #endif // UNICODE
+
+xaml_result XAML_CALL xaml_string_clone(xaml_string* str, xaml_string** ptr) noexcept
+{
+    xaml_char_t const* data;
+    XAML_RETURN_IF_FAILED(str->get_data(&data));
+    return xaml_string_new(data, ptr);
+}
+
+xaml_result XAML_CALL xaml_string_concat(xaml_string* lhs, xaml_string* rhs, xaml_string** ptr) noexcept
+try
+{
+    xaml_std_string_t str;
+    XAML_RETURN_IF_FAILED(to_string_t(lhs, &str));
+    xaml_char_t const* rhs_data;
+    XAML_RETURN_IF_FAILED(rhs->get_data(&rhs_data));
+    str += rhs_data;
+    return xaml_string_new(move(str), ptr);
+}
+XAML_CATCH_RETURN()
+
+xaml_result XAML_CALL xaml_string_substr(xaml_string* str, int32_t offset, int32_t length, xaml_string** ptr) noexcept
+{
+    if (offset < 0) return XAML_E_OUTOFBOUNDS;
+    xaml_std_string_view_t view;
+    XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
+    return xaml_string_new(view.substr((size_t)offset, (size_t)length), ptr);
+}
