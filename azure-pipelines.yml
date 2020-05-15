@@ -10,6 +10,13 @@ jobs:
         plat: 'win'
         rid: 'win'
         def: '-DBUILD_WINDOWS=on'
+        arch: x64
+      windows_x86:
+        imageName: 'windows-latest'
+        plat: 'win'
+        rid: 'win'
+        def: '-DBUILD_WINDOWS=on'
+        arch: x86
       mingw:
         imageName: 'windows-latest'
         plat: 'win'
@@ -38,7 +45,7 @@ jobs:
 
   steps:
   - script: |
-      vcpkg install wil:x64-windows
+      vcpkg install wil:$(arch)-windows
     displayName: 'Install wil'
     condition: eq(variables.rid, 'win')
 
@@ -68,7 +75,7 @@ jobs:
     condition: eq(variables.rid, 'mac-gtk')
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
       cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake
     displayName: 'Configure all projects'
@@ -97,7 +104,7 @@ jobs:
       cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       cd build
       ninja install
     displayName: 'Install all projects'
