@@ -35,6 +35,7 @@ string get_valid_name(string_view str, size_t index)
 void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 {
     stream << "#include <xaml/resource/resource.h>" << endl;
+    stream << "#include <xaml/string.h>" << endl;
 
     size_t index{ 0 };
     map<path, string> rc_map{};
@@ -45,17 +46,22 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         string name = get_valid_name(file.string(), index++);
         rc_map.emplace(file, name);
         ifstream input{ file };
-        string content(istreambuf_iterator<char>{ input }, istreambuf_iterator<char>{});
-        stream << "inline constexpr ::std::string_view " << name << " = " << quoted(content) << ";" << endl;
+        stream << "inline constexpr ::std::string_view " << name << " = " << endl;
+        string line;
+        while (getline(input, line))
+        {
+            stream << quoted(line) << "\"\\n\"" << endl;
+        }
     }
+    stream << ';' << endl;
 
     stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, void const** ptr) noexcept" << endl;
     stream << '{' << endl;
 
     string tab(4, ' ');
 
-    stream << tab << "xaml_std_string_view file;" << endl;
-    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
+    stream << tab << "xaml_std_string_view_t file;" << endl;
+    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, file));" << endl;
 
     size_t i = 0;
     for (auto pair : rc_map)
@@ -71,7 +77,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     stream << tab << "else" << endl;
     stream << tab << '{' << endl;
-    stream << tab << tab << "return XMAL_E_KEYNOTFOUND;" << endl;
+    stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
     stream << tab << '}' << endl;
 
     stream << '}' << endl;
