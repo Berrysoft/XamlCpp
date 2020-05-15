@@ -27,10 +27,3 @@ if(Git_FOUND)
 endif()
 
 target_link_libraries(xaml_cmdline_helper PUBLIC xaml_cmdline)
-
-install(
-	TARGETS xaml_cmdline_helper
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-)

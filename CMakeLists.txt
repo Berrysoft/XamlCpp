@@ -150,7 +150,7 @@ set(_XAML_TARGETS
     xaml_ui xaml_ui_appmain
     xaml_ui_controls
     xaml_ui_canvas
-    xaml_cmdline
+    xaml_cmdline xaml_cmdline_helper
 )
 
 add_subdirectory(global)
