@@ -1,24 +1,18 @@
-#include <filesystem>
+#include <iomanip>
 #include <iostream>
 #include <options.h>
 #include <unordered_map>
-#include <xaml/cmdline/deserializer.h>
-#include <xaml/cmdline/option.h>
-#include <xaml/result_handler.h>
 #include <xaml/version.h>
 
 #ifdef UNICODE
 #define _tmain wmain
 #define _tcout ::std::wcout
-#define _tcerr ::std::wcerr
 #else
 #define _tmain main
 #define _tcout ::std::cout
-#define _tcerr ::std::cerr
 #endif // UNICODE
 
 using namespace std;
-using namespace std::filesystem;
 
 xaml_std_string_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
@@ -91,8 +85,8 @@ int _tmain(int argc, xaml_char_t** argv)
         XAML_THROW_IF_FAILED(info->get_include_file(&include_file));
         if (auto t = info.query<xaml_type_info>())
         {
-            _tcout << U("class ") << to_string_view_t(name) << endl;
-            _tcout << U("  included in <") << to_string_view_t(include_file) << U('>') << endl;
+            _tcout << U("class ") << name << endl;
+            _tcout << U("  included in <") << include_file << U('>') << endl;
             {
                 xaml_ptr<xaml_map_view> props;
                 XAML_THROW_IF_FAILED(t->get_properties(&props));
@@ -106,7 +100,7 @@ int _tmain(int argc, xaml_char_t** argv)
                     xaml_ptr<xaml_property_info> info = value.query<xaml_property_info>();
                     xaml_guid type;
                     XAML_THROW_IF_FAILED(info->get_type(&type));
-                    _tcout << U("    P: ") << to_string_view_t(key.query<xaml_string>()) << U('\t') << get_type_name(ctx, type) << endl;
+                    _tcout << U("    P: ") << key.query<xaml_string>() << U('\t') << get_type_name(ctx, type) << endl;
                 }
             }
             {
@@ -122,7 +116,7 @@ int _tmain(int argc, xaml_char_t** argv)
                     xaml_ptr<xaml_collection_property_info> info = value.query<xaml_collection_property_info>();
                     xaml_guid type;
                     XAML_THROW_IF_FAILED(info->get_type(&type));
-                    _tcout << U("    C: ") << to_string_view_t(key.query<xaml_string>()) << U('\t') << get_type_name(ctx, type) << endl;
+                    _tcout << U("    C: ") << key.query<xaml_string>() << U('\t') << get_type_name(ctx, type) << endl;
                 }
             }
             {
@@ -133,14 +127,14 @@ int _tmain(int argc, xaml_char_t** argv)
                     xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
                     XAML_THROW_IF_FAILED(pair->get_key(&key));
-                    _tcout << U("    E: ") << to_string_view_t(key.query<xaml_string>()) << endl;
+                    _tcout << U("    E: ") << key.query<xaml_string>() << endl;
                 }
             }
         }
         else if (auto t = info.query<xaml_enum_info>())
         {
-            _tcout << U("enum ") << to_string_view_t(name) << endl;
-            _tcout << U("  included in <") << to_string_view_t(include_file) << U('>') << endl;
+            _tcout << U("enum ") << name << endl;
+            _tcout << U("  included in <") << include_file << U('>') << endl;
             xaml_ptr<xaml_map_view> values;
             XAML_THROW_IF_FAILED(t->get_values(&values));
             for (auto item2 : values)
@@ -153,7 +147,7 @@ int _tmain(int argc, xaml_char_t** argv)
                 xaml_ptr<xaml_box> box = value.query<xaml_box>();
                 int const* pvalue;
                 XAML_THROW_IF_FAILED(box->get_data((void const**)&pvalue));
-                _tcout << U("    ") << to_string_view_t(key.query<xaml_string>()) << U(" = ") << *pvalue << endl;
+                _tcout << U("    ") << key.query<xaml_string>() << U(" = ") << *pvalue << endl;
             }
         }
     }

@@ -5,6 +5,6 @@ add_executable(xamlrc ${XAML_RC_SOURCE})
 
 target_include_directories(xamlrc PUBLIC include)
 
-target_link_libraries(xamlrc xaml_cmdline)
+target_link_libraries(xamlrc PUBLIC xaml_cmdline PRIVATE xaml_cmdline_helper)
 
 install(TARGETS xamlrc RUNTIME DESTINATION bin)

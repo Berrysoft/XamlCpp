@@ -1,22 +1,81 @@
 #include <filesystem>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <map>
 #include <options.h>
-#include <xaml/cmdline/deserializer.h>
-#include <xaml/cmdline/option.h>
-#include <xaml/result_handler.h>
+#include <sstream>
 
 #ifdef UNICODE
 #define _tmain wmain
 #define _tcout ::std::wcout
-#define _tcerr ::std::wcerr
 #else
 #define _tmain main
 #define _tcout ::std::cout
-#define _tcerr ::std::cerr
 #endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
+
+string get_valid_name(string_view str, size_t index)
+{
+    ostringstream stream;
+    stream << "__";
+    for (char c : str)
+    {
+        if (isdigit(c) || isalpha(c))
+            stream << c;
+        else
+            stream << '_';
+    }
+    stream << "__" << index;
+    return stream.str();
+}
+
+void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
+{
+    stream << "#include <xaml/resource/resource.h>" << endl;
+
+    size_t index{ 0 };
+    map<path, string> rc_map{};
+
+    for (auto item : inputs)
+    {
+        path file = to_string_view_t(item.query<xaml_string>());
+        string name = get_valid_name(file.string(), index++);
+        rc_map.emplace(file, name);
+        ifstream input{ file };
+        string content(istreambuf_iterator<char>{ input }, istreambuf_iterator<char>{});
+        stream << "inline constexpr ::std::string_view " << name << " = " << quoted(content) << ";" << endl;
+    }
+
+    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, void const** ptr) noexcept" << endl;
+    stream << '{' << endl;
+
+    string tab(4, ' ');
+
+    stream << tab << "xaml_std_string_view file;" << endl;
+    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
+
+    size_t i = 0;
+    for (auto pair : rc_map)
+    {
+        stream << tab << (i ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
+        stream << tab << '{' << endl;
+
+        stream << tab << tab << "*ptr = " << pair.second << ".data();" << endl;
+        stream << tab << tab << "return XAML_S_OK;" << endl;
+
+        stream << tab << '}' << endl;
+    }
+
+    stream << tab << "else" << endl;
+    stream << tab << '{' << endl;
+    stream << tab << tab << "return XMAL_E_KEYNOTFOUND;" << endl;
+    stream << tab << '}' << endl;
+
+    stream << '}' << endl;
+}
 
 int _tmain(int argc, xaml_char_t** argv)
 {
@@ -24,46 +83,22 @@ int _tmain(int argc, xaml_char_t** argv)
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
     XAML_THROW_IF_FAILED(xaml_rc_options_register(cmdline_ctx.get()));
     xaml_ptr<xaml_rc_options> options;
-    XAML_THROW_IF_FAILED(xaml_cmdline_deserialize(cmdline_ctx.get(), argc, argv, &options));
+    XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx.get(), argc, argv, &options));
 
-    bool verbose;
-    XAML_THROW_IF_FAILED(options->get_verbose(&verbose));
+    xaml_ptr<xaml_vector_view> inputs;
+    XAML_THROW_IF_FAILED(options->get_inputs(&inputs));
 
-    if (verbose)
+    xaml_ptr<xaml_string> output;
+    XAML_THROW_IF_FAILED(options->get_output(&output));
+
+    if (output)
     {
-        int32_t token;
-        XAML_THROW_IF_FAILED(xaml_result_handler_add(
-            [](xaml_result hr, xaml_char_t const* msg) {
-                _tcerr << U("0x") << hex << hr << U(": ") << msg << endl;
-            },
-            &token));
+        ofstream stream{ to_string_view_t(output) };
+        compile(stream, inputs);
     }
-
-    path exe{ argv[0] };
-    bool no_logo;
-    XAML_THROW_IF_FAILED(options->get_no_logo(&no_logo));
-    if (!no_logo)
+    else
     {
-        _tcout << exe.filename().string<xaml_char_t>() << U(" ") XAML_VERSION;
-#ifdef XAML_COMMIT_HASH
-        constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
-        _tcout << U('-') << hash.substr(0, 8);
-#endif // XAML_COMMIT_HASH
-        _tcout << U("\nCopyright (c) 2019-2020 Berrysoft\n") << endl;
-    }
-
-    bool help;
-    XAML_THROW_IF_FAILED(options->get_help(&help));
-    if (help || argc <= 1)
-    {
-        xaml_ptr<xaml_reflection_info> info;
-        XAML_THROW_IF_FAILED(cmdline_ctx->get_type<xaml_rc_options>(&info));
-        xaml_ptr<xaml_type_info> t;
-        XAML_THROW_IF_FAILED(info->query(&t));
-        xaml_ptr<xaml_cmdline_option> opt;
-        XAML_THROW_IF_FAILED(t->get_attribute(&opt));
-        XAML_THROW_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
-        return 1;
+        compile(cout, inputs);
     }
 
     return 0;
