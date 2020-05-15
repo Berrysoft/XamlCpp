@@ -63,7 +63,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
         xaml_ptr<xaml_string> arg_item;
         XAML_RETURN_IF_FAILED(item->query(&arg_item));
         xaml_std_string_view_t arg;
-        XAML_RETURN_IF_FAILED(to_string_view_t(arg_item, arg));
+        XAML_RETURN_IF_FAILED(to_string_view_t(arg_item, &arg));
         if (arg.empty())
             continue;
         else if (arg[0] == '-')

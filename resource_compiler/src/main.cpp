@@ -61,7 +61,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     string tab(4, ' ');
 
     stream << tab << "xaml_std_string_view_t file;" << endl;
-    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, file));" << endl;
+    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
 
     size_t i = 0;
     for (auto pair : rc_map)

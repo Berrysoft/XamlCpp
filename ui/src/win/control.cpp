@@ -71,10 +71,12 @@ xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& s
     wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
     if (hDC && str)
     {
-        xaml_std_string_view_t view;
-        XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
+        xaml_char_t const* data;
+        XAML_RETURN_IF_FAILED(str->get_data(&data));
+        int32_t length;
+        XAML_RETURN_IF_FAILED(str->get_length(&length));
         SIZE s = {};
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), view.data(), (int)view.length(), &s));
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), data, length, &s));
         *pvalue = xaml_from_native(s) + offset;
     }
     else

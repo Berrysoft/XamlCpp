@@ -193,7 +193,7 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
         else if (auto s = obj.query<xaml_string>())
         {
             xaml_std_string_view_t str;
-            XAML_RETURN_IF_FAILED(to_string_view_t(s, str));
+            XAML_RETURN_IF_FAILED(to_string_view_t(s, &str));
             constexpr xaml_char_t __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
             constexpr xaml_char_t __auto[] = { 'a', 'u', 't', 'o', '\0' };
             xaml_ptr<xaml_vector> result;

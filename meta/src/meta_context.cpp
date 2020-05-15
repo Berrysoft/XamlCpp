@@ -185,9 +185,9 @@ public:
 
     static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept
     {
-        xaml_std_string_view_t name_view;
-        XAML_RETURN_IF_FAILED(to_string_view_t(name, name_view));
-        return xaml_string_new((xaml_std_string_t)name_view + U("_changed"), ptr);
+        xaml_std_string_t name_view;
+        XAML_RETURN_IF_FAILED(to_string_t(name, &name_view));
+        return xaml_string_new(name_view + U("_changed"), ptr);
     }
 
     xaml_result XAML_CALL bind(xaml_object* target, xaml_string* target_prop, xaml_object* source, xaml_string* source_prop, xaml_binding_mode mode) noexcept override

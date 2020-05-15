@@ -49,7 +49,7 @@ struct __xaml_converter_helper
             else if (auto str = obj.query<xaml_string>())
             {
                 xaml_std_string_view_t view;
-                XAML_RETURN_IF_FAILED(to_string_view_t(str, view));
+                XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
                 *value = func(view);
                 return XAML_S_OK;
             }
