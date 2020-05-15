@@ -175,6 +175,15 @@ xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) n
 }
 #endif // UNICODE
 
+static xaml_string_view_impl s_empty_string{};
+
+xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept
+{
+    s_empty_string.add_ref();
+    *ptr = &s_empty_string;
+    return XAML_S_OK;
+}
+
 xaml_result XAML_CALL xaml_string_clone(xaml_string* str, xaml_string** ptr) noexcept
 {
     xaml_char_t const* data;

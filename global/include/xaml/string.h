@@ -37,6 +37,7 @@ EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(xaml_char_t const*, xaml
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_utf8(char const*, xaml_string**) XAML_NOEXCEPT;
 
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_empty(xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_clone(xaml_string*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_concat(xaml_string*, xaml_string*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_substr(xaml_string*, XAML_CSTD int32_t, XAML_CSTD int32_t, xaml_string**) XAML_NOEXCEPT;
