@@ -50,34 +50,62 @@ public:
         return XAML_S_OK;
     }
 
+    xaml_result XAML_CALL index_of(xaml_object* value, int32_t* pindex) noexcept override
+    {
+        for (size_t i = 0; i < m_vec.size(); i++)
+        {
+            if (m_vec[i].get() == value)
+            {
+                *pindex = (int32_t)i;
+                return XAML_S_OK;
+            }
+        }
+        *pindex = -1;
+        return XAML_S_OK;
+    }
+
     xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         auto& res = m_vec[index];
         return res->query(ptr);
     }
 
     xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         m_vec[index] = obj;
         return XAML_S_OK;
     }
 
     xaml_result XAML_CALL append(xaml_object* obj) noexcept override
+    try
     {
-        try
-        {
-            m_vec.push_back(obj);
-            return XAML_S_OK;
-        }
-        XAML_CATCH_RETURN()
+        m_vec.push_back(obj);
+        return XAML_S_OK;
     }
+    XAML_CATCH_RETURN()
+
+    xaml_result XAML_CALL insert_at(int32_t index, xaml_object* obj) noexcept override
+    try
+    {
+        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        m_vec.insert(m_vec.begin() + index, obj);
+        return XAML_S_OK;
+    }
+    XAML_CATCH_RETURN()
 
     xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
-        if (index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
         m_vec.erase(m_vec.begin() + index);
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL remove_at_end() noexcept override
+    {
+        if (m_vec.empty()) return XAML_E_OUTOFBOUNDS;
+        m_vec.pop_back();
         return XAML_S_OK;
     }
 

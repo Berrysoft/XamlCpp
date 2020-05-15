@@ -267,7 +267,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
                 [this](xaml_ptr<xaml_button>) -> xaml_result {
-                    return m_combo_source->remove_at(0);
+                    return m_combo_source->remove_at_end();
                 },
                 &callback)));
             int32_t token;

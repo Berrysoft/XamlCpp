@@ -35,6 +35,11 @@ public:
         return m_vec->get_size(psize);
     }
 
+    xaml_result XAML_CALL index_of(xaml_object* value, int32_t* pindex) noexcept override
+    {
+        return m_vec->index_of(value, pindex);
+    }
+
     xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
         return m_vec->get_at(index, ptr);
@@ -43,7 +48,7 @@ public:
     xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
         xaml_ptr<xaml_object> old_item;
-        XAML_RETURN_IF_FAILED(get_at(index, &old_item));
+        XAML_RETURN_IF_FAILED(m_vec->get_at(index, &old_item));
         XAML_RETURN_IF_FAILED(m_vec->set_at(index, obj));
         xaml_ptr<xaml_vector> old_items, new_items;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ old_item }, &old_items));
@@ -61,11 +66,32 @@ public:
         return on_collection_changed(xaml_vector_changed_add, new_items.get(), index, nullptr, index);
     }
 
+    xaml_result XAML_CALL insert_at(int32_t index, xaml_object* obj) noexcept override
+    {
+        XAML_RETURN_IF_FAILED(m_vec->insert_at(index, obj));
+        xaml_ptr<xaml_vector> new_items;
+        XAML_RETURN_IF_FAILED(xaml_vector_new({ obj }, &new_items));
+        return on_collection_changed(xaml_vector_changed_add, new_items.get(), index, nullptr, index);
+    }
+
     xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
         xaml_ptr<xaml_object> old_item;
-        XAML_RETURN_IF_FAILED(get_at(index, &old_item));
+        XAML_RETURN_IF_FAILED(m_vec->get_at(index, &old_item));
         XAML_RETURN_IF_FAILED(m_vec->remove_at(index));
+        xaml_ptr<xaml_vector> old_items;
+        XAML_RETURN_IF_FAILED(xaml_vector_new({ old_item }, &old_items));
+        return on_collection_changed(xaml_vector_changed_erase, nullptr, index, old_items.get(), index);
+    }
+
+    xaml_result XAML_CALL remove_at_end() noexcept override
+    {
+        int32_t index;
+        XAML_RETURN_IF_FAILED(m_vec->get_size(&index));
+        index--;
+        xaml_ptr<xaml_object> old_item;
+        XAML_RETURN_IF_FAILED(m_vec->get_at(index, &old_item));
+        XAML_RETURN_IF_FAILED(m_vec->remove_at_end());
         xaml_ptr<xaml_vector> old_items;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ old_item }, &old_items));
         return on_collection_changed(xaml_vector_changed_erase, nullptr, index, old_items.get(), index);

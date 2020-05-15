@@ -143,7 +143,11 @@
 #ifdef __cplusplus
 #define XAML_CONSTEXPR_VAR inline constexpr const
 #else
+#ifdef _MSC_VER
+#define XAML_CONSTEXPR_VAR extern const __declspec(selectany)
+#else
 #define XAML_CONSTEXPR_VAR static const
+#endif // _MSC_VER
 #endif // __cplusplus
 #endif // !XAML_CONSTEXPR_VAR
 

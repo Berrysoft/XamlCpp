@@ -36,7 +36,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
         XAML_RETURN_IF_FAILED(args->get_old_index(&old_index));
         for (std::int32_t i = old_index; i < size + old_index; i++)
         {
-            XAML_RETURN_IF_FAILED(remove_item(i + old_index));
+            XAML_RETURN_IF_FAILED(remove_item(i));
         }
         break;
     }
