@@ -37,7 +37,7 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui PRIVATE gtk3)
 endif()
 
-if(${Boost_nowide_FOUND})
+if(${Boost_nowide_FOUND} AND ${BUILD_GTK3})
     target_link_libraries(xaml_ui PRIVATE Boost::nowide)
 endif()
 
