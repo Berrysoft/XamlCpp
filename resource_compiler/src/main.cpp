@@ -45,17 +45,25 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     for (auto item : inputs)
     {
         path file = to_string_view_t(item.query<xaml_string>());
-        string name = get_valid_name(file.string(), index++);
-        rc_map.emplace(file, name);
-        ifstream input{ file };
-        stream << "inline constexpr char " << name << "[] = " << endl;
-        string line;
-        while (getline(input, line))
+#ifndef XAML_APPLE
+        if (!rc_map.contains(file))
+#else
+        auto it = rc_map.find(file);
+        if (it == rc_map.end())
+#endif // !XAML_APPLE
         {
-            stream << quoted(line) << "\"\\n\"" << endl;
+            string name = get_valid_name(file.string(), index++);
+            rc_map.emplace(file, name);
+            ifstream input{ file };
+            stream << "inline constexpr char " << name << "[] = " << endl;
+            string line;
+            while (getline(input, line))
+            {
+                stream << quoted(line) << "\"\\n\"" << endl;
+            }
+            stream << ';' << endl;
         }
     }
-    stream << ';' << endl;
 
     stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, xaml_buffer** ptr) noexcept" << endl;
     stream << '{' << endl;
