@@ -43,6 +43,15 @@ struct parser_impl
     }
     XAML_CATCH_RETURN()
 
+    xaml_result load_buffer(xaml_ptr<xaml_buffer> const& buffer) noexcept
+    {
+        uint8_t* data;
+        XAML_RETURN_IF_FAILED(buffer->get_data(&data));
+        int32_t size;
+        XAML_RETURN_IF_FAILED(buffer->get_size(&size));
+        return load_string(string_view((char const*)data, (size_t)size));
+    }
+
     xaml_result load_stream(istream& stream) noexcept
     try
     {
@@ -554,6 +563,14 @@ xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, char cons
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());
     XAML_RETURN_IF_FAILED(parser.load_string(str));
+    return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
+}
+
+xaml_result XAML_CALL xaml_parser_parse_buffer(xaml_meta_context* ctx, xaml_buffer* buffer, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+{
+    parser_impl parser{};
+    XAML_RETURN_IF_FAILED(parser.init());
+    XAML_RETURN_IF_FAILED(parser.load_buffer(buffer));
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
 

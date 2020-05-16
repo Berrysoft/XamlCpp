@@ -32,6 +32,8 @@ string get_valid_name(string_view str, size_t index)
     return stream.str();
 }
 
+constexpr string_view tab = "    ";
+
 void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 {
     stream << "#include <xaml/resource/resource.h>" << endl;
@@ -46,7 +48,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         string name = get_valid_name(file.string(), index++);
         rc_map.emplace(file, name);
         ifstream input{ file };
-        stream << "inline constexpr ::std::string_view " << name << " = " << endl;
+        stream << "inline constexpr char " << name << "[] = " << endl;
         string line;
         while (getline(input, line))
         {
@@ -55,13 +57,12 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     }
     stream << ';' << endl;
 
-    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, void const** ptr) noexcept" << endl;
+    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, xaml_buffer** ptr) noexcept" << endl;
     stream << '{' << endl;
-
-    string tab(4, ' ');
 
     stream << tab << "xaml_std_string_view_t file;" << endl;
     stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
+    stream << tab << "xaml_ptr<xaml_buffer> buffer;" << endl;
 
     size_t i = 0;
     for (auto pair : rc_map)
@@ -69,8 +70,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         stream << tab << (i ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
         stream << tab << '{' << endl;
 
-        stream << tab << tab << "*ptr = " << pair.second << ".data();" << endl;
-        stream << tab << tab << "return XAML_S_OK;" << endl;
+        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));";
 
         stream << tab << '}' << endl;
     }
@@ -79,6 +79,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     stream << tab << '{' << endl;
     stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
     stream << tab << '}' << endl;
+
+    stream << tab << "return buffer->query(ptr);";
 
     stream << '}' << endl;
 }
