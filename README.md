@@ -7,12 +7,17 @@ This project is NOT complete, and still needs a lot of work. Welcome issues and 
 ## Goal
 The goal of XamlCpp is to write a cross-platfrom GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies, compared to Qt or so.
 
+## Charset
+XamlCpp uses UTF-16 with Win32, and UTF-8 with others API sets. However, the `xaml` file should be in valid UTF-8. XamlCpp uses `boost-nowide` to ensure it.
+
 ## Reflection
 XamlCpp supports reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
 
 A simple example is [here](./meta/test/src/main.cpp).
 
-It doesn't use the RTTI feature of C++, instead, it ownes an stable implementation, because the constraints of the standard are too loose to implement reflection. All GUI libraries are shipped with another "meta" library, which contains functions used by the XAML parser, but is optional for the final application. Meta library is large, for it contains many instances of template classes and functions.
+It doesn't use the RTTI feature of C++, instead, it ownes an stable implementation, because the constraints of the standard are too loose to implement reflection.
+
+The object model of XamlCpp is inspired by COM.
 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
@@ -89,15 +94,21 @@ The `xmlns` should be `https://github.com/Berrysoft/XamlCpp/` to use default con
 
 The XAML parser uses a modified version of [rapidxml_ns](https://github.com/svgpp/rapidxml_ns). It is modified to use features of C++ 17 and simplified to support UTF-8 only for convenience.
 
+## Detector
+XamlCpp provides a detector called `xmald` to show the reflection infomation of a dynamic library for XamlCpp.
+
+## Resource
+XamlCpp provides a resource compiler called `xamlrc`, to embed small files into the final program. It supports UTF-8 only.
+
 ## Build
 A C++17-compliant compiler is required. Actually it needs C++20, but no compiler is compliant...
 
-This project assumes it is built by GCC 10.1+ or Clang 10.0+ when using GNU or LLVM toolchains.
+This project assumes it is built by GCC 10.0+ or Clang 10.0+ when using GNU or LLVM toolchains.
 ### Build on Windows
 #### MSVC
-`wil` is required. `vcpkg` is recommanded for installing. Other packages will be downloaded from NuGet when configuring.
+`wil` and `boost-nowide` are required. `vcpkg` is recommanded for installing. Other packages will be downloaded from NuGet when configuring.
 #### MinGW
-`gtk` and `pkgconfig` are required. MSYS2 is recommanded for installing and building.
+`gtk`, `pkgconfig` and `boost` are required. MSYS2 is recommanded for installing and building.
 
 It is not possible now to build target Windows API with MinGW toolchain, because `wil` isn't supported by GCC or Clang/MinGW.
 ### Build on Linux
