@@ -1,4 +1,5 @@
 #ifdef XAML_USE_BOOST_NOWIDE
+#include <boost/nowide/args.hpp>
 #include <boost/nowide/cstdlib.hpp>
 #endif // XAML_USE_BOOST_NOWIDE
 
@@ -22,6 +23,9 @@ using namespace std;
 xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
 {
     gtk_init(&argc, &argv);
+#ifdef XAML_USE_BOOST_NOWIDE
+    boost::nowide::args _(argc, argv);
+#endif // XAML_USE_BOOST_NOWIDE
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
     {

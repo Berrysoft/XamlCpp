@@ -4,15 +4,16 @@
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
 #else
-#include <fstream>
 #include <iostream>
 #endif // XAML_USE_BOOST_NOWIDE
 
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <map>
 #include <options.h>
 #include <sstream>
+#include <tuple>
 
 #ifdef XAML_USE_BOOST_NOWIDE
 using u8ofstream = boost::nowide::ofstream;
@@ -53,13 +54,14 @@ string get_valid_name(string_view str, size_t index)
 }
 
 constexpr string_view tab = "    ";
+constexpr string_view text_extensions[] = { ".txt", ".xml", ".xaml", ".md" };
 
 void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 {
     stream << "#include <xaml/resource/resource.h>" << endl;
 
     size_t index{ 0 };
-    map<path, string> rc_map{};
+    map<path, tuple<string, bool>> rc_map{};
 
     for (auto item : inputs)
     {
@@ -71,19 +73,49 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         if (it == rc_map.end())
 #endif // !XAML_APPLE
         {
-            u8ifstream input{ file };
-            if (input.is_open())
+            auto it = find(begin(text_extensions), end(text_extensions), file.extension());
+            bool text = it != end(text_extensions);
+            if (text)
             {
-                string name = get_valid_name(file.string(), index++);
-                rc_map.emplace(file, name);
-                stream << "inline constexpr char8_t " << name << "[] = " << endl;
-                stream << "u8";
-                string line;
-                while (getline(input, line))
+                u8ifstream input{ file };
+                if (input.is_open())
                 {
-                    stream << quoted(line) << "\"\\n\"" << endl;
+                    string name = get_valid_name(file.string(), index++);
+                    rc_map.emplace(file, make_tuple(name, text));
+                    stream << "inline constexpr char8_t " << name << "[] = " << endl;
+                    stream << "u8";
+                    string line;
+                    while (getline(input, line))
+                    {
+                        stream << quoted(line);
+                        if (!input.eof())
+                        {
+                            stream << "\"\\n\"";
+                            stream << endl;
+                        }
+                    }
+                    stream << ';' << endl;
                 }
-                stream << ';' << endl;
+            }
+            else
+            {
+                ifstream input{ file, ios_base::binary };
+                if (input.is_open())
+                {
+                    string name = get_valid_name(file.string(), index++);
+                    rc_map.emplace(file, make_tuple(name, text));
+                    stream << "inline constexpr ::std::uint8_t " << name << "[] = {";
+                    size_t i = 0;
+                    while (input.peek() != char_traits<char>::eof())
+                    {
+                        i %= 16;
+                        if (i++ == 0) stream << endl;
+                        int b = input.get();
+                        stream << "0x" << hex << b;
+                        if (input.peek() != char_traits<char>::eof()) stream << ", ";
+                    }
+                    stream << "};" << endl;
+                }
             }
         }
     }
@@ -98,10 +130,14 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     size_t i = 0;
     for (auto pair : rc_map)
     {
-        stream << tab << (i ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
+        stream << tab << (i++ ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
         stream << tab << '{' << endl;
 
-        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char8_t*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));" << endl;
+        auto& [name, text] = pair.second;
+        if (text)
+            stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char8_t*>(" << name << ")), (std::int32_t)sizeof(" << name << "), &buffer));" << endl;
+        else
+            stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(const_cast<std::uint8_t*>(" << name << "), (std::int32_t)sizeof(" << name << "), &buffer));" << endl;
 
         stream << tab << '}' << endl;
     }

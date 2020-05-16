@@ -1,3 +1,7 @@
+#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
+#include <boost/nowide/args.hpp>
+#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
+
 #include <sstream>
 #include <xaml/cmdline/option.h>
 #include <xaml/cmdline/parser.h>
@@ -230,6 +234,9 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
 
 xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info* type, int argc, xaml_char_t** argv, xaml_cmdline_options** ptr) noexcept
 {
+#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
+    boost::nowide::args _(argc, argv);
+#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
     xaml_ptr<xaml_vector> args;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
     for (int i = 1; i < argc; i++)
