@@ -114,7 +114,7 @@ jobs:
       cd build
       ninja install
       cd ..
-      copy vcpkg\installed\$(arch)-windows\bin\*.dll $(Build.ArtifactStagingDirectory)\$(rid)-$(arch)\
+      copy vcpkg\installed\$(arch)-windows\bin\*.dll $(Build.ArtifactStagingDirectory)\$(rid)-$(arch)\bin\
     displayName: 'Install all projects'
     condition: eq(variables.rid, 'win')
 
