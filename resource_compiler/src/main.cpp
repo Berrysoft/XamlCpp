@@ -52,16 +52,19 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         if (it == rc_map.end())
 #endif // !XAML_APPLE
         {
-            string name = get_valid_name(file.string(), index++);
-            rc_map.emplace(file, name);
             ifstream input{ file };
-            stream << "inline constexpr char " << name << "[] = " << endl;
-            string line;
-            while (getline(input, line))
+            if (input.is_open())
             {
-                stream << quoted(line) << "\"\\n\"" << endl;
+                string name = get_valid_name(file.string(), index++);
+                rc_map.emplace(file, name);
+                stream << "inline constexpr char " << name << "[] = " << endl;
+                string line;
+                while (getline(input, line))
+                {
+                    stream << quoted(line) << "\"\\n\"" << endl;
+                }
+                stream << ';' << endl;
             }
-            stream << ';' << endl;
         }
     }
 
@@ -83,7 +86,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         stream << tab << '}' << endl;
     }
 
-    stream << tab << "else" << endl;
+    if (!rc_map.empty()) stream << tab << "else" << endl;
     stream << tab << '{' << endl;
     stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
     stream << tab << '}' << endl;
