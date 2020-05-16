@@ -25,15 +25,7 @@ xaml_std_string_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_gui
     }
     else
     {
-        xaml_ptr<xaml_string> name;
-        if (XAML_SUCCEEDED(ctx->get_basic_type(type, &name)))
-        {
-            return to_string_t(name);
-        }
-        else
-        {
-            return U("Unknown-type");
-        }
+        return U("Unknown-type");
     }
 }
 

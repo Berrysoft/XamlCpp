@@ -23,12 +23,14 @@ public:
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_namespace));
         XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_name_info_map));
 
-#define AT(type)                                                                      \
-    do                                                                                \
-    {                                                                                 \
-        xaml_ptr<xaml_string> __name;                                                 \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                    \
-        XAML_RETURN_IF_FAILED(xaml_meta_context::add_basic_type<type>(__name.get())); \
+#define AT(type)                                                                                                 \
+    do                                                                                                           \
+    {                                                                                                            \
+        xaml_ptr<xaml_string> __name;                                                                            \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                                               \
+        xaml_ptr<xaml_basic_type_info> __info;                                                                   \
+        XAML_RETURN_IF_FAILED(xaml_basic_type_info_new(xaml_type_guid_v<type>, __name.get(), nullptr, &__info)); \
+        XAML_RETURN_IF_FAILED(add_type(__info.get()));                                                           \
     } while (0)
 
         AT(xaml_object);

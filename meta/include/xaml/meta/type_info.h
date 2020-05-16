@@ -9,6 +9,17 @@
 #include <xaml/meta/property_info.h>
 #include <xaml/meta/reflection_info.h>
 
+XAML_CLASS(xaml_basic_type_info, { 0x373d2efe, 0x469b, 0x4cb9, { 0x97, 0xbd, 0xff, 0x33, 0xee, 0xfd, 0xbc, 0x3a } })
+
+#define XAML_BASIC_TYPE_INFO_VTBL(type) XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type))
+
+XAML_DECL_INTERFACE_(xaml_basic_type_info, xaml_reflection_info)
+{
+    XAML_DECL_VTBL(xaml_basic_type_info, XAML_BASIC_TYPE_INFO_VTBL);
+};
+
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_basic_type_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_basic_type_info**) XAML_NOEXCEPT;
+
 XAML_CLASS(xaml_type_info, { 0x3de3b2c1, 0x09d6, 0x433c, { 0xbf, 0x40, 0x40, 0x2d, 0xfe, 0x28, 0xda, 0x1d } })
 
 #define XAML_TYPE_INFO_VTBL(type)                                                              \

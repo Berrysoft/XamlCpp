@@ -7,12 +7,10 @@
 template <typename T, typename... Base>
 struct xaml_reflection_info_implement : xaml_implement<T, Base..., xaml_reflection_info, xaml_object>
 {
-protected:
     xaml_guid m_type;
     xaml_ptr<xaml_string> m_name;
     xaml_ptr<xaml_string> m_include_file;
 
-public:
     xaml_reflection_info_implement(xaml_guid const& type, xaml_ptr<xaml_string>&& name, xaml_ptr<xaml_string>&& include_file) noexcept
         : m_type(type), m_name(std::move(name)), m_include_file(std::move(include_file)) {}
 

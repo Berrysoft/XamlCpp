@@ -290,12 +290,14 @@
 
 #define XAML_ENUM_INFO_ADD2(type, name) XAML_ENUM_INFO_ADD(#name, type##_##name)
 
-#define XAML_META_CONTEXT_ADD_BASIC_TYPE(type)                          \
-    do                                                                  \
-    {                                                                   \
-        xaml_ptr<xaml_string> __name;                                   \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));      \
-        XAML_RETURN_IF_FAILED(ctx->add_basic_type<type>(__name.get())); \
+#define XAML_META_CONTEXT_ADD_BASIC_TYPE(type)                                                                   \
+    do                                                                                                           \
+    {                                                                                                            \
+        xaml_ptr<xaml_string> __name;                                                                            \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                                               \
+        xaml_ptr<xaml_basic_type_info> __info;                                                                   \
+        XAML_RETURN_IF_FAILED(xaml_basic_type_info_new(xaml_type_guid_v<type>, __name.get(), nullptr, &__info)); \
+        XAML_RETURN_IF_FAILED(ctx->add_type(__info.get()));                                                      \
     } while (0)
 
 #endif // __cplusplus

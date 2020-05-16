@@ -11,6 +11,7 @@ using namespace boost::multi_index;
 struct option_entry
 {
     xaml_char_t short_arg;
+    xaml_std_string_view_t long_arg_view;
     xaml_ptr<xaml_string> long_arg;
     xaml_ptr<xaml_string> prop;
     xaml_ptr<xaml_string> help_text;
@@ -29,8 +30,8 @@ struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_
             hashed_non_unique<
                 member<
                     option_entry,
-                    xaml_ptr<xaml_string>,
-                    &option_entry::long_arg>>>>
+                    xaml_std_string_view_t,
+                    &option_entry::long_arg_view>>>>
         m_map;
 
     xaml_result XAML_CALL find_short_arg(xaml_char_t name, xaml_string** ptr) noexcept override;
@@ -54,7 +55,9 @@ xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_stri
 try
 {
     auto& long_index = m_map.get<1>();
-    auto [begin, end] = long_index.equal_range(name);
+    xaml_std_string_view_t view;
+    XAML_RETURN_IF_FAILED(to_string_view_t(name, &view));
+    auto [begin, end] = long_index.equal_range(view);
     if (begin == end) return XAML_E_KEYNOTFOUND;
     return begin->prop->query(ptr);
 }
@@ -68,9 +71,7 @@ try
     if (begin == end) return XAML_E_KEYNOTFOUND;
     for (auto it = begin; it != end; ++it)
     {
-        xaml_std_string_view_t view;
-        XAML_RETURN_IF_FAILED(to_string_view_t(it->long_arg, &view));
-        if (view.empty()) return it->prop->query(ptr);
+        if (it->long_arg_view.empty()) return it->prop->query(ptr);
     }
     return XAML_E_KEYNOTFOUND;
 }
@@ -81,11 +82,13 @@ try
 {
     xaml_ptr<xaml_string> rln = long_name;
     if (!rln) XAML_RETURN_IF_FAILED(xaml_string_empty(&rln));
+    xaml_std_string_view_t rln_view;
+    XAML_RETURN_IF_FAILED(to_string_view_t(long_name, &rln_view));
     xaml_ptr<xaml_string> rpn = prop_name;
     if (!rpn) XAML_RETURN_IF_FAILED(xaml_string_empty(&rpn));
     xaml_ptr<xaml_string> rht = help_text;
     if (!rht) XAML_RETURN_IF_FAILED(xaml_string_empty(&rht));
-    m_map.insert({ short_name, rln, rpn, rht });
+    m_map.insert({ short_name, rln_view, rln, rpn, rht });
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()

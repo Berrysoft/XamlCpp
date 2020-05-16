@@ -33,8 +33,6 @@ XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 
     XAML_METHOD(get_type_by_namespace_name, type, xaml_string*, xaml_string*, xaml_reflection_info**); \
     XAML_METHOD(get_name_by_namespace_name, type, xaml_string*, xaml_string*, xaml_string**);          \
     XAML_METHOD(add_type, type, xaml_reflection_info*);                                                \
-    XAML_METHOD(get_basic_type, type, xaml_guid XAML_CONST_REF, xaml_string**);                        \
-    XAML_METHOD(add_basic_type, type, xaml_guid XAML_CONST_REF, xaml_string*);                         \
     XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode)
 
 XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
@@ -46,18 +44,6 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
     xaml_result XAML_CALL get_type(xaml_reflection_info * *ptr) noexcept
     {
         return get_type(xaml_type_guid_v<T>, ptr);
-    }
-
-    template <typename T>
-    xaml_result XAML_CALL get_basic_type(xaml_string * *ptr) noexcept
-    {
-        return get_basic_type(xaml_type_guid_v<T>, ptr);
-    }
-
-    template <typename T>
-    xaml_result XAML_CALL add_basic_type(xaml_string * name) noexcept
-    {
-        return add_basic_type(xaml_type_guid_v<T>, name);
     }
 
     xaml_result XAML_CALL add_module(xaml_std_string_view_t path) noexcept
