@@ -19,6 +19,8 @@ if(${Boost_nowide_FOUND})
     target_link_libraries(xaml_cmdline PRIVATE Boost::nowide)
 endif()
 
+target_link_libraries(xaml_cmdline PRIVATE Boost::headers)
+
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_cmdline PRIVATE "XAML_CMDLINE_API=__XAML_EXPORT")
 endif()

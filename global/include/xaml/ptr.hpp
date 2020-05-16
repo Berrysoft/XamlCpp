@@ -128,4 +128,10 @@ namespace std
     };
 } // namespace std
 
+template <typename T>
+inline std::size_t hash_value(xaml_ptr<T> const& ptr) noexcept
+{
+    return std::hash<xaml_ptr<T>>{}(ptr);
+}
+
 #endif // !XAML_PTR_HPP

@@ -1,166 +1,162 @@
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index_container.hpp>
 #include <xaml/cmdline/option.h>
 #include <xaml/internal/stream.hpp>
 #include <xaml/map.h>
 
 using namespace std;
+using namespace boost::multi_index;
 
-struct xaml_cmdline_option_entry_impl : xaml_implement<xaml_cmdline_option_entry_impl, xaml_cmdline_option_entry, xaml_object>
+struct option_entry
 {
-    XAML_PROP_IMPL(short_arg, xaml_char_t, xaml_char_t*, xaml_char_t)
-    XAML_PROP_PTR_IMPL(long_arg, xaml_string)
-    XAML_PROP_PTR_IMPL(help_text, xaml_string)
+    xaml_char_t short_arg;
+    xaml_ptr<xaml_string> long_arg;
+    xaml_ptr<xaml_string> prop;
+    xaml_ptr<xaml_string> help_text;
 };
 
 struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_cmdline_option, xaml_object>
 {
-    xaml_ptr<xaml_map> m_short_args;
-    xaml_ptr<xaml_map> m_long_args;
-    xaml_ptr<xaml_map> m_entries;
-    xaml_ptr<xaml_string> m_default_prop;
-
-    xaml_result XAML_CALL init() noexcept;
+    multi_index_container<
+        option_entry,
+        indexed_by<
+            hashed_non_unique<
+                member<
+                    option_entry,
+                    xaml_char_t,
+                    &option_entry::short_arg>>,
+            hashed_non_unique<
+                member<
+                    option_entry,
+                    xaml_ptr<xaml_string>,
+                    &option_entry::long_arg>>>>
+        m_map;
 
     xaml_result XAML_CALL find_short_arg(xaml_char_t name, xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL find_long_arg(xaml_string* name, xaml_string** ptr) noexcept override;
-    xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override { return m_default_prop->query(ptr); }
-    xaml_result XAML_CALL get_entries(xaml_map_view** ptr) noexcept override { return m_entries->query(ptr); }
+    xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL add_arg(xaml_char_t, xaml_string*, xaml_string*, xaml_string*) noexcept override;
+    xaml_result XAML_CALL for_each_entry(xaml_delegate* handler) noexcept override;
 };
 
-xaml_result xaml_cmdline_option_impl::init() noexcept
-{
-    xaml_ptr<xaml_hasher> char_hasher;
-    XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_char_t>(&char_hasher));
-    XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(char_hasher.get(), &m_short_args));
-    xaml_ptr<xaml_hasher> string_hasher;
-    XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
-    XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_long_args));
-    XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_entries));
-    return XAML_S_OK;
-}
-
 xaml_result xaml_cmdline_option_impl::find_short_arg(xaml_char_t name, xaml_string** ptr) noexcept
+try
 {
-    xaml_ptr<xaml_object> key;
-    XAML_RETURN_IF_FAILED(xaml_box_value(name, &key));
-    xaml_ptr<xaml_object> item;
-    XAML_RETURN_IF_FAILED(m_short_args->lookup(key.get(), &item));
-    return item->query(ptr);
+    auto& short_index = m_map.get<0>();
+    auto [begin, end] = short_index.equal_range(name);
+    if (begin == end) return XAML_E_KEYNOTFOUND;
+    return begin->prop->query(ptr);
 }
+XAML_CATCH_RETURN()
 
 xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_string** ptr) noexcept
+try
 {
-    xaml_ptr<xaml_object> item;
-    XAML_RETURN_IF_FAILED(m_long_args->lookup(name, &item));
-    return item->query(ptr);
+    auto& long_index = m_map.get<1>();
+    auto [begin, end] = long_index.equal_range(name);
+    if (begin == end) return XAML_E_KEYNOTFOUND;
+    return begin->prop->query(ptr);
 }
+XAML_CATCH_RETURN()
+
+xaml_result xaml_cmdline_option_impl::get_default_property(xaml_string** ptr) noexcept
+try
+{
+    auto& short_index = m_map.get<0>();
+    auto [begin, end] = short_index.equal_range(U('\0'));
+    if (begin == end) return XAML_E_KEYNOTFOUND;
+    for (auto it = begin; it != end; ++it)
+    {
+        xaml_std_string_view_t view;
+        XAML_RETURN_IF_FAILED(to_string_view_t(it->long_arg, &view));
+        if (view.empty()) return it->prop->query(ptr);
+    }
+    return XAML_E_KEYNOTFOUND;
+}
+XAML_CATCH_RETURN()
 
 xaml_result xaml_cmdline_option_impl::add_arg(xaml_char_t short_name, xaml_string* long_name, xaml_string* prop_name, xaml_string* help_text) noexcept
+try
 {
-    int32_t long_name_length = 0;
-    if (long_name)
+    xaml_ptr<xaml_string> rln = long_name;
+    if (!rln) XAML_RETURN_IF_FAILED(xaml_string_empty(&rln));
+    xaml_ptr<xaml_string> rpn = prop_name;
+    if (!rpn) XAML_RETURN_IF_FAILED(xaml_string_empty(&rpn));
+    xaml_ptr<xaml_string> rht = help_text;
+    if (!rht) XAML_RETURN_IF_FAILED(xaml_string_empty(&rht));
+    m_map.insert({ short_name, rln, rpn, rht });
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+xaml_result xaml_cmdline_option_impl::for_each_entry(xaml_delegate* handler) noexcept
+{
+    for (auto& entry : m_map)
     {
-        XAML_RETURN_IF_FAILED(long_name->get_length(&long_name_length));
+        xaml_ptr<xaml_vector_view> args;
+        XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&args, entry.short_arg, entry.long_arg, entry.prop, entry.help_text));
+        xaml_ptr<xaml_object> obj;
+        XAML_RETURN_IF_FAILED(handler->invoke(args.get(), &obj));
     }
-    bool replaced;
-    xaml_ptr<xaml_cmdline_option_entry> entry;
-    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_cmdline_option_entry_impl>(&entry));
-    if (short_name)
-    {
-        xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(xaml_box_value(short_name, &key));
-        XAML_RETURN_IF_FAILED(m_short_args->insert(key.get(), prop_name, &replaced));
-        XAML_RETURN_IF_FAILED(entry->set_short_arg(short_name));
-    }
-    if (long_name_length)
-    {
-        XAML_RETURN_IF_FAILED(m_long_args->insert(long_name, prop_name, &replaced));
-        XAML_RETURN_IF_FAILED(entry->set_long_arg(long_name));
-    }
-    if (!short_name && !long_name_length)
-    {
-        m_default_prop = prop_name;
-    }
-    if (help_text)
-    {
-        XAML_RETURN_IF_FAILED(entry->set_help_text(help_text));
-    }
-    return m_entries->insert(prop_name, entry.get(), &replaced);
+    return XAML_S_OK;
 }
 
 xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcept
 {
-    return xaml_object_init<xaml_cmdline_option_impl>(ptr);
+    return xaml_object_new<xaml_cmdline_option_impl>(ptr);
 }
 
 static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
 {
-    constexpr size_t offset = 2;
-    constexpr size_t spacing = 24;
-    xaml_ptr<xaml_map_view> entries;
-    XAML_RETURN_IF_FAILED(opt->get_entries(&entries));
-    XAML_FOREACH_START(p, entries);
-    {
-        xaml_ptr<xaml_key_value_pair> prop;
-        XAML_RETURN_IF_FAILED(p->query(&prop));
-        size_t count = offset;
-        stream << xaml_std_string_t(count, ' ');
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(prop->get_value(&value));
-        xaml_ptr<xaml_cmdline_option_entry> entry;
-        XAML_RETURN_IF_FAILED(value->query(&entry));
-        xaml_char_t short_arg;
-        XAML_RETURN_IF_FAILED(entry->get_short_arg(&short_arg));
-        if (short_arg)
-        {
-            stream << U('-') << short_arg;
-            count += 2;
-        }
-        xaml_ptr<xaml_string> long_arg;
-        XAML_RETURN_IF_FAILED(entry->get_long_arg(&long_arg));
-        int32_t long_arg_length = 0;
-        if (long_arg)
-            XAML_RETURN_IF_FAILED(long_arg->get_length(&long_arg_length));
-        if (long_arg_length)
-        {
+    xaml_ptr<xaml_delegate> callback;
+    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_char_t, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
+        [&stream](xaml_char_t short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) -> xaml_result {
+            constexpr size_t offset = 2;
+            constexpr size_t spacing = 24;
+            size_t count = offset;
+            stream << xaml_std_string_t(count, ' ');
             if (short_arg)
             {
-                stream << U(", ");
+                stream << U('-') << short_arg;
                 count += 2;
             }
-            else
+            int32_t long_arg_length = 0;
+            XAML_RETURN_IF_FAILED(long_arg->get_length(&long_arg_length));
+            if (long_arg_length)
             {
-                stream << xaml_std_string_t(4, ' ');
-                count += 4;
+                if (short_arg)
+                {
+                    stream << U(", ");
+                    count += 2;
+                }
+                else
+                {
+                    stream << xaml_std_string_t(4, ' ');
+                    count += 4;
+                }
+                xaml_char_t const* long_arg_data;
+                XAML_RETURN_IF_FAILED(long_arg->get_data(&long_arg_data));
+                stream << U("--") << long_arg_data;
+                count += 2 + long_arg_length;
             }
-            xaml_char_t const* long_arg_data;
-            XAML_RETURN_IF_FAILED(long_arg->get_data(&long_arg_data));
-            stream << U("--") << long_arg_data;
-            count += 2 + long_arg_length;
-        }
-        if (!short_arg && !long_arg_length)
-        {
-            stream << U("[default]");
-            count += 9;
-        }
-        if (count < spacing)
-        {
-            stream << xaml_std_string_t(spacing - count, ' ');
-        }
-        {
-            xaml_ptr<xaml_string> help_text;
-            XAML_RETURN_IF_FAILED(entry->get_help_text(&help_text));
-            if (help_text)
+            if (!short_arg && !long_arg_length)
             {
-                xaml_char_t const* help_text_data;
-                XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
-                stream << help_text_data;
+                stream << U("[default]");
+                count += 9;
             }
-        }
-        stream << endl;
-    }
-    XAML_FOREACH_END();
-    return XAML_S_OK;
+            if (count < spacing)
+            {
+                stream << xaml_std_string_t(spacing - count, ' ');
+            }
+            xaml_char_t const* help_text_data;
+            XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
+            stream << help_text_data;
+            stream << endl;
+            return XAML_S_OK;
+        },
+        &callback)));
+    return opt->for_each_entry(callback.get());
 }
 
 xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept

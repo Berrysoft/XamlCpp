@@ -95,6 +95,25 @@ try
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()
+
+namespace std
+{
+    template <>
+    struct hash<xaml_ptr<xaml_string>>
+    {
+        size_t operator()(xaml_ptr<xaml_string> const& str) const noexcept
+        {
+            xaml_std_string_view_t view{};
+            XAML_ASSERT_SUCCEEDED(to_string_view_t(str, &view));
+            return hash<xaml_std_string_view_t>{}(view);
+        }
+    };
+} // namespace std
+
+inline std::size_t hash_value(xaml_ptr<xaml_string> const& str) noexcept
+{
+    return std::hash<xaml_ptr<xaml_string>>{}(str);
+}
 #endif // __cplusplus
 
 #endif // !XAML_STRING_H

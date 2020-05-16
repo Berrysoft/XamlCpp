@@ -153,6 +153,8 @@ if(WIN32)
     endif()
 elseif(APPLE)
     find_package(Boost REQUIRED iostreams container)
+else()
+    find_package(Boost REQUIRED)
 endif()
 
 option(BUILD_TESTS "Build tests." ON)
