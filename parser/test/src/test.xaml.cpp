@@ -98,6 +98,12 @@ xaml_result XAML_CALL xaml_test_window_new(xaml_meta_context* ctx, xaml_test_win
 
 xaml_result XAML_CALL xaml_test_window_register(xaml_meta_context* ctx) noexcept
 {
+    xaml_ptr<xaml_string> xml_ns;
+    XAML_RETURN_IF_FAILED(xaml_string_new(U("https://github.com/Berrysoft/XamlCpp/parser/test/"), &xml_ns));
+    xaml_ptr<xaml_string> ns;
+    XAML_RETURN_IF_FAILED(xaml_string_new(U("xaml_test"), &ns));
+    XAML_RETURN_IF_FAILED(ctx->add_namespace(xml_ns.get(), ns.get()));
+
     XAML_TYPE_INFO_NEW(xaml_test_window, "test.xaml.h");
     XAML_RETURN_IF_FAILED(xaml_window_members(__info.get()));
     XAML_TYPE_INFO_ADD_PROP(model, xaml_test_model);

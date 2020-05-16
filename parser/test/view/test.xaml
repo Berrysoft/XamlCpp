@@ -1,9 +1,10 @@
-<test_window xmlns="https://github.com/Berrysoft/XamlCpp/"
+<test:window xmlns="https://github.com/Berrysoft/XamlCpp/"
              xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
+             xmlns:test="https://github.com/Berrysoft/XamlCpp/parser/test/"
              title="Test Window" location="200, 100" size="800, 600">
-  <test_window.model>
-    <test_model x:name="model" text="&#x1f923;"/>
-  </test_window.model>
+  <test:window.model>
+    <test:model x:name="model" text="&#x1f923;"/>
+  </test:window.model>
   <grid margin="10" columns="1*, 1*, 0.8*" rows="auto, auto, 0.5*, 0.8*">
     <label margin="10" text_halignment="right" valignment="center">Username:</label>
     <entry grid.column="1" margin="0, 5" valignment="center">John</entry>
@@ -27,4 +28,4 @@
       <check_box margin="5">Check 5</check_box>
     </uniform_grid>
   </grid>
-</test_window>
+</test:window>
