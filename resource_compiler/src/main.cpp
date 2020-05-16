@@ -70,7 +70,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         stream << tab << (i ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
         stream << tab << '{' << endl;
 
-        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));";
+        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));" << endl;
 
         stream << tab << '}' << endl;
     }
