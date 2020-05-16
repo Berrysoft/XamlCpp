@@ -136,7 +136,9 @@ elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
 
-if(APPLE)
+if(WIN32)
+    find_package(Boost REQUIRED nowide)
+elseif(APPLE)
     find_package(Boost REQUIRED iostreams container)
 endif()
 

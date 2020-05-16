@@ -1,10 +1,30 @@
-#include <filesystem>
+#ifdef XAML_WIN32
+#include <ios>
+
+#include <boost/nowide/fstream.hpp>
+#include <boost/nowide/iostream.hpp>
+#else
 #include <fstream>
-#include <iomanip>
 #include <iostream>
+#endif // XAML_WIN32
+
+#include <filesystem>
+#include <iomanip>
 #include <map>
 #include <options.h>
 #include <sstream>
+
+#ifdef XAML_WIN32
+using u8ofstream = boost::nowide::ofstream;
+using u8ifstream = boost::nowide::ifstream;
+
+#define u8cout ::boost::nowide::cout
+#else
+using u8ofstream = std::ofstream;
+using u8ifstream = std::ifstream;
+
+#define u8cout ::std::cout
+#endif // XAML_WIN32
 
 #ifdef UNICODE
 #define _tmain wmain
@@ -37,7 +57,6 @@ constexpr string_view tab = "    ";
 void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 {
     stream << "#include <xaml/resource/resource.h>" << endl;
-    stream << "#include <xaml/string.h>" << endl;
 
     size_t index{ 0 };
     map<path, string> rc_map{};
@@ -52,12 +71,13 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         if (it == rc_map.end())
 #endif // !XAML_APPLE
         {
-            ifstream input{ file };
+            u8ifstream input{ file };
             if (input.is_open())
             {
                 string name = get_valid_name(file.string(), index++);
                 rc_map.emplace(file, name);
-                stream << "inline constexpr char " << name << "[] = " << endl;
+                stream << "inline constexpr char8_t " << name << "[] = " << endl;
+                stream << "u8";
                 string line;
                 while (getline(input, line))
                 {
@@ -81,7 +101,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         stream << tab << (i ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
         stream << tab << '{' << endl;
 
-        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));" << endl;
+        stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char8_t*>(" << pair.second << ")), (std::int32_t)sizeof(" << pair.second << "), &buffer));" << endl;
 
         stream << tab << '}' << endl;
     }
@@ -112,12 +132,12 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
-        ofstream stream{ to_string_t(output) };
+        u8ofstream stream{ path{ to_string_view_t(output) } };
         compile(stream, inputs);
     }
     else
     {
-        compile(cout, inputs);
+        compile(u8cout, inputs);
     }
 
     return 0;
