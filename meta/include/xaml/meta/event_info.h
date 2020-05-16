@@ -18,7 +18,7 @@ XAML_DECL_INTERFACE_(xaml_event_info, xaml_object)
     XAML_DECL_VTBL(xaml_event_info, XAML_EVENT_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_object*, xaml_delegate*, XAML_CSTD int32_t*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, XAML_CSTD int32_t) XAML_NOEXCEPT, xaml_event_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_object*, xaml_delegate*, XAML_STD int32_t*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, XAML_STD int32_t) XAML_NOEXCEPT, xaml_event_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, std::function<xaml_result(xaml_object*, xaml_delegate*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, std::int32_t)>&&, xaml_event_info**) noexcept;

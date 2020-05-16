@@ -17,9 +17,9 @@ typedef struct xaml_version xaml_version;
 
 struct xaml_version
 {
-    XAML_CSTD int32_t major;
-    XAML_CSTD int32_t minor;
-    XAML_CSTD int32_t patch;
+    XAML_STD int32_t major;
+    XAML_STD int32_t minor;
+    XAML_STD int32_t patch;
 
 #ifdef __cplusplus
     auto operator<=>(xaml_version const&) const = default;

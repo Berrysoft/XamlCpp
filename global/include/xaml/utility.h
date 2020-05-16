@@ -89,13 +89,13 @@
 #endif // __cplusplus
 #endif // !EXTERN_C
 
-#ifndef XAML_CSTD
+#ifndef XAML_STD
 #ifdef __cplusplus
-#define XAML_CSTD ::std::
+#define XAML_STD ::std::
 #else
-#define XAML_CSTD
+#define XAML_STD
 #endif // __cplusplus
-#endif // !XAML_CSTD
+#endif // !XAML_STD
 
 #ifndef XAML_CALL
 #ifdef _MSC_VER

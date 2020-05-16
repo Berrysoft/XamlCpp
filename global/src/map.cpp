@@ -113,10 +113,10 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 std::size_t std_hash = hasher(xaml_std_string_view_t(data, (std::size_t)length));
                 std::int32_t* ptr = (std::int32_t*)&std_hash;
 #if SIZE_MAX == UINT64_MAX
-                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint64_t), "Unknown 64-bit platform.");
+                static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");
                 *phash = ptr[0] ^ ptr[1];
 #elif SIZE_MAX == UINT32_MAX
-                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint32_t), "Unknown 32-bit platform.");
+                static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint32_t), "Unknown 32-bit platform.");
                 *phash = ptr[0];
 #else
 #error Cannot determine platform architecture

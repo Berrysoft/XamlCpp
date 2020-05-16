@@ -16,13 +16,13 @@
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)
 typedef long xaml_result;
 #else
-typedef XAML_CSTD int32_t xaml_result;
+typedef XAML_STD int32_t xaml_result;
 #endif // XAML_WIN32 && !XAML_MINGW
 
 #define XAML_SUCCEEDED(expr) (!(expr))
 #define XAML_FAILED(expr) (expr)
 
-EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t const*, XAML_CSTD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
+EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t const*, XAML_STD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
 
 #ifdef UNICODE
 #define __XAML_FILE__ __FILEW__

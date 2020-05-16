@@ -10,7 +10,7 @@ XAML_CLASS(xaml_items_base, { 0xfad67a33, 0x4a5f, 0x4915, { 0xa1, 0x77, 0xe6, 0x
     XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                                \
     XAML_PROP(items, type, xaml_observable_vector**, xaml_observable_vector*); \
     XAML_EVENT(items_changed, type);                                           \
-    XAML_PROP(sel_id, type, XAML_CSTD int32_t*, XAML_CSTD int32_t);            \
+    XAML_PROP(sel_id, type, XAML_STD int32_t*, XAML_STD int32_t);              \
     XAML_EVENT(sel_id_changed, type)
 
 XAML_DECL_INTERFACE_(xaml_items_base, xaml_control)

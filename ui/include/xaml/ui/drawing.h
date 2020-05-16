@@ -257,10 +257,10 @@ typedef struct xaml_color xaml_color;
 
 struct xaml_color
 {
-    XAML_CSTD uint8_t a;
-    XAML_CSTD uint8_t r;
-    XAML_CSTD uint8_t g;
-    XAML_CSTD uint8_t b;
+    XAML_STD uint8_t a;
+    XAML_STD uint8_t r;
+    XAML_STD uint8_t g;
+    XAML_STD uint8_t b;
 
 #ifdef __cplusplus
     constexpr operator std::uint32_t() const noexcept

@@ -42,13 +42,13 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_new(xaml_grid**) X
 EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_register(xaml_meta_context*) XAML_NOEXCEPT;
 
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column_span(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column_span(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row_span(xaml_control*, XAML_CSTD int32_t*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control*, XAML_CSTD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column(xaml_control*, XAML_STD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column(xaml_control*, XAML_STD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row(xaml_control*, XAML_STD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row(xaml_control*, XAML_STD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_column_span(xaml_control*, XAML_STD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_column_span(xaml_control*, XAML_STD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_get_row_span(xaml_control*, XAML_STD int32_t*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control*, XAML_STD int32_t) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CONTROLS_GRID_H

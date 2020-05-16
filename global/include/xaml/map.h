@@ -32,7 +32,7 @@ XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3
     XAML_VTBL_INHERIT(XAML_ENUMERABLE_VTBL(type));          \
     XAML_METHOD(lookup, type, xaml_object*, xaml_object**); \
     XAML_METHOD(has_key, type, xaml_object*, bool*);        \
-    XAML_METHOD(get_size, type, XAML_CSTD int32_t*)
+    XAML_METHOD(get_size, type, XAML_STD int32_t*)
 
 XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 {
@@ -41,9 +41,9 @@ XAML_DECL_INTERFACE_(xaml_map_view, xaml_enumerable)
 
 XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
 
-#define XAML_HASHER_VTBL(type)                                 \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                 \
-    XAML_METHOD(hash, type, xaml_object*, XAML_CSTD int32_t*); \
+#define XAML_HASHER_VTBL(type)                                \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                \
+    XAML_METHOD(hash, type, xaml_object*, XAML_STD int32_t*); \
     XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
 
 XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
@@ -53,7 +53,7 @@ XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_default(xaml_hasher**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_CSTD int32_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_new(xaml_result (*)(xaml_object*, XAML_STD int32_t*), xaml_result (*)(xaml_object*, xaml_object*, bool*), xaml_hasher**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_API xaml_result XAML_CALL xaml_hasher_new(std::function<xaml_result(xaml_object*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, xaml_object*, bool*)>&&, xaml_hasher**) noexcept;
@@ -70,10 +70,10 @@ inline xaml_result XAML_CALL xaml_hasher_new(xaml_hasher** ptr) noexcept
                 std::size_t std_hash = hasher(value);
                 std::int32_t* ptr = (std::int32_t*)&std_hash;
 #if SIZE_MAX == UINT64_MAX
-                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint64_t), "Unknown 64-bit platform.");
+                static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");
                 *phash = ptr[0] ^ ptr[1];
 #elif SIZE_MAX == UINT32_MAX
-                static_assert(sizeof(XAML_CSTD size_t) == sizeof(XAML_CSTD uint32_t), "Unknown 32-bit platform.");
+                static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint32_t), "Unknown 32-bit platform.");
                 *phash = ptr[0];
 #else
 #error Cannot determine platform architecture

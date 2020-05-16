@@ -116,7 +116,7 @@ It is not possible now to build target Windows API with MinGW toolchain, because
 ### Build on Mac
 Mac OS 10.15+ is required for some C++17 features (`<any>` and `<filesystem>`)
 
-`boost` is required because of the uncompleted `<memory_resource>` in libcxx.
+`boost` is required.
 #### Cocoa
 No other package is needed.
 #### Gtk

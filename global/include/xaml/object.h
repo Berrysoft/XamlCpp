@@ -37,8 +37,8 @@
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })
 
 #define XAML_OBJECT_VTBL(type)                                  \
-    XAML_METHOD_(XAML_CSTD int32_t, add_ref, type);             \
-    XAML_METHOD_(XAML_CSTD int32_t, release, type);             \
+    XAML_METHOD_(XAML_STD int32_t, add_ref, type);              \
+    XAML_METHOD_(XAML_STD int32_t, release, type);              \
     XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, void**); \
     XAML_METHOD(get_guid, type, xaml_guid*)
 

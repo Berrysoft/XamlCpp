@@ -260,49 +260,49 @@ xaml_result XAML_CALL xaml_grid_register(xaml_meta_context* ctx) noexcept
     return ctx->add_type(__info.get());
 }
 
-xaml_result XAML_CALL xaml_grid_get_column(xaml_control* c, XAML_CSTD int32_t* presult) noexcept
+xaml_result XAML_CALL xaml_grid_get_column(xaml_control* c, XAML_STD int32_t* presult) noexcept
 {
     *presult = s_grid_indecies[c].column;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_set_column(xaml_control* c, XAML_CSTD int32_t value) noexcept
+xaml_result XAML_CALL xaml_grid_set_column(xaml_control* c, XAML_STD int32_t value) noexcept
 {
     s_grid_indecies[c].column = value;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_get_row(xaml_control* c, XAML_CSTD int32_t* presult) noexcept
+xaml_result XAML_CALL xaml_grid_get_row(xaml_control* c, XAML_STD int32_t* presult) noexcept
 {
     *presult = s_grid_indecies[c].row;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_set_row(xaml_control* c, XAML_CSTD int32_t value) noexcept
+xaml_result XAML_CALL xaml_grid_set_row(xaml_control* c, XAML_STD int32_t value) noexcept
 {
     s_grid_indecies[c].row = value;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_get_column_span(xaml_control* c, XAML_CSTD int32_t* presult) noexcept
+xaml_result XAML_CALL xaml_grid_get_column_span(xaml_control* c, XAML_STD int32_t* presult) noexcept
 {
     *presult = s_grid_indecies[c].column_span;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_set_column_span(xaml_control* c, XAML_CSTD int32_t value) noexcept
+xaml_result XAML_CALL xaml_grid_set_column_span(xaml_control* c, XAML_STD int32_t value) noexcept
 {
     s_grid_indecies[c].column_span = value;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_get_row_span(xaml_control* c, XAML_CSTD int32_t* presult) noexcept
+xaml_result XAML_CALL xaml_grid_get_row_span(xaml_control* c, XAML_STD int32_t* presult) noexcept
 {
     *presult = s_grid_indecies[c].row_span;
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control* c, XAML_CSTD int32_t value) noexcept
+xaml_result XAML_CALL xaml_grid_set_row_span(xaml_control* c, XAML_STD int32_t value) noexcept
 {
     s_grid_indecies[c].row_span = value;
     return XAML_S_OK;

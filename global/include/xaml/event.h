@@ -10,10 +10,10 @@
 
 XAML_CLASS(xaml_event, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0x2b, 0xdd, 0xca, 0x7f } })
 
-#define XAML_EVENT_VTBL(type)                                   \
-    XAML_VTBL_INHERIT(XAML_DELEGATE_VTBL(type));                \
-    XAML_METHOD(add, type, xaml_delegate*, XAML_CSTD int32_t*); \
-    XAML_METHOD(remove, type, XAML_CSTD int32_t)
+#define XAML_EVENT_VTBL(type)                                  \
+    XAML_VTBL_INHERIT(XAML_DELEGATE_VTBL(type));               \
+    XAML_METHOD(add, type, xaml_delegate*, XAML_STD int32_t*); \
+    XAML_METHOD(remove, type, XAML_STD int32_t)
 
 XAML_DECL_INTERFACE_(xaml_event, xaml_delegate)
 {
