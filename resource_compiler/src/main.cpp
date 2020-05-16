@@ -80,7 +80,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
     stream << tab << '}' << endl;
 
-    stream << tab << "return buffer->query(ptr);";
+    stream << tab << "return buffer->query(ptr);" << endl;
 
     stream << '}' << endl;
 }
