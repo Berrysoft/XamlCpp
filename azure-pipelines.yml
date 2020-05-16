@@ -46,8 +46,8 @@ jobs:
   steps:
   - script: |
       git clone https://github.com/Microsoft/vcpkg
-      vcpkg/bootstrap.bat -Win64
-      vcpkg/vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows
+      vcpkg\bootstrap.bat -Win64
+      vcpkg\vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows
     displayName: 'Install wil & boost-nowide'
     condition: eq(variables.rid, 'win')
 
