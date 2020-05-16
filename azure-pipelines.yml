@@ -113,6 +113,8 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       cd build
       ninja install
+      cd ..
+      copy vcpkg\installed\$(arch)-windows\bin\*.dll $(Build.ArtifactStagingDirectory)\$(rid)-$(arch)\
     displayName: 'Install all projects'
     condition: eq(variables.rid, 'win')
 

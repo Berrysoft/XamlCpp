@@ -200,8 +200,3 @@ install(
 install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
 configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
 install(FILES ${PROJECT_BINARY_DIR}/xaml-config.cmake DESTINATION lib/cmake/xaml)
-
-if(WIN32 AND NOT MINGW)
-    file(GLOB BOOST_LIBS "${XAML_RUNTIME_OUTPUT_DIRECTORY}/boost*.dll")
-    install(FILES ${BOOST_LIBS} DESTINATION bin)
-endif()
