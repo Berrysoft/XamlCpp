@@ -37,6 +37,10 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui PRIVATE gtk3)
 endif()
 
+if(${Boost_nowide_FOUND})
+    target_link_libraries(xaml_ui PRIVATE Boost::nowide)
+endif()
+
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)
 install(FILES ${UI_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win)
 install(FILES ${UI_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa)

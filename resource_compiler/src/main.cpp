@@ -14,7 +14,7 @@
 #include <options.h>
 #include <sstream>
 
-#ifdef XAML_WIN32
+#ifdef XAML_USE_BOOST_NOWIDE
 using u8ofstream = boost::nowide::ofstream;
 using u8ifstream = boost::nowide::ifstream;
 
