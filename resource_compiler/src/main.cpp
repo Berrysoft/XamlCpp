@@ -1,4 +1,4 @@
-#ifdef XAML_WIN32
+#ifdef XAML_USE_BOOST_NOWIDE
 #include <ios>
 
 #include <boost/nowide/fstream.hpp>
@@ -6,7 +6,7 @@
 #else
 #include <fstream>
 #include <iostream>
-#endif // XAML_WIN32
+#endif // XAML_USE_BOOST_NOWIDE
 
 #include <filesystem>
 #include <iomanip>

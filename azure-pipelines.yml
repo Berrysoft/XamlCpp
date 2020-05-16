@@ -46,7 +46,7 @@ jobs:
   steps:
   - script: |
       vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows
-    displayName: 'Install wil'
+    displayName: 'Install wil & boost-nowide'
     condition: eq(variables.rid, 'win')
 
   - script: |

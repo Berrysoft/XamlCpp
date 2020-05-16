@@ -7,7 +7,7 @@ target_include_directories(xamlrc PUBLIC include)
 
 target_link_libraries(xamlrc PUBLIC xaml_cmdline PRIVATE xaml_cmdline_helper)
 
-if(WIN32)
+if(${Boost_nowide_FOUND})
     target_link_libraries(xamlrc PUBLIC Boost::nowide)
 endif()
 
