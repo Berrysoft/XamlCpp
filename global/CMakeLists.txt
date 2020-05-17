@@ -20,6 +20,10 @@ target_include_directories(xaml_global
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+if(Boost_nowide_FOUND)
+    target_link_libraries(xaml_global PRIVATE Boost::headers)
+endif()
+
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")
 endif()

@@ -168,7 +168,7 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
-        u8ofstream stream{ path{ to_string_view_t(output) } };
+        u8ofstream stream{ to_string(output) };
         compile(stream, inputs);
     }
     else

@@ -1,7 +1,13 @@
+#ifdef UNICODE
+#ifdef XAML_USE_BOOST_NOWIDE
+#include <boost/nowide/convert.hpp>
+#else
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+#include <codecvt>
+#endif // XAML_USE_BOOST_NOWIDE
+#endif // UNICODE
 
 #include <algorithm>
-#include <codecvt>
 #include <xaml/object.h>
 #include <xaml/string.h>
 
@@ -110,24 +116,39 @@ xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t str, xaml_stri
 }
 
 #ifdef UNICODE
-static wstring to_wstring(string_view str) noexcept
+#ifdef XAML_USE_BOOST_NOWIDE
+static xaml_result to_wstring(string_view str, wstring* pvalue) noexcept
 try
 {
-    wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
-    return conv.from_bytes(str.data(), str.data() + str.length());
+    *pvalue = boost::nowide::widen(str.data(), str.size());
+    return XAML_S_OK;
 }
-catch (...)
-{
-    return {};
-}
+XAML_CATCH_RETURN()
 
 string to_string(xaml_ptr<xaml_string> const& str)
 {
     xaml_char_t const* data;
     XAML_THROW_IF_FAILED(str->get_data(&data));
-    wstring_convert<codecvt_utf8_utf16<wchar_t>> conv;
-    return conv.to_bytes(data);
+    return boost::nowide::narrow(data);
 }
+#else
+static wstring_convert<codecvt_utf8_utf16<wchar_t>> s_conv;
+
+static xaml_result to_wstring(string_view str, wstring* pvalue) noexcept
+try
+{
+    *pvalue = s_conv.from_bytes(str.data(), str.data() + str.length());
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+string to_string(xaml_ptr<xaml_string> const& str)
+{
+    xaml_char_t const* data;
+    XAML_THROW_IF_FAILED(str->get_data(&data));
+    return s_conv.to_bytes(data);
+}
+#endif // XAML_USE_BOOST_NOWIDE
 
 ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 {
@@ -141,12 +162,16 @@ basic_ostream<xaml_char_t>& operator<<(basic_ostream<xaml_char_t>& stream, xaml_
 
 xaml_result XAML_CALL xaml_string_new_utf8(char const* str, xaml_string** ptr) noexcept
 {
-    return xaml_string_new(to_wstring(str), ptr);
+    wstring value;
+    XAML_RETURN_IF_FAILED(to_wstring(str, &value));
+    return xaml_string_new(move(value), ptr);
 }
 
 xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) noexcept
 {
-    return xaml_string_new(to_wstring(str), ptr);
+    wstring value;
+    XAML_RETURN_IF_FAILED(to_wstring(str, &value));
+    return xaml_string_new(move(value), ptr);
 }
 #else
 string to_string(xaml_ptr<xaml_string> const& str)
