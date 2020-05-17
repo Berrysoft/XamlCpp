@@ -40,7 +40,7 @@ struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage
 
     void Length(uint32_t value) { throw hresult_invalid_argument(); }
 
-    STDMETHODIMP Buffer(uint8_t** value)
+    STDMETHODIMP Buffer(::byte** value)
     {
         return m_buffer->get_data(value);
     }

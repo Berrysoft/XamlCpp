@@ -120,12 +120,11 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         }
     }
 
-    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, xaml_buffer** ptr) noexcept" << endl;
+    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept" << endl;
     stream << '{' << endl;
 
     stream << tab << "xaml_std_string_view_t file;" << endl;
     stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
-    stream << tab << "xaml_ptr<xaml_buffer> buffer;" << endl;
 
     size_t i = 0;
     for (auto pair : rc_map)
@@ -135,9 +134,14 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
         auto& [name, text] = pair.second;
         if (text)
-            stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(reinterpret_cast<std::uint8_t*>(const_cast<char8_t*>(" << name << ")), (std::int32_t)sizeof(" << name << "), &buffer));" << endl;
+        {
+            stream << tab << tab << "*pdata = reinterpret_cast<std::uint8_t const*>(" << name << ");" << endl;
+        }
         else
-            stream << tab << tab << "XAML_RETURN_IF_FAILED(xaml_buffer_new_reference(const_cast<std::uint8_t*>(" << name << "), (std::int32_t)sizeof(" << name << "), &buffer));" << endl;
+        {
+            stream << tab << tab << "*pdata = " << name << ';' << endl;
+        }
+        stream << tab << tab << "*psize = static_cast<std::int32_t>(sizeof(" << name << "));" << endl;
 
         stream << tab << '}' << endl;
     }
@@ -147,7 +151,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
     stream << tab << '}' << endl;
 
-    stream << tab << "return buffer->query(ptr);" << endl;
+    stream << tab << "return XAML_S_OK;" << endl;
 
     stream << '}' << endl;
 }
