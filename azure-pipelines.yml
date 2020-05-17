@@ -51,7 +51,7 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      vcpkg\vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows
+      vcpkg\vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows boost-multi-index:$(arch)-windows
     displayName: 'Install wil & boost'
     condition: eq(variables.rid, 'win')
 
@@ -65,7 +65,7 @@ jobs:
 
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
-      sudo apt-get install gcc-10 g++-10 libgtk-3-dev libwebkit2gtk-4.0-dev ninja-build
+      sudo apt-get install gcc-10 g++-10 libgtk-3-dev libwebkit2gtk-4.0-dev ninja-build boost-dev
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
     displayName: 'Install linux dependencies'
     condition: eq(variables.rid, 'linux')

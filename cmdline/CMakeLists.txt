@@ -15,7 +15,7 @@ target_include_directories(xaml_cmdline
 
 target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers)
 
-if(${Boost_nowide_FOUND})
+if(Boost_nowide_FOUND)
     target_link_libraries(xaml_cmdline PRIVATE Boost::nowide)
 endif()
 
