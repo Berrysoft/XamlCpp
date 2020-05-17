@@ -22,6 +22,19 @@ jobs:
         plat: 'win'
         rid: 'mingw'
         def: '-DBUILD_GTK3=on'
+        arch: 'x64'
+        arch_pkg: 'x86_64'
+        msystem: 'MINGW64'
+        bindir: 'C:\msys64\mingw64\bin'
+      mingw_x86:
+        imageName: 'windows-latest'
+        plat: 'win'
+        rid: 'mingw'
+        def: '-DBUILD_GTK3=on'
+        arch: 'x86'
+        arch_pkg: 'i686'
+        msystem: 'MINGW32'
+        bindir: 'C:\msys64\mingw32\bin'
       linux:
         imageName: 'ubuntu-latest'
         plat: 'linux'
@@ -57,11 +70,11 @@ jobs:
 
   - script: |
       cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
-      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm git mingw-w64-x86_64-gcc mingw-w64-x86_64-pkg-config mingw-w64-x86_64-gtk3 mingw-w64-x86_64-boost"
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm git mingw-w64-$(arch_pkg)-gcc mingw-w64-$(arch_pkg)-pkg-config mingw-w64-$(arch_pkg)-gtk3 mingw-w64-$(arch_pkg)-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
     env:
-      MSYSTEM: MINGW64
+      MSYSTEM: $(msystem)
 
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
@@ -89,14 +102,14 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
-      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=C:/msys64/mingw64/bin/gcc.exe -DCMAKE_CXX_COMPILER=C:/msys64/mingw64/bin/g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=$(bindir)\gcc.exe -DCMAKE_CXX_COMPILER=$(bindir)\g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
     env:
-      MSYSTEM: MINGW64
-      PATH: C:\msys64\mingw64\bin
+      MSYSTEM: $(msystem)
+      PATH: $(bindir)
 
   - task: CMake@1
     displayName: 'Configure all projects'
@@ -120,14 +133,14 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - script: |
-      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
+      call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       cd build
       ninja install
     displayName: 'Install all projects'
     condition: eq(variables.rid, 'mingw')
     env:
-      MSYSTEM: MINGW64
-      PATH: C:\msys64\mingw64\bin
+      MSYSTEM: $(msystem)
+      PATH: $(bindir)
 
   - script: |
       cd build
