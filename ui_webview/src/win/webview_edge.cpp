@@ -46,29 +46,6 @@ struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage
     }
 };
 
-struct xaml_buffer_ibuffer_impl : xaml_implement<xaml_buffer_ibuffer_impl, xaml_buffer, xaml_object>
-{
-    IBuffer m_buffer;
-
-    xaml_buffer_ibuffer_impl(IBuffer buffer) noexcept : m_buffer(buffer) {}
-
-    xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
-    try
-    {
-        *psize = (int32_t)m_buffer.Length();
-        return XAML_S_OK;
-    }
-    XAML_CATCH_RETURN_WINRT()
-
-    xaml_result XAML_CALL get_data(uint8_t** pdata) noexcept override
-    try
-    {
-        *pdata = m_buffer.data();
-        return XAML_S_OK;
-    }
-    XAML_CATCH_RETURN_WINRT()
-};
-
 xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
 try
 {
