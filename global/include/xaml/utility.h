@@ -123,14 +123,6 @@
 #endif // __cplusplus
 #endif // !XAML_CONST_REF
 
-#ifndef XAML_ADDRESSOF_REF
-#ifdef __cplusplus
-#define XAML_ADDRESSOF_REF(x) (&x)
-#else
-#define XAML_ADDRESSOF_REF(x) (x)
-#endif // __cplusplus
-#endif // !XAML_ADDRESSOF_REF
-
 #ifndef XAML_CONSTEXPR
 #ifdef __cplusplus
 #define XAML_CONSTEXPR constexpr

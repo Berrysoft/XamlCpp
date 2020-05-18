@@ -53,14 +53,15 @@ inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 }
 #endif // !__cplusplus
 
-XAML_CONSTEXPR XAML_STD size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXCEPT
+#ifdef __cplusplus
+constexpr std::size_t hash_value(xaml_guid const& g) noexcept
 {
-    XAML_STD size_t* ptr = (XAML_STD size_t*)XAML_ADDRESSOF_REF(g);
+    std::size_t* ptr = (std::size_t*)&g;
 #if SIZE_MAX == UINT64_MAX
-    static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");
+    static_assert(sizeof(std::size_t) == sizeof(std::uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];
 #elif SIZE_MAX == UINT32_MAX
-    static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint32_t), "Unknown 32-bit platform.");
+    static_assert(sizeof(std::size_t) == sizeof(std::uint32_t), "Unknown 32-bit platform.");
     return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
 #else
 #error Cannot determine platform architecture
@@ -68,13 +69,12 @@ XAML_CONSTEXPR XAML_STD size_t hash_value(xaml_guid XAML_CONST_REF g) XAML_NOEXC
 #endif
 }
 
-#ifdef __cplusplus
 namespace std
 {
     template <>
     struct hash<xaml_guid>
     {
-        constexpr std::size_t operator()(xaml_guid const& g) const noexcept
+        constexpr size_t operator()(xaml_guid const& g) const noexcept
         {
             return hash_value(g);
         }

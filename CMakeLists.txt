@@ -102,16 +102,16 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
-if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-incompatible-ms-struct")
 endif()
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-inconsistent-missing-override")
 endif()
 
 # Enable MSVC new preprocessor
-#if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang"))
+#if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang"))
 #    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
 #endif()
 
