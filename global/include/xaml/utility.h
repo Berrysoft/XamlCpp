@@ -99,9 +99,9 @@
 
 #ifndef XAML_CALL
 #ifdef _MSC_VER
-#define XAML_CALL __stdcall
+#define XAML_CALL __cdecl
 #elif defined(__MINGW32__)
-#define XAML_CALL __attribute__((__stdcall__))
+#define XAML_CALL __attribute__((__cdecl__))
 #else
 #define XAML_CALL
 #endif // _MSC_VER

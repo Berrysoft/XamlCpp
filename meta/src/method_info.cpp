@@ -4,11 +4,9 @@ using namespace std;
 
 struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method_info, xaml_delegate, xaml_object>
 {
-private:
     xaml_ptr<xaml_string> m_name;
     function<xaml_result(xaml_vector_view*)> m_func;
 
-public:
     xaml_method_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_vector_view*)>&& func) noexcept : m_name(name), m_func(move(func)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
