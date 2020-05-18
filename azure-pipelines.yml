@@ -26,6 +26,7 @@ jobs:
         arch_pkg: 'x86_64'
         msystem: 'MINGW64'
         bindir: 'C:\msys64\mingw64\bin'
+        bindir2: 'C:/msys64/mingw64/bin'
       mingw_x86:
         imageName: 'windows-latest'
         plat: 'win'
@@ -35,6 +36,7 @@ jobs:
         arch_pkg: 'i686'
         msystem: 'MINGW32'
         bindir: 'C:\msys64\mingw32\bin'
+        bindir2: 'C:/msys64/mingw32/bin'
       linux:
         imageName: 'ubuntu-latest'
         plat: 'linux'
@@ -104,7 +106,7 @@ jobs:
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
-      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=$(bindir)\gcc.exe -DCMAKE_CXX_COMPILER=$(bindir)\g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=$(bindir2)/gcc.exe -DCMAKE_CXX_COMPILER=$(bindir2)/g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch)
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
     env:
