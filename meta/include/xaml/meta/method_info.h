@@ -31,7 +31,11 @@ inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args) + 1) return XAML_E_INVALIDARG;
                 return __xaml_delegate_noexcept_impl_invoke_void<xaml_ptr<T>, Args...>(
-                    std::function<xaml_result(xaml_ptr<T>, Args...)>([func](xaml_ptr<T> self, Args... args) -> xaml_result { return (self.get()->*func)(std::forward<Args>(args)...); }), args);
+                    std::function<xaml_result(xaml_ptr<T>, Args...)>{
+                        [func](xaml_ptr<T> self, Args... args) -> xaml_result {
+                            return (self.get()->*func)(std::forward<Args>(args)...);
+                        } },
+                    args);
             } },
         ptr);
 }

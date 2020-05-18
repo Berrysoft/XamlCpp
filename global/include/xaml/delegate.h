@@ -149,15 +149,38 @@ inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate*
         ptr);
 }
 
+template <typename...>
+struct __xaml_delegate_pack_args_impl;
+
+template <typename Arg1, typename... Args>
+struct __xaml_delegate_pack_args_impl<Arg1, Args...>
+{
+    xaml_result operator()(xaml_ptr<xaml_vector> const& res, Arg1&& arg1, Args&&... args) const noexcept
+    {
+        xaml_ptr<xaml_object> obj;
+        XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<Arg1>(arg1), &obj));
+        XAML_RETURN_IF_FAILED(res->append(obj.get()));
+        return __xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...);
+    }
+};
+
+template <>
+struct __xaml_delegate_pack_args_impl<>
+{
+    xaml_result operator()(xaml_ptr<xaml_vector> const& res) const noexcept
+    {
+        return XAML_S_OK;
+    }
+};
+
 template <typename... Args>
 xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noexcept
-try
 {
     xaml_ptr<xaml_vector> res;
-    XAML_RETURN_IF_FAILED(xaml_vector_new({ xaml_box_value(std::forward<Args>(args))... }, &res));
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&res));
+    XAML_RETURN_IF_FAILED(__xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...));
     return res->query(ptr);
 }
-XAML_CATCH_RETURN()
 
 template <typename T, typename Return, typename... Args>
 constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...), T* obj) noexcept
