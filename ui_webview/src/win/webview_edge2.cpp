@@ -60,20 +60,6 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(uri), &uri_str));
                                         RETURN_IF_FAILED(args_req->set_uri(uri_str.get()));
 
-                                        wil::com_ptr_t<IStream, wil::err_returncode_policy> stream;
-                                        RETURN_IF_FAILED(req->get_Content(&stream));
-                                        if (stream)
-                                        {
-                                            unsigned long long count;
-                                            RETURN_IF_FAILED(wil::stream_size_nothrow(stream.get(), &count));
-                                            xaml_ptr<xaml_buffer> buffer;
-                                            RETURN_IF_FAILED(xaml_buffer_new((int32_t)count, &buffer));
-                                            uint8_t* data;
-                                            RETURN_IF_FAILED(buffer->get_data(&data));
-                                            RETURN_IF_FAILED(stream->Read(data, (ULONG)count, nullptr));
-                                            RETURN_IF_FAILED(args_req->set_data(buffer.get()));
-                                        }
-
                                         RETURN_IF_FAILED(invoke_resource_requested(args));
 
                                         xaml_ptr<xaml_webview_web_response> args_res;

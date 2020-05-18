@@ -30,8 +30,7 @@ XAML_CLASS(xaml_webview_web_request, { 0xa1c28b95, 0x1a77, 0x4cb4, { 0xa3, 0xbd,
 #define XAML_WEBVIEW_WEB_REQUEST_VTBL(type)               \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));            \
     XAML_PROP(method, type, xaml_string**, xaml_string*); \
-    XAML_PROP(uri, type, xaml_string**, xaml_string*);    \
-    XAML_PROP(data, type, xaml_buffer**, xaml_buffer*)
+    XAML_PROP(uri, type, xaml_string**, xaml_string*)
 
 XAML_DECL_INTERFACE_(xaml_webview_web_request, xaml_object)
 {

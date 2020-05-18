@@ -151,15 +151,13 @@ inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate*
 
 template <typename... Args>
 xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view** ptr, Args&&... args) noexcept
+try
 {
-    try
-    {
-        xaml_ptr<xaml_vector> res;
-        XAML_RETURN_IF_FAILED(xaml_vector_new({ xaml_box_value(std::forward<Args>(args))... }, &res));
-        return res->query(ptr);
-    }
-    XAML_CATCH_RETURN()
+    xaml_ptr<xaml_vector> res;
+    XAML_RETURN_IF_FAILED(xaml_vector_new({ xaml_box_value(std::forward<Args>(args))... }, &res));
+    return res->query(ptr);
 }
+XAML_CATCH_RETURN()
 
 template <typename T, typename Return, typename... Args>
 constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...), T* obj) noexcept

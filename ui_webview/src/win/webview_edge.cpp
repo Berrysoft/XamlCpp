@@ -46,12 +46,35 @@ struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage
     }
 };
 
+struct xaml_buffer_ibuffer_impl : xaml_implement<xaml_buffer_ibuffer_impl, xaml_buffer, xaml_object>
+{
+    IBuffer m_buffer;
+
+    xaml_buffer_ibuffer_impl(IBuffer buffer) noexcept : m_buffer(buffer) {}
+
+    xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
+    try
+    {
+        *psize = (int32_t)m_buffer.Length();
+        return XAML_S_OK;
+    }
+    XAML_CATCH_RETURN_WINRT()
+
+    xaml_result XAML_CALL get_data(uint8_t** pdata) noexcept override
+    try
+    {
+        *pdata = m_buffer.data();
+        return XAML_S_OK;
+    }
+    XAML_CATCH_RETURN_WINRT()
+};
+
 xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
 try
 {
     WebViewControlProcess process;
     auto task = process.CreateWebViewControlAsync((int64_t)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
-    task.Completed([this, callback](IAsyncOperation<WebViewControl> operation, AsyncStatus status) {
+    task.Completed([this, callback](IAsyncOperation<WebViewControl> const& operation, AsyncStatus status) {
         if (status == AsyncStatus::Completed)
         {
             m_view = operation.GetResults();
@@ -75,6 +98,7 @@ try
                 xaml_ptr<xaml_string> uri_str;
                 check_hresult(xaml_string_new_hstring(uri, &uri_str));
                 check_hresult(args_req->set_uri(uri_str.get()));
+
                 check_hresult(invoke_resource_requested(args));
 
                 xaml_ptr<xaml_webview_web_response> args_res;

@@ -9,7 +9,7 @@ private:
     vector<uint8_t> m_buffer;
 
 public:
-    xaml_buffer_impl(int32_t size) : m_buffer((size_t)size) {}
+    xaml_buffer_impl(int32_t size) noexcept : m_buffer((size_t)size) {}
     xaml_buffer_impl(vector<uint8_t>&& buffer) noexcept : m_buffer(move(buffer)) {}
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
