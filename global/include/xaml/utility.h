@@ -100,8 +100,8 @@
 #ifndef XAML_CALL
 #ifdef _MSC_VER
 #define XAML_CALL __cdecl
-#elif defined(__MINGW32__)
-#define XAML_CALL __attribute__((__cdecl__))
+#elif defined(__GNUC__) && defined(__MINGW32__)
+#define XAML_CALL __attribute__((cdecl))
 #else
 #define XAML_CALL
 #endif // _MSC_VER
@@ -137,6 +137,8 @@
 #else
 #ifdef _MSC_VER
 #define XAML_CONSTEXPR_VAR extern const __declspec(selectany)
+#elif defined(__GNUC__) && defined(__MINGW32__)
+#define XAML_CONSTEXPR_VAR extern const __attribute__((selectany))
 #else
 #define XAML_CONSTEXPR_VAR static const
 #endif // _MSC_VER
