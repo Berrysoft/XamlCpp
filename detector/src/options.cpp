@@ -24,6 +24,7 @@ xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noe
     xaml_ptr<xaml_cmdline_option> opt;
     XAML_RETURN_IF_FAILED(xaml_cmdline_option_new(&opt));
     XAML_RETURN_IF_FAILED(opt->add_arg(U('h'), U("help"), U("help"), U("Print help message")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(0, U("version"), U("version"), U("Print version info")));
 #ifndef NDEBUG
     XAML_RETURN_IF_FAILED(opt->add_arg(U('d'), U("debug"), U("debug"), U("Show debug output")));
 #endif // !NDEBUG

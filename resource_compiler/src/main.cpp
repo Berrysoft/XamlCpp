@@ -81,7 +81,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file, make_tuple(name, text));
+                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
                     stream << "inline constexpr char8_t " << name << "[] = " << endl;
                     stream << "u8";
                     string line;
@@ -103,7 +103,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file, make_tuple(name, text));
+                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
                     stream << "inline constexpr ::std::uint8_t " << name << "[] = {";
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
@@ -129,7 +129,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     size_t i = 0;
     for (auto pair : rc_map)
     {
-        stream << tab << (i++ ? "else if (file == U(" : "if (file == U(") << quoted(pair.first.string()) << "))" << endl;
+        stream << tab << (i++ ? "else if (file == U(" : "if (file == U(") << pair.first << "))" << endl;
         stream << tab << '{' << endl;
 
         auto& [name, text] = pair.second;

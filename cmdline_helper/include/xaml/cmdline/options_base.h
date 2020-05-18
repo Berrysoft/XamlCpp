@@ -14,6 +14,7 @@ XAML_CLASS(xaml_cmdline_options_base, { 0x50dd3e88, 0x5d41, 0x4418, { 0x90, 0x96
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
     XAML_PROP(help, type, bool*, bool);        \
     XAML_PROP(verbose, type, bool*, bool);     \
+    XAML_PROP(version, type, bool*, bool);     \
     XAML_PROP(debug, type, bool*, bool);       \
     XAML_PROP(no_logo, type, bool*, bool)
 

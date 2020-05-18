@@ -8,6 +8,7 @@ struct xaml_cmdline_options_base_implement : xaml_implement<T, Base..., xaml_cmd
 {
     XAML_PROP_IMPL(help, bool, bool*, bool)
     XAML_PROP_IMPL(verbose, bool, bool*, bool)
+    XAML_PROP_IMPL(version, bool, bool*, bool)
     XAML_PROP_IMPL(debug, bool, bool*, bool)
     XAML_PROP_IMPL(no_logo, bool, bool*, bool)
 };

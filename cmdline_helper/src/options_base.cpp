@@ -22,6 +22,7 @@ xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registrat
     using self_type = xaml_cmdline_options_base;
     XAML_TYPE_INFO_ADD_PROP(help, bool);
     XAML_TYPE_INFO_ADD_PROP(verbose, bool);
+    XAML_TYPE_INFO_ADD_PROP(version, bool);
     XAML_TYPE_INFO_ADD_PROP(debug, bool);
     XAML_TYPE_INFO_ADD_PROP(no_logo, bool);
     return XAML_S_OK;
@@ -34,6 +35,23 @@ xaml_result XAML_CALL xaml_cmdline_options_base_register(xaml_meta_context* ctx)
     return ctx->add_type(__info.get());
 }
 
+static xaml_result print_help(xaml_ptr<xaml_type_info> const& t) noexcept
+{
+    xaml_ptr<xaml_cmdline_option> opt;
+    XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
+    return XAML_S_OK;
+}
+
+static void print_version() noexcept
+{
+    _tcout << U("") XAML_VERSION;
+#ifdef XAML_COMMIT_HASH
+    constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
+    _tcout << U('-') << hash.substr(0, 8);
+#endif // XAML_COMMIT_HASH
+}
+
 xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, xaml_char_t** argv, void** ptr) noexcept
 {
     xaml_ptr<xaml_reflection_info> info;
@@ -41,11 +59,27 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(info->query(&t));
     xaml_ptr<xaml_cmdline_options> opts;
-    XAML_RETURN_IF_FAILED(xaml_cmdline_parse_argv(t.get(), argc, argv, &opts));
+    {
+        xaml_result hr = xaml_cmdline_parse_argv(t.get(), argc, argv, &opts);
+        if (XAML_FAILED(hr))
+        {
+            _tcerr << U("Error: 0x") << hex << hr << endl;
+            XAML_RETURN_IF_FAILED(print_help(t));
+            exit(1);
+        }
+    }
     xaml_ptr<xaml_object> obj;
     XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
     xaml_ptr<xaml_cmdline_options_base> options;
     XAML_RETURN_IF_FAILED(obj->query(&options));
+
+    bool show_version;
+    XAML_RETURN_IF_FAILED(options->get_version(&show_version));
+    if (show_version)
+    {
+        print_version();
+        exit(0);
+    }
 
     bool verbose;
     XAML_RETURN_IF_FAILED(options->get_verbose(&verbose));
@@ -65,11 +99,8 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        _tcout << exe.filename().string<xaml_char_t>() << U(" ") XAML_VERSION;
-#ifdef XAML_COMMIT_HASH
-        constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
-        _tcout << U('-') << hash.substr(0, 8);
-#endif // XAML_COMMIT_HASH
+        _tcout << exe.filename().string<xaml_char_t>() << U(" ");
+        print_version();
         _tcout << U("\nCopyright (c) 2019-2020 Berrysoft\n") << endl;
     }
 
@@ -77,10 +108,8 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_help(&help));
     if (help || argc <= 1)
     {
-        xaml_ptr<xaml_cmdline_option> opt;
-        XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
-        XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
-        exit(1);
+        XAML_RETURN_IF_FAILED(print_help(t));
+        exit(0);
     }
 
     return options->query(id, ptr);
