@@ -92,11 +92,17 @@ static vector<path> get_module_search_path()
 #endif // XAML_WIN32
     result.push_back(".");
     result.push_back("../lib");
+#ifdef CMAKE_INTDIR
+    result.push_back("../../lib/" CMAKE_INTDIR);
+#endif // CMAKE_INTDIR
     auto location = program_location().parent_path();
     if (!location.empty())
     {
         result.push_back(location);
-        result.push_back(location / ".." / "lib");
+        result.push_back(location / "../lib");
+#ifdef CMAKE_INTDIR
+        result.push_back(location / "../../lib" / CMAKE_INTDIR);
+#endif // CMAKE_INTDIR
     }
     return result;
 }
