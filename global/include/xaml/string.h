@@ -25,8 +25,7 @@ XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 
 #define XAML_STRING_VTBL(type)                        \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));        \
     XAML_METHOD(get_length, type, XAML_STD int32_t*); \
-    XAML_METHOD(get_data, type, xaml_char_t const**); \
-    XAML_METHOD(equals, type, xaml_string*, bool*)
+    XAML_METHOD(get_data, type, xaml_char_t const**)
 
 XAML_DECL_INTERFACE_(xaml_string, xaml_object)
 {
@@ -38,6 +37,7 @@ EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const*,
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_utf8(char const*, xaml_string**) XAML_NOEXCEPT;
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_empty(xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_equals(xaml_string*, xaml_string*, bool*) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_clone(xaml_string*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_concat(xaml_string*, xaml_string*, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_substr(xaml_string*, XAML_STD int32_t, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;

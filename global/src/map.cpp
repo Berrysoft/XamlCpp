@@ -128,7 +128,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 xaml_ptr<xaml_string> lvalue, rvalue;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, &lvalue));
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, &rvalue));
-                return lvalue->equals(rvalue.get(), pb);
+                return xaml_string_equals(lvalue.get(), rvalue.get(), pb);
             } },
         ptr);
 }

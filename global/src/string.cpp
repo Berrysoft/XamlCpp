@@ -34,23 +34,6 @@ struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
             *ptr = m_str.data();
         return XAML_S_OK;
     }
-
-    xaml_result XAML_CALL equals(xaml_string* str, bool* pres) noexcept override
-    {
-        int32_t rhs_length;
-        XAML_RETURN_IF_FAILED(str->get_length(&rhs_length));
-        xaml_char_t const* rhs_data;
-        XAML_RETURN_IF_FAILED(str->get_data(&rhs_data));
-        if ((int32_t)m_str.size() != rhs_length)
-        {
-            *pres = false;
-        }
-        else
-        {
-            *pres = char_traits<xaml_char_t>::compare(m_str.data(), rhs_data, m_str.size()) == 0;
-        }
-        return XAML_S_OK;
-    }
 };
 
 struct xaml_string_impl : xaml_string_implement<xaml_string_impl, xaml_std_string_t>
@@ -200,12 +183,28 @@ xaml_result XAML_CALL xaml_string_new_utf8(string_view str, xaml_string** ptr) n
 }
 #endif // UNICODE
 
-static xaml_string_view_impl s_empty_string{};
-
 xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept
 {
+    static xaml_string_view_impl s_empty_string{};
     s_empty_string.add_ref();
     *ptr = &s_empty_string;
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_string_equals(xaml_string* lhs, xaml_string* rhs, bool* pres) noexcept
+{
+    if (lhs && rhs)
+    {
+        xaml_std_string_view_t lhs_view;
+        XAML_RETURN_IF_FAILED(to_string_view_t(lhs, &lhs_view));
+        xaml_std_string_view_t rhs_view;
+        XAML_RETURN_IF_FAILED(to_string_view_t(rhs, &rhs_view));
+        *pres = lhs_view == rhs_view;
+    }
+    else
+    {
+        *pres = !lhs && !rhs;
+    }
     return XAML_S_OK;
 }
 

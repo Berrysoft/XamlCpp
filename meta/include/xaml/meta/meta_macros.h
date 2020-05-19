@@ -106,21 +106,18 @@
 
 #define XAML_PROP_PTR_INTERNAL_IMPL(name, type) XAML_PROP_INTERNAL_IMPL(name, type**, type*)
 
-#define XAML_PROP_STRING_EVENT_IMPL(name)                           \
-    XAML_PROP_PTR_IMPL_BASE(name, xaml_string)                      \
-    xaml_result XAML_CALL set_##name(xaml_string* value) noexcept   \
-    {                                                               \
-        bool equal = false;                                         \
-        if (m_##name && value)                                      \
-            XAML_RETURN_IF_FAILED(m_##name->equals(value, &equal)); \
-        else                                                        \
-            equal = (!m_##name) && (!value);                        \
-        if (!equal)                                                 \
-        {                                                           \
-            m_##name = value;                                       \
-            return on_##name##_changed(m_outer_this, m_##name);     \
-        }                                                           \
-        return XAML_S_OK;                                           \
+#define XAML_PROP_STRING_EVENT_IMPL(name)                                         \
+    XAML_PROP_PTR_IMPL_BASE(name, xaml_string)                                    \
+    xaml_result XAML_CALL set_##name(xaml_string* value) noexcept                 \
+    {                                                                             \
+        bool equal = false;                                                       \
+        XAML_RETURN_IF_FAILED(xaml_string_equals(m_##name.get(), value, &equal)); \
+        if (!equal)                                                               \
+        {                                                                         \
+            m_##name = value;                                                     \
+            return on_##name##_changed(m_outer_this, m_##name);                   \
+        }                                                                         \
+        return XAML_S_OK;                                                         \
     }
 
 #define XAML_CPROP_INTERNAL_IMPL(name, atype, rtype)          \
