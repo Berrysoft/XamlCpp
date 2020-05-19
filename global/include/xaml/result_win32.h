@@ -4,30 +4,30 @@
 #include <Windows.h>
 #include <xaml/result.h>
 
-#define XAML_RETURN_IF_WIN32_BOOL_FALSE(expr)                           \
-    do                                                                  \
-    {                                                                   \
-        BOOL res = (expr);                                              \
-        if (!res)                                                       \
-        {                                                               \
-            xaml_result hr = HRESULT_FROM_WIN32(GetLastError());        \
-            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            return HRESULT_FROM_WIN32(hr);                              \
-        }                                                               \
+#define XAML_RETURN_IF_WIN32_BOOL_FALSE(expr)                    \
+    do                                                           \
+    {                                                            \
+        BOOL res = (expr);                                       \
+        if (!res)                                                \
+        {                                                        \
+            xaml_result hr = HRESULT_FROM_WIN32(GetLastError()); \
+            XAML_RAISE(hr, XAML_RAISE_LEVEL);                    \
+            return HRESULT_FROM_WIN32(hr);                       \
+        }                                                        \
     } while (0)
 
-#define XAML_GOTO_IF_WIN32_BOOL_FALSE(expr, label)                      \
-    do                                                                  \
-    {                                                                   \
-        BOOL res = (expr);                                              \
-        if (res)                                                        \
-            hr = XAML_S_OK;                                             \
-        else                                                            \
-        {                                                               \
-            hr = HRESULT_FROM_WIN32(GetLastError());                    \
-            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            goto label;                                                 \
-        }                                                               \
+#define XAML_GOTO_IF_WIN32_BOOL_FALSE(expr, label)   \
+    do                                               \
+    {                                                \
+        BOOL res = (expr);                           \
+        if (res)                                     \
+            hr = XAML_S_OK;                          \
+        else                                         \
+        {                                            \
+            hr = HRESULT_FROM_WIN32(GetLastError()); \
+            XAML_RAISE(hr, XAML_RAISE_LEVEL);        \
+            goto label;                              \
+        }                                            \
     } while (0)
 
 #define XAML_ASSERT_WIN32_BOOL(expr) \

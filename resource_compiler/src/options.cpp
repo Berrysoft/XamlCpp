@@ -47,9 +47,6 @@ xaml_result XAML_CALL xaml_rc_options_register(xaml_meta_context* ctx) noexcept
     XAML_RETURN_IF_FAILED(xaml_cmdline_option_new(&opt));
     XAML_RETURN_IF_FAILED(opt->add_arg(U('h'), U("help"), U("help"), U("Print help message")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("version"), U("version"), U("Print version info")));
-#ifndef NDEBUG
-    XAML_RETURN_IF_FAILED(opt->add_arg(U('d'), U("debug"), U("debug"), U("Show debug output")));
-#endif // !NDEBUG
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright infomation")));
     XAML_RETURN_IF_FAILED(opt->add_arg(U('o'), U("output"), U("output"), U("Output file")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("input"), U("Input files")));

@@ -23,7 +23,6 @@ xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registrat
     XAML_TYPE_INFO_ADD_PROP(help, bool);
     XAML_TYPE_INFO_ADD_PROP(verbose, bool);
     XAML_TYPE_INFO_ADD_PROP(version, bool);
-    XAML_TYPE_INFO_ADD_PROP(debug, bool);
     XAML_TYPE_INFO_ADD_PROP(no_logo, bool);
     return XAML_S_OK;
 }
@@ -79,19 +78,6 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     {
         print_version();
         exit(0);
-    }
-
-    bool verbose;
-    XAML_RETURN_IF_FAILED(options->get_verbose(&verbose));
-
-    if (verbose)
-    {
-        int32_t token;
-        XAML_RETURN_IF_FAILED(xaml_result_handler_add(
-            [](xaml_result hr, xaml_char_t const* msg) {
-                _tcerr << U("0x") << hex << hr << U(": ") << msg << endl;
-            },
-            &token));
     }
 
     path exe{ argv[0] };

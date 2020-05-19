@@ -28,7 +28,7 @@ public:
     xaml_result XAML_CALL remove(int32_t token) noexcept override
     {
         auto it = m_callbacks.find(token);
-        if (it == m_callbacks.end()) return XAML_E_INVALIDARG;
+        if (it == m_callbacks.end()) return XAML_E_KEYNOTFOUND;
         m_callbacks.erase(it);
         return XAML_S_OK;
     }

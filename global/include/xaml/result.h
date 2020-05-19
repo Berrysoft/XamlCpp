@@ -22,7 +22,14 @@ typedef XAML_STD int32_t xaml_result;
 #define XAML_SUCCEEDED(expr) (!(expr))
 #define XAML_FAILED(expr) (expr)
 
-EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t const*, XAML_STD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
+typedef enum xaml_result_raise_level
+{
+    xaml_result_raise_info,
+    xaml_result_raise_warning,
+    xaml_result_raise_error
+} xaml_result_raise_level;
+
+EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_raise_level, xaml_char_t const*, XAML_STD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
 
 #ifdef UNICODE
 #define __XAML_FILE__ __FILEW__
@@ -35,29 +42,33 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_char_t cons
 #ifdef NDEBUG
 #define XAML_RAISE(...)
 #else
-#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__)
+#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__, __XAML_FILE__, __LINE__, __XAML_FUNCTION__)
 #endif // NDEBUG
 
-#define XAML_RETURN_IF_FAILED(expr)                                     \
-    do                                                                  \
-    {                                                                   \
-        xaml_result hr = (expr);                                        \
-        if (XAML_FAILED(hr))                                            \
-        {                                                               \
-            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            return hr;                                                  \
-        }                                                               \
+#ifndef XAML_RAISE_LEVEL
+#define XAML_RAISE_LEVEL xaml_result_raise_info
+#endif // !XAML_RAISE_LEVEL
+
+#define XAML_RETURN_IF_FAILED(expr)           \
+    do                                        \
+    {                                         \
+        xaml_result hr = (expr);              \
+        if (XAML_FAILED(hr))                  \
+        {                                     \
+            XAML_RAISE(hr, XAML_RAISE_LEVEL); \
+            return hr;                        \
+        }                                     \
     } while (0)
 
-#define XAML_GOTO_IF_FAILED(expr, label)                                \
-    do                                                                  \
-    {                                                                   \
-        hr = (expr);                                                    \
-        if (XAML_FAILED(hr))                                            \
-        {                                                               \
-            XAML_RAISE(hr, __XAML_FILE__, __LINE__, __XAML_FUNCTION__); \
-            goto label;                                                 \
-        }                                                               \
+#define XAML_GOTO_IF_FAILED(expr, label)      \
+    do                                        \
+    {                                         \
+        hr = (expr);                          \
+        if (XAML_FAILED(hr))                  \
+        {                                     \
+            XAML_RAISE(hr, XAML_RAISE_LEVEL); \
+            goto label;                       \
+        }                                     \
     } while (0)
 
 #define XAML_ASSERT_SUCCEEDED(expr) \
