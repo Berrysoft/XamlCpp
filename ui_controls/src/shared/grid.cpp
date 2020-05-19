@@ -21,10 +21,10 @@ static xaml_result get_max_compact(int32_t index, xaml_ptr<xaml_vector> const& c
         xaml_ptr<xaml_control> cc;
         XAML_RETURN_IF_FAILED(c->query(&cc));
         int32_t crow, ccol, crows, ccols;
-        XAML_RETURN_IF_FAILED(xaml_grid_get_column(cc.get(), &ccol));
-        XAML_RETURN_IF_FAILED(xaml_grid_get_row(cc.get(), &crow));
-        XAML_RETURN_IF_FAILED(xaml_grid_get_column_span(cc.get(), &ccols));
-        XAML_RETURN_IF_FAILED(xaml_grid_get_row_span(cc.get(), &crows));
+        XAML_RETURN_IF_FAILED(xaml_grid_get_column(cc, &ccol));
+        XAML_RETURN_IF_FAILED(xaml_grid_get_row(cc, &crow));
+        XAML_RETURN_IF_FAILED(xaml_grid_get_column_span(cc, &ccols));
+        XAML_RETURN_IF_FAILED(xaml_grid_get_row_span(cc, &crows));
         if (((vertical ? crow : ccol) == index) && ((vertical ? crows : ccols) <= 1))
         {
             xaml_size csize;
@@ -167,7 +167,7 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
     {
         xaml_ptr<xaml_control> cc;
         XAML_RETURN_IF_FAILED(c->query(&cc));
-        xaml_grid_index const& index = s_grid_indecies[cc.get()];
+        xaml_grid_index const& index = s_grid_indecies[cc];
         double subx = get<1>(columns[(min)((size_t)index.column, columns.size() - 1)]) + real.x;
         double suby = get<1>(rows[(min)((size_t)index.row, rows.size() - 1)]) + real.y;
         double subw = accumulate(columns.begin() + (min)((size_t)index.column, columns.size() - 1), columns.begin() + (min)((size_t)index.column + (max<int32_t>)(index.column_span, 1), columns.size()), 0.0, real_length_plus);
@@ -175,7 +175,7 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
         xaml_rectangle subrect = { subx, suby, subw, subh };
         XAML_RETURN_IF_FAILED(get_real_region(cc, subrect));
         XAML_RETURN_IF_FAILED(cc->draw(subrect));
-        if (func) func(cc.get(), subrect);
+        if (func) func(cc, subrect);
     }
     XAML_FOREACH_END();
     return XAML_S_OK;
@@ -220,7 +220,7 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                 }
                 xaml_ptr<xaml_object> obj;
                 XAML_RETURN_IF_FAILED(xaml_box_value(len, &obj));
-                XAML_RETURN_IF_FAILED(result->append(obj.get()));
+                XAML_RETURN_IF_FAILED(result->append(obj));
                 offset = str.find_first_not_of(__delimeter, index);
             } while (offset != xaml_std_string_view_t::npos);
             return result->query(value);
@@ -256,8 +256,8 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
 xaml_result XAML_CALL xaml_grid_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_grid, "xaml/ui/controls/grid.h");
-    XAML_RETURN_IF_FAILED(xaml_grid_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_grid_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_grid_get_column(xaml_control* c, XAML_STD int32_t* presult) noexcept
@@ -315,5 +315,5 @@ xaml_result XAML_CALL xaml_grid_layout_register(xaml_meta_context* ctx) noexcept
     XAML_ENUM_INFO_ADD2(xaml_grid_layout, star);
     XAML_ENUM_INFO_ADD2(xaml_grid_layout, auto);
     XAML_ENUM_INFO_NEW(xaml_grid_layout, "xaml/ui/controls/grid.h");
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

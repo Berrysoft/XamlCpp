@@ -105,7 +105,7 @@ public:
     std::int32_t operator()(xaml_ptr<xaml_object> const& obj) const noexcept
     {
         std::int32_t hash;
-        XAML_ASSERT_SUCCEEDED(m_inner->hash(obj.get(), &hash));
+        XAML_ASSERT_SUCCEEDED(m_inner->hash(obj, &hash));
         return hash;
     }
 };
@@ -124,7 +124,7 @@ public:
     bool operator()(xaml_ptr<xaml_object> const& lhs, xaml_ptr<xaml_object> const& rhs) const noexcept
     {
         bool eq;
-        XAML_ASSERT_SUCCEEDED(m_inner->equal(lhs.get(), rhs.get(), &eq));
+        XAML_ASSERT_SUCCEEDED(m_inner->equal(lhs, rhs, &eq));
         return eq;
     }
 };

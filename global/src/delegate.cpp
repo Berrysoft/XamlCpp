@@ -38,14 +38,14 @@ xaml_result XAML_CALL xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* 
             XAML_RETURN_IF_FAILED(xaml_vector_new(&real_args));
             XAML_FOREACH_START(a, args);
             {
-                XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                XAML_RETURN_IF_FAILED(real_args->append(a));
             }
             XAML_FOREACH_END();
             XAML_FOREACH_START(a, remain_args);
             {
-                XAML_RETURN_IF_FAILED(real_args->append(a.get()));
+                XAML_RETURN_IF_FAILED(real_args->append(a));
             }
             XAML_FOREACH_END();
-            return func->invoke(real_args.get(), ptr);
+            return func->invoke(real_args, ptr);
         });
 }

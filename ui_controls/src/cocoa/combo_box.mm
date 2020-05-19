@@ -103,7 +103,7 @@ void xaml_combo_box_internal::on_changed() noexcept
     XAML_ASSERT_SUCCEEDED(set_sel_id(combo.indexOfSelectedItem));
     xaml_ptr<xaml_string> str;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(combo.stringValue.UTF8String, &str));
-    XAML_ASSERT_SUCCEEDED(set_text(str.get()));
+    XAML_ASSERT_SUCCEEDED(set_text(str));
 }
 
 xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept

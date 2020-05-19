@@ -28,13 +28,13 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
     {
         xaml_ptr<xaml_hasher> guid_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_attr_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher, &m_attr_map));
         xaml_ptr<xaml_hasher> string_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_method_map));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_prop_map));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_cprop_map));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_event_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_method_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_prop_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_cprop_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_event_map));
         return XAML_S_OK;
     }
 
@@ -48,7 +48,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         xaml_ptr<xaml_object> item;
-        XAML_RETURN_IF_FAILED(m_attr_map->lookup(key.get(), &item));
+        XAML_RETURN_IF_FAILED(m_attr_map->lookup(key, &item));
         return item->query(type, ptr);
     }
 
@@ -57,7 +57,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         bool replaced;
-        return m_attr_map->insert(key.get(), attr, &replaced);
+        return m_attr_map->insert(key, attr, &replaced);
     }
 
     xaml_result XAML_CALL get_constructor(xaml_delegate** ptr) noexcept override
@@ -96,7 +96,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(method->get_name(&name));
         bool replaced;
-        return m_method_map->insert(name.get(), method, &replaced);
+        return m_method_map->insert(name, method, &replaced);
     }
 
     xaml_result XAML_CALL get_properties(xaml_map_view** ptr) noexcept override
@@ -116,7 +116,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(prop->get_name(&name));
         bool replaced;
-        return m_prop_map->insert(name.get(), prop, &replaced);
+        return m_prop_map->insert(name, prop, &replaced);
     }
 
     xaml_result XAML_CALL get_collection_properties(xaml_map_view** ptr) noexcept override
@@ -136,7 +136,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(prop->get_name(&name));
         bool replaced;
-        return m_cprop_map->insert(name.get(), prop, &replaced);
+        return m_cprop_map->insert(name, prop, &replaced);
     }
 
     xaml_result XAML_CALL get_events(xaml_map_view** ptr) noexcept override
@@ -156,7 +156,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(ev->get_name(&name));
         bool replaced;
-        return m_event_map->insert(name.get(), ev, &replaced);
+        return m_event_map->insert(name, ev, &replaced);
     }
 };
 

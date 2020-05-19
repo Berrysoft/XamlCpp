@@ -51,5 +51,5 @@ xaml_result XAML_CALL xaml_test_calculator_register(xaml_meta_context* ctx) noex
     XAML_TYPE_INFO_ADD_METHOD(plus);
     XAML_TYPE_INFO_ADD_METHOD(minus);
     XAML_TYPE_INFO_ADD_PROP_EVENT(value, int);
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

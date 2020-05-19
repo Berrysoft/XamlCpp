@@ -22,7 +22,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
         {
             xaml_ptr<xaml_object> value;
             XAML_RETURN_IF_FAILED(p->get_value(&value));
-            XAML_RETURN_IF_FAILED(info->set(result.get(), value.get()));
+            XAML_RETURN_IF_FAILED(info->set(result, value));
         }
     }
     XAML_FOREACH_END();
@@ -50,7 +50,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_type_info* type, xaml_cmdlin
             XAML_RETURN_IF_FAILED(value->query(&values));
             XAML_FOREACH_START(v, values);
             {
-                XAML_RETURN_IF_FAILED(prop->add(result.get(), v.get()));
+                XAML_RETURN_IF_FAILED(prop->add(result, v));
             }
             XAML_FOREACH_END();
         }

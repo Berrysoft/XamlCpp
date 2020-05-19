@@ -36,7 +36,7 @@ void xaml_webview_internal::on_load_changed(WebKitWebView* web_view, WebKitLoadE
         {
             xaml_ptr<xaml_string> uri;
             XAML_ASSERT_SUCCEEDED(xaml_string_new(webkit_web_view_get_uri(WEBKIT_WEB_VIEW(self->m_handle)), &uri));
-            XAML_ASSERT_SUCCEEDED(self->set_uri(uri.get()));
+            XAML_ASSERT_SUCCEEDED(self->set_uri(uri));
         }
     }
 }

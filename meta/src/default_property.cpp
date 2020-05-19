@@ -26,5 +26,5 @@ xaml_result XAML_CALL xaml_default_property_register(xaml_meta_context* ctx) noe
 {
     XAML_TYPE_INFO_NEW(xaml_default_property, "xaml/meta/default_property.h");
     XAML_TYPE_INFO_ADD_PROP_RD(default_property, xaml_string);
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

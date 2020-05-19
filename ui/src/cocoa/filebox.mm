@@ -64,14 +64,14 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
         {
             xaml_ptr<xaml_string> str;
             XAML_RETURN_IF_FAILED(xaml_string_new(url.path.UTF8String, &str));
-            XAML_RETURN_IF_FAILED(m_results->append(str.get()));
+            XAML_RETURN_IF_FAILED(m_results->append(str));
         }
     }
     else
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(xaml_string_new(handle.URL.path.UTF8String, &str));
-        XAML_RETURN_IF_FAILED(m_results->append(str.get()));
+        XAML_RETURN_IF_FAILED(m_results->append(str));
     }
     return XAML_S_OK;
 }

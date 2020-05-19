@@ -58,34 +58,34 @@ xaml_result xaml_test_window_impl::init() noexcept
     {
         xaml_ptr<xaml_string> item;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("A"), &item));
-        XAML_RETURN_IF_FAILED(m_combo_source->append(item.get()));
+        XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
         xaml_ptr<xaml_string> item;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("BBB"), &item));
-        XAML_RETURN_IF_FAILED(m_combo_source->append(item.get()));
+        XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
         xaml_ptr<xaml_string> item;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("C"), &item));
-        XAML_RETURN_IF_FAILED(m_combo_source->append(item.get()));
+        XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_timer>>(xaml_mem_fn(&xaml_test_window_impl::on_timer_tick, this), &callback)));
         int32_t token;
-        XAML_RETURN_IF_FAILED(m_timer->add_tick(callback.get(), &token));
+        XAML_RETURN_IF_FAILED(m_timer->add_tick(callback, &token));
     }
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_window>, xaml_ptr<xaml_box>>(xaml_mem_fn(&xaml_test_window_impl::on_window_closing, this), &callback)));
         int32_t token;
-        XAML_RETURN_IF_FAILED(m_window->add_closing(callback.get(), &token));
+        XAML_RETURN_IF_FAILED(m_window->add_closing(callback, &token));
     }
     // Set title, location, and size.
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Test window"), &title));
-    XAML_RETURN_IF_FAILED(m_window->set_title(title.get()));
+    XAML_RETURN_IF_FAILED(m_window->set_title(title));
     XAML_RETURN_IF_FAILED(m_window->set_location({ 100, 100 }));
     XAML_RETURN_IF_FAILED(m_window->set_size({ 800, 600 }));
     // Construct a grid.
@@ -100,7 +100,7 @@ xaml_result xaml_test_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(g->add_row({ 1, xaml_grid_layout_star }));
     XAML_RETURN_IF_FAILED(g->add_row({ 1, xaml_grid_layout_star }));
     // Set g as child of the window.
-    XAML_RETURN_IF_FAILED(m_window->set_child(g.get()));
+    XAML_RETURN_IF_FAILED(m_window->set_child(g));
     {
         xaml_ptr<xaml_progress> prog;
         XAML_RETURN_IF_FAILED(xaml_progress_new(&prog));
@@ -110,9 +110,9 @@ xaml_result xaml_test_window_impl::init() noexcept
         prog->set_maximum(100);
         prog->set_value(30);
         prog->set_is_indeterminate(true);
-        g->add_child(prog.get());
-        xaml_grid_set_column(prog.get(), 2);
-        xaml_grid_set_row(prog.get(), 2);
+        g->add_child(prog);
+        xaml_grid_set_column(prog, 2);
+        xaml_grid_set_row(prog, 2);
         // Construct a button.
         xaml_ptr<xaml_button> btn;
         XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
@@ -120,7 +120,7 @@ xaml_result xaml_test_window_impl::init() noexcept
         btn->set_margin({ 10, 10, 10, 10 });
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &text));
-        btn->set_text(text.get());
+        btn->set_text(text);
         // Add a handler for button.
         {
             xaml_ptr<xaml_delegate> callback;
@@ -130,20 +130,20 @@ xaml_result xaml_test_window_impl::init() noexcept
                 },
                 &callback)));
             int32_t token;
-            XAML_RETURN_IF_FAILED(btn->add_click(callback.get(), &token));
+            XAML_RETURN_IF_FAILED(btn->add_click(callback, &token));
         }
         {
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(xaml_mem_fn(&xaml_test_window_impl::on_button_click, this), &callback)));
             int32_t token;
-            XAML_RETURN_IF_FAILED(btn->add_click(callback.get(), &token));
+            XAML_RETURN_IF_FAILED(btn->add_click(callback, &token));
         }
         // Set the button to be placed in the center vertically.
         btn->set_valignment(xaml_valignment_center);
         // Add the button to the grid, and set its column and row.
-        g->add_child(btn.get());
-        xaml_grid_set_column(btn.get(), 1);
-        xaml_grid_set_row(btn.get(), 2);
+        g->add_child(btn);
+        xaml_grid_set_column(btn, 1);
+        xaml_grid_set_row(btn, 2);
     }
     {
         // Construct a label.
@@ -155,11 +155,11 @@ xaml_result xaml_test_window_impl::init() noexcept
         lb->set_valignment(xaml_valignment_center);
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Username:"), &text));
-        lb->set_text(text.get());
+        lb->set_text(text);
         // Add the label to the grid, and set its column and row.
-        g->add_child(lb.get());
-        xaml_grid_set_column(lb.get(), 0);
-        xaml_grid_set_row(lb.get(), 0);
+        g->add_child(lb);
+        xaml_grid_set_column(lb, 0);
+        xaml_grid_set_row(lb, 0);
     }
     {
         // Construct an entry (single-line text box).
@@ -168,12 +168,12 @@ xaml_result xaml_test_window_impl::init() noexcept
         et->set_margin({ 0, 5, 0, 5 });
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("John"), &text));
-        et->set_text(text.get());
+        et->set_text(text);
         et->set_halignment(xaml_halignment_left);
         et->set_valignment(xaml_valignment_center);
-        g->add_child(et.get());
-        xaml_grid_set_column(et.get(), 1);
-        xaml_grid_set_row(et.get(), 0);
+        g->add_child(et);
+        xaml_grid_set_column(et, 1);
+        xaml_grid_set_row(et, 0);
     }
     {
         xaml_ptr<xaml_label> lb;
@@ -184,11 +184,11 @@ xaml_result xaml_test_window_impl::init() noexcept
         lb->set_valignment(xaml_valignment_center);
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Password:"), &text));
-        lb->set_text(text.get());
+        lb->set_text(text);
         // Add the label to the grid, and set its column and row.
-        g->add_child(lb.get());
-        xaml_grid_set_column(lb.get(), 0);
-        xaml_grid_set_row(lb.get(), 1);
+        g->add_child(lb);
+        xaml_grid_set_column(lb, 0);
+        xaml_grid_set_row(lb, 1);
     }
     {
         xaml_ptr<xaml_password_entry> et;
@@ -196,12 +196,12 @@ xaml_result xaml_test_window_impl::init() noexcept
         et->set_margin({ 0, 5, 0, 5 });
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("123456"), &text));
-        et->set_text(text.get());
+        et->set_text(text);
         et->set_halignment(xaml_halignment_stretch);
         et->set_valignment(xaml_valignment_center);
-        g->add_child(et.get());
-        xaml_grid_set_column(et.get(), 1);
-        xaml_grid_set_row(et.get(), 1);
+        g->add_child(et);
+        xaml_grid_set_column(et, 1);
+        xaml_grid_set_row(et, 1);
     }
     {
         // Construct a cnavas.
@@ -215,12 +215,12 @@ xaml_result xaml_test_window_impl::init() noexcept
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_canvas>, xaml_ptr<xaml_drawing_context>>(xaml_mem_fn(&xaml_test_window_impl::on_canvas_redraw, this), &callback)));
             int32_t token;
-            XAML_RETURN_IF_FAILED(cv->add_redraw(callback.get(), &token));
+            XAML_RETURN_IF_FAILED(cv->add_redraw(callback, &token));
         }
         // Add the canvas to the grid, and set its column and row.
-        g->add_child(cv.get());
-        xaml_grid_set_column(cv.get(), 0);
-        xaml_grid_set_row(cv.get(), 3);
+        g->add_child(cv);
+        xaml_grid_set_column(cv, 0);
+        xaml_grid_set_row(cv, 3);
     }
     {
         xaml_ptr<xaml_combo_box> box;
@@ -228,11 +228,11 @@ xaml_result xaml_test_window_impl::init() noexcept
         box->set_halignment(xaml_halignment_center);
         box->set_valignment(xaml_valignment_top);
         box->set_margin({ 10, 10, 10, 10 });
-        box->set_items(m_combo_source.get());
+        box->set_items(m_combo_source);
         box->set_sel_id(1);
-        g->add_child(box.get());
-        xaml_grid_set_column(box.get(), 1);
-        xaml_grid_set_row(box.get(), 3);
+        g->add_child(box);
+        xaml_grid_set_column(box, 1);
+        xaml_grid_set_row(box, 3);
 
         xaml_ptr<xaml_stack_panel> panel;
         XAML_RETURN_IF_FAILED(xaml_stack_panel_new(&panel));
@@ -244,18 +244,18 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_margin({ 5, 5, 5, 5 });
             xaml_ptr<xaml_string> text;
             XAML_RETURN_IF_FAILED(xaml_string_new(U("Push"), &text));
-            btn->set_text(text.get());
+            btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
                 [this](xaml_ptr<xaml_button>) -> xaml_result {
                     xaml_ptr<xaml_string> item;
                     XAML_RETURN_IF_FAILED(xaml_string_new(U("DDDD"), &item));
-                    return m_combo_source->append(item.get());
+                    return m_combo_source->append(item);
                 },
                 &callback)));
             int32_t token;
-            btn->add_click(callback.get(), &token);
-            panel->add_child(btn.get());
+            btn->add_click(callback, &token);
+            panel->add_child(btn);
         }
         {
             xaml_ptr<xaml_button> btn;
@@ -263,7 +263,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_margin({ 5, 5, 5, 5 });
             xaml_ptr<xaml_string> text;
             XAML_RETURN_IF_FAILED(xaml_string_new(U("Pop"), &text));
-            btn->set_text(text.get());
+            btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
                 [this](xaml_ptr<xaml_button>) -> xaml_result {
@@ -271,8 +271,8 @@ xaml_result xaml_test_window_impl::init() noexcept
                 },
                 &callback)));
             int32_t token;
-            btn->add_click(callback.get(), &token);
-            panel->add_child(btn.get());
+            btn->add_click(callback, &token);
+            panel->add_child(btn);
         }
         {
             xaml_ptr<xaml_button> btn;
@@ -280,7 +280,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_margin({ 5, 5, 5, 5 });
             xaml_ptr<xaml_string> text;
             XAML_RETURN_IF_FAILED(xaml_string_new(U("Show"), &text));
-            btn->set_text(text.get());
+            btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
                 [this, box](xaml_ptr<xaml_button>) -> xaml_result {
@@ -297,18 +297,18 @@ xaml_result xaml_test_window_impl::init() noexcept
                         xaml_ptr<xaml_string> title;
                         XAML_RETURN_IF_FAILED(xaml_string_new(U("Show selected item"), &title));
                         xaml_msgbox_result res;
-                        XAML_RETURN_IF_FAILED(xaml_msgbox(m_window.get(), str.get(), title.get(), nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
+                        XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, str, title, nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
                     }
                     return XAML_S_OK;
                 },
                 &callback)));
             int32_t token;
-            btn->add_click(callback.get(), &token);
-            panel->add_child(btn.get());
+            btn->add_click(callback, &token);
+            panel->add_child(btn);
         }
-        g->add_child(panel.get());
-        xaml_grid_set_column(panel.get(), 2);
-        xaml_grid_set_row(panel.get(), 3);
+        g->add_child(panel);
+        xaml_grid_set_column(panel, 2);
+        xaml_grid_set_row(panel, 3);
     }
     {
         xaml_ptr<xaml_menu_bar> mbar;
@@ -319,7 +319,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             {
                 xaml_ptr<xaml_string> text;
                 XAML_RETURN_IF_FAILED(xaml_string_new(U("File"), &text));
-                XAML_RETURN_IF_FAILED(mfile->set_text(text.get()));
+                XAML_RETURN_IF_FAILED(mfile->set_text(text));
             }
             {
                 xaml_ptr<xaml_menu_item> mquit;
@@ -327,7 +327,7 @@ xaml_result xaml_test_window_impl::init() noexcept
                 {
                     xaml_ptr<xaml_string> text;
                     XAML_RETURN_IF_FAILED(xaml_string_new(U("Close"), &text));
-                    XAML_RETURN_IF_FAILED(mquit->set_text(text.get()));
+                    XAML_RETURN_IF_FAILED(mquit->set_text(text));
                 }
                 {
                     xaml_ptr<xaml_delegate> callback;
@@ -335,13 +335,13 @@ xaml_result xaml_test_window_impl::init() noexcept
                         [this](xaml_ptr<xaml_menu_item>) -> xaml_result { return m_window->close(); },
                         &callback)));
                     int32_t token;
-                    XAML_RETURN_IF_FAILED(mquit->add_click(callback.get(), &token));
+                    XAML_RETURN_IF_FAILED(mquit->add_click(callback, &token));
                 }
-                mfile->add_submenu(mquit.get());
+                mfile->add_submenu(mquit);
             }
-            mbar->add_child(mfile.get());
+            mbar->add_child(mfile);
         }
-        m_window->set_menu_bar(mbar.get());
+        m_window->set_menu_bar(mbar);
     }
     return XAML_S_OK;
 }
@@ -353,7 +353,7 @@ xaml_result xaml_test_window_impl::on_timer_tick(xaml_ptr<xaml_timer>) noexcept
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &title));
     xaml_msgbox_result res;
-    XAML_RETURN_IF_FAILED(xaml_msgbox(m_window.get(), msg.get(), title.get(), nullptr, xaml_msgbox_info, xaml_msgbox_buttons_ok, &res));
+    XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, msg, title, nullptr, xaml_msgbox_info, xaml_msgbox_buttons_ok, &res));
     if (++count >= 3)
     {
         XAML_RETURN_IF_FAILED(m_timer->stop());
@@ -361,19 +361,19 @@ xaml_result xaml_test_window_impl::on_timer_tick(xaml_ptr<xaml_timer>) noexcept
         XAML_RETURN_IF_FAILED(xaml_open_filebox_new(&openbox));
         xaml_ptr<xaml_string> title;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Open file"), &title));
-        XAML_RETURN_IF_FAILED(openbox->set_title(title.get()));
+        XAML_RETURN_IF_FAILED(openbox->set_title(title));
         xaml_ptr<xaml_object> f;
         XAML_RETURN_IF_FAILED(xaml_box_value<xaml_filebox_filter>({ U("XAML file"), U("*.xaml") }, &f));
         xaml_ptr<xaml_vector> filters;
         XAML_RETURN_IF_FAILED(xaml_vector_new({ f }, &filters));
-        XAML_RETURN_IF_FAILED(openbox->set_filters(filters.get()));
-        if (XAML_SUCCEEDED(openbox->show(m_window.get())))
+        XAML_RETURN_IF_FAILED(openbox->set_filters(filters));
+        if (XAML_SUCCEEDED(openbox->show(m_window)))
         {
             xaml_ptr<xaml_string> result;
             XAML_RETURN_IF_FAILED(openbox->get_result(&result));
             xaml_ptr<xaml_string> title;
             XAML_RETURN_IF_FAILED(xaml_string_new(U("Open file"), &title));
-            XAML_RETURN_IF_FAILED(xaml_msgbox(m_window.get(), result.get(), title.get(), nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
+            XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, result, title, nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
         }
     }
     return XAML_S_OK;
@@ -383,7 +383,7 @@ xaml_result xaml_test_window_impl::on_button_click(xaml_ptr<xaml_button> btn) no
 {
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
-    XAML_RETURN_IF_FAILED(btn->set_text(text.get()));
+    XAML_RETURN_IF_FAILED(btn->set_text(text));
     count = 0;
     return m_timer->start();
 }
@@ -405,7 +405,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     XAML_RETURN_IF_FAILED(dc->draw_round_rect({ colors::sky_blue, 1 }, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
-    XAML_RETURN_IF_FAILED(dc->draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text.get()));
+    XAML_RETURN_IF_FAILED(dc->draw_string({ colors::pink }, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));
     return XAML_S_OK;
 }
 
@@ -418,7 +418,7 @@ xaml_result xaml_test_window_impl::on_window_closing(xaml_ptr<xaml_window> win, 
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Close window"), &title));
     xaml_msgbox_result res;
-    XAML_RETURN_IF_FAILED(xaml_msgbox(win.get(), msg.get(), title.get(), nullptr, xaml_msgbox_question, xaml_msgbox_buttons_yes_no, &res));
+    XAML_RETURN_IF_FAILED(xaml_msgbox(win, msg, title, nullptr, xaml_msgbox_question, xaml_msgbox_buttons_yes_no, &res));
     handled = res != xaml_msgbox_result_yes;
     XAML_RETURN_IF_FAILED(box->set_value(handled));
     return XAML_S_OK;

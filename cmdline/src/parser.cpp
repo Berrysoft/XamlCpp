@@ -20,7 +20,7 @@ static xaml_result props_insert(xaml_ptr<xaml_map> const& props, xaml_ptr<xaml_p
     xaml_ptr<xaml_object> value_str;
     XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<S2>(value), &value_str));
     bool replaced;
-    return props->insert(info.get(), value_str.get(), &replaced);
+    return props->insert(info, value_str, &replaced);
 }
 
 template <typename S>
@@ -32,7 +32,7 @@ static xaml_result cprops_values(xaml_ptr<xaml_map> const& cprops, S&& str, xaml
     {
         xaml_ptr<xaml_key_value_pair> pair;
         xaml_ptr<xaml_object> item;
-        if (XAML_SUCCEEDED(cprops->lookup(key_str.get(), &item)))
+        if (XAML_SUCCEEDED(cprops->lookup(key_str, &item)))
         {
             XAML_RETURN_IF_FAILED(item->query(&pair));
             xaml_ptr<xaml_object> values_item;
@@ -42,9 +42,9 @@ static xaml_result cprops_values(xaml_ptr<xaml_map> const& cprops, S&& str, xaml
         else
         {
             XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
-            XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(cprop.get(), values.get(), &pair));
+            XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(cprop, values, &pair));
             bool replaced;
-            XAML_RETURN_IF_FAILED(cprops->insert(key_str.get(), pair.get(), &replaced));
+            XAML_RETURN_IF_FAILED(cprops->insert(key_str, pair, &replaced));
         }
     }
     return values->query(ptr);
@@ -88,9 +88,9 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                 xaml_ptr<xaml_string> long_arg_str;
                 XAML_RETURN_IF_FAILED(xaml_string_new_view(long_arg, &long_arg_str));
                 xaml_ptr<xaml_string> pprop;
-                XAML_RETURN_IF_FAILED(popt->find_long_arg(long_arg_str.get(), &pprop));
+                XAML_RETURN_IF_FAILED(popt->find_long_arg(long_arg_str, &pprop));
                 xaml_ptr<xaml_property_info> prop;
-                if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
+                if (XAML_SUCCEEDED(type->get_property(pprop, &prop)))
                 {
                     if (!maybe_value.empty())
                     {
@@ -116,7 +116,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                 else
                 {
                     xaml_ptr<xaml_collection_property_info> cprop;
-                    if (XAML_SUCCEEDED(type->get_collection_property(pprop.get(), &cprop)))
+                    if (XAML_SUCCEEDED(type->get_collection_property(pprop, &cprop)))
                     {
                         xaml_ptr<xaml_vector> values;
                         XAML_RETURN_IF_FAILED(cprops_values(cprops, pprop, cprop, &values));
@@ -124,7 +124,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                         {
                             xaml_ptr<xaml_string> maybe_value_str;
                             XAML_RETURN_IF_FAILED(xaml_string_new(maybe_value, &maybe_value_str));
-                            XAML_RETURN_IF_FAILED(values->append(maybe_value_str.get()));
+                            XAML_RETURN_IF_FAILED(values->append(maybe_value_str));
                         }
                         else
                         {
@@ -133,7 +133,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
                             xaml_ptr<xaml_string> new_arg;
                             XAML_RETURN_IF_FAILED(new_item->query(&new_arg));
-                            XAML_RETURN_IF_FAILED(values->append(new_arg.get()));
+                            XAML_RETURN_IF_FAILED(values->append(new_arg));
                         }
                     }
                 }
@@ -145,7 +145,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                 xaml_ptr<xaml_string> pprop;
                 XAML_RETURN_IF_FAILED(popt->find_short_arg(short_arg, &pprop));
                 xaml_ptr<xaml_property_info> prop;
-                if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
+                if (XAML_SUCCEEDED(type->get_property(pprop, &prop)))
                 {
                     xaml_guid t;
                     XAML_RETURN_IF_FAILED(prop->get_type(&t));
@@ -157,7 +157,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             xaml_ptr<xaml_string> pprop;
                             XAML_RETURN_IF_FAILED(popt->find_short_arg(other_short_arg, &pprop));
                             xaml_ptr<xaml_property_info> prop;
-                            if (XAML_SUCCEEDED(type->get_property(pprop.get(), &prop)))
+                            if (XAML_SUCCEEDED(type->get_property(pprop, &prop)))
                             {
                                 XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
                             }
@@ -181,7 +181,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                 else
                 {
                     xaml_ptr<xaml_collection_property_info> cprop;
-                    if (XAML_SUCCEEDED(type->get_collection_property(pprop.get(), &cprop)))
+                    if (XAML_SUCCEEDED(type->get_collection_property(pprop, &cprop)))
                     {
                         xaml_ptr<xaml_vector> values;
                         XAML_RETURN_IF_FAILED(cprops_values(cprops, pprop, cprop, &values));
@@ -189,7 +189,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                         {
                             xaml_ptr<xaml_string> value_str;
                             XAML_RETURN_IF_FAILED(xaml_string_new(switches_or_value, &value_str));
-                            XAML_RETURN_IF_FAILED(values->append(value_str.get()));
+                            XAML_RETURN_IF_FAILED(values->append(value_str));
                         }
                         else
                         {
@@ -198,7 +198,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                             XAML_RETURN_IF_FAILED(args->get_at(i, &new_item));
                             xaml_ptr<xaml_string> new_arg;
                             XAML_RETURN_IF_FAILED(new_item->query(&new_arg));
-                            XAML_RETURN_IF_FAILED(values->append(new_arg.get()));
+                            XAML_RETURN_IF_FAILED(values->append(new_arg));
                         }
                     }
                 }
@@ -209,26 +209,26 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
             xaml_ptr<xaml_string> pdef_prop;
             XAML_RETURN_IF_FAILED(popt->get_default_property(&pdef_prop));
             xaml_ptr<xaml_property_info> prop;
-            if (XAML_SUCCEEDED(type->get_property(pdef_prop.get(), &prop)))
+            if (XAML_SUCCEEDED(type->get_property(pdef_prop, &prop)))
             {
                 XAML_RETURN_IF_FAILED(props_insert(props, prop, arg_item));
             }
             else
             {
                 xaml_ptr<xaml_collection_property_info> cprop;
-                if (XAML_SUCCEEDED(type->get_collection_property(pdef_prop.get(), &cprop)))
+                if (XAML_SUCCEEDED(type->get_collection_property(pdef_prop, &cprop)))
                 {
                     xaml_ptr<xaml_vector> values;
                     XAML_RETURN_IF_FAILED(cprops_values(cprops, pdef_prop, cprop, &values));
-                    XAML_RETURN_IF_FAILED(values->append(arg_item.get()));
+                    XAML_RETURN_IF_FAILED(values->append(arg_item));
                 }
             }
         }
     }
     xaml_ptr<xaml_cmdline_options> result;
     XAML_RETURN_IF_FAILED(xaml_object_new<xaml_cmdline_options_impl>(&result));
-    XAML_RETURN_IF_FAILED(result->set_properties(props.get()));
-    XAML_RETURN_IF_FAILED(result->set_collection_properties(cprops.get()));
+    XAML_RETURN_IF_FAILED(result->set_properties(props));
+    XAML_RETURN_IF_FAILED(result->set_collection_properties(cprops));
     return result->query(ptr);
 }
 
@@ -243,7 +243,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info* type, int argc, xa
     {
         xaml_ptr<xaml_string> arg;
         XAML_RETURN_IF_FAILED(xaml_string_new_view(argv[i], &arg));
-        XAML_RETURN_IF_FAILED(args->append(arg.get()));
+        XAML_RETURN_IF_FAILED(args->append(arg));
     }
-    return xaml_cmdline_parse(type, args.get(), ptr);
+    return xaml_cmdline_parse(type, args, ptr);
 }

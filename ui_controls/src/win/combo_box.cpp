@@ -27,7 +27,7 @@ xaml_result xaml_combo_box_internal::wnd_proc(xaml_win32_window_message const& m
                 ComboBox_GetText(m_handle, text.data(), count + 1);
                 xaml_ptr<xaml_string> s;
                 XAML_RETURN_IF_FAILED(xaml_string_new(move(text), &s));
-                XAML_RETURN_IF_FAILED(set_text(s.get()));
+                XAML_RETURN_IF_FAILED(set_text(s));
                 break;
             }
             }

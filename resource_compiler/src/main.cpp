@@ -160,9 +160,9 @@ int _tmain(int argc, xaml_char_t** argv)
 {
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
-    XAML_THROW_IF_FAILED(xaml_rc_options_register(cmdline_ctx.get()));
+    XAML_THROW_IF_FAILED(xaml_rc_options_register(cmdline_ctx));
     xaml_ptr<xaml_rc_options> options;
-    XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx.get(), argc, argv, &options));
+    XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx, argc, argv, &options));
 
     xaml_ptr<xaml_vector_view> inputs;
     XAML_THROW_IF_FAILED(options->get_inputs(&inputs));

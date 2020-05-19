@@ -55,7 +55,7 @@ xaml_result xaml_radio_box_internal::draw_group() noexcept
                         xaml_ptr<xaml_string> group;
                         XAML_RETURN_IF_FAILED(rc->get_group(&group));
                         bool equals;
-                        XAML_RETURN_IF_FAILED(xaml_string_equals(group.get(), m_group.get(), &equals));
+                        XAML_RETURN_IF_FAILED(xaml_string_equals(group, m_group, &equals));
                         if (equals)
                         {
                             XAML_RETURN_IF_FAILED(rc->set_is_checked(false));
@@ -88,6 +88,6 @@ xaml_result XAML_CALL xaml_radio_box_members(xaml_type_info_registration* __info
 xaml_result XAML_CALL xaml_radio_box_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_radio_box, "xaml/ui/controls/check_box.h");
-    XAML_RETURN_IF_FAILED(xaml_radio_box_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_radio_box_members(__info));
+    return ctx->add_type(__info);
 }

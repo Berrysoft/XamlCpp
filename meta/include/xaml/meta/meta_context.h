@@ -51,9 +51,9 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         xaml_ptr<xaml_module> m;
         XAML_RETURN_IF_FAILED(xaml_module_new(&m));
         xaml_ptr<xaml_string> path_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new(path, &path_str));
-        XAML_RETURN_IF_FAILED(m->open(path_str.get()));
-        return add_module(m.get());
+        XAML_RETURN_IF_FAILED(xaml_string_new_view(path, &path_str));
+        XAML_RETURN_IF_FAILED(m->open(path_str));
+        return add_module(m);
     }
 
     xaml_result XAML_CALL add_module_recursive(xaml_std_string_view_t path) noexcept
@@ -61,9 +61,9 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         xaml_ptr<xaml_module> m;
         XAML_RETURN_IF_FAILED(xaml_module_new(&m));
         xaml_ptr<xaml_string> path_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new(path, &path_str));
-        XAML_RETURN_IF_FAILED(m->open(path_str.get()));
-        return add_module_recursive(m.get());
+        XAML_RETURN_IF_FAILED(xaml_string_new_view(path, &path_str));
+        XAML_RETURN_IF_FAILED(m->open(path_str));
+        return add_module_recursive(m);
     }
 #endif // __cplusplus
 };

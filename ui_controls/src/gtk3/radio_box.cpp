@@ -42,7 +42,7 @@ xaml_result xaml_radio_box_internal::draw_group() noexcept
                         xaml_ptr<xaml_string> group;
                         XAML_RETURN_IF_FAILED(rc->get_group(&group));
                         bool equals;
-                        XAML_RETURN_IF_FAILED(xaml_string_equals(group.get(), m_group.get(), &equals));
+                        XAML_RETURN_IF_FAILED(xaml_string_equals(group, m_group, &equals));
                         if (equals)
                         {
                             xaml_ptr<xaml_gtk3_control> native_control;

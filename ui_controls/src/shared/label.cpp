@@ -42,6 +42,6 @@ xaml_result XAML_CALL xaml_label_members(xaml_type_info_registration* __info) no
 xaml_result XAML_CALL xaml_label_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_label, "xaml/ui/controls/label.h");
-    XAML_RETURN_IF_FAILED(xaml_label_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_label_members(__info));
+    return ctx->add_type(__info);
 }

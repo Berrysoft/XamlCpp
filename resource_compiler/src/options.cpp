@@ -39,7 +39,7 @@ xaml_result XAML_CALL xaml_rc_options_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_rc_options, "options.h");
     XAML_TYPE_INFO_ADD_CTOR(xaml_rc_options_new);
-    XAML_RETURN_IF_FAILED(xaml_cmdline_options_base_members(__info.get()));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_options_base_members(__info));
     XAML_TYPE_INFO_ADD_CPROP(input, xaml_string);
     XAML_TYPE_INFO_ADD_PROP(output, xaml_string);
     XAML_TYPE_INFO_ADD_DEF_PROP(path);
@@ -51,5 +51,5 @@ xaml_result XAML_CALL xaml_rc_options_register(xaml_meta_context* ctx) noexcept
     XAML_RETURN_IF_FAILED(opt->add_arg(U('o'), U("output"), U("output"), U("Output file")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("input"), U("Input files")));
     XAML_RETURN_IF_FAILED(__info->add_attribute(opt.get()));
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

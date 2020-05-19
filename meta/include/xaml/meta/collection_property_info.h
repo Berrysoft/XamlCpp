@@ -45,14 +45,14 @@ inline xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name
             XAML_RETURN_IF_FAILED(target->query(&self));
             __xaml_wrapper_t<std::decay_t<TValueAdd>> value;
             XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueAdd>>>{}(obj, &value));
-            return (self.get()->*adder)(__xaml_wrapper_get<std::decay_t<TValueAdd>>(value));
+            return (self.get()->*adder)(value);
         },
         [remover](xaml_object* target, xaml_object* obj) -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             __xaml_wrapper_t<std::decay_t<TValueRemove>> value;
             XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueRemove>>>{}(obj, &value));
-            return (self.get()->*remover)(__xaml_wrapper_get<std::decay_t<TValueRemove>>(value));
+            return (self.get()->*remover)(value);
         },
         ptr);
 }

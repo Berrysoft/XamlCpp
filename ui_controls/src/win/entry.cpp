@@ -93,7 +93,7 @@ xaml_result xaml_entry_internal::wnd_proc(xaml_win32_window_message const& msg, 
                 SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
                 xaml_ptr<xaml_string> text;
                 XAML_RETURN_IF_FAILED(xaml_string_new(move(t), &text));
-                XAML_RETURN_IF_FAILED(set_text(text.get()));
+                XAML_RETURN_IF_FAILED(set_text(text));
                 SetFocus(m_handle);
                 Edit_SetSel(m_handle, start, end);
                 break;

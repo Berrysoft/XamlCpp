@@ -23,7 +23,7 @@ xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
     {
         xaml_ptr<xaml_string> arg;
         XAML_RETURN_IF_FAILED(xaml_string_new_view(argv[i], &arg));
-        XAML_RETURN_IF_FAILED(m_cmd_lines->append(arg.get()));
+        XAML_RETURN_IF_FAILED(m_cmd_lines->append(arg));
     }
     [NSApplication sharedApplication];
     [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];

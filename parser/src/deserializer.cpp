@@ -39,7 +39,7 @@ struct deserializer_impl
     {
         xaml_ptr<xaml_hasher> hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher.get(), &symbols));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &symbols));
         return XAML_S_OK;
     }
 
@@ -65,7 +65,7 @@ xaml_result deserializer_impl::construct_impl(xaml_ptr<xaml_node> const& node, x
     if (map_class)
     {
         xaml_ptr<xaml_reflection_info> map_type;
-        if (XAML_SUCCEEDED(m_ctx->get_type_by_name(map_class.get(), &map_type)))
+        if (XAML_SUCCEEDED(m_ctx->get_type_by_name(map_class, &map_type)))
         {
             t = nullptr;
             XAML_RETURN_IF_FAILED(map_type->query(&t));
@@ -83,7 +83,7 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
         xaml_ptr<xaml_string> node_name;
         XAML_RETURN_IF_FAILED(node->get_name(&node_name));
         bool replaced;
-        XAML_RETURN_IF_FAILED(symbols->insert(node_name.get(), mc.get(), &replaced));
+        XAML_RETURN_IF_FAILED(symbols->insert(node_name, mc, &replaced));
     }
     {
         xaml_ptr<xaml_vector> node_properties;
@@ -108,24 +108,24 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
                     if (auto enum_info = type_info.query<xaml_enum_info>())
                     {
                         xaml_ptr<xaml_box> box;
-                        XAML_RETURN_IF_FAILED(enum_info->get_value(str.get(), &box));
-                        XAML_RETURN_IF_FAILED(info->set(mc.get(), box.get()));
+                        XAML_RETURN_IF_FAILED(enum_info->get_value(str, &box));
+                        XAML_RETURN_IF_FAILED(info->set(mc, box));
                     }
                     else
                     {
-                        XAML_RETURN_IF_FAILED(info->set(mc.get(), str.get()));
+                        XAML_RETURN_IF_FAILED(info->set(mc, str));
                     }
                 }
                 else
                 {
-                    XAML_RETURN_IF_FAILED(info->set(mc.get(), str.get()));
+                    XAML_RETURN_IF_FAILED(info->set(mc, str));
                 }
             }
             else if (auto cnode = value.query<xaml_node>())
             {
                 xaml_ptr<xaml_object> c;
                 XAML_RETURN_IF_FAILED(construct_impl(cnode, root, root_type, &c));
-                XAML_RETURN_IF_FAILED(info->set(mc.get(), c.get()));
+                XAML_RETURN_IF_FAILED(info->set(mc, c));
             }
         }
         XAML_FOREACH_END();
@@ -151,7 +151,7 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
                 XAML_RETURN_IF_FAILED(n_item->query(&n));
                 xaml_ptr<xaml_object> c;
                 XAML_RETURN_IF_FAILED(construct_impl(n, root, root_type, &c));
-                XAML_RETURN_IF_FAILED(info->add(mc.get(), c.get()));
+                XAML_RETURN_IF_FAILED(info->add(mc, c));
             }
             XAML_FOREACH_END();
         }
@@ -167,15 +167,15 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
             xaml_ptr<xaml_string> ev_value;
             XAML_RETURN_IF_FAILED(ev->get_value(&ev_value));
             xaml_ptr<xaml_method_info> method;
-            XAML_RETURN_IF_FAILED(root_type->get_method(ev_value.get(), &method));
+            XAML_RETURN_IF_FAILED(root_type->get_method(ev_value, &method));
             xaml_ptr<xaml_vector_view> bind_args;
             XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&bind_args, root));
             xaml_ptr<xaml_delegate> binded_method;
-            XAML_RETURN_IF_FAILED(xaml_delegate_bind(method.get(), bind_args.get(), &binded_method));
+            XAML_RETURN_IF_FAILED(xaml_delegate_bind(method, bind_args, &binded_method));
             xaml_ptr<xaml_event_info> info;
             XAML_RETURN_IF_FAILED(ev->get_info(&info));
             int32_t token;
-            XAML_RETURN_IF_FAILED(info->add(mc.get(), binded_method.get(), &token));
+            XAML_RETURN_IF_FAILED(info->add(mc, binded_method, &token));
         }
         XAML_FOREACH_END();
     }
@@ -187,7 +187,7 @@ xaml_result deserializer_impl::deserialize_extensions(xaml_ptr<xaml_node> const&
     xaml_ptr<xaml_string> node_name;
     XAML_RETURN_IF_FAILED(node->get_name(&node_name));
     xaml_ptr<xaml_object> mc;
-    XAML_RETURN_IF_FAILED(symbols->lookup(node_name.get(), &mc));
+    XAML_RETURN_IF_FAILED(symbols->lookup(node_name, &mc));
     {
         xaml_ptr<xaml_vector> node_properties;
         XAML_RETURN_IF_FAILED(node->get_properties(&node_properties));
@@ -204,10 +204,10 @@ xaml_result deserializer_impl::deserialize_extensions(xaml_ptr<xaml_node> const&
                 xaml_ptr<xaml_string> info_name;
                 XAML_RETURN_IF_FAILED(info->get_name(&info_name));
                 xaml_ptr<xaml_markup_context> context;
-                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc.get(), info_name, symbols));
+                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc, info_name, symbols));
                 xaml_ptr<xaml_markup_extension> ex;
                 XAML_RETURN_IF_FAILED(deserialize(n, &ex));
-                XAML_RETURN_IF_FAILED(ex->provide(m_ctx.get(), context.get()));
+                XAML_RETURN_IF_FAILED(ex->provide(m_ctx, context));
             }
             else if (auto cnode = value.query<xaml_node>())
             {
@@ -291,17 +291,17 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& nod
                     if (auto enum_info = type_info.query<xaml_enum_info>())
                     {
                         xaml_ptr<xaml_box> box;
-                        XAML_RETURN_IF_FAILED(enum_info->get_value(str.get(), &box));
-                        XAML_RETURN_IF_FAILED(info->set(ex.get(), box.get()));
+                        XAML_RETURN_IF_FAILED(enum_info->get_value(str, &box));
+                        XAML_RETURN_IF_FAILED(info->set(ex, box));
                     }
                     else
                     {
-                        XAML_RETURN_IF_FAILED(info->set(ex.get(), str.get()));
+                        XAML_RETURN_IF_FAILED(info->set(ex, str));
                     }
                 }
                 else
                 {
-                    XAML_RETURN_IF_FAILED(info->set(ex.get(), str.get()));
+                    XAML_RETURN_IF_FAILED(info->set(ex, str));
                 }
             }
         }

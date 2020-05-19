@@ -15,8 +15,8 @@ struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding, xaml_
         xaml_ptr<xaml_string> current_property;
         XAML_RETURN_IF_FAILED(mkctx->get_current_property(&current_property));
         xaml_ptr<xaml_object> element;
-        XAML_RETURN_IF_FAILED(mkctx->find_element(m_element.get(), &element));
-        return ctx->bind(current_element.get(), current_property.get(), element.get(), m_path.get(), m_mode);
+        XAML_RETURN_IF_FAILED(mkctx->find_element(m_element, &element));
+        return ctx->bind(current_element, current_property, element, m_path, m_mode);
     }
 };
 
@@ -39,8 +39,8 @@ xaml_result XAML_CALL xaml_binding_members(xaml_type_info_registration* __info) 
 xaml_result XAML_CALL xaml_binding_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_binding, "xaml/markup/binding.h");
-    XAML_RETURN_IF_FAILED(xaml_binding_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_binding_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_binding_mode_register(xaml_meta_context* ctx) noexcept
@@ -51,5 +51,5 @@ xaml_result XAML_CALL xaml_binding_mode_register(xaml_meta_context* ctx) noexcep
     XAML_ENUM_INFO_ADD2(xaml_binding, one_way_to_source);
     XAML_ENUM_INFO_ADD2(xaml_binding, two_way);
     XAML_ENUM_INFO_NEW(xaml_binding_mode, "xaml/meta/meta_context.h");
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

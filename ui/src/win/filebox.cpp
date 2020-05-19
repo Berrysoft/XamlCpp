@@ -75,8 +75,8 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
             wil::unique_cotaskmem_string name;
             XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
             xaml_ptr<xaml_string> xaml_name;
-            XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
-            XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+            XAML_RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(name), &xaml_name));
+            XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
         }
     }
     else
@@ -87,7 +87,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
         xaml_ptr<xaml_string> xaml_name;
         XAML_RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(name), &xaml_name));
-        XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+        XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
     }
     return XAML_S_OK;
 }

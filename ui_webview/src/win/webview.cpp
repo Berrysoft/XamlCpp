@@ -96,7 +96,7 @@ xaml_result xaml_webview_internal::draw_create() noexcept
         {
             xaml_ptr<xaml_string> uri_str;
             XAML_RETURN_IF_FAILED(xaml_string_new(uri, &uri_str));
-            return set_uri(uri_str.get());
+            return set_uri(uri_str);
         }
         return XAML_S_OK;
     });

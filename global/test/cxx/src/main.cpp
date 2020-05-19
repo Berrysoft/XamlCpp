@@ -106,23 +106,23 @@ int main()
         },
         &callback)));
     int32_t token;
-    XAML_THROW_IF_FAILED(vec->add_vector_changed(callback.get(), &token));
-    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(1).get()));
-    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(2).get()));
-    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(3).get()));
-    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(4).get()));
+    XAML_THROW_IF_FAILED(vec->add_vector_changed(callback, &token));
+    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(1)));
+    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(2)));
+    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(3)));
+    XAML_THROW_IF_FAILED(vec->append(xaml_box_value(4)));
     XAML_THROW_IF_FAILED(vec->remove_at(0));
-    XAML_THROW_IF_FAILED(vec->set_at(2, xaml_box_value(100).get()));
+    XAML_THROW_IF_FAILED(vec->set_at(2, xaml_box_value(100)));
     XAML_THROW_IF_FAILED(vec->clear());
 
     xaml_ptr<xaml_hasher> hasher;
     XAML_THROW_IF_FAILED(xaml_hasher_new<int>(&hasher));
     xaml_ptr<xaml_map> map;
-    XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(hasher.get(), &map));
+    XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(hasher, &map));
     bool replaced;
-    XAML_THROW_IF_FAILED(map->insert(xaml_box_value(1).get(), str.get(), &replaced));
-    XAML_THROW_IF_FAILED(map->insert(xaml_box_value(2).get(), vec.get(), &replaced));
+    XAML_THROW_IF_FAILED(map->insert(xaml_box_value(1), str, &replaced));
+    XAML_THROW_IF_FAILED(map->insert(xaml_box_value(2), vec, &replaced));
     xaml_ptr<xaml_object> obj1;
-    XAML_THROW_IF_FAILED(map->lookup(xaml_box_value(1).get(), &obj1));
+    XAML_THROW_IF_FAILED(map->lookup(xaml_box_value(1), &obj1));
     _tcout << xaml_unbox_value<xaml_ptr<xaml_string>>(obj1) << endl;
 }

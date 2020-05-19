@@ -15,22 +15,22 @@ public:
     {
         xaml_ptr<xaml_hasher> guid_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_type_info_map));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher.get(), &m_basic_type_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher, &m_type_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher, &m_basic_type_info_map));
         xaml_ptr<xaml_hasher> string_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_modules));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_namespace));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher.get(), &m_name_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_modules));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_namespace));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_name_info_map));
 
-#define AT(type)                                                                                                 \
-    do                                                                                                           \
-    {                                                                                                            \
-        xaml_ptr<xaml_string> __name;                                                                            \
-        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                                               \
-        xaml_ptr<xaml_basic_type_info> __info;                                                                   \
-        XAML_RETURN_IF_FAILED(xaml_basic_type_info_new(xaml_type_guid_v<type>, __name.get(), nullptr, &__info)); \
-        XAML_RETURN_IF_FAILED(add_type(__info.get()));                                                           \
+#define AT(type)                                                                                           \
+    do                                                                                                     \
+    {                                                                                                      \
+        xaml_ptr<xaml_string> __name;                                                                      \
+        XAML_RETURN_IF_FAILED(xaml_string_new(U(#type), &__name));                                         \
+        xaml_ptr<xaml_basic_type_info> __info;                                                             \
+        XAML_RETURN_IF_FAILED(xaml_basic_type_info_new(xaml_type_guid_v<type>, __name, nullptr, &__info)); \
+        XAML_RETURN_IF_FAILED(add_type(__info));                                                           \
     } while (0)
 
         AT(xaml_object);
@@ -68,14 +68,14 @@ public:
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(mod->get_name(&name));
         bool contains;
-        XAML_RETURN_IF_FAILED(m_modules->has_key(name.get(), &contains));
+        XAML_RETURN_IF_FAILED(m_modules->has_key(name, &contains));
         if (!contains)
         {
             xaml_result (*pregister)(xaml_meta_context*) noexcept;
             XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", (void**)&pregister));
             XAML_RETURN_IF_FAILED(pregister(this));
             bool replaced;
-            XAML_RETURN_IF_FAILED(m_modules->insert(name.get(), mod, &replaced));
+            XAML_RETURN_IF_FAILED(m_modules->insert(name, mod, &replaced));
         }
         return XAML_S_OK;
     }
@@ -119,7 +119,7 @@ public:
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_type_info_map->lookup(key.get(), &value));
+        XAML_RETURN_IF_FAILED(m_type_info_map->lookup(key, &value));
         return value->query(ptr);
     }
 
@@ -134,7 +134,7 @@ public:
     {
         xaml_ptr<xaml_string> real_name;
         XAML_RETURN_IF_FAILED(get_name_by_namespace_name(ns, name, &real_name));
-        return get_type_by_name(real_name.get(), ptr);
+        return get_type_by_name(real_name, ptr);
     }
 
     xaml_result XAML_CALL get_name_by_namespace_name(xaml_string* ns, xaml_string* name, xaml_string** ptr) noexcept override
@@ -164,8 +164,8 @@ public:
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         bool replaced;
-        XAML_RETURN_IF_FAILED(m_type_info_map->insert(key.get(), info, &replaced));
-        return m_name_info_map->insert(name.get(), info, &replaced);
+        XAML_RETURN_IF_FAILED(m_type_info_map->insert(key, info, &replaced));
+        return m_name_info_map->insert(name, info, &replaced);
     }
 
     xaml_result XAML_CALL get_basic_type(xaml_guid const& type, xaml_string** ptr) noexcept
@@ -173,7 +173,7 @@ public:
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_basic_type_info_map->lookup(key.get(), &value));
+        XAML_RETURN_IF_FAILED(m_basic_type_info_map->lookup(key, &value));
         return value->query(ptr);
     }
 
@@ -182,7 +182,7 @@ public:
         xaml_ptr<xaml_object> key;
         XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
         bool replaced;
-        return m_basic_type_info_map->insert(key.get(), name, &replaced);
+        return m_basic_type_info_map->insert(key, name, &replaced);
     }
 
     static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept
@@ -217,7 +217,7 @@ public:
         {
             xaml_ptr<xaml_string> name;
             XAML_RETURN_IF_FAILED(get_property_changed_event_name(target_prop, &name));
-            XAML_RETURN_IF_FAILED(target_type->get_event(name.get(), &targete));
+            XAML_RETURN_IF_FAILED(target_type->get_event(name, &targete));
         }
         xaml_ptr<xaml_property_info> sourcep;
         XAML_RETURN_IF_FAILED(source_type->get_property(source_prop, &sourcep));
@@ -225,41 +225,41 @@ public:
         {
             xaml_ptr<xaml_string> name;
             XAML_RETURN_IF_FAILED(get_property_changed_event_name(source_prop, &name));
-            XAML_RETURN_IF_FAILED(source_type->get_event(name.get(), &sourcee));
+            XAML_RETURN_IF_FAILED(source_type->get_event(name, &sourcee));
         }
         if (mode & xaml_binding_one_way)
         {
             xaml_ptr<xaml_object> value;
             XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
-            XAML_RETURN_IF_FAILED(targetp->set(target, value.get()));
+            XAML_RETURN_IF_FAILED(targetp->set(target, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
                 [source, sourcep, target, targetp]() -> xaml_result {
                     xaml_ptr<xaml_object> value;
                     XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
-                    XAML_RETURN_IF_FAILED(targetp->set(target, value.get()));
+                    XAML_RETURN_IF_FAILED(targetp->set(target, value));
                     return XAML_S_OK;
                 },
                 &callback)));
             int32_t token;
-            XAML_RETURN_IF_FAILED(sourcee->add(source, callback.get(), &token));
+            XAML_RETURN_IF_FAILED(sourcee->add(source, callback, &token));
         }
         if (mode & xaml_binding_one_way_to_source)
         {
             xaml_ptr<xaml_object> value;
             XAML_RETURN_IF_FAILED(targetp->get(target, &value));
-            XAML_RETURN_IF_FAILED(sourcep->set(source, value.get()));
+            XAML_RETURN_IF_FAILED(sourcep->set(source, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
                 [source, sourcep, target, targetp]() -> xaml_result {
                     xaml_ptr<xaml_object> value;
                     XAML_RETURN_IF_FAILED(targetp->get(target, &value));
-                    XAML_RETURN_IF_FAILED(sourcep->set(source, value.get()));
+                    XAML_RETURN_IF_FAILED(sourcep->set(source, value));
                     return XAML_S_OK;
                 },
                 &callback)));
             int32_t token;
-            XAML_RETURN_IF_FAILED(targete->add(target, callback.get(), &token));
+            XAML_RETURN_IF_FAILED(targete->add(target, callback, &token));
         }
         return XAML_S_OK;
     }

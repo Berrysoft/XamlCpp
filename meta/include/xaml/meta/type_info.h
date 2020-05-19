@@ -54,7 +54,7 @@ XAML_DECL_INTERFACE_(xaml_type_info, xaml_reflection_info)
         if (!ctor) return XAML_E_NOTIMPL;
         xaml_ptr<xaml_vector> args;
         XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
-        return ctor->invoke(args.get(), ptr);
+        return ctor->invoke(args, ptr);
     }
 #endif // __cplusplus
 };

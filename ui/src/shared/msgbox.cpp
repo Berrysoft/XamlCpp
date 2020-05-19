@@ -31,5 +31,5 @@ xaml_result XAML_CALL xaml_msgbox(xaml_window* parent, xaml_string* message, xam
     }
     xaml_ptr<xaml_vector> cbs;
     XAML_RETURN_IF_FAILED(xaml_vector_new(move(mbs), &cbs));
-    return xaml_msgbox_custom(parent, message, title, instruction, style, cbs.get(), presult);
+    return xaml_msgbox_custom(parent, message, title, instruction, style, cbs, presult);
 }

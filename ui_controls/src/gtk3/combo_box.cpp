@@ -96,7 +96,7 @@ void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_inter
         auto entry = gtk_bin_get_child(GTK_BIN(self->m_handle));
         xaml_ptr<xaml_string> text;
         XAML_ASSERT_SUCCEEDED(xaml_string_new(gtk_entry_get_text(GTK_ENTRY(entry)), &text));
-        XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
+        XAML_ASSERT_SUCCEEDED(self->set_text(text));
     }
     else
     {
@@ -116,7 +116,7 @@ void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_inter
                 XAML_ASSERT_SUCCEEDED(str->get_data(&data));
                 xaml_ptr<xaml_string> text;
                 XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
-                XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
+                XAML_ASSERT_SUCCEEDED(self->set_text(text));
             }
         }
     }

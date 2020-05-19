@@ -67,14 +67,14 @@ try
                 check_hresult(xaml_webview_resource_requested_args_new(&args));
                 xaml_ptr<xaml_webview_web_request> args_req;
                 check_hresult(xaml_webview_web_request_new(&args_req));
-                check_hresult(args->set_request(args_req.get()));
+                check_hresult(args->set_request(args_req));
 
                 xaml_ptr<xaml_string> method_str;
                 check_hresult(xaml_string_new_hstring(method, &method_str));
-                check_hresult(args_req->set_method(method_str.get()));
+                check_hresult(args_req->set_method(method_str));
                 xaml_ptr<xaml_string> uri_str;
                 check_hresult(xaml_string_new_hstring(uri, &uri_str));
-                check_hresult(args_req->set_uri(uri_str.get()));
+                check_hresult(args_req->set_uri(uri_str));
 
                 check_hresult(invoke_resource_requested(args));
 

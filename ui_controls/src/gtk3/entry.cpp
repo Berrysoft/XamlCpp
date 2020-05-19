@@ -51,7 +51,7 @@ void xaml_entry_internal::on_changed(GtkWidget* widget, xaml_entry_internal* sel
     gchar const* data = gtk_entry_get_text(GTK_ENTRY(self->m_handle));
     xaml_ptr<xaml_string> text;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
-    XAML_ASSERT_SUCCEEDED(self->set_text(text.get()));
+    XAML_ASSERT_SUCCEEDED(self->set_text(text));
 }
 
 xaml_result xaml_entry_internal::size_to_fit() noexcept

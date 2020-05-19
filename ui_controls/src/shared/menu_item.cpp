@@ -102,7 +102,7 @@ xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
                         xaml_ptr<xaml_string> group;
                         XAML_RETURN_IF_FAILED(rc->get_group(&group));
                         bool equals;
-                        XAML_RETURN_IF_FAILED(xaml_string_equals(group.get(), m_group.get(), &equals));
+                        XAML_RETURN_IF_FAILED(xaml_string_equals(group, m_group, &equals));
                         if (equals)
                         {
                             XAML_RETURN_IF_FAILED(rc->set_is_checked(false));
@@ -136,8 +136,8 @@ xaml_result XAML_CALL xaml_menu_item_members(xaml_type_info_registration* __info
 xaml_result XAML_CALL xaml_menu_item_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_menu_item, "xaml/ui/controls/menu_item.h");
-    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_menu_item_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_popup_menu_item_new(xaml_popup_menu_item** ptr) noexcept
@@ -157,8 +157,8 @@ xaml_result XAML_CALL xaml_popup_menu_item_members(xaml_type_info_registration* 
 xaml_result XAML_CALL xaml_popup_menu_item_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_popup_menu_item, "xaml/ui/controls/menu_item.h");
-    XAML_RETURN_IF_FAILED(xaml_popup_menu_item_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_popup_menu_item_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_check_menu_item_new(xaml_check_menu_item** ptr) noexcept
@@ -178,8 +178,8 @@ xaml_result XAML_CALL xaml_check_menu_item_members(xaml_type_info_registration* 
 xaml_result XAML_CALL xaml_check_menu_item_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_check_menu_item, "xaml/ui/controls/menu_item.h");
-    XAML_RETURN_IF_FAILED(xaml_check_menu_item_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_check_menu_item_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_radio_menu_item_new(xaml_radio_menu_item** ptr) noexcept
@@ -200,8 +200,8 @@ xaml_result XAML_CALL xaml_radio_menu_item_members(xaml_type_info_registration* 
 xaml_result XAML_CALL xaml_radio_menu_item_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_radio_menu_item, "xaml/ui/controls/menu_item.h");
-    XAML_RETURN_IF_FAILED(xaml_radio_menu_item_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_radio_menu_item_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_separator_menu_item_new(xaml_separator_menu_item** ptr) noexcept
@@ -220,6 +220,6 @@ xaml_result XAML_CALL xaml_separator_menu_item_members(xaml_type_info_registrati
 xaml_result XAML_CALL xaml_separator_menu_item_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_separator_menu_item, "xaml/ui/controls/menu_item.h");
-    XAML_RETURN_IF_FAILED(xaml_separator_menu_item_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_separator_menu_item_members(__info));
+    return ctx->add_type(__info);
 }

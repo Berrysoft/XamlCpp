@@ -17,6 +17,6 @@ xaml_result XAML_CALL xaml_menu_bar_members(xaml_type_info_registration* __info)
 xaml_result XAML_CALL xaml_menu_bar_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_menu_bar, "xaml/ui/menu_bar.h");
-    XAML_RETURN_IF_FAILED(xaml_menu_bar_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_menu_bar_members(__info));
+    return ctx->add_type(__info);
 }

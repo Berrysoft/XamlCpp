@@ -100,7 +100,7 @@ xaml_result xaml_cmdline_option_impl::for_each_entry(xaml_delegate* handler) noe
         xaml_ptr<xaml_vector_view> args;
         XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&args, entry.short_arg, entry.long_arg, entry.prop, entry.help_text));
         xaml_ptr<xaml_object> obj;
-        XAML_RETURN_IF_FAILED(handler->invoke(args.get(), &obj));
+        XAML_RETURN_IF_FAILED(handler->invoke(args, &obj));
     }
     return XAML_S_OK;
 }
@@ -159,7 +159,7 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_c
             return XAML_S_OK;
         },
         &callback)));
-    return opt->for_each_entry(callback.get());
+    return opt->for_each_entry(callback);
 }
 
 xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept

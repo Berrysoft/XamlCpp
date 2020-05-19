@@ -57,7 +57,7 @@ public:
     {
         if (m_begin == m_end) return XAML_E_OUTOFBOUNDS;
         xaml_ptr<xaml_key_value_pair> pair;
-        XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(m_begin->first.get(), m_begin->second.get(), &pair));
+        XAML_RETURN_IF_FAILED(xaml_key_value_pair_new(m_begin->first, m_begin->second, &pair));
         return pair->query(ptr);
     }
 };
@@ -128,7 +128,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 xaml_ptr<xaml_string> lvalue, rvalue;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, &lvalue));
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, &rvalue));
-                return xaml_string_equals(lvalue.get(), rvalue.get(), pb);
+                return xaml_string_equals(lvalue, rvalue, pb);
             } },
         ptr);
 }

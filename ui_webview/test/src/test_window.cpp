@@ -23,7 +23,7 @@ xaml_result xaml_test_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_window_new(&m_window));
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Test window"), &title));
-    XAML_RETURN_IF_FAILED(m_window->set_title(title.get()));
+    XAML_RETURN_IF_FAILED(m_window->set_title(title));
     XAML_RETURN_IF_FAILED(m_window->set_location({ 100, 100 }));
     XAML_RETURN_IF_FAILED(m_window->set_size({ 800, 600 }));
 
@@ -33,21 +33,21 @@ xaml_result xaml_test_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(g->add_column({ 50, xaml_grid_layout_abs }));
     XAML_RETURN_IF_FAILED(g->add_row({ 0, xaml_grid_layout_auto }));
     XAML_RETURN_IF_FAILED(g->add_row({ 1, xaml_grid_layout_star }));
-    XAML_RETURN_IF_FAILED(m_window->set_child(g.get()));
+    XAML_RETURN_IF_FAILED(m_window->set_child(g));
 
     xaml_ptr<xaml_entry> abar;
     XAML_RETURN_IF_FAILED(xaml_entry_new(&abar));
-    XAML_RETURN_IF_FAILED(g->add_child(abar.get()));
+    XAML_RETURN_IF_FAILED(g->add_child(abar));
 
     xaml_ptr<xaml_button> abutton;
     XAML_RETURN_IF_FAILED(xaml_button_new(&abutton));
     {
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Go"), &text));
-        XAML_RETURN_IF_FAILED(abutton->set_text(text.get()));
+        XAML_RETURN_IF_FAILED(abutton->set_text(text));
     }
-    XAML_RETURN_IF_FAILED(g->add_child(abutton.get()));
-    XAML_RETURN_IF_FAILED(xaml_grid_set_column(abutton.get(), 1));
+    XAML_RETURN_IF_FAILED(g->add_child(abutton));
+    XAML_RETURN_IF_FAILED(xaml_grid_set_column(abutton, 1));
 
     xaml_ptr<xaml_webview> view;
     XAML_RETURN_IF_FAILED(xaml_webview_new(&view));
@@ -70,23 +70,23 @@ xaml_result xaml_test_window_impl::init() noexcept
         {
             XAML_RETURN_IF_FAILED(xaml_string_new(U("https://www.bing.com/"), &uri_str));
         }
-        XAML_RETURN_IF_FAILED(view->set_uri(uri_str.get()));
+        XAML_RETURN_IF_FAILED(view->set_uri(uri_str));
     }
-    XAML_RETURN_IF_FAILED(g->add_child(view.get()));
-    XAML_RETURN_IF_FAILED(xaml_grid_set_row(view.get(), 1));
-    XAML_RETURN_IF_FAILED(xaml_grid_set_column_span(view.get(), 2));
+    XAML_RETURN_IF_FAILED(g->add_child(view));
+    XAML_RETURN_IF_FAILED(xaml_grid_set_row(view, 1));
+    XAML_RETURN_IF_FAILED(xaml_grid_set_column_span(view, 2));
 
-    XAML_RETURN_IF_FAILED(abar->set_text(uri_str.get()));
+    XAML_RETURN_IF_FAILED(abar->set_text(uri_str));
 
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>>(
             [abar](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string> uri) -> xaml_result {
-                return abar->set_text(uri.get());
+                return abar->set_text(uri);
             },
             &callback)));
         int32_t token;
-        XAML_RETURN_IF_FAILED(view->add_uri_changed(callback.get(), &token));
+        XAML_RETURN_IF_FAILED(view->add_uri_changed(callback, &token));
     }
     {
         xaml_ptr<xaml_delegate> callback;
@@ -94,11 +94,11 @@ xaml_result xaml_test_window_impl::init() noexcept
             [abar, view](xaml_ptr<xaml_button>) -> xaml_result {
                 xaml_ptr<xaml_string> uri;
                 XAML_RETURN_IF_FAILED(abar->get_text(&uri));
-                return view->set_uri(uri.get());
+                return view->set_uri(uri);
             },
             &callback)));
         int32_t token;
-        XAML_RETURN_IF_FAILED(abutton->add_click(callback.get(), &token));
+        XAML_RETURN_IF_FAILED(abutton->add_click(callback, &token));
     }
     return XAML_S_OK;
 }

@@ -23,7 +23,7 @@ xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, f
             double subh = cs.height + cm.top + cm.bottom;
             xaml_rectangle subrect = { real.x, suby, real.width, subh };
             XAML_RETURN_IF_FAILED(cc->draw(subrect));
-            if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
+            if (func) XAML_RETURN_IF_FAILED(func(cc, subrect));
             suby += subh;
         }
         XAML_FOREACH_END();
@@ -42,7 +42,7 @@ xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, f
             double subw = cs.width + cm.left + cm.right;
             xaml_rectangle subrect = { subx, real.y, subw, real.height };
             XAML_RETURN_IF_FAILED(cc->draw(subrect));
-            if (func) XAML_RETURN_IF_FAILED(func(cc.get(), subrect));
+            if (func) XAML_RETURN_IF_FAILED(func(cc, subrect));
             subx += subw;
         }
         XAML_FOREACH_END();
@@ -103,6 +103,6 @@ xaml_result XAML_CALL xaml_stack_panel_members(xaml_type_info_registration* __in
 xaml_result XAML_CALL xaml_stack_panel_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_stack_panel, "xaml/ui/controls/stack_panel.h");
-    XAML_RETURN_IF_FAILED(xaml_stack_panel_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_stack_panel_members(__info));
+    return ctx->add_type(__info);
 }

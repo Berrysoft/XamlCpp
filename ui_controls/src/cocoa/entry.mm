@@ -70,5 +70,5 @@ void xaml_entry_internal::on_changed() noexcept
     NSTextField* textField = (NSTextField*)m_handle;
     xaml_ptr<xaml_string> str;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(textField.stringValue.UTF8String, &str));
-    XAML_ASSERT_SUCCEEDED(set_text(str.get()));
+    XAML_ASSERT_SUCCEEDED(set_text(str));
 }

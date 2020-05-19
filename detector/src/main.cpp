@@ -33,16 +33,16 @@ int _tmain(int argc, xaml_char_t** argv)
 {
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
-    XAML_THROW_IF_FAILED(xaml_detector_options_register(cmdline_ctx.get()));
+    XAML_THROW_IF_FAILED(xaml_detector_options_register(cmdline_ctx));
     xaml_ptr<xaml_detector_options> options;
-    XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx.get(), argc, argv, &options));
+    XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx, argc, argv, &options));
 
     xaml_ptr<xaml_string> path_str;
     XAML_THROW_IF_FAILED(options->get_path(&path_str));
 
     xaml_ptr<xaml_module> module;
     XAML_THROW_IF_FAILED(xaml_module_new(&module));
-    XAML_THROW_IF_FAILED(module->open(path_str.get()));
+    XAML_THROW_IF_FAILED(module->open(path_str));
 
     xaml_ptr<xaml_meta_context> ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&ctx));
@@ -50,9 +50,9 @@ int _tmain(int argc, xaml_char_t** argv)
     bool recursive;
     XAML_THROW_IF_FAILED(options->get_recursive(&recursive));
     if (recursive)
-        XAML_THROW_IF_FAILED(ctx->add_module_recursive(module.get()));
+        XAML_THROW_IF_FAILED(ctx->add_module_recursive(module));
     else
-        XAML_THROW_IF_FAILED(ctx->add_module(module.get()));
+        XAML_THROW_IF_FAILED(ctx->add_module(module));
 
     xaml_result (*pget_version)(xaml_version*);
     XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", (void**)&pget_version));

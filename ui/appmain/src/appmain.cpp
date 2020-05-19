@@ -26,7 +26,7 @@ static xaml_result xaml_main_begin(int* pcode) noexcept
 {
     xaml_ptr<xaml_application> app;
     XAML_RETURN_IF_FAILED(xaml_application_init(&app));
-    return xaml_main(app.get(), pcode);
+    return xaml_main(app, pcode);
 }
 
 int APIENTRY _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
@@ -39,7 +39,7 @@ static xaml_result xaml_main_begin(int argc, xaml_char_t** argv, int* pcode) noe
 {
     xaml_ptr<xaml_application> app;
     XAML_RETURN_IF_FAILED(xaml_application_init_with_args(argc, argv, &app));
-    return xaml_main(app.get(), pcode);
+    return xaml_main(app, pcode);
 }
 
 int main(int argc, char** argv)

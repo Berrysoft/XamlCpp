@@ -159,7 +159,7 @@ struct __xaml_delegate_pack_args_impl<Arg1, Args...>
     {
         xaml_ptr<xaml_object> obj;
         XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<Arg1>(arg1), &obj));
-        XAML_RETURN_IF_FAILED(res->append(obj.get()));
+        XAML_RETURN_IF_FAILED(res->append(obj));
         return __xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...);
     }
 };

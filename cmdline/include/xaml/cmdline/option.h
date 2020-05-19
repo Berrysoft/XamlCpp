@@ -35,7 +35,7 @@ XAML_DECL_INTERFACE_(xaml_cmdline_option, xaml_object)
         XAML_RETURN_IF_FAILED(xaml_string_new(prop, &prop_str));
         xaml_ptr<xaml_string> help_text_str;
         XAML_RETURN_IF_FAILED(xaml_string_new(help_text, &help_text_str));
-        return add_arg(short_arg, long_arg_str.get(), prop_str.get(), help_text_str.get());
+        return add_arg(short_arg, long_arg_str, prop_str, help_text_str);
     }
 #endif // __cplusplus
 };

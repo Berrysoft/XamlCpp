@@ -53,7 +53,7 @@ void xaml_webview_internal::on_navigated() noexcept
     {
         xaml_ptr<xaml_string> uri;
         XAML_ASSERT_SUCCEEDED(xaml_string_new(webview.URL.absoluteString.UTF8String, &uri));
-        XAML_ASSERT_SUCCEEDED(set_uri(uri.get()));
+        XAML_ASSERT_SUCCEEDED(set_uri(uri));
     }
 }
 

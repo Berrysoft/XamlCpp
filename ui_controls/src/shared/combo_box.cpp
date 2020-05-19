@@ -40,6 +40,6 @@ xaml_result XAML_CALL xaml_combo_box_members(xaml_type_info_registration* __info
 xaml_result XAML_CALL xaml_combo_box_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_combo_box, "xaml/ui/controls/combo_box.h");
-    XAML_RETURN_IF_FAILED(xaml_combo_box_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_combo_box_members(__info));
+    return ctx->add_type(__info);
 }

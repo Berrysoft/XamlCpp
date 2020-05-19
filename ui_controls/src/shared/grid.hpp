@@ -13,7 +13,7 @@ struct xaml_grid_internal : xaml_layout_base_internal
     {
         xaml_ptr<xaml_object> box;
         XAML_RETURN_IF_FAILED(xaml_box_value(length, &box));
-        return m_columns->append(box.get());
+        return m_columns->append(box);
     }
 
     xaml_result XAML_CALL remove_column(xaml_grid_length const& length) noexcept { return XAML_E_NOTIMPL; }
@@ -22,7 +22,7 @@ struct xaml_grid_internal : xaml_layout_base_internal
     {
         xaml_ptr<xaml_object> box;
         XAML_RETURN_IF_FAILED(xaml_box_value(length, &box));
-        return m_rows->append(box.get());
+        return m_rows->append(box);
     }
 
     xaml_result XAML_CALL remove_row(xaml_grid_length const& length) noexcept { return XAML_E_NOTIMPL; }

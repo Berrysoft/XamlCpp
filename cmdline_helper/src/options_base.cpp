@@ -30,15 +30,15 @@ xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registrat
 xaml_result XAML_CALL xaml_cmdline_options_base_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_cmdline_options_base, "xaml/cmdline/options_base.h");
-    XAML_RETURN_IF_FAILED(xaml_cmdline_options_base_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_cmdline_options_base_members(__info));
+    return ctx->add_type(__info);
 }
 
 static xaml_result print_help(xaml_ptr<xaml_type_info> const& t) noexcept
 {
     xaml_ptr<xaml_cmdline_option> opt;
     XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
-    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt.get()));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt));
     return XAML_S_OK;
 }
 
@@ -59,7 +59,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(info->query(&t));
     xaml_ptr<xaml_cmdline_options> opts;
     {
-        xaml_result hr = xaml_cmdline_parse_argv(t.get(), argc, argv, &opts);
+        xaml_result hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
         if (XAML_FAILED(hr))
         {
             _tcerr << U("Error: 0x") << hex << hr << endl;
@@ -68,7 +68,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         }
     }
     xaml_ptr<xaml_object> obj;
-    XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(t.get(), opts.get(), &obj));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_deserialize(t, opts, &obj));
     xaml_ptr<xaml_cmdline_options_base> options;
     XAML_RETURN_IF_FAILED(obj->query(&options));
 

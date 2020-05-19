@@ -39,14 +39,14 @@ STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid,
         RETURN_IF_FAILED(xaml_webview_resource_requested_args_new(&args));
         xaml_ptr<xaml_webview_web_request> args_req;
         RETURN_IF_FAILED(xaml_webview_web_request_new(&args_req));
-        RETURN_IF_FAILED(args->set_request(args_req.get()));
+        RETURN_IF_FAILED(args->set_request(args_req));
 
         xaml_ptr<xaml_string> uri_str;
         RETURN_IF_FAILED(xaml_string_new(pDispParams->rgvarg[5].pvarVal->bstrVal, &uri_str));
-        RETURN_IF_FAILED(args_req->set_uri(uri_str.get()));
+        RETURN_IF_FAILED(args_req->set_uri(uri_str));
         xaml_ptr<xaml_string> method_str;
         RETURN_IF_FAILED(xaml_string_new(U("GET"), &method_str));
-        RETURN_IF_FAILED(args_req->set_method(method_str.get()));
+        RETURN_IF_FAILED(args_req->set_method(method_str));
         RETURN_IF_FAILED(m_webview->invoke_resource_requested(args));
 
         xaml_ptr<xaml_webview_web_response> args_res;

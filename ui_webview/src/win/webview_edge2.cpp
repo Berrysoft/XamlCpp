@@ -43,7 +43,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
 
                                         xaml_ptr<xaml_webview_web_request> args_req;
                                         RETURN_IF_FAILED(xaml_webview_web_request_new(&args_req));
-                                        RETURN_IF_FAILED(args->set_request(args_req.get()));
+                                        RETURN_IF_FAILED(args->set_request(args_req));
 
                                         wil::com_ptr_t<ICoreWebView2WebResourceRequest, wil::err_returncode_policy> req;
                                         RETURN_IF_FAILED(e->get_Request(&req));
@@ -52,13 +52,13 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         RETURN_IF_FAILED(req->get_Method(&method));
                                         xaml_ptr<xaml_string> method_str;
                                         RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(method), &method_str));
-                                        RETURN_IF_FAILED(args_req->set_method(method_str.get()));
+                                        RETURN_IF_FAILED(args_req->set_method(method_str));
 
                                         wil::unique_cotaskmem_string uri;
                                         RETURN_IF_FAILED(req->get_Uri(&uri));
                                         xaml_ptr<xaml_string> uri_str;
                                         RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(uri), &uri_str));
-                                        RETURN_IF_FAILED(args_req->set_uri(uri_str.get()));
+                                        RETURN_IF_FAILED(args_req->set_uri(uri_str));
 
                                         RETURN_IF_FAILED(invoke_resource_requested(args));
 

@@ -59,7 +59,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
             g_free_unique_ptr<gchar> name{ (gchar*)list->data };
             xaml_ptr<xaml_string> xaml_name;
             XAML_RETURN_IF_FAILED(xaml_string_new_gstring(move(name), &xaml_name));
-            XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+            XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
             list.reset(list->next);
         }
     }
@@ -68,7 +68,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
         g_free_unique_ptr<gchar> name{ gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(handle)) };
         xaml_ptr<xaml_string> xaml_name;
         XAML_RETURN_IF_FAILED(xaml_string_new_gstring(move(name), &xaml_name));
-        XAML_RETURN_IF_FAILED(m_results->append(xaml_name.get()));
+        XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
     }
     gtk_widget_destroy(handle);
     return XAML_S_OK;

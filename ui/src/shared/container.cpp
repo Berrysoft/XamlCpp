@@ -37,8 +37,8 @@ xaml_result XAML_CALL xaml_container_members(xaml_type_info_registration* __info
 xaml_result XAML_CALL xaml_container_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_container, "xaml/ui/container.h");
-    XAML_RETURN_IF_FAILED(xaml_container_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_container_members(__info));
+    return ctx->add_type(__info);
 }
 
 xaml_result XAML_CALL xaml_multicontainer_members(xaml_type_info_registration* __info) noexcept
@@ -53,6 +53,6 @@ xaml_result XAML_CALL xaml_multicontainer_members(xaml_type_info_registration* _
 xaml_result XAML_CALL xaml_multicontainer_register(xaml_meta_context* ctx) noexcept
 {
     XAML_TYPE_INFO_NEW(xaml_multicontainer, "xaml/ui/container.h");
-    XAML_RETURN_IF_FAILED(xaml_multicontainer_members(__info.get()));
-    return ctx->add_type(__info.get());
+    XAML_RETURN_IF_FAILED(xaml_multicontainer_members(__info));
+    return ctx->add_type(__info);
 }

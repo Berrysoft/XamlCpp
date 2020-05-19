@@ -8,6 +8,7 @@
 template <typename T>
 struct xaml_ptr
 {
+private:
     T* m_ptr;
 
     constexpr void try_release() noexcept
@@ -15,20 +16,28 @@ struct xaml_ptr
         if (m_ptr) m_ptr->release();
     }
 
-    constexpr xaml_ptr() noexcept : m_ptr{ nullptr } {}
-    constexpr xaml_ptr(std::nullptr_t) noexcept : m_ptr{ nullptr } {}
-    constexpr xaml_ptr(T* ptr) noexcept : m_ptr{ ptr }
+    constexpr void try_add() noexcept
     {
         if (m_ptr) m_ptr->add_ref();
     }
-    constexpr xaml_ptr(xaml_ptr const& p) noexcept : m_ptr{ p.m_ptr }
+
+    template <typename D>
+    friend struct xaml_ptr;
+
+public:
+    constexpr xaml_ptr() noexcept : m_ptr{ nullptr } {}
+    constexpr xaml_ptr(std::nullptr_t) noexcept : m_ptr{ nullptr } {}
+    constexpr xaml_ptr(T* ptr) noexcept : m_ptr{ ptr } { try_add(); }
+    constexpr xaml_ptr(xaml_ptr const& p) noexcept : m_ptr{ p.m_ptr } { try_add(); }
+    template <typename D, typename = std::enable_if_t<std::is_base_of_v<T, D>>>
+    constexpr xaml_ptr(D* ptr) noexcept : m_ptr{ ptr }
     {
-        if (m_ptr) m_ptr->add_ref();
+        try_add();
     }
     template <typename D, typename = std::enable_if_t<std::is_base_of_v<T, D>>>
     constexpr xaml_ptr(xaml_ptr<D> const& p) noexcept : m_ptr{ p.m_ptr }
     {
-        if (m_ptr) m_ptr->add_ref();
+        try_add();
     }
     constexpr xaml_ptr(xaml_ptr&& p) noexcept : m_ptr{ p.m_ptr } { p.m_ptr = nullptr; }
 
@@ -45,7 +54,16 @@ struct xaml_ptr
     {
         try_release();
         m_ptr = ptr;
-        if (m_ptr) m_ptr->add_ref();
+        try_add();
+        return *this;
+    }
+
+    template <typename D, typename = std::enable_if_t<std::is_base_of_v<T, D>>>
+    constexpr xaml_ptr& operator=(D* ptr) noexcept
+    {
+        try_release();
+        m_ptr = ptr;
+        try_add();
         return *this;
     }
 
@@ -53,7 +71,7 @@ struct xaml_ptr
     {
         try_release();
         m_ptr = p.m_ptr;
-        if (m_ptr) m_ptr->add_ref();
+        try_add();
         return *this;
     }
 
@@ -62,7 +80,7 @@ struct xaml_ptr
     {
         try_release();
         m_ptr = p.m_ptr;
-        if (m_ptr) m_ptr->add_ref();
+        try_add();
         return *this;
     }
 
@@ -75,15 +93,28 @@ struct xaml_ptr
     }
 
     constexpr T** operator&() noexcept { return &m_ptr; }
+    constexpr T* const* operator&() const noexcept { return &m_ptr; }
     constexpr T* operator->() const noexcept { return m_ptr; }
     constexpr T& operator*() const noexcept { return *m_ptr; }
 
+    constexpr operator T*() const noexcept { return m_ptr; }
+
     constexpr T* get() const noexcept { return m_ptr; }
-    constexpr T* release() const noexcept
+    constexpr T* detach() const noexcept
     {
         T* res = m_ptr;
         m_ptr = nullptr;
         return res;
+    }
+    constexpr void reset() const noexcept
+    {
+        try_release();
+        m_ptr = nullptr;
+    }
+    constexpr T** put() noexcept
+    {
+        reset();
+        return &m_ptr;
     }
 
     template <typename D>
@@ -97,7 +128,26 @@ struct xaml_ptr
         return nullptr;
     }
 
+    template <typename D>
+    constexpr xaml_result query(D** ptr) const noexcept
+    {
+        if (m_ptr)
+        {
+            return m_ptr->query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
+    }
+
     constexpr operator bool() const noexcept { return m_ptr; }
+
+    void swap(xaml_ptr& other) noexcept
+    {
+        std::swap(m_ptr, other.m_ptr);
+    }
 
     template <typename D>
     constexpr bool operator==(xaml_ptr<D> const& rhs) const noexcept

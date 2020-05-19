@@ -14,7 +14,7 @@ EXTERN_C XAML_UI_API xaml_result xaml_module_register(xaml_meta_context* ctx) no
     XAML_RETURN_IF_FAILED(xaml_string_new(U("https://github.com/Berrysoft/XamlCpp/"), &xml_ns));
     xaml_ptr<xaml_string> ns;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("xaml"), &ns));
-    XAML_RETURN_IF_FAILED(ctx->add_namespace(xml_ns.get(), ns.get()));
+    XAML_RETURN_IF_FAILED(ctx->add_namespace(xml_ns, ns));
     XAML_RETURN_IF_FAILED(xaml_control_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_container_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_multicontainer_register(ctx));

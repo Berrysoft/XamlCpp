@@ -47,11 +47,11 @@ xaml_result xaml_test_window_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_string_new_view(U("view/test.xaml"), &path));
     uint8_t const* data;
     int32_t size;
-    XAML_RETURN_IF_FAILED(xaml_resource_get(path.get(), &data, &size));
+    XAML_RETURN_IF_FAILED(xaml_resource_get(path, &data, &size));
     xaml_ptr<xaml_node> node;
     xaml_ptr<xaml_vector_view> headers;
-    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx.get(), reinterpret_cast<char const*>(data), &node, &headers));
-    XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx.get(), node.get(), m_outer_this));
+    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, reinterpret_cast<char const*>(data), &node, &headers));
+    XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx, node, m_outer_this));
     return XAML_S_OK;
 }
 
@@ -59,13 +59,13 @@ xaml_result xaml_test_window_internal::on_button_click(xaml_button* btn) noexcep
 {
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
-    XAML_RETURN_IF_FAILED(m_model->set_text(text.get()));
+    XAML_RETURN_IF_FAILED(m_model->set_text(text));
     xaml_ptr<xaml_string> title;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &title));
     xaml_ptr<xaml_string> des;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("I'm going to say hello..."), &des));
     xaml_msgbox_result res;
-    XAML_RETURN_IF_FAILED(xaml_msgbox(static_cast<xaml_window*>(m_outer_this), text.get(), title.get(), des.get(), xaml_msgbox_info, xaml_msgbox_buttons_abort_retry_ignore, &res));
+    XAML_RETURN_IF_FAILED(xaml_msgbox(static_cast<xaml_window*>(m_outer_this), text, title, des, xaml_msgbox_info, xaml_msgbox_buttons_abort_retry_ignore, &res));
     return XAML_S_OK;
 }
 
@@ -103,12 +103,12 @@ xaml_result XAML_CALL xaml_test_window_register(xaml_meta_context* ctx) noexcept
     XAML_RETURN_IF_FAILED(xaml_string_new(U("https://github.com/Berrysoft/XamlCpp/parser/test/"), &xml_ns));
     xaml_ptr<xaml_string> ns;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("xaml_test"), &ns));
-    XAML_RETURN_IF_FAILED(ctx->add_namespace(xml_ns.get(), ns.get()));
+    XAML_RETURN_IF_FAILED(ctx->add_namespace(xml_ns, ns));
 
     XAML_TYPE_INFO_NEW(xaml_test_window, "test.xaml.h");
-    XAML_RETURN_IF_FAILED(xaml_window_members(__info.get()));
+    XAML_RETURN_IF_FAILED(xaml_window_members(__info));
     XAML_TYPE_INFO_ADD_PROP(model, xaml_test_model);
     XAML_TYPE_INFO_ADD_METHOD(on_button_click);
     XAML_TYPE_INFO_ADD_METHOD(on_canvas_redraw);
-    return ctx->add_type(__info.get());
+    return ctx->add_type(__info);
 }

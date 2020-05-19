@@ -28,7 +28,7 @@ xaml_result XAML_CALL xaml_monitor_get_all(xaml_vector_view** ptr) noexcept
 #endif // GDK_VERSION_3_22
         xaml_ptr<xaml_object> value;
         XAML_RETURN_IF_FAILED(xaml_box_value<xaml_monitor>({ xaml_from_native(geo), xaml_from_native(work) }));
-        XAML_RETURN_IF_FAILED(result->append(value.get()));
+        XAML_RETURN_IF_FAILED(result->append(value));
     }
     return result->query(ptr);
 }

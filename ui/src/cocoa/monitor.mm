@@ -14,7 +14,7 @@ xaml_result XAML_CALL xaml_monitor_get_all(xaml_vector_view** ptr) noexcept
         NSRect const& vframe = screen.visibleFrame;
         xaml_ptr<xaml_object> obj;
         XAML_RETURN_IF_FAILED(xaml_box_value<xaml_monitor>({ xaml_from_native(frame), xaml_from_native(vframe) }));
-        XAML_RETURN_IF_FAILED(ms->append(obj.get()));
+        XAML_RETURN_IF_FAILED(ms->append(obj));
     }
     return ms->query(ptr);
 }
