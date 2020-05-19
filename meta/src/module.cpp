@@ -159,7 +159,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     }
 
 #ifdef XAML_WIN32
-    HMODULE m_handle;
+    HMODULE m_handle{};
 
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {
@@ -187,7 +187,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         return XAML_S_OK;
     }
 #else
-    void* m_handle;
+    void* m_handle{};
 
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
     {

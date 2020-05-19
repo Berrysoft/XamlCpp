@@ -6,9 +6,9 @@ using namespace std;
 struct xaml_box_impl : xaml_implement<xaml_box_impl, xaml_box, xaml_object>
 {
 private:
-    xaml_guid m_type;
-    void* m_data;
-    int32_t m_size;
+    xaml_guid m_type{};
+    void* m_data{};
+    int32_t m_size{};
 
 public:
     xaml_result XAML_CALL init(xaml_guid const& type, void const* data, int32_t size)

@@ -35,7 +35,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
         switch (msg.Msg)
         {
         case WM_NCCREATE:
-            if (hWnd) XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
+            XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
             break;
         case WM_CTLCOLORSTATIC:
             if (XAML_FAILED(hr))

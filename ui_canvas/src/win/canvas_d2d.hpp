@@ -76,7 +76,7 @@ inline D2D1_POINT_2F xaml_to_native<D2D1_POINT_2F, xaml_point>(xaml_point const&
 
 inline xaml_rectangle xaml_from_native(D2D1_RECT_F const& r) noexcept
 {
-    return { (double)r.left, (double)r.top, (double)(r.right - r.left), (double)(r.bottom - r.top) };
+    return { (double)r.left, (double)r.top, (double)r.right - (double)r.left, (double)r.bottom - (double)r.top };
 }
 template <>
 inline D2D1_RECT_F xaml_to_native<D2D1_RECT_F, xaml_rectangle>(xaml_rectangle const& r) noexcept

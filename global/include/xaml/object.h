@@ -174,7 +174,7 @@ inline xaml_result XAML_CALL xaml_object_new_and_init(T** ptr, Args&&... args) n
 template <typename T, typename D, typename Base>
 struct xaml_inner_implement : Base
 {
-    D* m_outer;
+    D* m_outer{};
 
     std::int32_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
     std::int32_t XAML_CALL release() noexcept override { return m_outer->release(); }

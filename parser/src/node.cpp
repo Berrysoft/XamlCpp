@@ -2,7 +2,7 @@
 
 struct xaml_node_base_internal
 {
-    xaml_object* m_outer_this;
+    xaml_object* m_outer_this{};
     virtual ~xaml_node_base_internal() {}
 
     XAML_PROP_PTR_IMPL(type, xaml_type_info)

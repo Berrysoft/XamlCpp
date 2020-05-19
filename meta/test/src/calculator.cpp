@@ -4,7 +4,7 @@
 
 struct xaml_test_calculator_internal
 {
-    xaml_object* m_outer_this;
+    xaml_object* m_outer_this{};
 
     XAML_EVENT_IMPL(value_changed)
     XAML_PROP_EVENT_IMPL(value, int, int*, int);

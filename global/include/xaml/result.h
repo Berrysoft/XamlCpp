@@ -84,7 +84,7 @@ private:
     xaml_result m_result;
 
 public:
-    xaml_result_error(xaml_result result) noexcept : exception() {}
+    xaml_result_error(xaml_result result) noexcept : m_result(result) {}
 
     constexpr xaml_result get_result() const noexcept { return m_result; }
 };
