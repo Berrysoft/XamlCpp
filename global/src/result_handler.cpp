@@ -49,26 +49,22 @@ static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream,
 }
 
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg) noexcept
-try
 {
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)
+    basic_ostringstream<xaml_char_t> stream;
+    print_msg(stream, hr, level, msg);
+    xaml_std_string_t s = stream.str();
     if (IsDebuggerPresent())
     {
-        basic_ostringstream<xaml_char_t> stream;
-        print_msg(stream, hr, level, msg);
-        xaml_std_string_t s = stream.str();
         OutputDebugString(s.c_str());
     }
     else
     {
-        print_msg(_tcerr, hr, level, msg);
+        WriteConsole(GetStdHandle(STD_ERROR_HANDLE), s.c_str(), (DWORD)s.size(), nullptr, 0);
     }
 #else
     print_msg(_tcerr, hr, level, msg);
 #endif // XAML_WIN32 && !XAML_MINGW
-}
-catch (...)
-{
 }
 
 xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept
