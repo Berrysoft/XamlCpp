@@ -70,9 +70,14 @@ jobs:
     displayName: 'Install wil & boost'
     condition: eq(variables.rid, 'win')
 
-  - script: |
-      cinst msys2 --params "/InstallDir=C:/msys64" --no-progress
-      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm git mingw-w64-$(arch_pkg)-gcc mingw-w64-$(arch_pkg)-pkg-config mingw-w64-$(arch_pkg)-gtk3 mingw-w64-$(arch_pkg)-boost"
+  - pwsh: |
+      cd C:\
+      git clone https://github.com/msys2/msys2-ci-base.git msys64
+      C:\msys64\usr\bin\pacman --noconfirm -Syyuu
+      C:\msys64\usr\bin\pacman --noconfirm -Syuu
+      C:\msys64\usr\bin\pacman --noconfirm -S git base base-devel msys2-devel
+      C:\msys64\usr\bin\dash /usr/bin/rebaseall -p
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-$(arch_pkg)-gcc mingw-w64-$(arch_pkg)-pkg-config mingw-w64-$(arch_pkg)-gtk3 mingw-w64-$(arch_pkg)-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
     env:
