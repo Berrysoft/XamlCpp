@@ -107,7 +107,7 @@ if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
-    list(APPEND XAML_COMPILE_OPTIONS "-Wno-inconsistent-missing-override")
+    list(APPEND XAML_COMPILE_OPTIONS "-Wno-inconsistent-missing-override" "-Wno-unknown-attributes")
 endif()
 
 # Enable MSVC new preprocessor
