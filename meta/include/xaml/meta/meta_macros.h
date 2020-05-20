@@ -71,15 +71,7 @@
                                                           \
     xaml_result XAML_CALL get_##name(type** ptr) noexcept \
     {                                                     \
-        if (m_##name)                                     \
-        {                                                 \
-            return m_##name->query(ptr);                  \
-        }                                                 \
-        else                                              \
-        {                                                 \
-            *ptr = nullptr;                               \
-            return XAML_S_OK;                             \
-        }                                                 \
+        return m_##name.query(ptr);                       \
     }
 
 #define XAML_PROP_PTR_IMPL(name, type)                     \

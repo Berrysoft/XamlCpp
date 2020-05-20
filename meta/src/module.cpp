@@ -151,17 +151,9 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
 {
     xaml_ptr<xaml_string> m_name;
 
-    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept
+    xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
-        if (m_name)
-        {
-            return m_name->query(ptr);
-        }
-        else
-        {
-            *ptr = nullptr;
-            return XAML_S_OK;
-        }
+        return m_name.query(ptr);
     }
 
 #ifdef XAML_WIN32
