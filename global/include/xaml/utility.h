@@ -115,6 +115,22 @@
 #endif // _MSC_VER
 #endif // !XAML_NOVTBL
 
+#ifndef XAML_LIKELY
+#ifdef __cplusplus
+#define XAML_LIKELY [[likely]]
+#else
+#define XAML_LIKELY
+#endif // __cplusplus
+#endif // !XAML_LIKELY
+
+#ifndef XAML_UNLIKELY
+#ifdef __cplusplus
+#define XAML_UNLIKELY [[unlikely]]
+#else
+#define XAML_UNLIKELY
+#endif // __cplusplus
+#endif // !XAML_UNLIKELY
+
 #ifndef XAML_CONST_REF
 #ifdef __cplusplus
 #define XAML_CONST_REF const&

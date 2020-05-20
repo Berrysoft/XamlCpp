@@ -107,7 +107,7 @@ xaml_result xaml_cmdline_option_impl::for_each_entry(xaml_delegate* handler) noe
 
 xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcept
 {
-    return xaml_object_new<xaml_cmdline_option_impl>(ptr);
+    return xaml_object_new_catch<xaml_cmdline_option_impl>(ptr);
 }
 
 static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept

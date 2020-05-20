@@ -47,5 +47,5 @@ public:
 
 xaml_result XAML_CALL xaml_event_new(xaml_event** ptr) noexcept
 {
-    return xaml_object_new<xaml_event_impl>(ptr);
+    return xaml_object_new_catch<xaml_event_impl>(ptr);
 }

@@ -89,11 +89,6 @@ public:
     {
         return m_enumerator == nullptr && rhs.m_enumerator == nullptr;
     }
-
-    bool operator!=(__xaml_enumerator_iterator const& rhs) const
-    {
-        return !operator==(rhs);
-    }
 };
 
 template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>

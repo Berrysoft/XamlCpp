@@ -1,0 +1,49 @@
+#include <xaml/resource/resource.h>
+inline constexpr char8_t __view_test_xaml__0[] = 
+u8"<test:window xmlns=\"https://github.com/Berrysoft/XamlCpp/\"""\n"
+"             xmlns:x=\"https://github.com/Berrysoft/XamlCpp/xaml/\"""\n"
+"             xmlns:test=\"https://github.com/Berrysoft/XamlCpp/parser/test/\"""\n"
+"             title=\"Test Window\" location=\"200, 100\" size=\"800, 600\">""\n"
+"  <test:window.model>""\n"
+"    <test:model x:name=\"model\" text=\"&#x1f923;\"/>""\n"
+"  </test:window.model>""\n"
+"  <grid margin=\"10\" columns=\"1*, 1*, 0.8*\" rows=\"auto, auto, 0.5*, 0.8*\">""\n"
+"    <label margin=\"10\" text_halignment=\"right\" valignment=\"center\">Username:</label>""\n"
+"    <entry grid.column=\"1\" margin=\"0, 5\" valignment=\"center\">John</entry>""\n"
+"    <label grid.row=\"1\" margin=\"10\" text_halignment=\"right\" valignment=\"center\">Password:</label>""\n"
+"    <password_entry grid.column=\"1\" grid.row=\"1\" margin=\"0, 5\" valignment=\"center\">123456</password_entry>""\n"
+"    <stack_panel grid.column=\"2\" grid.row=\"0\" grid.row_span=\"3\" margin=\"5\" orientation=\"vertical\">""\n"
+"      <radio_box margin=\"5, 0\" group=\"a\">Radio 1</radio_box>""\n"
+"      <radio_box margin=\"5, 0\" group=\"a\" is_checked=\"true\">Radio 2</radio_box>""\n"
+"      <radio_box margin=\"5, 0\" group=\"a\">Radio 3</radio_box>""\n"
+"      <radio_box margin=\"5, 0\" group=\"b\" is_checked=\"true\">Radio 4 in group b</radio_box>""\n"
+"      <radio_box margin=\"5, 0\" group=\"b\">Radio 5 in group b</radio_box>""\n"
+"    </stack_panel>""\n"
+"    <label x:name=\"mylabel\" grid.column=\"0\" grid.row=\"2\" margin=\"5, 0\" text_halignment=\"center\" valignment=\"center\" text=\"{binding text,element=model,mode=one_way}\"/>""\n"
+"    <button x:name=\"mybutton\" grid.column=\"1\" grid.row=\"2\" is_default=\"true\" valignment=\"center\" click=\"on_button_click\" text=\"{binding text,element=model,mode=one_way}\"/>""\n"
+"    <canvas grid.column=\"0\" grid.row=\"3\" margin=\"10\" redraw=\"on_canvas_redraw\"/>""\n"
+"    <uniform_grid grid.column=\"1\" grid.row=\"3\" margin=\"5\" valignment=\"top\">""\n"
+"      <check_box margin=\"5\">Check 1</check_box>""\n"
+"      <check_box margin=\"5\">Check 2</check_box>""\n"
+"      <check_box margin=\"5\">Check 3</check_box>""\n"
+"      <check_box margin=\"5\">Check 4</check_box>""\n"
+"      <check_box margin=\"5\">Check 5</check_box>""\n"
+"    </uniform_grid>""\n"
+"  </grid>""\n"
+"</test:window>""\n"
+;
+xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept
+{
+    xaml_std_string_view_t file;
+    XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));
+    if (file == U("view/test.xaml"))
+    {
+        *pdata = reinterpret_cast<std::uint8_t const*>(__view_test_xaml__0);
+        *psize = static_cast<std::int32_t>(sizeof(__view_test_xaml__0));
+    }
+    else
+    {
+        return XAML_E_KEYNOTFOUND;
+    }
+    return XAML_S_OK;
+}

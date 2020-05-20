@@ -127,6 +127,8 @@ xaml_result XAML_CALL xaml_vector_new(inner_vector_type&& vec, xaml_vector** ptr
 }
 
 xaml_result XAML_CALL xaml_vector_new(xaml_vector** ptr) noexcept
+try
 {
     return xaml_vector_new({}, ptr);
 }
+XAML_CATCH_RETURN()

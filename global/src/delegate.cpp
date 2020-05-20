@@ -20,7 +20,7 @@ public:
 xaml_result XAML_CALL xaml_delegate_new(xaml_result(XAML_CALL* func)(xaml_vector_view*, xaml_object**) XAML_NOEXCEPT, xaml_delegate** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
-    return xaml_object_new<xaml_delegate_impl>(ptr, func);
+    return xaml_object_new_catch<xaml_delegate_impl>(ptr, func);
 }
 
 xaml_result XAML_CALL xaml_delegate_new(function<xaml_result(xaml_vector_view*, xaml_object**)>&& func, xaml_delegate** ptr) noexcept
@@ -31,7 +31,7 @@ xaml_result XAML_CALL xaml_delegate_new(function<xaml_result(xaml_vector_view*, 
 
 xaml_result XAML_CALL xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* args, xaml_delegate** ptr) noexcept
 {
-    return xaml_object_new<xaml_delegate_impl>(
+    return xaml_object_new_catch<xaml_delegate_impl>(
         ptr,
         [func = xaml_ptr<xaml_delegate>(func), args = xaml_ptr<xaml_vector_view>(args)](xaml_vector_view* remain_args, xaml_object** ptr) -> xaml_result {
             xaml_ptr<xaml_vector> real_args;

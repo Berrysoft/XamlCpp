@@ -38,7 +38,7 @@ struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
 
 struct xaml_string_impl : xaml_string_implement<xaml_string_impl, xaml_std_string_t>
 {
-    xaml_string_impl() noexcept {}
+    xaml_string_impl() {}
     xaml_result XAML_CALL init(xaml_char_t const* str)
     {
         try
@@ -70,9 +70,9 @@ struct xaml_string_view_impl : xaml_string_implement<xaml_string_view_impl, xaml
 xaml_result XAML_CALL xaml_string_new(xaml_char_t const* str, xaml_string** ptr) noexcept
 {
     if (str)
-        return xaml_object_init<xaml_string_impl>(ptr, str);
+        return xaml_object_init_catch<xaml_string_impl>(ptr, str);
     else
-        return xaml_object_new<xaml_string_impl>(ptr);
+        return xaml_object_new_catch<xaml_string_impl>(ptr);
 }
 
 xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const* str, xaml_string** ptr) noexcept
@@ -90,7 +90,7 @@ xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&& str, xaml_string** ptr
 
 xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t str, xaml_string** ptr) noexcept
 {
-    return xaml_object_init<xaml_string_impl>(ptr, str);
+    return xaml_object_init_catch<xaml_string_impl>(ptr, str);
 }
 
 xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t str, xaml_string** ptr) noexcept

@@ -53,7 +53,7 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_rais
     do                                        \
     {                                         \
         xaml_result hr = (expr);              \
-        if (XAML_FAILED(hr))                  \
+        XAML_UNLIKELY if (XAML_FAILED(hr))    \
         {                                     \
             XAML_RAISE(hr, XAML_RAISE_LEVEL); \
             return hr;                        \
@@ -64,7 +64,7 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_rais
     do                                        \
     {                                         \
         hr = (expr);                          \
-        if (XAML_FAILED(hr))                  \
+        XAML_UNLIKELY if (XAML_FAILED(hr))    \
         {                                     \
             XAML_RAISE(hr, XAML_RAISE_LEVEL); \
             goto label;                       \
@@ -104,8 +104,10 @@ public:
     do                                     \
     {                                      \
         xaml_result hr = (expr);           \
-        if (XAML_FAILED(hr))               \
+        XAML_UNLIKELY if (XAML_FAILED(hr)) \
+        {                                  \
             throw xaml_result_error{ hr }; \
+        }                                  \
     } while (0)
 
 #define XAML_CATCH_RETURN()                                            \

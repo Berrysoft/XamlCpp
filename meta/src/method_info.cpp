@@ -24,7 +24,7 @@ struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method
 
 xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view*), xaml_method_info** ptr) noexcept
 {
-    return xaml_object_new<xaml_method_info_impl>(ptr, name, func);
+    return xaml_object_new_catch<xaml_method_info_impl>(ptr, name, func);
 }
 
 xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_vector_view*)>&& func, xaml_method_info** ptr) noexcept

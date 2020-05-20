@@ -8,7 +8,7 @@
     do                                                           \
     {                                                            \
         BOOL res = (expr);                                       \
-        if (!res)                                                \
+        XAML_UNLIKELY if (!res)                                  \
         {                                                        \
             xaml_result hr = HRESULT_FROM_WIN32(GetLastError()); \
             XAML_RAISE(hr, XAML_RAISE_LEVEL);                    \
@@ -20,7 +20,7 @@
     do                                               \
     {                                                \
         BOOL res = (expr);                           \
-        if (res)                                     \
+        XAML_LIKELY if (res)                         \
             hr = XAML_S_OK;                          \
         else                                         \
         {                                            \
@@ -42,8 +42,10 @@
     do                                                                     \
     {                                                                      \
         BOOL res = (expr);                                                 \
-        if (!res)                                                          \
+        XAML_UNLIKELY if (!res)                                            \
+        {                                                                  \
             throw xaml_result_error{ HRESULT_FROM_WIN32(GetLastError()) }; \
+        }                                                                  \
     } while (0)
 #else
 #define XAML_THROW_IF_WIN32_BOOL_FALSE(expr) XAML_ASSERT_WIN32_BOOL(expr)

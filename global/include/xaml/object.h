@@ -126,22 +126,31 @@ inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, v
     return __query_impl<D, Base...>{}(static_cast<T*>(this), type, ptr);
 }
 
-template <typename D, typename T, typename... Args>
+template <typename D, typename T, typename... Args, typename = std::enable_if_t<noexcept(D(std::declval<Args&&>()...))>>
 inline xaml_result XAML_CALL xaml_object_new(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
-    if (!res) return XAML_E_OUTOFMEMORY;
+    XAML_UNLIKELY if (!res) return XAML_E_OUTOFMEMORY;
     *ptr = res;
     return XAML_S_OK;
 }
 
 template <typename D, typename T, typename... Args>
+inline xaml_result XAML_CALL xaml_object_new_catch(T** ptr, Args&&... args) noexcept
+try
+{
+    *ptr = new D(std::forward<Args>(args)...);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+template <typename D, typename T, typename... Args, typename = std::enable_if_t<std::is_nothrow_constructible_v<D>>>
 inline xaml_result XAML_CALL xaml_object_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D;
-    if (!res) return XAML_E_OUTOFMEMORY;
+    XAML_UNLIKELY if (!res) return XAML_E_OUTOFMEMORY;
     xaml_result hr = res->init(std::forward<Args>(args)...);
-    if (XAML_SUCCEEDED(hr))
+    XAML_LIKELY if (XAML_SUCCEEDED(hr))
     {
         *ptr = res;
         return XAML_S_OK;
@@ -154,10 +163,29 @@ inline xaml_result XAML_CALL xaml_object_init(T** ptr, Args&&... args) noexcept
 }
 
 template <typename D, typename T, typename... Args>
+inline xaml_result XAML_CALL xaml_object_init_catch(T** ptr, Args&&... args) noexcept
+try
+{
+    D* res = new D;
+    xaml_result hr = res->init(std::forward<Args>(args)...);
+    XAML_LIKELY if (XAML_SUCCEEDED(hr))
+    {
+        *ptr = res;
+        return XAML_S_OK;
+    }
+    else
+    {
+        delete res;
+        return hr;
+    }
+}
+XAML_CATCH_RETURN()
+
+template <typename D, typename T, typename... Args, typename = std::enable_if_t<noexcept(D(std::declval<Args&&>()...))>>
 inline xaml_result XAML_CALL xaml_object_new_and_init(T** ptr, Args&&... args) noexcept
 {
     D* res = new (std::nothrow) D(std::forward<Args>(args)...);
-    if (!res) return XAML_E_OUTOFMEMORY;
+    XAML_UNLIKELY if (!res) return XAML_E_OUTOFMEMORY;
     xaml_result hr = res->init();
     if (XAML_SUCCEEDED(hr))
     {
@@ -170,6 +198,25 @@ inline xaml_result XAML_CALL xaml_object_new_and_init(T** ptr, Args&&... args) n
         return hr;
     }
 }
+
+template <typename D, typename T, typename... Args>
+inline xaml_result XAML_CALL xaml_object_new_and_init_catch(T** ptr, Args&&... args) noexcept
+try
+{
+    D* res = new D(std::forward<Args>(args)...);
+    xaml_result hr = res->init();
+    XAML_LIKELY if (XAML_SUCCEEDED(hr))
+    {
+        *ptr = res;
+        return XAML_S_OK;
+    }
+    else
+    {
+        delete res;
+        return hr;
+    }
+}
+XAML_CATCH_RETURN()
 
 template <typename T, typename D, typename Base>
 struct xaml_inner_implement : Base

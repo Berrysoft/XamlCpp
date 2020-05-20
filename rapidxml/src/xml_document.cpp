@@ -167,7 +167,6 @@ namespace rapidxml
     };
 
     constexpr bool operator==(file_iterator const& lhs, file_iterator const& rhs) noexcept { return (!lhs.m_stream) && (!rhs.m_stream); }
-    constexpr bool operator!=(file_iterator const& lhs, file_iterator const& rhs) noexcept { return !(lhs == rhs); }
 
     void xml_document::load_stream(FILE* stream, parse_flag flags)
     {

@@ -9,7 +9,7 @@ template <typename T>
 struct xaml_ptr
 {
 private:
-    T* m_ptr;
+    T* m_ptr{};
 
     constexpr void try_release() noexcept
     {
@@ -100,7 +100,7 @@ public:
     constexpr operator T*() const noexcept { return m_ptr; }
 
     constexpr T* get() const noexcept { return m_ptr; }
-    constexpr T* detach() const noexcept
+    [[nodiscard]] constexpr T* detach() const noexcept
     {
         T* res = m_ptr;
         m_ptr = nullptr;
@@ -111,7 +111,7 @@ public:
         try_release();
         m_ptr = nullptr;
     }
-    constexpr T** put() noexcept
+    [[nodiscard]] constexpr T** put() noexcept
     {
         reset();
         return &m_ptr;
@@ -154,16 +154,15 @@ public:
     {
         return m_ptr == rhs.m_ptr;
     }
+
     template <typename D>
-    constexpr bool operator!=(xaml_ptr<D> const& rhs) const noexcept
+    constexpr bool operator==(D* rhs) const noexcept
     {
-        return !operator==(rhs);
+        return m_ptr == rhs;
     }
 
     friend constexpr bool operator==(xaml_ptr<T> const& lhs, std::nullptr_t) noexcept { return lhs.m_ptr == nullptr; }
     friend constexpr bool operator==(std::nullptr_t, xaml_ptr<T> const& rhs) noexcept { return rhs == nullptr; }
-    friend constexpr bool operator!=(xaml_ptr<T> const& lhs, std::nullptr_t) noexcept { return !(lhs == nullptr); }
-    friend constexpr bool operator!=(std::nullptr_t, xaml_ptr<T> const& rhs) noexcept { return !(rhs == nullptr); }
 };
 
 namespace std

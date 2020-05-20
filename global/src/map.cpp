@@ -85,7 +85,7 @@ public:
 
 xaml_result XAML_CALL xaml_hasher_new(xaml_result (*func)(xaml_object*, int32_t*), xaml_result (*eq_func)(xaml_object*, xaml_object*, bool*), xaml_hasher** ptr) noexcept
 {
-    return xaml_object_new<xaml_hasher_impl>(ptr, func, eq_func);
+    return xaml_object_new_catch<xaml_hasher_impl>(ptr, func, eq_func);
 }
 
 xaml_result XAML_CALL xaml_hasher_new(function<xaml_result(xaml_object*, int32_t*)>&& func, function<xaml_result(xaml_object*, xaml_object*, bool*)>&& eq_func, xaml_hasher** ptr) noexcept

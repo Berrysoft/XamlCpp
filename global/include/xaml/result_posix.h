@@ -16,7 +16,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                                      \
     {                                                       \
         int res = (expr);                                   \
-        if (res == -1)                                      \
+        XAML_UNLIKELY if (res == -1)                        \
         {                                                   \
             xaml_result hr = xaml_result_from_errno(errno); \
             XAML_RAISE(hr, XAML_RAISE_LEVEL);               \
@@ -28,7 +28,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                          \
     {                                           \
         int res = (expr);                       \
-        if (res != -1)                          \
+        XAML_LIKELY if (res != -1)              \
             hr = XAML_S_OK;                     \
         else                                    \
         {                                       \
@@ -50,8 +50,10 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                                                \
     {                                                                 \
         int res = (expr);                                             \
-        if (res == -1)                                                \
+        XAML_UNLIKELY if (res == -1)                                  \
+        {                                                             \
             throw xaml_result_error{ xaml_result_from_errno(errno) }; \
+        }                                                             \
     } while (0)
 #else
 #define XAML_THROW_IF_POSIX_ERROR(expr) XAML_ASSERT_POSIX_SUCCESS(expr)

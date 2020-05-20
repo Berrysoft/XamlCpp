@@ -33,7 +33,6 @@ constexpr bool operator==(xaml_guid const& lhs, xaml_guid const& rhs)
 {
     return lhs.data1 == rhs.data1 && lhs.data2 == rhs.data2 && lhs.data3 == rhs.data3 && std::equal(std::begin(lhs.data4), std::end(lhs.data4), std::begin(rhs.data4), std::end(rhs.data4));
 }
-constexpr bool operator!=(xaml_guid const& lhs, xaml_guid const& rhs) { return !(lhs == rhs); }
 #endif // __cplusplus
 
 #ifndef __cplusplus

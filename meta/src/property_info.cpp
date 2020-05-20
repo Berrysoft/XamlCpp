@@ -61,7 +61,7 @@ public:
 
 xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_guid const& type, xaml_result(XAML_CALL* getter)(xaml_object*, xaml_object**), xaml_result(XAML_CALL* setter)(xaml_object*, xaml_object*), xaml_property_info** ptr) noexcept
 {
-    return xaml_object_new<xaml_property_info_impl>(ptr, name, type, getter, setter);
+    return xaml_object_new_catch<xaml_property_info_impl>(ptr, name, type, getter, setter);
 }
 
 xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_guid const& type, std::function<xaml_result(xaml_object*, xaml_object**)>&& getter, std::function<xaml_result(xaml_object*, xaml_object*)>&& setter, xaml_property_info** ptr) noexcept
