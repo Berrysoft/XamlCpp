@@ -8,6 +8,8 @@
 
 #ifdef XAML_WIN32
 #include <Windows.h>
+#else
+#include <sf/color.hpp>
 #endif // XAML_WIN32
 
 #ifdef UNICODE
@@ -43,9 +45,21 @@ static map<xaml_result_raise_level, xaml_std_string_view_t> s_level_map{
     { xaml_result_raise_error, U("ERROR") }
 };
 
+#ifndef XAML_WIN32
+static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
+    { xaml_result_raise_info, sf::bright_blue },
+    { xaml_result_raise_warning, sf::yellow },
+    { xaml_result_raise_warning, sf::red }
+};
+#endif // !XAML_WIN32
+
 static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream, xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg)
 {
+#ifdef XAML_WIN32
     return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
+#else
+    return sf::println(stream, U("{}: 0x{:x}: {}"), sf::make_color_arg(s_level_map[level], s_level_color_map[level]), hr, msg);
+#endif // XAML_WIN32
 }
 
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg) noexcept
