@@ -8,7 +8,7 @@ using namespace std;
 
 static unordered_map<UINT_PTR, xaml_timer_impl*> timer_map;
 
-static void CALLBACK on_win32_timer_tick(HWND hWnd, UINT Msg, UINT_PTR nIdEvent, DWORD uElapsed)
+static void CALLBACK on_win32_timer_tick(HWND, UINT, UINT_PTR nIdEvent, DWORD)
 {
     auto self = timer_map[nIdEvent];
     if (self)

@@ -46,13 +46,13 @@ public:
         return S_OK;
     }
 
-    STDMETHODIMP GetTypeInfo(UINT iTInfo, LCID lcid, ITypeInfo** ppTInfo) override
+    STDMETHODIMP GetTypeInfo(UINT, LCID, ITypeInfo** ppTInfo) override
     {
         *ppTInfo = NULL;
         return E_NOTIMPL;
     }
 
-    STDMETHODIMP GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgDispId)
+    STDMETHODIMP GetIDsOfNames(REFIID, LPOLESTR*, UINT, LCID, DISPID*)
     {
         return E_NOTIMPL;
     }

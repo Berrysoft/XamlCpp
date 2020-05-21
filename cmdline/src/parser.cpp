@@ -150,12 +150,12 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                         XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
                         for (xaml_char_t other_short_arg : switches_or_value)
                         {
-                            xaml_ptr<xaml_string> pprop;
-                            XAML_RETURN_IF_FAILED(popt->find_short_arg(other_short_arg, &pprop));
-                            xaml_ptr<xaml_property_info> prop;
-                            if (XAML_SUCCEEDED(type->get_property(pprop, &prop)))
+                            xaml_ptr<xaml_string> pprop2;
+                            XAML_RETURN_IF_FAILED(popt->find_short_arg(other_short_arg, &pprop2));
+                            xaml_ptr<xaml_property_info> prop2;
+                            if (XAML_SUCCEEDED(type->get_property(pprop2, &prop2)))
                             {
-                                XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
+                                XAML_RETURN_IF_FAILED(props_insert(props, prop2, U("true")));
                             }
                         }
                     }

@@ -25,7 +25,7 @@ STDMETHODIMP WebBrowserSink::QueryInterface(REFIID riid, void** ppvObject)
         return E_NOINTERFACE;
 }
 
-STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS* pDispParams, VARIANT* pVarResult, EXCEPINFO* pExcepInfo, UINT* puArgErr)
+STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID, WORD, DISPPARAMS* pDispParams, VARIANT*, EXCEPINFO*, UINT*)
 {
     if (riid != IID_NULL)
         return DISP_E_UNKNOWNINTERFACE;

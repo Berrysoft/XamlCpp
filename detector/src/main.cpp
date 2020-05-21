@@ -93,14 +93,14 @@ int _tmain(int argc, xaml_char_t** argv)
                 XAML_THROW_IF_FAILED(t->get_properties(&props));
                 for (auto item2 : props)
                 {
-                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_key_value_pair> pair2 = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
-                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    XAML_THROW_IF_FAILED(pair2->get_key(&key));
                     xaml_ptr<xaml_object> value;
-                    XAML_THROW_IF_FAILED(pair->get_value(&value));
-                    xaml_ptr<xaml_property_info> info = value.query<xaml_property_info>();
+                    XAML_THROW_IF_FAILED(pair2->get_value(&value));
+                    xaml_ptr<xaml_property_info> info2 = value.query<xaml_property_info>();
                     xaml_guid type;
-                    XAML_THROW_IF_FAILED(info->get_type(&type));
+                    XAML_THROW_IF_FAILED(info2->get_type(&type));
                     sf::println(_tcout, U("    P: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
                 }
             }
@@ -109,14 +109,14 @@ int _tmain(int argc, xaml_char_t** argv)
                 XAML_THROW_IF_FAILED(t->get_collection_properties(&props));
                 for (auto item2 : props)
                 {
-                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_key_value_pair> pair2 = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
-                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    XAML_THROW_IF_FAILED(pair2->get_key(&key));
                     xaml_ptr<xaml_object> value;
-                    XAML_THROW_IF_FAILED(pair->get_value(&value));
-                    xaml_ptr<xaml_collection_property_info> info = value.query<xaml_collection_property_info>();
+                    XAML_THROW_IF_FAILED(pair2->get_value(&value));
+                    xaml_ptr<xaml_collection_property_info> info2 = value.query<xaml_collection_property_info>();
                     xaml_guid type;
-                    XAML_THROW_IF_FAILED(info->get_type(&type));
+                    XAML_THROW_IF_FAILED(info2->get_type(&type));
                     sf::println(_tcout, U("    C: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
                 }
             }
@@ -125,26 +125,26 @@ int _tmain(int argc, xaml_char_t** argv)
                 XAML_THROW_IF_FAILED(t->get_events(&props));
                 for (auto item2 : props)
                 {
-                    xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                    xaml_ptr<xaml_key_value_pair> pair2 = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
-                    XAML_THROW_IF_FAILED(pair->get_key(&key));
+                    XAML_THROW_IF_FAILED(pair2->get_key(&key));
                     sf::println(_tcout, U("    E: {}"), key.query<xaml_string>());
                 }
             }
         }
-        else if (auto t = info.query<xaml_enum_info>())
+        else if (auto e = info.query<xaml_enum_info>())
         {
             sf::println(_tcout, U("enum {}"), name);
             sf::println(_tcout, U("  included in <{}>"), include_file);
             xaml_ptr<xaml_map_view> values;
-            XAML_THROW_IF_FAILED(t->get_values(&values));
+            XAML_THROW_IF_FAILED(e->get_values(&values));
             for (auto item2 : values)
             {
-                xaml_ptr<xaml_key_value_pair> pair = item2.query<xaml_key_value_pair>();
+                xaml_ptr<xaml_key_value_pair> pair2 = item2.query<xaml_key_value_pair>();
                 xaml_ptr<xaml_object> key;
-                XAML_THROW_IF_FAILED(pair->get_key(&key));
+                XAML_THROW_IF_FAILED(pair2->get_key(&key));
                 xaml_ptr<xaml_object> value;
-                XAML_THROW_IF_FAILED(pair->get_value(&value));
+                XAML_THROW_IF_FAILED(pair2->get_value(&value));
                 xaml_ptr<xaml_box> box = value.query<xaml_box>();
                 int const* pvalue;
                 XAML_THROW_IF_FAILED(box->get_data((void const**)&pvalue));

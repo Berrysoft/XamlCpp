@@ -119,7 +119,7 @@ endif()
 if(MSVC)
     string(REGEX REPLACE "/W3" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
     string(REGEX REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    list(APPEND XAML_COMPILE_OPTIONS "/W4")
+    list(APPEND XAML_COMPILE_OPTIONS "/W4" "/wd4458")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)

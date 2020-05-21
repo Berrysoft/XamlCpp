@@ -165,11 +165,11 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         {
             xaml_ptr<xaml_string> prop_value_str;
             XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_value, &prop_value_str));
-            xaml_ptr<xaml_string_node> node;
-            XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
-            XAML_RETURN_IF_FAILED(node->set_value(prop_value_str));
+            xaml_ptr<xaml_string_node> node_value;
+            XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
+            XAML_RETURN_IF_FAILED(node_value->set_value(prop_value_str));
             xaml_ptr<xaml_attribute_property> prop_item;
-            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t, prop, node, &prop_item));
+            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t, prop, node_value, &prop_item));
             XAML_RETURN_IF_FAILED(props->append(prop_item));
         }
     }
@@ -269,11 +269,11 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     {
                         xaml_ptr<xaml_string> attr_value_str;
                         XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr.value(), &attr_value_str));
-                        xaml_ptr<xaml_string_node> node;
-                        XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
-                        XAML_RETURN_IF_FAILED(node->set_value(attr_value_str));
+                        xaml_ptr<xaml_string_node> node_value;
+                        XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
+                        XAML_RETURN_IF_FAILED(node_value->set_value(attr_value_str));
                         xaml_ptr<xaml_attribute_property> prop_item;
-                        XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t, prop, node, &prop_item));
+                        XAML_RETURN_IF_FAILED(xaml_attribute_property_new(t, prop, node_value, &prop_item));
                         XAML_RETURN_IF_FAILED(props->append(prop_item));
                     }
                 }
@@ -303,11 +303,11 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             {
                                 xaml_ptr<xaml_string> attr_value_str;
                                 XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
-                                xaml_ptr<xaml_string_node> node;
-                                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
-                                XAML_RETURN_IF_FAILED(node->set_value(attr_value_str));
+                                xaml_ptr<xaml_string_node> node_value;
+                                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
+                                XAML_RETURN_IF_FAILED(node_value->set_value(attr_value_str));
                                 xaml_ptr<xaml_attribute_property> prop_item;
-                                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, node, &prop_item));
+                                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, node_value, &prop_item));
                                 XAML_RETURN_IF_FAILED(props->append(prop_item));
                             }
                         }
@@ -345,11 +345,11 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
             {
                 xaml_ptr<xaml_string> node_value_str;
                 XAML_RETURN_IF_FAILED(xaml_string_new_utf8(node.value(), &node_value_str));
-                xaml_ptr<xaml_string_node> node;
-                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node));
-                XAML_RETURN_IF_FAILED(node->set_value(node_value_str));
+                xaml_ptr<xaml_string_node> node_value;
+                XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
+                XAML_RETURN_IF_FAILED(node_value->set_value(node_value_str));
                 xaml_ptr<xaml_attribute_property> prop_item;
-                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, node, &prop_item));
+                XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, node_value, &prop_item));
                 XAML_RETURN_IF_FAILED(props->append(prop_item));
             }
         }
@@ -467,18 +467,18 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     }
                     else
                     {
-                        xaml_ptr<xaml_collection_property_info> info;
-                        XAML_RETURN_IF_FAILED(type->get_collection_property(prop_name, &info));
+                        xaml_ptr<xaml_collection_property_info> info2;
+                        XAML_RETURN_IF_FAILED(type->get_collection_property(prop_name, &info2));
                         bool can_add;
-                        XAML_RETURN_IF_FAILED(info->get_can_add(&can_add));
+                        XAML_RETURN_IF_FAILED(info2->get_can_add(&can_add));
                         if (can_add)
                         {
-                            xaml_ptr<xaml_string> name;
-                            XAML_RETURN_IF_FAILED(info->get_name(&name));
+                            xaml_ptr<xaml_string> name2;
+                            XAML_RETURN_IF_FAILED(info2->get_name(&name2));
                             xaml_ptr<xaml_attribute_collection_property> cprop;
                             xaml_ptr<xaml_vector> values;
                             xaml_ptr<xaml_object> item;
-                            if (XAML_SUCCEEDED(cprops->lookup(name, &item)))
+                            if (XAML_SUCCEEDED(cprops->lookup(name2, &item)))
                             {
                                 XAML_RETURN_IF_FAILED(item->query(&cprop));
                                 XAML_RETURN_IF_FAILED(cprop->get_values(&values));
@@ -486,9 +486,9 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             else
                             {
                                 XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
-                                XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type, info, values, &cprop));
+                                XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type, info2, values, &cprop));
                                 bool replaced;
-                                XAML_RETURN_IF_FAILED(cprops->insert(name, cprop, &replaced));
+                                XAML_RETURN_IF_FAILED(cprops->insert(name2, cprop, &replaced));
                             }
                             XAML_RETURN_IF_FAILED(values->append(child));
                         }

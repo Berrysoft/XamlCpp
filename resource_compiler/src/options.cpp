@@ -11,8 +11,9 @@ struct xaml_rc_options_impl : xaml_cmdline_options_base_implement<xaml_rc_option
         return m_inputs->append(value);
     }
 
-    xaml_result XAML_CALL remove_input(xaml_string*) noexcept override
+    xaml_result XAML_CALL remove_input([[maybe_unused]] xaml_string* value) noexcept override
     {
+        // TODO
         return XAML_E_NOTIMPL;
     }
 

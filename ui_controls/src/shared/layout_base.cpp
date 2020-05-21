@@ -3,7 +3,7 @@
 
 using namespace std;
 
-xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
+xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
 {
     XAML_FOREACH_START(c, m_children);
     {

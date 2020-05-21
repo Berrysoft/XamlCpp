@@ -16,7 +16,7 @@ xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexce
         {
             HFONT font;
             XAML_RETURN_IF_FAILED(provider->get_default_font(XamlGetDpiForWindow(m_handle), &font));
-            return draw_impl(region, [font](xaml_control* c, xaml_rectangle const& region) -> xaml_result {
+            return draw_impl(region, [font](xaml_control* c, xaml_rectangle const&) -> xaml_result {
                 xaml_ptr<xaml_win32_control> native_control;
                 if (XAML_SUCCEEDED(c->query(&native_control)))
                 {

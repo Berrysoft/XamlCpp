@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
 {
     xaml_control* parent = m_parent;
     xaml_ptr<xaml_win32_control> native_parent;

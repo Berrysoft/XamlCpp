@@ -16,7 +16,11 @@ struct xaml_grid_internal : xaml_layout_base_internal
         return m_columns->append(box);
     }
 
-    xaml_result XAML_CALL remove_column(xaml_grid_length const& length) noexcept { return XAML_E_NOTIMPL; }
+    xaml_result XAML_CALL remove_column([[maybe_unused]] xaml_grid_length const& length) noexcept
+    {
+        // TODO
+        return XAML_E_NOTIMPL;
+    }
 
     xaml_result XAML_CALL add_row(xaml_grid_length const& length) noexcept
     {
@@ -25,7 +29,11 @@ struct xaml_grid_internal : xaml_layout_base_internal
         return m_rows->append(box);
     }
 
-    xaml_result XAML_CALL remove_row(xaml_grid_length const& length) noexcept { return XAML_E_NOTIMPL; }
+    xaml_result XAML_CALL remove_row([[maybe_unused]] xaml_grid_length const& length) noexcept
+    {
+        // TODO
+        return XAML_E_NOTIMPL;
+    }
 
     xaml_result XAML_CALL draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept override;
 

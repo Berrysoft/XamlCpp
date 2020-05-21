@@ -23,8 +23,9 @@ xaml_result xaml_popup_menu_item_internal::add_submenu(xaml_menu_item* child) no
     return XAML_S_OK;
 }
 
-xaml_result xaml_popup_menu_item_internal::remove_submenu(xaml_menu_item* child) noexcept
+xaml_result xaml_popup_menu_item_internal::remove_submenu([[maybe_unused]] xaml_menu_item* child) noexcept
 {
+    // TODO
     return XAML_E_NOTIMPL;
 }
 

@@ -80,7 +80,7 @@ BOOL WINAPI XamlIsDarkModeAllowedForApp(void)
 HRESULT WINAPI XamlWindowUseDarkMode(HWND hWnd)
 {
     BOOL set_dark_mode = XamlIsDarkModeAllowedForApp();
-    if (pAllowDarkModeForWindow) pAllowDarkModeForWindow(hWnd, set_dark_mode);
+    if (pAllowDarkModeForWindow) pAllowDarkModeForWindow(hWnd, (BOOLEAN)set_dark_mode);
     if (FAILED(DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE_V2, &set_dark_mode, sizeof(BOOL))))
     {
         HRESULT hr = DwmSetWindowAttribute(hWnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &set_dark_mode, sizeof(BOOL));

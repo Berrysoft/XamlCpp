@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result xaml_check_box_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept
+xaml_result xaml_check_box_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT*) noexcept
 {
     switch (msg.Msg)
     {

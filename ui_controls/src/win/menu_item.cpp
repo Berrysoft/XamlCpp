@@ -21,7 +21,7 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
     return draw_impl(MF_STRING);
 }
 
-xaml_result xaml_menu_item_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept
+xaml_result xaml_menu_item_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT*) noexcept
 {
     switch (msg.Msg)
     {
@@ -150,7 +150,7 @@ xaml_result xaml_check_menu_item_internal::draw_checked() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     XAML_RETURN_IF_FAILED(draw_impl(MF_STRING | MF_UNCHECKED));
     MENUITEMINFO info;
@@ -167,7 +167,7 @@ xaml_result xaml_radio_menu_item_internal::draw_checked() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     return draw_impl(MF_SEPARATOR);
 }

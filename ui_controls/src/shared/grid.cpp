@@ -184,11 +184,11 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
 template <>
 struct __xaml_converter<xaml_ptr<xaml_vector>, void>
 {
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_vector** value) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_vector** ptr) const noexcept
     {
         if (auto vec = obj.query<xaml_vector>())
         {
-            return vec->query(value);
+            return vec->query(ptr);
         }
         else if (auto s = obj.query<xaml_string>())
         {
@@ -218,12 +218,12 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                     double value = __stof<double, xaml_char_t>(lenstr);
                     len = { value, xaml_grid_layout_abs };
                 }
-                xaml_ptr<xaml_object> obj;
-                XAML_RETURN_IF_FAILED(xaml_box_value(len, &obj));
-                XAML_RETURN_IF_FAILED(result->append(obj));
+                xaml_ptr<xaml_object> item;
+                XAML_RETURN_IF_FAILED(xaml_box_value(len, &item));
+                XAML_RETURN_IF_FAILED(result->append(item));
                 offset = str.find_first_not_of(__delimeter, index);
             } while (offset != xaml_std_string_view_t::npos);
-            return result->query(value);
+            return result->query(ptr);
         }
         else
         {

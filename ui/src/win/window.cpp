@@ -31,14 +31,14 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
     if (wnd)
     {
         LPARAM result;
-        xaml_result hr = wnd->wnd_proc(msg, &result);
+        xaml_result __hr = wnd->wnd_proc(msg, &result);
         switch (msg.Msg)
         {
         case WM_NCCREATE:
             XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
             break;
         case WM_CTLCOLORSTATIC:
-            if (XAML_FAILED(hr))
+            if (XAML_FAILED(__hr))
             {
                 bool dark = XamlIsDarkModeAllowedForApp();
                 HDC hDC = (HDC)wParam;
@@ -52,7 +52,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
             }
             break;
         case WM_CTLCOLOREDIT:
-            if (XAML_FAILED(hr) && XamlIsDarkModeAllowedForApp())
+            if (XAML_FAILED(__hr) && XamlIsDarkModeAllowedForApp())
             {
                 HDC hDC = (HDC)wParam;
                 HWND hEdit = (HWND)lParam;
@@ -66,7 +66,7 @@ LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM
             }
             break;
         }
-        if (XAML_SUCCEEDED(hr)) return result;
+        if (XAML_SUCCEEDED(__hr)) return result;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
@@ -87,7 +87,7 @@ xaml_window_internal::~xaml_window_internal()
     close();
 }
 
-xaml_result xaml_window_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
