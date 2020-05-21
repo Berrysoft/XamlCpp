@@ -1,5 +1,7 @@
 #include <iostream>
 #include <map>
+#include <sf/format.hpp>
+#include <sf/sformat.hpp>
 #include <sstream>
 #include <xaml/event.h>
 #include <xaml/result_handler.h>
@@ -27,9 +29,7 @@ static function<__xaml_result_handler_prototype> s_handler = XAML_DEFAULT_HANDLE
 void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* file, int32_t line, xaml_char_t const* func) noexcept
 {
     // If exceptions throwed here, the program should terminate.
-    basic_ostringstream<xaml_char_t> stream;
-    stream << file << U(':') << line << U(':') << func;
-    xaml_std_string_t msg = stream.str();
+    xaml_std_string_t msg = sf::sprint<xaml_char_t>(U("{}:{}:{}"), file, line, func);
     s_handler(hr, level, msg.c_str());
 }
 
@@ -45,7 +45,7 @@ static map<xaml_result_raise_level, xaml_std_string_view_t> s_level_map{
 
 static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream, xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg)
 {
-    return stream << s_level_map[level] << U(": 0x") << hex << hr << U(": ") << msg << endl;
+    return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
 }
 
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg) noexcept

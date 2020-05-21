@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <sf/format.hpp>
 #include <xaml/delegate.h>
 #include <xaml/enumerable.h>
 #include <xaml/map.h>
@@ -25,7 +26,7 @@ int main()
 {
     xaml_ptr<xaml_string> str;
     XAML_THROW_IF_FAILED(xaml_string_new_utf8("Hello world!", &str));
-    _tcout << to_string_view_t(str) << endl;
+    sf::println(_tcout, to_string_view_t(str));
 
     xaml_ptr<xaml_observable_vector> vec;
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
@@ -40,30 +41,28 @@ int main()
             {
                 int32_t index;
                 XAML_THROW_IF_FAILED(args->get_new_index(&index));
-                _tcout << U("Add item at ") << index << ": ";
+                sf::print(_tcout, U("Add item at {}: "), index);
                 xaml_ptr<xaml_vector_view> new_items;
                 XAML_THROW_IF_FAILED(args->get_new_items(&new_items));
                 for (auto obj : new_items)
                 {
-                    int value = xaml_unbox_value<int>(obj);
-                    _tcout << value << ' ';
+                    sf::print(_tcout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                _tcout << endl;
+                sf::println(_tcout);
                 break;
             }
             case xaml_vector_changed_erase:
             {
                 int32_t index;
                 XAML_THROW_IF_FAILED(args->get_new_index(&index));
-                _tcout << U("Erase item at ") << index << ": ";
+                sf::print(_tcout, U("Erase item at {}: "), index);
                 xaml_ptr<xaml_vector_view> old_items;
                 XAML_THROW_IF_FAILED(args->get_old_items(&old_items));
                 for (auto obj : old_items)
                 {
-                    int value = xaml_unbox_value<int>(obj);
-                    _tcout << value << ' ';
+                    sf::print(_tcout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                _tcout << endl;
+                sf::println(_tcout);
                 break;
             }
             case xaml_vector_changed_move:
@@ -75,7 +74,7 @@ int main()
                 int32_t old_index, new_index;
                 XAML_THROW_IF_FAILED(args->get_old_index(&old_index));
                 XAML_THROW_IF_FAILED(args->get_new_index(&new_index));
-                _tcout << U("Move item ") << xaml_unbox_value<int>(obj) << U(" at ") << old_index << U(" to ") << new_index << endl;
+                sf::println(_tcout, U("Move item {} at {} to {}"), xaml_unbox_value<int>(obj), old_index, new_index);
                 break;
             }
             case xaml_vector_changed_replace:
@@ -88,7 +87,7 @@ int main()
                 xaml_ptr<xaml_object> old_item, new_item;
                 XAML_THROW_IF_FAILED(old_items->get_at(0, &old_item));
                 XAML_THROW_IF_FAILED(new_items->get_at(0, &new_item));
-                _tcout << U("Replace item at ") << index << U(" from ") << xaml_unbox_value<int>(old_item) << U(" to ") << xaml_unbox_value<int>(new_item) << endl;
+                sf::println(_tcout, U("Replace item at {} from {} to {}"), index, xaml_unbox_value<int>(old_item), xaml_unbox_value<int>(new_item));
                 break;
             }
             case xaml_vector_changed_reset:
@@ -99,7 +98,7 @@ int main()
                 int32_t old_size, new_size;
                 XAML_THROW_IF_FAILED(old_items->get_size(&old_size));
                 XAML_THROW_IF_FAILED(new_items->get_size(&new_size));
-                _tcout << U("Reset. Old count: ") << old_size << U("; new count: ") << new_size << endl;
+                sf::println(_tcout, U("Reset. Old count: {}; new count: {}"), old_size, new_size);
                 break;
             }
             }

@@ -24,6 +24,8 @@ if(Boost_nowide_FOUND)
     target_link_libraries(xaml_global PRIVATE Boost::headers)
 endif()
 
+target_link_libraries(xaml_global PRIVATE stream_format)
+
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")
 endif()

@@ -1,5 +1,6 @@
 #include <calculator.h>
 #include <iostream>
+#include <sf/format.hpp>
 #include <xaml/meta/meta_context.h>
 #include <xaml/meta/type_info.h>
 
@@ -27,7 +28,7 @@ int main()
     xaml_ptr<xaml_delegate> handler;
     XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_test_calculator>, int>(
         [](xaml_ptr<xaml_test_calculator>, int i) {
-            cout << "Value changed: " << i << endl;
+            sf::println("Value changed: {}", i);
         },
         &handler)));
     int32_t token;
