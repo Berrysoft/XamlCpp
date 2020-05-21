@@ -109,14 +109,14 @@ jobs:
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
-      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DVCPKG_TARGET_TRIPLET=$(arch)-windows -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake
+      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DVCPKG_TARGET_TRIPLET=$(arch)-windows -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DSF_BUILD_TESTS=off
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
-      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=$(bindir2)/gcc.exe -DCMAKE_CXX_COMPILER=$(bindir2)/g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch)
+      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=$(bindir2)/gcc.exe -DCMAKE_CXX_COMPILER=$(bindir2)/g++.exe -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DSF_BUILD_TESTS=off
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'mingw')
     env:
@@ -127,13 +127,13 @@ jobs:
     displayName: 'Configure all projects'
     condition: eq(variables.plat, 'linux')
     inputs:
-      cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DSF_BUILD_TESTS=off
 
   - task: CMake@1
     displayName: 'Configure all projects'
     condition: eq(variables.plat, 'mac')
     inputs:
-      cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)  -DSF_BUILD_TESTS=off
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
