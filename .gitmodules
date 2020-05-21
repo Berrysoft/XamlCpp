@@ -1,3 +1,6 @@
 [submodule "StreamFormat"]
 	path = StreamFormat
 	url = https://github.com/Berrysoft/StreamFormat
+[submodule "nowide"]
+	path = nowide
+	url = https://github.com/boostorg/nowide.git
