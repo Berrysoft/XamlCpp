@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <map>
 #include <options.h>
+#include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
 
@@ -82,19 +83,18 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 {
                     string name = get_valid_name(file.string(), index++);
                     rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    stream << "inline constexpr char8_t " << name << "[] = " << endl;
-                    stream << "u8";
+                    sf::println(stream, "inline constexpr char8_t {}[] = ", name);
+                    sf::print(stream, "u8");
                     string line;
                     while (getline(input, line))
                     {
-                        stream << quoted(line);
+                        sf::print(stream, quoted(line));
                         if (!input.eof())
                         {
-                            stream << "\"\\n\"";
-                            stream << endl;
+                            sf::println(stream, "\"\\n\"");
                         }
                     }
-                    stream << ';' << endl;
+                    sf::println(stream, ';');
                 }
             }
             else
@@ -104,56 +104,55 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 {
                     string name = get_valid_name(file.string(), index++);
                     rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    stream << "inline constexpr ::std::uint8_t " << name << "[] = {";
+                    sf::print(stream, "inline constexpr ::std::uint8_t {}[] = {{", name);
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
                     {
                         i %= 16;
-                        if (i++ == 0) stream << endl;
+                        if (i++ == 0) sf::println(stream);
                         int b = input.get();
-                        stream << "0x" << hex << b;
-                        if (input.peek() != char_traits<char>::eof()) stream << ", ";
+                        sf::print(stream, "0x{:x}", b);
+                        if (input.peek() != char_traits<char>::eof()) sf::print(stream, ", ");
                     }
-                    stream << "};" << endl;
+                    sf::println(stream, "};");
                 }
             }
         }
     }
 
-    stream << "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept" << endl;
-    stream << '{' << endl;
+    sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept\n{");
 
-    stream << tab << "xaml_std_string_view_t file;" << endl;
-    stream << tab << "XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));" << endl;
+    sf::println(stream, "{}xaml_std_string_view_t file;", tab);
+    sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));", tab);
 
     size_t i = 0;
     for (auto pair : rc_map)
     {
-        stream << tab << (i++ ? "else if (file == U(" : "if (file == U(") << pair.first << "))" << endl;
-        stream << tab << '{' << endl;
+        sf::println(stream, "{}{}if (file == U({}))", tab, i++ ? "else " : "", pair.first);
+        sf::println(stream, "{}{{", tab);
 
         auto& [name, text] = pair.second;
         if (text)
         {
-            stream << tab << tab << "*pdata = reinterpret_cast<std::uint8_t const*>(" << name << ");" << endl;
+            sf::println(stream, "{0}{0}*pdata = reinterpret_cast<std::uint8_t const*>({});", tab, name);
         }
         else
         {
-            stream << tab << tab << "*pdata = " << name << ';' << endl;
+            sf::println(stream, "{0}{0}*pdata = {};", tab, name);
         }
-        stream << tab << tab << "*psize = static_cast<std::int32_t>(sizeof(" << name << "));" << endl;
+        sf::println(stream, "{0}{0}*psize = static_cast<std::int32_t>(sizeof({}));", tab, name);
 
-        stream << tab << '}' << endl;
+        sf::println(stream, "{}}}", tab);
     }
 
-    if (!rc_map.empty()) stream << tab << "else" << endl;
-    stream << tab << '{' << endl;
-    stream << tab << tab << "return XAML_E_KEYNOTFOUND;" << endl;
-    stream << tab << '}' << endl;
+    if (!rc_map.empty()) sf::println(stream, "{}else", tab);
+    sf::println(stream, "{}{{", tab);
+    sf::println(stream, "{0}{0}return XAML_E_KEYNOTFOUND;", tab);
+    sf::println(stream, "{}}}", tab);
 
-    stream << tab << "return XAML_S_OK;" << endl;
+    sf::println(stream, "{}return XAML_S_OK;", tab);
 
-    stream << '}' << endl;
+    sf::println(stream, '}');
 }
 
 int _tmain(int argc, xaml_char_t** argv)

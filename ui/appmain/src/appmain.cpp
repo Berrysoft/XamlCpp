@@ -1,10 +1,17 @@
 #include <iostream>
+#include <sf/format.hpp>
 #include <xaml/ui/application.h>
 
 #ifdef XAML_WIN32
 #include <Windows.h>
 #include <tchar.h>
 #endif // XAML_WIN32
+
+#ifdef UNICODE
+#define _tcerr ::std::wcerr
+#else
+#define _tcerr ::std::cerr
+#endif // UNICODE
 
 using namespace std;
 
@@ -16,7 +23,7 @@ static int xaml_main_end(xaml_result hr, int* pcode) noexcept
     }
     else
     {
-        cerr << "Unhandled exception: 0x" << hex << hr << endl;
+        sf::println(_tcerr, U("Unhandled exception: 0x{:x}"), hr);
         return (int)hr;
     }
 }

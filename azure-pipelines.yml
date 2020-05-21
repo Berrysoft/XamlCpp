@@ -60,6 +60,11 @@ jobs:
 
   steps:
   - script: |
+      git submodule init
+      git submodule update --init
+    displayName: 'Init git submodule'
+
+  - script: |
       git clone https://github.com/Microsoft/vcpkg.git
       vcpkg\bootstrap-vcpkg.bat -Win64
     displayName: 'Install vcpkg'

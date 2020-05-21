@@ -13,7 +13,7 @@ target_include_directories(xaml_cmdline
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers)
+target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers stream_format)
 
 if(Boost_nowide_FOUND)
     target_link_libraries(xaml_cmdline PRIVATE Boost::nowide)

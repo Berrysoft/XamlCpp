@@ -22,12 +22,12 @@ struct xaml_reflection_info_implement : xaml_implement<T, Base..., xaml_reflecti
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
     {
-        return m_name->query(ptr);
+        return m_name.query(ptr);
     }
 
     xaml_result XAML_CALL get_include_file(xaml_string** ptr) noexcept override
     {
-        return m_include_file->query(ptr);
+        return m_include_file.query(ptr);
     }
 };
 

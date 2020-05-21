@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <iostream>
 #include <options_base.hpp>
+#include <sf/format.hpp>
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
 #include <xaml/cmdline/options_base.h>
@@ -44,10 +45,10 @@ static xaml_result print_help(xaml_ptr<xaml_type_info> const& t) noexcept
 
 static void print_version() noexcept
 {
-    _tcout << U("") XAML_VERSION;
+    sf::print(_tcout, U("") XAML_VERSION);
 #ifdef XAML_COMMIT_HASH
     constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
-    _tcout << U('-') << hash.substr(0, 8);
+    sf::print(_tcout, U("-{}"), hash.substr(0, 8));
 #endif // XAML_COMMIT_HASH
 }
 
@@ -62,7 +63,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         xaml_result hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
         if (XAML_FAILED(hr))
         {
-            _tcerr << U("Error: 0x") << hex << hr << endl;
+            sf::println(_tcerr, U("Command line parse error: 0x{:x}"), hr);
             XAML_RETURN_IF_FAILED(print_help(t));
             exit(1);
         }
@@ -85,9 +86,9 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        _tcout << exe.filename().string<xaml_char_t>() << U(" ");
+        sf::print(_tcout, U("{} "), exe.filename().string<xaml_char_t>());
         print_version();
-        _tcout << U("\nCopyright (c) 2019-2020 Berrysoft\n") << endl;
+        sf::println(_tcout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
     }
 
     bool help;

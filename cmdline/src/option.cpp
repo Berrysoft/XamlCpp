@@ -1,6 +1,7 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index_container.hpp>
+#include <sf/sformat.hpp>
 #include <xaml/cmdline/option.h>
 #include <xaml/internal/stream.hpp>
 #include <xaml/map.h>
@@ -115,48 +116,40 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_c
     xaml_ptr<xaml_delegate> callback;
     XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_char_t, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
         [&stream](xaml_char_t short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) -> xaml_result {
-            constexpr size_t offset = 2;
-            constexpr size_t spacing = 24;
-            size_t count = offset;
-            stream << xaml_std_string_t(count, ' ');
-            if (short_arg)
+            try
             {
-                stream << U('-') << short_arg;
-                count += 2;
-            }
-            int32_t long_arg_length = 0;
-            XAML_RETURN_IF_FAILED(long_arg->get_length(&long_arg_length));
-            if (long_arg_length)
-            {
+                xaml_std_string_t arg_str;
+                xaml_std_string_view_t long_arg_view;
+                XAML_RETURN_IF_FAILED(to_string_view_t(long_arg, &long_arg_view));
                 if (short_arg)
                 {
-                    stream << U(", ");
-                    count += 2;
+                    if (!long_arg_view.empty())
+                    {
+                        arg_str = sf::sprint<xaml_char_t>(U("-{}, --{}"), short_arg, long_arg_view);
+                    }
+                    else
+                    {
+                        arg_str = sf::sprint<xaml_char_t>(U("-{}"), short_arg);
+                    }
                 }
                 else
                 {
-                    stream << xaml_std_string_t(4, ' ');
-                    count += 4;
+                    if (!long_arg_view.empty())
+                    {
+                        arg_str = sf::sprint<xaml_char_t>(U("    --{}"), long_arg_view);
+                    }
+                    else
+                    {
+                        arg_str = U("[default]");
+                    }
                 }
-                xaml_char_t const* long_arg_data;
-                XAML_RETURN_IF_FAILED(long_arg->get_data(&long_arg_data));
-                stream << U("--") << long_arg_data;
-                count += 2 + long_arg_length;
+                sf::print(stream, U("  {:l22}"), arg_str);
+                xaml_char_t const* help_text_data;
+                XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
+                sf::println(stream, help_text_data);
+                return XAML_S_OK;
             }
-            if (!short_arg && !long_arg_length)
-            {
-                stream << U("[default]");
-                count += 9;
-            }
-            if (count < spacing)
-            {
-                stream << xaml_std_string_t(spacing - count, ' ');
-            }
-            xaml_char_t const* help_text_data;
-            XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
-            stream << help_text_data;
-            stream << endl;
-            return XAML_S_OK;
+            XAML_CATCH_RETURN()
         },
         &callback)));
     return opt->for_each_entry(callback);

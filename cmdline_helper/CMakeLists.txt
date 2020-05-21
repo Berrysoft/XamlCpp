@@ -26,4 +26,4 @@ if(Git_FOUND)
 	endif()
 endif()
 
-target_link_libraries(xaml_cmdline_helper PUBLIC xaml_cmdline)
+target_link_libraries(xaml_cmdline_helper PUBLIC xaml_cmdline PRIVATE stream_format)

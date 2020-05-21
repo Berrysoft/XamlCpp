@@ -1,6 +1,7 @@
 #include <iostream>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
+#include <sf/sformat.hpp>
 #include <sstream>
 #include <xaml/markup/binding.h>
 #include <xaml/parser/parser.h>
@@ -22,9 +23,7 @@ static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_str
     XAML_RETURN_IF_FAILED(ref->get_name(&name));
     try
     {
-        basic_ostringstream<xaml_char_t> oss;
-        oss << "__" << name << "__" << index++;
-        return xaml_string_new(oss.str(), ptr);
+        return xaml_string_new(sf::sprint<xaml_char_t>(U("__{}__{}"), name, index++), ptr);
     }
     XAML_CATCH_RETURN()
 }
