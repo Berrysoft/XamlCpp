@@ -84,7 +84,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 {
                     string name = get_valid_name(file.string(), index++);
                     rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    sf::println(stream, "inline constexpr char8_t {}[] = ", name);
+                    sf::println(stream, "inline static constexpr char8_t {}[] = ", name);
                     sf::print(stream, "u8");
                     string line;
                     while (getline(input, line))
@@ -105,7 +105,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 {
                     string name = get_valid_name(file.string(), index++);
                     rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    sf::print(stream, "inline constexpr ::std::uint8_t {}[] = {{", name);
+                    sf::print(stream, "inline static constexpr ::std::uint8_t {}[] = {{", name);
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
                     {

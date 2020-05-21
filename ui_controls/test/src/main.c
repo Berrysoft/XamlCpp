@@ -6,13 +6,12 @@ xaml_result XAML_CALL xaml_main(xaml_application* app, int* pcode)
     xaml_result hr;
     // Construct a window.
     xaml_test_window* wnd;
-    hr = xaml_test_window_new(&wnd);
-    if (XAML_FAILED(hr)) goto exit;
+    XAML_GOTO_IF_FAILED(xaml_test_window_new(&wnd), exit);
     // Show the window.
-    hr = wnd->vtbl->show(wnd);
-    if (XAML_FAILED(hr)) goto exit_clean_wnd;
+    XAML_GOTO_IF_FAILED(wnd->vtbl->show(wnd), clean_wnd);
+    // Run the application.
     hr = app->vtbl->run(app, pcode);
-exit_clean_wnd:
+clean_wnd:
     wnd->vtbl->release(wnd);
 exit:
     return hr;

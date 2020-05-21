@@ -88,9 +88,11 @@ list(APPEND XAML_BUILD_DEFINITIONS
 # Big object for Windows.
 if(MSVC)
     list(APPEND XAML_COMPILE_OPTIONS "/bigobj")
+endif()
+
+# Enable visual style on Windows.
+if(MSVC)
     list(APPEND XAML_LINK_OPTIONS "/manifestdependency:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'")
-elseif(MINGW)
-    list(APPEND XAML_COMPILE_OPTIONS "-Wa,-mbig-obj")
 endif()
 
 # Disable RTTI by default.

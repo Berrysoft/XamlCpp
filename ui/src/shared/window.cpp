@@ -18,12 +18,6 @@ xaml_result xaml_window_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_closing));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
-        [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) -> xaml_result {
-            if (m_handle) XAML_RETURN_IF_FAILED(draw_title());
-            return XAML_S_OK;
-        },
-        &token)));
     XAML_RETURN_IF_FAILED((m_location_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_point>(
         [this](xaml_ptr<xaml_window>, xaml_point) -> xaml_result {
             if (m_handle && !m_resizing) XAML_RETURN_IF_FAILED(draw({}));
