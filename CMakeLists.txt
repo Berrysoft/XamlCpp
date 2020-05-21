@@ -10,16 +10,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-if("${CMAKE_BUILD_TYPE}" STREQUAL "")
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+include(CheckIPOSupported)
+check_ipo_supported(RESULT ENABLE_IPO OUTPUT output)
 
-if("${CONFIGURATION}" STREQUAL "")
-    set(CONFIGURATION "Debug")
-endif()
-
-if(NOT "${CONFIGURATION}" MATCHES "Debug")
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION ON)
+if(ENABLE_IPO)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
+    message(STATUS "LTO is enabled for Release")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
