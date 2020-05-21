@@ -1,0 +1,3 @@
+[submodule "StreamFormat"]
+	path = StreamFormat
+	url = https://github.com/Berrysoft/StreamFormat
