@@ -106,7 +106,7 @@ A C++17-compliant compiler is required. Actually it needs C++20, but no compiler
 This project assumes it is built by GCC 10.0+ or Clang 10.0+ when using GNU or LLVM toolchains.
 ### Build on Windows
 #### MSVC
-`wil` and `boost-nowide` are required. `vcpkg` is recommanded for installing. Other packages will be downloaded from NuGet when configuring.
+`wil` and `boost-multi-index` are required. `vcpkg` is recommanded for installing. Other packages will be downloaded from NuGet when configuring.
 #### MinGW
 `gtk`, `pkgconfig` and `boost` are required. MSYS2 is recommanded for installing and building.
 

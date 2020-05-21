@@ -131,6 +131,18 @@
 #endif // __cplusplus
 #endif // !XAML_UNLIKELY
 
+#ifndef XAML_MAYBE_UNUSED
+#ifdef __cplusplus
+#define XAML_MAYBE_UNUSED [[maybe_unused]]
+#else
+#ifdef __GNUC__
+#define XAML_MAYBE_UNUSED __attribute__((__unused__))
+#else
+#define XAML_MAYBE_UNUSED
+#endif // __GNUC__
+#endif // __cplusplus
+#endif // !XAML_MAYBE_UNUSED
+
 #ifndef XAML_CONST_REF
 #ifdef __cplusplus
 #define XAML_CONST_REF const&

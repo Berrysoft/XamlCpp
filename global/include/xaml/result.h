@@ -71,11 +71,11 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_rais
         }                                     \
     } while (0)
 
-#define XAML_ASSERT_SUCCEEDED(expr) \
-    do                              \
-    {                               \
-        xaml_result hr = (expr);    \
-        assert(XAML_SUCCEEDED(hr)); \
+#define XAML_ASSERT_SUCCEEDED(expr)                \
+    do                                             \
+    {                                              \
+        XAML_MAYBE_UNUSED xaml_result hr = (expr); \
+        assert(XAML_SUCCEEDED(hr));                \
     } while (0)
 
 #define XAML_S_OK 0

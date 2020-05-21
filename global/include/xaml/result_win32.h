@@ -30,11 +30,11 @@
         }                                            \
     } while (0)
 
-#define XAML_ASSERT_WIN32_BOOL(expr) \
-    do                               \
-    {                                \
-        BOOL res = (expr);           \
-        assert(res);                 \
+#define XAML_ASSERT_WIN32_BOOL(expr)         \
+    do                                       \
+    {                                        \
+        XAML_MAYBE_UNUSED BOOL res = (expr); \
+        assert(res);                         \
     } while (0)
 
 #ifdef __cplusplus

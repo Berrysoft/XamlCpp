@@ -38,11 +38,11 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
         }                                       \
     } while (0)
 
-#define XAML_ASSERT_POSIX_SUCCESS(expr) \
-    do                                  \
-    {                                   \
-        int res = (expr);               \
-        assert(res != -1);              \
+#define XAML_ASSERT_POSIX_SUCCESS(expr)     \
+    do                                      \
+    {                                       \
+        XAML_MAYBE_UNUSED int res = (expr); \
+        assert(res != -1);                  \
     } while (0)
 
 #ifdef __cplusplus
