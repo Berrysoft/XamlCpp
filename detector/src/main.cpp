@@ -1,3 +1,7 @@
+#ifdef XAML_USE_BOOST_NOWIDE
+#include <boost/nowide/args.hpp>
+#endif // XAML_USE_BOOST_NOWIDE
+
 #include <iomanip>
 #include <iostream>
 #include <options.h>
@@ -32,6 +36,10 @@ xaml_std_string_view_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xam
 
 int _tmain(int argc, xaml_char_t** argv)
 {
+#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
+    boost::nowide::args _(argc, argv);
+#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
+
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
     XAML_THROW_IF_FAILED(xaml_detector_options_register(cmdline_ctx));

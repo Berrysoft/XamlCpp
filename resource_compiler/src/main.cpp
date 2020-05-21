@@ -1,6 +1,7 @@
 #ifdef XAML_USE_BOOST_NOWIDE
 #include <ios>
 
+#include <boost/nowide/args.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
 #else
@@ -157,6 +158,10 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
 int _tmain(int argc, xaml_char_t** argv)
 {
+#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
+    boost::nowide::args _(argc, argv);
+#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
+
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
     XAML_THROW_IF_FAILED(xaml_rc_options_register(cmdline_ctx));
@@ -171,6 +176,7 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
+        cout << to_string(output) << endl;
         u8ofstream stream{ to_string(output) };
         compile(stream, inputs);
     }
