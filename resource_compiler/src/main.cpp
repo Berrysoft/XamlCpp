@@ -59,7 +59,7 @@ constexpr string_view text_extensions[] = { ".txt", ".xml", ".xaml", ".md" };
 
 void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 {
-    stream << "#include <xaml/resource/resource.h>" << endl;
+    sf::println(stream, "#include <xaml/resource/resource.h>");
 
     size_t index{ 0 };
     map<path, tuple<string, bool>> rc_map{};
