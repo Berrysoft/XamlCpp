@@ -283,10 +283,10 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& nod
             {
                 xaml_ptr<xaml_string> str;
                 XAML_RETURN_IF_FAILED(s->get_value(&str));
-                xaml_guid type;
-                XAML_RETURN_IF_FAILED(info->get_type(&type));
+                xaml_guid t;
+                XAML_RETURN_IF_FAILED(info->get_type(&t));
                 xaml_ptr<xaml_reflection_info> type_info;
-                if (XAML_SUCCEEDED(m_ctx->get_type(type, &type_info)))
+                if (XAML_SUCCEEDED(m_ctx->get_type(t, &type_info)))
                 {
                     if (auto enum_info = type_info.query<xaml_enum_info>())
                     {

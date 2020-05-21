@@ -348,20 +348,24 @@ xaml_result xaml_test_window_impl::init() noexcept
 
 xaml_result xaml_test_window_impl::on_timer_tick(xaml_ptr<xaml_timer>) noexcept
 {
-    xaml_ptr<xaml_string> msg;
-    XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &msg));
-    xaml_ptr<xaml_string> title;
-    XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &title));
     xaml_msgbox_result res;
-    XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, msg, title, nullptr, xaml_msgbox_info, xaml_msgbox_buttons_ok, &res));
+    {
+        xaml_ptr<xaml_string> msg;
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &msg));
+        xaml_ptr<xaml_string> title;
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &title));
+        XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, msg, title, nullptr, xaml_msgbox_info, xaml_msgbox_buttons_ok, &res));
+    }
     if (++count >= 3)
     {
         XAML_RETURN_IF_FAILED(m_timer->stop());
         xaml_ptr<xaml_open_filebox> openbox;
         XAML_RETURN_IF_FAILED(xaml_open_filebox_new(&openbox));
-        xaml_ptr<xaml_string> title;
-        XAML_RETURN_IF_FAILED(xaml_string_new(U("Open file"), &title));
-        XAML_RETURN_IF_FAILED(openbox->set_title(title));
+        {
+            xaml_ptr<xaml_string> title;
+            XAML_RETURN_IF_FAILED(xaml_string_new(U("Open file"), &title));
+            XAML_RETURN_IF_FAILED(openbox->set_title(title));
+        }
         xaml_ptr<xaml_object> f;
         XAML_RETURN_IF_FAILED(xaml_box_value<xaml_filebox_filter>({ U("XAML file"), U("*.xaml") }, &f));
         xaml_ptr<xaml_vector> filters;

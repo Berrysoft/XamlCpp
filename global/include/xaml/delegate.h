@@ -85,7 +85,7 @@ Return XAML_CALL __xaml_delegate_noexcept_invoke(F&& f, xaml_result* pres, Args&
 template <typename Return, typename... Args, std::int32_t... Indicies, typename F>
 xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_impl(decltype(&std::declval<Return>()) presult, F&& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
 {
-    xaml_result hr = XAML_S_OK;
+    xaml_result __hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(std::forward<F>(func)(
         __xaml_delegate_noexcept_invoke<Args>(
             [args](int32_t i, auto& arg) -> xaml_result {
@@ -93,9 +93,9 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_impl(decltype(&std::d
                 XAML_RETURN_IF_FAILED(args->get_at(i, &item));
                 return xaml_unbox_value(item, &arg);
             },
-            &hr, Indicies)...,
+            &__hr, Indicies)...,
         presult));
-    return hr;
+    return __hr;
 }
 
 template <typename Return, typename... Args, typename F>
@@ -107,15 +107,15 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke(decltype(&std::declva
 template <typename... Args, std::int32_t... Indicies>
 xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void_impl(std::function<xaml_result(Args...)> const& func, xaml_vector_view* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
 {
-    xaml_result hr = XAML_S_OK;
+    xaml_result __hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(func(__xaml_delegate_noexcept_invoke<Args>(
         [args](int32_t i, auto& arg) -> xaml_result {
             xaml_ptr<xaml_object> item;
             XAML_RETURN_IF_FAILED(args->get_at(i, &item));
             return xaml_unbox_value(item, &arg);
         },
-        &hr, Indicies)...));
-    return hr;
+        &__hr, Indicies)...));
+    return __hr;
 }
 
 template <typename... Args>
@@ -167,7 +167,7 @@ struct __xaml_delegate_pack_args_impl<Arg1, Args...>
 template <>
 struct __xaml_delegate_pack_args_impl<>
 {
-    xaml_result operator()(xaml_ptr<xaml_vector> const& res) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_vector> const&) const noexcept
     {
         return XAML_S_OK;
     }

@@ -60,10 +60,10 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(info->query(&t));
     xaml_ptr<xaml_cmdline_options> opts;
     {
-        xaml_result hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
-        if (XAML_FAILED(hr))
+        xaml_result __hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
+        if (XAML_FAILED(__hr))
         {
-            sf::println(_tcerr, U("Command line parse error: 0x{:x}"), hr);
+            sf::println(_tcerr, U("Command line parse error: 0x{:x}"), __hr);
             XAML_RETURN_IF_FAILED(print_help(t));
             exit(1);
         }

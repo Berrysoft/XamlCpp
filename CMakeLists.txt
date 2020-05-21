@@ -115,6 +115,13 @@ endif()
 #    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
 #endif()
 
+# MSVC warnings
+if(MSVC)
+    string(REGEX REPLACE "/W3" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string(REGEX REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    list(APPEND XAML_COMPILE_OPTIONS "/W4")
+endif()
+
 option(BUILD_SHARED_LIBS "Build shared libs" ON)
 
 if(NOT ${BUILD_SHARED_LIBS})
@@ -146,12 +153,7 @@ elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
 endif()
 
-if(WIN32)
-    find_package(Boost REQUIRED OPTIONAL_COMPONENTS nowide)
-    if(Boost_nowide_FOUND)
-        list(APPEND XAML_BUILD_DEFINITIONS "XAML_USE_BOOST_NOWIDE")
-    endif()
-elseif(APPLE)
+if(APPLE)
     find_package(Boost REQUIRED COMPONENTS iostreams container)
 else()
     find_package(Boost REQUIRED)
@@ -170,9 +172,18 @@ set(_XAML_TARGETS
     xaml_cmdline xaml_cmdline_helper
 )
 
+add_subdirectory(StreamFormat)
+list(APPEND _XAML_TARGETS stream_format)
+
+if(WIN32)
+    add_subdirectory(nowide)
+    set_target_properties(boost_nowide PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "")
+    list(APPEND _XAML_TARGETS boost_nowide)
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_USE_BOOST_NOWIDE")
+endif()
+
 add_subdirectory(global)
 add_subdirectory(helpers)
-add_subdirectory(StreamFormat)
 add_subdirectory(meta)
 add_subdirectory(rapidxml)
 add_subdirectory(parser)
@@ -192,10 +203,6 @@ add_subdirectory(cmdline_helper)
 add_subdirectory(detector)
 add_subdirectory(resource)
 add_subdirectory(resource_compiler)
-
-if(NOT ${SF_INSTALL})
-    list(APPEND _XAML_TARGETS stream_format)
-endif()
 
 install(
     TARGETS ${_XAML_TARGETS}

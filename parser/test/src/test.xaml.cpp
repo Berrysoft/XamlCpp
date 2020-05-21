@@ -55,7 +55,7 @@ xaml_result xaml_test_window_internal::init() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_test_window_internal::on_button_click(xaml_button* btn) noexcept
+xaml_result xaml_test_window_internal::on_button_click(xaml_button*) noexcept
 {
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));

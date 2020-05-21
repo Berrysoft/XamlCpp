@@ -176,7 +176,6 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
-        cout << to_string(output) << endl;
         u8ofstream stream{ to_string(output) };
         compile(stream, inputs);
     }

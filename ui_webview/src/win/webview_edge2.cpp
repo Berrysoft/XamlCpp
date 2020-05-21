@@ -12,7 +12,7 @@ using namespace Microsoft::WRL;
 
 xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
 {
-    HRESULT hr = CreateCoreWebView2Environment(
+    HRESULT __hr = CreateCoreWebView2Environment(
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
             [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
                 RETURN_IF_FAILED(result);
@@ -91,12 +91,12 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                 return S_OK;
             })
             .Get());
-    if (FAILED(hr))
+    if (FAILED(__hr))
     {
         m_view = nullptr;
         XAML_RETURN_IF_FAILED(callback());
     }
-    return hr;
+    return __hr;
 }
 
 xaml_result xaml_webview_edge2::navigate(xaml_char_t const* uri) noexcept
