@@ -65,13 +65,7 @@ jobs:
     displayName: 'Init git submodule'
 
   - script: |
-      git clone https://github.com/Microsoft/vcpkg.git
-      vcpkg\bootstrap-vcpkg.bat -Win64
-    displayName: 'Install vcpkg'
-    condition: eq(variables.rid, 'win')
-
-  - script: |
-      vcpkg\vcpkg install wil:$(arch)-windows boost-nowide:$(arch)-windows boost-multi-index:$(arch)-windows
+      vcpkg install wil:$(arch)-windows boost-multi-index:$(arch)-windows
     displayName: 'Install wil & boost'
     condition: eq(variables.rid, 'win')
 
@@ -109,7 +103,7 @@ jobs:
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       mkdir build & cd build
-      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DVCPKG_TARGET_TRIPLET=$(arch)-windows -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DBUILD_TESTS=on
+      cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DVCPKG_TARGET_TRIPLET=$(arch)-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_TESTS=on
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
 
@@ -139,8 +133,6 @@ jobs:
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
       cd build
       ninja install
-      cd ..
-      copy vcpkg\installed\$(arch)-windows\bin\boost_nowide*.dll $(Build.ArtifactStagingDirectory)\$(rid)-$(arch)\bin\
     displayName: 'Install all projects'
     condition: eq(variables.rid, 'win')
 
