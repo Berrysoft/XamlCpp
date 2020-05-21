@@ -1,5 +1,6 @@
 #ifdef XAML_UI_CANVAS_DIRECT2D
 
+#include <numbers>
 #include <shared/canvas.hpp>
 #include <tuple>
 #include <wil/result_macros.h>
@@ -7,14 +8,8 @@
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
-#if __has_include(<numbers>)
-#include <numbers>
-using std::numbers::pi;
-#else
-inline constexpr double pi = M_PI;
-#endif // __has_include(<numbers>)
-
 using namespace std;
+using std::numbers::pi;
 
 static inline D2D1::ColorF get_COLOR(xaml_color c) noexcept
 {

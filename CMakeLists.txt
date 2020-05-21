@@ -157,8 +157,8 @@ else()
     find_package(Boost REQUIRED)
 endif()
 
-option(BUILD_TESTS "Build tests." ON)
-option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" ON)
+option(BUILD_TESTS "Build tests." OFF)
+option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" OFF)
 option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
@@ -192,6 +192,10 @@ add_subdirectory(cmdline_helper)
 add_subdirectory(detector)
 add_subdirectory(resource)
 add_subdirectory(resource_compiler)
+
+if(NOT ${SF_INSTALL})
+    list(APPEND _XAML_TARGETS stream_format)
+endif()
 
 install(
     TARGETS ${_XAML_TARGETS}

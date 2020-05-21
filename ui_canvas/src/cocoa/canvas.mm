@@ -29,7 +29,7 @@
 #include <numbers>
 using std::numbers::pi;
 #else
-inline constexpr double pi = M_PI;
+#define pi M_PI
 #endif // __has_include(<numbers>)
 
 using namespace std;

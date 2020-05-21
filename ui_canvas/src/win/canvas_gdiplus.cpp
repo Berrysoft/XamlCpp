@@ -1,16 +1,11 @@
+#include <numbers>
 #include <win/canvas_gdiplus.hpp>
 #include <windowsx.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>
 
-#if __has_include(<numbers>)
-#include <numbers>
-using std::numbers::pi;
-#else
-inline constexpr double pi = M_PI;
-#endif // __has_include(<numbers>)
-
 using namespace std;
+using std::numbers::pi;
 using namespace Gdiplus;
 
 constexpr xaml_result xaml_result_from_gdiplus(Gdiplus::Status err) noexcept { return (xaml_result)(err) <= 0 ? (xaml_result)(err) : (xaml_result)((err & 0x0000FFFF) | (FACILITY_UI << 16) | 0x80000000 | 0x20000000); }
