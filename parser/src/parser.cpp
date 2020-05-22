@@ -102,9 +102,9 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     xaml_ptr<xaml_reflection_info> info;
     {
         xaml_ptr<xaml_string> ns_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+        XAML_RETURN_IF_FAILED(xaml_string_new(ns, &ns_str));
         xaml_ptr<xaml_string> name_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+        XAML_RETURN_IF_FAILED(xaml_string_new(name, &name_str));
         XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, name_str, &info));
     }
     xaml_ptr<xaml_type_info> t;
@@ -155,7 +155,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         }
         else
         {
-            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
+            XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
         }
         xaml_ptr<xaml_property_info> prop;
         XAML_RETURN_IF_FAILED(t->get_property(prop_name_str, &prop));
@@ -164,7 +164,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         if (can_write)
         {
             xaml_ptr<xaml_string> prop_value_str;
-            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_value, &prop_value_str));
+            XAML_RETURN_IF_FAILED(xaml_string_new(prop_value, &prop_value_str));
             xaml_ptr<xaml_string_node> node_value;
             XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
             XAML_RETURN_IF_FAILED(node_value->set_value(prop_value_str));
@@ -225,13 +225,13 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 if (attr_name == "name")
                 {
                     xaml_ptr<xaml_string> attr_value_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &attr_value_str));
                     XAML_RETURN_IF_FAILED(mc->set_name(attr_value_str));
                 }
                 else if (attr_name == "class")
                 {
                     xaml_ptr<xaml_string> full_map_name;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &full_map_name));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &full_map_name));
                     XAML_RETURN_IF_FAILED(mc->set_map_class(full_map_name));
                 }
             }
@@ -246,9 +246,9 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     {
 
                         xaml_ptr<xaml_string> attr_ns_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_ns, &attr_ns_str));
+                        XAML_RETURN_IF_FAILED(xaml_string_new(attr_ns, &attr_ns_str));
                         xaml_ptr<xaml_string> class_name_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(class_name, &class_name_str));
+                        XAML_RETURN_IF_FAILED(xaml_string_new(class_name, &class_name_str));
                         XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(attr_ns_str, class_name_str, &info));
                     }
                     xaml_ptr<xaml_type_info> t;
@@ -260,7 +260,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     xaml_ptr<xaml_property_info> prop;
                     {
                         xaml_ptr<xaml_string> aprop_name_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attach_prop_name, &aprop_name_str));
+                        XAML_RETURN_IF_FAILED(xaml_string_new(attach_prop_name, &aprop_name_str));
                         XAML_RETURN_IF_FAILED(t->get_property(aprop_name_str, &prop));
                     }
                     bool can_write;
@@ -268,7 +268,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     if (can_write)
                     {
                         xaml_ptr<xaml_string> attr_value_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr.value(), &attr_value_str));
+                        XAML_RETURN_IF_FAILED(xaml_string_new(attr.value(), &attr_value_str));
                         xaml_ptr<xaml_string_node> node_value;
                         XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
                         XAML_RETURN_IF_FAILED(node_value->set_value(attr_value_str));
@@ -283,7 +283,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     XAML_RETURN_IF_FAILED(mc->get_type(&type));
                     xaml_ptr<xaml_property_info> prop;
                     xaml_ptr<xaml_string> attr_name_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_name, &attr_name_str));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(attr_name, &attr_name_str));
                     if (XAML_SUCCEEDED(type->get_property(attr_name_str, &prop)))
                     {
                         bool can_write;
@@ -302,7 +302,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             else
                             {
                                 xaml_ptr<xaml_string> attr_value_str;
-                                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr_value, &attr_value_str));
+                                XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &attr_value_str));
                                 xaml_ptr<xaml_string_node> node_value;
                                 XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
                                 XAML_RETURN_IF_FAILED(node_value->set_value(attr_value_str));
@@ -317,7 +317,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                         xaml_ptr<xaml_event_info> ev;
                         XAML_RETURN_IF_FAILED(type->get_event(attr_name_str, &ev));
                         xaml_ptr<xaml_string> attr_value_str;
-                        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(attr.value(), &attr_value_str));
+                        XAML_RETURN_IF_FAILED(xaml_string_new(attr.value(), &attr_value_str));
                         xaml_ptr<xaml_attribute_event> ev_item;
                         XAML_RETURN_IF_FAILED(xaml_attribute_event_new(ev, attr_value_str, &ev_item));
                         XAML_RETURN_IF_FAILED(events->append(ev_item));
@@ -344,7 +344,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
             if (can_write)
             {
                 xaml_ptr<xaml_string> node_value_str;
-                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(node.value(), &node_value_str));
+                XAML_RETURN_IF_FAILED(xaml_string_new(node.value(), &node_value_str));
                 xaml_ptr<xaml_string_node> node_value;
                 XAML_RETURN_IF_FAILED(xaml_string_node_new(&node_value));
                 XAML_RETURN_IF_FAILED(node_value->set_value(node_value_str));
@@ -366,7 +366,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
         {
             auto ns = c.namespace_uri();
             xaml_ptr<xaml_string> ns_str;
-            XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+            XAML_RETURN_IF_FAILED(xaml_string_new(ns, &ns_str));
             auto name = c.local_name();
             size_t dm_index = name.find_first_of('.');
             if (dm_index != string_view::npos)
@@ -376,7 +376,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 xaml_ptr<xaml_reflection_info> info;
                 {
                     xaml_ptr<xaml_string> class_name_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(class_name, &class_name_str));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(class_name, &class_name_str));
                     XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, class_name_str, &info));
                 }
                 xaml_ptr<xaml_type_info> t;
@@ -386,7 +386,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 if (include_file)
                     headers->append(include_file);
                 xaml_ptr<xaml_string> prop_name_str;
-                XAML_RETURN_IF_FAILED(xaml_string_new_utf8(prop_name, &prop_name_str));
+                XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
                 xaml_ptr<xaml_property_info> prop;
                 if (XAML_SUCCEEDED(t->get_property(prop_name_str, &prop)))
                 {
@@ -441,7 +441,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 xaml_ptr<xaml_reflection_info> info;
                 {
                     xaml_ptr<xaml_string> name_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(name, &name_str));
                     XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, name_str, &info));
                 }
                 xaml_ptr<xaml_type_info> t;
@@ -518,9 +518,9 @@ xaml_result parser_impl::parse_impl(xml_node& node, xaml_node** ptr) noexcept
     xaml_ptr<xaml_reflection_info> info;
     {
         xaml_ptr<xaml_string> ns_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(ns, &ns_str));
+        XAML_RETURN_IF_FAILED(xaml_string_new(ns, &ns_str));
         xaml_ptr<xaml_string> name_str;
-        XAML_RETURN_IF_FAILED(xaml_string_new_utf8(name, &name_str));
+        XAML_RETURN_IF_FAILED(xaml_string_new(name, &name_str));
         XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, name_str, &info));
     }
     xaml_ptr<xaml_type_info> t;

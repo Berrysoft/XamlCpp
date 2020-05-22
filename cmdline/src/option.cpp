@@ -12,7 +12,7 @@ using namespace boost::multi_index;
 struct option_entry
 {
     char short_arg;
-    std::string_view long_arg_view;
+    string_view long_arg_view;
     xaml_ptr<xaml_string> long_arg;
     xaml_ptr<xaml_string> prop;
     xaml_ptr<xaml_string> help_text;
@@ -31,7 +31,7 @@ struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_
             hashed_non_unique<
                 member<
                     option_entry,
-                    std::string_view,
+                    string_view,
                     &option_entry::long_arg_view>>>>
         m_map;
 
@@ -56,7 +56,7 @@ xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_stri
 try
 {
     auto& long_index = m_map.get<1>();
-    std::string_view view;
+    string_view view;
     XAML_RETURN_IF_FAILED(to_string_view(name, &view));
     auto [begin, end] = long_index.equal_range(view);
     if (begin == end) return XAML_E_KEYNOTFOUND;
@@ -68,7 +68,7 @@ xaml_result xaml_cmdline_option_impl::get_default_property(xaml_string** ptr) no
 try
 {
     auto& short_index = m_map.get<0>();
-    auto [begin, end] = short_index.equal_range(U('\0'));
+    auto [begin, end] = short_index.equal_range('\0');
     if (begin == end) return XAML_E_KEYNOTFOUND;
     for (auto it = begin; it != end; ++it)
     {

@@ -1,13 +1,8 @@
-#ifdef XAML_USE_BOOST_NOWIDE
 #include <ios>
 
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
-#else
-#include <iostream>
-#endif // XAML_USE_BOOST_NOWIDE
-
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -16,26 +11,6 @@
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
-
-#ifdef XAML_USE_BOOST_NOWIDE
-using u8ofstream = boost::nowide::ofstream;
-using u8ifstream = boost::nowide::ifstream;
-
-#define u8cout ::boost::nowide::cout
-#else
-using u8ofstream = std::ofstream;
-using u8ifstream = std::ifstream;
-
-#define u8cout ::std::cout
-#endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tmain wmain
-#define _tcout ::std::wcout
-#else
-#define _tmain main
-#define _tcout ::std::cout
-#endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
@@ -79,7 +54,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
             bool text = it != end(text_extensions);
             if (text)
             {
-                u8ifstream input{ file };
+                boost::nowide::ifstream input{ file };
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
@@ -156,11 +131,9 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, '}');
 }
 
-int _tmain(int argc, char** argv)
+int main(int argc, char** argv)
 {
-#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
-#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
@@ -176,12 +149,12 @@ int _tmain(int argc, char** argv)
 
     if (output)
     {
-        u8ofstream stream{ to_string(output) };
+        boost::nowide::ofstream stream{ to_string(output) };
         compile(stream, inputs);
     }
     else
     {
-        compile(u8cout, inputs);
+        compile(boost::nowide::cout, inputs);
     }
 
     return 0;

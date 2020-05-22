@@ -1,7 +1,5 @@
-#ifdef XAML_USE_BOOST_NOWIDE
 #include <boost/nowide/args.hpp>
-#endif // XAML_USE_BOOST_NOWIDE
-
+#include <boost/nowide/iostream.hpp>
 #include <iomanip>
 #include <iostream>
 #include <options.h>
@@ -9,15 +7,7 @@
 #include <unordered_map>
 #include <xaml/version.h>
 
-#ifdef UNICODE
-#define _tmain wmain
-#define _tcout ::std::wcout
-#else
-#define _tmain main
-#define _tcout ::std::cout
-#endif // UNICODE
-
-using namespace std;
+std::ostream& cout = boost::nowide::cout;
 
 std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
@@ -34,11 +24,9 @@ std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid
     }
 }
 
-int _tmain(int argc, char** argv)
+int main(int argc, char** argv)
 {
-#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
-#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
@@ -69,7 +57,7 @@ int _tmain(int argc, char** argv)
     xaml_version ver;
     XAML_THROW_IF_FAILED(pget_version(&ver));
 
-    sf::println(_tcout, U("Module {} ({})"), quoted(to_string_view(path_str)), ver);
+    sf::println(cout, U("Module {} ({})"), quoted(to_string_view(path_str)), ver);
 
     xaml_ptr<xaml_map_view> types;
     XAML_THROW_IF_FAILED(ctx->get_types(&types));
@@ -86,8 +74,8 @@ int _tmain(int argc, char** argv)
         XAML_THROW_IF_FAILED(info->get_include_file(&include_file));
         if (auto t = info.query<xaml_type_info>())
         {
-            sf::println(_tcout, U("class {}"), name);
-            sf::println(_tcout, U("  included in <{}>"), include_file);
+            sf::println(cout, U("class {}"), name);
+            sf::println(cout, U("  included in <{}>"), include_file);
             {
                 xaml_ptr<xaml_map_view> props;
                 XAML_THROW_IF_FAILED(t->get_properties(&props));
@@ -101,7 +89,7 @@ int _tmain(int argc, char** argv)
                     xaml_ptr<xaml_property_info> info2 = value.query<xaml_property_info>();
                     xaml_guid type;
                     XAML_THROW_IF_FAILED(info2->get_type(&type));
-                    sf::println(_tcout, U("    P: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
+                    sf::println(cout, U("    P: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
                 }
             }
             {
@@ -117,7 +105,7 @@ int _tmain(int argc, char** argv)
                     xaml_ptr<xaml_collection_property_info> info2 = value.query<xaml_collection_property_info>();
                     xaml_guid type;
                     XAML_THROW_IF_FAILED(info2->get_type(&type));
-                    sf::println(_tcout, U("    C: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
+                    sf::println(cout, U("    C: {}\t{}"), key.query<xaml_string>(), get_type_name(ctx, type));
                 }
             }
             {
@@ -128,14 +116,14 @@ int _tmain(int argc, char** argv)
                     xaml_ptr<xaml_key_value_pair> pair2 = item2.query<xaml_key_value_pair>();
                     xaml_ptr<xaml_object> key;
                     XAML_THROW_IF_FAILED(pair2->get_key(&key));
-                    sf::println(_tcout, U("    E: {}"), key.query<xaml_string>());
+                    sf::println(cout, U("    E: {}"), key.query<xaml_string>());
                 }
             }
         }
         else if (auto e = info.query<xaml_enum_info>())
         {
-            sf::println(_tcout, U("enum {}"), name);
-            sf::println(_tcout, U("  included in <{}>"), include_file);
+            sf::println(cout, U("enum {}"), name);
+            sf::println(cout, U("  included in <{}>"), include_file);
             xaml_ptr<xaml_map_view> values;
             XAML_THROW_IF_FAILED(e->get_values(&values));
             for (auto item2 : values)
@@ -148,7 +136,7 @@ int _tmain(int argc, char** argv)
                 xaml_ptr<xaml_box> box = value.query<xaml_box>();
                 int const* pvalue;
                 XAML_THROW_IF_FAILED(box->get_data((void const**)&pvalue));
-                sf::println(_tcout, U("    {} = {}"), key.query<xaml_string>(), *pvalue);
+                sf::println(cout, U("    {} = {}"), key.query<xaml_string>(), *pvalue);
             }
         }
     }
