@@ -77,6 +77,8 @@ xaml_result xaml_test_window_internal::on_button_click(xaml_button*) noexcept
     case xaml_msgbox_result_ignore:
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Ignore"), text.put()));
         break;
+    default:
+        return XAML_S_OK;
     }
     XAML_RETURN_IF_FAILED(m_model->set_text(text));
     return XAML_S_OK;
