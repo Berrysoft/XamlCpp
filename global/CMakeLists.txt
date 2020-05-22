@@ -20,7 +20,11 @@ target_include_directories(xaml_global
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
-target_link_libraries(xaml_global PRIVATE stream_format Boost::nowide)
+if(WIN32)
+    target_link_libraries(xaml_global PRIVATE Boost::nowide)
+endif()
+
+target_link_libraries(xaml_global PRIVATE stream_format)
 
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")

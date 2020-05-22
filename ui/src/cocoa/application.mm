@@ -16,7 +16,7 @@
 
 using namespace std;
 
-xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
+xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)

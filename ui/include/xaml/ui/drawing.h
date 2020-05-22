@@ -24,14 +24,14 @@ T __initialize_from_tuple(TTuple&& t) noexcept
     return __intialize_from_tuple_impl<T>(std::forward<TTuple>(t), std::make_index_sequence<std::tuple_size_v<TTuple>>{});
 }
 
-template <typename T, typename TTuple, TTuple (*func)(std::string_view) noexcept>
+template <typename T, typename TTuple, TTuple (*func)(xaml_std_string_view_t) noexcept>
 struct __xaml_tuple_converter_helper
 {
     xaml_result __convert(xaml_ptr<xaml_object> const& obj, TTuple* value) const noexcept
     {
         if (auto str = obj.query<xaml_string>())
         {
-            std::string_view view;
+            xaml_std_string_view_t view;
             XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
             *value = func(view);
             return XAML_S_OK;
@@ -146,7 +146,7 @@ template <typename T>
 inline constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stot2d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double>, __stot2d<char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stot2d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double>, __stot2d<xaml_char_t>>
 {
 };
 #endif // __cplusplus
@@ -248,7 +248,7 @@ template <typename T>
 constexpr bool __can_stot4d_v = __can_stot4d<T>::value;
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stot4d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double, double, double>, __stot4d<char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stot4d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double, double, double>, __stot4d<xaml_char_t>>
 {
 };
 #endif // __cplusplus

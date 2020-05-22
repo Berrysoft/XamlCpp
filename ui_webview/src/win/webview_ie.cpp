@@ -102,7 +102,7 @@ xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rec
     return callback();
 }
 
-xaml_result xaml_webview_ie::navigate(char const* uri) noexcept
+xaml_result xaml_webview_ie::navigate(xaml_char_t const* uri) noexcept
 {
     wil::unique_variant empty{};
     auto u = wil::make_bstr_nothrow(uri);

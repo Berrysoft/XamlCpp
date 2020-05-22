@@ -98,7 +98,7 @@ try
 }
 XAML_CATCH_RETURN_WINRT()
 
-xaml_result xaml_webview_edge::navigate(char const* uri) noexcept
+xaml_result xaml_webview_edge::navigate(xaml_char_t const* uri) noexcept
 try
 {
     m_view.Navigate(Uri{ uri });

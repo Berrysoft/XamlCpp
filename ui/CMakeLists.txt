@@ -34,7 +34,11 @@ if(${BUILD_WINDOWS})
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui PUBLIC "-framework Cocoa")
 elseif(${BUILD_GTK3})
-    target_link_libraries(xaml_ui PRIVATE gtk3 Boost::nowide)
+    target_link_libraries(xaml_ui PRIVATE gtk3)
+endif()
+
+if(WIN32 AND ${BUILD_GTK3})
+    target_link_libraries(xaml_ui PRIVATE Boost::nowide)
 endif()
 
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)

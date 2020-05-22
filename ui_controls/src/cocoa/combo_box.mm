@@ -55,7 +55,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
             XAML_RETURN_IF_FAILED(m_items->get_at(m_sel_id, &item));
             if (auto str = item.query<xaml_string>())
             {
-                char const* data;
+                xaml_char_t const* data;
                 XAML_RETURN_IF_FAILED(str->get_data(&data));
                 combo.stringValue = [NSString stringWithUTF8String:data];
             }
@@ -72,7 +72,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
         xaml_ptr<xaml_string> s = item.query<xaml_string>();
         if (s)
         {
-            char const* data;
+            xaml_char_t const* data;
             XAML_RETURN_IF_FAILED(s->get_data(&data));
             [combo addItemWithObjectValue:[NSString stringWithUTF8String:data]];
         }

@@ -137,9 +137,9 @@ static path get_full_path(path const& name)
     return name;
 }
 
-static string get_module_name(path file)
+static xaml_std_string_t get_module_name(path file)
 {
-    string result = file.filename().replace_extension().string<char>();
+    xaml_std_string_t result = file.filename().replace_extension().string<xaml_char_t>();
     if constexpr (has_prefix)
     {
         result = result.substr(3);

@@ -192,17 +192,17 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
         }
         else if (auto s = obj.query<xaml_string>())
         {
-            std::string_view str;
+            xaml_std_string_view_t str;
             XAML_RETURN_IF_FAILED(to_string_view_t(s, &str));
-            constexpr char __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
-            constexpr char __auto[] = { 'a', 'u', 't', 'o', '\0' };
+            constexpr xaml_char_t __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
+            constexpr xaml_char_t __auto[] = { 'a', 'u', 't', 'o', '\0' };
             xaml_ptr<xaml_vector> result;
             XAML_RETURN_IF_FAILED(xaml_vector_new(&result));
             std::size_t offset = 0;
             do
             {
                 std::size_t index = str.find_first_of(__delimeter, offset);
-                std::string_view lenstr = str.substr(offset, index - offset);
+                xaml_std_string_view_t lenstr = str.substr(offset, index - offset);
                 xaml_grid_length len;
                 if (lenstr == __auto)
                 {
@@ -210,19 +210,19 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                 }
                 else if (lenstr.back() == '*')
                 {
-                    double rate = __stof<double, char>(lenstr.substr(0, lenstr.length() - 1));
+                    double rate = __stof<double, xaml_char_t>(lenstr.substr(0, lenstr.length() - 1));
                     len = { rate, xaml_grid_layout_star };
                 }
                 else
                 {
-                    double value = __stof<double, char>(lenstr);
+                    double value = __stof<double, xaml_char_t>(lenstr);
                     len = { value, xaml_grid_layout_abs };
                 }
                 xaml_ptr<xaml_object> item;
                 XAML_RETURN_IF_FAILED(xaml_box_value(len, &item));
                 XAML_RETURN_IF_FAILED(result->append(item));
                 offset = str.find_first_not_of(__delimeter, index);
-            } while (offset != std::string_view::npos);
+            } while (offset != xaml_std_string_view_t::npos);
             return result->query(ptr);
         }
         else

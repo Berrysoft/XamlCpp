@@ -103,11 +103,15 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
     return xaml_hasher_new(
         function<xaml_result(xaml_object*, std::int32_t*)>{
             [](xaml_object* obj, int32_t* phash) -> xaml_result {
-                static hash<string_view> hasher{};
-                char const* value;
+                static hash<xaml_std_string_view_t> hasher{};
+                xaml_ptr<xaml_string> value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, &value));
-                size_t std_hash = hasher(string_view(value));
-                int32_t* ptr = (int32_t*)&std_hash;
+                xaml_char_t const* data;
+                XAML_RETURN_IF_FAILED(value->get_data(&data));
+                int32_t length;
+                XAML_RETURN_IF_FAILED(value->get_length(&length));
+                std::size_t std_hash = hasher(xaml_std_string_view_t(data, (std::size_t)length));
+                std::int32_t* ptr = (std::int32_t*)&std_hash;
 #if SIZE_MAX == UINT64_MAX
                 static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");
                 *phash = ptr[0] ^ ptr[1];
@@ -121,11 +125,10 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
             } },
         function<xaml_result(xaml_object*, xaml_object*, bool*)>{
             [](xaml_object* lhs, xaml_object* rhs, bool* pb) -> xaml_result {
-                char const *lvalue, *rvalue;
+                xaml_ptr<xaml_string> lvalue, rvalue;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, &lvalue));
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, &rvalue));
-                *pb = string_view(lvalue) == string_view(rvalue);
-                return XAML_S_OK;
+                return xaml_string_equals(lvalue, rvalue, pb);
             } },
         ptr);
 }

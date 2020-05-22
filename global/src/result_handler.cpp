@@ -12,6 +12,12 @@
 #include <sf/color.hpp>
 #endif // XAML_WIN32
 
+#ifdef UNICODE
+#define _tcerr ::std::wcerr
+#else
+#define _tcerr ::std::cerr
+#endif // UNICODE
+
 #ifdef NDEBUG
 #define XAML_DEFAULT_HANDLER xaml_result_handler_empty
 #else
@@ -22,18 +28,18 @@ using namespace std;
 
 static function<__xaml_result_handler_prototype> s_handler = XAML_DEFAULT_HANDLER;
 
-void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line, char const* func) noexcept
+void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* file, int32_t line, xaml_char_t const* func) noexcept
 {
     // If exceptions throwed here, the program should terminate.
-    string msg = sf::sprint<char>(U("{}:{}:{}"), file, line, func);
+    xaml_std_string_t msg = sf::sprint<xaml_char_t>(U("{}:{}:{}"), file, line, func);
     s_handler(hr, level, msg.c_str());
 }
 
-void XAML_CALL xaml_result_handler_empty(xaml_result, xaml_result_raise_level, char const*) noexcept
+void XAML_CALL xaml_result_handler_empty(xaml_result, xaml_result_raise_level, xaml_char_t const*) noexcept
 {
 }
 
-static map<xaml_result_raise_level, std::string_view> s_level_map{
+static map<xaml_result_raise_level, xaml_std_string_view_t> s_level_map{
     { xaml_result_raise_info, U("INFO") },
     { xaml_result_raise_warning, U("WARNING") },
     { xaml_result_raise_error, U("ERROR") }
@@ -47,7 +53,7 @@ static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
 };
 #endif // !XAML_WIN32
 
-static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
+static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream, xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg)
 {
 #ifdef XAML_WIN32
     return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
@@ -56,19 +62,19 @@ static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_lev
 #endif // XAML_WIN32
 }
 
-void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
+void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg) noexcept
 {
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)
-    ostringstream stream;
+    basic_ostringstream<xaml_char_t> stream;
     print_msg(stream, hr, level, msg);
-    wstring s = to_wstring(stream.str());
+    xaml_std_string_t s = stream.str();
     if (IsDebuggerPresent())
     {
-        OutputDebugStringW(s.c_str());
+        OutputDebugString(s.c_str());
     }
     else
     {
-        WriteConsoleW(GetStdHandle(STD_ERROR_HANDLE), s.c_str(), (DWORD)s.size(), nullptr, 0);
+        WriteConsole(GetStdHandle(STD_ERROR_HANDLE), s.c_str(), (DWORD)s.size(), nullptr, 0);
     }
 #else
     print_msg(_tcerr, hr, level, msg);

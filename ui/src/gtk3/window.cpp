@@ -56,7 +56,7 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    char const* title = nullptr;
+    xaml_char_t const* title = nullptr;
     if (m_title)
     {
         XAML_RETURN_IF_FAILED(m_title->get_data(&title));

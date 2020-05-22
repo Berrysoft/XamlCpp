@@ -30,7 +30,7 @@ XAML_DECL_INTERFACE_(xaml_application, xaml_object)
 };
 
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_application_init(xaml_application**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_application_init_with_args(int, char**, xaml_application**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_application_init_with_args(int, xaml_char_t**, xaml_application**) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_application_current(xaml_application**) XAML_NOEXCEPT;
 
 EXTERN_C xaml_result XAML_CALL xaml_main(xaml_application*, int*) XAML_NOEXCEPT;

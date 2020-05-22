@@ -79,7 +79,7 @@ xaml_result xaml_menu_item_internal::draw_append(HMENU pmenu, UINT flags) noexce
         m_menu_parent = pmenu;
         XAML_RETURN_IF_FAILED(xaml_win32_menu_item_generate_id(&m_menu_id));
     }
-    char const* data;
+    xaml_char_t const* data;
     XAML_RETURN_IF_FAILED(m_text->get_data(&data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, m_menu_id, data));
     return XAML_S_OK;
@@ -133,7 +133,7 @@ xaml_result xaml_popup_menu_item_internal::draw_append(HMENU pmenu, UINT flags) 
         m_menu.reset(CreateMenu());
         XAML_RETURN_IF_FAILED(draw_submenu());
     }
-    char const* data;
+    xaml_char_t const* data;
     XAML_RETURN_IF_FAILED(m_text->get_data(&data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, (UINT_PTR)m_menu.get(), data));
     return XAML_S_OK;

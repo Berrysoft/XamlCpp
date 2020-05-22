@@ -20,7 +20,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
         auto entry = gtk_bin_get_child(GTK_BIN(m_handle));
         if (m_text)
         {
-            char const* data;
+            xaml_char_t const* data;
             XAML_RETURN_IF_FAILED(m_text->get_data(&data));
             gtk_entry_set_text(GTK_ENTRY(entry), data);
         }
@@ -38,7 +38,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
                 XAML_RETURN_IF_FAILED(m_items->get_at(m_sel_id, &item));
                 if (auto str = item.query<xaml_string>())
                 {
-                    char const* data;
+                    xaml_char_t const* data;
                     XAML_RETURN_IF_FAILED(str->get_data(&data));
                     gtk_entry_set_text(GTK_ENTRY(entry), data);
                 }
@@ -55,7 +55,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
         xaml_ptr<xaml_string> s = item.query<xaml_string>();
         if (s)
         {
-            char const* data;
+            xaml_char_t const* data;
             XAML_RETURN_IF_FAILED(s->get_data(&data));
             gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(m_handle), data);
         }
@@ -112,7 +112,7 @@ void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_inter
             XAML_ASSERT_SUCCEEDED(self->m_items->get_at(self->m_sel_id, &item));
             if (auto str = item.query<xaml_string>())
             {
-                char const* data;
+                xaml_char_t const* data;
                 XAML_ASSERT_SUCCEEDED(str->get_data(&data));
                 xaml_ptr<xaml_string> text;
                 XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
@@ -127,7 +127,7 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        char const* data;
+        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(s->get_data(&data));
         gtk_combo_box_text_insert_text(GTK_COMBO_BOX_TEXT(m_handle), index, data);
     }

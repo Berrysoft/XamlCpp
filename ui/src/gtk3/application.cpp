@@ -1,5 +1,8 @@
+#ifdef XAML_USE_BOOST_NOWIDE
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/cstdlib.hpp>
+#endif // XAML_USE_BOOST_NOWIDE
+
 #include <cstdlib>
 #include <gtk/gtk.h>
 #include <shared/application.hpp>
@@ -9,9 +12,15 @@
 #include <Windows.h>
 #endif // XAML_WIN32
 
+#ifdef XAML_USE_BOOST_NOWIDE
+#define u8getenv ::boost::nowide::getenv
+#else
+#define u8getenv ::std::getenv
+#endif // XAML_USE_BOOST_NOWIDE
+
 using namespace std;
 
-xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
+xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
 {
     gtk_init(&argc, &argv);
 #ifdef XAML_USE_BOOST_NOWIDE
@@ -43,8 +52,15 @@ xaml_result xaml_application_impl::quit(int value) noexcept
 
 xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noexcept
 {
+#if defined(XAML_WIN32) && !defined(XAML_USE_BOOST_NOWIDE)
+    string theme(32767, L'\0');
+    DWORD count = GetEnvironmentVariable("GTK_THEME", theme.data(), (DWORD)theme.length());
+    theme.resize(count);
+#else
     char* theme_buffer = u8getenv("GTK_THEME");
     string_view theme = theme_buffer ? theme_buffer : string_view{};
+#endif // WIN32 || __MINGW32__
+
     *ptheme = theme.ends_with(":dark") ? xaml_application_theme_dark : xaml_application_theme_light;
     return XAML_S_OK;
 }

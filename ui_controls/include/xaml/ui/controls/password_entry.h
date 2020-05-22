@@ -5,9 +5,9 @@
 
 XAML_CLASS(xaml_password_entry, { 0x78f0bbc1, 0x9817, 0x4613, { 0xbd, 0x70, 0xbc, 0x0f, 0x2f, 0x2e, 0x30, 0x64 } })
 
-#define XAML_PASSWORD_ENTRY_VTBL(type)           \
-    XAML_VTBL_INHERIT(XAML_ENTRY_VTBL(type));    \
-    XAML_PROP(password_char, type, char*, char); \
+#define XAML_PASSWORD_ENTRY_VTBL(type)                         \
+    XAML_VTBL_INHERIT(XAML_ENTRY_VTBL(type));                  \
+    XAML_PROP(password_char, type, xaml_char_t*, xaml_char_t); \
     XAML_EVENT(password_char_changed, type)
 
 XAML_DECL_INTERFACE_(xaml_password_entry, xaml_entry)

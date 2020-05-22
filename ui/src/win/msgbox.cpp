@@ -24,19 +24,19 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
     config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_SIZE_TO_CONTENT;
     if (title)
     {
-        char const* data;
+        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(title->get_data(&data));
         config.pszWindowTitle = data;
     }
     if (instruction)
     {
-        char const* data;
+        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(instruction->get_data(&data));
         config.pszMainInstruction = data;
     }
     if (message)
     {
-        char const* data;
+        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(message->get_data(&data));
         config.pszContent = data;
     }

@@ -7,8 +7,8 @@ typedef struct xaml_filebox_filter xaml_filebox_filter;
 
 struct xaml_filebox_filter
 {
-    char const* name;
-    char const* pattern;
+    xaml_char_t const* name;
+    xaml_char_t const* pattern;
 };
 
 XAML_TYPE(xaml_filebox_filter, { 0xff79e816, 0x280b, 0x4e03, { 0x99, 0x12, 0xba, 0x3c, 0x1a, 0x74, 0xcb, 0x94 } })

@@ -15,7 +15,7 @@ struct xaml_string_hstring_impl : xaml_implement<xaml_string_hstring_impl, xaml_
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_data(char const** ptr) noexcept override
+    xaml_result XAML_CALL get_data(xaml_char_t const** ptr) noexcept override
     {
         if (m_str.empty())
             *ptr = nullptr;

@@ -43,7 +43,7 @@ xaml_result xaml_entry_internal::draw_text() noexcept
 {
     if (m_text)
     {
-        char const* data;
+        xaml_char_t const* data;
         XAML_RETURN_IF_FAILED(m_text->get_data(&data));
         XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, data));
     }
@@ -87,7 +87,7 @@ xaml_result xaml_entry_internal::wnd_proc(xaml_win32_window_message const& msg, 
             case EN_UPDATE:
             {
                 int len = Edit_GetTextLength(m_handle);
-                string t(len, U('\0'));
+                xaml_std_string_t t(len, U('\0'));
                 Edit_GetText(m_handle, t.data(), len + 1);
                 DWORD start, end;
                 SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);

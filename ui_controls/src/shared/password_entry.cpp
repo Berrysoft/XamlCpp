@@ -10,8 +10,8 @@ xaml_result xaml_password_entry_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_password_char_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_password_char_changed->add_noexcept<xaml_ptr<xaml_password_entry>, char>(
-        [this](xaml_ptr<xaml_password_entry>, char) -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_password_char_changed->add_noexcept<xaml_ptr<xaml_password_entry>, xaml_char_t>(
+        [this](xaml_ptr<xaml_password_entry>, xaml_char_t) -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_password_char());
@@ -33,7 +33,7 @@ xaml_result XAML_CALL xaml_password_entry_members(xaml_type_info_registration* _
     using self_type = xaml_password_entry;
     XAML_RETURN_IF_FAILED(xaml_entry_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_password_entry_new);
-    XAML_TYPE_INFO_ADD_PROP_EVENT(password_char, char);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(password_char, xaml_char_t);
     return XAML_S_OK;
 }
 
