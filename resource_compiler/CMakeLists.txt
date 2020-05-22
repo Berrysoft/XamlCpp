@@ -5,10 +5,6 @@ add_executable(xamlrc ${XAML_RC_SOURCE})
 
 target_include_directories(xamlrc PUBLIC include)
 
-target_link_libraries(xamlrc PUBLIC xaml_cmdline PRIVATE xaml_cmdline_helper stream_format)
-
-if(WIN32)
-    target_link_libraries(xamlrc PUBLIC Boost::nowide)
-endif()
+target_link_libraries(xamlrc PUBLIC xaml_cmdline PRIVATE xaml_cmdline_helper stream_format Boost::nowide)
 
 install(TARGETS xamlrc RUNTIME DESTINATION bin)
