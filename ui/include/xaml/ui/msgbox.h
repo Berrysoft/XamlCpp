@@ -42,7 +42,7 @@ typedef struct xaml_msgbox_custom_button xaml_msgbox_custom_button;
 struct xaml_msgbox_custom_button
 {
     xaml_msgbox_result result;
-    xaml_char_t const* text;
+    char const* text;
 };
 
 XAML_TYPE(xaml_msgbox_custom_button, { 0x519f6660, 0x380e, 0x44d4, { 0x98, 0xc1, 0x3d, 0x40, 0xa1, 0xd7, 0x9e, 0xa6 } })

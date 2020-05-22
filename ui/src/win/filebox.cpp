@@ -23,13 +23,13 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     }
     if (m_title)
     {
-        xaml_char_t const* data;
+        char const* data;
         XAML_RETURN_IF_FAILED(m_title->get_data(&data));
         XAML_RETURN_IF_FAILED(handle->SetTitle(data));
     }
     if (m_filename)
     {
-        xaml_char_t const* data;
+        char const* data;
         XAML_RETURN_IF_FAILED(m_filename->get_data(&data));
         XAML_RETURN_IF_FAILED(handle->SetFileName(data));
     }

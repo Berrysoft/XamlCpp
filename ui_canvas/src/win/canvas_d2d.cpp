@@ -163,7 +163,7 @@ xaml_result xaml_drawing_context_d2d_impl::draw_string(xaml_drawing_brush const&
         DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
     auto size = target->GetSize();
     auto region = xaml_to_native<D2D1_RECT_F, xaml_rectangle>({ p.x, p.y, p.x, p.y });
-    xaml_char_t const* data;
+    char const* data;
     XAML_RETURN_IF_FAILED(str->get_data(&data));
     int32_t length;
     XAML_RETURN_IF_FAILED(str->get_length(&length));

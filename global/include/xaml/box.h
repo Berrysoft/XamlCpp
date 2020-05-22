@@ -60,7 +60,7 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_box_new(xaml_guid XAML_CONST_REF, void const*, int32_t, xaml_box**) XAML_NOEXCEPT;
 
 XAML_TYPE(bool, { 0xc3a0fdbf, 0xa30b, 0x315e, { 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae } })
-XAML_TYPE_NAME(xaml_char_t, char, { 0x2d08eb84, 0x64e6, 0x3688, { 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d } })
+XAML_TYPE(char, { 0x2d08eb84, 0x64e6, 0x3688, { 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d } })
 XAML_TYPE_NAME(XAML_STD int8_t, int8, { 0xdc3c96bc, 0x48ce, 0x3ef7, { 0x8c, 0x15, 0x37, 0xbc, 0x7e, 0xc8, 0x07, 0xa1 } })
 XAML_TYPE_NAME(XAML_STD int16_t, int16, { 0xe3e8f6e4, 0xe677, 0x3436, { 0x8e, 0x0e, 0x96, 0x3d, 0x3d, 0x6f, 0x81, 0x0a } })
 XAML_TYPE_NAME(XAML_STD int32_t, int32, { 0x0ce68e8c, 0x51a4, 0x3115, { 0xbe, 0x13, 0xdd, 0x1a, 0xce, 0x42, 0xe6, 0x1f } })
@@ -158,11 +158,11 @@ struct __xaml_box_impl<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_obje
 };
 
 template <typename T>
-struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_string_view_t>>>
+struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, std::string_view>>>
 {
     using boxed_type = xaml_string;
 
-    xaml_result operator()(xaml_std_string_view_t value, xaml_string** ptr) const noexcept
+    xaml_result operator()(std::string_view value, xaml_string** ptr) const noexcept
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(xaml_string_new(value, &str));
@@ -171,17 +171,17 @@ struct __xaml_box_impl<T, std::enable_if_t<std::is_convertible_v<T, xaml_std_str
 };
 
 template <typename T>
-struct __xaml_unbox_impl<T, std::enable_if_t<std::is_convertible_v<xaml_std_string_view_t, T>>>
+struct __xaml_unbox_impl<T, std::enable_if_t<std::is_convertible_v<std::string_view, T>>>
 {
     xaml_result operator()(xaml_ptr<xaml_object> const& obj, T* value) const noexcept
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(obj->query(&str));
-        xaml_char_t const* data;
+        char const* data;
         XAML_RETURN_IF_FAILED(str->get_data(&data));
         std::int32_t length;
         XAML_RETURN_IF_FAILED(str->get_length(&length));
-        *value = xaml_std_string_view_t(data, length);
+        *value = std::string_view(data, length);
         return XAML_S_OK;
     }
 };

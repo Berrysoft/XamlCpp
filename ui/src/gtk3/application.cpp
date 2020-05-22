@@ -20,7 +20,7 @@
 
 using namespace std;
 
-xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
+xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
     gtk_init(&argc, &argv);
 #ifdef XAML_USE_BOOST_NOWIDE

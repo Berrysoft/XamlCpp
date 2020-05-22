@@ -67,7 +67,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     for (auto item : inputs)
     {
-        path file = to_string_view_t(item.query<xaml_string>());
+        path file = to_string_view(item.query<xaml_string>());
 #ifndef XAML_APPLE
         if (!rc_map.contains(file))
 #else
@@ -123,8 +123,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept\n{");
 
-    sf::println(stream, "{}xaml_std_string_view_t file;", tab);
-    sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));", tab);
+    sf::println(stream, "{}std::string_view file;", tab);
+    sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view(path, &file));", tab);
 
     size_t i = 0;
     for (auto pair : rc_map)
@@ -156,7 +156,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, '}');
 }
 
-int _tmain(int argc, xaml_char_t** argv)
+int _tmain(int argc, char** argv)
 {
 #if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);

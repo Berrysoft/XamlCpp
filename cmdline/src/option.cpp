@@ -11,8 +11,8 @@ using namespace boost::multi_index;
 
 struct option_entry
 {
-    xaml_char_t short_arg;
-    xaml_std_string_view_t long_arg_view;
+    char short_arg;
+    std::string_view long_arg_view;
     xaml_ptr<xaml_string> long_arg;
     xaml_ptr<xaml_string> prop;
     xaml_ptr<xaml_string> help_text;
@@ -26,23 +26,23 @@ struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_
             hashed_non_unique<
                 member<
                     option_entry,
-                    xaml_char_t,
+                    char,
                     &option_entry::short_arg>>,
             hashed_non_unique<
                 member<
                     option_entry,
-                    xaml_std_string_view_t,
+                    std::string_view,
                     &option_entry::long_arg_view>>>>
         m_map;
 
-    xaml_result XAML_CALL find_short_arg(xaml_char_t name, xaml_string** ptr) noexcept override;
+    xaml_result XAML_CALL find_short_arg(char name, xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL find_long_arg(xaml_string* name, xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override;
-    xaml_result XAML_CALL add_arg(xaml_char_t, xaml_string*, xaml_string*, xaml_string*) noexcept override;
+    xaml_result XAML_CALL add_arg(char, xaml_string*, xaml_string*, xaml_string*) noexcept override;
     xaml_result XAML_CALL for_each_entry(xaml_delegate* handler) noexcept override;
 };
 
-xaml_result xaml_cmdline_option_impl::find_short_arg(xaml_char_t name, xaml_string** ptr) noexcept
+xaml_result xaml_cmdline_option_impl::find_short_arg(char name, xaml_string** ptr) noexcept
 try
 {
     auto& short_index = m_map.get<0>();
@@ -56,8 +56,8 @@ xaml_result xaml_cmdline_option_impl::find_long_arg(xaml_string* name, xaml_stri
 try
 {
     auto& long_index = m_map.get<1>();
-    xaml_std_string_view_t view;
-    XAML_RETURN_IF_FAILED(to_string_view_t(name, &view));
+    std::string_view view;
+    XAML_RETURN_IF_FAILED(to_string_view(name, &view));
     auto [begin, end] = long_index.equal_range(view);
     if (begin == end) return XAML_E_KEYNOTFOUND;
     return begin->prop->query(ptr);
@@ -78,13 +78,13 @@ try
 }
 XAML_CATCH_RETURN()
 
-xaml_result xaml_cmdline_option_impl::add_arg(xaml_char_t short_name, xaml_string* long_name, xaml_string* prop_name, xaml_string* help_text) noexcept
+xaml_result xaml_cmdline_option_impl::add_arg(char short_name, xaml_string* long_name, xaml_string* prop_name, xaml_string* help_text) noexcept
 try
 {
     xaml_ptr<xaml_string> rln = long_name;
     if (!rln) XAML_RETURN_IF_FAILED(xaml_string_empty(&rln));
-    xaml_std_string_view_t rln_view;
-    XAML_RETURN_IF_FAILED(to_string_view_t(long_name, &rln_view));
+    std::string_view rln_view;
+    XAML_RETURN_IF_FAILED(to_string_view(long_name, &rln_view));
     xaml_ptr<xaml_string> rpn = prop_name;
     if (!rpn) XAML_RETURN_IF_FAILED(xaml_string_empty(&rpn));
     xaml_ptr<xaml_string> rht = help_text;
@@ -111,32 +111,32 @@ xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcep
     return xaml_object_new_catch<xaml_cmdline_option_impl>(ptr);
 }
 
-static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>& stream, xaml_cmdline_option* opt) noexcept
 {
     xaml_ptr<xaml_delegate> callback;
-    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_char_t, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
-        [&stream](xaml_char_t short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) -> xaml_result {
+    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, char, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
+        [&stream](char short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) -> xaml_result {
             try
             {
-                xaml_std_string_t arg_str;
-                xaml_std_string_view_t long_arg_view;
-                XAML_RETURN_IF_FAILED(to_string_view_t(long_arg, &long_arg_view));
+                std::string arg_str;
+                std::string_view long_arg_view;
+                XAML_RETURN_IF_FAILED(to_string_view(long_arg, &long_arg_view));
                 if (short_arg)
                 {
                     if (!long_arg_view.empty())
                     {
-                        arg_str = sf::sprint<xaml_char_t>(U("-{}, --{}"), short_arg, long_arg_view);
+                        arg_str = sf::sprint<char>(U("-{}, --{}"), short_arg, long_arg_view);
                     }
                     else
                     {
-                        arg_str = sf::sprint<xaml_char_t>(U("-{}"), short_arg);
+                        arg_str = sf::sprint<char>(U("-{}"), short_arg);
                     }
                 }
                 else
                 {
                     if (!long_arg_view.empty())
                     {
-                        arg_str = sf::sprint<xaml_char_t>(U("    --{}"), long_arg_view);
+                        arg_str = sf::sprint<char>(U("    --{}"), long_arg_view);
                     }
                     else
                     {
@@ -144,7 +144,7 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_c
                     }
                 }
                 sf::print(stream, U("  {:l22}"), arg_str);
-                xaml_char_t const* help_text_data;
+                char const* help_text_data;
                 XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
                 sf::println(stream, help_text_data);
                 return XAML_S_OK;
@@ -157,10 +157,10 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<xaml_c
 
 xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept
 {
-    return call_with_file_to_stream<xaml_char_t>(xaml_cmdline_option_print_impl, file, opt);
+    return call_with_file_to_stream<char>(xaml_cmdline_option_print_impl, file, opt);
 }
 
-xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<xaml_char_t>& stream, xaml_cmdline_option* opt) noexcept
+xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<char>& stream, xaml_cmdline_option* opt) noexcept
 {
     return xaml_cmdline_option_print_impl(stream, opt);
 }

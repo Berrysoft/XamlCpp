@@ -185,7 +185,7 @@ xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush co
     check_status(fmt.SetAlignment(a));
     check_status(fmt.SetLineAlignment(a));
     auto pf = get_PointF(p, dpi);
-    xaml_char_t const* data;
+    char const* data;
     XAML_RETURN_IF_FAILED(str->get_data(&data));
     int32_t length;
     XAML_RETURN_IF_FAILED(str->get_length(&length));

@@ -19,14 +19,14 @@
 
 using namespace std;
 
-xaml_std_string_view_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
+std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
     xaml_ptr<xaml_reflection_info> info;
     if (XAML_SUCCEEDED(ctx->get_type(type, &info)))
     {
         xaml_ptr<xaml_string> name;
         XAML_THROW_IF_FAILED(info->get_name(&name));
-        return to_string_view_t(name);
+        return to_string_view(name);
     }
     else
     {
@@ -34,7 +34,7 @@ xaml_std_string_view_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xam
     }
 }
 
-int _tmain(int argc, xaml_char_t** argv)
+int _tmain(int argc, char** argv)
 {
 #if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
@@ -69,7 +69,7 @@ int _tmain(int argc, xaml_char_t** argv)
     xaml_version ver;
     XAML_THROW_IF_FAILED(pget_version(&ver));
 
-    sf::println(_tcout, U("Module {} ({})"), quoted(to_string_view_t(path_str)), ver);
+    sf::println(_tcout, U("Module {} ({})"), quoted(to_string_view(path_str)), ver);
 
     xaml_ptr<xaml_map_view> types;
     XAML_THROW_IF_FAILED(ctx->get_types(&types));

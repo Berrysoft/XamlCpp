@@ -47,12 +47,12 @@ static void print_version() noexcept
 {
     sf::print(_tcout, U("") XAML_VERSION);
 #ifdef XAML_COMMIT_HASH
-    constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
+    constexpr std::string_view hash{ U("") XAML_COMMIT_HASH };
     sf::print(_tcout, U("-{}"), hash.substr(0, 8));
 #endif // XAML_COMMIT_HASH
 }
 
-xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, xaml_char_t** argv, void** ptr) noexcept
+xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, char** argv, void** ptr) noexcept
 {
     xaml_ptr<xaml_reflection_info> info;
     XAML_RETURN_IF_FAILED(ctx->get_type(id, &info));
@@ -86,7 +86,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        sf::print(_tcout, U("{} "), exe.filename().string<xaml_char_t>());
+        sf::print(_tcout, U("{} "), exe.filename().string<char>());
         print_version();
         sf::println(_tcout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
     }

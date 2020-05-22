@@ -71,7 +71,7 @@ xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& s
     wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
     if (hDC && str)
     {
-        xaml_char_t const* data;
+        char const* data;
         XAML_RETURN_IF_FAILED(str->get_data(&data));
         int32_t length;
         XAML_RETURN_IF_FAILED(str->get_length(&length));

@@ -137,9 +137,9 @@ static path get_full_path(path const& name)
     return name;
 }
 
-static xaml_std_string_t get_module_name(path file)
+static std::string get_module_name(path file)
 {
-    xaml_std_string_t result = file.filename().replace_extension().string<xaml_char_t>();
+    std::string result = file.filename().replace_extension().string<char>();
     if constexpr (has_prefix)
     {
         result = result.substr(3);
@@ -167,7 +167,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
             {
                 XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
             }
-            auto p = get_full_path(to_string_view_t(path));
+            auto p = get_full_path(to_string_view(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = LoadLibraryW(p.c_str());
             if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
@@ -196,7 +196,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
                 int res = dlclose(m_handle);
                 if (res) return XAML_E_FAIL;
             }
-            auto p = get_full_path(to_string_view_t(path));
+            auto p = get_full_path(to_string_view(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
             if (!m_handle) return XAML_E_FAIL;
