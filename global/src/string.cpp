@@ -1,10 +1,10 @@
-#ifdef UNICODE
-#include <boost/nowide/convert.hpp>
-#endif // UNICODE
-
 #include <algorithm>
 #include <xaml/object.h>
 #include <xaml/string.h>
+
+#ifdef UNICODE
+#include <Windows.h>
+#endif // UNICODE
 
 using namespace std;
 
@@ -93,32 +93,64 @@ xaml_result XAML_CALL xaml_string_new_view(std::string_view str, xaml_string** p
     return xaml_object_new<xaml_string_view_impl>(ptr, str);
 }
 
-#ifdef UNICODE
-wstring to_wstring(xaml_ptr<xaml_string> const& str)
-{
-    string_view view = to_string_view(str);
-    return to_wstring(view);
-}
-
-wstring to_wstring(string_view view)
-{
-    return boost::nowide::widen(view.data(), view.size());
-}
-
-xaml_result to_wstring(xaml_ptr<xaml_string> const& str, wstring* pvalue) noexcept
-try
-{
-    string_view view;
-    XAML_RETURN_IF_FAILED(to_string_view(str, &view));
-    *pvalue = boost::nowide::widen(view.data(), view.size());
-    return XAML_S_OK;
-}
-XAML_CATCH_RETURN()
-
 ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 {
     return stream << to_string_view(str);
 }
+
+#ifdef UNICODE
+wstring to_wstring(string_view view)
+{
+    int count = MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0);
+    if (!count) return {};
+    wstring result(count, L' ');
+    MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), result.data(), count);
+    return result;
+}
+
+xaml_result to_wstring(string_view view, wstring* pvalue) noexcept
+try
+{
+    *pvalue = to_wstring(view);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+wchar_t const* xaml_to_wstring_pool::operator()(string_view view)
+{
+    int count = MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0);
+    if (!count) return nullptr;
+    wchar_t* result = m_allocator.allocate(count + 1);
+    MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), result, count);
+    result[count] = L'\0';
+    return result;
+}
+
+xaml_result xaml_to_wstring_pool::operator()(string_view view, wchar_t const** pvalue) noexcept
+try
+{
+    *pvalue = operator()(view);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+string to_string(wstring_view view)
+{
+    int count = WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0, nullptr, nullptr);
+    if (!count) return {};
+    string result(count, ' ');
+    WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), result.data(), count, nullptr, nullptr);
+    return result;
+}
+
+xaml_result to_string(wstring_view view, string* pvalue) noexcept
+try
+{
+    *pvalue = to_string(view);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
 #endif // UNICODE
 
 xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept

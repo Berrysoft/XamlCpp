@@ -40,7 +40,7 @@ static BOOL register_window_class() noexcept
     cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
     cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     cls.hbrBackground = nullptr;
-    cls.lpszClassName = U("XamlWindow");
+    cls.lpszClassName = L"XamlWindow";
     cls.hInstance = GetModuleHandle(NULL);
     return RegisterClassEx(&cls);
 }

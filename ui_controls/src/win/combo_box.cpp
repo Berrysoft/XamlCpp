@@ -23,10 +23,10 @@ xaml_result xaml_combo_box_internal::wnd_proc(xaml_win32_window_message const& m
             {
                 XAML_RETURN_IF_FAILED(set_sel_id(ComboBox_GetCurSel(m_handle)));
                 int count = ComboBox_GetTextLength(m_handle);
-                std::string text(count, U('\0'));
+                wstring text(count, L'\0');
                 ComboBox_GetText(m_handle, text.data(), count + 1);
                 xaml_ptr<xaml_string> s;
-                XAML_RETURN_IF_FAILED(xaml_string_new(move(text), &s));
+                XAML_RETURN_IF_FAILED(xaml_string_new(text, &s));
                 XAML_RETURN_IF_FAILED(set_text(s));
                 break;
             }
@@ -52,24 +52,30 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
-    char const* data = nullptr;
     if (m_text)
     {
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
+        wstring data;
+        XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data.c_str()));
     }
-    XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data));
+    else
+    {
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, nullptr));
+    }
     return XAML_S_OK;
 }
 
 xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
+    xaml_to_wstring_pool pool;
+
     XAML_FOREACH_START(item, m_items);
     {
         xaml_ptr<xaml_string> s = item.query<xaml_string>();
         if (s)
         {
-            char const* data;
-            XAML_RETURN_IF_FAILED(s->get_data(&data));
+            wchar_t const* data;
+            XAML_RETURN_IF_FAILED(pool(s, &data));
             ComboBox_AddString(m_handle, data);
         }
     }
@@ -135,9 +141,9 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(s->get_data(&data));
-        ComboBox_InsertString(m_handle, index, data);
+        wstring data;
+        XAML_RETURN_IF_FAILED(to_wstring(s, &data));
+        ComboBox_InsertString(m_handle, index, data.c_str());
     }
     return XAML_S_OK;
 }
@@ -159,9 +165,9 @@ xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_o
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(s->get_data(&data));
-        ComboBox_SetItemData(m_handle, index, data);
+        wstring data;
+        XAML_RETURN_IF_FAILED(to_wstring(s, &data));
+        ComboBox_SetItemData(m_handle, index, data.c_str());
     }
     return XAML_S_OK;
 }

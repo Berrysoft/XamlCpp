@@ -41,16 +41,9 @@ xaml_result xaml_entry_internal::size_to_fit() noexcept
 
 xaml_result xaml_entry_internal::draw_text() noexcept
 {
-    if (m_text)
-    {
-        char const* data;
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, data));
-    }
-    else
-    {
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, nullptr));
-    }
+    wstring data;
+    XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, data.c_str()));
     return XAML_S_OK;
 }
 
@@ -87,12 +80,12 @@ xaml_result xaml_entry_internal::wnd_proc(xaml_win32_window_message const& msg, 
             case EN_UPDATE:
             {
                 int len = Edit_GetTextLength(m_handle);
-                std::string t(len, U('\0'));
+                wstring t(len, L'\0');
                 Edit_GetText(m_handle, t.data(), len + 1);
                 DWORD start, end;
                 SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
                 xaml_ptr<xaml_string> text;
-                XAML_RETURN_IF_FAILED(xaml_string_new(move(t), &text));
+                XAML_RETURN_IF_FAILED(xaml_string_new(t, &text));
                 XAML_RETURN_IF_FAILED(set_text(text));
                 SetFocus(m_handle);
                 Edit_SetSel(m_handle, start, end);

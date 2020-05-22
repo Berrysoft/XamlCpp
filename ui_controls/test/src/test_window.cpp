@@ -337,11 +337,11 @@ xaml_result xaml_test_window_impl::init() noexcept
                     int32_t token;
                     XAML_RETURN_IF_FAILED(mquit->add_click(callback, &token));
                 }
-                mfile->add_submenu(mquit);
+                XAML_RETURN_IF_FAILED(mfile->add_submenu(mquit));
             }
-            mbar->add_child(mfile);
+            XAML_RETURN_IF_FAILED(mbar->add_child(mfile));
         }
-        m_window->set_menu_bar(mbar);
+        XAML_RETURN_IF_FAILED(m_window->set_menu_bar(mbar));
     }
     return XAML_S_OK;
 }

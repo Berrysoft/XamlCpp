@@ -6,6 +6,10 @@
 #include <string>
 #include <string_view>
 #include <xaml/ptr.hpp>
+
+#ifdef UNICODE
+#include <memory_resource>
+#endif // UNICODE
 #else
 #include <stdbool.h>
 #endif // __cplusplus
@@ -59,20 +63,34 @@ XAML_API std::ostream& operator<<(std::ostream&, xaml_ptr<xaml_string> const&);
 
 inline std::string_view to_string_view(xaml_ptr<xaml_string> const& str)
 {
-    char const* data;
-    XAML_THROW_IF_FAILED(str->get_data(&data));
-    std::int32_t length;
-    XAML_THROW_IF_FAILED(str->get_length(&length));
-    return std::string_view(data, length);
+    if (str)
+    {
+        char const* data;
+        XAML_THROW_IF_FAILED(str->get_data(&data));
+        std::int32_t length;
+        XAML_THROW_IF_FAILED(str->get_length(&length));
+        return std::string_view(data, length);
+    }
+    else
+    {
+        return {};
+    }
 }
 
 inline xaml_result to_string_view(xaml_ptr<xaml_string> const& str, std::string_view* view) noexcept
 {
-    char const* data;
-    XAML_RETURN_IF_FAILED(str->get_data(&data));
-    std::int32_t length;
-    XAML_RETURN_IF_FAILED(str->get_length(&length));
-    *view = std::string_view(data, length);
+    if (str)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(str->get_data(&data));
+        std::int32_t length;
+        XAML_RETURN_IF_FAILED(str->get_length(&length));
+        *view = std::string_view(data, length);
+    }
+    else
+    {
+        *view = {};
+    }
     return XAML_S_OK;
 }
 
@@ -92,9 +110,53 @@ try
 XAML_CATCH_RETURN()
 
 #ifdef UNICODE
-XAML_API std::wstring to_wstring(xaml_ptr<xaml_string> const&);
 XAML_API std::wstring to_wstring(std::string_view);
-XAML_API xaml_result to_wstring(xaml_ptr<xaml_string> const&, std::wstring*) noexcept;
+XAML_API xaml_result to_wstring(std::string_view, std::wstring*) noexcept;
+
+inline std::wstring to_wstring(xaml_ptr<xaml_string> const& str)
+{
+    return to_wstring(to_string_view(str));
+}
+
+inline xaml_result to_wstring(xaml_ptr<xaml_string> const& str, std::wstring* presult) noexcept
+{
+    std::string_view view;
+    XAML_RETURN_IF_FAILED(to_string_view(str, &view));
+    return to_wstring(view, presult);
+}
+
+XAML_API std::string to_string(std::wstring_view);
+XAML_API xaml_result to_string(std::wstring_view, std::string*) noexcept;
+
+inline xaml_result XAML_CALL xaml_string_new(std::wstring_view wstr, xaml_string** ptr) noexcept
+{
+    std::string str;
+    XAML_RETURN_IF_FAILED(to_string(wstr, &str));
+    return xaml_string_new(std::move(str), ptr);
+}
+
+struct xaml_to_wstring_pool
+{
+private:
+    std::pmr::monotonic_buffer_resource m_resource{};
+    std::pmr::polymorphic_allocator<wchar_t> m_allocator{ &m_resource };
+
+public:
+    XAML_API wchar_t const* operator()(std::string_view);
+    XAML_API xaml_result operator()(std::string_view, wchar_t const**) noexcept;
+
+    wchar_t const* operator()(xaml_ptr<xaml_string> const& str)
+    {
+        return operator()(to_string_view(str));
+    }
+
+    xaml_result operator()(xaml_ptr<xaml_string> const& str, wchar_t const** presult) noexcept
+    {
+        std::string_view view;
+        XAML_RETURN_IF_FAILED(to_string_view(str, &view));
+        return operator()(view, presult);
+    }
+};
 #endif // UNICODE
 
 namespace std

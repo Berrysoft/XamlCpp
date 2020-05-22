@@ -1,3 +1,4 @@
+#include <boost/nowide/iostream.hpp>
 #include <iostream>
 #include <sf/format.hpp>
 #include <xaml/ui/application.h>
@@ -6,12 +7,6 @@
 #include <Windows.h>
 #include <tchar.h>
 #endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tcerr ::std::wcerr
-#else
-#define _tcerr ::std::cerr
-#endif // UNICODE
 
 using namespace std;
 
@@ -23,7 +18,7 @@ static int xaml_main_end(xaml_result hr, int* pcode) noexcept
     }
     else
     {
-        sf::println(_tcerr, U("Unhandled exception: 0x{:x}"), hr);
+        sf::println(boost::nowide::cerr, U("Unhandled exception: 0x{:x}"), hr);
         return (int)hr;
     }
 }

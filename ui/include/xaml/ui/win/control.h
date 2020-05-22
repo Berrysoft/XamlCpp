@@ -15,8 +15,8 @@ typedef struct xaml_win32_window_message
 
 typedef struct xaml_win32_window_create_params
 {
-    char const* class_name;
-    char const* window_name;
+    wchar_t const* class_name;
+    wchar_t const* window_name;
     DWORD style;
     DWORD ex_style;
     int x;

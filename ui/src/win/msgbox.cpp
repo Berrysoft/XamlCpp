@@ -22,22 +22,22 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         }
     }
     config.dwFlags = TDF_ALLOW_DIALOG_CANCELLATION | TDF_SIZE_TO_CONTENT;
-    if (title)
+
+    xaml_to_wstring_pool pool;
+
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(title->get_data(&data));
+        wchar_t const* data;
+        XAML_RETURN_IF_FAILED(pool(title, &data));
         config.pszWindowTitle = data;
     }
-    if (instruction)
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(instruction->get_data(&data));
+        wchar_t const* data;
+        XAML_RETURN_IF_FAILED(pool(instruction, &data));
         config.pszMainInstruction = data;
     }
-    if (message)
     {
-        char const* data;
-        XAML_RETURN_IF_FAILED(message->get_data(&data));
+        wchar_t const* data;
+        XAML_RETURN_IF_FAILED(pool(message, &data));
         config.pszContent = data;
     }
     TASKDIALOG_COMMON_BUTTON_FLAGS flags = 0;
@@ -48,7 +48,9 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         XAML_RETURN_IF_FAILED(b->query(&box));
         xaml_msgbox_custom_button const* button;
         XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
-        cbs.push_back({ (int)button->result, button->text });
+        wchar_t const* data;
+        XAML_RETURN_IF_FAILED(pool(button->text, &data));
+        cbs.push_back({ (int)button->result, data });
     }
     XAML_FOREACH_END();
     config.dwCommonButtons = flags;
