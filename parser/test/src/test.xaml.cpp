@@ -66,6 +66,19 @@ xaml_result xaml_test_window_internal::on_button_click(xaml_button*) noexcept
     XAML_RETURN_IF_FAILED(xaml_string_new(U("I'm going to say hello..."), &des));
     xaml_msgbox_result res;
     XAML_RETURN_IF_FAILED(xaml_msgbox(static_cast<xaml_window*>(m_outer_this), text, title, des, xaml_msgbox_info, xaml_msgbox_buttons_abort_retry_ignore, &res));
+    switch (res)
+    {
+    case xaml_msgbox_result_abort:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Abort"), text.put()));
+        break;
+    case xaml_msgbox_result_retry:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Retry"), text.put()));
+        break;
+    case xaml_msgbox_result_ignore:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Ignore"), text.put()));
+        break;
+    }
+    XAML_RETURN_IF_FAILED(m_model->set_text(text));
     return XAML_S_OK;
 }
 
