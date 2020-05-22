@@ -17,7 +17,7 @@
 #include <xaml/object.h>
 
 #ifndef U
-#ifdef UNICODE
+#ifdef XAML_WIN32
 #ifdef __cplusplus
 #define U(x) reinterpret_cast<char const*>(u8##x)
 #else
@@ -25,7 +25,7 @@
 #endif // __cplusplus
 #else
 #define U(x) x
-#endif // UNICODE
+#endif // XAML_WIN32
 #endif // !U
 
 #ifndef U_

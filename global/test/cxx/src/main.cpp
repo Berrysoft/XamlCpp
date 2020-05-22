@@ -12,7 +12,7 @@
 #include <xaml/string.h>
 #include <xaml/vector.h>
 
-std::ostream& cout = boost::nowide::cout;
+using boost::nowide::cout;
 
 int main()
 {
@@ -40,7 +40,7 @@ int main()
                 {
                     sf::print(cout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                sf::println(cout);
+                sf::println<char>(cout);
                 break;
             }
             case xaml_vector_changed_erase:
@@ -54,7 +54,7 @@ int main()
                 {
                     sf::print(cout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                sf::println(cout);
+                sf::println<char>(cout);
                 break;
             }
             case xaml_vector_changed_move:

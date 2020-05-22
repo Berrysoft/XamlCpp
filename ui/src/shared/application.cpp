@@ -1,11 +1,10 @@
-#include <boost/nowide/args.hpp>
-#include <shared/application.hpp>
-#include <xaml/ptr.hpp>
-
 #ifdef XAML_WIN32
-#include <Windows.h>
+#include <boost/nowide/args.hpp>
 #include <cstdlib>
 #endif // XAML_WIN32
+
+#include <shared/application.hpp>
+#include <xaml/ptr.hpp>
 
 using namespace std;
 

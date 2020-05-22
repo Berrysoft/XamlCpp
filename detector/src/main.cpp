@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <xaml/version.h>
 
-std::ostream& cout = boost::nowide::cout;
+using boost::nowide::cout;
 
 std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
