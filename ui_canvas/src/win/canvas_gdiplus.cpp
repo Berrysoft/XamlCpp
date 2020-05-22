@@ -37,13 +37,6 @@ static constexpr INT get_font_style(bool italic, bool bold) noexcept
     return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
 }
 
-static inline Font get_Font(xaml_drawing_font const& font, double dpi) noexcept
-{
-    wstring ff{};
-    to_wstring(font.font_family, &ff);
-    return Font(ff.c_str(), get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
-}
-
 static inline RectF get_RectF(xaml_rectangle const& rect, double dpi) noexcept
 {
     return xaml_to_native<RectF>(rect * dpi / USER_DEFAULT_SCREEN_DPI);
@@ -180,7 +173,9 @@ static constexpr StringAlignment get_Align(xaml_halignment align) noexcept
 xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
     auto b = get_Brush(brush);
-    auto f = get_Font(font, dpi);
+    wstring ff{};
+    XAML_RETURN_IF_FAILED(to_wstring(font.font_family, &ff));
+    Font f(ff.c_str(), get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
     if (f.GetSize() <= 0) return XAML_S_OK;
     StringFormat fmt{};
     auto a = get_Align(font.halign);

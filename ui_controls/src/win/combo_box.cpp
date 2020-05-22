@@ -120,14 +120,17 @@ xaml_result xaml_combo_box_internal::draw_editable() noexcept
 
 xaml_result xaml_combo_box_internal::size_to_fit() noexcept
 {
+    xaml_to_wstring_pool pool;
     double fw = 0.0, fh = 0.0;
     XAML_FOREACH_START(item, m_items);
     {
         xaml_ptr<xaml_string> s = item.query<xaml_string>();
         if (s)
         {
+            wchar_t const* data;
+            XAML_RETURN_IF_FAILED(pool(s, &data));
             xaml_size msize;
-            XAML_RETURN_IF_FAILED(measure_string(s, { 5, 5 }, &msize));
+            XAML_RETURN_IF_FAILED(measure_string(data, { 5, 5 }, &msize));
             fw = (max)(fw, msize.width);
             fh = (max)(fh, msize.height);
         }
