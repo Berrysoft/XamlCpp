@@ -38,7 +38,7 @@ public:                                                                  \
             return XAML_S_OK;                                            \
     }
 
-    __NATIVE_WEBVIEW_EVENT(navigated, char const*)
+    __NATIVE_WEBVIEW_EVENT(navigated, wchar_t const*)
     __NATIVE_WEBVIEW_EVENT(resource_requested, xaml_ptr<xaml_webview_resource_requested_args>)
 
 #undef __NATIVE_WEBVIEW_EVENT

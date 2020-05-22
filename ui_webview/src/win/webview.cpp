@@ -90,7 +90,7 @@ xaml_result xaml_webview_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_webview_internal::draw_create() noexcept
 {
-    m_webview->set_navigated([this](char const* uri) -> xaml_result {
+    m_webview->set_navigated([this](wchar_t const* uri) -> xaml_result {
         xaml_atomic_guard guard(m_navigating);
         if (!guard.test_and_set())
         {
