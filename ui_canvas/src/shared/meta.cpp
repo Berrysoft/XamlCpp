@@ -7,9 +7,9 @@ EXTERN_C XAML_UI_CANVAS_API xaml_result xaml_module_version(xaml_version* pver) 
     return XAML_S_OK;
 }
 
-EXTERN_C XAML_UI_CANVAS_API xaml_result xaml_module_dependencies(xaml_char_t const* const** parr) noexcept
+EXTERN_C XAML_UI_CANVAS_API xaml_result xaml_module_dependencies(char const* const** parr) noexcept
 {
-    static xaml_char_t const* arr[] = { U("xaml_ui"), nullptr };
+    static char const* arr[] = { U("xaml_ui"), nullptr };
     *parr = arr;
     return XAML_S_OK;
 }

@@ -129,7 +129,7 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    xaml_char_t const* title;
+    char const* title;
     XAML_RETURN_IF_FAILED(m_title->get_data(&title));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowText(m_handle, title));
     return XAML_S_OK;

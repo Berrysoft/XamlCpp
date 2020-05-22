@@ -175,16 +175,13 @@ set(_XAML_TARGETS
 add_subdirectory(StreamFormat)
 list(APPEND _XAML_TARGETS stream_format)
 
-if(WIN32)
-    add_subdirectory(nowide)
-    set_target_properties(boost_nowide PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "")
-    target_include_directories(boost_nowide
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nowide/include>
-    )
-    list(APPEND _XAML_TARGETS boost_nowide)
-    list(APPEND XAML_BUILD_DEFINITIONS "XAML_USE_BOOST_NOWIDE")
-endif()
+add_subdirectory(nowide)
+set_target_properties(boost_nowide PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "")
+target_include_directories(boost_nowide
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nowide/include>
+)
+list(APPEND _XAML_TARGETS boost_nowide)
 
 add_subdirectory(global)
 add_subdirectory(helpers)

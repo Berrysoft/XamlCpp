@@ -33,7 +33,7 @@ xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_label_internal::draw_text() noexcept
 {
-    xaml_char_t const* data = nullptr;
+    char const* data = nullptr;
     if (m_text)
     {
         XAML_RETURN_IF_FAILED(m_text->get_data(&data));

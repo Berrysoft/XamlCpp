@@ -35,7 +35,7 @@ struct __xaml_converter<xaml_ptr<T>, std::enable_if_t<std::is_base_of_v<xaml_obj
     }
 };
 
-template <typename T, T (*func)(xaml_std_string_view_t) noexcept>
+template <typename T, T (*func)(std::string_view) noexcept>
 struct __xaml_converter_helper
 {
     xaml_result operator()(xaml_ptr<xaml_object> const& obj, T* value) const noexcept
@@ -48,7 +48,7 @@ struct __xaml_converter_helper
             }
             else if (auto str = obj.query<xaml_string>())
             {
-                xaml_std_string_view_t view;
+                std::string_view view;
                 XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
                 *value = func(view);
                 return XAML_S_OK;
@@ -222,7 +222,7 @@ inline TInt __stoi(std::basic_string_view<TChar> str) noexcept
 }
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stoi_v<T>>> : __xaml_converter_helper<T, __stoi<T, xaml_char_t>>
+struct __xaml_converter<T, std::enable_if_t<__can_stoi_v<T>>> : __xaml_converter_helper<T, __stoi<T, char>>
 {
 };
 
@@ -331,7 +331,7 @@ inline TFloat __stof(std::basic_string_view<TChar> str) noexcept
 }
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stof_v<T>>> : __xaml_converter_helper<T, __stof<T, xaml_char_t>>
+struct __xaml_converter<T, std::enable_if_t<__can_stof_v<T>>> : __xaml_converter_helper<T, __stof<T, char>>
 {
 };
 
@@ -348,7 +348,7 @@ inline bool __stob(std::basic_string_view<TChar> str) noexcept
 }
 
 template <>
-struct __xaml_converter<bool, void> : __xaml_converter_helper<bool, __stob<xaml_char_t>>
+struct __xaml_converter<bool, void> : __xaml_converter_helper<bool, __stob<char>>
 {
 };
 

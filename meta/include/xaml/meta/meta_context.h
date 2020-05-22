@@ -46,7 +46,7 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         return get_type(xaml_type_guid_v<T>, ptr);
     }
 
-    xaml_result XAML_CALL add_module(xaml_std_string_view_t path) noexcept
+    xaml_result XAML_CALL add_module(std::string_view path) noexcept
     {
         xaml_ptr<xaml_module> m;
         XAML_RETURN_IF_FAILED(xaml_module_new(&m));
@@ -56,7 +56,7 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         return add_module(m);
     }
 
-    xaml_result XAML_CALL add_module_recursive(xaml_std_string_view_t path) noexcept
+    xaml_result XAML_CALL add_module_recursive(std::string_view path) noexcept
     {
         xaml_ptr<xaml_module> m;
         XAML_RETURN_IF_FAILED(xaml_module_new(&m));

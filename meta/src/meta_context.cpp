@@ -41,7 +41,7 @@ public:
         AT(xaml_map);
         AT(xaml_observable_vector);
         AT(bool);
-        AT(xaml_char_t);
+        AT(char);
         AT(int8_t);
         AT(int16_t);
         AT(int32_t);
@@ -83,10 +83,10 @@ public:
     xaml_result XAML_CALL add_module_recursive(xaml_module* mod) noexcept override
     {
         XAML_RETURN_IF_FAILED(add_module(mod));
-        xaml_result (*pdeps)(xaml_char_t const* const**) noexcept;
+        xaml_result (*pdeps)(char const* const**) noexcept;
         if (XAML_SUCCEEDED(mod->get_method("xaml_module_dependencies", (void**)&pdeps)))
         {
-            xaml_char_t const* const* arr;
+            char const* const* arr;
             XAML_RETURN_IF_FAILED(pdeps(&arr));
             for (size_t i = 0; arr[i]; i++)
             {
@@ -146,12 +146,12 @@ public:
             real_ns = nullptr;
             XAML_RETURN_IF_FAILED(item->query(&real_ns));
         }
-        xaml_std_string_view_t ns_view;
+        std::string_view ns_view;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(real_ns, &ns_view));
-        xaml_std_string_view_t name_view;
+        std::string_view name_view;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(name, &name_view));
         xaml_ptr<xaml_string> real_name;
-        XAML_RETURN_IF_FAILED(xaml_string_new((xaml_std_string_t)ns_view + U("_") + (xaml_std_string_t)name_view, &real_name));
+        XAML_RETURN_IF_FAILED(xaml_string_new((string)ns_view + U("_") + (string)name_view, &real_name));
         return real_name->query(ptr);
     }
 
@@ -187,7 +187,7 @@ public:
 
     static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept
     {
-        xaml_std_string_t name_view;
+        string name_view;
         XAML_RETURN_IF_FAILED(to_string_t(name, &name_view));
         name_view += U("_changed");
         return xaml_string_new(move(name_view), ptr);

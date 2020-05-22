@@ -21,7 +21,7 @@ xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_meta_context* ctx, xaml_vect
 }
 
 template <typename T>
-xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_meta_context* ctx, int argc, xaml_char_t** argv, T** ptr) noexcept
+xaml_result XAML_CALL xaml_cmdline_deserialize(xaml_meta_context* ctx, int argc, char** argv, T** ptr) noexcept
 {
     xaml_ptr<xaml_reflection_info> info;
     XAML_RETURN_IF_FAILED(ctx->get_type<T>(&info));

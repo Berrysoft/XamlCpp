@@ -62,7 +62,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
         XAML_RETURN_IF_FAILED(args->get_at(i, &item));
         xaml_ptr<xaml_string> arg_item;
         XAML_RETURN_IF_FAILED(item->query(&arg_item));
-        xaml_std_string_view_t arg;
+        std::string_view arg;
         XAML_RETURN_IF_FAILED(to_string_view_t(arg_item, &arg));
         if (arg.empty())
             continue;
@@ -73,10 +73,10 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
             else if (arg[1] == '-')
             {
                 if (arg.size() == 2) return XAML_E_FAIL;
-                xaml_std_string_view_t long_arg = arg.substr(2);
+                std::string_view long_arg = arg.substr(2);
                 size_t index = long_arg.find_first_of('=');
-                xaml_std_string_view_t maybe_value = {};
-                if (index != xaml_std_string_view_t::npos)
+                std::string_view maybe_value = {};
+                if (index != std::string_view::npos)
                 {
                     maybe_value = long_arg.substr(index + 1);
                     long_arg = long_arg.substr(0, index);
@@ -136,8 +136,8 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
             }
             else
             {
-                xaml_char_t short_arg = arg[1];
-                xaml_std_string_view_t switches_or_value = arg.size() > 2 ? arg.substr(2) : xaml_std_string_view_t{};
+                char short_arg = arg[1];
+                std::string_view switches_or_value = arg.size() > 2 ? arg.substr(2) : std::string_view{};
                 xaml_ptr<xaml_string> pprop;
                 XAML_RETURN_IF_FAILED(popt->find_short_arg(short_arg, &pprop));
                 xaml_ptr<xaml_property_info> prop;
@@ -148,7 +148,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
                     if (t == xaml_type_guid_v<bool>)
                     {
                         XAML_RETURN_IF_FAILED(props_insert(props, prop, U("true")));
-                        for (xaml_char_t other_short_arg : switches_or_value)
+                        for (char other_short_arg : switches_or_value)
                         {
                             xaml_ptr<xaml_string> pprop2;
                             XAML_RETURN_IF_FAILED(popt->find_short_arg(other_short_arg, &pprop2));
@@ -228,7 +228,7 @@ xaml_result XAML_CALL xaml_cmdline_parse(xaml_type_info* type, xaml_vector_view*
     return result->query(ptr);
 }
 
-xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info* type, int argc, xaml_char_t** argv, xaml_cmdline_options** ptr) noexcept
+xaml_result XAML_CALL xaml_cmdline_parse_argv(xaml_type_info* type, int argc, char** argv, xaml_cmdline_options** ptr) noexcept
 {
     xaml_ptr<xaml_vector> args;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&args));

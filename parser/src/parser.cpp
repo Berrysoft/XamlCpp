@@ -23,7 +23,7 @@ static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_str
     XAML_RETURN_IF_FAILED(ref->get_name(&name));
     try
     {
-        return xaml_string_new(sf::sprint<xaml_char_t>(U("__{}__{}"), name, index++), ptr);
+        return xaml_string_new(sf::sprint<char>(U("__{}__{}"), name, index++), ptr);
     }
     XAML_CATCH_RETURN()
 }

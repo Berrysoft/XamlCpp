@@ -17,7 +17,7 @@ typedef struct xaml_drawing_pen
 
 typedef struct xaml_drawing_font
 {
-    xaml_char_t const* font_family;
+    char const* font_family;
     double size;
     bool italic;
     bool bold;

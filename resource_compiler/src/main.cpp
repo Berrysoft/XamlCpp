@@ -1,41 +1,15 @@
-#ifdef XAML_USE_BOOST_NOWIDE
-#include <ios>
-
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
-#else
-#include <iostream>
-#endif // XAML_USE_BOOST_NOWIDE
-
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <ios>
 #include <map>
 #include <options.h>
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
-
-#ifdef XAML_USE_BOOST_NOWIDE
-using u8ofstream = boost::nowide::ofstream;
-using u8ifstream = boost::nowide::ifstream;
-
-#define u8cout ::boost::nowide::cout
-#else
-using u8ofstream = std::ofstream;
-using u8ifstream = std::ifstream;
-
-#define u8cout ::std::cout
-#endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tmain wmain
-#define _tcout ::std::wcout
-#else
-#define _tmain main
-#define _tcout ::std::cout
-#endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
@@ -123,7 +97,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept\n{");
 
-    sf::println(stream, "{}xaml_std_string_view_t file;", tab);
+    sf::println(stream, "{}std::string_view file;", tab);
     sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));", tab);
 
     size_t i = 0;
@@ -156,11 +130,9 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, '}');
 }
 
-int _tmain(int argc, xaml_char_t** argv)
+int main(int argc, char** argv)
 {
-#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
-#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));

@@ -1,7 +1,4 @@
-#ifdef XAML_USE_BOOST_NOWIDE
 #include <boost/nowide/args.hpp>
-#endif // XAML_USE_BOOST_NOWIDE
-
 #include <iomanip>
 #include <iostream>
 #include <options.h>
@@ -9,17 +6,9 @@
 #include <unordered_map>
 #include <xaml/version.h>
 
-#ifdef UNICODE
-#define _tmain wmain
-#define _tcout ::std::wcout
-#else
-#define _tmain main
-#define _tcout ::std::cout
-#endif // UNICODE
-
 using namespace std;
 
-xaml_std_string_view_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
+std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
     xaml_ptr<xaml_reflection_info> info;
     if (XAML_SUCCEEDED(ctx->get_type(type, &info)))
@@ -34,11 +23,9 @@ xaml_std_string_view_t get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xam
     }
 }
 
-int _tmain(int argc, xaml_char_t** argv)
+int main(int argc, char** argv)
 {
-#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
-#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
