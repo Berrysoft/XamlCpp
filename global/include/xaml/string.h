@@ -18,11 +18,7 @@
 
 #ifndef U
 #ifdef XAML_WIN32
-#ifdef __cplusplus
-#define U(x) reinterpret_cast<char const*>(u8##x)
-#else
 #define U(x) u8##x
-#endif // __cplusplus
 #else
 #define U(x) x
 #endif // XAML_WIN32

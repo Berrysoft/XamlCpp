@@ -49,7 +49,7 @@ xaml_result xaml_test_window_internal::init() noexcept
     int32_t size;
     XAML_RETURN_IF_FAILED(xaml_resource_get(path, &data, &size));
     xaml_ptr<xaml_string> data_str;
-    XAML_RETURN_IF_FAILED(xaml_string_new_view_length((char const*)data, size, &data_str));
+    XAML_RETURN_IF_FAILED(xaml_string_new_view_length((char const*)data, size - 1, &data_str));
     xaml_ptr<xaml_node> node;
     xaml_ptr<xaml_vector_view> headers;
     XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, data_str, &node, &headers));

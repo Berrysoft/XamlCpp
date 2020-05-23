@@ -59,7 +59,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 {
                     string name = get_valid_name(file.string(), index++);
                     rc_map.emplace(file.relative_path(), name);
-                    sf::println(stream, "inline static constexpr char8_t const {}[] = ", name);
+                    sf::println(stream, "inline static constexpr char const {}[] = ", name);
                     sf::print(stream, "u8");
                     string line;
                     while (getline(input, line))
