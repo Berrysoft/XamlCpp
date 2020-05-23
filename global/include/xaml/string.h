@@ -17,11 +17,7 @@
 #include <xaml/object.h>
 
 #ifndef U
-#ifdef XAML_WIN32
 #define U(x) u8##x
-#else
-#define U(x) x
-#endif // XAML_WIN32
 #endif // !U
 
 #ifndef U_
