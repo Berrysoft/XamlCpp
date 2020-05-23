@@ -135,26 +135,42 @@ inline xaml_result XAML_CALL xaml_string_new(std::wstring_view wstr, xaml_string
     return xaml_string_new(std::move(str), ptr);
 }
 
-struct xaml_to_wstring_pool
+struct xaml_codecvt_pool
 {
 private:
-    std::pmr::monotonic_buffer_resource m_resource{};
-    std::pmr::polymorphic_allocator<wchar_t> m_allocator{ &m_resource };
+    std::pmr::monotonic_buffer_resource m_resource{ 128 };
+    std::pmr::polymorphic_allocator<wchar_t> m_wide_allocator{ &m_resource };
+    std::pmr::polymorphic_allocator<char> m_allocator{ &m_resource };
 
 public:
-    XAML_API wchar_t const* operator()(std::string_view);
-    XAML_API xaml_result operator()(std::string_view, wchar_t const**) noexcept;
+    xaml_codecvt_pool() noexcept = default;
+    explicit xaml_codecvt_pool(size_t init_size) noexcept : m_resource(init_size) {}
 
-    wchar_t const* operator()(xaml_ptr<xaml_string> const& str)
+    constexpr std::pmr::memory_resource* resource() noexcept { return &m_resource; }
+
+    XAML_API std::wstring_view operator()(std::string_view);
+    XAML_API xaml_result operator()(std::string_view, std::wstring_view*) noexcept;
+
+    std::wstring_view operator()(xaml_ptr<xaml_string> const& str)
     {
         return operator()(to_string_view(str));
     }
 
-    xaml_result operator()(xaml_ptr<xaml_string> const& str, wchar_t const** presult) noexcept
+    xaml_result operator()(xaml_ptr<xaml_string> const& str, std::wstring_view* presult) noexcept
     {
         std::string_view view;
         XAML_RETURN_IF_FAILED(to_string_view(str, &view));
         return operator()(view, presult);
+    }
+
+    XAML_API std::string_view operator()(std::wstring_view);
+    XAML_API xaml_result operator()(std::wstring_view, std::string_view*) noexcept;
+
+    xaml_result operator()(std::wstring_view wstr, xaml_string** ptr) noexcept
+    {
+        std::string_view view;
+        XAML_RETURN_IF_FAILED(operator()(wstr, &view));
+        return xaml_string_new_view(view, ptr);
     }
 };
 #endif // UNICODE

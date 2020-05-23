@@ -1,3 +1,10 @@
+#ifdef XAML_WIN32
+#include <Windows.h>
+#else
+#include <sf/color.hpp>
+#endif // XAML_WIN32
+
+#include <boost/nowide/iostream.hpp>
 #include <iostream>
 #include <map>
 #include <sf/format.hpp>
@@ -5,18 +12,6 @@
 #include <sstream>
 #include <xaml/event.h>
 #include <xaml/result_handler.h>
-
-#ifdef XAML_WIN32
-#include <Windows.h>
-#else
-#include <sf/color.hpp>
-#endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tcerr ::std::wcerr
-#else
-#define _tcerr ::std::cerr
-#endif // UNICODE
 
 #ifdef NDEBUG
 #define XAML_DEFAULT_HANDLER xaml_result_handler_empty
@@ -28,10 +23,10 @@ using namespace std;
 
 static function<__xaml_result_handler_prototype> s_handler = XAML_DEFAULT_HANDLER;
 
-void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line, char const* func) noexcept
+void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line) noexcept
 {
     // If exceptions throwed here, the program should terminate.
-    std::string msg = sf::sprint<char>(U("{}:{}:{}"), file, line, func);
+    std::string msg = sf::sprint(U("{}:{}"), file, line);
     s_handler(hr, level, msg.c_str());
 }
 
@@ -53,7 +48,7 @@ static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
 };
 #endif // !XAML_WIN32
 
-static basic_ostream<char>& print_msg(basic_ostream<char>& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
+static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
 {
 #ifdef XAML_WIN32
     return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
@@ -65,19 +60,20 @@ static basic_ostream<char>& print_msg(basic_ostream<char>& stream, xaml_result h
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
 {
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)
-    basic_ostringstream<char> stream;
-    print_msg(stream, hr, level, msg);
-    wstring s = to_wstring(stream.str());
     if (IsDebuggerPresent())
     {
-        OutputDebugStringW(s.c_str());
+        xaml_codecvt_pool pool;
+        basic_ostringstream<char, char_traits<char>, pmr::polymorphic_allocator<char>> stream(pmr::string{ pmr::polymorphic_allocator<char>{ pool.resource() } });
+        print_msg(stream, hr, level, msg);
+        wstring_view s = pool(stream.str());
+        OutputDebugStringW(s.data());
     }
     else
     {
-        WriteConsoleW(GetStdHandle(STD_ERROR_HANDLE), s.c_str(), (DWORD)s.size(), nullptr, 0);
+        print_msg(boost::nowide::cerr, hr, level, msg);
     }
 #else
-    print_msg(_tcerr, hr, level, msg);
+    print_msg(boost::nowide::cerr, hr, level, msg);
 #endif // XAML_WIN32 && !XAML_MINGW
 }
 

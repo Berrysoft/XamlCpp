@@ -21,6 +21,9 @@ target_include_directories(xaml_global
 )
 
 target_link_libraries(xaml_global PRIVATE stream_format)
+if(WIN32)
+    target_link_libraries(xaml_global PRIVATE Boost::nowide)
+endif()
 
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")

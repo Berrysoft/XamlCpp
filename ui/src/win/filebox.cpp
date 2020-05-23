@@ -21,30 +21,30 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         XAML_RETURN_IF_FAILED(CoCreateInstance(__uuidof(FileSaveDialog), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&handle)));
     }
 
-    xaml_to_wstring_pool pool;
+    xaml_codecvt_pool pool;
 
     if (m_title)
     {
-        wchar_t const* data;
+        wstring_view data;
         XAML_RETURN_IF_FAILED(pool(m_title, &data));
-        XAML_RETURN_IF_FAILED(handle->SetTitle(data));
+        XAML_RETURN_IF_FAILED(handle->SetTitle(data.data()));
     }
     if (m_filename)
     {
-        wchar_t const* data;
+        wstring_view data;
         XAML_RETURN_IF_FAILED(pool(m_filename, &data));
-        XAML_RETURN_IF_FAILED(handle->SetFileName(data));
+        XAML_RETURN_IF_FAILED(handle->SetFileName(data.data()));
     }
     vector<COMDLG_FILTERSPEC> types;
     XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter filter;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
-        wchar_t const* name_data;
+        wstring_view name_data;
         XAML_RETURN_IF_FAILED(pool(filter.name, &name_data));
-        wchar_t const* pattern_data;
+        wstring_view pattern_data;
         XAML_RETURN_IF_FAILED(pool(filter.pattern, &pattern_data));
-        types.push_back({ name_data, pattern_data });
+        types.push_back({ name_data.data(), pattern_data.data() });
     }
     XAML_FOREACH_END();
     XAML_RETURN_IF_FAILED(handle->SetFileTypes((UINT)types.size(), types.data()));

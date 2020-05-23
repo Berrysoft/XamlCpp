@@ -116,17 +116,17 @@ try
 }
 XAML_CATCH_RETURN()
 
-wchar_t const* xaml_to_wstring_pool::operator()(string_view view)
+wstring_view xaml_codecvt_pool::operator()(string_view view)
 {
     int count = MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0);
-    if (!count) return nullptr;
-    wchar_t* result = m_allocator.allocate(count + 1);
+    if (!count) return {};
+    wchar_t* result = m_wide_allocator.allocate(count + 1);
     MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), result, count);
     result[count] = L'\0';
-    return result;
+    return { result, (size_t)count };
 }
 
-xaml_result xaml_to_wstring_pool::operator()(string_view view, wchar_t const** pvalue) noexcept
+xaml_result xaml_codecvt_pool::operator()(string_view view, wstring_view* pvalue) noexcept
 try
 {
     *pvalue = operator()(view);
@@ -151,6 +151,22 @@ try
 }
 XAML_CATCH_RETURN()
 
+string_view xaml_codecvt_pool::operator()(wstring_view view)
+{
+    int count = WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0, nullptr, nullptr);
+    if (!count) return {};
+    char* result = m_allocator.allocate(count + 1);
+    WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), result, count, nullptr, nullptr);
+    return { result, (size_t)count };
+}
+
+xaml_result xaml_codecvt_pool::operator()(wstring_view view, string_view* pvalue) noexcept
+try
+{
+    *pvalue = operator()(view);
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
 #endif // UNICODE
 
 xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept
