@@ -125,18 +125,18 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>&
                 {
                     if (!long_arg_view.empty())
                     {
-                        arg_str = sf::sprint<char>(U("-{}, --{}"), short_arg, long_arg_view);
+                        arg_str = sf::sprint(U("-{}, --{}"), short_arg, long_arg_view);
                     }
                     else
                     {
-                        arg_str = sf::sprint<char>(U("-{}"), short_arg);
+                        arg_str = sf::sprint(U("-{}"), short_arg);
                     }
                 }
                 else
                 {
                     if (!long_arg_view.empty())
                     {
-                        arg_str = sf::sprint<char>(U("    --{}"), long_arg_view);
+                        arg_str = sf::sprint(U("    --{}"), long_arg_view);
                     }
                     else
                     {
@@ -144,8 +144,8 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>&
                     }
                 }
                 sf::print(stream, U("  {:l22}"), arg_str);
-                char const* help_text_data;
-                XAML_RETURN_IF_FAILED(help_text->get_data(&help_text_data));
+                string_view help_text_data;
+                XAML_RETURN_IF_FAILED(to_string_view(help_text, &help_text_data));
                 sf::println(stream, help_text_data);
                 return XAML_S_OK;
             }

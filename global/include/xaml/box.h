@@ -177,11 +177,9 @@ struct __xaml_unbox_impl<T, std::enable_if_t<std::is_convertible_v<std::string_v
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(obj->query(&str));
-        char const* data;
-        XAML_RETURN_IF_FAILED(str->get_data(&data));
-        std::int32_t length;
-        XAML_RETURN_IF_FAILED(str->get_length(&length));
-        *value = std::string_view(data, length);
+        std::string_view view;
+        XAML_RETURN_IF_FAILED(to_string_view(str, &view));
+        *value = view;
         return XAML_S_OK;
     }
 };

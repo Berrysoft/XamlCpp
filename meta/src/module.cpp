@@ -176,10 +176,12 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
+    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
     {
         if (!m_handle) return XAML_E_NOTIMPL;
-        auto proc = GetProcAddress(m_handle, name);
+        string_view data;
+        XAML_RETURN_IF_FAILED(to_string_view(name, &data));
+        auto proc = GetProcAddress(m_handle, data.data());
         if (!proc) return XAML_E_NOTIMPL;
         *ptr = (void*)proc;
         return XAML_S_OK;
@@ -208,7 +210,9 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
     {
         if (!m_handle) return XAML_E_NOTIMPL;
-        auto proc = dlsym(m_handle, name);
+        string_view data;
+        XAML_RETURN_IF_FAILED(to_string_view(name, &data));
+        auto proc = dlsym(m_handle, data.data());
         if (!proc) return XAML_E_NOTIMPL;
         *ptr = (void*)proc;
         return XAML_S_OK;

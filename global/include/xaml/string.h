@@ -45,7 +45,9 @@ XAML_DECL_INTERFACE_(xaml_string, xaml_object)
 };
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(char const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_length(char const*, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(char const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view_length(char const*, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_empty(xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_equals(xaml_string*, xaml_string*, bool*) XAML_NOEXCEPT;

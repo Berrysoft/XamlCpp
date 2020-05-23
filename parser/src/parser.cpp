@@ -557,11 +557,13 @@ static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_met
     return parser.headers->query(pheaders);
 }
 
-xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, char const* str, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, xaml_string* str, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
 {
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());
-    XAML_RETURN_IF_FAILED(parser.load_string(str));
+    string_view data;
+    XAML_RETURN_IF_FAILED(to_string_view(str, &data));
+    XAML_RETURN_IF_FAILED(parser.load_string(data));
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
 

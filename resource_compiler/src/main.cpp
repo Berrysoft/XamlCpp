@@ -38,7 +38,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, "#include <xaml/resource/resource.h>");
 
     size_t index{ 0 };
-    map<path, tuple<string, bool>> rc_map{};
+    map<path, string> rc_map{};
 
     for (auto item : inputs)
     {
@@ -58,7 +58,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
+                    rc_map.emplace(file.relative_path(), name);
                     sf::println(stream, "inline static constexpr char8_t const {}[] = ", name);
                     sf::print(stream, "u8");
                     string line;
@@ -79,7 +79,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
+                    rc_map.emplace(file.relative_path(), name);
                     sf::print(stream, "inline static constexpr ::std::uint8_t const {}[] = {{", name);
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
@@ -96,7 +96,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         }
     }
 
-    sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept\n{");
+    sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, void const** pdata, std::int32_t* psize) noexcept\n{");
 
     sf::println(stream, "{}std::string_view file;", tab);
     sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view(path, &file));", tab);
@@ -107,16 +107,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         sf::println(stream, "{}{}if (file == U({}))", tab, i++ ? "else " : "", pair.first);
         sf::println(stream, "{}{{", tab);
 
-        auto& [name, text] = pair.second;
-        if (text)
-        {
-            sf::println(stream, "{0}{0}*pdata = reinterpret_cast<std::uint8_t const*>({});", tab, name);
-        }
-        else
-        {
-            sf::println(stream, "{0}{0}*pdata = {};", tab, name);
-        }
-        sf::println(stream, "{0}{0}*psize = static_cast<std::int32_t>(sizeof({}));", tab, name);
+        sf::println(stream, "{0}{0}*pdata = reinterpret_cast<void const*>({});", tab, pair.second);
+        sf::println(stream, "{0}{0}*psize = static_cast<std::int32_t>(sizeof({}));", tab, pair.second);
 
         sf::println(stream, "{}}}", tab);
     }

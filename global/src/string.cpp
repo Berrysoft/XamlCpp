@@ -70,12 +70,22 @@ xaml_result XAML_CALL xaml_string_new(char const* str, xaml_string** ptr) noexce
         return xaml_object_new_catch<xaml_string_impl>(ptr);
 }
 
+xaml_result XAML_CALL xaml_string_new_length(char const* str, int32_t length, xaml_string** ptr) noexcept
+{
+    return xaml_string_new(string_view(str, (size_t)length), ptr);
+}
+
 xaml_result XAML_CALL xaml_string_new_view(char const* str, xaml_string** ptr) noexcept
 {
     if (str)
         return xaml_object_new<xaml_string_view_impl>(ptr, str);
     else
         return xaml_object_new<xaml_string_view_impl>(ptr);
+}
+
+xaml_result XAML_CALL xaml_string_new_view_length(char const* str, int32_t length, xaml_string** ptr) noexcept
+{
+    return xaml_string_new_view(string_view(str, (size_t)length), ptr);
 }
 
 xaml_result XAML_CALL xaml_string_new(std::string&& str, xaml_string** ptr) noexcept
@@ -90,6 +100,7 @@ xaml_result XAML_CALL xaml_string_new(std::string_view str, xaml_string** ptr) n
 
 xaml_result XAML_CALL xaml_string_new_view(std::string_view str, xaml_string** ptr) noexcept
 {
+    if (*(str.data() + str.size())) return XAML_E_INVALIDARG;
     return xaml_object_new<xaml_string_view_impl>(ptr, str);
 }
 

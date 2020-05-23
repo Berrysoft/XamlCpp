@@ -45,12 +45,14 @@ xaml_result xaml_test_window_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_window_internal::init());
     xaml_ptr<xaml_string> path;
     XAML_RETURN_IF_FAILED(xaml_string_new_view(U("view/test.xaml"), &path));
-    uint8_t const* data;
+    void const* data;
     int32_t size;
     XAML_RETURN_IF_FAILED(xaml_resource_get(path, &data, &size));
+    xaml_ptr<xaml_string> data_str;
+    XAML_RETURN_IF_FAILED(xaml_string_new_view_length((char const*)data, size, &data_str));
     xaml_ptr<xaml_node> node;
     xaml_ptr<xaml_vector_view> headers;
-    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, reinterpret_cast<char const*>(data), &node, &headers));
+    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, data_str, &node, &headers));
     XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx, node, m_outer_this));
     return XAML_S_OK;
 }
