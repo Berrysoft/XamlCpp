@@ -3,4 +3,5 @@
 	url = https://github.com/Berrysoft/StreamFormat
 [submodule "nowide"]
 	path = nowide
-	url = https://github.com/boostorg/nowide.git
+	url = https://github.com/Berrysoft/nowide
+	branch = honly

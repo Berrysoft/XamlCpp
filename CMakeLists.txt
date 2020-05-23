@@ -184,11 +184,6 @@ add_subdirectory(StreamFormat)
 list(APPEND _XAML_TARGETS stream_format)
 
 add_subdirectory(nowide)
-set_target_properties(boost_nowide PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "")
-target_include_directories(boost_nowide
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nowide/include>
-)
 list(APPEND _XAML_TARGETS boost_nowide)
 
 add_subdirectory(rapidxml)
