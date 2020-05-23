@@ -3,7 +3,7 @@
 #include <xaml/string.h>
 
 #ifdef UNICODE
-#include <Windows.h>
+#include <boost/nowide/convert.hpp>
 #endif // UNICODE
 
 using namespace std;
@@ -112,11 +112,7 @@ ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 #ifdef UNICODE
 wstring to_wstring(string_view view)
 {
-    int count = MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0);
-    if (!count) return {};
-    wstring result(count, L' ');
-    MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), result.data(), count);
-    return result;
+    return boost::nowide::widen(view);
 }
 
 xaml_result to_wstring(string_view view, wstring* pvalue) noexcept
@@ -129,12 +125,9 @@ XAML_CATCH_RETURN()
 
 wstring_view xaml_codecvt_pool::operator()(string_view view)
 {
-    int count = MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0);
-    if (!count) return {};
-    wchar_t* result = m_wide_allocator.allocate(count + 1);
-    MultiByteToWideChar(CP_UTF8, 0, view.data(), (int)view.size(), result, count);
-    result[count] = L'\0';
-    return { result, (size_t)count };
+    size_t len = view.length() + 1;
+    wchar_t* result = m_wide_allocator.allocate(len);
+    return boost::nowide::convert(result, len, view);
 }
 
 xaml_result xaml_codecvt_pool::operator()(string_view view, wstring_view* pvalue) noexcept
@@ -147,11 +140,7 @@ XAML_CATCH_RETURN()
 
 string to_string(wstring_view view)
 {
-    int count = WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0, nullptr, nullptr);
-    if (!count) return {};
-    string result(count, ' ');
-    WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), result.data(), count, nullptr, nullptr);
-    return result;
+    return boost::nowide::narrow(view);
 }
 
 xaml_result to_string(wstring_view view, string* pvalue) noexcept
@@ -164,11 +153,9 @@ XAML_CATCH_RETURN()
 
 string_view xaml_codecvt_pool::operator()(wstring_view view)
 {
-    int count = WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), nullptr, 0, nullptr, nullptr);
-    if (!count) return {};
-    char* result = m_allocator.allocate(count + 1);
-    WideCharToMultiByte(CP_UTF8, 0, view.data(), (int)view.size(), result, count, nullptr, nullptr);
-    return { result, (size_t)count };
+    size_t len = view.length() * 2 + 1;
+    char* result = m_allocator.allocate(len);
+    return boost::nowide::convert(result, len, view);
 }
 
 xaml_result xaml_codecvt_pool::operator()(wstring_view view, string_view* pvalue) noexcept
