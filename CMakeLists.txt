@@ -108,11 +108,14 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
-# Disable char8_t by default
-if(MSVC)
-    list(APPEND XAML_COMPILE_OPTIONS "/Zc:char8_t-")
-else()
-    list(APPEND XAML_COMPILE_OPTIONS "-fno-char8_t")
+
+# Disable char8_t by default on Windows
+if(WIN32)
+    if(MSVC)
+        list(APPEND XAML_COMPILE_OPTIONS "/std:c++latest" "/Zc:char8_t-")
+    else()
+        list(APPEND XAML_COMPILE_OPTIONS "-fno-char8_t")
+    endif()
 endif()
 
 if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
@@ -190,10 +193,17 @@ target_include_directories(boost_nowide
 )
 list(APPEND _XAML_TARGETS boost_nowide)
 
+add_subdirectory(rapidxml)
+
+# /Zc:char8_t will be overrided by /std:c++latest
+if(WIN32 AND MSVC)
+    set(CMAKE_CXX20_STANDARD_COMPILE_OPTION "")
+    set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "")
+endif()
+
 add_subdirectory(global)
 add_subdirectory(helpers)
 add_subdirectory(meta)
-add_subdirectory(rapidxml)
 add_subdirectory(parser)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
