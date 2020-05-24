@@ -74,12 +74,12 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         exit(0);
     }
 
-    path exe{ argv[0] };
+    path exe = to_wstring(argv[0]);
     bool no_logo;
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        sf::print(boost::nowide::cout, U("{} "), exe.filename().string<char>());
+        sf::print(boost::nowide::cout, U("{} "), exe.filename().u8string());
         print_version();
         sf::println(boost::nowide::cout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
     }
