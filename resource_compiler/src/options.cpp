@@ -46,10 +46,10 @@ xaml_result XAML_CALL xaml_rc_options_register(xaml_meta_context* ctx) noexcept
     XAML_TYPE_INFO_ADD_DEF_PROP(path);
     xaml_ptr<xaml_cmdline_option> opt;
     XAML_RETURN_IF_FAILED(xaml_cmdline_option_new(&opt));
-    XAML_RETURN_IF_FAILED(opt->add_arg(U('h'), U("help"), U("help"), U("Print help message")));
+    XAML_RETURN_IF_FAILED(opt->add_arg('h', U("help"), U("help"), U("Print help message")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("version"), U("version"), U("Print version info")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright infomation")));
-    XAML_RETURN_IF_FAILED(opt->add_arg(U('o'), U("output"), U("output"), U("Output file")));
+    XAML_RETURN_IF_FAILED(opt->add_arg('o', U("output"), U("output"), U("Output file")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("input"), U("Input files")));
     XAML_RETURN_IF_FAILED(__info->add_attribute(opt.get()));
     return ctx->add_type(__info);

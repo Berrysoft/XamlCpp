@@ -1,13 +1,8 @@
-#ifdef XAML_USE_BOOST_NOWIDE
 #include <ios>
 
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
-#else
-#include <iostream>
-#endif // XAML_USE_BOOST_NOWIDE
-
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -16,26 +11,6 @@
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
-
-#ifdef XAML_USE_BOOST_NOWIDE
-using u8ofstream = boost::nowide::ofstream;
-using u8ifstream = boost::nowide::ifstream;
-
-#define u8cout ::boost::nowide::cout
-#else
-using u8ofstream = std::ofstream;
-using u8ifstream = std::ifstream;
-
-#define u8cout ::std::cout
-#endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tmain wmain
-#define _tcout ::std::wcout
-#else
-#define _tmain main
-#define _tcout ::std::cout
-#endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
@@ -63,11 +38,11 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, "#include <xaml/resource/resource.h>");
 
     size_t index{ 0 };
-    map<path, tuple<string, bool>> rc_map{};
+    map<path, string> rc_map{};
 
     for (auto item : inputs)
     {
-        path file = to_string_view_t(item.query<xaml_string>());
+        path file = to_wstring(item.query<xaml_string>());
 #ifndef XAML_APPLE
         if (!rc_map.contains(file))
 #else
@@ -79,12 +54,12 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
             bool text = it != end(text_extensions);
             if (text)
             {
-                u8ifstream input{ file };
+                boost::nowide::ifstream input{ file };
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    sf::println(stream, "inline static constexpr char8_t {}[] = ", name);
+                    rc_map.emplace(file.relative_path(), name);
+                    sf::println(stream, "inline static constexpr char const {}[] = ", name);
                     sf::print(stream, "u8");
                     string line;
                     while (getline(input, line))
@@ -104,8 +79,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                 if (input.is_open())
                 {
                     string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), make_tuple(name, text));
-                    sf::print(stream, "inline static constexpr ::std::uint8_t {}[] = {{", name);
+                    rc_map.emplace(file.relative_path(), name);
+                    sf::print(stream, "inline static constexpr ::std::uint8_t const {}[] = {{", name);
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
                     {
@@ -121,10 +96,10 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         }
     }
 
-    sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, std::uint8_t const** pdata, std::int32_t* psize) noexcept\n{");
+    sf::println(stream, "xaml_result XAML_CALL xaml_resource_get(xaml_string* path, void const** pdata, std::int32_t* psize) noexcept\n{");
 
-    sf::println(stream, "{}xaml_std_string_view_t file;", tab);
-    sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view_t(path, &file));", tab);
+    sf::println(stream, "{}std::string_view file;", tab);
+    sf::println(stream, "{}XAML_RETURN_IF_FAILED(to_string_view(path, &file));", tab);
 
     size_t i = 0;
     for (auto pair : rc_map)
@@ -132,16 +107,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         sf::println(stream, "{}{}if (file == U({}))", tab, i++ ? "else " : "", pair.first);
         sf::println(stream, "{}{{", tab);
 
-        auto& [name, text] = pair.second;
-        if (text)
-        {
-            sf::println(stream, "{0}{0}*pdata = reinterpret_cast<std::uint8_t const*>({});", tab, name);
-        }
-        else
-        {
-            sf::println(stream, "{0}{0}*pdata = {};", tab, name);
-        }
-        sf::println(stream, "{0}{0}*psize = static_cast<std::int32_t>(sizeof({}));", tab, name);
+        sf::println(stream, "{0}{0}*pdata = reinterpret_cast<void const*>({});", tab, pair.second);
+        sf::println(stream, "{0}{0}*psize = static_cast<std::int32_t>(sizeof({}));", tab, pair.second);
 
         sf::println(stream, "{}}}", tab);
     }
@@ -156,11 +123,9 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
     sf::println(stream, '}');
 }
 
-int _tmain(int argc, xaml_char_t** argv)
+int main(int argc, char** argv)
 {
-#if defined(XAML_USE_BOOST_NOWIDE) && !defined(UNICODE)
     boost::nowide::args _(argc, argv);
-#endif // XAML_USE_BOOST_NOWIDE && !UNICODE
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
@@ -176,12 +141,12 @@ int _tmain(int argc, xaml_char_t** argv)
 
     if (output)
     {
-        u8ofstream stream{ to_string(output) };
+        boost::nowide::ofstream stream{ to_string(output) };
         compile(stream, inputs);
     }
     else
     {
-        compile(u8cout, inputs);
+        compile(boost::nowide::cout, inputs);
     }
 
     return 0;

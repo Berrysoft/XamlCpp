@@ -181,10 +181,4 @@
 #endif // __cplusplus
 #endif // !XAML_NOEXCEPT
 
-#ifdef UNICODE
-typedef wchar_t xaml_char_t;
-#else
-typedef char xaml_char_t;
-#endif // UNICODE
-
 #endif // !XAML_UTILITY_HPP

@@ -5,7 +5,6 @@
 #include "winrt/Windows.Web.Http.h"
 #include "winrt/Windows.Web.UI.h"
 #include <robuffer.h>
-#include <win/hstring.hpp>
 #include <win/webview_edge.hpp>
 
 using namespace std;
@@ -70,10 +69,10 @@ try
                 check_hresult(args->set_request(args_req));
 
                 xaml_ptr<xaml_string> method_str;
-                check_hresult(xaml_string_new_hstring(method, &method_str));
+                check_hresult(xaml_string_new(method, &method_str));
                 check_hresult(args_req->set_method(method_str));
                 xaml_ptr<xaml_string> uri_str;
-                check_hresult(xaml_string_new_hstring(uri, &uri_str));
+                check_hresult(xaml_string_new(uri, &uri_str));
                 check_hresult(args_req->set_uri(uri_str));
 
                 check_hresult(invoke_resource_requested(args));
@@ -98,10 +97,10 @@ try
 }
 XAML_CATCH_RETURN_WINRT()
 
-xaml_result xaml_webview_edge::navigate(xaml_char_t const* uri) noexcept
+xaml_result xaml_webview_edge::navigate(char const* uri) noexcept
 try
 {
-    m_view.Navigate(Uri{ uri });
+    m_view.Navigate(Uri{ to_wstring(uri) });
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN_WINRT()

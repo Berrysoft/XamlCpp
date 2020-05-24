@@ -57,17 +57,17 @@ xaml_result xaml_test_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_observable_vector_new(&m_combo_source));
     {
         xaml_ptr<xaml_string> item;
-        XAML_RETURN_IF_FAILED(xaml_string_new(U("A"), &item));
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("\u05e9\u05dc\u05d5\u05dd"), &item));
         XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
         xaml_ptr<xaml_string> item;
-        XAML_RETURN_IF_FAILED(xaml_string_new(U("BBB"), &item));
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("锟斤拷"), &item));
         XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
         xaml_ptr<xaml_string> item;
-        XAML_RETURN_IF_FAILED(xaml_string_new(U("C"), &item));
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("\u05e9-\u043c-\u03bd"), &item));
         XAML_RETURN_IF_FAILED(m_combo_source->append(item));
     }
     {
@@ -249,7 +249,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
                 [this](xaml_ptr<xaml_button>) -> xaml_result {
                     xaml_ptr<xaml_string> item;
-                    XAML_RETURN_IF_FAILED(xaml_string_new(U("DDDD"), &item));
+                    XAML_RETURN_IF_FAILED(xaml_string_new(U("\U0001D49E-\u043F\u0440\u0438\u0432\u0435\u0442-\u3084\u3042"), &item));
                     return m_combo_source->append(item);
                 },
                 &callback)));
@@ -337,11 +337,11 @@ xaml_result xaml_test_window_impl::init() noexcept
                     int32_t token;
                     XAML_RETURN_IF_FAILED(mquit->add_click(callback, &token));
                 }
-                mfile->add_submenu(mquit);
+                XAML_RETURN_IF_FAILED(mfile->add_submenu(mquit));
             }
-            mbar->add_child(mfile);
+            XAML_RETURN_IF_FAILED(mbar->add_child(mfile));
         }
-        m_window->set_menu_bar(mbar);
+        XAML_RETURN_IF_FAILED(m_window->set_menu_bar(mbar));
     }
     return XAML_S_OK;
 }

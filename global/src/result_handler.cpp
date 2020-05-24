@@ -1,3 +1,10 @@
+#ifdef XAML_WIN32
+#include <Windows.h>
+#else
+#include <sf/color.hpp>
+#endif // XAML_WIN32
+
+#include <boost/nowide/iostream.hpp>
 #include <iostream>
 #include <map>
 #include <sf/format.hpp>
@@ -5,18 +12,6 @@
 #include <sstream>
 #include <xaml/event.h>
 #include <xaml/result_handler.h>
-
-#ifdef XAML_WIN32
-#include <Windows.h>
-#else
-#include <sf/color.hpp>
-#endif // XAML_WIN32
-
-#ifdef UNICODE
-#define _tcerr ::std::wcerr
-#else
-#define _tcerr ::std::cerr
-#endif // UNICODE
 
 #ifdef NDEBUG
 #define XAML_DEFAULT_HANDLER xaml_result_handler_empty
@@ -28,18 +23,18 @@ using namespace std;
 
 static function<__xaml_result_handler_prototype> s_handler = XAML_DEFAULT_HANDLER;
 
-void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* file, int32_t line, xaml_char_t const* func) noexcept
+void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line) noexcept
 {
     // If exceptions throwed here, the program should terminate.
-    xaml_std_string_t msg = sf::sprint<xaml_char_t>(U("{}:{}:{}"), file, line, func);
+    std::string msg = sf::sprint(U("{}:{}"), file, line);
     s_handler(hr, level, msg.c_str());
 }
 
-void XAML_CALL xaml_result_handler_empty(xaml_result, xaml_result_raise_level, xaml_char_t const*) noexcept
+void XAML_CALL xaml_result_handler_empty(xaml_result, xaml_result_raise_level, char const*) noexcept
 {
 }
 
-static map<xaml_result_raise_level, xaml_std_string_view_t> s_level_map{
+static map<xaml_result_raise_level, std::string_view> s_level_map{
     { xaml_result_raise_info, U("INFO") },
     { xaml_result_raise_warning, U("WARNING") },
     { xaml_result_raise_error, U("ERROR") }
@@ -53,7 +48,7 @@ static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
 };
 #endif // !XAML_WIN32
 
-static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream, xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg)
+static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
 {
 #ifdef XAML_WIN32
     return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
@@ -62,22 +57,23 @@ static basic_ostream<xaml_char_t>& print_msg(basic_ostream<xaml_char_t>& stream,
 #endif // XAML_WIN32
 }
 
-void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, xaml_char_t const* msg) noexcept
+void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
 {
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)
-    basic_ostringstream<xaml_char_t> stream;
-    print_msg(stream, hr, level, msg);
-    xaml_std_string_t s = stream.str();
     if (IsDebuggerPresent())
     {
-        OutputDebugString(s.c_str());
+        xaml_codecvt_pool pool;
+        basic_ostringstream<char, char_traits<char>, pmr::polymorphic_allocator<char>> stream(pmr::string{ pmr::polymorphic_allocator<char>{ pool.resource() } });
+        print_msg(stream, hr, level, msg);
+        wstring_view s = pool(stream.str());
+        OutputDebugStringW(s.data());
     }
     else
     {
-        WriteConsole(GetStdHandle(STD_ERROR_HANDLE), s.c_str(), (DWORD)s.size(), nullptr, 0);
+        print_msg(boost::nowide::cerr, hr, level, msg);
     }
 #else
-    print_msg(_tcerr, hr, level, msg);
+    print_msg(boost::nowide::cerr, hr, level, msg);
 #endif // XAML_WIN32 && !XAML_MINGW
 }
 

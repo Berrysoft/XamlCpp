@@ -108,6 +108,14 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
+
+# Disable char8_t
+if(MSVC)
+    list(APPEND XAML_COMPILE_OPTIONS "/std:c++latest" "/Zc:char8_t-")
+else()
+    list(APPEND XAML_COMPILE_OPTIONS "-fno-char8_t")
+endif()
+
 if(MINGW AND CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
     list(APPEND XAML_COMPILE_OPTIONS "-Wno-incompatible-ms-struct")
 endif()
@@ -175,21 +183,20 @@ set(_XAML_TARGETS
 add_subdirectory(StreamFormat)
 list(APPEND _XAML_TARGETS stream_format)
 
-if(WIN32)
-    add_subdirectory(nowide)
-    set_target_properties(boost_nowide PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "")
-    target_include_directories(boost_nowide
-        PUBLIC
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nowide/include>
-    )
-    list(APPEND _XAML_TARGETS boost_nowide)
-    list(APPEND XAML_BUILD_DEFINITIONS "XAML_USE_BOOST_NOWIDE")
+add_subdirectory(nowide)
+list(APPEND _XAML_TARGETS boost_nowide)
+
+add_subdirectory(rapidxml)
+
+# /Zc:char8_t will be overrided by /std:c++latest
+if(MSVC)
+    set(CMAKE_CXX20_STANDARD_COMPILE_OPTION "")
+    set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "")
 endif()
 
 add_subdirectory(global)
 add_subdirectory(helpers)
 add_subdirectory(meta)
-add_subdirectory(rapidxml)
 add_subdirectory(parser)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)

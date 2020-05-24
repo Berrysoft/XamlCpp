@@ -25,11 +25,11 @@ XAML_DECL_INTERFACE_(xaml_cmdline_options_base, xaml_object)
 EXTERN_C XAML_CMDLINE_HELPER_API xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_CMDLINE_HELPER_API xaml_result XAML_CALL xaml_cmdline_options_base_register(xaml_meta_context*) XAML_NOEXCEPT;
 
-EXTERN_C XAML_CMDLINE_HELPER_API xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context*, xaml_guid XAML_CONST_REF, int, xaml_char_t**, void**) XAML_NOEXCEPT;
+EXTERN_C XAML_CMDLINE_HELPER_API xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context*, xaml_guid XAML_CONST_REF, int, char**, void**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T>
-xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, int argc, xaml_char_t** argv, T** ptr) noexcept
+xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, int argc, char** argv, T** ptr) noexcept
 {
     return xaml_cmdline_parse_and_print(ctx, xaml_type_guid_v<T>, argc, argv, (void**)ptr);
 }

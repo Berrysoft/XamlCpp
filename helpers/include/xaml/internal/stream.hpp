@@ -3,6 +3,10 @@
 
 #include <cstdio>
 
+#ifdef XAML_WIN32
+#include <boost/nowide/iostream.hpp>
+#endif // XAML_WIN32
+
 #ifdef _MSVC_STL_VERSION
 #include <fstream>
 #elif defined(__GLIBCXX__)
@@ -16,6 +20,16 @@ template <typename Char, typename F, typename... Args>
 decltype(auto) call_with_file_to_stream(F&& f, std::FILE* file, Args&&... args) noexcept(noexcept(
     std::forward<F>(f)(std::declval<std::basic_ostream<Char>&>(), std::forward<Args>(args)...)))
 {
+#ifdef XAML_WIN32
+    switch (_fileno(file))
+    {
+    case 1:
+        return std::forward<F>(f)(boost::nowide::cout, std::forward<Args>(args)...);
+    case 2:
+        return std::forward<F>(f)(boost::nowide::cerr, std::forward<Args>(args)...);
+    }
+#endif // XAML_WIN32
+
 #ifdef _MSVC_STL_VERSION
     std::basic_filebuf<Char> buf{ file };
 #elif defined(__GLIBCXX__)

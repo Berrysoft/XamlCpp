@@ -34,12 +34,9 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_button_internal::draw_text() noexcept
 {
-    xaml_char_t const* data = nullptr;
-    if (m_text)
-    {
-        XAML_RETURN_IF_FAILED(m_text->get_data(&data));
-    }
-    XAML_RETURN_IF_WIN32_BOOL_FALSE(Button_SetText(m_handle, data));
+    wstring data;
+    XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(Button_SetText(m_handle, data.c_str()));
     return XAML_S_OK;
 }
 

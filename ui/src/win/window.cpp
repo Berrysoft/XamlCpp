@@ -92,7 +92,7 @@ xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
     if (!m_handle)
     {
         xaml_win32_window_create_params params = {};
-        params.class_name = U("XamlWindow");
+        params.class_name = L"XamlWindow";
         params.style = WS_OVERLAPPEDWINDOW;
         params.x = CW_USEDEFAULT;
         params.y = CW_USEDEFAULT;
@@ -129,9 +129,9 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    xaml_char_t const* title;
-    XAML_RETURN_IF_FAILED(m_title->get_data(&title));
-    XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowText(m_handle, title));
+    wstring title;
+    XAML_RETURN_IF_FAILED(to_wstring(m_title, &title));
+    XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowText(m_handle, title.c_str()));
     return XAML_S_OK;
 }
 

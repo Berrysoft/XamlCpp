@@ -11,7 +11,7 @@ public:
     virtual ~xaml_win32_webview() {}
     virtual xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback = {}) noexcept = 0;
     virtual operator bool() const noexcept = 0;
-    virtual xaml_result navigate(xaml_char_t const* uri) noexcept = 0;
+    virtual xaml_result navigate(char const* uri) noexcept = 0;
     virtual xaml_result set_visible(bool vis) noexcept = 0;
     virtual xaml_result set_location(xaml_point const& p) noexcept = 0;
     virtual xaml_result set_size(xaml_size const& s) noexcept = 0;
@@ -38,7 +38,7 @@ public:                                                                  \
             return XAML_S_OK;                                            \
     }
 
-    __NATIVE_WEBVIEW_EVENT(navigated, xaml_char_t const*)
+    __NATIVE_WEBVIEW_EVENT(navigated, wchar_t const*)
     __NATIVE_WEBVIEW_EVENT(resource_requested, xaml_ptr<xaml_webview_resource_requested_args>)
 
 #undef __NATIVE_WEBVIEW_EVENT

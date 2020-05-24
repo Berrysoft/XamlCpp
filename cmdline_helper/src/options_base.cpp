@@ -1,3 +1,4 @@
+#include <boost/nowide/iostream.hpp>
 #include <filesystem>
 #include <iostream>
 #include <options_base.hpp>
@@ -6,14 +7,6 @@
 #include <xaml/cmdline/option.h>
 #include <xaml/cmdline/options_base.h>
 #include <xaml/result_handler.h>
-
-#ifdef UNICODE
-#define _tcout ::std::wcout
-#define _tcerr ::std::wcerr
-#else
-#define _tcout ::std::cout
-#define _tcerr ::std::cerr
-#endif // UNICODE
 
 using namespace std;
 using namespace std::filesystem;
@@ -39,20 +32,20 @@ static xaml_result print_help(xaml_ptr<xaml_type_info> const& t) noexcept
 {
     xaml_ptr<xaml_cmdline_option> opt;
     XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
-    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(_tcout, opt));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(boost::nowide::cout, opt));
     return XAML_S_OK;
 }
 
 static void print_version() noexcept
 {
-    sf::print(_tcout, U("") XAML_VERSION);
+    sf::print(boost::nowide::cout, U_(XAML_VERSION));
 #ifdef XAML_COMMIT_HASH
-    constexpr xaml_std_string_view_t hash{ U("") XAML_COMMIT_HASH };
-    sf::print(_tcout, U("-{}"), hash.substr(0, 8));
+    const std::string_view hash{ U_(XAML_COMMIT_HASH) };
+    sf::print(boost::nowide::cout, U("-{}"), hash.substr(0, 8));
 #endif // XAML_COMMIT_HASH
 }
 
-xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, xaml_char_t** argv, void** ptr) noexcept
+xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_guid const& id, int argc, char** argv, void** ptr) noexcept
 {
     xaml_ptr<xaml_reflection_info> info;
     XAML_RETURN_IF_FAILED(ctx->get_type(id, &info));
@@ -63,7 +56,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         xaml_result __hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
         if (XAML_FAILED(__hr))
         {
-            sf::println(_tcerr, U("Command line parse error: 0x{:x}"), __hr);
+            sf::println(boost::nowide::cerr, U("Command line parse error: 0x{:x}"), __hr);
             XAML_RETURN_IF_FAILED(print_help(t));
             exit(1);
         }
@@ -81,14 +74,14 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         exit(0);
     }
 
-    path exe{ argv[0] };
+    path exe = to_wstring(argv[0]);
     bool no_logo;
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        sf::print(_tcout, U("{} "), exe.filename().string<xaml_char_t>());
+        sf::print(boost::nowide::cout, U("{} "), exe.filename().u8string());
         print_version();
-        sf::println(_tcout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
+        sf::println(boost::nowide::cout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
     }
 
     bool help;

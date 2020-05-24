@@ -103,14 +103,12 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
     return xaml_hasher_new(
         function<xaml_result(xaml_object*, std::int32_t*)>{
             [](xaml_object* obj, int32_t* phash) -> xaml_result {
-                static hash<xaml_std_string_view_t> hasher{};
+                static hash<std::string_view> hasher{};
                 xaml_ptr<xaml_string> value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, &value));
-                xaml_char_t const* data;
-                XAML_RETURN_IF_FAILED(value->get_data(&data));
-                int32_t length;
-                XAML_RETURN_IF_FAILED(value->get_length(&length));
-                std::size_t std_hash = hasher(xaml_std_string_view_t(data, (std::size_t)length));
+                string_view data;
+                XAML_RETURN_IF_FAILED(to_string_view(value, &data));
+                std::size_t std_hash = hasher(data);
                 std::int32_t* ptr = (std::int32_t*)&std_hash;
 #if SIZE_MAX == UINT64_MAX
                 static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");

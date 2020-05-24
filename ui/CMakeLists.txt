@@ -30,15 +30,11 @@ endif()
 
 target_link_libraries(xaml_ui PUBLIC xaml_meta)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui PUBLIC Comctl32 ntdll UxTheme Dwmapi PRIVATE wil)
+    target_link_libraries(xaml_ui PUBLIC Comctl32 ntdll UxTheme Dwmapi PRIVATE wil Boost::nowide)
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui PUBLIC "-framework Cocoa")
 elseif(${BUILD_GTK3})
-    target_link_libraries(xaml_ui PRIVATE gtk3)
-endif()
-
-if(WIN32 AND ${BUILD_GTK3})
-    target_link_libraries(xaml_ui PRIVATE Boost::nowide)
+    target_link_libraries(xaml_ui PRIVATE gtk3 Boost::nowide)
 endif()
 
 install(FILES ${UI_HEADERS} DESTINATION include/xaml/ui)

@@ -106,7 +106,7 @@ public:
         m_ptr = nullptr;
         return res;
     }
-    constexpr void reset() const noexcept
+    constexpr void reset() noexcept
     {
         try_release();
         m_ptr = nullptr;

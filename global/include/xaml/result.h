@@ -29,20 +29,12 @@ typedef enum xaml_result_raise_level
     xaml_result_raise_error
 } xaml_result_raise_level;
 
-EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_raise_level, xaml_char_t const*, XAML_STD int32_t, xaml_char_t const*) XAML_NOEXCEPT;
-
-#ifdef UNICODE
-#define __XAML_FILE__ __FILEW__
-#define __XAML_FUNCTION__ __FUNCTIONW__
-#else
-#define __XAML_FILE__ __FILE__
-#define __XAML_FUNCTION__ __FUNCTION__
-#endif // UNICODE
+EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_raise_level, char const*, XAML_STD int32_t) XAML_NOEXCEPT;
 
 #ifdef NDEBUG
 #define XAML_RAISE(...)
 #else
-#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__, __XAML_FILE__, __LINE__, __XAML_FUNCTION__)
+#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__, U_(__FILE__), __LINE__)
 #endif // NDEBUG
 
 #ifndef XAML_RAISE_LEVEL

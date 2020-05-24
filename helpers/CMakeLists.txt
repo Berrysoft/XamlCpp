@@ -4,6 +4,9 @@ add_library(xaml_helpers INTERFACE)
 
 target_include_directories(xaml_helpers INTERFACE include)
 
+if(MSVC)
+    target_link_libraries(xaml_helpers INTERFACE Boost::nowide)
+endif()
 if(APPLE)
     target_link_libraries(xaml_helpers INTERFACE Boost::iostreams)
 endif()

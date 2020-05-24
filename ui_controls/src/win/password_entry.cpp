@@ -7,7 +7,7 @@
 
 using namespace std;
 
-static xaml_char_t default_char{ U('*') };
+static wchar_t s_default_char{ L'*' };
 
 xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
@@ -25,7 +25,7 @@ xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noe
             params.height = 50;
             params.parent = m_parent;
             XAML_RETURN_IF_FAILED(create(params));
-            default_char = Edit_GetPasswordChar(m_handle);
+            s_default_char = Edit_GetPasswordChar(m_handle);
             XAML_RETURN_IF_FAILED(draw_password_char());
             XAML_RETURN_IF_FAILED(draw_visible());
             XAML_RETURN_IF_FAILED(draw_text());
@@ -38,6 +38,6 @@ xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noe
 
 xaml_result xaml_password_entry_internal::draw_password_char() noexcept
 {
-    Edit_SetPasswordChar(m_handle, m_password_char ? m_password_char : default_char);
+    Edit_SetPasswordChar(m_handle, m_password_char ? m_password_char : s_default_char);
     return XAML_S_OK;
 }

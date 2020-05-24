@@ -1,7 +1,6 @@
 #include <Windows.h>
 #include <shared/filebox.hpp>
 #include <wil/com.h>
-#include <win/cotaskmem_string.hpp>
 #include <xaml/ui/filebox.h>
 #include <xaml/ui/win/control.h>
 
@@ -21,24 +20,31 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     {
         XAML_RETURN_IF_FAILED(CoCreateInstance(__uuidof(FileSaveDialog), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&handle)));
     }
+
+    xaml_codecvt_pool pool;
+
     if (m_title)
     {
-        xaml_char_t const* data;
-        XAML_RETURN_IF_FAILED(m_title->get_data(&data));
-        XAML_RETURN_IF_FAILED(handle->SetTitle(data));
+        wstring_view data;
+        XAML_RETURN_IF_FAILED(pool(m_title, &data));
+        XAML_RETURN_IF_FAILED(handle->SetTitle(data.data()));
     }
     if (m_filename)
     {
-        xaml_char_t const* data;
-        XAML_RETURN_IF_FAILED(m_filename->get_data(&data));
-        XAML_RETURN_IF_FAILED(handle->SetFileName(data));
+        wstring_view data;
+        XAML_RETURN_IF_FAILED(pool(m_filename, &data));
+        XAML_RETURN_IF_FAILED(handle->SetFileName(data.data()));
     }
     vector<COMDLG_FILTERSPEC> types;
     XAML_FOREACH_START(f, m_filters);
     {
         xaml_filebox_filter filter;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
-        types.push_back({ filter.name, filter.pattern });
+        wstring_view name_data;
+        XAML_RETURN_IF_FAILED(pool(filter.name, &name_data));
+        wstring_view pattern_data;
+        XAML_RETURN_IF_FAILED(pool(filter.pattern, &pattern_data));
+        types.push_back({ name_data.data(), pattern_data.data() });
     }
     XAML_FOREACH_END();
     XAML_RETURN_IF_FAILED(handle->SetFileTypes((UINT)types.size(), types.data()));
@@ -75,7 +81,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
             wil::unique_cotaskmem_string name;
             XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
             xaml_ptr<xaml_string> xaml_name;
-            XAML_RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(name), &xaml_name));
+            XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
             XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
         }
     }
@@ -86,7 +92,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         wil::unique_cotaskmem_string name;
         XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
         xaml_ptr<xaml_string> xaml_name;
-        XAML_RETURN_IF_FAILED(xaml_string_new_cotaskmem(std::move(name), &xaml_name));
+        XAML_RETURN_IF_FAILED(xaml_string_new(name.get(), &xaml_name));
         XAML_RETURN_IF_FAILED(m_results->append(xaml_name));
     }
     return XAML_S_OK;

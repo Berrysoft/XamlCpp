@@ -11,7 +11,7 @@ struct xaml_webview_edge2 : xaml_win32_webview
 
     operator bool() const noexcept override { return (bool)m_view; }
 
-    xaml_result navigate(xaml_char_t const* uri) noexcept override;
+    xaml_result navigate(char const* uri) noexcept override;
 
     xaml_result set_visible(bool vis) noexcept override;
 

@@ -40,12 +40,12 @@ static BOOL register_window_class() noexcept
     cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
     cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     cls.hbrBackground = nullptr;
-    cls.lpszClassName = U("XamlWindow");
+    cls.lpszClassName = L"XamlWindow";
     cls.hInstance = GetModuleHandle(NULL);
     return RegisterClassEx(&cls);
 }
 
-xaml_result xaml_application_impl::init(int argc, xaml_char_t** argv) noexcept
+xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
     m_font_provider.m_outer = this;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));

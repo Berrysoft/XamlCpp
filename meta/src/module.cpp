@@ -30,11 +30,8 @@ static inline std::filesystem::path module_extension{ ".so" };
 using namespace std;
 using namespace std::filesystem;
 
-using path_char_t = typename path::string_type::value_type;
-using path_string_t = typename path::string_type;
-using path_string_view_t = basic_string_view<path_char_t>;
-
-static vector<path> split(path_string_view_t str, path_char_t separater)
+template <typename Char>
+static vector<path> split(basic_string_view<Char> str, Char separater)
 {
     if (str.empty()) return {};
     size_t index = 0, offset = 0;
@@ -48,7 +45,7 @@ static vector<path> split(path_string_view_t str, path_char_t separater)
             if (!sub.empty())
                 result.emplace_back(sub);
         }
-        if (index == path_string_view_t::npos) break;
+        if (index == decltype(str)::npos) break;
         offset = index + 1;
     }
     return result;
@@ -80,7 +77,7 @@ static vector<path> get_module_search_path()
     wstring buffer(32767, L'\0');
     DWORD count = GetEnvironmentVariableW(L"PATH", buffer.data(), (DWORD)buffer.length());
     buffer.resize(count);
-    vector<path> result = split(buffer, ';');
+    vector<path> result = split<wchar_t>(buffer, L';');
 #else
 #ifdef XAML_APPLE
     constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
@@ -88,7 +85,7 @@ static vector<path> get_module_search_path()
     constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
 #endif // XAML_APPLE
     char* ldp = getenv(ld_library_path.data());
-    vector<path> result = split(ldp ? ldp : path_string_view_t{}, ':');
+    vector<path> result = split<char>(ldp ? ldp : path_string_view_t{}, ':');
 #endif // XAML_WIN32
     result.push_back(".");
     result.push_back("../lib");
@@ -137,9 +134,9 @@ static path get_full_path(path const& name)
     return name;
 }
 
-static xaml_std_string_t get_module_name(path file)
+static path::string_type get_module_name(path file)
 {
-    xaml_std_string_t result = file.filename().replace_extension().string<xaml_char_t>();
+    auto result = file.filename().replace_extension().native();
     if constexpr (has_prefix)
     {
         result = result.substr(3);
@@ -167,7 +164,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
             {
                 XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
             }
-            auto p = get_full_path(to_string_view_t(path));
+            auto p = get_full_path(to_wstring(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = LoadLibraryW(p.c_str());
             if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
@@ -176,10 +173,12 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
+    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
     {
         if (!m_handle) return XAML_E_NOTIMPL;
-        auto proc = GetProcAddress(m_handle, name);
+        string_view data;
+        XAML_RETURN_IF_FAILED(to_string_view(name, &data));
+        auto proc = GetProcAddress(m_handle, data.data());
         if (!proc) return XAML_E_NOTIMPL;
         *ptr = (void*)proc;
         return XAML_S_OK;
@@ -196,7 +195,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
                 int res = dlclose(m_handle);
                 if (res) return XAML_E_FAIL;
             }
-            auto p = get_full_path(to_string_view_t(path));
+            auto p = get_full_path(to_string_view(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
             if (!m_handle) return XAML_E_FAIL;
@@ -205,10 +204,12 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL get_method(char const* name, void** ptr) noexcept override
+    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
     {
         if (!m_handle) return XAML_E_NOTIMPL;
-        auto proc = dlsym(m_handle, name);
+        string_view data;
+        XAML_RETURN_IF_FAILED(to_string_view(name, &data));
+        auto proc = dlsym(m_handle, data.data());
         if (!proc) return XAML_E_NOTIMPL;
         *ptr = (void*)proc;
         return XAML_S_OK;

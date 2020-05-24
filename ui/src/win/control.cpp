@@ -68,15 +68,33 @@ xaml_result xaml_control_internal::size_to_fit() noexcept
 
 xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& str, xaml_size const& offset, xaml_size* pvalue) noexcept
 {
-    wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
-    if (hDC && str)
+    bool equal;
+    if (m_measure_str_cache)
+        XAML_RETURN_IF_FAILED(xaml_string_equals(m_measure_str_cache, str, &equal));
+    else
+        equal = false;
+    if (equal)
     {
-        xaml_char_t const* data;
-        XAML_RETURN_IF_FAILED(str->get_data(&data));
-        int32_t length;
-        XAML_RETURN_IF_FAILED(str->get_length(&length));
+        *pvalue = m_measure_cache;
+    }
+    else
+    {
+        wstring data;
+        XAML_RETURN_IF_FAILED(to_wstring(str, &data));
+        XAML_RETURN_IF_FAILED(measure_string(data, offset, pvalue));
+        m_measure_str_cache = str;
+        m_measure_cache = *pvalue;
+    }
+    return XAML_S_OK;
+}
+
+xaml_result xaml_control_internal::measure_string(wstring_view data, xaml_size const& offset, xaml_size* pvalue) noexcept
+{
+    wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
+    if (hDC && !data.empty())
+    {
         SIZE s = {};
-        XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), data, length, &s));
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), data.data(), (DWORD)data.length(), &s));
         *pvalue = xaml_from_native(s) + offset;
     }
     else

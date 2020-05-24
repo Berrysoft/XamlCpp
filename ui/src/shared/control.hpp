@@ -91,7 +91,10 @@ struct xaml_control_internal
 
     XAML_UI_API xaml_result XAML_CALL create(xaml_win32_window_create_params const&) noexcept;
 
+    xaml_ptr<xaml_string> m_measure_str_cache{ nullptr };
+    xaml_size m_measure_cache{};
     XAML_UI_API xaml_result XAML_CALL measure_string(xaml_ptr<xaml_string> const&, xaml_size const&, xaml_size*) noexcept;
+    XAML_UI_API xaml_result XAML_CALL measure_string(std::wstring_view, xaml_size const&, xaml_size*) noexcept;
 
     virtual xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept
     {

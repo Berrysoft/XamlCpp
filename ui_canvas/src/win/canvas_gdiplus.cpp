@@ -37,11 +37,6 @@ static constexpr INT get_font_style(bool italic, bool bold) noexcept
     return (italic ? Gdiplus::FontStyleItalic : Gdiplus::FontStyleRegular) | (bold ? Gdiplus::FontStyleBold : Gdiplus::FontStyleRegular);
 }
 
-static inline Font get_Font(xaml_drawing_font const& font, double dpi) noexcept
-{
-    return Font(font.font_family, get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
-}
-
 static inline RectF get_RectF(xaml_rectangle const& rect, double dpi) noexcept
 {
     return xaml_to_native<RectF>(rect * dpi / USER_DEFAULT_SCREEN_DPI);
@@ -178,19 +173,19 @@ static constexpr StringAlignment get_Align(xaml_halignment align) noexcept
 xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
     auto b = get_Brush(brush);
-    auto f = get_Font(font, dpi);
+    wstring ff{};
+    XAML_RETURN_IF_FAILED(to_wstring(font.font_family, &ff));
+    Font f(ff.c_str(), get_WIDTH(font.size, dpi), get_font_style(font.italic, font.bold), UnitPixel);
     if (f.GetSize() <= 0) return XAML_S_OK;
     StringFormat fmt{};
     auto a = get_Align(font.halign);
     check_status(fmt.SetAlignment(a));
     check_status(fmt.SetLineAlignment(a));
     auto pf = get_PointF(p, dpi);
-    xaml_char_t const* data;
-    XAML_RETURN_IF_FAILED(str->get_data(&data));
-    int32_t length;
-    XAML_RETURN_IF_FAILED(str->get_length(&length));
+    wstring data;
+    XAML_RETURN_IF_FAILED(to_wstring(str, &data));
     RectF r;
-    check_status(handle->MeasureString(data, length, &f, pf, &fmt, &r));
+    check_status(handle->MeasureString(data.c_str(), (int)data.length(), &f, pf, &fmt, &r));
     switch (font.valign)
     {
     case xaml_valignment_center:
@@ -202,7 +197,7 @@ xaml_result xaml_drawing_context_gdiplus_impl::draw_string(xaml_drawing_brush co
     default:
         break;
     }
-    check_status(handle->DrawString(data, length, &f, pf, &fmt, &b));
+    check_status(handle->DrawString(data.c_str(), (int)data.length(), &f, pf, &fmt, &b));
     return XAML_S_OK;
 }
 

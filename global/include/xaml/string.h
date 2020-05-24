@@ -6,6 +6,10 @@
 #include <string>
 #include <string_view>
 #include <xaml/ptr.hpp>
+
+#ifdef UNICODE
+#include <memory_resource>
+#endif // UNICODE
 #else
 #include <stdbool.h>
 #endif // __cplusplus
@@ -13,28 +17,29 @@
 #include <xaml/object.h>
 
 #ifndef U
-#ifdef UNICODE
-#define U(x) L##x
-#else
-#define U(x) x
-#endif // UNICODE
+#define U(x) u8##x
 #endif // !U
+
+#ifndef U_
+#define U_(x) U(x)
+#endif // !U_
 
 XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } })
 
 #define XAML_STRING_VTBL(type)                        \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));        \
     XAML_METHOD(get_length, type, XAML_STD int32_t*); \
-    XAML_METHOD(get_data, type, xaml_char_t const**)
+    XAML_METHOD(get_data, type, char const**)
 
 XAML_DECL_INTERFACE_(xaml_string, xaml_object)
 {
     XAML_DECL_VTBL(xaml_string, XAML_STRING_VTBL);
 };
 
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_char_t const*, xaml_string**) XAML_NOEXCEPT;
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_utf8(char const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new(char const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_length(char const*, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view(char const*, xaml_string**) XAML_NOEXCEPT;
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_new_view_length(char const*, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_empty(xaml_string**) XAML_NOEXCEPT;
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_equals(xaml_string*, xaml_string*, bool*) XAML_NOEXCEPT;
@@ -43,58 +48,126 @@ EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_concat(xaml_string*, xaml_st
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_string_substr(xaml_string*, XAML_STD int32_t, XAML_STD int32_t, xaml_string**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-using xaml_std_string_t = std::basic_string<xaml_char_t>;
-using xaml_std_string_view_t = std::basic_string_view<xaml_char_t>;
+XAML_API xaml_result XAML_CALL xaml_string_new(std::string&&, xaml_string**) noexcept;
+XAML_API xaml_result XAML_CALL xaml_string_new(std::string_view, xaml_string**) noexcept;
 
-XAML_API xaml_result XAML_CALL xaml_string_new(xaml_std_string_t&&, xaml_string**) noexcept;
-XAML_API xaml_result XAML_CALL xaml_string_new(xaml_std_string_view_t, xaml_string**) noexcept;
-
-XAML_API xaml_result XAML_CALL xaml_string_new_view(xaml_std_string_view_t, xaml_string**) noexcept;
-
-#ifndef UNICODE
-XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string&&, xaml_string**) noexcept;
-#endif // !UNICODE
-
-XAML_API xaml_result XAML_CALL xaml_string_new_utf8(std::string_view, xaml_string**) noexcept;
-
-XAML_API std::string to_string(xaml_ptr<xaml_string> const&);
+XAML_API xaml_result XAML_CALL xaml_string_new_view(std::string_view, xaml_string**) noexcept;
 
 XAML_API std::ostream& operator<<(std::ostream&, xaml_ptr<xaml_string> const&);
-XAML_API std::basic_ostream<xaml_char_t>& operator<<(std::basic_ostream<xaml_char_t>&, xaml_ptr<xaml_string> const&);
 
-inline xaml_std_string_view_t to_string_view_t(xaml_ptr<xaml_string> const& str)
+inline std::string_view to_string_view(xaml_ptr<xaml_string> const& str)
 {
-    xaml_char_t const* data;
-    XAML_THROW_IF_FAILED(str->get_data(&data));
-    std::int32_t length;
-    XAML_THROW_IF_FAILED(str->get_length(&length));
-    return xaml_std_string_view_t(data, length);
+    if (str)
+    {
+        char const* data;
+        XAML_THROW_IF_FAILED(str->get_data(&data));
+        std::int32_t length;
+        XAML_THROW_IF_FAILED(str->get_length(&length));
+        return std::string_view(data, length);
+    }
+    else
+    {
+        return {};
+    }
 }
 
-inline xaml_result to_string_view_t(xaml_ptr<xaml_string> const& str, xaml_std_string_view_t* view) noexcept
+inline xaml_result to_string_view(xaml_ptr<xaml_string> const& str, std::string_view* view) noexcept
 {
-    xaml_char_t const* data;
-    XAML_RETURN_IF_FAILED(str->get_data(&data));
-    std::int32_t length;
-    XAML_RETURN_IF_FAILED(str->get_length(&length));
-    *view = xaml_std_string_view_t(data, length);
+    if (str)
+    {
+        char const* data;
+        XAML_RETURN_IF_FAILED(str->get_data(&data));
+        std::int32_t length;
+        XAML_RETURN_IF_FAILED(str->get_length(&length));
+        *view = std::string_view(data, length);
+    }
+    else
+    {
+        *view = {};
+    }
     return XAML_S_OK;
 }
 
-inline xaml_std_string_t to_string_t(xaml_ptr<xaml_string> const& str)
+inline std::string to_string(xaml_ptr<xaml_string> const& str)
 {
-    return (xaml_std_string_t)to_string_view_t(str);
+    return (std::string)to_string_view(str);
 }
 
-inline xaml_result to_string_t(xaml_ptr<xaml_string> const& str, xaml_std_string_t* s) noexcept
+inline xaml_result to_string(xaml_ptr<xaml_string> const& str, std::string* s) noexcept
 try
 {
-    xaml_std_string_view_t view;
-    XAML_RETURN_IF_FAILED(to_string_view_t(str, &view));
+    std::string_view view;
+    XAML_RETURN_IF_FAILED(to_string_view(str, &view));
     *s = view;
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()
+
+#ifdef UNICODE
+XAML_API std::wstring to_wstring(std::string_view);
+XAML_API xaml_result to_wstring(std::string_view, std::wstring*) noexcept;
+
+inline std::wstring to_wstring(xaml_ptr<xaml_string> const& str)
+{
+    return to_wstring(to_string_view(str));
+}
+
+inline xaml_result to_wstring(xaml_ptr<xaml_string> const& str, std::wstring* presult) noexcept
+{
+    std::string_view view;
+    XAML_RETURN_IF_FAILED(to_string_view(str, &view));
+    return to_wstring(view, presult);
+}
+
+XAML_API std::string to_string(std::wstring_view);
+XAML_API xaml_result to_string(std::wstring_view, std::string*) noexcept;
+
+inline xaml_result XAML_CALL xaml_string_new(std::wstring_view wstr, xaml_string** ptr) noexcept
+{
+    std::string str;
+    XAML_RETURN_IF_FAILED(to_string(wstr, &str));
+    return xaml_string_new(std::move(str), ptr);
+}
+
+struct xaml_codecvt_pool
+{
+private:
+    std::pmr::monotonic_buffer_resource m_resource{ 128 };
+    std::pmr::polymorphic_allocator<wchar_t> m_wide_allocator{ &m_resource };
+    std::pmr::polymorphic_allocator<char> m_allocator{ &m_resource };
+
+public:
+    xaml_codecvt_pool() noexcept = default;
+    explicit xaml_codecvt_pool(size_t init_size) noexcept : m_resource(init_size) {}
+
+    constexpr std::pmr::memory_resource* resource() noexcept { return &m_resource; }
+
+    XAML_API std::wstring_view operator()(std::string_view);
+    XAML_API xaml_result operator()(std::string_view, std::wstring_view*) noexcept;
+
+    std::wstring_view operator()(xaml_ptr<xaml_string> const& str)
+    {
+        return operator()(to_string_view(str));
+    }
+
+    xaml_result operator()(xaml_ptr<xaml_string> const& str, std::wstring_view* presult) noexcept
+    {
+        std::string_view view;
+        XAML_RETURN_IF_FAILED(to_string_view(str, &view));
+        return operator()(view, presult);
+    }
+
+    XAML_API std::string_view operator()(std::wstring_view);
+    XAML_API xaml_result operator()(std::wstring_view, std::string_view*) noexcept;
+
+    xaml_result operator()(std::wstring_view wstr, xaml_string** ptr) noexcept
+    {
+        std::string_view view;
+        XAML_RETURN_IF_FAILED(operator()(wstr, &view));
+        return xaml_string_new_view(view, ptr);
+    }
+};
+#endif // UNICODE
 
 namespace std
 {
@@ -103,9 +176,9 @@ namespace std
     {
         size_t operator()(xaml_ptr<xaml_string> const& str) const noexcept
         {
-            xaml_std_string_view_t view{};
-            XAML_ASSERT_SUCCEEDED(to_string_view_t(str, &view));
-            return hash<xaml_std_string_view_t>{}(view);
+            std::string_view view{};
+            XAML_ASSERT_SUCCEEDED(to_string_view(str, &view));
+            return hash<std::string_view>{}(view);
         }
     };
 } // namespace std

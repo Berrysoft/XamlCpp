@@ -45,12 +45,14 @@ xaml_result xaml_test_window_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_window_internal::init());
     xaml_ptr<xaml_string> path;
     XAML_RETURN_IF_FAILED(xaml_string_new_view(U("view/test.xaml"), &path));
-    uint8_t const* data;
+    void const* data;
     int32_t size;
     XAML_RETURN_IF_FAILED(xaml_resource_get(path, &data, &size));
+    xaml_ptr<xaml_string> data_str;
+    XAML_RETURN_IF_FAILED(xaml_string_new_view_length((char const*)data, size - 1, &data_str));
     xaml_ptr<xaml_node> node;
     xaml_ptr<xaml_vector_view> headers;
-    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, reinterpret_cast<char const*>(data), &node, &headers));
+    XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, data_str, &node, &headers));
     XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx, node, m_outer_this));
     return XAML_S_OK;
 }
@@ -66,6 +68,21 @@ xaml_result xaml_test_window_internal::on_button_click(xaml_button*) noexcept
     XAML_RETURN_IF_FAILED(xaml_string_new(U("I'm going to say hello..."), &des));
     xaml_msgbox_result res;
     XAML_RETURN_IF_FAILED(xaml_msgbox(static_cast<xaml_window*>(m_outer_this), text, title, des, xaml_msgbox_info, xaml_msgbox_buttons_abort_retry_ignore, &res));
+    switch (res)
+    {
+    case xaml_msgbox_result_abort:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Abort"), text.put()));
+        break;
+    case xaml_msgbox_result_retry:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Retry"), text.put()));
+        break;
+    case xaml_msgbox_result_ignore:
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("Ignore"), text.put()));
+        break;
+    default:
+        return XAML_S_OK;
+    }
+    XAML_RETURN_IF_FAILED(m_model->set_text(text));
     return XAML_S_OK;
 }
 

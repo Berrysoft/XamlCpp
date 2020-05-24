@@ -16,18 +16,18 @@ XAML_CLASS(xaml_cmdline_option, { 0x240bec4e, 0xefc2, 0x45ed, { 0xa5, 0x01, 0x04
 
 #define XAML_CMDLINE_OPTION_VTBL(type)                             \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                     \
-    XAML_METHOD(find_short_arg, type, xaml_char_t, xaml_string**); \
+    XAML_METHOD(find_short_arg, type, char, xaml_string**); \
     XAML_METHOD(find_long_arg, type, xaml_string*, xaml_string**); \
     XAML_METHOD(get_default_property, type, xaml_string**);        \
     XAML_METHOD(for_each_entry, type, xaml_delegate*);             \
-    XAML_METHOD(add_arg, type, xaml_char_t, xaml_string*, xaml_string*, xaml_string*)
+    XAML_METHOD(add_arg, type, char, xaml_string*, xaml_string*, xaml_string*)
 
 XAML_DECL_INTERFACE_(xaml_cmdline_option, xaml_object)
 {
     XAML_DECL_VTBL(xaml_cmdline_option, XAML_CMDLINE_OPTION_VTBL);
 
 #ifdef __cplusplus
-    xaml_result XAML_CALL add_arg(xaml_char_t short_arg, xaml_std_string_view_t long_arg, xaml_std_string_view_t prop, xaml_std_string_view_t help_text) noexcept
+    xaml_result XAML_CALL add_arg(char short_arg, std::string_view long_arg, std::string_view prop, std::string_view help_text) noexcept
     {
         xaml_ptr<xaml_string> long_arg_str;
         XAML_RETURN_IF_FAILED(xaml_string_new(long_arg, &long_arg_str));
@@ -44,7 +44,7 @@ EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmd
 EXTERN_C XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(XAML_STD FILE*, xaml_cmdline_option*) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
-XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(std::basic_ostream<xaml_char_t>&, xaml_cmdline_option*) noexcept;
+XAML_CMDLINE_API xaml_result XAML_CALL xaml_cmdline_option_print(std::basic_ostream<char>&, xaml_cmdline_option*) noexcept;
 #endif // __cplusplus
 
 #endif // !XAML_CMDLINE_OPTION_H
