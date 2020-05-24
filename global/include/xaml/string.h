@@ -7,9 +7,9 @@
 #include <string_view>
 #include <xaml/ptr.hpp>
 
-#ifdef UNICODE
+#ifdef XAML_WIN32
 #include <memory_resource>
-#endif // UNICODE
+#endif // XAML_WIN32
 #else
 #include <stdbool.h>
 #endif // __cplusplus
@@ -103,7 +103,7 @@ try
 }
 XAML_CATCH_RETURN()
 
-#ifdef UNICODE
+#ifdef XAML_WIN32
 XAML_API std::wstring to_wstring(std::string_view);
 XAML_API xaml_result to_wstring(std::string_view, std::wstring*) noexcept;
 
@@ -167,7 +167,7 @@ public:
         return xaml_string_new_view(view, ptr);
     }
 };
-#endif // UNICODE
+#endif // XAML_WIN32
 
 namespace std
 {

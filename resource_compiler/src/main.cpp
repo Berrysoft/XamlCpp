@@ -1,5 +1,3 @@
-#include <ios>
-
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
@@ -11,6 +9,7 @@
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
+#include <xaml/internal/filesystem.hpp>
 
 using namespace std;
 using namespace std::filesystem;
@@ -42,7 +41,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     for (auto item : inputs)
     {
-        path file = to_wstring(item.query<xaml_string>());
+        path file = to_path(item.query<xaml_string>());
 #ifndef XAML_APPLE
         if (!rc_map.contains(file))
 #else

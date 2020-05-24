@@ -1,8 +1,16 @@
+#ifndef XAML_DEFAULT_HANDLER_COLOR
+#if !defined(XAML_WIN32) || defined(XAML_MINGW)
+#define XAML_DEFAULT_HANDLER_COLOR
+#endif // !XAML_WIN32 || XAML_MINGW
+#endif // !XAML_DEFAULT_HANDLER_COLOR
+
 #ifdef XAML_WIN32
 #include <Windows.h>
-#else
-#include <sf/color.hpp>
 #endif // XAML_WIN32
+
+#ifdef XAML_DEFAULT_HANDLER_COLOR
+#include <sf/color.hpp>
+#endif // XAML_DEFAULT_HANDLER_COLOR
 
 #include <boost/nowide/iostream.hpp>
 #include <iostream>
@@ -40,26 +48,26 @@ static map<xaml_result_raise_level, std::string_view> s_level_map{
     { xaml_result_raise_error, U("ERROR") }
 };
 
-#ifndef XAML_WIN32
+#ifdef XAML_DEFAULT_HANDLER_COLOR
 static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
     { xaml_result_raise_info, sf::bright_blue },
     { xaml_result_raise_warning, sf::yellow },
     { xaml_result_raise_warning, sf::red }
 };
-#endif // !XAML_WIN32
+#endif // XAML_DEFAULT_HANDLER_COLOR
 
 static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
 {
-#ifdef XAML_WIN32
+#ifndef XAML_DEFAULT_HANDLER_COLOR
     return sf::println(stream, U("{}: 0x{:x}: {}"), s_level_map[level], hr, msg);
 #else
     return sf::println(stream, U("{}: 0x{:x}: {}"), sf::make_color_arg(s_level_map[level], s_level_color_map[level]), hr, msg);
-#endif // XAML_WIN32
+#endif // !XAML_DEFAULT_HANDLER_COLOR
 }
 
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
 {
-#if defined(XAML_WIN32) && !defined(XAML_MINGW)
+#ifndef XAML_DEFAULT_HANDLER_COLOR
     if (IsDebuggerPresent())
     {
         xaml_codecvt_pool pool;
@@ -74,7 +82,7 @@ void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_lev
     }
 #else
     print_msg(boost::nowide::cerr, hr, level, msg);
-#endif // XAML_WIN32 && !XAML_MINGW
+#endif // !XAML_DEFAULT_HANDLER_COLOR
 }
 
 xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept
@@ -89,7 +97,9 @@ try
 XAML_CATCH_RETURN()
 
 xaml_result XAML_CALL xaml_result_handler_set(xaml_result_handler handler) noexcept
+try
 {
     if (!handler) handler = XAML_DEFAULT_HANDLER;
     return xaml_result_handler_set(function<__xaml_result_handler_prototype>{ handler });
 }
+XAML_CATCH_RETURN()

@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <vector>
+#include <xaml/internal/filesystem.hpp>
 #include <xaml/meta/module.h>
 
 #ifdef XAML_WIN32
@@ -80,12 +81,12 @@ static vector<path> get_module_search_path()
     vector<path> result = split<wchar_t>(buffer, L';');
 #else
 #ifdef XAML_APPLE
-    constexpr path_string_view_t ld_library_path = "DYLD_LIBRARY_PATH";
+    constexpr string_view ld_library_path = "DYLD_LIBRARY_PATH";
 #else
-    constexpr path_string_view_t ld_library_path = "LD_LIBRARY_PATH";
+    constexpr string_view ld_library_path = "LD_LIBRARY_PATH";
 #endif // XAML_APPLE
     char* ldp = getenv(ld_library_path.data());
-    vector<path> result = split<char>(ldp ? ldp : path_string_view_t{}, ':');
+    vector<path> result = split<char>(ldp ? ldp : string_view{}, ':');
 #endif // XAML_WIN32
     result.push_back(".");
     result.push_back("../lib");
@@ -164,7 +165,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
             {
                 XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
             }
-            auto p = get_full_path(to_wstring(path));
+            auto p = get_full_path(to_path(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = LoadLibraryW(p.c_str());
             if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
@@ -195,7 +196,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
                 int res = dlclose(m_handle);
                 if (res) return XAML_E_FAIL;
             }
-            auto p = get_full_path(to_string_view(path));
+            auto p = get_full_path(to_path(path));
             XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
             m_handle = dlopen(p.c_str(), RTLD_LAZY);
             if (!m_handle) return XAML_E_FAIL;

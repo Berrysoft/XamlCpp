@@ -6,6 +6,7 @@
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
 #include <xaml/cmdline/options_base.h>
+#include <xaml/internal/filesystem.hpp>
 #include <xaml/result_handler.h>
 
 using namespace std;
@@ -74,7 +75,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         exit(0);
     }
 
-    path exe = to_wstring(argv[0]);
+    path exe = to_path(argv[0]);
     bool no_logo;
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)

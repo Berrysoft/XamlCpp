@@ -2,9 +2,9 @@
 #include <xaml/object.h>
 #include <xaml/string.h>
 
-#ifdef UNICODE
+#ifdef XAML_WIN32
 #include <boost/nowide/convert.hpp>
-#endif // UNICODE
+#endif // XAML_WIN32
 
 using namespace std;
 
@@ -109,7 +109,7 @@ ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
     return stream << to_string_view(str);
 }
 
-#ifdef UNICODE
+#ifdef XAML_WIN32
 wstring to_wstring(string_view view)
 {
     return boost::nowide::widen(view);
@@ -165,7 +165,7 @@ try
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()
-#endif // UNICODE
+#endif // XAML_WIN32
 
 xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept
 {

@@ -14,6 +14,8 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_cmdline_helper PRIVATE "XAML_CMDLINE_HELPER_API=__XAML_EXPORT")
 endif()
 
+target_link_libraries(xaml_cmdline_helper PRIVATE xaml_helpers)
+
 find_package(Git)
 if(Git_FOUND)
 	execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
