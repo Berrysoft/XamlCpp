@@ -26,19 +26,22 @@ void WINAPI XamlInitializeDarkModeFunc(void)
 {
     if (!uxtheme)
     {
-        uxtheme = LoadLibraryEx(L"Uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
-        if (uxtheme)
+        DWORD major, build;
+        RtlGetNtVersionNumbers(&major, NULL, &build);
+        build &= ~0xF0000000;
+        if (major >= 10)
         {
-            DWORD build;
-            RtlGetNtVersionNumbers(NULL, NULL, &build);
-            build &= ~0xF0000000;
-            pShouldAppsUseDarkMode = (pfShouldAppsUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
-            pAllowDarkModeForWindow = (pfAllowDarkModeForWindow)GetProcAddress(uxtheme, MAKEINTRESOURCEA(133));
-            if (build < 18362)
-                pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
-            else
-                pSetPreferredAppMode = (pfSetPreferredAppMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
-            pFlushMenuThemes = (pfFlushMenuThemes)GetProcAddress(uxtheme, MAKEINTRESOURCEA(136));
+            uxtheme = LoadLibraryEx(L"Uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+            if (uxtheme)
+            {
+                pShouldAppsUseDarkMode = (pfShouldAppsUseDarkMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(132));
+                pAllowDarkModeForWindow = (pfAllowDarkModeForWindow)GetProcAddress(uxtheme, MAKEINTRESOURCEA(133));
+                if (build < 18362)
+                    pAllowDarkModeForApp = (pfAllowDarkModeForApp)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
+                else
+                    pSetPreferredAppMode = (pfSetPreferredAppMode)GetProcAddress(uxtheme, MAKEINTRESOURCEA(135));
+                pFlushMenuThemes = (pfFlushMenuThemes)GetProcAddress(uxtheme, MAKEINTRESOURCEA(136));
+            }
         }
     }
 }
