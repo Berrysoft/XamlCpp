@@ -10,7 +10,20 @@ target_compile_definitions(xaml_global
         $<BUILD_INTERFACE:${XAML_BUILD_INTERNAL_DEFINITIONS}>
 )
 
-target_compile_options(xaml_global PUBLIC ${XAML_COMPILE_OPTIONS})
+target_compile_options(xaml_global
+    PUBLIC
+        ${XAML_COMPILE_OPTIONS}
+        $<$<COMPILE_LANGUAGE:C>:${XAML_C_COMPILE_OPTIONS}>
+        $<$<COMPILE_LANGUAGE:CXX>:${XAML_CXX_COMPILE_OPTIONS}>
+)
+
+if(${BUILD_COCOA})
+    target_compile_options(xaml_global
+        PUBLIC
+            $<$<COMPILE_LANGUAGE:OBJC,OBJCXX>:${XAML_OBJC_COMPILE_OPTIONS}>
+            $<$<COMPILE_LANGUAGE:OBJCXX>:${XAML_CXX_COMPILE_OPTIONS}>
+    )
+endif()
 
 target_link_options(xaml_global PUBLIC ${XAML_LINK_OPTIONS})
 

@@ -34,6 +34,7 @@
     do                                       \
     {                                        \
         XAML_MAYBE_UNUSED BOOL res = (expr); \
+        (void)hr;                            \
         assert(res);                         \
     } while (0)
 

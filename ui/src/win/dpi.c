@@ -129,6 +129,7 @@ UINT WINAPI XamlGetDpiForWindow(HWND hWnd)
     {
         int dpi = GetDeviceCaps(hDC, LOGPIXELSX);
         int res = ReleaseDC(hWnd, hDC);
+        (void)res;
         assert(res);
         return dpi;
     }

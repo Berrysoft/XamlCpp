@@ -42,6 +42,7 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     do                                      \
     {                                       \
         XAML_MAYBE_UNUSED int res = (expr); \
+        (void)hr;                           \
         assert(res != -1);                  \
     } while (0)
 

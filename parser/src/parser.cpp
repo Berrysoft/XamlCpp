@@ -1,3 +1,5 @@
+#define XAML_RAISE_LEVEL xaml_result_raise_warning
+
 #include <iostream>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
@@ -23,7 +25,7 @@ static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_str
     XAML_RETURN_IF_FAILED(ref->get_name(&name));
     try
     {
-        return xaml_string_new(sf::sprint<char>(U("__{}__{}"), name, index++), ptr);
+        return xaml_string_new(sf::sprint(U("__{}__{}"), name, index++), ptr);
     }
     XAML_CATCH_RETURN()
 }
