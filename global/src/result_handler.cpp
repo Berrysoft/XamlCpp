@@ -77,12 +77,10 @@ void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_lev
         OutputDebugStringW(s.data());
     }
     else
+#endif // !XAML_DEFAULT_HANDLER_COLOR
     {
         print_msg(boost::nowide::cerr, hr, level, msg);
     }
-#else
-    print_msg(boost::nowide::cerr, hr, level, msg);
-#endif // !XAML_DEFAULT_HANDLER_COLOR
 }
 
 xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept

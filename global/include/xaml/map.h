@@ -44,7 +44,7 @@ XAML_CLASS(xaml_hasher, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 
 #define XAML_HASHER_VTBL(type)                                \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                \
     XAML_METHOD(hash, type, xaml_object*, XAML_STD int32_t*); \
-    XAML_METHOD(equal, type, xaml_object*, xaml_object*, bool*)
+    XAML_METHOD(equals, type, xaml_object*, xaml_object*, bool*)
 
 XAML_DECL_INTERFACE_(xaml_hasher, xaml_object)
 {
@@ -124,7 +124,7 @@ public:
     bool operator()(xaml_ptr<xaml_object> const& lhs, xaml_ptr<xaml_object> const& rhs) const noexcept
     {
         bool eq;
-        XAML_ASSERT_SUCCEEDED(m_inner->equal(lhs, rhs, &eq));
+        XAML_ASSERT_SUCCEEDED(m_inner->equals(lhs, rhs, &eq));
         return eq;
     }
 };

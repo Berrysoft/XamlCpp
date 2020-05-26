@@ -77,7 +77,7 @@ public:
         return m_func(obj, phash);
     }
 
-    xaml_result XAML_CALL equal(xaml_object* lhs, xaml_object* rhs, bool* pb) noexcept override
+    xaml_result XAML_CALL equals(xaml_object* lhs, xaml_object* rhs, bool* pb) noexcept override
     {
         return m_eq_func(lhs, rhs, pb);
     }
