@@ -33,7 +33,7 @@ xaml_result XAML_CALL xaml_delegate_bind(xaml_delegate* func, xaml_vector_view* 
 {
     return xaml_object_new_catch<xaml_delegate_impl>(
         ptr,
-        [func = xaml_ptr<xaml_delegate>(func), args = xaml_ptr<xaml_vector_view>(args)](xaml_vector_view* remain_args, xaml_object** ptr) -> xaml_result {
+        [func = xaml_ptr<xaml_delegate>(func), args = xaml_ptr<xaml_vector_view>(args)](xaml_vector_view* remain_args, xaml_object** ptr) noexcept -> xaml_result {
             xaml_ptr<xaml_vector> real_args;
             XAML_RETURN_IF_FAILED(xaml_vector_new(&real_args));
             XAML_FOREACH_START(a, args);

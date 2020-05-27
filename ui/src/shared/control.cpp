@@ -29,7 +29,7 @@ xaml_result xaml_control_internal::init() noexcept
 
     std::int32_t token;
     XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_control>, xaml_size>(
-        [this](xaml_ptr<xaml_control>, xaml_size) -> xaml_result {
+        [this](xaml_ptr<xaml_control>, xaml_size) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_size());
@@ -39,7 +39,7 @@ xaml_result xaml_control_internal::init() noexcept
         },
         &token)));
     XAML_RETURN_IF_FAILED((m_is_visible_changed->add_noexcept<xaml_ptr<xaml_control>, bool>(
-        [this](xaml_ptr<xaml_control>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_control>, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_visible());
             return XAML_S_OK;
         },

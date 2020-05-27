@@ -10,7 +10,7 @@ xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexce
     xaml_ptr<xaml_gtk3_control> native_parent;
     XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
     XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
-    return draw_impl(region, [this](xaml_control* c, xaml_rectangle const& subrect) -> xaml_result {
+    return draw_impl(region, [this](xaml_control* c, xaml_rectangle const& subrect) noexcept -> xaml_result {
         xaml_ptr<xaml_gtk3_control> native_control;
         if (XAML_SUCCEEDED(c->query(&native_control)))
         {

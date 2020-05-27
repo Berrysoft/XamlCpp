@@ -12,7 +12,7 @@ xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexce
         NSView* parent_handle;
         XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
         m_handle = parent_handle;
-        XAML_RETURN_IF_FAILED(draw_impl(region, [this](xaml_control* c, xaml_rectangle const& subrect) -> xaml_result {
+        XAML_RETURN_IF_FAILED(draw_impl(region, [this](xaml_control* c, xaml_rectangle const& subrect) noexcept -> xaml_result {
             xaml_ptr<xaml_cocoa_control> native_control;
             if (XAML_SUCCEEDED(c->query(&native_control)))
             {

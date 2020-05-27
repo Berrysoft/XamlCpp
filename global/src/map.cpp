@@ -102,7 +102,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
 {
     return xaml_hasher_new(
         function<xaml_result(xaml_object*, std::int32_t*)>{
-            [](xaml_object* obj, int32_t* phash) -> xaml_result {
+            [](xaml_object* obj, int32_t* phash) noexcept -> xaml_result {
                 static hash<std::string_view> hasher{};
                 xaml_ptr<xaml_string> value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, &value));
@@ -122,7 +122,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 return XAML_S_OK;
             } },
         function<xaml_result(xaml_object*, xaml_object*, bool*)>{
-            [](xaml_object* lhs, xaml_object* rhs, bool* pb) -> xaml_result {
+            [](xaml_object* lhs, xaml_object* rhs, bool* pb) noexcept -> xaml_result {
                 xaml_ptr<xaml_string> lvalue, rvalue;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, &lvalue));
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, &rvalue));

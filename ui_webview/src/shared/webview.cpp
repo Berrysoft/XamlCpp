@@ -12,7 +12,7 @@ xaml_result xaml_webview_internal::init() noexcept
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_uri_changed->add_noexcept<xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>>(
-        [this](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>) -> xaml_result {
+        [this](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>) noexcept -> xaml_result {
             if (m_handle && !m_navigating)
             {
                 XAML_RETURN_IF_FAILED(draw_uri());

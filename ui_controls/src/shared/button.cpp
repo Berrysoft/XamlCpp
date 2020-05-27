@@ -13,7 +13,7 @@ xaml_result xaml_button_internal::init() noexcept
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_button>, xaml_ptr<xaml_string>>(
-        [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) -> xaml_result {
+        [this](xaml_ptr<xaml_button>, xaml_ptr<xaml_string>) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_text());
@@ -23,7 +23,7 @@ xaml_result xaml_button_internal::init() noexcept
         },
         &token)));
     XAML_RETURN_IF_FAILED((m_is_default_changed->add_noexcept<xaml_ptr<xaml_button>, bool>(
-        [this](xaml_ptr<xaml_button>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_button>, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_default());
             return XAML_S_OK;
         },

@@ -12,13 +12,13 @@ xaml_result xaml_progress_internal::init() noexcept
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_value_changed->add_noexcept<xaml_ptr<xaml_progress>, int32_t>(
-        [this](xaml_ptr<xaml_progress>, int32_t) -> xaml_result {
+        [this](xaml_ptr<xaml_progress>, int32_t) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_progress());
             return XAML_S_OK;
         },
         &token)));
     XAML_RETURN_IF_FAILED((m_is_indeterminate_changed->add_noexcept<xaml_ptr<xaml_progress>, bool>(
-        [this](xaml_ptr<xaml_progress>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_progress>, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_indeterminate());
             return XAML_S_OK;
         },

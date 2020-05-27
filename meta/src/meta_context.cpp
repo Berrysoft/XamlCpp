@@ -234,7 +234,7 @@ public:
             XAML_RETURN_IF_FAILED(targetp->set(target, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
-                [source, sourcep, target, targetp]() -> xaml_result {
+                [source, sourcep, target, targetp]() noexcept -> xaml_result {
                     xaml_ptr<xaml_object> value;
                     XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
                     XAML_RETURN_IF_FAILED(targetp->set(target, value));
@@ -251,7 +251,7 @@ public:
             XAML_RETURN_IF_FAILED(sourcep->set(source, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
-                [source, sourcep, target, targetp]() -> xaml_result {
+                [source, sourcep, target, targetp]() noexcept -> xaml_result {
                     xaml_ptr<xaml_object> value;
                     XAML_RETURN_IF_FAILED(targetp->get(target, &value));
                     XAML_RETURN_IF_FAILED(sourcep->set(source, value));

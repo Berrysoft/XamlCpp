@@ -81,7 +81,7 @@ xaml_result xaml_items_base_internal::set_items(xaml_observable_vector* value) n
         if (m_items)
         {
             xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>>([this](xaml_ptr<xaml_observable_vector> sender, xaml_ptr<xaml_vector_changed_args> args) -> xaml_result { return on_items_vector_changed(sender, args); }, &callback)));
+            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>>([this](xaml_ptr<xaml_observable_vector> sender, xaml_ptr<xaml_vector_changed_args> args) noexcept -> xaml_result { return on_items_vector_changed(sender, args); }, &callback)));
             XAML_RETURN_IF_FAILED(m_items->add_vector_changed(callback, &m_items_changed_token));
             XAML_RETURN_IF_FAILED(on_items_changed(m_outer_this, m_items));
         }

@@ -45,7 +45,7 @@ xaml_result xaml_check_menu_item_internal::init() noexcept
 
     int32_t token;
     return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_menu_item>, bool>(
-        [this](xaml_ptr<xaml_check_menu_item>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_check_menu_item>, bool) noexcept -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
 #elif defined(XAML_UI_COCOA)
@@ -67,7 +67,7 @@ xaml_result xaml_radio_menu_item_internal::init() noexcept
 
     int32_t token;
     return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_menu_item>, bool>(
-        [this](xaml_ptr<xaml_radio_menu_item>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_radio_menu_item>, bool) noexcept -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
 #elif defined(XAML_UI_COCOA)

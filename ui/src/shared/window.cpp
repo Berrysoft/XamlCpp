@@ -19,13 +19,13 @@ xaml_result xaml_window_internal::init() noexcept
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_location_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_point>(
-        [this](xaml_ptr<xaml_window>, xaml_point) -> xaml_result {
+        [this](xaml_ptr<xaml_window>, xaml_point) noexcept -> xaml_result {
             if (m_handle && !m_resizing) XAML_RETURN_IF_FAILED(draw({}));
             return XAML_S_OK;
         },
         &token)));
     XAML_RETURN_IF_FAILED((m_is_resizable_changed->add_noexcept<xaml_ptr<xaml_window>, bool>(
-        [this](xaml_ptr<xaml_window>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_window>, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_resizable());
             return XAML_S_OK;
         },

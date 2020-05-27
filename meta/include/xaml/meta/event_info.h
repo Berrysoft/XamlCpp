@@ -28,12 +28,12 @@ inline xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, xaml_result 
 {
     return xaml_event_info_new(
         name,
-        [adder](xaml_object* target, xaml_delegate* handler, std::int32_t* ptoken) -> xaml_result {
+        [adder](xaml_object* target, xaml_delegate* handler, std::int32_t* ptoken) noexcept -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             return (self.get()->*adder)(handler, ptoken);
         },
-        [remover](xaml_object* target, std::int32_t token) -> xaml_result {
+        [remover](xaml_object* target, std::int32_t token) noexcept -> xaml_result {
             xaml_ptr<T> self;
             XAML_RETURN_IF_FAILED(target->query(&self));
             return (self.get()->*remover)(token);

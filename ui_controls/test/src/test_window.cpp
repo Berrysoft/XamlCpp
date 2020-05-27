@@ -125,7 +125,7 @@ xaml_result xaml_test_window_impl::init() noexcept
         {
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [prog](xaml_ptr<xaml_button>) -> xaml_result {
+                [prog](xaml_ptr<xaml_button>) noexcept -> xaml_result {
                     return prog->set_is_indeterminate(false);
                 },
                 &callback)));
@@ -247,7 +247,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this](xaml_ptr<xaml_button>) -> xaml_result {
+                [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
                     xaml_ptr<xaml_string> item;
                     XAML_RETURN_IF_FAILED(xaml_string_new(U("\U0001D49E-\u043F\u0440\u0438\u0432\u0435\u0442-\u3084\u3042"), &item));
                     return m_combo_source->append(item);
@@ -266,7 +266,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this](xaml_ptr<xaml_button>) -> xaml_result {
+                [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
                     return m_combo_source->remove_at_end();
                 },
                 &callback)));
@@ -283,7 +283,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             btn->set_text(text);
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this, box](xaml_ptr<xaml_button>) -> xaml_result {
+                [this, box](xaml_ptr<xaml_button>) noexcept -> xaml_result {
                     int32_t sel;
                     XAML_RETURN_IF_FAILED(box->get_sel_id(&sel));
                     int32_t size;
@@ -332,7 +332,7 @@ xaml_result xaml_test_window_impl::init() noexcept
                 {
                     xaml_ptr<xaml_delegate> callback;
                     XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_menu_item>>(
-                        [this](xaml_ptr<xaml_menu_item>) -> xaml_result { return m_window->close(); },
+                        [this](xaml_ptr<xaml_menu_item>) noexcept -> xaml_result { return m_window->close(); },
                         &callback)));
                     int32_t token;
                     XAML_RETURN_IF_FAILED(mquit->add_click(callback, &token));

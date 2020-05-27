@@ -63,7 +63,7 @@ inline xaml_result XAML_CALL xaml_hasher_new(xaml_hasher** ptr) noexcept
 {
     return xaml_hasher_new(
         std::function<xaml_result(xaml_object*, std::int32_t*)>{
-            [](xaml_object* obj, std::int32_t* phash) -> xaml_result {
+            [](xaml_object* obj, std::int32_t* phash) noexcept -> xaml_result {
                 static std::hash<T> hasher{};
                 T value;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, &value));
@@ -81,7 +81,7 @@ inline xaml_result XAML_CALL xaml_hasher_new(xaml_hasher** ptr) noexcept
                 return XAML_S_OK;
             } },
         std::function<xaml_result(xaml_object*, xaml_object*, bool*)>{
-            [](xaml_object* lhs, xaml_object* rhs, bool* pb) -> xaml_result {
+            [](xaml_object* lhs, xaml_object* rhs, bool* pb) noexcept -> xaml_result {
                 T lvalue, rvalue;
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(lhs, &lvalue));
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(rhs, &rvalue));

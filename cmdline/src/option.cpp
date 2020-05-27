@@ -115,7 +115,7 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>&
 {
     xaml_ptr<xaml_delegate> callback;
     XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, char, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
-        [&stream](char short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) -> xaml_result {
+        [&stream](char short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) noexcept -> xaml_result {
             try
             {
                 std::string arg_str;

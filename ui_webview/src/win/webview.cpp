@@ -18,7 +18,7 @@ xaml_result xaml_webview_internal::create_edge2(xaml_rectangle const& real) noex
 {
 #ifdef XAML_UI_WEBVIEW_WEBVIEW2
     m_webview = make_shared<xaml_webview_edge2>();
-    return m_webview->create_async(m_handle, real, [this, real]() -> xaml_result {
+    return m_webview->create_async(m_handle, real, [this, real]() noexcept -> xaml_result {
         if (!*m_webview)
         {
             return create_edge(real);
@@ -37,7 +37,7 @@ xaml_result xaml_webview_internal::create_edge(xaml_rectangle const& real) noexc
 {
 #ifdef XAML_UI_WEBVIEW_EDGE
     m_webview = make_shared<xaml_webview_edge>();
-    return m_webview->create_async(m_handle, real, [this, real]() -> xaml_result {
+    return m_webview->create_async(m_handle, real, [this, real]() noexcept -> xaml_result {
         if (!*m_webview)
         {
             return create_ie(real);
@@ -55,7 +55,7 @@ xaml_result xaml_webview_internal::create_edge(xaml_rectangle const& real) noexc
 xaml_result xaml_webview_internal::create_ie(xaml_rectangle const& real) noexcept
 {
     m_webview = make_shared<xaml_webview_ie>();
-    return m_webview->create_async(m_handle, real, [this]() -> xaml_result {
+    return m_webview->create_async(m_handle, real, [this]() noexcept -> xaml_result {
         if (!*m_webview)
         {
             m_webview = nullptr;
@@ -90,7 +90,7 @@ xaml_result xaml_webview_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_webview_internal::draw_create() noexcept
 {
-    m_webview->set_navigated([this](wchar_t const* uri) -> xaml_result {
+    m_webview->set_navigated([this](wchar_t const* uri) noexcept -> xaml_result {
         xaml_atomic_guard guard(m_navigating);
         if (!guard.test_and_set())
         {
@@ -100,7 +100,7 @@ xaml_result xaml_webview_internal::draw_create() noexcept
         }
         return XAML_S_OK;
     });
-    m_webview->set_resource_requested([this](xaml_ptr<xaml_webview_resource_requested_args> args) -> xaml_result {
+    m_webview->set_resource_requested([this](xaml_ptr<xaml_webview_resource_requested_args> args) noexcept -> xaml_result {
         return on_resource_requested(m_outer_this, args);
     });
     m_created.store(true);

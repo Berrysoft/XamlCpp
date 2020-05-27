@@ -81,7 +81,7 @@ xaml_result xaml_test_window_impl::init() noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>>(
-            [abar](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string> uri) -> xaml_result {
+            [abar](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string> uri) noexcept -> xaml_result {
                 return abar->set_text(uri);
             },
             &callback)));
@@ -91,7 +91,7 @@ xaml_result xaml_test_window_impl::init() noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-            [abar, view](xaml_ptr<xaml_button>) -> xaml_result {
+            [abar, view](xaml_ptr<xaml_button>) noexcept -> xaml_result {
                 xaml_ptr<xaml_string> uri;
                 XAML_RETURN_IF_FAILED(abar->get_text(&uri));
                 return view->set_uri(uri);

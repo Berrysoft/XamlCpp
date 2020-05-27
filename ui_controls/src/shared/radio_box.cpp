@@ -12,7 +12,7 @@ xaml_result xaml_radio_box_internal::init() noexcept
 
     int32_t token;
     XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
-        [this](xaml_ptr<xaml_radio_box>, bool) -> xaml_result {
+        [this](xaml_ptr<xaml_radio_box>, bool) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_checked());
@@ -24,7 +24,7 @@ xaml_result xaml_radio_box_internal::init() noexcept
 
 #ifdef XAML_UI_COCOA
     XAML_RETURN_IF_FAILED((m_click->add_noexcept<xaml_ptr<xaml_radio_box>>(
-        [this](xaml_ptr<xaml_radio_box>) -> xaml_result {
+        [this](xaml_ptr<xaml_radio_box>) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(on_state_changed());

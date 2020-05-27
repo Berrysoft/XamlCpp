@@ -51,7 +51,7 @@ inline xaml_result XAML_CALL xaml_delegate_new(F&& func, xaml_delegate** ptr) no
 {
     return xaml_delegate_new(
         std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
-            [func = std::function<Return(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+            [func = std::function<Return(Args...)>(std::forward<F>(func))](xaml_vector_view* args, xaml_object** ptr) noexcept -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_OUTOFBOUNDS;
@@ -88,7 +88,7 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_impl(decltype(&std::d
     xaml_result __hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(std::forward<F>(func)(
         __xaml_delegate_noexcept_invoke<Args>(
-            [args](int32_t i, auto& arg) -> xaml_result {
+            [args](int32_t i, auto& arg) noexcept -> xaml_result {
                 xaml_ptr<xaml_object> item;
                 XAML_RETURN_IF_FAILED(args->get_at(i, &item));
                 return xaml_unbox_value(item, &arg);
@@ -109,7 +109,7 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void_impl(std::functi
 {
     xaml_result __hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(func(__xaml_delegate_noexcept_invoke<Args>(
-        [args](int32_t i, auto& arg) -> xaml_result {
+        [args](int32_t i, auto& arg) noexcept -> xaml_result {
             xaml_ptr<xaml_object> item;
             XAML_RETURN_IF_FAILED(args->get_at(i, &item));
             return xaml_unbox_value(item, &arg);
@@ -129,7 +129,7 @@ inline xaml_result XAML_CALL xaml_delegate_new_noexcept(F&& func, xaml_delegate*
 {
     return xaml_delegate_new(
         std::function<xaml_result(xaml_vector_view*, xaml_object**)>{
-            [func = std::forward<F>(func)](xaml_vector_view* args, xaml_object** ptr) -> xaml_result {
+            [func = std::forward<F>(func)](xaml_vector_view* args, xaml_object** ptr) noexcept -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_OUTOFBOUNDS;
