@@ -26,8 +26,10 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
     UINT_PTR m_id{};
 #elif defined(XAML_UI_COCOA)
     using native_timer_type = OBJC_OBJECT(NSTimer);
+    using native_delegate_type = OBJC_OBJECT(XamlDelegate);
 
     native_timer_type m_handle;
+    native_delegate_type m_delegate;
 
     void on_tick() noexcept;
 #elif defined(XAML_UI_GTK3)

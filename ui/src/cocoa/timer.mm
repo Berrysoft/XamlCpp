@@ -30,8 +30,12 @@ xaml_result xaml_timer_impl::start() noexcept
 {
     if (!m_is_enabled.exchange(true))
     {
-        XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
-        NSTimer* timer = [delegate newTimer:m_interval / 1000.0];
+        if (!m_delegate)
+        {
+            XamlTimerDelegate* delegate = [[XamlTimerDelegate alloc] initWithClassPointer:this];
+            m_delegate = delegate;
+        }
+        NSTimer* timer = [(XamlTimerDelegate*)m_delegate newTimer:m_interval / 1000.0];
         m_handle = timer;
     }
     return XAML_S_OK;

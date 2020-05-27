@@ -105,7 +105,7 @@ xaml_result xaml_window_internal::draw_size() noexcept
         frame.size = { fw, fh };
         frame.origin.x = m_location.x;
         NSScreen* screen = m_window_handle.screen;
-        NSRect screen_frame = screen.frame;
+        NSRect const& screen_frame = screen.frame;
         frame.origin.y = screen_frame.size.height - fh - m_location.y;
         [m_window_handle setFrame:frame display:YES];
     }
@@ -194,7 +194,11 @@ void xaml_window_internal::on_did_move() noexcept
     xaml_atomic_guard guard{ m_resizing };
     if (!guard.test_and_set())
     {
-        XAML_ASSERT_SUCCEEDED(set_location(xaml_from_native(frame.origin)));
+        NSPoint origin = frame.origin;
+        NSScreen* screen = m_window_handle.screen;
+        NSRect const& screen_frame = screen.frame;
+        origin.y = screen_frame.size.height - frame.size.height - origin.y;
+        XAML_ASSERT_SUCCEEDED(set_location(xaml_from_native(origin)));
         XAML_ASSERT_SUCCEEDED(draw({}));
     }
 }

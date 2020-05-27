@@ -48,8 +48,10 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     {
         xaml_filebox_filter ff;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
+        string_view ffp = ff.pattern;
+        if (ffp.starts_with("*.")) ffp = ffp.substr(2);
         NSString* pattern;
-        XAML_RETURN_IF_FAILED(get_NSString(ff.pattern, &pattern));
+        XAML_RETURN_IF_FAILED(get_NSString(ffp.data(), &pattern));
         [filters addObject:pattern];
     }
     XAML_FOREACH_END();
