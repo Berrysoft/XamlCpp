@@ -37,9 +37,9 @@
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })
 
 #define XAML_OBJECT_VTBL(type)                                  \
-    XAML_METHOD_(XAML_STD int32_t, add_ref, type);              \
-    XAML_METHOD_(XAML_STD int32_t, release, type);              \
     XAML_METHOD(query, type, xaml_guid XAML_CONST_REF, void**); \
+    XAML_METHOD_(XAML_STD uint32_t, add_ref, type);             \
+    XAML_METHOD_(XAML_STD uint32_t, release, type);             \
     XAML_METHOD(get_guid, type, xaml_guid*)
 
 XAML_DECL_INTERFACE(xaml_object)
@@ -59,24 +59,20 @@ XAML_DECL_INTERFACE(xaml_object)
 template <typename T, typename D, typename... Base>
 struct xaml_implement : D
 {
-    std::atomic<std::int32_t> m_ref_count{ 1 };
+    std::atomic<std::uint32_t> m_ref_count{ 1 };
 
     virtual ~xaml_implement() {}
 
-    std::int32_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
+    std::uint32_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
 
-    std::int32_t XAML_CALL release() noexcept override
+    std::uint32_t XAML_CALL release() noexcept override
     {
         std::int32_t res = --m_ref_count;
-        if (res <= 0)
+        if (res == 0)
         {
             delete static_cast<T*>(this);
-            return 0;
         }
-        else
-        {
-            return res;
-        }
+        return res;
     }
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override;
@@ -223,9 +219,9 @@ struct xaml_inner_implement : Base
 {
     D* m_outer{};
 
-    std::int32_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
-    std::int32_t XAML_CALL release() noexcept override { return m_outer->release(); }
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override { return m_outer->query(type, ptr); }
+    std::uint32_t XAML_CALL add_ref() noexcept override { return m_outer->add_ref(); }
+    std::uint32_t XAML_CALL release() noexcept override { return m_outer->release(); }
     xaml_result XAML_CALL get_guid(xaml_guid* pvalue) noexcept override { return m_outer->get_guid(pvalue); }
 };
 #endif // __cplusplus

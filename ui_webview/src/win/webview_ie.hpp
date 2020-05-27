@@ -29,15 +29,12 @@ public:
 
     ULONG STDMETHODCALLTYPE Release() override
     {
-        if (--m_ref)
-        {
-            return m_ref;
-        }
-        else
+        ULONG res = --m_ref;
+        if (res == 0)
         {
             delete this;
-            return 0;
         }
+        return res;
     }
 
     STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
