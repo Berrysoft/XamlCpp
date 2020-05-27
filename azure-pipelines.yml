@@ -65,8 +65,8 @@ jobs:
     displayName: 'Init git submodule'
 
   - script: |
-      vcpkg install wil:$(arch)-windows boost-multi-index:$(arch)-windows
-    displayName: 'Install wil & boost'
+      vcpkg install wil:$(arch)-windows
+    displayName: 'Install wil'
     condition: eq(variables.rid, 'win')
 
   - pwsh: |
@@ -106,6 +106,8 @@ jobs:
       cmake .. -GNinja $(def) -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid)-$(arch) -DVCPKG_TARGET_TRIPLET=$(arch)-windows -DCMAKE_TOOLCHAIN_FILE=$(VCPKG_INSTALLATION_ROOT)/scripts/buildsystems/vcpkg.cmake -DBUILD_TESTS=on
     displayName: 'Configure all projects'
     condition: eq(variables.rid, 'win')
+    env:
+      BOOST_ROOT: $(BOOST_ROOT_1_72_0)
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
