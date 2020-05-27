@@ -70,7 +70,7 @@ jobs:
     condition: eq(variables.rid, 'win')
 
   - pwsh: |
-      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm mingw-w64-$(arch_pkg)-gcc mingw-w64-$(arch_pkg)-pkg-config mingw-w64-$(arch_pkg)-gtk3 mingw-w64-$(arch_pkg)-boost"
+      C:\msys64\usr\bin\bash --login -c "pacman -S --noconfirm git mingw-w64-$(arch_pkg)-gcc mingw-w64-$(arch_pkg)-pkg-config mingw-w64-$(arch_pkg)-gtk3 mingw-w64-$(arch_pkg)-boost"
     displayName: 'Install msys2'
     condition: eq(variables.rid, 'mingw')
     env:
