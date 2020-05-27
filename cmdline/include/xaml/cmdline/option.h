@@ -16,7 +16,7 @@ XAML_CLASS(xaml_cmdline_option, { 0x240bec4e, 0xefc2, 0x45ed, { 0xa5, 0x01, 0x04
 
 #define XAML_CMDLINE_OPTION_VTBL(type)                             \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                     \
-    XAML_METHOD(find_short_arg, type, char, xaml_string**); \
+    XAML_METHOD(find_short_arg, type, char, xaml_string**);        \
     XAML_METHOD(find_long_arg, type, xaml_string*, xaml_string**); \
     XAML_METHOD(get_default_property, type, xaml_string**);        \
     XAML_METHOD(for_each_entry, type, xaml_delegate*);             \
