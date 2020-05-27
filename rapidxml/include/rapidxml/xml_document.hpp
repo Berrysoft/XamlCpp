@@ -168,7 +168,6 @@ namespace rapidxml
 
         RAPIDXML_API void load_string(std::string_view str, parse_flag flags = parse_flag::default_flag);
         RAPIDXML_API void load_stream(std::istream& stream, parse_flag flags = parse_flag::default_flag);
-        RAPIDXML_API void load_stream(std::FILE* stream, parse_flag flags = parse_flag::default_flag);
 
     private:
         //! Parses zero-terminated XML string according to given flags.

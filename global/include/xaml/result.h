@@ -30,6 +30,7 @@ typedef enum xaml_result_raise_level
 } xaml_result_raise_level;
 
 EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_raise_level, char const*, XAML_STD int32_t) XAML_NOEXCEPT;
+EXTERN_C XAML_API void XAML_CALL xaml_result_raise_message(xaml_result, xaml_result_raise_level, char const*) XAML_NOEXCEPT;
 
 #ifdef NDEBUG
 #define XAML_RAISE(hr, ...) (void)(hr)

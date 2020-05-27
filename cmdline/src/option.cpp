@@ -157,7 +157,7 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>&
 
 xaml_result XAML_CALL xaml_cmdline_option_print(FILE* file, xaml_cmdline_option* opt) noexcept
 {
-    return call_with_file_to_stream<char>(xaml_cmdline_option_print_impl, file, opt);
+    return cfile_ostream_invoke<char>(xaml_cmdline_option_print_impl, file, opt);
 }
 
 xaml_result XAML_CALL xaml_cmdline_option_print(basic_ostream<char>& stream, xaml_cmdline_option* opt) noexcept

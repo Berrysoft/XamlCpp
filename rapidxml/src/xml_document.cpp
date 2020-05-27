@@ -129,51 +129,6 @@ namespace rapidxml
         parse(m_buffer.data(), flags);
     }
 
-    struct file_iterator
-    {
-        FILE* m_stream;
-        char m_current;
-
-        using iterator_category = forward_iterator_tag;
-        using value_type = char const;
-        using difference_type = intptr_t;
-        using pointer = char const*;
-        using reference = char const&;
-
-        void move_next() noexcept
-        {
-            m_current = (char)fgetc(m_stream);
-            if (m_current == EOF) m_stream = nullptr;
-        }
-
-        constexpr file_iterator() noexcept : m_stream(nullptr), m_current() {}
-        file_iterator(FILE* stream) noexcept : m_stream(stream) { move_next(); }
-
-        file_iterator& operator++() noexcept
-        {
-            move_next();
-            return *this;
-        }
-
-        file_iterator operator++(int) noexcept
-        {
-            file_iterator result = *this;
-            operator++();
-            return result;
-        }
-
-        constexpr reference operator*() const noexcept { return m_current; }
-        constexpr pointer operator->() const noexcept { return &m_current; }
-    };
-
-    constexpr bool operator==(file_iterator const& lhs, file_iterator const& rhs) noexcept { return (!lhs.m_stream) && (!rhs.m_stream); }
-
-    void xml_document::load_stream(FILE* stream, parse_flag flags)
-    {
-        m_buffer.assign(file_iterator{ stream }, file_iterator{});
-        parse(m_buffer.data(), flags);
-    }
-
     ///////////////////////////////////////////////////////////////////////
     // Internal character utility functions
 

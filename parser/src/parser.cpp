@@ -5,6 +5,7 @@
 #include <rapidxml/xml_document.hpp>
 #include <sf/sformat.hpp>
 #include <sstream>
+#include <xaml/internal/stream.hpp>
 #include <xaml/markup/binding.h>
 #include <xaml/parser/parser.h>
 
@@ -30,6 +31,19 @@ static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_str
     XAML_CATCH_RETURN()
 }
 
+static xaml_result to_xaml_result() noexcept
+try
+{
+    throw;
+}
+catch (rapidxml::parse_error const& e)
+{
+    string msg = sf::sprint("{}:{}:{}:{}", e.what(), e.where(), e.row(), e.col());
+    xaml_result_raise_message(XAML_E_FAIL, xaml_result_raise_error, msg.c_str());
+    return XAML_E_FAIL;
+}
+XAML_CATCH_RETURN()
+
 struct parser_impl
 {
     xaml_ptr<xaml_meta_context> ctx{ nullptr };
@@ -42,7 +56,10 @@ struct parser_impl
         doc.load_string(s);
         return XAML_S_OK;
     }
-    XAML_CATCH_RETURN()
+    catch (...)
+    {
+        return to_xaml_result();
+    }
 
     xaml_result load_buffer(xaml_ptr<xaml_buffer> const& buffer) noexcept
     {
@@ -59,15 +76,15 @@ struct parser_impl
         doc.load_stream(stream);
         return XAML_S_OK;
     }
-    XAML_CATCH_RETURN()
+    catch (...)
+    {
+        return to_xaml_result();
+    }
 
     xaml_result load_stream(FILE* stream) noexcept
-    try
     {
-        doc.load_stream(stream);
-        return XAML_S_OK;
+        return cfile_istream_invoke<char>([this](istream& stream) noexcept -> xaml_result { return load_stream(stream); }, stream);
     }
-    XAML_CATCH_RETURN()
 
     xaml_result init() noexcept
     {

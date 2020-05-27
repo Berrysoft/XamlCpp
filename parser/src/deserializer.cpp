@@ -1,3 +1,5 @@
+#define XAML_RAISE_LEVEL xaml_result_raise_warning
+
 #include <xaml/markup/markup_extension.h>
 #include <xaml/parser/deserializer.h>
 #include <xaml/parser/parser.h>

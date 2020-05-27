@@ -35,7 +35,12 @@ void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, 
 {
     // If exceptions throwed here, the program should terminate.
     std::string msg = sf::sprint(U("{}:{}"), file, line);
-    s_handler(hr, level, msg.c_str());
+    xaml_result_raise_message(hr, level, msg.c_str());
+}
+
+void XAML_CALL xaml_result_raise_message(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
+{
+    s_handler(hr, level, msg);
 }
 
 void XAML_CALL xaml_result_handler_empty(xaml_result, xaml_result_raise_level, char const*) noexcept

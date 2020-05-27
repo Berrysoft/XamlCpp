@@ -102,11 +102,11 @@ public:
 
     xaml_ptr<xaml_hasher> get_hasher() const noexcept { return m_inner; }
 
-    std::int32_t operator()(xaml_ptr<xaml_object> const& obj) const noexcept
+    std::size_t operator()(xaml_ptr<xaml_object> const& obj) const noexcept
     {
         std::int32_t hash;
         XAML_ASSERT_SUCCEEDED(m_inner->hash(obj, &hash));
-        return hash;
+        return (std::size_t)hash;
     }
 };
 
