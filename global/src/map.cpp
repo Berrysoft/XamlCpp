@@ -169,7 +169,6 @@ public:
         auto [it, inserted] = m_map.emplace(key, value);
         if (!inserted)
         {
-            it->second = nullptr;
             it->second = value;
         }
         *pb = !inserted;
