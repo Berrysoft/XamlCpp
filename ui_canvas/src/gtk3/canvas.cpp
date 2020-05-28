@@ -2,6 +2,8 @@
 #include <cmath>
 #include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
+#include <xaml/ui/gtk3/controls/brush.h>
+#include <xaml/ui/gtk3/controls/pen.h>
 
 #if __has_include(<numbers>)
 #include <numbers>
@@ -12,15 +14,18 @@ using std::numbers::pi;
 
 using namespace std;
 
-static void set_pen(cairo_t* handle, xaml_drawing_pen const& pen) noexcept
+static xaml_result set_pen(cairo_t* handle, xaml_pen* pen) noexcept
 {
-    cairo_set_source_rgba(handle, pen.stroke.r / 255.0, pen.stroke.g / 255.0, pen.stroke.b / 255.0, pen.stroke.a / 255.0);
-    cairo_set_line_width(handle, pen.width);
+    xaml_ptr<xaml_gtk3_pen> native_pen;
+    XAML_RETURN_IF_FAILED(pen->query(&native_pen));
+    return native_pen->set(handle);
 }
 
-static void set_brush(cairo_t* handle, xaml_drawing_brush const& brush) noexcept
+static xaml_result set_brush(cairo_t* handle, xaml_brush* brush) noexcept
 {
-    cairo_set_source_rgba(handle, brush.fill.r / 255.0, brush.fill.g / 255.0, brush.fill.b / 255.0, brush.fill.a / 255.0);
+    xaml_ptr<xaml_gtk3_brush> native_brush;
+    XAML_RETURN_IF_FAILED(brush->query(&native_brush));
+    return native_brush->set(handle);
 }
 
 static void path_arc(cairo_t* handle, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
@@ -33,38 +38,38 @@ static void path_arc(cairo_t* handle, xaml_rectangle const& region, double start
     cairo_set_matrix(handle, &save_matrix);
 }
 
-xaml_result xaml_drawing_context_impl::draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     path_arc(m_handle, region, start_angle, end_angle);
-    set_pen(m_handle, pen);
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     path_arc(m_handle, region, start_angle, end_angle);
-    set_brush(m_handle, brush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush));
     cairo_fill(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept
+xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
     return draw_arc(pen, region, 0, 2 * pi);
 }
 
-xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_drawing_brush const& brush, const xaml_rectangle& region) noexcept
+xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, const xaml_rectangle& region) noexcept
 {
     return fill_pie(brush, region, 0, 2 * pi);
 }
 
-xaml_result xaml_drawing_context_impl::draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept
+xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
 {
     cairo_new_path(m_handle);
     cairo_move_to(m_handle, startp.x, startp.y);
     cairo_line_to(m_handle, endp.x, endp.y);
-    set_pen(m_handle, pen);
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
@@ -75,18 +80,18 @@ static void path_rect(cairo_t* handle, xaml_rectangle const& rect) noexcept
     cairo_rectangle(handle, rect.x, rect.y, rect.width, rect.height);
 }
 
-xaml_result xaml_drawing_context_impl::draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept
+xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle const& rect) noexcept
 {
     path_rect(m_handle, rect);
-    set_pen(m_handle, pen);
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_rect(xaml_drawing_brush const& brush, const xaml_rectangle& rect) noexcept
+xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, const xaml_rectangle& rect) noexcept
 {
     path_rect(m_handle, rect);
-    set_brush(m_handle, brush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
@@ -105,25 +110,25 @@ static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_si
     cairo_set_matrix(handle, &save_matrix);
 }
 
-xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
+xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     path_round_rect(m_handle, rect, round);
-    set_pen(m_handle, pen);
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
+xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     path_round_rect(m_handle, rect, round);
-    set_brush(m_handle, brush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
-    set_brush(m_handle, brush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush));
     cairo_select_font_face(m_handle, font.font_family, font.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, font.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
     cairo_set_font_size(m_handle, font.size);
     char const* data;
