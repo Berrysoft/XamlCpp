@@ -3,6 +3,8 @@
 #include <cocoa/nsstring.hpp>
 #include <functional>
 #include <shared/canvas.hpp>
+#include <xaml/ui/cocoa/controls/brush.h>
+#include <xaml/ui/cocoa/controls/pen.h>
 #include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/drawing_conv.hpp>
 
@@ -34,20 +36,18 @@ using std::numbers::pi;
 
 using namespace std;
 
-static NSColor* get_NSColor(xaml_color c) noexcept
+static xaml_result set_pen(NSBezierPath* path, xaml_pen* pen) noexcept
 {
-    return [NSColor colorWithCalibratedRed:(c.r / 255.0) green:(c.g / 255.0) blue:(c.b / 255.0) alpha:(c.a / 255.0)];
+    xaml_ptr<xaml_cocoa_pen> native_pen;
+    XAML_RETURN_IF_FAILED(pen->query(&native_pen));
+    return native_pen->set(path);
 }
 
-static void set_pen(NSBezierPath* path, xaml_drawing_pen const& pen) noexcept
+static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush) noexcept
 {
-    [path setLineWidth:pen.width];
-    [get_NSColor(pen.stroke) set];
-}
-
-static void set_brush(NSBezierPath* path, xaml_drawing_brush const& brush) noexcept
-{
-    [get_NSColor(brush.fill) set];
+    xaml_ptr<xaml_cocoa_brush> native_brush;
+    XAML_RETURN_IF_FAILED(brush->query(&native_brush));
+    return native_brush->set(path);
 }
 
 static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
@@ -67,7 +67,7 @@ static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& 
     return path;
 }
 
-xaml_result xaml_drawing_context_impl::draw_arc(xaml_drawing_pen const& pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     set_pen(arc, pen);
@@ -75,7 +75,7 @@ xaml_result xaml_drawing_context_impl::draw_arc(xaml_drawing_pen const& pen, xam
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_pie(xaml_drawing_brush const& brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
+xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     [arc closePath];
@@ -89,7 +89,7 @@ static NSBezierPath* path_ellipse(xaml_size const& base_size, xaml_rectangle con
     return [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(region.x, base_size.height - region.height - region.y, region.width, region.height)];
 }
 
-xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_drawing_pen const& pen, xaml_rectangle const& region) noexcept
+xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
     NSBezierPath* ellipse = path_ellipse(m_size, region);
     set_pen(ellipse, pen);
@@ -97,7 +97,7 @@ xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_drawing_pen const& pen,
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_drawing_brush const& brush, xaml_rectangle const& region) noexcept
+xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rectangle const& region) noexcept
 {
     NSBezierPath* ellipse = path_ellipse(m_size, region);
     set_brush(ellipse, brush);
@@ -105,7 +105,7 @@ xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_drawing_brush const& br
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::draw_line(xaml_drawing_pen const& pen, xaml_point const& startp, xaml_point const& endp) noexcept
+xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
 {
     NSBezierPath* line = [NSBezierPath bezierPath];
     [line moveToPoint:NSMakePoint(startp.x, m_size.height - startp.y)];
@@ -120,7 +120,7 @@ static NSBezierPath* path_rect(xaml_size const& base_size, xaml_rectangle const&
     return [NSBezierPath bezierPathWithRect:NSMakeRect(rect.x, base_size.height - rect.height - rect.y, rect.width, rect.height)];
 }
 
-xaml_result xaml_drawing_context_impl::draw_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect) noexcept
+xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle const& rect) noexcept
 {
     NSBezierPath* path = path_rect(m_size, rect);
     set_pen(path, pen);
@@ -128,7 +128,7 @@ xaml_result xaml_drawing_context_impl::draw_rect(xaml_drawing_pen const& pen, xa
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect) noexcept
+xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectangle const& rect) noexcept
 {
     NSBezierPath* path = path_rect(m_size, rect);
     set_brush(path, brush);
@@ -143,7 +143,7 @@ static NSBezierPath* path_round_rect(xaml_size const& base_size, xaml_rectangle 
                                            yRadius:round.height / 2];
 }
 
-xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
+xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
     set_pen(path, pen);
@@ -151,7 +151,7 @@ xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_drawing_pen const& p
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_drawing_brush const& brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
+xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
     set_brush(path, brush);
@@ -159,7 +159,7 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_drawing_brush const&
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
     NSString* font_name;
     XAML_RETURN_IF_FAILED(get_NSString(font.font_family, &font_name));
@@ -175,7 +175,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& bru
     NSFont* nfont = [NSFont fontWithDescriptor:fontdes size:font.size];
     NSDictionary* attrs = @{
         NSFontAttributeName : nfont,
-        NSForegroundColorAttributeName : get_NSColor(brush.fill)
+        NSForegroundColorAttributeName : [NSColor whiteColor]
     };
     NSString* data;
     XAML_RETURN_IF_FAILED(get_NSString(str, &data));
@@ -205,7 +205,25 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_drawing_brush const& bru
     default:
         break;
     }
+
+    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
+    CGContextRef maskContext = CGBitmapContextCreate(nullptr, m_size.width, m_size.height, 8, m_size.width, colorspace, 0);
+    CGColorSpaceRelease(colorspace);
+
+    NSGraphicsContext* maskGraphicsContext = [NSGraphicsContext graphicsContextWithCGContext:maskContext
+                                                                                     flipped:NO];
+    [NSGraphicsContext saveGraphicsState];
+    [NSGraphicsContext setCurrentContext:maskGraphicsContext];
+
     [astr drawAtPoint:location];
+
+    [NSGraphicsContext restoreGraphicsState];
+
+    CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
+
+    set_brush(nullptr, brush);
+
+    CGImageRelease(alphaMask);
     return XAML_S_OK;
 }
 

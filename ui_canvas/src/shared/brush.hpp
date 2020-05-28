@@ -5,6 +5,8 @@
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/controls/brush.h>
+#elif defined(XAML_UI_COCOA)
+#include <xaml/ui/cocoa/controls/brush.h>
 #elif defined(XAML_UI_GTK3)
 #include <xaml/ui/gtk3/controls/brush.h>
 #endif // XAML_UI_WINDOWS
@@ -21,6 +23,15 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
     } m_native_brush;
 
     using native_brush_type = xaml_win32_brush;
+#elif defined(XAML_UI_COCOA)
+    virtual xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept = 0;
+
+    struct xaml_cocoa_brush_impl : xaml_inner_implement<xaml_cocoa_brush_impl, T, xaml_cocoa_brush>
+    {
+        xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath) path) noexcept override { return this->m_outer->set(path); }
+    } m_native_brush;
+
+    using native_brush_type = xaml_cocoa_brush;
 #elif defined(XAML_UI_GTK3)
     virtual xaml_result XAML_CALL set(cairo_t*) noexcept = 0;
 
@@ -58,6 +69,8 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
 
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**) noexcept override;
+#elif defined(XAML_UI_COCOA)
+    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*) noexcept override;
 #endif // XAML_UI_WINDOWS
