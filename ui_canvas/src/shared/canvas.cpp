@@ -7,15 +7,17 @@ xaml_result xaml_canvas_internal::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_control_internal::init());
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_redraw));
+#ifdef XAML_UI_WINDOWS
+    XAML_RETURN_IF_FAILED(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2d));
+    XAML_RETURN_IF_FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, &dwrite));
+#endif // XAML_UI_WINDOWS
     return XAML_S_OK;
 }
 
-#ifndef XAML_UI_WINDOWS
 xaml_result XAML_CALL xaml_canvas_new(xaml_canvas** ptr) noexcept
 {
     return xaml_object_init<xaml_canvas_impl>(ptr);
 }
-#endif // !XAML_UI_WINDOWS
 
 xaml_result XAML_CALL xaml_canvas_members(xaml_type_info_registration* __info) noexcept
 {
