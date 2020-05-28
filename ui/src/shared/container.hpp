@@ -59,8 +59,13 @@ struct xaml_multicontainer_internal : xaml_control_internal
     xaml_result XAML_CALL remove_child(xaml_control* child) noexcept
     {
         child->set_parent(nullptr);
-        // TODO
-        if (m_handle) XAML_RETURN_IF_FAILED(parent_redraw());
+        int32_t index;
+        XAML_RETURN_IF_FAILED(m_children->index_of(child, &index));
+        if (index >= 0)
+        {
+            XAML_RETURN_IF_FAILED(m_children->remove_at(index));
+            if (m_handle) XAML_RETURN_IF_FAILED(parent_redraw());
+        }
         return XAML_S_OK;
     }
 

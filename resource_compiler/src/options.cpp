@@ -11,10 +11,22 @@ struct xaml_rc_options_impl : xaml_cmdline_options_base_implement<xaml_rc_option
         return m_inputs->append(value);
     }
 
-    xaml_result XAML_CALL remove_input([[maybe_unused]] xaml_string* value) noexcept override
+    xaml_result XAML_CALL remove_input(xaml_string* value) noexcept override
     {
-        // TODO
-        return XAML_E_NOTIMPL;
+        int32_t size;
+        XAML_RETURN_IF_FAILED(m_inputs->get_size(&size));
+        for (int32_t i = 0; i < size; i++)
+        {
+            xaml_ptr<xaml_object> obj;
+            XAML_RETURN_IF_FAILED(m_inputs->get_at(i, &obj));
+            bool equals;
+            XAML_RETURN_IF_FAILED(xaml_string_equals(value, obj.query<xaml_string>(), &equals));
+            if (equals)
+            {
+                return m_inputs->remove_at(i);
+            }
+        }
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL get_inputs(xaml_vector_view** ptr) noexcept override

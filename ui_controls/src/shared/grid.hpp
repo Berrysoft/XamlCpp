@@ -16,10 +16,22 @@ struct xaml_grid_internal : xaml_layout_base_internal
         return m_columns->append(box);
     }
 
-    xaml_result XAML_CALL remove_column([[maybe_unused]] xaml_grid_length const& length) noexcept
+    xaml_result XAML_CALL remove_column(xaml_grid_length const& length) noexcept
     {
-        // TODO
-        return XAML_E_NOTIMPL;
+        int32_t size;
+        XAML_RETURN_IF_FAILED(m_columns->get_size(&size));
+        for (int32_t i = 0; i < size; i++)
+        {
+            xaml_ptr<xaml_object> box;
+            XAML_RETURN_IF_FAILED(m_columns->get_at(i, &box));
+            xaml_grid_length const* pvalue;
+            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pvalue));
+            if (*pvalue == length)
+            {
+                return m_columns->remove_at(i);
+            }
+        }
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL add_row(xaml_grid_length const& length) noexcept
@@ -29,10 +41,22 @@ struct xaml_grid_internal : xaml_layout_base_internal
         return m_rows->append(box);
     }
 
-    xaml_result XAML_CALL remove_row([[maybe_unused]] xaml_grid_length const& length) noexcept
+    xaml_result XAML_CALL remove_row(xaml_grid_length const& length) noexcept
     {
-        // TODO
-        return XAML_E_NOTIMPL;
+        int32_t size;
+        XAML_RETURN_IF_FAILED(m_rows->get_size(&size));
+        for (int32_t i = 0; i < size; i++)
+        {
+            xaml_ptr<xaml_object> box;
+            XAML_RETURN_IF_FAILED(m_rows->get_at(i, &box));
+            xaml_grid_length const* pvalue;
+            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pvalue));
+            if (*pvalue == length)
+            {
+                return m_rows->remove_at(i);
+            }
+        }
+        return XAML_S_OK;
     }
 
     xaml_result XAML_CALL draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept override;

@@ -1,6 +1,10 @@
 #ifndef XAML_UI_CONTROLS_GRID_H
 #define XAML_UI_CONTROLS_GRID_H
 
+#ifdef __cplusplus
+#include <compare>
+#endif // __cplusplus
+
 #include <xaml/ui/controls/layout_base.h>
 
 typedef enum xaml_grid_layout
@@ -20,6 +24,10 @@ struct xaml_grid_length
 {
     double value;
     xaml_grid_layout layout;
+
+#ifdef __cplusplus
+    auto operator<=>(xaml_grid_length const&) const = default;
+#endif // __cplusplus
 };
 
 XAML_TYPE(xaml_grid_length, { 0xfed37e9d, 0x1f3b, 0x4247, { 0x82, 0x69, 0x95, 0x56, 0x09, 0x93, 0xf3, 0x84 } })
