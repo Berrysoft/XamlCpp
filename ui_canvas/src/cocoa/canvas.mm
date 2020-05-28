@@ -221,8 +221,13 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
 
     CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
 
-    set_brush(nullptr, brush);
+    CGContextRef windowContext = [[NSGraphicsContext currentContext] CGContext];
+    CGContextSaveGState(windowContext);
+    CGContextClipToMask(windowContext, { 0, 0, m_size.width, m_size.height }, alphaMask);
 
+    fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
+
+    CGContextRestoreGState(windowContext);
     CGImageRelease(alphaMask);
     return XAML_S_OK;
 }
