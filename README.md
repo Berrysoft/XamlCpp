@@ -8,7 +8,7 @@ This project is NOT complete, and still needs a lot of work. Welcome issues and 
 The goal of XamlCpp is to write a cross-platfrom GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies, compared to Qt or so.
 
 ## Charset
-XamlCpp uses UTF-16 with Win32, and UTF-8 with others API sets. However, the `xaml` file should be in valid UTF-8. XamlCpp uses `boost-nowide` to ensure it.
+XamlCpp uses UTF-8 everywhere, which is ensured by `boost-nowide` on Windows.
 
 ## Reflection
 XamlCpp supports reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
@@ -17,7 +17,7 @@ A simple example is [here](./meta/test/src/main.cpp).
 
 It doesn't use the RTTI feature of C++, instead, it ownes an stable implementation, because the constraints of the standard are too loose to implement reflection.
 
-The object model of XamlCpp is inspired by COM.
+The object model of XamlCpp is inspired by COM. The only difference is that COM uses `stdcall` for calling convention, but XamlCpp uses `cdecl`.
 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
@@ -41,8 +41,8 @@ It also supports high DPI settings even on Windows.
 #### Supported platforms
 |Name|API set|Supported OS|Recommanded OS|
 |-|-|-|-|
-|Win32|Windows API, GDI+|Windows\*|Windows|
-|GTK+3|GLib, Cairo, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
+|Win32|Windows API|Windows\*|Windows|
+|GTK+3|GLib, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
 |Cocoa|Cocoa|MacOS|MacOS|
 
 \* At least Windows 7.
@@ -55,11 +55,9 @@ A canvas control.
 #### Supported platforms
 |Name|API set|
 |-|-|
-|Win32|Direct2D -> GDI+ \*|
+|Win32|Direct2D|
 |GTK+3|Cairo|
 |Cocoa|NSGraphicsContext|
-
-\* Indicates the search order. GDI is not supported because it lacks some key features.
 
 ### WebView
 A webview control.
