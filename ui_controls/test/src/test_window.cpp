@@ -417,7 +417,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     XAML_RETURN_IF_FAILED(xaml_linear_gradient_brush_new(&brush1));
     XAML_RETURN_IF_FAILED(brush1->set_start_point({ 0, 0 }));
     XAML_RETURN_IF_FAILED(brush1->set_end_point({ csize.width, 0 }));
-    XAML_RETURN_IF_FAILED(brush1->add_stop({ colors::white, 0 }));
+    XAML_RETURN_IF_FAILED(brush1->add_stop({ is_dark ? colors::white : colors::black, 0 }));
     XAML_RETURN_IF_FAILED(brush1->add_stop({ colors::pink, 1 }));
     XAML_RETURN_IF_FAILED(dc->draw_string(brush1, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));
     return XAML_S_OK;
