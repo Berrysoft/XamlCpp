@@ -4,7 +4,7 @@
 #include <wil/resource.h>
 #include <windowsx.h>
 #include <xaml/result_win32.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 #include <xaml/ui/win/control.h>
 #include <xaml/ui/win/dark_mode.h>
 #include <xaml/ui/win/dpi.h>

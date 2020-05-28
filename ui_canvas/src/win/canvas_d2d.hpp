@@ -9,7 +9,7 @@
 #include <win/canvas.hpp>
 #include <xaml/object.h>
 #include <xaml/ui/controls/canvas.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 template <typename Factory>
 HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) noexcept

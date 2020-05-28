@@ -2,7 +2,7 @@
 #include <cocoa/nsstring.hpp>
 #include <shared/button.hpp>
 #include <xaml/ui/controls/button.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 @implementation XamlButtonDelegate : XamlDelegate
 - (void)onAction

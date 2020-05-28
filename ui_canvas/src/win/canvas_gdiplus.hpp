@@ -6,7 +6,7 @@
 #include <shared/canvas.hpp>
 #include <wil/resource.h>
 #include <win/canvas.hpp>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 #include <gdiplus.h>
 

@@ -3,7 +3,7 @@
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
 #include <xaml/ui/application.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 #include <xaml/ui/window.h>
 
 @implementation XamlWindowDelegate : XamlDelegate

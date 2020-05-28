@@ -4,7 +4,7 @@
 #include <xaml/event.h>
 #include <xaml/ui/application.h>
 #include <xaml/ui/control.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 #ifdef XAML_UI_WINDOWS
 #include <xaml/ui/win/control.h>

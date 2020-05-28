@@ -3,7 +3,7 @@
 #include <shared/atomic_guard.hpp>
 #include <shared/webview.hpp>
 #include <xaml/ui/controls/webview.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 @implementation XamlWebViewDelegate
 - (void)webView:(WKWebView*)webView didFinishNavigation:(WKNavigation*)navigation;

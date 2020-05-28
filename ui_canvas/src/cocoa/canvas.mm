@@ -4,7 +4,7 @@
 #include <functional>
 #include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 @implementation XamlCanvasView : NSView
 @synthesize classPointer;

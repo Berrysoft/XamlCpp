@@ -2,9 +2,9 @@
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
 #include <xaml/ui/application.h>
+#include <xaml/ui/drawing_conv.hpp>
 #include <xaml/ui/gtk3/xamlfixed.h>
 #include <xaml/ui/menu_bar.h>
-#include <xaml/ui/native_drawing.hpp>
 #include <xaml/ui/window.h>
 
 using namespace std;

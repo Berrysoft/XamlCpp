@@ -1,7 +1,7 @@
 #include <wil/result_macros.h>
 #include <win/webview_ie.hpp>
 #include <xaml/result_win32.h>
-#include <xaml/ui/native_drawing.hpp>
+#include <xaml/ui/drawing_conv.hpp>
 
 #include <ExDispID.h>
 #include <Shlwapi.h>
