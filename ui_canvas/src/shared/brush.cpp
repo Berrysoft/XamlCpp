@@ -7,3 +7,8 @@ xaml_result XAML_CALL xaml_solid_brush_new(xaml_color color, xaml_solid_brush** 
 {
     return xaml_object_new<xaml_solid_brush_impl>(ptr, color);
 }
+
+xaml_result XAML_CALL xaml_linear_gradient_brush_new(xaml_linear_gradient_brush** ptr) noexcept
+{
+    return xaml_object_init<xaml_linear_gradient_brush_impl>(ptr);
+}

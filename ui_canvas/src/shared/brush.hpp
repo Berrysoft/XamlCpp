@@ -80,4 +80,61 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
     }
 };
 
+template <typename T, typename... Base>
+struct xaml_gradient_brush_implement : xaml_brush_implement<T, Base..., xaml_gradient_brush>
+{
+    xaml_ptr<xaml_vector> m_gradient_stops;
+
+    xaml_result XAML_CALL get_stops(xaml_vector_view** ptr) noexcept override
+    {
+        return m_gradient_stops.query(ptr);
+    }
+
+    xaml_result XAML_CALL add_stop(xaml_gradient_stop const& stop) noexcept override
+    {
+        xaml_ptr<xaml_object> box;
+        XAML_RETURN_IF_FAILED(xaml_box_value(stop, &box));
+        return m_gradient_stops->append(box);
+    }
+
+    xaml_result XAML_CALL remove_stop(xaml_gradient_stop const& stop) noexcept override
+    {
+        std::int32_t size;
+        XAML_RETURN_IF_FAILED(m_gradient_stops->get_size(&size));
+        for (std::int32_t i = 0; i < size; i++)
+        {
+            xaml_ptr<xaml_object> box;
+            XAML_RETURN_IF_FAILED(m_gradient_stops->get_at(i, &box));
+            xaml_gradient_stop const* pitem;
+            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pitem));
+            if (*pitem == stop)
+            {
+                return m_gradient_stops->remove_at(i);
+            }
+        }
+        return XAML_S_OK;
+    }
+
+    virtual xaml_result XAML_CALL init() noexcept
+    {
+        XAML_RETURN_IF_FAILED(xaml_vector_new(&m_gradient_stops));
+
+        return XAML_S_OK;
+    }
+};
+
+struct xaml_linear_gradient_brush_impl : xaml_gradient_brush_implement<xaml_linear_gradient_brush_impl, xaml_linear_gradient_brush>
+{
+    XAML_PROP_IMPL(start_point, xaml_point, xaml_point*, xaml_point const&)
+    XAML_PROP_IMPL(end_point, xaml_point, xaml_point*, xaml_point const&)
+
+#ifdef XAML_UI_WINDOWS
+    xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**) noexcept override;
+#elif defined(XAML_UI_COCOA)
+    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
+#elif defined(XAML_UI_GTK3)
+    xaml_result XAML_CALL set(cairo_t*) noexcept override;
+#endif // XAML_UI_WINDOWS
+};
+
 #endif // !XAML_UI_CANVAS_SHARED_BRUSH_HPP

@@ -1,6 +1,10 @@
 #ifndef XAML_UI_CANVAS_BRUSH_H
 #define XAML_UI_CANVAS_BRUSH_H
 
+#ifdef __cplusplus
+#include <compare>
+#endif // __cplusplus
+
 #include <xaml/meta/meta_macros.h>
 #include <xaml/ui/drawing.h>
 
@@ -25,5 +29,43 @@ XAML_DECL_INTERFACE_(xaml_solid_brush, xaml_brush)
 };
 
 EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_solid_brush_new(xaml_color, xaml_solid_brush**) XAML_NOEXCEPT;
+
+typedef struct xaml_gradient_stop
+{
+    xaml_color color;
+    double position;
+
+#ifdef __cplusplus
+    auto operator<=>(xaml_gradient_stop const&) const = default;
+#endif // __cplusplus
+} xaml_gradient_stop;
+
+XAML_TYPE(xaml_gradient_stop, { 0xe2ccbf44, 0x1909, 0x41c6, { 0x88, 0x85, 0x70, 0x7c, 0x94, 0x2e, 0xe4, 0xe5 } })
+
+XAML_CLASS(xaml_gradient_brush, { 0x6fca23d8, 0xc758, 0x484c, { 0x91, 0x2b, 0xc0, 0x94, 0x03, 0x59, 0xa4, 0x77 } })
+
+#define XAML_GRADIENT_BRUSH_VTBL(type)                \
+    XAML_VTBL_INHERIT(XAML_BRUSH_VTBL(type));         \
+    XAML_METHOD(get_stops, type, xaml_vector_view**); \
+    XAML_CPROP(stop, type, xaml_gradient_stop XAML_CONST_REF, xaml_gradient_stop XAML_CONST_REF)
+
+XAML_DECL_INTERFACE_(xaml_gradient_brush, xaml_brush)
+{
+    XAML_DECL_VTBL(xaml_gradient_brush, XAML_GRADIENT_BRUSH_VTBL);
+};
+
+XAML_CLASS(xaml_linear_gradient_brush, { 0xfb86a888, 0x0a5f, 0x47a9, { 0x81, 0x8c, 0xa9, 0x48, 0xbd, 0xe2, 0x9e, 0x07 } })
+
+#define XAML_LINEAR_GRADIENT_BRUSH_VTBL(type)                             \
+    XAML_VTBL_INHERIT(XAML_GRADIENT_BRUSH_VTBL(type));                    \
+    XAML_PROP(start_point, type, xaml_point*, xaml_point XAML_CONST_REF); \
+    XAML_PROP(end_point, type, xaml_point*, xaml_point XAML_CONST_REF)
+
+XAML_DECL_INTERFACE_(xaml_linear_gradient_brush, xaml_gradient_brush)
+{
+    XAML_DECL_VTBL(xaml_linear_gradient_brush, XAML_LINEAR_GRADIENT_BRUSH_VTBL);
+};
+
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_linear_gradient_brush_new(xaml_linear_gradient_brush**) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CANVAS_BRUSH_H
