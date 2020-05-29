@@ -4,14 +4,14 @@
 
 using namespace std;
 
-xaml_result xaml_solid_brush_impl::create(ID2D1RenderTarget* target, ID2D1Brush** ptr) noexcept
+xaml_result xaml_solid_brush_impl::create(ID2D1RenderTarget* target, xaml_rectangle const&, ID2D1Brush** ptr) noexcept
 {
     wil::com_ptr_t<ID2D1SolidColorBrush, wil::err_returncode_policy> brush;
     XAML_RETURN_IF_FAILED(target->CreateSolidColorBrush(D2D1::ColorF((uint32_t)m_color), &brush));
     return brush.copy_to(ptr);
 }
 
-xaml_result xaml_linear_gradient_brush_impl::create(ID2D1RenderTarget* target, ID2D1Brush** ptr) noexcept
+xaml_result xaml_linear_gradient_brush_impl::create(ID2D1RenderTarget* target, xaml_rectangle const& region, ID2D1Brush** ptr) noexcept
 {
     vector<D2D1_GRADIENT_STOP> stops;
     XAML_FOREACH_START(item, m_gradient_stops);
@@ -26,8 +26,8 @@ xaml_result xaml_linear_gradient_brush_impl::create(ID2D1RenderTarget* target, I
     wil::com_ptr_t<ID2D1LinearGradientBrush, wil::err_returncode_policy> brush;
     XAML_RETURN_IF_FAILED(target->CreateLinearGradientBrush(
         D2D1::LinearGradientBrushProperties(
-            D2D1::Point2F((FLOAT)m_start_point.x, (FLOAT)m_start_point.y),
-            D2D1::Point2F((FLOAT)m_end_point.x, (FLOAT)m_end_point.y)),
+            D2D1::Point2F((FLOAT)lerp(region.x, region.x + region.width, m_start_point.x), (FLOAT)lerp(region.y, region.y + region.height, m_start_point.y)),
+            D2D1::Point2F((FLOAT)lerp(region.x, region.x + region.width, m_end_point.x), (FLOAT)lerp(region.y, region.y + region.height, m_end_point.y))),
         stop_collection.get(), &brush));
     return brush.copy_to(ptr);
 }

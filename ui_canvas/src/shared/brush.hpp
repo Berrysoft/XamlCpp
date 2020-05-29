@@ -15,11 +15,11 @@ template <typename T, typename... Base>
 struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object>
 {
 #ifdef XAML_UI_WINDOWS
-    virtual xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**) noexcept = 0;
+    virtual xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept = 0;
 
     struct xaml_win32_brush_impl : xaml_inner_implement<xaml_win32_brush_impl, T, xaml_win32_brush>
     {
-        xaml_result XAML_CALL create(ID2D1RenderTarget* target, ID2D1Brush** ptr) noexcept override { return this->m_outer->create(target, ptr); }
+        xaml_result XAML_CALL create(ID2D1RenderTarget* target, xaml_rectangle const& region, ID2D1Brush** ptr) noexcept override { return this->m_outer->create(target, region, ptr); }
     } m_native_brush;
 
     using native_brush_type = xaml_win32_brush;
@@ -33,11 +33,11 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
 
     using native_brush_type = xaml_cocoa_brush;
 #elif defined(XAML_UI_GTK3)
-    virtual xaml_result XAML_CALL set(cairo_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept = 0;
 
     struct xaml_gtk3_brush_impl : xaml_inner_implement<xaml_gtk3_brush_impl, T, xaml_gtk3_brush>
     {
-        xaml_result XAML_CALL set(cairo_t* handle) noexcept override { return this->m_outer->set(handle); }
+        xaml_result XAML_CALL set(cairo_t* handle, xaml_rectangle const& region) noexcept override { return this->m_outer->set(handle, region); }
     } m_native_brush;
 
     using native_brush_type = xaml_gtk3_brush;
@@ -68,11 +68,11 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
     XAML_PROP_IMPL(color, xaml_color, xaml_color*, xaml_color)
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**) noexcept override;
+    xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept override;
 #elif defined(XAML_UI_COCOA)
     xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
 #elif defined(XAML_UI_GTK3)
-    xaml_result XAML_CALL set(cairo_t*) noexcept override;
+    xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS
 
     xaml_solid_brush_impl(xaml_color color) noexcept : m_color(color)
@@ -129,11 +129,11 @@ struct xaml_linear_gradient_brush_impl : xaml_gradient_brush_implement<xaml_line
     XAML_PROP_IMPL(end_point, xaml_point, xaml_point*, xaml_point const&)
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**) noexcept override;
+    xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept override;
 #elif defined(XAML_UI_COCOA)
     xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
 #elif defined(XAML_UI_GTK3)
-    xaml_result XAML_CALL set(cairo_t*) noexcept override;
+    xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS
 };
 
