@@ -8,7 +8,7 @@ XAML_CLASS(xaml_cocoa_brush, { 0xfdd93db9, 0x0203, 0x454f, { 0x9b, 0x08, 0xc9, 0
 
 #define XAML_COCOA_BRUSH_VTBL(type)            \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(set, type, OBJC_OBJECT(NSBezierPath), xaml_size XAML_CONST_REF, xaml_rectangle XAML_CONST_REF)
+    XAML_METHOD(draw, type, OBJC_OBJECT(NSBezierPath), xaml_size XAML_CONST_REF, xaml_rectangle XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_cocoa_brush, xaml_object)
 {

@@ -3,15 +3,23 @@
 #include <xaml/ui/controls/brush.h>
 #include <xaml/ui/drawing_conv.hpp>
 
+#if __has_include(<numbers>)
+#include <numbers>
+using std::numbers::pi;
+#else
+#define pi M_PI
+#endif // __has_include(<numbers>)
+
 using namespace std;
 
-xaml_result xaml_solid_brush_impl::set(NSBezierPath* path, xaml_size const&, xaml_rectangle const&) noexcept
+xaml_result xaml_solid_brush_impl::draw(NSBezierPath* path, xaml_size const&, xaml_rectangle const&) noexcept
 {
     [xaml_to_native<NSColor*>(m_color) set];
+    [path fill];
     return XAML_S_OK;
 }
 
-xaml_result xaml_linear_gradient_brush_impl::set(NSBezierPath* path, xaml_size const& size, xaml_rectangle const& region) noexcept
+xaml_result xaml_linear_gradient_brush_impl::draw(NSBezierPath* path, xaml_size const& size, xaml_rectangle const& region) noexcept
 {
     NSMutableArray<NSColor*>* colors = [NSMutableArray<NSColor*> new];
     vector<CGFloat> locations;
@@ -26,8 +34,7 @@ xaml_result xaml_linear_gradient_brush_impl::set(NSBezierPath* path, xaml_size c
     NSGradient* gradient = [[NSGradient alloc] initWithColors:colors
                                                   atLocations:locations.data()
                                                    colorSpace:[NSColorSpace deviceRGBColorSpace]];
-    [gradient drawFromPoint:NSMakePoint(lerp(region.x, region.x + region.width, m_start_point.x), size.height - region.height - lerp(region.y, region.y + region.height, m_start_point.y))
-                    toPoint:NSMakePoint(lerp(region.x, region.x + region.width, m_end_point.x), size.height - region.height - lerp(region.y, region.y + region.height, m_end_point.y))
-                    options:NSGradientDrawsAfterEndingLocation];
+    xaml_point dir = m_end_point - m_start_point;
+    [gradient drawInBezierPath:path angle:-atan(dir.y / dir.x) / pi * 180.0];
     return XAML_S_OK;
 }

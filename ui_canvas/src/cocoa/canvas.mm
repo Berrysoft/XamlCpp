@@ -47,7 +47,7 @@ static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush, xaml_size co
 {
     xaml_ptr<xaml_cocoa_brush> native_brush;
     XAML_RETURN_IF_FAILED(brush->query(&native_brush));
-    return native_brush->set(path, size, region);
+    return native_brush->draw(path, size, region);
 }
 
 static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
@@ -79,9 +79,7 @@ xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangl
 {
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     [arc closePath];
-    set_brush(arc, brush, m_size, region);
-    [arc fill];
-    return XAML_S_OK;
+    return set_brush(arc, brush, m_size, region);
 }
 
 static NSBezierPath* path_ellipse(xaml_size const& base_size, xaml_rectangle const& region) noexcept
@@ -100,9 +98,7 @@ xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangl
 xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rectangle const& region) noexcept
 {
     NSBezierPath* ellipse = path_ellipse(m_size, region);
-    set_brush(ellipse, brush, m_size, region);
-    [ellipse fill];
-    return XAML_S_OK;
+    return set_brush(ellipse, brush, m_size, region);
 }
 
 xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
@@ -131,9 +127,7 @@ xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle c
 xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectangle const& rect) noexcept
 {
     NSBezierPath* path = path_rect(m_size, rect);
-    set_brush(path, brush, m_size, rect);
-    [path fill];
-    return XAML_S_OK;
+    return set_brush(path, brush, m_size, rect);
 }
 
 static NSBezierPath* path_round_rect(xaml_size const& base_size, xaml_rectangle const& rect, xaml_size const& round) noexcept
@@ -154,9 +148,7 @@ xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_recta
 xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
-    set_brush(path, brush, m_size, rect);
-    [path fill];
-    return XAML_S_OK;
+    return set_brush(path, brush, m_size, rect);
 }
 
 xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
