@@ -1,3 +1,4 @@
+#include <cmath>
 #include <gtk3/resources.hpp>
 #include <shared/brush.hpp>
 #include <xaml/ui/controls/brush.h>
