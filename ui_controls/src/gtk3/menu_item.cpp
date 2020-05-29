@@ -50,7 +50,7 @@ xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
@@ -76,7 +76,7 @@ xaml_result xaml_check_menu_item_internal::draw_checked() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
@@ -142,7 +142,7 @@ xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
     return XAML_S_OK;
 }
 
-xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {

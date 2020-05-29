@@ -174,7 +174,7 @@ xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
     return set_rect(region);
 }
 
-gboolean xaml_canvas_internal::on_draw(GtkWidget* widget, cairo_t* cr, xaml_canvas_internal* self) noexcept
+gboolean xaml_canvas_internal::on_draw(GtkWidget*, cairo_t* cr, xaml_canvas_internal* self) noexcept
 {
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));

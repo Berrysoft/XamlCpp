@@ -29,7 +29,6 @@ xaml_result xaml_progress_internal::init() noexcept
     {
         xaml_ptr<xaml_delegate> callback;
         XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_timer>>(xaml_mem_fn(&xaml_progress_internal::on_pulse, this), &callback)));
-        int32_t token;
         XAML_RETURN_IF_FAILED(m_pulse_timer->add_tick(callback, &token));
     }
 #endif // XAML_UI_GTK3

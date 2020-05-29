@@ -87,6 +87,7 @@ static void xaml_fixed_size_allocate(GtkWidget* widget, GtkAllocation* allocatio
 
 static GType xaml_fixed_child_type(GtkContainer* container)
 {
+    (void)container;
     return GTK_TYPE_WIDGET;
 }
 
@@ -120,6 +121,8 @@ static void xaml_fixed_remove(GtkContainer* container, GtkWidget* widget)
 
 static void xaml_fixed_forall(GtkContainer* container, gboolean include_internals, GtkCallback callback, gpointer callback_data)
 {
+    (void)include_internals;
+
     g_return_if_fail(callback);
 
     XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(container);

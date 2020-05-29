@@ -88,7 +88,7 @@ xaml_result xaml_combo_box_internal::draw_editable() noexcept
     return XAML_S_OK;
 }
 
-void xaml_combo_box_internal::on_changed(GtkWidget* widget, xaml_combo_box_internal* self) noexcept
+void xaml_combo_box_internal::on_changed(GtkWidget*, xaml_combo_box_internal* self) noexcept
 {
     XAML_ASSERT_SUCCEEDED(self->set_sel_id(gtk_combo_box_get_active(GTK_COMBO_BOX(self->m_handle))));
     if (self->m_is_editable)

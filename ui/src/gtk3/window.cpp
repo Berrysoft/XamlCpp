@@ -17,7 +17,7 @@ xaml_window_internal::~xaml_window_internal()
     }
 }
 
-xaml_result xaml_window_internal::draw(xaml_rectangle const& region) noexcept
+xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
@@ -138,7 +138,7 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
     return XAML_S_OK;
 }
 
-void xaml_window_internal::on_destroy(GtkWidget* widget, xaml_window_internal* self) noexcept
+void xaml_window_internal::on_destroy(GtkWidget*, xaml_window_internal* self) noexcept
 {
     xaml_ptr<xaml_application> app;
     XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
@@ -146,7 +146,7 @@ void xaml_window_internal::on_destroy(GtkWidget* widget, xaml_window_internal* s
     XAML_ASSERT_SUCCEEDED(self->set_handle(nullptr));
 }
 
-gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
+gboolean xaml_window_internal::on_delete_event(GtkWidget*, GdkEvent*, xaml_window_internal* self) noexcept
 {
     xaml_ptr<xaml_object> handled;
     XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
@@ -156,7 +156,7 @@ gboolean xaml_window_internal::on_delete_event(GtkWidget* widget, GdkEvent* even
     return value;
 }
 
-gboolean xaml_window_internal::on_configure_event(GtkWidget* widget, GdkEvent* event, xaml_window_internal* self) noexcept
+gboolean xaml_window_internal::on_configure_event(GtkWidget*, GdkEvent* event, xaml_window_internal* self) noexcept
 {
     if (event->type == GDK_CONFIGURE && self->m_handle)
     {

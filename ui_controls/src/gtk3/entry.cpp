@@ -46,7 +46,7 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
     return XAML_S_OK;
 }
 
-void xaml_entry_internal::on_changed(GtkWidget* widget, xaml_entry_internal* self) noexcept
+void xaml_entry_internal::on_changed(GtkWidget*, xaml_entry_internal* self) noexcept
 {
     gchar const* data = gtk_entry_get_text(GTK_ENTRY(self->m_handle));
     xaml_ptr<xaml_string> text;
