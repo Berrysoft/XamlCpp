@@ -26,11 +26,11 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
 
     using native_pen_type = xaml_win32_pen;
 #elif defined(XAML_UI_COCOA)
-    virtual xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept = 0;
+    virtual xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept = 0;
 
     struct xaml_cocoa_pen_impl : xaml_inner_implement<xaml_cocoa_pen_impl, T, xaml_cocoa_pen>
     {
-        xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath) path) noexcept override { return this->m_outer->set(path); }
+        xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath) path, xaml_size const& size, xaml_rectangle const& region) noexcept override { return this->m_outer->draw(path, size, region); }
     } m_native_pen;
 
     using native_pen_type = xaml_cocoa_pen;
@@ -72,7 +72,7 @@ struct xaml_brush_pen_impl : xaml_pen_implement<xaml_brush_pen_impl, xaml_brush_
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**, FLOAT*) noexcept override;
 #elif defined(XAML_UI_COCOA)
-    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
+    xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS

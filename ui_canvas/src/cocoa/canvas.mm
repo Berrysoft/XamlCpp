@@ -36,11 +36,11 @@ using std::numbers::pi;
 
 using namespace std;
 
-static xaml_result set_pen(NSBezierPath* path, xaml_pen* pen) noexcept
+static xaml_result set_pen(NSBezierPath* path, xaml_pen* pen, xaml_size const& size, xaml_rectangle const& region) noexcept
 {
     xaml_ptr<xaml_cocoa_pen> native_pen;
     XAML_RETURN_IF_FAILED(pen->query(&native_pen));
-    return native_pen->set(path);
+    return native_pen->draw(path, size, region);
 }
 
 static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush, xaml_size const& size, xaml_rectangle const& region) noexcept
@@ -70,9 +70,7 @@ static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& 
 xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
-    set_pen(arc, pen);
-    [arc stroke];
-    return XAML_S_OK;
+    return set_pen(arc, pen, m_size, region);
 }
 
 xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
@@ -90,9 +88,7 @@ static NSBezierPath* path_ellipse(xaml_size const& base_size, xaml_rectangle con
 xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
     NSBezierPath* ellipse = path_ellipse(m_size, region);
-    set_pen(ellipse, pen);
-    [ellipse stroke];
-    return XAML_S_OK;
+    return set_pen(ellipse, pen, m_size, region);
 }
 
 xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rectangle const& region) noexcept
@@ -103,12 +99,12 @@ xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rect
 
 xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
 {
+    xaml_point minp{ (min)(startp.x, endp.x), (min)(startp.y, endp.y) };
+    xaml_point maxp{ (max)(startp.x, endp.x), (max)(startp.y, endp.y) };
     NSBezierPath* line = [NSBezierPath bezierPath];
     [line moveToPoint:NSMakePoint(startp.x, m_size.height - startp.y)];
     [line lineToPoint:NSMakePoint(endp.x, m_size.height - endp.y)];
-    set_pen(line, pen);
-    [line stroke];
-    return XAML_S_OK;
+    return set_pen(line, pen, m_size, { minp.x, minp.y, maxp.x - minp.x, maxp.y - minp.y });
 }
 
 static NSBezierPath* path_rect(xaml_size const& base_size, xaml_rectangle const& rect) noexcept
@@ -119,9 +115,7 @@ static NSBezierPath* path_rect(xaml_size const& base_size, xaml_rectangle const&
 xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle const& rect) noexcept
 {
     NSBezierPath* path = path_rect(m_size, rect);
-    set_pen(path, pen);
-    [path stroke];
-    return XAML_S_OK;
+    return set_pen(path, pen, m_size, rect);
 }
 
 xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectangle const& rect) noexcept
@@ -140,9 +134,7 @@ static NSBezierPath* path_round_rect(xaml_size const& base_size, xaml_rectangle 
 xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
-    set_pen(path, pen);
-    [path stroke];
-    return XAML_S_OK;
+    return set_pen(path, pen, m_size, rect);
 }
 
 xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
@@ -217,11 +209,11 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     CGContextSaveGState(windowContext);
     CGContextClipToMask(windowContext, { 0, 0, m_size.width, m_size.height }, alphaMask);
 
-    XAML_RETURN_IF_FAILED(fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height }));
+    xaml_result hr = fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
 
     CGContextRestoreGState(windowContext);
     CGImageRelease(alphaMask);
-    return XAML_S_OK;
+    return hr;
 }
 
 xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
