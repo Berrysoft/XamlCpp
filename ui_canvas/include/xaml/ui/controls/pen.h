@@ -28,5 +28,6 @@ XAML_DECL_INTERFACE_(xaml_brush_pen, xaml_pen)
 };
 
 EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_brush_pen_new(xaml_brush*, double, xaml_brush_pen**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_brush_pen_new_solid(xaml_color, double, xaml_brush_pen**) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_CANVAS_PEN_H

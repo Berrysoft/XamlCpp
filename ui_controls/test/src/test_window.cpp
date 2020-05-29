@@ -104,23 +104,23 @@ xaml_result xaml_test_window_impl::init() noexcept
     {
         xaml_ptr<xaml_progress> prog;
         XAML_RETURN_IF_FAILED(xaml_progress_new(&prog));
-        prog->set_margin({ 10, 10, 10, 10 });
-        prog->set_valignment(xaml_valignment_center);
-        prog->set_minimum(0);
-        prog->set_maximum(100);
-        prog->set_value(30);
-        prog->set_is_indeterminate(true);
-        g->add_child(prog);
-        xaml_grid_set_column(prog, 2);
-        xaml_grid_set_row(prog, 2);
+        XAML_RETURN_IF_FAILED(prog->set_margin({ 10, 10, 10, 10 }));
+        XAML_RETURN_IF_FAILED(prog->set_valignment(xaml_valignment_center));
+        XAML_RETURN_IF_FAILED(prog->set_minimum(0));
+        XAML_RETURN_IF_FAILED(prog->set_maximum(100));
+        XAML_RETURN_IF_FAILED(prog->set_value(30));
+        XAML_RETURN_IF_FAILED(prog->set_is_indeterminate(true));
+        XAML_RETURN_IF_FAILED(g->add_child(prog));
+        XAML_RETURN_IF_FAILED(xaml_grid_set_column(prog, 2));
+        XAML_RETURN_IF_FAILED(xaml_grid_set_row(prog, 2));
         // Construct a button.
         xaml_ptr<xaml_button> btn;
         XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
         // Set margin and text.
-        btn->set_margin({ 10, 10, 10, 10 });
+        XAML_RETURN_IF_FAILED(btn->set_margin({ 10, 10, 10, 10 }));
         xaml_ptr<xaml_string> text;
         XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello"), &text));
-        btn->set_text(text);
+        XAML_RETURN_IF_FAILED(btn->set_text(text));
         // Add a handler for button.
         {
             xaml_ptr<xaml_delegate> callback;
@@ -139,11 +139,11 @@ xaml_result xaml_test_window_impl::init() noexcept
             XAML_RETURN_IF_FAILED(btn->add_click(callback, &token));
         }
         // Set the button to be placed in the center vertically.
-        btn->set_valignment(xaml_valignment_center);
+        XAML_RETURN_IF_FAILED(btn->set_valignment(xaml_valignment_center));
         // Add the button to the grid, and set its column and row.
-        g->add_child(btn);
-        xaml_grid_set_column(btn, 1);
-        xaml_grid_set_row(btn, 2);
+        XAML_RETURN_IF_FAILED(g->add_child(btn));
+        XAML_RETURN_IF_FAILED(xaml_grid_set_column(btn, 1));
+        XAML_RETURN_IF_FAILED(xaml_grid_set_row(btn, 2));
     }
     {
         // Construct a label.
@@ -404,10 +404,8 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     auto cx = csize.width / 2;
     auto cy = csize.height / 2;
     auto r = (min)(cx, cy) - 2;
-    xaml_ptr<xaml_solid_brush> brush1;
-    XAML_RETURN_IF_FAILED(xaml_solid_brush_new(is_dark ? colors::white : colors::black, &brush1));
     xaml_ptr<xaml_brush_pen> pen1;
-    XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush1, 1, &pen1));
+    XAML_RETURN_IF_FAILED(xaml_brush_pen_new_solid(is_dark ? colors::white : colors::black, 1, &pen1));
     XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r, cy - r, r * 2, r * 2 }, pi, 2 * pi));
     XAML_RETURN_IF_FAILED(dc->draw_line(pen1, { cx - r, cy }, { cx + r, cy }));
     xaml_ptr<xaml_linear_gradient_brush> brush2;

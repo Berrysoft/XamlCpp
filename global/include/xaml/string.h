@@ -17,7 +17,11 @@
 #include <xaml/object.h>
 
 #ifndef U
+#ifdef __cpp_char8_t
+#define U(x) reinterpret_cast<char const*>(u8##x)
+#else
 #define U(x) u8##x
+#endif // __cpp_char8_t
 #endif // !U
 
 #ifndef U_
