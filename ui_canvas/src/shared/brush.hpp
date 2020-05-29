@@ -24,11 +24,11 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
 
     using native_brush_type = xaml_win32_brush;
 #elif defined(XAML_UI_COCOA)
-    virtual xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept = 0;
+    virtual xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept = 0;
 
     struct xaml_cocoa_brush_impl : xaml_inner_implement<xaml_cocoa_brush_impl, T, xaml_cocoa_brush>
     {
-        xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath) path) noexcept override { return this->m_outer->set(path); }
+        xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath) path, xaml_size const& size, xaml_rectangle const& region) noexcept override { return this->m_outer->set(path, size, region); }
     } m_native_brush;
 
     using native_brush_type = xaml_cocoa_brush;
@@ -70,7 +70,7 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept override;
 #elif defined(XAML_UI_COCOA)
-    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
+    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS
@@ -131,7 +131,7 @@ struct xaml_linear_gradient_brush_impl : xaml_gradient_brush_implement<xaml_line
 #ifdef XAML_UI_WINDOWS
     xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept override;
 #elif defined(XAML_UI_COCOA)
-    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
+    xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS

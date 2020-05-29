@@ -43,11 +43,11 @@ static xaml_result set_pen(NSBezierPath* path, xaml_pen* pen) noexcept
     return native_pen->set(path);
 }
 
-static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush) noexcept
+static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush, xaml_size const& size, xaml_rectangle const& region) noexcept
 {
     xaml_ptr<xaml_cocoa_brush> native_brush;
     XAML_RETURN_IF_FAILED(brush->query(&native_brush));
-    return native_brush->set(path);
+    return native_brush->set(path, size, region);
 }
 
 static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
@@ -79,7 +79,7 @@ xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangl
 {
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     [arc closePath];
-    set_brush(arc, brush);
+    set_brush(arc, brush, m_size, region);
     [arc fill];
     return XAML_S_OK;
 }
@@ -100,7 +100,7 @@ xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangl
 xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rectangle const& region) noexcept
 {
     NSBezierPath* ellipse = path_ellipse(m_size, region);
-    set_brush(ellipse, brush);
+    set_brush(ellipse, brush, m_size, region);
     [ellipse fill];
     return XAML_S_OK;
 }
@@ -131,7 +131,7 @@ xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle c
 xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectangle const& rect) noexcept
 {
     NSBezierPath* path = path_rect(m_size, rect);
-    set_brush(path, brush);
+    set_brush(path, brush, m_size, rect);
     [path fill];
     return XAML_S_OK;
 }
@@ -154,7 +154,7 @@ xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_recta
 xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     NSBezierPath* path = path_round_rect(m_size, rect, round);
-    set_brush(path, brush);
+    set_brush(path, brush, m_size, rect);
     [path fill];
     return XAML_S_OK;
 }
@@ -225,7 +225,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     CGContextSaveGState(windowContext);
     CGContextClipToMask(windowContext, { 0, 0, m_size.width, m_size.height }, alphaMask);
 
-    fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
+    XAML_RETURN_IF_FAILED(fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height }));
 
     CGContextRestoreGState(windowContext);
     CGImageRelease(alphaMask);

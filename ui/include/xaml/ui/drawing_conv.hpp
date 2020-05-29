@@ -104,6 +104,12 @@ constexpr NSRect xaml_to_native<NSRect, xaml_rectangle>(xaml_rectangle const& r)
 {
     return { { r.x, r.y }, { r.width, r.height } };
 }
+
+template <>
+inline NSColor* xaml_to_native<NSColor*, xaml_color>(xaml_color const& c) noexcept
+{
+    return [NSColor colorWithCalibratedRed:(c.r / 255.0) green:(c.g / 255.0) blue:(c.b / 255.0) alpha:(c.a / 255.0)];
+}
 #endif // XAML_UI_WINDOWS
 
 #endif // !XAML_UI_NATIVE_DRAWING_HPP
