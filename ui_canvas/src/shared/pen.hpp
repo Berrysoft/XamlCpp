@@ -35,11 +35,11 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
 
     using native_pen_type = xaml_cocoa_pen;
 #elif defined(XAML_UI_GTK3)
-    virtual xaml_result XAML_CALL set(cairo_t*) noexcept = 0;
+    virtual xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept = 0;
 
     struct xaml_gtk3_pen_impl : xaml_inner_implement<xaml_gtk3_pen_impl, T, xaml_gtk3_pen>
     {
-        xaml_result XAML_CALL set(cairo_t* handle) noexcept override { return this->m_outer->set(handle); }
+        xaml_result XAML_CALL set(cairo_t* handle, xaml_rectangle const& region) noexcept override { return this->m_outer->set(handle, region); }
     } m_native_pen;
 
     using native_pen_type = xaml_gtk3_pen;
@@ -74,7 +74,7 @@ struct xaml_brush_pen_impl : xaml_pen_implement<xaml_brush_pen_impl, xaml_brush_
 #elif defined(XAML_UI_COCOA)
     xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
 #elif defined(XAML_UI_GTK3)
-    xaml_result XAML_CALL set(cairo_t*) noexcept override;
+    xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
 #endif // XAML_UI_WINDOWS
 
     xaml_brush_pen_impl(xaml_ptr<xaml_brush> const& brush, double width) noexcept : xaml_pen_implement(width), m_brush(brush)

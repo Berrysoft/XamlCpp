@@ -8,7 +8,7 @@ XAML_CLASS(xaml_gtk3_pen, { 0x422b5e58, 0x42cf, 0x43e4, { 0xa4, 0x86, 0x1f, 0x63
 
 #define XAML_GTK3_PEN_VTBL(type)               \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(set, type, cairo_t*)
+    XAML_METHOD(set, type, cairo_t*, xaml_rectangle XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_gtk3_pen, xaml_object)
 {

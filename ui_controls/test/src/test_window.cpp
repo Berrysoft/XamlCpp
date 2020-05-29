@@ -410,8 +410,12 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush1, 1, &pen1));
     XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r, cy - r, r * 2, r * 2 }, pi, 2 * pi));
     XAML_RETURN_IF_FAILED(dc->draw_line(pen1, { cx - r, cy }, { cx + r, cy }));
-    xaml_ptr<xaml_solid_brush> brush2;
-    XAML_RETURN_IF_FAILED(xaml_solid_brush_new(colors::sky_blue, &brush2));
+    xaml_ptr<xaml_linear_gradient_brush> brush2;
+    XAML_RETURN_IF_FAILED(xaml_linear_gradient_brush_new(&brush2));
+    XAML_RETURN_IF_FAILED(brush2->set_start_point({ 0, 0 }));
+    XAML_RETURN_IF_FAILED(brush2->set_end_point({ 0, 1 }));
+    XAML_RETURN_IF_FAILED(brush2->add_stop({ colors::sky_blue, 0 }));
+    XAML_RETURN_IF_FAILED(brush2->add_stop({ is_dark ? colors::white : colors::black, 1 }));
     xaml_ptr<xaml_brush_pen> pen2;
     XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush2, 1, &pen2));
     XAML_RETURN_IF_FAILED(dc->draw_round_rect(pen2, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));

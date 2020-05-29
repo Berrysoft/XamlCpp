@@ -14,11 +14,11 @@ using std::numbers::pi;
 
 using namespace std;
 
-static xaml_result set_pen(cairo_t* handle, xaml_pen* pen) noexcept
+static xaml_result set_pen(cairo_t* handle, xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
     xaml_ptr<xaml_gtk3_pen> native_pen;
     XAML_RETURN_IF_FAILED(pen->query(&native_pen));
-    return native_pen->set(handle);
+    return native_pen->set(handle, region);
 }
 
 static xaml_result set_brush(cairo_t* handle, xaml_brush* brush, xaml_rectangle const& region) noexcept
@@ -41,7 +41,7 @@ static void path_arc(cairo_t* handle, xaml_rectangle const& region, double start
 xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     path_arc(m_handle, region, start_angle, end_angle);
-    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, region));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
@@ -66,10 +66,12 @@ xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, const xam
 
 xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
 {
+    xaml_point minp{ (min)(startp.x, endp.x), (min)(startp.y, endp.y) };
+    xaml_point maxp{ (max)(startp.x, endp.x), (max)(startp.y, endp.y) };
     cairo_new_path(m_handle);
     cairo_move_to(m_handle, startp.x, startp.y);
     cairo_line_to(m_handle, endp.x, endp.y);
-    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, { minp.x, minp.y, maxp.x - minp.x, maxp.y - minp.y }));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
@@ -83,7 +85,7 @@ static void path_rect(cairo_t* handle, xaml_rectangle const& rect) noexcept
 xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle const& rect) noexcept
 {
     path_rect(m_handle, rect);
-    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, rect));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
@@ -113,7 +115,7 @@ static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_si
 xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     path_round_rect(m_handle, rect, round);
-    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, rect));
     cairo_stroke(m_handle);
     return XAML_S_OK;
 }
