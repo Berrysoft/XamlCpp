@@ -12,3 +12,8 @@ xaml_result XAML_CALL xaml_linear_gradient_brush_new(xaml_linear_gradient_brush*
 {
     return xaml_object_init<xaml_linear_gradient_brush_impl>(ptr);
 }
+
+xaml_result XAML_CALL xaml_radial_gradient_brush_new(xaml_radial_gradient_brush** ptr) noexcept
+{
+    return xaml_object_init<xaml_radial_gradient_brush_impl>(ptr);
+}

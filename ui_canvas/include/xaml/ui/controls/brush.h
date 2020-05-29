@@ -68,4 +68,19 @@ XAML_DECL_INTERFACE_(xaml_linear_gradient_brush, xaml_gradient_brush)
 
 EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_linear_gradient_brush_new(xaml_linear_gradient_brush**) XAML_NOEXCEPT;
 
+XAML_CLASS(xaml_radial_gradient_brush, { 0xeb863aa0, 0x2d59, 0x4128, { 0x80, 0xe6, 0x65, 0x71, 0x8d, 0x83, 0x18, 0x8b } })
+
+#define XAML_RADIAL_GRADIENT_BRUSH_VTBL(type)                        \
+    XAML_VTBL_INHERIT(XAML_GRADIENT_BRUSH_VTBL(type));               \
+    XAML_PROP(origin, type, xaml_point*, xaml_point XAML_CONST_REF); \
+    XAML_PROP(center, type, xaml_point*, xaml_point XAML_CONST_REF); \
+    XAML_PROP(radius, type, xaml_size*, xaml_size XAML_CONST_REF)
+
+XAML_DECL_INTERFACE_(xaml_radial_gradient_brush, xaml_gradient_brush)
+{
+    XAML_DECL_VTBL(xaml_radial_gradient_brush, XAML_RADIAL_GRADIENT_BRUSH_VTBL);
+};
+
+EXTERN_C XAML_UI_CANVAS_API xaml_result XAML_CALL xaml_radial_gradient_brush_new(xaml_radial_gradient_brush**) XAML_NOEXCEPT;
+
 #endif // !XAML_UI_CANVAS_BRUSH_H

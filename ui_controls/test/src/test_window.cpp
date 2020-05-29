@@ -419,10 +419,10 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     XAML_RETURN_IF_FAILED(dc->draw_round_rect(pen2, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
-    xaml_ptr<xaml_linear_gradient_brush> brush3;
-    XAML_RETURN_IF_FAILED(xaml_linear_gradient_brush_new(&brush3));
-    XAML_RETURN_IF_FAILED(brush3->set_start_point({ 0, 0 }));
-    XAML_RETURN_IF_FAILED(brush3->set_end_point({ 1, 0 }));
+    xaml_ptr<xaml_radial_gradient_brush> brush3;
+    XAML_RETURN_IF_FAILED(xaml_radial_gradient_brush_new(&brush3));
+    XAML_RETURN_IF_FAILED(brush3->set_center({ 0.5, 0.5 }));
+    XAML_RETURN_IF_FAILED(brush3->set_origin({ 0.5, 0.5 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ is_dark ? colors::white : colors::black, 0 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::pink, 1 }));
     XAML_RETURN_IF_FAILED(dc->draw_string(brush3, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));

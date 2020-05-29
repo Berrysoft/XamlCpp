@@ -137,4 +137,23 @@ struct xaml_linear_gradient_brush_impl : xaml_gradient_brush_implement<xaml_line
 #endif // XAML_UI_WINDOWS
 };
 
+struct xaml_radial_gradient_brush_impl : xaml_gradient_brush_implement<xaml_radial_gradient_brush_impl, xaml_radial_gradient_brush>
+{
+    XAML_PROP_IMPL(origin, xaml_point, xaml_point*, xaml_point const&)
+    XAML_PROP_IMPL(center, xaml_point, xaml_point*, xaml_point const&)
+    XAML_PROP_IMPL(radius, xaml_size, xaml_size*, xaml_size const&)
+
+#ifdef XAML_UI_WINDOWS
+    xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept override;
+#elif defined(XAML_UI_COCOA)
+    xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
+#elif defined(XAML_UI_GTK3)
+    xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
+#endif // XAML_UI_WINDOWS
+
+    xaml_radial_gradient_brush_impl() noexcept : m_origin({ 0.5, 0.5 }), m_center({ 0.5, 0.5 }), m_radius({ 0.5, 0.5 })
+    {
+    }
+};
+
 #endif // !XAML_UI_CANVAS_SHARED_BRUSH_HPP
