@@ -16,6 +16,7 @@ xaml_result xaml_brush_pen_impl::draw(NSBezierPath* path, xaml_size const& size,
     [NSGraphicsContext setCurrentContext:maskGraphicsContext];
 
     [path setLineWidth:m_width];
+    [[NSColor whiteColor] set];
     [path stroke];
 
     [NSGraphicsContext restoreGraphicsState];
@@ -26,7 +27,9 @@ xaml_result xaml_brush_pen_impl::draw(NSBezierPath* path, xaml_size const& size,
     CGContextSaveGState(windowContext);
     CGContextClipToMask(windowContext, { 0, 0, size.width, size.height }, alphaMask);
 
-    xaml_result hr = native_brush->draw(path, size, region);
+    xaml_rectangle new_region = region + xaml_margin{ m_width, m_width, m_width, m_width };
+    NSBezierPath* regionPath = [NSBezierPath bezierPathWithRect:NSMakeRect(new_region.x, size.height - new_region.height - new_region.y, new_region.width, new_region.height)];
+    xaml_result hr = native_brush->draw(regionPath, size, region);
 
     CGContextRestoreGState(windowContext);
     CGImageRelease(alphaMask);
