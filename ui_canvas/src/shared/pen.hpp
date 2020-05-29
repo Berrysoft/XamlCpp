@@ -17,11 +17,11 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
     XAML_PROP_IMPL(width, double, double*, double)
 
 #ifdef XAML_UI_WINDOWS
-    virtual xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**, FLOAT*) noexcept = 0;
+    virtual xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**, FLOAT*) noexcept = 0;
 
     struct xaml_win32_pen_impl : xaml_inner_implement<xaml_win32_pen_impl, T, xaml_win32_pen>
     {
-        xaml_result XAML_CALL create(ID2D1RenderTarget* target, ID2D1Brush** ptr, FLOAT* pwidth) noexcept override { return this->m_outer->create(target, ptr, pwidth); }
+        xaml_result XAML_CALL create(ID2D1RenderTarget* target, xaml_rectangle const& region, ID2D1Brush** ptr, FLOAT* pwidth) noexcept override { return this->m_outer->create(target, region, ptr, pwidth); }
     } m_native_pen;
 
     using native_pen_type = xaml_win32_pen;
@@ -65,19 +65,19 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
     }
 };
 
-struct xaml_solid_pen_impl : xaml_pen_implement<xaml_solid_pen_impl, xaml_solid_pen>
+struct xaml_brush_pen_impl : xaml_pen_implement<xaml_brush_pen_impl, xaml_brush_pen>
 {
-    XAML_PROP_IMPL(color, xaml_color, xaml_color*, xaml_color)
+    XAML_PROP_PTR_IMPL(brush, xaml_brush)
 
 #ifdef XAML_UI_WINDOWS
-    xaml_result XAML_CALL create(ID2D1RenderTarget*, ID2D1Brush**, FLOAT*) noexcept override;
+    xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**, FLOAT*) noexcept override;
 #elif defined(XAML_UI_COCOA)
     xaml_result XAML_CALL set(OBJC_OBJECT(NSBezierPath)) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*) noexcept override;
 #endif // XAML_UI_WINDOWS
 
-    xaml_solid_pen_impl(xaml_color color, double width) noexcept : xaml_pen_implement(width), m_color(color)
+    xaml_brush_pen_impl(xaml_ptr<xaml_brush> const& brush, double width) noexcept : xaml_pen_implement(width), m_brush(brush)
     {
     }
 };

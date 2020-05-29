@@ -1,13 +1,14 @@
 #include <shared/pen.hpp>
 #include <wil/com.h>
+#include <xaml/ui/win/controls/brush.h>
 
 using namespace std;
 
-xaml_result xaml_solid_pen_impl::create(ID2D1RenderTarget* target, ID2D1Brush** ptr, FLOAT* pwidth) noexcept
+xaml_result xaml_brush_pen_impl::create(ID2D1RenderTarget* target, xaml_rectangle const& region, ID2D1Brush** ptr, FLOAT* pwidth) noexcept
 {
-    wil::com_ptr_t<ID2D1SolidColorBrush, wil::err_returncode_policy> brush;
-    XAML_RETURN_IF_FAILED(target->CreateSolidColorBrush(D2D1::ColorF((uint32_t)m_color), &brush));
-    XAML_RETURN_IF_FAILED(brush.copy_to(ptr));
+    xaml_ptr<xaml_win32_brush> native_brush;
+    XAML_RETURN_IF_FAILED(m_brush->query(&native_brush));
+    XAML_RETURN_IF_FAILED(native_brush->create(target, region, ptr));
     *pwidth = (FLOAT)m_width;
     return XAML_S_OK;
 }

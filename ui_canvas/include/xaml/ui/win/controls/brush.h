@@ -8,7 +8,7 @@ XAML_CLASS(xaml_win32_brush, { 0xf471fc33, 0x03af, 0x4959, { 0xa9, 0x52, 0xcc, 0
 
 #define XAML_WIN32_BRUSH_VTBL(type)            \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(create, type, ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**)
+    XAML_METHOD(create, type, ID2D1RenderTarget*, xaml_rectangle XAML_CONST_REF, ID2D1Brush**)
 
 XAML_DECL_INTERFACE_(xaml_win32_brush, xaml_object)
 {
