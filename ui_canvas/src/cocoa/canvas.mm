@@ -53,33 +53,57 @@ static xaml_result set_brush(NSBezierPath* path, xaml_brush* brush, xaml_size co
 
 static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
-    NSBezierPath* path = [NSBezierPath bezierPath];
     xaml_size radius = { region.width / 2, region.height / 2 };
     xaml_point centerp = { region.x + radius.width, region.y + radius.height };
     xaml_point startp = centerp + xaml_point{ radius.width * cos(start_angle), radius.height * sin(start_angle) };
-    [path moveToPoint:NSMakePoint(startp.x, base_size.height - startp.y)];
-    [path appendBezierPathWithArcWithCenter:NSMakePoint(centerp.x, base_size.height - centerp.y)
+    double rate = radius.height / radius.width;
+    NSAffineTransform* transform = [NSAffineTransform transform];
+    [transform scaleXBy:1 yBy:rate];
+    [transform concat];
+    NSBezierPath* path = [NSBezierPath bezierPath];
+    [path moveToPoint:NSMakePoint(startp.x, (base_size.height - startp.y) / rate)];
+    [path appendBezierPathWithArcWithCenter:NSMakePoint(centerp.x, (base_size.height - centerp.y) / rate)
                                      radius:radius.width
                                  startAngle:-start_angle / pi * 180
                                    endAngle:-end_angle / pi * 180
                                   clockwise:YES];
-    NSAffineTransform* transform = [NSAffineTransform transform];
-    [transform scaleXBy:1 yBy:radius.height / radius.width];
-    [transform concat];
     return path;
+}
+
+static constexpr xaml_rectangle get_scaled_rect(xaml_rectangle const& region) noexcept
+{
+    xaml_rectangle scaled_region = region;
+    if (scaled_region.width > scaled_region.height)
+    {
+        scaled_region.y = scaled_region.y + scaled_region.height - scaled_region.width;
+        scaled_region.height = scaled_region.width;
+    }
+    else if (scaled_region.height > scaled_region.width)
+    {
+        scaled_region.width = scaled_region.height;
+    }
+    return scaled_region;
 }
 
 xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
+    [[NSGraphicsContext currentContext] saveGraphicsState];
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
-    return set_pen(arc, pen, m_size, region);
+    xaml_rectangle scaled_region = get_scaled_rect(region);
+    xaml_result hr = set_pen(arc, pen, m_size, scaled_region);
+    [[NSGraphicsContext currentContext] restoreGraphicsState];
+    return hr;
 }
 
 xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
+    [[NSGraphicsContext currentContext] saveGraphicsState];
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     [arc closePath];
-    return set_brush(arc, brush, m_size, region);
+    xaml_rectangle scaled_region = get_scaled_rect(region);
+    xaml_result hr = set_brush(arc, brush, m_size, scaled_region);
+    [[NSGraphicsContext currentContext] restoreGraphicsState];
+    return hr;
 }
 
 static NSBezierPath* path_ellipse(xaml_size const& base_size, xaml_rectangle const& region) noexcept
@@ -191,10 +215,6 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     default:
         break;
     }
-
-    CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
-    CGContextRef maskContext = CGBitmapContextCreate(nullptr, m_size.width, m_size.height, 8, m_size.width, colorspace, 0);
-    CGColorSpaceRelease(colorspace);
     return draw_mask(
         m_size,
         [astr, &location]() noexcept -> xaml_result {

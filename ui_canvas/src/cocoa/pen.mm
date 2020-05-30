@@ -15,7 +15,7 @@ xaml_result xaml_brush_pen_impl::draw(NSBezierPath* path, xaml_size const& size,
             [path stroke];
             return XAML_S_OK;
         },
-        [this, native_brush, &size, &region]() noexcept -> xaml_result {
+        [this, &native_brush, &size, &region]() noexcept -> xaml_result {
             xaml_rectangle new_region = region + xaml_margin{ m_width, m_width, m_width, m_width };
             NSBezierPath* regionPath = [NSBezierPath bezierPathWithRect:NSMakeRect(new_region.x, size.height - new_region.height - new_region.y, new_region.width, new_region.height)];
             return native_brush->draw(regionPath, size, region);
