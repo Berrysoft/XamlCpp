@@ -4,6 +4,7 @@
 #include <cocoa/nsstring.hpp>
 #include <functional>
 #include <shared/canvas.hpp>
+#include <tuple>
 #include <xaml/ui/cocoa/controls/brush.h>
 #include <xaml/ui/cocoa/controls/pen.h>
 #include <xaml/ui/controls/canvas.h>
@@ -70,27 +71,22 @@ static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& 
     return path;
 }
 
-static constexpr xaml_rectangle get_scaled_rect(xaml_rectangle const& region) noexcept
+static constexpr tuple<xaml_size, xaml_rectangle> get_scaled_rect(xaml_size const& size, xaml_rectangle const& region) noexcept
 {
     xaml_rectangle scaled_region = region;
-    if (scaled_region.width > scaled_region.height)
-    {
-        scaled_region.y = scaled_region.y + scaled_region.height - scaled_region.width;
-        scaled_region.height = scaled_region.width;
-    }
-    else if (scaled_region.height > scaled_region.width)
-    {
-        scaled_region.width = scaled_region.height;
-    }
-    return scaled_region;
+    double rate = scaled_region.height / scaled_region.width;
+    scaled_region.y /= rate;
+    scaled_region.height /= rate;
+    xaml_size scaled_size = { size.width, size.height / rate };
+    return make_tuple(scaled_size, scaled_region);
 }
 
 xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     [[NSGraphicsContext currentContext] saveGraphicsState];
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
-    xaml_rectangle scaled_region = get_scaled_rect(region);
-    xaml_result hr = set_pen(arc, pen, m_size, scaled_region);
+    auto [scaled_size, scaled_region] = get_scaled_rect(m_size, region);
+    xaml_result hr = set_pen(arc, pen, scaled_size, scaled_region);
     [[NSGraphicsContext currentContext] restoreGraphicsState];
     return hr;
 }
@@ -100,8 +96,8 @@ xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangl
     [[NSGraphicsContext currentContext] saveGraphicsState];
     NSBezierPath* arc = path_arc(m_size, region, start_angle, end_angle);
     [arc closePath];
-    xaml_rectangle scaled_region = get_scaled_rect(region);
-    xaml_result hr = set_brush(arc, brush, m_size, scaled_region);
+    auto [scaled_size, scaled_region] = get_scaled_rect(m_size, region);
+    xaml_result hr = set_brush(arc, brush, scaled_size, scaled_region);
     [[NSGraphicsContext currentContext] restoreGraphicsState];
     return hr;
 }
