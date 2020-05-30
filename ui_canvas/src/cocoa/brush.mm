@@ -62,13 +62,17 @@ xaml_result xaml_radial_gradient_brush_impl::draw(NSBezierPath* path, xaml_size 
             return XAML_S_OK;
         },
         [this, gradient, &size, &region]() noexcept -> xaml_result {
-            [gradient drawFromCenter:xaml_to_native<NSPoint>(lerp_point(region, m_origin))
+            xaml_point real_origin = lerp_point(region, m_origin);
+            xaml_point real_center = lerp_point(region, m_center);
+            double rate = region.height / region.width;
+            NSAffineTransform* transform = [NSAffineTransform transform];
+            [transform scaleXBy:1 yBy:rate];
+            [transform concat];
+            [gradient drawFromCenter:NSMakePoint(real_origin.x, (size.height - real_origin.y) / rate)
                               radius:0
-                            toCenter:xaml_to_native<NSPoint>(lerp_point(region, m_center))
+                            toCenter:NSMakePoint(real_center.x, (size.height - real_center.y) / rate)
                               radius:sqrt(region.width * region.width + region.height * region.height) * m_radius.width
                              options:NSGradientDrawsAfterEndingLocation];
-            NSAffineTransform* transform = [NSAffineTransform transform];
-            [transform scaleXBy:1 yBy:m_radius.height / m_radius.width];
             return XAML_S_OK;
         });
 }

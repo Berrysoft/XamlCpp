@@ -65,6 +65,7 @@ static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& 
                                   clockwise:YES];
     NSAffineTransform* transform = [NSAffineTransform transform];
     [transform scaleXBy:1 yBy:radius.height / radius.width];
+    [transform concat];
     return path;
 }
 
