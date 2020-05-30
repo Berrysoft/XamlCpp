@@ -1,5 +1,6 @@
 #include <cmath>
 #import <cocoa/XamlCanvasView.h>
+#include <cocoa/drawing_mask.hpp>
 #include <cocoa/nsstring.hpp>
 #include <functional>
 #include <shared/canvas.hpp>
@@ -193,27 +194,15 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceGray();
     CGContextRef maskContext = CGBitmapContextCreate(nullptr, m_size.width, m_size.height, 8, m_size.width, colorspace, 0);
     CGColorSpaceRelease(colorspace);
-
-    NSGraphicsContext* maskGraphicsContext = [NSGraphicsContext graphicsContextWithCGContext:maskContext
-                                                                                     flipped:NO];
-    [NSGraphicsContext saveGraphicsState];
-    [NSGraphicsContext setCurrentContext:maskGraphicsContext];
-
-    [astr drawAtPoint:location];
-
-    [NSGraphicsContext restoreGraphicsState];
-
-    CGImageRef alphaMask = CGBitmapContextCreateImage(maskContext);
-
-    CGContextRef windowContext = [[NSGraphicsContext currentContext] CGContext];
-    CGContextSaveGState(windowContext);
-    CGContextClipToMask(windowContext, { 0, 0, m_size.width, m_size.height }, alphaMask);
-
-    xaml_result hr = fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
-
-    CGContextRestoreGState(windowContext);
-    CGImageRelease(alphaMask);
-    return hr;
+    return draw_mask(
+        m_size,
+        [astr, &location]() noexcept -> xaml_result {
+            [astr drawAtPoint:location];
+            return XAML_S_OK;
+        },
+        [this, brush, &location, &str_size]() noexcept -> xaml_result {
+            return fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
+        });
 }
 
 xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept

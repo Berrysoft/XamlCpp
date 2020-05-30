@@ -1,4 +1,7 @@
+#include <cmath>
+#include <cocoa/drawing_mask.hpp>
 #include <shared/brush.hpp>
+#include <shared/point.hpp>
 #include <vector>
 #include <xaml/ui/controls/brush.h>
 #include <xaml/ui/drawing_conv.hpp>
@@ -19,11 +22,11 @@ xaml_result xaml_solid_brush_impl::draw(NSBezierPath* path, xaml_size const&, xa
     return XAML_S_OK;
 }
 
-xaml_result xaml_linear_gradient_brush_impl::draw(NSBezierPath* path, xaml_size const& size, xaml_rectangle const& region) noexcept
+static xaml_result get_Gradient(xaml_ptr<xaml_vector> const& stops, NSGradient** pres) noexcept
 {
     NSMutableArray<NSColor*>* colors = [NSMutableArray<NSColor*> new];
     vector<CGFloat> locations;
-    XAML_FOREACH_START(item, m_gradient_stops);
+    XAML_FOREACH_START(item, stops);
     {
         xaml_gradient_stop const* pitem;
         XAML_RETURN_IF_FAILED(item.query<xaml_box>()->get_value_ptr(&pitem));
@@ -34,7 +37,38 @@ xaml_result xaml_linear_gradient_brush_impl::draw(NSBezierPath* path, xaml_size 
     NSGradient* gradient = [[NSGradient alloc] initWithColors:colors
                                                   atLocations:locations.data()
                                                    colorSpace:[NSColorSpace deviceRGBColorSpace]];
+    *pres = gradient;
+    return XAML_S_OK;
+}
+
+xaml_result xaml_linear_gradient_brush_impl::draw(NSBezierPath* path, xaml_size const& size, xaml_rectangle const& region) noexcept
+{
+    NSGradient* gradient;
+    XAML_RETURN_IF_FAILED(get_Gradient(m_gradient_stops, &gradient));
     xaml_point dir = m_end_point - m_start_point;
     [gradient drawInBezierPath:path angle:-atan(dir.y / dir.x) / pi * 180.0];
     return XAML_S_OK;
+}
+
+xaml_result xaml_radial_gradient_brush_impl::draw(NSBezierPath* path, xaml_size const& size, xaml_rectangle const& region) noexcept
+{
+    NSGradient* gradient;
+    XAML_RETURN_IF_FAILED(get_Gradient(m_gradient_stops, &gradient));
+    return draw_mask(
+        size,
+        [this, path]() noexcept -> xaml_result {
+            [[NSColor whiteColor] set];
+            [path fill];
+            return XAML_S_OK;
+        },
+        [this, gradient, &size, &region]() noexcept -> xaml_result {
+            [gradient drawFromCenter:xaml_to_native<NSPoint>(lerp_point(region, m_origin))
+                              radius:0
+                            toCenter:xaml_to_native<NSPoint>(lerp_point(region, m_center))
+                              radius:sqrt(region.width * region.width + region.height * region.height) * m_radius.width
+                             options:NSGradientDrawsAfterEndingLocation];
+            NSAffineTransform* transform = [NSAffineTransform transform];
+            [transform scaleXBy:1 yBy:m_radius.height / m_radius.width];
+            return XAML_S_OK;
+        });
 }
