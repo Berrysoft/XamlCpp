@@ -129,8 +129,8 @@ xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectang
 static NSBezierPath* path_round_rect(xaml_size const& base_size, xaml_rectangle const& rect, xaml_size const& round) noexcept
 {
     return [NSBezierPath bezierPathWithRoundedRect:NSMakeRect(rect.x, base_size.height - rect.height - rect.y, rect.width, rect.height)
-                                           xRadius:round.width / 2
-                                           yRadius:round.height / 2];
+                                           xRadius:round.width
+                                           yRadius:round.height];
 }
 
 xaml_result xaml_drawing_context_impl::draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept

@@ -105,10 +105,10 @@ static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_si
     cairo_get_matrix(handle, &save_matrix);
     cairo_scale(handle, 1, round.height / round.width);
     cairo_new_sub_path(handle);
-    cairo_arc(handle, rect.x + rect.width - round.width / 2, rect.y + round.height / 2, round.width / 2, -pi / 2, 0);
-    cairo_arc(handle, rect.x + rect.width - round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, 0, pi / 2);
-    cairo_arc(handle, rect.x + round.width / 2, rect.y + rect.height - round.height / 2, round.width / 2, pi / 2, pi);
-    cairo_arc(handle, rect.x + round.width / 2, rect.y + round.height / 2, round.width / 2, pi, pi / 2 * 3);
+    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + round.height, round.width, -pi / 2, 0);
+    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + rect.height - round.height, round.width, 0, pi / 2);
+    cairo_arc(handle, rect.x + round.width, rect.y + rect.height - round.height, round.width, pi / 2, pi);
+    cairo_arc(handle, rect.x + round.width, rect.y + round.height, round.width, pi, pi / 2 * 3);
     cairo_close_path(handle);
     cairo_set_matrix(handle, &save_matrix);
 }
