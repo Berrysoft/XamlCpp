@@ -64,7 +64,7 @@ xaml_result xaml_radial_gradient_brush_impl::draw(NSBezierPath* path, xaml_size 
         [this, gradient, &size, &region]() noexcept -> xaml_result {
             xaml_point real_origin = lerp_point(region, m_origin);
             xaml_point real_center = lerp_point(region, m_center);
-            double rate = region.height / region.width;
+            double rate = region.height / region.width * m_radius.height / m_radius.width;
             NSAffineTransform* transform = [NSAffineTransform transform];
             [transform scaleXBy:1 yBy:rate];
             [transform concat];

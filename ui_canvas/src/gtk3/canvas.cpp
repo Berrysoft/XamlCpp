@@ -32,9 +32,10 @@ static void path_arc(cairo_t* handle, xaml_rectangle const& region, double start
 {
     cairo_matrix_t save_matrix;
     cairo_get_matrix(handle, &save_matrix);
-    cairo_scale(handle, 1, region.height / region.width);
+    double rate = region.height / region.width;
+    cairo_scale(handle, 1, rate);
     cairo_new_path(handle);
-    cairo_arc(handle, region.x + region.width / 2, region.y + region.height / 2, region.width / 2, start_angle, end_angle);
+    cairo_arc(handle, region.x + region.width / 2, (region.y + region.height / 2) / rate, region.width / 2, start_angle, end_angle);
     cairo_set_matrix(handle, &save_matrix);
 }
 
@@ -160,7 +161,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         break;
     }
     cairo_move_to(m_handle, x, y);
-    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, { x, y, extent.width, extent.height }));
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, { x, y - extent.height, extent.width, extent.height }));
     cairo_show_text(m_handle, data);
     return XAML_S_OK;
 }

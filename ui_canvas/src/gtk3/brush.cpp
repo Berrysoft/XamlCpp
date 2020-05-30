@@ -33,7 +33,7 @@ xaml_result xaml_linear_gradient_brush_impl::set(cairo_t* handle, xaml_rectangle
             real_start_point.x, real_start_point.y,
             real_end_point.x, real_end_point.y)
     };
-    add_stops(pattern.get(), m_gradient_stops);
+    XAML_RETURN_IF_FAILED(add_stops(pattern.get(), m_gradient_stops));
     cairo_set_source(handle, pattern.get());
     return XAML_S_OK;
 }
@@ -42,15 +42,16 @@ xaml_result xaml_radial_gradient_brush_impl::set(cairo_t* handle, xaml_rectangle
 {
     xaml_point real_origin = lerp_point(region, m_origin);
     xaml_point real_center = lerp_point(region, m_center);
+    double rate = region.height / region.width * m_radius.height / m_radius.width;
     unique_ptr<cairo_pattern_t, g_free_deleter<cairo_pattern_t, cairo_pattern_destroy>> pattern{
         cairo_pattern_create_radial(
-            real_origin.x, real_origin.y, 0,
-            real_center.x, real_center.y, m_radius.width * region.width)
+            real_origin.x, real_origin.y / rate, 0,
+            real_center.x, real_center.y / rate, m_radius.width * region.width)
     };
-    cairo_matrix_t matrix;
-    cairo_matrix_init_scale(&matrix, 1, m_radius.height / m_radius.width);
+    cairo_matrix_t matrix{};
+    cairo_matrix_init_scale(&matrix, 1, 1 / rate);
     cairo_pattern_set_matrix(pattern.get(), &matrix);
-    add_stops(pattern.get(), m_gradient_stops);
+    XAML_RETURN_IF_FAILED(add_stops(pattern.get(), m_gradient_stops));
     cairo_set_source(handle, pattern.get());
     return XAML_S_OK;
 }
