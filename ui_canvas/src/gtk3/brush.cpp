@@ -1,6 +1,7 @@
 #include <cmath>
 #include <gtk3/resources.hpp>
 #include <shared/brush.hpp>
+#include <shared/point.hpp>
 #include <xaml/ui/controls/brush.h>
 
 using namespace std;
@@ -25,12 +26,12 @@ static xaml_result add_stops(cairo_pattern_t* pattern, xaml_ptr<xaml_vector> con
 
 xaml_result xaml_linear_gradient_brush_impl::set(cairo_t* handle, xaml_rectangle const& region) noexcept
 {
+    xaml_point real_start_point = lerp_point(region, m_start_point);
+    xaml_point real_end_point = lerp_point(region, m_end_point);
     unique_ptr<cairo_pattern_t, g_free_deleter<cairo_pattern_t, cairo_pattern_destroy>> pattern{
         cairo_pattern_create_linear(
-            lerp(region.x, region.x + region.width, m_start_point.x),
-            lerp(region.y, region.y + region.height, m_start_point.y),
-            lerp(region.x, region.x + region.width, m_end_point.x),
-            lerp(region.y, region.y + region.height, m_end_point.y))
+            real_start_point.x, real_start_point.y,
+            real_end_point.x, real_end_point.y)
     };
     add_stops(pattern.get(), m_gradient_stops);
     cairo_set_source(handle, pattern.get());
@@ -39,14 +40,12 @@ xaml_result xaml_linear_gradient_brush_impl::set(cairo_t* handle, xaml_rectangle
 
 xaml_result xaml_radial_gradient_brush_impl::set(cairo_t* handle, xaml_rectangle const& region) noexcept
 {
+    xaml_point real_origin = lerp_point(region, m_origin);
+    xaml_point real_center = lerp_point(region, m_center);
     unique_ptr<cairo_pattern_t, g_free_deleter<cairo_pattern_t, cairo_pattern_destroy>> pattern{
         cairo_pattern_create_radial(
-            lerp(region.x, region.x + region.width, m_origin.x),
-            lerp(region.y, region.y + region.height, m_origin.y),
-            0,
-            lerp(region.x, region.x + region.width, m_center.x),
-            lerp(region.y, region.y + region.height, m_center.y),
-            m_radius.width * region.width)
+            real_origin.x, real_origin.y, 0,
+            real_center.x, real_center.y, m_radius.width * region.width)
     };
     cairo_matrix_t matrix;
     cairo_matrix_init_scale(&matrix, 1, m_radius.height / m_radius.width);

@@ -422,7 +422,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     xaml_ptr<xaml_radial_gradient_brush> brush3;
     XAML_RETURN_IF_FAILED(xaml_radial_gradient_brush_new(&brush3));
     XAML_RETURN_IF_FAILED(brush3->set_center({ 0.5, 0.5 }));
-    XAML_RETURN_IF_FAILED(brush3->set_origin({ 0.5, 0.5 }));
+    XAML_RETURN_IF_FAILED(brush3->set_origin({ 0.2, 0.5 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ is_dark ? colors::white : colors::black, 0 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::pink, 1 }));
     XAML_RETURN_IF_FAILED(dc->draw_string(brush3, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));

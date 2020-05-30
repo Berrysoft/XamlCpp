@@ -1,6 +1,8 @@
 #include <shared/brush.hpp>
+#include <shared/point.hpp>
 #include <vector>
 #include <wil/com.h>
+#include <win/d2d_conv.hpp>
 
 using namespace std;
 
@@ -31,8 +33,8 @@ xaml_result xaml_linear_gradient_brush_impl::create(ID2D1RenderTarget* target, x
     wil::com_ptr_t<ID2D1LinearGradientBrush, wil::err_returncode_policy> brush;
     XAML_RETURN_IF_FAILED(target->CreateLinearGradientBrush(
         D2D1::LinearGradientBrushProperties(
-            D2D1::Point2F((FLOAT)lerp(region.x, region.x + region.width, m_start_point.x), (FLOAT)lerp(region.y, region.y + region.height, m_start_point.y)),
-            D2D1::Point2F((FLOAT)lerp(region.x, region.x + region.width, m_end_point.x), (FLOAT)lerp(region.y, region.y + region.height, m_end_point.y))),
+            xaml_to_native<D2D1_POINT_2F>(lerp_point(region, m_start_point)),
+            xaml_to_native<D2D1_POINT_2F>(lerp_point(region, m_end_point))),
         stop_collection.get(), &brush));
     return brush.copy_to(ptr);
 }
@@ -44,7 +46,7 @@ xaml_result xaml_radial_gradient_brush_impl::create(ID2D1RenderTarget* target, x
     wil::com_ptr_t<ID2D1RadialGradientBrush, wil::err_returncode_policy> brush;
     XAML_RETURN_IF_FAILED(target->CreateRadialGradientBrush(
         D2D1::RadialGradientBrushProperties(
-            D2D1::Point2F((FLOAT)lerp(region.x, region.x + region.width, m_center.x), (FLOAT)lerp(region.y, region.y + region.height, m_center.y)),
+            xaml_to_native<D2D1_POINT_2F>(lerp_point(region, m_center)),
             D2D1::Point2F((FLOAT)(region.width * (m_origin - m_center).x), (FLOAT)(region.height * (m_origin - m_center).y)),
             (FLOAT)(m_radius.width * region.width), (FLOAT)(m_radius.height * region.height)),
         stop_collection.get(), &brush));

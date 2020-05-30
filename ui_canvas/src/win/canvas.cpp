@@ -1,5 +1,6 @@
 #include <numbers>
 #include <shared/canvas.hpp>
+#include <win/d2d_conv.hpp>
 #include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/win/controls/brush.h>
 #include <xaml/ui/win/controls/pen.h>
@@ -37,36 +38,6 @@ static D2D1_ELLIPSE get_ELLIPSE(xaml_rectangle const& region) noexcept
 
 #define CHECK_SIZE(r) \
     if ((r).width < 1 || (r).height < 1) return XAML_S_OK
-
-inline xaml_size xaml_from_native(D2D1_SIZE_F const& s) noexcept
-{
-    return { (double)s.width, (double)s.height };
-}
-template <>
-inline D2D1_SIZE_F xaml_to_native<D2D1_SIZE_F, xaml_size>(xaml_size const& s) noexcept
-{
-    return { (float)s.width, (float)s.height };
-}
-
-inline xaml_point xaml_from_native(D2D1_POINT_2F const& p) noexcept
-{
-    return { (double)p.x, (double)p.y };
-}
-template <>
-inline D2D1_POINT_2F xaml_to_native<D2D1_POINT_2F, xaml_point>(xaml_point const& p) noexcept
-{
-    return { (float)p.x, (float)p.y };
-}
-
-inline xaml_rectangle xaml_from_native(D2D1_RECT_F const& r) noexcept
-{
-    return { (double)r.left, (double)r.top, (double)r.right - (double)r.left, (double)r.bottom - (double)r.top };
-}
-template <>
-inline D2D1_RECT_F xaml_to_native<D2D1_RECT_F, xaml_rectangle>(xaml_rectangle const& r) noexcept
-{
-    return { (float)r.x, (float)r.y, (float)(r.x + r.width), (float)(r.y + r.height) };
-}
 
 static constexpr tuple<xaml_size, xaml_point, xaml_point, xaml_point> get_arc(xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
