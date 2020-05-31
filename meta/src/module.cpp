@@ -74,21 +74,19 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     HMODULE m_handle{};
 
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
+    try
     {
-        try
+        if (m_handle)
         {
-            if (m_handle)
-            {
-                XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
-            }
-            auto p = get_full_path(to_path(path));
-            XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
-            m_handle = LoadLibraryW(p.c_str());
-            if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
-            return XAML_S_OK;
+            XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
         }
-        XAML_CATCH_RETURN()
+        auto p = get_full_path(to_path(path));
+        XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
+        m_handle = LoadLibraryW(p.c_str());
+        if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
+        return XAML_S_OK;
     }
+    XAML_CATCH_RETURN()
 
     xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
     {
@@ -104,26 +102,24 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     void* m_handle{};
 
     xaml_result XAML_CALL open(xaml_string* path) noexcept override
+    try
     {
-        try
+        if (m_handle)
         {
-            if (m_handle)
-            {
-                int res = dlclose(m_handle);
-                if (res) return XAML_E_FAIL;
-            }
-            auto p = get_full_path(to_path(path));
-            XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
-            m_handle = dlopen(p.c_str(), RTLD_LAZY);
-            if (!m_handle)
-            {
-                xaml_result_raise_message(XAML_E_FAIL, xaml_result_raise_error, dlerror());
-                return XAML_E_FAIL;
-            }
-            return XAML_S_OK;
+            int res = dlclose(m_handle);
+            if (res) return XAML_E_FAIL;
         }
-        XAML_CATCH_RETURN()
+        auto p = get_full_path(to_path(path));
+        XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
+        m_handle = dlopen(p.c_str(), RTLD_LAZY);
+        if (!m_handle)
+        {
+            xaml_result_raise_message(XAML_E_FAIL, xaml_result_raise_error, dlerror());
+            return XAML_E_FAIL;
+        }
+        return XAML_S_OK;
     }
+    XAML_CATCH_RETURN()
 
     xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
     {

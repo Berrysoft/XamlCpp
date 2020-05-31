@@ -57,7 +57,7 @@ static map<xaml_result_raise_level, std::string_view> s_level_map{
 static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
     { xaml_result_raise_info, sf::bright_blue },
     { xaml_result_raise_warning, sf::yellow },
-    { xaml_result_raise_warning, sf::red }
+    { xaml_result_raise_error, sf::bright_red }
 };
 #endif // XAML_DEFAULT_HANDLER_COLOR
 
