@@ -115,56 +115,34 @@ wstring to_wstring(string_view view)
     return boost::nowide::widen(view);
 }
 
-xaml_result to_wstring(string_view view, wstring* pvalue) noexcept
-try
+pmr::wstring to_pmr_wstring(string_view str, pmr::polymorphic_allocator<wchar_t> alloc)
 {
-    *pvalue = to_wstring(view);
-    return XAML_S_OK;
+    return boost::nowide::convert<wchar_t>(str, alloc);
 }
-XAML_CATCH_RETURN()
 
-wstring_view xaml_codecvt_pool::operator()(string_view view)
+wstring_view __xaml_codecvt_pool_impl::operator()(string_view view)
 {
     size_t len = view.length() + 1;
     wchar_t* result = m_wide_allocator.allocate(len);
-    return boost::nowide::convert(result, len, view);
+    return boost::nowide::widen(result, len, view);
 }
-
-xaml_result xaml_codecvt_pool::operator()(string_view view, wstring_view* pvalue) noexcept
-try
-{
-    *pvalue = operator()(view);
-    return XAML_S_OK;
-}
-XAML_CATCH_RETURN()
 
 string to_string(wstring_view view)
 {
     return boost::nowide::narrow(view);
 }
 
-xaml_result to_string(wstring_view view, string* pvalue) noexcept
-try
+pmr::string to_pmr_string(wstring_view wstr, pmr::polymorphic_allocator<char> alloc)
 {
-    *pvalue = to_string(view);
-    return XAML_S_OK;
+    return boost::nowide::convert<char>(wstr, alloc);
 }
-XAML_CATCH_RETURN()
 
-string_view xaml_codecvt_pool::operator()(wstring_view view)
+string_view __xaml_codecvt_pool_impl::operator()(wstring_view view)
 {
     size_t len = view.length() * 2 + 1;
     char* result = m_allocator.allocate(len);
-    return boost::nowide::convert(result, len, view);
+    return boost::nowide::narrow(result, len, view);
 }
-
-xaml_result xaml_codecvt_pool::operator()(wstring_view view, string_view* pvalue) noexcept
-try
-{
-    *pvalue = operator()(view);
-    return XAML_S_OK;
-}
-XAML_CATCH_RETURN()
 #endif // XAML_WIN32
 
 xaml_result XAML_CALL xaml_string_empty(xaml_string** ptr) noexcept

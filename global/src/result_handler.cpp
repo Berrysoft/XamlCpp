@@ -72,7 +72,7 @@ static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_lev
 
 void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_level level, char const* msg) noexcept
 {
-#ifndef XAML_DEFAULT_HANDLER_COLOR
+#ifdef XAML_WIN32
     if (IsDebuggerPresent())
     {
         xaml_codecvt_pool pool;
