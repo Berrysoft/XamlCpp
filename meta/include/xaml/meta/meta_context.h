@@ -1,6 +1,7 @@
 #ifndef XAML_META_META_CONTEXT_H
 #define XAML_META_META_CONTEXT_H
 
+#include <xaml/converter.h>
 #include <xaml/map.h>
 #include <xaml/meta/module.h>
 #include <xaml/meta/reflection_info.h>
@@ -33,7 +34,7 @@ XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 
     XAML_METHOD(get_type_by_namespace_name, type, xaml_string*, xaml_string*, xaml_reflection_info**); \
     XAML_METHOD(get_name_by_namespace_name, type, xaml_string*, xaml_string*, xaml_string**);          \
     XAML_METHOD(add_type, type, xaml_reflection_info*);                                                \
-    XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode)
+    XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode, xaml_converter*, xaml_object*, xaml_string*)
 
 XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
 {
