@@ -6,18 +6,10 @@
 #include <sf/sformat.hpp>
 #include <sstream>
 #include <xaml/internal/stream.hpp>
-#include <xaml/markup/binding.h>
 #include <xaml/parser/parser.h>
 
 using namespace std;
 using namespace rapidxml;
-
-xaml_result XAML_CALL xaml_parser_register(xaml_meta_context* ctx) noexcept
-{
-    XAML_RETURN_IF_FAILED(xaml_binding_register(ctx));
-    XAML_RETURN_IF_FAILED(xaml_binding_mode_register(ctx));
-    return XAML_S_OK;
-}
 
 static xaml_result get_random_name(xaml_ptr<xaml_type_info> const& ref, xaml_string** ptr) noexcept
 {

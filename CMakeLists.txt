@@ -176,7 +176,7 @@ option(BUILD_WEBVIEW "Build webview." ON)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
-    xaml_meta xaml_parser
+    xaml_meta xaml_markup xaml_parser
     xaml_ui xaml_ui_appmain
     xaml_ui_controls
     xaml_ui_canvas
@@ -200,6 +200,7 @@ endif()
 add_subdirectory(global)
 add_subdirectory(helpers)
 add_subdirectory(meta)
+add_subdirectory(markup)
 add_subdirectory(parser)
 add_subdirectory(ui)
 add_subdirectory(ui_controls)
