@@ -30,6 +30,9 @@ namespace rapidxml
 
         template <typename T>
         using list = std::list<T, polymorphic_allocator<T>>;
+
+        template <typename T>
+        using vector = std::vector<T, polymorphic_allocator<T>>;
     } // namespace pmr
 #endif // __cpp_lib_memory_resource
 

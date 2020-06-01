@@ -306,6 +306,16 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& nod
                     XAML_RETURN_IF_FAILED(info->set(ex, str));
                 }
             }
+            else if (auto n = value.query<xaml_markup_node>())
+            {
+                xaml_ptr<xaml_string> info_name;
+                XAML_RETURN_IF_FAILED(info->get_name(&info_name));
+                xaml_ptr<xaml_markup_context> context;
+                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, ex, info_name, symbols));
+                xaml_ptr<xaml_markup_extension> obj;
+                XAML_RETURN_IF_FAILED(deserialize(n, &obj));
+                XAML_RETURN_IF_FAILED(obj->provide(m_ctx, context));
+            }
         }
         XAML_FOREACH_END();
     }

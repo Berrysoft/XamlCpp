@@ -11,10 +11,15 @@ namespace rapidxml
     class xml_namespace_processor
     {
     private:
-        using xmlns_attributes_t = vector<pmr::list<xml_attribute>::iterator>;
+        using xmlns_attributes_t = pmr::vector<pmr::list<xml_attribute>::iterator>;
         xmlns_attributes_t m_namespace_prefixes;
 
     public:
+        xml_namespace_processor(pmr::polymorphic_allocator<pmr::list<xml_attribute>::iterator> const& alloc)
+            : m_namespace_prefixes(alloc)
+        {
+        }
+
         class scope
         {
         private:
@@ -530,7 +535,7 @@ namespace rapidxml
         {
             parse_buffer buffer{ text, text };
 
-            xml_namespace_processor namespace_processor;
+            xml_namespace_processor namespace_processor{ pmr::polymorphic_allocator<pmr::list<xml_attribute>::iterator>{ &m_pool } };
             // Creating topmost namespace scope that actually won't be used
             typename xml_namespace_processor::scope const namespace_scope(namespace_processor);
 

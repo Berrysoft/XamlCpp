@@ -38,7 +38,7 @@ try
 }
 catch (rapidxml::parse_error const& e)
 {
-    string msg = sf::sprint("{}:{}:{}:{}", e.what(), e.where(), e.row(), e.col());
+    string msg = sf::sprint(U("{}:{}:{}:{}"), e.what(), e.where(), e.row(), e.col());
     xaml_result_raise_message(XAML_E_FAIL, xaml_result_raise_error, msg.c_str());
     return XAML_E_FAIL;
 }
@@ -132,7 +132,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     xaml_ptr<xaml_string> include_file;
     XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
     if (include_file)
-        headers->append(include_file);
+        XAML_RETURN_IF_FAILED(headers->append(include_file));
     xaml_ptr<xaml_string> node_name;
     XAML_RETURN_IF_FAILED(get_random_name(t, &node_name));
     xaml_ptr<xaml_markup_node> node;
@@ -287,7 +287,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     xaml_ptr<xaml_string> include_file;
                     XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
                     if (include_file)
-                        headers->append(include_file);
+                        XAML_RETURN_IF_FAILED(headers->append(include_file));
                     xaml_ptr<xaml_property_info> prop;
                     {
                         xaml_ptr<xaml_string> aprop_name_str;
@@ -415,7 +415,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 xaml_ptr<xaml_string> include_file;
                 XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
                 if (include_file)
-                    headers->append(include_file);
+                    XAML_RETURN_IF_FAILED(headers->append(include_file));
                 xaml_ptr<xaml_string> prop_name_str;
                 XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
                 xaml_ptr<xaml_property_info> prop;
@@ -564,7 +564,7 @@ xaml_result parser_impl::parse_impl(xml_node& node, xaml_ptr<xaml_type_info> con
     xaml_ptr<xaml_string> include_file;
     XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
     if (include_file)
-        headers->append(include_file);
+        XAML_RETURN_IF_FAILED(headers->append(include_file));
     xaml_ptr<xaml_node> mc;
     XAML_RETURN_IF_FAILED(xaml_node_new(&mc));
     XAML_RETURN_IF_FAILED(mc->set_type(t));
