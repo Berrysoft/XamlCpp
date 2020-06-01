@@ -13,13 +13,24 @@ xaml_control_internal::~xaml_control_internal() {}
 xaml_result xaml_control_internal::parent_redraw() noexcept
 {
     if (m_parent)
-        return m_parent->parent_redraw();
+    {
+        xaml_ptr<xaml_control> control;
+        if (XAML_SUCCEEDED(m_parent->query(&control)))
+        {
+            return control->parent_redraw();
+        }
+        return XAML_S_OK;
+    }
     else
+    {
         return draw({});
+    }
 }
 
 xaml_result xaml_control_internal::init() noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_map_new(&m_resources));
+
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_parent_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_size_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_margin_changed));
@@ -50,6 +61,7 @@ xaml_result xaml_control_internal::init() noexcept
 xaml_result XAML_CALL xaml_control_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_control;
+    XAML_RETURN_IF_FAILED(xaml_element_base_members(__info));
     XAML_TYPE_INFO_ADD_PROP_EVENT(size, xaml_size);
     XAML_TYPE_INFO_ADD_PROP(width, double);
     XAML_TYPE_INFO_ADD_PROP(height, double);

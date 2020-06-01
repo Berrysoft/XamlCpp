@@ -28,7 +28,7 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_ui PRIVATE "XAML_UI_API=__XAML_EXPORT")
 endif()
 
-target_link_libraries(xaml_ui PUBLIC xaml_meta)
+target_link_libraries(xaml_ui PUBLIC xaml_markup)
 if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui PUBLIC Comctl32 ntdll UxTheme Dwmapi PRIVATE wil Boost::nowide)
 elseif(${BUILD_COCOA})

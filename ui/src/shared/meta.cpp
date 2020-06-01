@@ -8,6 +8,13 @@ EXTERN_C XAML_UI_API xaml_result xaml_module_version(xaml_version* pver) noexcep
     return XAML_S_OK;
 }
 
+EXTERN_C XAML_UI_API xaml_result xaml_module_dependencies(char const* const** parr) noexcept
+{
+    static char const* arr[] = { U("xaml_markup"), nullptr };
+    *parr = arr;
+    return XAML_S_OK;
+}
+
 EXTERN_C XAML_UI_API xaml_result xaml_module_register(xaml_meta_context* ctx) noexcept
 {
     xaml_ptr<xaml_string> xml_ns;

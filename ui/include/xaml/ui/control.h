@@ -1,10 +1,7 @@
 #ifndef XAML_UI_CONTROL_H
 #define XAML_UI_CONTROL_H
 
-#include <xaml/delegate.h>
-#include <xaml/meta/meta_context.h>
-#include <xaml/meta/meta_macros.h>
-#include <xaml/object.h>
+#include <xaml/markup/element_base.h>
 #include <xaml/ui/drawing.h>
 
 typedef enum xaml_halignment
@@ -34,9 +31,7 @@ EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_valignment_register(xaml_meta_co
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 
 #define XAML_CONTROL_VTBL(type)                                        \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                         \
-    XAML_PROP(parent, type, xaml_control**, xaml_control*);            \
-    XAML_EVENT(parent_changed, type);                                  \
+    XAML_VTBL_INHERIT(XAML_ELEMENT_BASE_VTBL(type));                   \
     XAML_PROP(size, type, xaml_size*, xaml_size XAML_CONST_REF);       \
     XAML_PROP(width, type, double*, double);                           \
     XAML_PROP(height, type, double*, double);                          \
@@ -55,7 +50,7 @@ XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb,
     XAML_METHOD(parent_redraw, type);                                  \
     XAML_METHOD(set_size_noevent, type, xaml_size XAML_CONST_REF)
 
-XAML_DECL_INTERFACE_(xaml_control, xaml_object)
+XAML_DECL_INTERFACE_(xaml_control, xaml_element_base)
 {
     XAML_DECL_VTBL(xaml_control, XAML_CONTROL_VTBL);
 };

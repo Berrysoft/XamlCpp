@@ -20,8 +20,26 @@ struct xaml_control_internal
 
     XAML_UI_API virtual ~xaml_control_internal();
 
+    xaml_ptr<xaml_map> m_resources;
+
+    xaml_result XAML_CALL add_resource(xaml_string* key, xaml_object* value) noexcept
+    {
+        bool replaced;
+        return m_resources->insert(key, value, &replaced);
+    }
+
+    xaml_result XAML_CALL get_resource(xaml_string* key, xaml_object** pvalue) noexcept
+    {
+        return m_resources->lookup(key, pvalue);
+    }
+
+    xaml_result XAML_CALL get_resources(xaml_map_view** ptr) noexcept
+    {
+        return m_resources.query(ptr);
+    }
+
     XAML_EVENT_IMPL(parent_changed)
-    XAML_PROP_EVENT_IMPL(parent, xaml_control*, xaml_control**, xaml_control*)
+    XAML_PROP_EVENT_IMPL(parent, xaml_element_base*, xaml_element_base**, xaml_element_base*)
 
     XAML_EVENT_IMPL(size_changed)
     XAML_PROP_EVENT_IMPL(size, xaml_size, xaml_size*, xaml_size const&)
@@ -154,12 +172,16 @@ struct xaml_gtk3_control_implement : xaml_inner_implement<T2, D, Base2>
 #endif // XAML_UI_WINDOWS
 
 template <typename T, typename Internal, typename... Base>
-struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_object>
+struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>
 {
     Internal m_internal;
 
+    xaml_result XAML_CALL add_resource(xaml_string* key, xaml_object* value) noexcept override { return m_internal.add_resource(key, value); }
+    xaml_result XAML_CALL get_resource(xaml_string* key, xaml_object** pvalue) noexcept override { return m_internal.get_resource(key, pvalue); }
+    xaml_result XAML_CALL get_resources(xaml_map_view** ptr) noexcept override { return m_internal.get_resources(ptr); }
+
     XAML_EVENT_INTERNAL_IMPL(parent_changed)
-    XAML_PROP_INTERNAL_IMPL(parent, xaml_control**, xaml_control*)
+    XAML_PROP_INTERNAL_IMPL(parent, xaml_element_base**, xaml_element_base*)
 
     XAML_EVENT_INTERNAL_IMPL(size_changed)
     XAML_PROP_INTERNAL_IMPL(size, xaml_size*, xaml_size const&)
@@ -231,7 +253,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_ob
         }
         else
         {
-            return xaml_implement<T, Base..., xaml_control, xaml_object>::query(type, ptr);
+            return xaml_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>::query(type, ptr);
         }
     }
 

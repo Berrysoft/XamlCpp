@@ -23,7 +23,7 @@ typedef struct xaml_win32_window_create_params
     int y;
     int width;
     int height;
-    xaml_control* parent;
+    xaml_element_base* parent;
 } xaml_win32_window_create_params;
 
 XAML_CLASS(xaml_win32_control, { 0x5aa117c2, 0x59f0, 0x43d6, { 0x94, 0x4c, 0x41, 0x2b, 0x52, 0xa9, 0x35, 0x3b } })
