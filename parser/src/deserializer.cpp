@@ -1,5 +1,6 @@
 #define XAML_RAISE_LEVEL xaml_result_raise_warning
 
+#include <xaml/markup/element_base.h>
 #include <xaml/markup/markup_extension.h>
 #include <xaml/parser/deserializer.h>
 #include <xaml/parser/parser.h>
@@ -92,6 +93,31 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
         XAML_RETURN_IF_FAILED(node->get_name(&node_name));
         bool replaced;
         XAML_RETURN_IF_FAILED(symbols->insert(node_name, mc, &replaced));
+    }
+    {
+        xaml_ptr<xaml_element_base> mce;
+        if (XAML_SUCCEEDED(mc->query(&mce)))
+        {
+            xaml_ptr<xaml_map> node_resources;
+            XAML_RETURN_IF_FAILED(node->get_resources(&node_resources));
+            XAML_FOREACH_START(res_item, node_resources);
+            {
+                xaml_ptr<xaml_key_value_pair> pair;
+                XAML_RETURN_IF_FAILED(res_item->query(&pair));
+                xaml_ptr<xaml_object> key;
+                XAML_RETURN_IF_FAILED(pair->get_key(&key));
+                xaml_ptr<xaml_string> key_str;
+                XAML_RETURN_IF_FAILED(key->query(&key_str));
+                xaml_ptr<xaml_object> value;
+                XAML_RETURN_IF_FAILED(pair->get_value(&value));
+                xaml_ptr<xaml_node> value_node;
+                XAML_RETURN_IF_FAILED(value->query(&value_node));
+                xaml_ptr<xaml_object> value_obj;
+                XAML_RETURN_IF_FAILED(deserialize(value_node, &value_obj));
+                XAML_RETURN_IF_FAILED(mce->add_resource(key_str, value_obj));
+            }
+            XAML_FOREACH_END();
+        }
     }
     {
         xaml_ptr<xaml_vector> node_properties;

@@ -7,6 +7,7 @@ struct xaml_node_base_internal
 
     XAML_PROP_PTR_IMPL(type, xaml_type_info)
     XAML_PROP_PTR_IMPL(name, xaml_string)
+    XAML_PROP_PTR_IMPL(key, xaml_string)
 };
 
 template <typename T, typename Internal, typename... Base>
@@ -21,6 +22,7 @@ struct xaml_node_base_implement : xaml_implement<T, Base..., xaml_node_base, xam
 
     XAML_PROP_PTR_INTERNAL_IMPL(type, xaml_type_info)
     XAML_PROP_PTR_INTERNAL_IMPL(name, xaml_string)
+    XAML_PROP_PTR_INTERNAL_IMPL(key, xaml_string)
 };
 
 struct xaml_string_node_internal : xaml_node_base_internal
@@ -56,6 +58,7 @@ xaml_result XAML_CALL xaml_markup_node_new(xaml_markup_node** ptr) noexcept
 struct xaml_node_internal : xaml_node_base_internal
 {
     XAML_PROP_PTR_IMPL(map_class, xaml_string)
+    XAML_PROP_PTR_IMPL(resources, xaml_map)
     XAML_PROP_PTR_IMPL(properties, xaml_vector)
     XAML_PROP_PTR_IMPL(collection_properties, xaml_map)
     XAML_PROP_PTR_IMPL(events, xaml_vector)
@@ -64,6 +67,7 @@ struct xaml_node_internal : xaml_node_base_internal
 struct xaml_node_impl : xaml_node_base_implement<xaml_node_impl, xaml_node_internal, xaml_node>
 {
     XAML_PROP_PTR_INTERNAL_IMPL(map_class, xaml_string)
+    XAML_PROP_PTR_INTERNAL_IMPL(resources, xaml_map)
     XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector)
     XAML_PROP_PTR_INTERNAL_IMPL(collection_properties, xaml_map)
     XAML_PROP_PTR_INTERNAL_IMPL(events, xaml_vector)

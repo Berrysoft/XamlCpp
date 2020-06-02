@@ -205,6 +205,15 @@ static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" 
 
 xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& node) noexcept
 {
+    xaml_ptr<xaml_map> reses;
+    XAML_RETURN_IF_FAILED(mc->get_resources(&reses));
+    if (!reses)
+    {
+        xaml_ptr<xaml_hasher> hasher;
+        XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
+        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &reses));
+        XAML_RETURN_IF_FAILED(mc->set_resources(reses));
+    }
     xaml_ptr<xaml_vector> props;
     XAML_RETURN_IF_FAILED(mc->get_properties(&props));
     if (!props)
@@ -246,17 +255,19 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
             if (attr_ns == x_ns)
             {
                 string_view attr_value = attr.value();
+                xaml_ptr<xaml_string> attr_value_str;
+                XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &attr_value_str));
                 if (attr_name == "name")
                 {
-                    xaml_ptr<xaml_string> attr_value_str;
-                    XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &attr_value_str));
                     XAML_RETURN_IF_FAILED(mc->set_name(attr_value_str));
+                }
+                else if (attr_name == "key")
+                {
+                    XAML_RETURN_IF_FAILED(mc->set_key(attr_value_str));
                 }
                 else if (attr_name == "class")
                 {
-                    xaml_ptr<xaml_string> full_map_name;
-                    XAML_RETURN_IF_FAILED(xaml_string_new(attr_value, &full_map_name));
-                    XAML_RETURN_IF_FAILED(mc->set_map_class(full_map_name));
+                    XAML_RETURN_IF_FAILED(mc->set_map_class(attr_value_str));
                 }
             }
             else
@@ -268,7 +279,6 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     string_view attach_prop_name = attr_name.substr(dm_index + 1);
                     xaml_ptr<xaml_reflection_info> info;
                     {
-
                         xaml_ptr<xaml_string> attr_ns_str;
                         XAML_RETURN_IF_FAILED(xaml_string_new(attr_ns, &attr_ns_str));
                         xaml_ptr<xaml_string> class_name_str;
@@ -409,52 +419,67 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
                 if (include_file)
                     XAML_RETURN_IF_FAILED(headers->append(include_file));
-                xaml_ptr<xaml_string> prop_name_str;
-                XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
-                xaml_ptr<xaml_property_info> prop;
-                if (XAML_SUCCEEDED(t->get_property(prop_name_str, &prop)))
+                if (prop_name == "resources")
                 {
-                    bool can_write;
-                    XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
-                    if (can_write)
+                    for (auto& cnode : c.nodes())
                     {
-                        xml_node& cnode = c.nodes().front();
                         xaml_ptr<xaml_node> child;
                         XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
-                        xaml_ptr<xaml_attribute_property> prop_item;
-                        XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, child, &prop_item));
-                        XAML_RETURN_IF_FAILED(props->append(prop_item));
+                        xaml_ptr<xaml_string> key;
+                        XAML_RETURN_IF_FAILED(child->get_key(&key));
+                        bool replaced;
+                        XAML_RETURN_IF_FAILED(reses->insert(key, child, &replaced));
                     }
                 }
                 else
                 {
-                    xaml_ptr<xaml_collection_property_info> cprop;
-                    if (XAML_SUCCEEDED(t->get_collection_property(prop_name_str, &cprop)))
+                    xaml_ptr<xaml_string> prop_name_str;
+                    XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
+                    xaml_ptr<xaml_property_info> prop;
+                    if (XAML_SUCCEEDED(t->get_property(prop_name_str, &prop)))
                     {
-                        bool can_add;
-                        XAML_RETURN_IF_FAILED(cprop->get_can_add(&can_add));
-                        if (can_add)
+                        bool can_write;
+                        XAML_RETURN_IF_FAILED(prop->get_can_write(&can_write));
+                        if (can_write)
                         {
-                            xaml_ptr<xaml_attribute_collection_property> cprop_item;
-                            xaml_ptr<xaml_vector> values;
-                            xaml_ptr<xaml_object> item;
-                            if (XAML_SUCCEEDED(cprops->lookup(prop_name_str, &item)))
+                            xml_node& cnode = c.nodes().front();
+                            xaml_ptr<xaml_node> child;
+                            XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
+                            xaml_ptr<xaml_attribute_property> prop_item;
+                            XAML_RETURN_IF_FAILED(xaml_attribute_property_new(type, prop, child, &prop_item));
+                            XAML_RETURN_IF_FAILED(props->append(prop_item));
+                        }
+                    }
+                    else
+                    {
+                        xaml_ptr<xaml_collection_property_info> cprop;
+                        if (XAML_SUCCEEDED(t->get_collection_property(prop_name_str, &cprop)))
+                        {
+                            bool can_add;
+                            XAML_RETURN_IF_FAILED(cprop->get_can_add(&can_add));
+                            if (can_add)
                             {
-                                XAML_RETURN_IF_FAILED(item->query(&cprop_item));
-                                XAML_RETURN_IF_FAILED(cprop_item->get_values(&values));
-                            }
-                            else
-                            {
-                                XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
-                                XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type, cprop, values, &cprop_item));
-                                bool replaced;
-                                XAML_RETURN_IF_FAILED(cprops->insert(prop_name_str, cprop_item, &replaced));
-                            }
-                            for (auto& cnode : c.nodes())
-                            {
-                                xaml_ptr<xaml_node> child;
-                                XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
-                                XAML_RETURN_IF_FAILED(values->append(child));
+                                xaml_ptr<xaml_attribute_collection_property> cprop_item;
+                                xaml_ptr<xaml_vector> values;
+                                xaml_ptr<xaml_object> item;
+                                if (XAML_SUCCEEDED(cprops->lookup(prop_name_str, &item)))
+                                {
+                                    XAML_RETURN_IF_FAILED(item->query(&cprop_item));
+                                    XAML_RETURN_IF_FAILED(cprop_item->get_values(&values));
+                                }
+                                else
+                                {
+                                    XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
+                                    XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type, cprop, values, &cprop_item));
+                                    bool replaced;
+                                    XAML_RETURN_IF_FAILED(cprops->insert(prop_name_str, cprop_item, &replaced));
+                                }
+                                for (auto& cnode : c.nodes())
+                                {
+                                    xaml_ptr<xaml_node> child;
+                                    XAML_RETURN_IF_FAILED(parse_impl(cnode, &child));
+                                    XAML_RETURN_IF_FAILED(values->append(child));
+                                }
                             }
                         }
                     }

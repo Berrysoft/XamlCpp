@@ -2,6 +2,9 @@
              xmlns:x="https://github.com/Berrysoft/XamlCpp/xaml/"
              xmlns:test="https://github.com/Berrysoft/XamlCpp/parser/test/"
              title="Test Window" location="200, 100" size="800, 600">
+  <test:window.resources>
+    <test:converter x:key="conv"/>
+  </test:window.resources>
   <test:window.model>
     <test:model x:name="model" text="&#x1f923;"/>
   </test:window.model>
