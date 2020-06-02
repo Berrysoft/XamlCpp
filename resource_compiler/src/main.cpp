@@ -86,7 +86,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                         i %= 16;
                         if (i++ == 0) sf::println(stream);
                         int b = input.get();
-                        sf::print(stream, "0x{:x}", b);
+                        sf::print(stream, "{:x,s}", b);
                         if (input.peek() != char_traits<char>::eof()) sf::print(stream, ", ");
                     }
                     sf::println(stream, "};");
