@@ -2,9 +2,9 @@
 #define XAML_RESULT_POSIX_H
 
 #ifdef __cplusplus
-#include <cerrno>
+    #include <cerrno>
 #else
-#include <errno.h>
+    #include <errno.h>
 #endif // __cplusplus
 
 #include <xaml/result.h>
@@ -47,17 +47,17 @@ XAML_CONSTEXPR xaml_result xaml_result_from_errno(int err) XAML_NOEXCEPT { retur
     } while (0)
 
 #ifdef __cplusplus
-#define XAML_THROW_IF_POSIX_ERROR(expr)                               \
-    do                                                                \
-    {                                                                 \
-        int res = (expr);                                             \
-        XAML_UNLIKELY if (res == -1)                                  \
-        {                                                             \
-            throw xaml_result_error{ xaml_result_from_errno(errno) }; \
-        }                                                             \
-    } while (0)
+    #define XAML_THROW_IF_POSIX_ERROR(expr)                               \
+        do                                                                \
+        {                                                                 \
+            int res = (expr);                                             \
+            XAML_UNLIKELY if (res == -1)                                  \
+            {                                                             \
+                throw xaml_result_error{ xaml_result_from_errno(errno) }; \
+            }                                                             \
+        } while (0)
 #else
-#define XAML_THROW_IF_POSIX_ERROR(expr) XAML_ASSERT_POSIX_SUCCESS(expr)
+    #define XAML_THROW_IF_POSIX_ERROR(expr) XAML_ASSERT_POSIX_SUCCESS(expr)
 #endif // __cplusplus
 
 #endif // !XAML_RESULT_POSIX_H

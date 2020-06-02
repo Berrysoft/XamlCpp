@@ -2,7 +2,7 @@
 #define XAML_UI_CONTROLS_GRID_H
 
 #ifdef __cplusplus
-#include <compare>
+    #include <compare>
 #endif // __cplusplus
 
 #include <xaml/ui/controls/layout_base.h>

@@ -5,11 +5,11 @@
 #include <xaml/ui/win/dpi.h>
 
 #ifdef XAML_UI_WEBVIEW_EDGE
-#include <win/webview_edge.hpp>
+    #include <win/webview_edge.hpp>
 #endif // XAML_UI_WEBVIEW_EDGE
 
 #ifdef XAML_UI_WEBVIEW_WEBVIEW2
-#include <win/webview_edge2.hpp>
+    #include <win/webview_edge2.hpp>
 #endif // XAML_UI_WEBVIEW_WEBVIEW2
 
 using namespace std;

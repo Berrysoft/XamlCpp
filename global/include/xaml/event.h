@@ -2,7 +2,7 @@
 #define XAML_EVENT_H
 
 #ifdef __cplusplus
-#include <xaml/ptr.hpp>
+    #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/delegate.h>

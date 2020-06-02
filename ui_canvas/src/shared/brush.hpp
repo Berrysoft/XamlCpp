@@ -4,11 +4,11 @@
 #include <xaml/ui/controls/brush.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <xaml/ui/win/controls/brush.h>
+    #include <xaml/ui/win/controls/brush.h>
 #elif defined(XAML_UI_COCOA)
-#include <xaml/ui/cocoa/controls/brush.h>
+    #include <xaml/ui/cocoa/controls/brush.h>
 #elif defined(XAML_UI_GTK3)
-#include <xaml/ui/gtk3/controls/brush.h>
+    #include <xaml/ui/gtk3/controls/brush.h>
 #endif // XAML_UI_WINDOWS
 
 template <typename T, typename... Base>

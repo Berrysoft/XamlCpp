@@ -117,7 +117,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
                 static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint32_t), "Unknown 32-bit platform.");
                 *phash = ptr[0];
 #else
-#error Cannot determine platform architecture
+    #error Cannot determine platform architecture
 #endif
                 return XAML_S_OK;
             } },

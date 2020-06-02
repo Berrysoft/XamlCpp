@@ -2,7 +2,7 @@
 #define XAML_UI_CANVAS_BRUSH_H
 
 #ifdef __cplusplus
-#include <compare>
+    #include <compare>
 #endif // __cplusplus
 
 #include <xaml/meta/meta_macros.h>

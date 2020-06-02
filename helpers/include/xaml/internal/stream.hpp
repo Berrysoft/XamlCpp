@@ -4,16 +4,16 @@
 #include <cstdio>
 
 #ifdef XAML_WIN32
-#include <boost/nowide/iostream.hpp>
+    #include <boost/nowide/iostream.hpp>
 #endif // XAML_WIN32
 
 #ifdef _MSVC_STL_VERSION
-#include <fstream>
+    #include <fstream>
 #elif defined(__GLIBCXX__)
-#include <ext/stdio_filebuf.h>
+    #include <ext/stdio_filebuf.h>
 #else
-#include <boost/iostreams/device/file_descriptor.hpp>
-#include <boost/iostreams/stream.hpp>
+    #include <boost/iostreams/device/file_descriptor.hpp>
+    #include <boost/iostreams/stream.hpp>
 #endif
 
 template <typename Char, typename F, typename... Args>

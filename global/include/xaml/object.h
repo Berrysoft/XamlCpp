@@ -2,10 +2,10 @@
 #define XAML_OBJECT_HPP
 
 #ifdef __cplusplus
-#include <atomic>
-#include <cstddef>
+    #include <atomic>
+    #include <cstddef>
 #else
-#include <stddef.h>
+    #include <stddef.h>
 #endif // __cplusplus
 
 #include <xaml/guid.h>
@@ -13,25 +13,25 @@
 #include <xaml/utility.h>
 
 #ifdef __cplusplus
-#define XAML_DECL_INTERFACE(name) struct XAML_NOVTBL name
-#define XAML_DECL_INTERFACE_(name, base) struct XAML_NOVTBL name : base
-#define XAML_ARGS(type, ...) (__VA_ARGS__)
-#define XAML_METHOD_(type, name, tname, ...) virtual type XAML_CALL name XAML_ARGS(tname, __VA_ARGS__) noexcept = 0
-#define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, __VA_ARGS__)
-#define XAML_VTBL_INHERIT(x)
-#define XAML_DECL_VTBL(type, vtbl) vtbl(type)
+    #define XAML_DECL_INTERFACE(name) struct XAML_NOVTBL name
+    #define XAML_DECL_INTERFACE_(name, base) struct XAML_NOVTBL name : base
+    #define XAML_ARGS(type, ...) (__VA_ARGS__)
+    #define XAML_METHOD_(type, name, tname, ...) virtual type XAML_CALL name XAML_ARGS(tname, __VA_ARGS__) noexcept = 0
+    #define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, __VA_ARGS__)
+    #define XAML_VTBL_INHERIT(x)
+    #define XAML_DECL_VTBL(type, vtbl) vtbl(type)
 #else
-#define XAML_DECL_INTERFACE(name) struct name
-#define XAML_DECL_INTERFACE_(name, base) struct name
-#define XAML_ARGS(type, ...) (type* const, ##__VA_ARGS__)
-#define XAML_METHOD_(type, name, tname, ...) type(XAML_CALL* name) XAML_ARGS(tname, ##__VA_ARGS__)
-#define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, ##__VA_ARGS__)
-#define XAML_VTBL_INHERIT(x) x
-#define XAML_DECL_VTBL(type, vname) \
-    struct                          \
-    {                               \
-        vname(type);                \
-    } const* const vtbl
+    #define XAML_DECL_INTERFACE(name) struct name
+    #define XAML_DECL_INTERFACE_(name, base) struct name
+    #define XAML_ARGS(type, ...) (type* const, ##__VA_ARGS__)
+    #define XAML_METHOD_(type, name, tname, ...) type(XAML_CALL* name) XAML_ARGS(tname, ##__VA_ARGS__)
+    #define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, ##__VA_ARGS__)
+    #define XAML_VTBL_INHERIT(x) x
+    #define XAML_DECL_VTBL(type, vname) \
+        struct                          \
+        {                               \
+            vname(type);                \
+        } const* const vtbl
 #endif // __cplusplus
 
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })

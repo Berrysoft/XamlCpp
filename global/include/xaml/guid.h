@@ -2,18 +2,18 @@
 #define XAML_META_GUID_HPP
 
 #ifdef __cplusplus
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-#include <functional>
+    #include <algorithm>
+    #include <cstddef>
+    #include <cstdint>
+    #include <functional>
 #else
-#include <assert.h>
-#if defined(_MSC_VER) && defined(__clang__)
-#define static_assert _Static_assert
-#endif // _MSC_VER && __clang__
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
+    #include <assert.h>
+    #if defined(_MSC_VER) && defined(__clang__)
+        #define static_assert _Static_assert
+    #endif // _MSC_VER && __clang__
+    #include <stdbool.h>
+    #include <stddef.h>
+    #include <stdint.h>
 #endif // __cplusplus
 
 #include <xaml/utility.h>
@@ -56,16 +56,16 @@ inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 constexpr std::size_t hash_value(xaml_guid const& g) noexcept
 {
     std::size_t* ptr = (std::size_t*)&g;
-#if SIZE_MAX == UINT64_MAX
+    #if SIZE_MAX == UINT64_MAX
     static_assert(sizeof(std::size_t) == sizeof(std::uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];
-#elif SIZE_MAX == UINT32_MAX
+    #elif SIZE_MAX == UINT32_MAX
     static_assert(sizeof(std::size_t) == sizeof(std::uint32_t), "Unknown 32-bit platform.");
     return ptr[0] ^ ptr[1] ^ ptr[2] ^ ptr[3];
-#else
-#error Cannot determine platform architecture
+    #else
+        #error Cannot determine platform architecture
     return ptr[0];
-#endif
+    #endif
 }
 
 namespace std
@@ -101,29 +101,29 @@ inline constexpr bool xaml_type_has_guid_v = xaml_type_has_guid<T>::value;
 #endif // __cplusplus
 
 #ifndef XAML_TYPE_NAME
-#define __XAML_TYPE_NAME_BASE(name, ...) \
-    XAML_CONSTEXPR_VAR xaml_guid xaml_guid_##name = __VA_ARGS__;
-#ifdef __cplusplus
-#define XAML_TYPE_NAME(type, name, ...)                      \
-    __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)                 \
-    template <>                                              \
-    struct xaml_type_guid<type>                              \
-    {                                                        \
-        static constexpr xaml_guid value = xaml_guid_##name; \
-    };
-#else
-#define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
-#endif // __cplusplus
+    #define __XAML_TYPE_NAME_BASE(name, ...) \
+        XAML_CONSTEXPR_VAR xaml_guid xaml_guid_##name = __VA_ARGS__;
+    #ifdef __cplusplus
+        #define XAML_TYPE_NAME(type, name, ...)                      \
+            __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)                 \
+            template <>                                              \
+            struct xaml_type_guid<type>                              \
+            {                                                        \
+                static constexpr xaml_guid value = xaml_guid_##name; \
+            };
+    #else
+        #define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
+    #endif // __cplusplus
 #endif // !XAML_TYPE_NAME
 
 #ifndef XAML_TYPE
-#define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
+    #define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
 #endif // !XAML_TYPE
 
 #ifndef XAML_CLASS
-#define XAML_CLASS(type, ...) \
-    typedef struct type type; \
-    XAML_TYPE(type, __VA_ARGS__)
+    #define XAML_CLASS(type, ...) \
+        typedef struct type type; \
+        XAML_TYPE(type, __VA_ARGS__)
 #endif // !XAML_CLASS
 
 XAML_TYPE(void, { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } })

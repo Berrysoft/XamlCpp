@@ -6,11 +6,11 @@
 #include <xaml/ui/timer.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <Windows.h>
+    #include <Windows.h>
 #elif defined(XAML_UI_COCOA)
-#include <xaml/ui/cocoa/objc.h>
+    #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
-#include <gtk/gtk.h>
+    #include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object>

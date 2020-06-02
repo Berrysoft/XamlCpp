@@ -2,13 +2,13 @@
 #define XAML_RESULT_H
 
 #ifdef __cplusplus
-#include <cassert>
-#include <cstdint>
-#include <exception>
-#include <stdexcept>
+    #include <cassert>
+    #include <cstdint>
+    #include <exception>
+    #include <stdexcept>
 #else
-#include <assert.h>
-#include <stdint.h>
+    #include <assert.h>
+    #include <stdint.h>
 #endif // __cplusplus
 
 #include <xaml/utility.h>
@@ -33,13 +33,13 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise(xaml_result, xaml_result_rais
 EXTERN_C XAML_API void XAML_CALL xaml_result_raise_message(xaml_result, xaml_result_raise_level, char const*) XAML_NOEXCEPT;
 
 #ifdef NDEBUG
-#define XAML_RAISE(hr, ...) (void)(hr)
+    #define XAML_RAISE(hr, ...) (void)(hr)
 #else
-#define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__, U_(__FILE__), __LINE__)
+    #define XAML_RAISE(...) xaml_result_raise(__VA_ARGS__, U_(__FILE__), __LINE__)
 #endif // NDEBUG
 
 #ifndef XAML_RAISE_LEVEL
-#define XAML_RAISE_LEVEL xaml_result_raise_info
+    #define XAML_RAISE_LEVEL xaml_result_raise_info
 #endif // !XAML_RAISE_LEVEL
 
 #define XAML_RETURN_IF_FAILED(expr)           \
@@ -94,24 +94,24 @@ public:
     constexpr xaml_result get_result() const noexcept { return m_result; }
 };
 
-#define XAML_THROW_IF_FAILED(expr)         \
-    do                                     \
-    {                                      \
-        xaml_result hr = (expr);           \
-        XAML_UNLIKELY if (XAML_FAILED(hr)) \
-        {                                  \
-            throw xaml_result_error{ hr }; \
-        }                                  \
-    } while (0)
+    #define XAML_THROW_IF_FAILED(expr)         \
+        do                                     \
+        {                                      \
+            xaml_result hr = (expr);           \
+            XAML_UNLIKELY if (XAML_FAILED(hr)) \
+            {                                  \
+                throw xaml_result_error{ hr }; \
+            }                                  \
+        } while (0)
 
-#define XAML_CATCH_RETURN()                                            \
-    catch (xaml_result_error const& e) { return e.get_result(); }      \
-    catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }       \
-    catch (std::out_of_range const&) { return XAML_E_OUTOFBOUNDS; }    \
-    catch (std::invalid_argument const&) { return XAML_E_INVALIDARG; } \
-    catch (...) { return XAML_E_FAIL; }
+    #define XAML_CATCH_RETURN()                                            \
+        catch (xaml_result_error const& e) { return e.get_result(); }      \
+        catch (std::bad_alloc const&) { return XAML_E_OUTOFMEMORY; }       \
+        catch (std::out_of_range const&) { return XAML_E_OUTOFBOUNDS; }    \
+        catch (std::invalid_argument const&) { return XAML_E_INVALIDARG; } \
+        catch (...) { return XAML_E_FAIL; }
 #else
-#define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCEEDED(expr)
+    #define XAML_THROW_IF_FAILED(expr) XAML_ASSERT_SUCCEEDED(expr)
 #endif // __cplusplus
 
 #endif // !XAML_RESULT_H

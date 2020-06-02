@@ -1,6 +1,6 @@
 #ifdef XAML_WIN32
-#include <boost/nowide/args.hpp>
-#include <cstdlib>
+    #include <boost/nowide/args.hpp>
+    #include <cstdlib>
 #endif // XAML_WIN32
 
 #include <shared/application.hpp>

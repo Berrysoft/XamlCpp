@@ -2,8 +2,8 @@
 #define XAML_BOX_H
 
 #ifdef __cplusplus
-#include <cstring>
-#include <xaml/ptr.hpp>
+    #include <cstring>
+    #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/object.h>

@@ -2,13 +2,13 @@
 #define XAML_VERSION_HPP
 
 #ifdef __cplusplus
-#include <compare>
-#include <cstddef>
-#include <ostream>
-#include <utility>
+    #include <compare>
+    #include <cstddef>
+    #include <ostream>
+    #include <utility>
 #else
-#include <stdbool.h>
-#include <stddef.h>
+    #include <stdbool.h>
+    #include <stddef.h>
 #endif // __cplusplus
 
 #include <xaml/utility.h>

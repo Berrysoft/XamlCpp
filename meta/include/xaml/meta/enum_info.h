@@ -2,7 +2,7 @@
 #define XAML_META_ENUM_INFO_H
 
 #ifdef __cplusplus
-#include <xaml/ptr.hpp>
+    #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/box.h>

@@ -2,13 +2,13 @@
 #define XAML_UI_DRAWING_H
 
 #ifdef __cplusplus
-#include <algorithm>
-#include <compare>
-#include <cstdint>
-#include <tuple>
-#include <xaml/meta/conv.hpp>
+    #include <algorithm>
+    #include <compare>
+    #include <cstdint>
+    #include <tuple>
+    #include <xaml/meta/conv.hpp>
 #else
-#include <stdint.h>
+    #include <stdint.h>
 #endif // __cplusplus
 
 #ifdef __cplusplus

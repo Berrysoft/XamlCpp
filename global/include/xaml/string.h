@@ -2,30 +2,30 @@
 #define XAML_STRING_H
 
 #ifdef __cplusplus
-#include <ostream>
-#include <string>
-#include <string_view>
-#include <xaml/ptr.hpp>
+    #include <ostream>
+    #include <string>
+    #include <string_view>
+    #include <xaml/ptr.hpp>
 
-#ifdef XAML_WIN32
-#include <memory_resource>
-#endif // XAML_WIN32
+    #ifdef XAML_WIN32
+        #include <memory_resource>
+    #endif // XAML_WIN32
 #else
-#include <stdbool.h>
+    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>
 
 #ifndef U
-#ifdef __cpp_char8_t
-#define U(x) reinterpret_cast<char const*>(u8##x)
-#else
-#define U(x) u8##x
-#endif // __cpp_char8_t
+    #ifdef __cpp_char8_t
+        #define U(x) reinterpret_cast<char const*>(u8##x)
+    #else
+        #define U(x) u8##x
+    #endif // __cpp_char8_t
 #endif // !U
 
 #ifndef U_
-#define U_(x) U(x)
+    #define U_(x) U(x)
 #endif // !U_
 
 XAML_CLASS(xaml_string, { 0xc8386ec4, 0xd28d, 0x422f, { 0x9e, 0x44, 0x36, 0xaa, 0x77, 0x63, 0x39, 0xd3 } })
@@ -107,7 +107,7 @@ try
 }
 XAML_CATCH_RETURN()
 
-#ifdef XAML_WIN32
+    #ifdef XAML_WIN32
 XAML_API std::wstring to_wstring(std::string_view);
 
 inline xaml_result to_wstring(std::string_view str, std::wstring* pres) noexcept
@@ -215,7 +215,7 @@ public:
 
     constexpr std::pmr::memory_resource* resource() noexcept { return &m_resource; }
 };
-#endif // XAML_WIN32
+    #endif // XAML_WIN32
 
 namespace std
 {

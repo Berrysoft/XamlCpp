@@ -2,9 +2,9 @@
 #define XAML_DELEGATE_H
 
 #ifdef __cplusplus
-#include <functional>
-#include <xaml/box.h>
-#include <xaml/ptr.hpp>
+    #include <functional>
+    #include <xaml/box.h>
+    #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/object.h>

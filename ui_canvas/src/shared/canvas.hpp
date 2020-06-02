@@ -5,10 +5,10 @@
 #include <xaml/ui/controls/canvas.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <Windows.h>
-#include <d2d1.h>
-#include <dwrite.h>
-#include <wil/com.h>
+    #include <Windows.h>
+    #include <d2d1.h>
+    #include <dwrite.h>
+    #include <wil/com.h>
 
 template <typename Factory>
 HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) noexcept
@@ -17,9 +17,9 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
 }
 
 #elif defined(XAML_UI_COCOA)
-#include <xaml/ui/cocoa/objc.h>
+    #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
-#include <cairo.h>
+    #include <cairo.h>
 #endif // XAML_UI_GTK3
 
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>

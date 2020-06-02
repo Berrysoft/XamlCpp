@@ -2,7 +2,7 @@
 #define XAML_BUFFER_H
 
 #ifdef __cplusplus
-#include <vector>
+    #include <vector>
 #endif // __cplusplus
 
 #include <xaml/object.h>

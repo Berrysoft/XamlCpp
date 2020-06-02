@@ -4,11 +4,11 @@
 #include <xaml/ui/drawing.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <Windows.h>
+    #include <Windows.h>
 #elif defined(XAML_UI_COCOA)
-#include <xaml/ui/cocoa/objc.h>
+    #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
-#include <gtk/gtk.h>
+    #include <gtk/gtk.h>
 #endif // XAML_UI_WINDOWS
 
 template <typename To, typename From>

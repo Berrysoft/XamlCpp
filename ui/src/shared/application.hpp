@@ -5,7 +5,7 @@
 #include <xaml/ui/application.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <xaml/ui/win/font_provider.h>
+    #include <xaml/ui/win/font_provider.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>

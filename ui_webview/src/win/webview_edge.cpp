@@ -1,11 +1,11 @@
 #ifdef XAML_UI_WEBVIEW_EDGE
 
-#include "winrt/Windows.Foundation.h"
-#include "winrt/Windows.Storage.Streams.h"
-#include "winrt/Windows.Web.Http.h"
-#include "winrt/Windows.Web.UI.h"
-#include <robuffer.h>
-#include <win/webview_edge.hpp>
+    #include "winrt/Windows.Foundation.h"
+    #include "winrt/Windows.Storage.Streams.h"
+    #include "winrt/Windows.Web.Http.h"
+    #include "winrt/Windows.Web.UI.h"
+    #include <robuffer.h>
+    #include <win/webview_edge.hpp>
 
 using namespace std;
 using namespace winrt;
@@ -15,12 +15,12 @@ using namespace winrt::Windows::Web::Http;
 using namespace winrt::Windows::Web::UI;
 using namespace winrt::Windows::Web::UI::Interop;
 
-#define XAML_CATCH_RETURN_WINRT()         \
-    catch (winrt::hresult_error const& e) \
-    {                                     \
-        return e.code();                  \
-    }                                     \
-    XAML_CATCH_RETURN()
+    #define XAML_CATCH_RETURN_WINRT()         \
+        catch (winrt::hresult_error const& e) \
+        {                                     \
+            return e.code();                  \
+        }                                     \
+        XAML_CATCH_RETURN()
 
 struct ArrayViewBuffer : implements<ArrayViewBuffer, IBuffer, ::Windows::Storage::Streams::IBufferByteAccess>
 {

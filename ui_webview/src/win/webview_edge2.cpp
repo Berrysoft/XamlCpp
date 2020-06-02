@@ -1,10 +1,10 @@
 #ifdef XAML_UI_WEBVIEW_WEBVIEW2
 
-#include <Shlwapi.h>
-#include <wil/result_macros.h>
-#include <win/webview_edge2.hpp>
-#include <wrl/event.h>
-#include <xaml/ui/drawing_conv.hpp>
+    #include <Shlwapi.h>
+    #include <wil/result_macros.h>
+    #include <win/webview_edge2.hpp>
+    #include <wrl/event.h>
+    #include <xaml/ui/drawing_conv.hpp>
 
 using namespace std;
 using namespace Microsoft::WRL;

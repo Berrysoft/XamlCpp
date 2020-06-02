@@ -4,8 +4,8 @@
 #include <xaml/ui/application.h>
 
 #ifdef XAML_WIN32
-#include <Windows.h>
-#include <tchar.h>
+    #include <Windows.h>
+    #include <tchar.h>
 #endif // XAML_WIN32
 
 using namespace std;

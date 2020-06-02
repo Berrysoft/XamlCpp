@@ -1,15 +1,15 @@
 #ifndef XAML_DEFAULT_HANDLER_COLOR
-#if !defined(XAML_WIN32) || defined(XAML_MINGW)
-#define XAML_DEFAULT_HANDLER_COLOR
-#endif // !XAML_WIN32 || XAML_MINGW
+    #if !defined(XAML_WIN32) || defined(XAML_MINGW)
+        #define XAML_DEFAULT_HANDLER_COLOR
+    #endif // !XAML_WIN32 || XAML_MINGW
 #endif // !XAML_DEFAULT_HANDLER_COLOR
 
 #ifdef XAML_WIN32
-#include <Windows.h>
+    #include <Windows.h>
 #endif // XAML_WIN32
 
 #ifdef XAML_DEFAULT_HANDLER_COLOR
-#include <sf/color.hpp>
+    #include <sf/color.hpp>
 #endif // XAML_DEFAULT_HANDLER_COLOR
 
 #include <boost/nowide/iostream.hpp>
@@ -22,9 +22,9 @@
 #include <xaml/result_handler.h>
 
 #ifdef NDEBUG
-#define XAML_DEFAULT_HANDLER xaml_result_handler_empty
+    #define XAML_DEFAULT_HANDLER xaml_result_handler_empty
 #else
-#define XAML_DEFAULT_HANDLER xaml_result_handler_default
+    #define XAML_DEFAULT_HANDLER xaml_result_handler_default
 #endif // NDEBUG
 
 using namespace std;

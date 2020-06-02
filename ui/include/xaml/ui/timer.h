@@ -2,9 +2,9 @@
 #define XAML_UI_TIMER_H
 
 #ifdef __cplusplus
-#include <chrono>
+    #include <chrono>
 #else
-#include <stdbool.h>
+    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/meta/meta_macros.h>

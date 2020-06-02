@@ -4,11 +4,11 @@
 #include <xaml/ui/controls/pen.h>
 
 #ifdef XAML_UI_WINDOWS
-#include <xaml/ui/win/controls/pen.h>
+    #include <xaml/ui/win/controls/pen.h>
 #elif defined(XAML_UI_COCOA)
-#include <xaml/ui/cocoa/controls/pen.h>
+    #include <xaml/ui/cocoa/controls/pen.h>
 #elif defined(XAML_UI_GTK3)
-#include <xaml/ui/gtk3/controls/pen.h>
+    #include <xaml/ui/gtk3/controls/pen.h>
 #endif // XAML_UI_WINDOWS
 
 template <typename T, typename... Base>

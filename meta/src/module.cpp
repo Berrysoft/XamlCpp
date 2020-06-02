@@ -4,10 +4,10 @@
 #include <xaml/meta/module.h>
 
 #ifdef XAML_WIN32
-#include <Windows.h>
-#include <xaml/result_win32.h>
+    #include <Windows.h>
+    #include <xaml/result_win32.h>
 #else
-#include <dlfcn.h>
+    #include <dlfcn.h>
 #endif // XAML_WIN32
 
 #if defined(XAML_WIN32) && !defined(XAML_MINGW)

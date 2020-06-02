@@ -5,7 +5,7 @@
 #include <xaml/meta/meta_macros.h>
 
 #ifndef XAML_CMDLINE_HELPER_API
-#define XAML_CMDLINE_HELPER_API __XAML_IMPORT
+    #define XAML_CMDLINE_HELPER_API __XAML_IMPORT
 #endif // !XAML_CMDLINE_HELPER_API
 
 XAML_CLASS(xaml_cmdline_options_base, { 0x50dd3e88, 0x5d41, 0x4418, { 0x90, 0x96, 0x7f, 0xd8, 0xb7, 0x76, 0xf9, 0xca } })

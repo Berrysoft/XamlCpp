@@ -2,10 +2,10 @@
 #define XAML_CMDLINE_OPTION_H
 
 #ifdef __cplusplus
-#include <cstdio>
-#include <ostream>
+    #include <cstdio>
+    #include <ostream>
 #else
-#include <stdio.h>
+    #include <stdio.h>
 #endif // __cplusplus
 
 #include <xaml/meta/meta_macros.h>

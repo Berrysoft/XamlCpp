@@ -2,12 +2,12 @@
 #define XAML_MAP_H
 
 #ifdef __cplusplus
-#include <functional>
-#include <unordered_map>
-#include <xaml/box.h>
-#include <xaml/ptr.hpp>
+    #include <functional>
+    #include <unordered_map>
+    #include <xaml/box.h>
+    #include <xaml/ptr.hpp>
 #else
-#include <stdbool.h>
+    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/enumerable.h>
@@ -69,15 +69,15 @@ inline xaml_result XAML_CALL xaml_hasher_new(xaml_hasher** ptr) noexcept
                 XAML_RETURN_IF_FAILED(xaml_unbox_value(obj, &value));
                 std::size_t std_hash = hasher(value);
                 std::int32_t* ptr = (std::int32_t*)&std_hash;
-#if SIZE_MAX == UINT64_MAX
+    #if SIZE_MAX == UINT64_MAX
                 static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint64_t), "Unknown 64-bit platform.");
                 *phash = ptr[0] ^ ptr[1];
-#elif SIZE_MAX == UINT32_MAX
+    #elif SIZE_MAX == UINT32_MAX
                 static_assert(sizeof(XAML_STD size_t) == sizeof(XAML_STD uint32_t), "Unknown 32-bit platform.");
                 *phash = ptr[0];
-#else
-#error Cannot determine platform architecture
-#endif
+    #else
+        #error Cannot determine platform architecture
+    #endif
                 return XAML_S_OK;
             } },
         std::function<xaml_result(xaml_object*, xaml_object*, bool*)>{

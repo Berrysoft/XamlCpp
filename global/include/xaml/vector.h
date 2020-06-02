@@ -2,8 +2,8 @@
 #define XAML_VECTOR_H
 
 #ifdef __cplusplus
-#include <vector>
-#include <xaml/ptr.hpp>
+    #include <vector>
+    #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
 #include <xaml/enumerable.h>
