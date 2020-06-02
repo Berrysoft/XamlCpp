@@ -8,6 +8,7 @@ XAML_CLASS(xaml_markup_context, { 0x32121ea5, 0xf85e, 0x4ccf, { 0x8c, 0xac, 0x53
 #define XAML_MARKUP_CONTEXT_VTBL(type)                      \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));              \
     XAML_METHOD(get_current_element, type, xaml_object**);  \
+    XAML_METHOD(get_current_object, type, xaml_object**);   \
     XAML_METHOD(get_current_property, type, xaml_string**); \
     XAML_METHOD(find_element, type, xaml_string*, xaml_object**)
 

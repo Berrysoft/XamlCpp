@@ -13,7 +13,11 @@ private:
 
     constexpr void try_release() noexcept
     {
-        if (m_ptr) m_ptr->release();
+        if (m_ptr)
+        {
+            m_ptr->release();
+            m_ptr = nullptr;
+        }
     }
 
     constexpr void try_add() noexcept

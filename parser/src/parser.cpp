@@ -147,6 +147,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
             else if (value[i] == '=')
                 break;
         }
+        if (i == value.length()) i = start_index;
         string_view prop_name = value.substr(start_index, i - start_index);
         while (i < value.length() && value[i] == '=') i++;
         start_index = i;

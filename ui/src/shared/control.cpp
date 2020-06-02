@@ -29,7 +29,9 @@ xaml_result xaml_control_internal::parent_redraw() noexcept
 
 xaml_result xaml_control_internal::init() noexcept
 {
-    XAML_RETURN_IF_FAILED(xaml_map_new(&m_resources));
+    xaml_ptr<xaml_hasher> hasher;
+    XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
+    XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &m_resources));
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_parent_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_size_changed));

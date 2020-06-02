@@ -1,6 +1,7 @@
 #include <cmath>
 #include <shared/window.hpp>
 #include <test.xaml.h>
+#include <test_converter.h>
 #include <xaml/parser/deserializer.h>
 #include <xaml/parser/parser.h>
 #include <xaml/resource/resource.h>
@@ -43,6 +44,14 @@ struct xaml_test_window_impl : xaml_window_implement<xaml_test_window_impl, xaml
 xaml_result xaml_test_window_internal::init() noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_window_internal::init());
+    // TODO: XAML
+    {
+        xaml_ptr<xaml_test_converter> conv;
+        XAML_RETURN_IF_FAILED(xaml_test_converter_new(&conv));
+        xaml_ptr<xaml_string> conv_key;
+        XAML_RETURN_IF_FAILED(xaml_string_new(U("conv"), &conv_key));
+        XAML_RETURN_IF_FAILED(add_resource(conv_key, conv));
+    }
     xaml_ptr<xaml_string> path;
     XAML_RETURN_IF_FAILED(xaml_string_new_view(U("view/test.xaml"), &path));
     void const* data;

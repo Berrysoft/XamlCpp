@@ -14,10 +14,16 @@ struct xaml_deserializer_context_impl : xaml_implement<xaml_deserializer_context
         return m_current->query(ptr);
     }
 
+    xaml_object* m_object;
+    xaml_result XAML_CALL get_current_object(xaml_object** ptr) noexcept override
+    {
+        return m_object->query(ptr);
+    }
+
     xaml_ptr<xaml_string> m_prop;
     xaml_result XAML_CALL get_current_property(xaml_string** ptr) noexcept override
     {
-        return m_prop->query(ptr);
+        return m_prop.query(ptr);
     }
 
     xaml_ptr<xaml_map> m_symbols;
@@ -26,8 +32,8 @@ struct xaml_deserializer_context_impl : xaml_implement<xaml_deserializer_context
         return m_symbols->lookup(key, ptr);
     }
 
-    xaml_deserializer_context_impl(xaml_object* current, xaml_ptr<xaml_string> const& prop, xaml_ptr<xaml_map> const& symbols) noexcept
-        : m_current(current), m_prop(prop), m_symbols(symbols) {}
+    xaml_deserializer_context_impl(xaml_object* current, xaml_object* current_obj, xaml_ptr<xaml_string> const& prop, xaml_ptr<xaml_map> const& symbols) noexcept
+        : m_current(current), m_object(current_obj), m_prop(prop), m_symbols(symbols) {}
 };
 
 struct deserializer_impl
@@ -55,7 +61,7 @@ struct deserializer_impl
 
     xaml_result deserialize(xaml_ptr<xaml_node> const& node, xaml_object** ptr) noexcept;
 
-    xaml_result deserialize(xaml_ptr<xaml_markup_node> const& node, xaml_markup_extension** ptr) noexcept;
+    xaml_result deserialize(xaml_ptr<xaml_object> const& mc, xaml_ptr<xaml_markup_node> const& node, xaml_markup_extension** ptr) noexcept;
 };
 
 xaml_result deserializer_impl::construct_impl(xaml_ptr<xaml_node> const& node, xaml_ptr<xaml_object> const& root, xaml_ptr<xaml_type_info> const& root_type, xaml_object** ptr) noexcept
@@ -206,9 +212,9 @@ xaml_result deserializer_impl::deserialize_extensions(xaml_ptr<xaml_node> const&
                 xaml_ptr<xaml_string> info_name;
                 XAML_RETURN_IF_FAILED(info->get_name(&info_name));
                 xaml_ptr<xaml_markup_context> context;
-                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc, info_name, symbols));
+                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc, mc, info_name, symbols));
                 xaml_ptr<xaml_markup_extension> ex;
-                XAML_RETURN_IF_FAILED(deserialize(n, &ex));
+                XAML_RETURN_IF_FAILED(deserialize(mc, n, &ex));
                 XAML_RETURN_IF_FAILED(ex->provide(m_ctx, context));
             }
             else if (auto cnode = value.query<xaml_node>())
@@ -264,7 +270,7 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_node> const& node, xaml
     return c->query(ptr);
 }
 
-xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& node, xaml_markup_extension** ptr) noexcept
+xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_object> const& mc, xaml_ptr<xaml_markup_node> const& node, xaml_markup_extension** ptr) noexcept
 {
     xaml_ptr<xaml_type_info> type;
     XAML_RETURN_IF_FAILED(node->get_type(&type));
@@ -311,9 +317,9 @@ xaml_result deserializer_impl::deserialize(xaml_ptr<xaml_markup_node> const& nod
                 xaml_ptr<xaml_string> info_name;
                 XAML_RETURN_IF_FAILED(info->get_name(&info_name));
                 xaml_ptr<xaml_markup_context> context;
-                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, ex, info_name, symbols));
+                XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc, ex, info_name, symbols));
                 xaml_ptr<xaml_markup_extension> obj;
-                XAML_RETURN_IF_FAILED(deserialize(n, &obj));
+                XAML_RETURN_IF_FAILED(deserialize(mc, n, &obj));
                 XAML_RETURN_IF_FAILED(obj->provide(m_ctx, context));
             }
         }
@@ -340,11 +346,4 @@ xaml_result XAML_CALL xaml_parser_deserialize_inplace(xaml_meta_context* ctx, xa
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(info->query(&t));
     return des.deserialize(node, mc, t);
-}
-
-xaml_result XAML_CALL xaml_parser_deserialize_markup(xaml_meta_context* ctx, xaml_markup_node* node, xaml_markup_extension** ptr) noexcept
-{
-    deserializer_impl des{ ctx };
-    XAML_RETURN_IF_FAILED(des.init());
-    return des.deserialize(node, ptr);
 }

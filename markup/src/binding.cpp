@@ -14,7 +14,7 @@ struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding, xaml_
     xaml_result XAML_CALL provide(xaml_meta_context* ctx, xaml_markup_context* mkctx) noexcept override
     {
         xaml_ptr<xaml_object> current_element;
-        XAML_RETURN_IF_FAILED(mkctx->get_current_element(&current_element));
+        XAML_RETURN_IF_FAILED(mkctx->get_current_object(&current_element));
         xaml_ptr<xaml_string> current_property;
         XAML_RETURN_IF_FAILED(mkctx->get_current_property(&current_property));
         xaml_ptr<xaml_object> element;

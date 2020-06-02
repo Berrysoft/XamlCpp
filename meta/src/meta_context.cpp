@@ -232,9 +232,6 @@ public:
         xaml_ptr<xaml_string> conv_lang = language;
         if (mode & xaml_binding_one_way)
         {
-            xaml_ptr<xaml_object> value;
-            XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
-            XAML_RETURN_IF_FAILED(targetp->set(target, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
                 [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
@@ -252,14 +249,15 @@ public:
                     return XAML_S_OK;
                 },
                 &callback)));
+            xaml_ptr<xaml_vector> args;
+            XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
+            xaml_ptr<xaml_object> obj;
+            XAML_RETURN_IF_FAILED(callback->invoke(args, &obj));
             int32_t token;
             XAML_RETURN_IF_FAILED(sourcee->add(source, callback, &token));
         }
         if (mode & xaml_binding_one_way_to_source)
         {
-            xaml_ptr<xaml_object> value;
-            XAML_RETURN_IF_FAILED(targetp->get(target, &value));
-            XAML_RETURN_IF_FAILED(sourcep->set(source, value));
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
                 [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
@@ -277,6 +275,10 @@ public:
                     return XAML_S_OK;
                 },
                 &callback)));
+            xaml_ptr<xaml_vector> args;
+            XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
+            xaml_ptr<xaml_object> obj;
+            XAML_RETURN_IF_FAILED(callback->invoke(args, &obj));
             int32_t token;
             XAML_RETURN_IF_FAILED(targete->add(target, callback, &token));
         }
