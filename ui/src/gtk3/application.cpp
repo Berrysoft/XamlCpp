@@ -12,7 +12,11 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
     for (int i = 0; i < argc; i++)
     {
         xaml_ptr<xaml_string> arg;
+#ifdef XAML_WIN32
+        XAML_RETURN_IF_FAILED(xaml_string_new(argv[i], &arg));
+#else
         XAML_RETURN_IF_FAILED(xaml_string_new_view(argv[i], &arg));
+#endif // XAML_WIN32
         XAML_RETURN_IF_FAILED(m_cmd_lines->append(arg));
     }
     return XAML_S_OK;
