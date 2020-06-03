@@ -201,19 +201,15 @@ public:
 };
 
 template <typename Res = std::pmr::monotonic_buffer_resource>
-struct xaml_codecvt_pool : __xaml_codecvt_pool_impl
+struct xaml_codecvt_pool : private Res, public __xaml_codecvt_pool_impl
 {
-private:
-    Res m_resource{};
-
-public:
-    xaml_codecvt_pool() noexcept(std::is_nothrow_constructible_v<Res>) : __xaml_codecvt_pool_impl(&m_resource) {}
+    xaml_codecvt_pool() noexcept(std::is_nothrow_constructible_v<Res>) : Res(), __xaml_codecvt_pool_impl(this) {}
     template <typename... Args>
-    xaml_codecvt_pool(Args&&... args) noexcept(noexcept(Res{ std::forward<Args>(args)... })) : __xaml_codecvt_pool_impl(&(m_resource = Res{ std::forward<Args>(args)... }))
+    xaml_codecvt_pool(Args&&... args) noexcept(noexcept(Res{ std::forward<Args>(args)... })) : Res(std::forward<Args>(args)...), __xaml_codecvt_pool_impl(this)
     {
     }
 
-    constexpr std::pmr::memory_resource* resource() noexcept { return &m_resource; }
+    constexpr std::pmr::memory_resource* resource() noexcept { return this; }
 };
     #endif // XAML_WIN32
 
