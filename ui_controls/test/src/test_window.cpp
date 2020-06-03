@@ -417,7 +417,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     xaml_ptr<xaml_brush_pen> pen2;
     XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush2, 1, &pen2));
     XAML_RETURN_IF_FAILED(dc->draw_round_rect(pen2, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
-    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r - 1, cy + r * 0.618 + 1 - r * 0.382 / 2, r * 2, r * 0.382 }, 0, pi));
+    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r - 1 + r / 10, cy + r * 0.618 + 1 - r * 0.382 / 2, r * 2 - r / 5, r * 0.382 }, 0, pi));
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
     xaml_ptr<xaml_radial_gradient_brush> brush3;
@@ -427,7 +427,6 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_ptr<xaml_canvas> cv, xa
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::white_smoke, 0 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::pink, 1 }));
     XAML_RETURN_IF_FAILED(dc->draw_string(brush3, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));
-    XAML_RETURN_IF_FAILED(dc->fill_ellipse(brush3, { cx - r, cy, r * 2, r / 2 }));
     return XAML_S_OK;
 }
 

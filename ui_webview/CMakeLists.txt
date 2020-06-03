@@ -31,7 +31,7 @@ if(${BUILD_WINDOWS})
     option(BUILD_WEBVIEW2 "Build webview2 which uses Edge(Chromium)." ON)
     option(BUILD_EDGE "Build webview which uses Edge." ON)
 
-    target_link_libraries(xaml_ui_webview PUBLIC ShLwApi PRIVATE wil)
+    target_link_libraries(xaml_ui_webview PUBLIC ShLwApi PRIVATE wil xaml_helpers)
 
     if(${BUILD_WEBVIEW2})
         target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_WEBVIEW2")

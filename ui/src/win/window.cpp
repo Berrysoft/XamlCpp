@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <wil/resource.h>
 #include <windowsx.h>
+#include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/drawing_conv.hpp>
 #include <xaml/ui/win/control.h>
@@ -129,7 +130,7 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    wstring title;
+    boost::nowide::wstackstring title;
     XAML_RETURN_IF_FAILED(to_wstring(m_title, &title));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowText(m_handle, title.c_str()));
     return XAML_S_OK;

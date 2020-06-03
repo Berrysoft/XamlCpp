@@ -6,6 +6,7 @@
     #include "winrt/Windows.Web.UI.h"
     #include <robuffer.h>
     #include <win/webview_edge.hpp>
+    #include <xaml/internal/string.hpp>
 
 using namespace std;
 using namespace winrt;
@@ -100,7 +101,9 @@ XAML_CATCH_RETURN_WINRT()
 xaml_result xaml_webview_edge::navigate(char const* uri) noexcept
 try
 {
-    m_view.Navigate(Uri{ to_wstring(uri) });
+    boost::nowide::wstackstring data;
+    XAML_RETURN_IF_FAILED(to_wstring(uri, &data));
+    m_view.Navigate(Uri{ (wstring_view)data });
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN_WINRT()

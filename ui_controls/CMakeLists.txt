@@ -31,7 +31,7 @@ endif()
 
 target_link_libraries(xaml_ui_controls PUBLIC xaml_ui)
 if(${BUILD_WINDOWS})
-    target_link_libraries(xaml_ui_controls PRIVATE wil)
+    target_link_libraries(xaml_ui_controls PRIVATE wil xaml_helpers)
 elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui_controls PRIVATE gtk3)
 endif()

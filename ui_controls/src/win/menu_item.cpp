@@ -2,6 +2,7 @@
 #include <optional>
 #include <shared/menu_item.hpp>
 #include <wil/result_macros.h>
+#include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/menu_item.h>
 #include <xaml/ui/menu_bar.h>
@@ -79,7 +80,7 @@ xaml_result xaml_menu_item_internal::draw_append(HMENU pmenu, UINT flags) noexce
         m_menu_parent = pmenu;
         XAML_RETURN_IF_FAILED(xaml_win32_menu_item_generate_id(&m_menu_id));
     }
-    wstring data;
+    boost::nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, m_menu_id, data.c_str()));
     return XAML_S_OK;
@@ -133,7 +134,7 @@ xaml_result xaml_popup_menu_item_internal::draw_append(HMENU pmenu, UINT flags) 
         m_menu.reset(CreateMenu());
         XAML_RETURN_IF_FAILED(draw_submenu());
     }
-    wstring data;
+    boost::nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(InsertMenu(m_menu_parent, m_menu_id, flags, (UINT_PTR)m_menu.get(), data.c_str()));
     return XAML_S_OK;

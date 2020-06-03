@@ -1,5 +1,6 @@
 #include <shared/button.hpp>
 #include <windowsx.h>
+#include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/button.h>
 #include <xaml/ui/win/control.h>
@@ -34,7 +35,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_button_internal::draw_text() noexcept
 {
-    wstring data;
+    boost::nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(Button_SetText(m_handle, data.c_str()));
     return XAML_S_OK;

@@ -11,8 +11,11 @@
         XAML_UNLIKELY if (!res)                                  \
         {                                                        \
             xaml_result hr = HRESULT_FROM_WIN32(GetLastError()); \
-            XAML_RAISE(hr, XAML_RAISE_LEVEL);                    \
-            return HRESULT_FROM_WIN32(hr);                       \
+            XAML_LIKELY if (XAML_FAILED(hr))                     \
+            {                                                    \
+                XAML_RAISE(hr, XAML_RAISE_LEVEL);                \
+                return hr;                                       \
+            }                                                    \
         }                                                        \
     } while (0)
 

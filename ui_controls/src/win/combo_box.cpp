@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <shared/combo_box.hpp>
 #include <windowsx.h>
+#include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/combo_box.h>
 
@@ -54,7 +55,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
     if (m_text)
     {
-        wstring data;
+        boost::nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
         XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data.c_str()));
     }
@@ -144,7 +145,7 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        wstring data;
+        boost::nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(s, &data));
         ComboBox_InsertString(m_handle, index, data.c_str());
     }
@@ -168,7 +169,7 @@ xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_o
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        wstring data;
+        boost::nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(s, &data));
         ComboBox_SetItemData(m_handle, index, data.c_str());
     }
