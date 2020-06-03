@@ -140,7 +140,7 @@ int main(int argc, char** argv)
 
     if (output)
     {
-        boost::nowide::ofstream stream{ to_string(output) };
+        boost::nowide::ofstream stream{ to_path(output) };
         compile(stream, inputs);
     }
     else
