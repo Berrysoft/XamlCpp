@@ -1,3 +1,4 @@
+#include <boost/nowide/filesystem.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <filesystem>
 #include <iostream>
@@ -6,11 +7,10 @@
 #include <xaml/cmdline/deserializer.h>
 #include <xaml/cmdline/option.h>
 #include <xaml/cmdline/options_base.h>
-#include <xaml/internal/filesystem.hpp>
 #include <xaml/result_handler.h>
 
 using namespace std;
-using namespace std::filesystem;
+using boost::nowide::filesystem::path;
 
 xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registration* __info) noexcept
 {
@@ -75,7 +75,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         exit(0);
     }
 
-    path exe = to_path(argv[0]);
+    path exe = argv[0];
     bool no_logo;
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)

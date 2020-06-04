@@ -1,7 +1,7 @@
 #include <boost/nowide/args.hpp>
+#include <boost/nowide/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/nowide/iostream.hpp>
-#include <filesystem>
 #include <fstream>
 #include <iomanip>
 #include <map>
@@ -9,10 +9,9 @@
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
-#include <xaml/internal/filesystem.hpp>
 
 using namespace std;
-using namespace std::filesystem;
+using boost::nowide::filesystem::path;
 
 string get_valid_name(string_view str, size_t index)
 {
@@ -41,7 +40,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     for (auto item : inputs)
     {
-        path file = to_path(item.query<xaml_string>());
+        path file = to_string_view(item.query<xaml_string>());
 #ifndef XAML_APPLE
         if (!rc_map.contains(file))
 #else
@@ -135,7 +134,7 @@ int main(int argc, char** argv)
 
     if (output)
     {
-        boost::nowide::ofstream stream{ to_string_view(output).data() };
+        boost::nowide::ofstream stream{ to_string_view(output) };
         compile(stream, inputs);
     }
     else

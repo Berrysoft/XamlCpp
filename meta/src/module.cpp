@@ -1,6 +1,5 @@
-#include <filesystem>
+#include <boost/nowide/filesystem.hpp>
 #include <vector>
-#include <xaml/internal/filesystem.hpp>
 #include <xaml/meta/module.h>
 
 #ifdef XAML_WIN32
@@ -15,18 +14,18 @@ static constexpr bool has_prefix = false;
 #else
 static constexpr bool has_prefix = true;
 #endif // XAML_WIN32 && !XAML_MINGW
-static inline std::filesystem::path module_prefix{ "lib" };
+static inline boost::nowide::filesystem::path module_prefix{ "lib" };
 
 #ifdef XAML_WIN32
-static inline std::filesystem::path module_extension{ ".dll" };
+static inline boost::nowide::filesystem::path module_extension{ ".dll" };
 #elif defined(XAML_APPLE)
-static inline std::filesystem::path module_extension{ ".dylib" };
+static inline boost::nowide::filesystem::path module_extension{ ".dylib" };
 #else
-static inline std::filesystem::path module_extension{ ".so" };
+static inline boost::nowide::filesystem::path module_extension{ ".so" };
 #endif // XAML_WIN32
 
 using namespace std;
-using namespace std::filesystem;
+using boost::nowide::filesystem::path;
 
 static path get_full_path(path const& name)
 {
@@ -80,7 +79,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         {
             XAML_RETURN_IF_WIN32_BOOL_FALSE(FreeLibrary(m_handle));
         }
-        auto p = get_full_path(to_path(path));
+        auto p = get_full_path(to_string_view(path));
         XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
         m_handle = LoadLibraryW(p.c_str());
         if (!m_handle) return HRESULT_FROM_WIN32(GetLastError());
