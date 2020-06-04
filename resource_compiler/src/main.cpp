@@ -51,13 +51,15 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
         {
             auto it = find(begin(text_extensions), end(text_extensions), file.extension());
             bool text = it != end(text_extensions);
-            if (text)
+            ios_base::openmode mode = ios_base::in;
+            if (text) mode |= ios_base::binary;
+            boost::nowide::ifstream input{ file, mode };
+            if (input.is_open())
             {
-                boost::nowide::ifstream input{ file };
-                if (input.is_open())
+                string name = get_valid_name(file.string(), index++);
+                rc_map.emplace(file.relative_path(), name);
+                if (text)
                 {
-                    string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), name);
                     sf::println(stream, "inline static constexpr char const {}[] = ", name);
                     sf::print(stream, "u8");
                     string line;
@@ -69,16 +71,9 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                             sf::println(stream, "\"\\n\"");
                         }
                     }
-                    sf::println(stream, ';');
                 }
-            }
-            else
-            {
-                ifstream input{ file, ios_base::binary };
-                if (input.is_open())
+                else
                 {
-                    string name = get_valid_name(file.string(), index++);
-                    rc_map.emplace(file.relative_path(), name);
                     sf::print(stream, "inline static constexpr ::std::uint8_t const {}[] = {{", name);
                     size_t i = 0;
                     while (input.peek() != char_traits<char>::eof())
@@ -89,8 +84,8 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
                         sf::print(stream, "{:x,s}", b);
                         if (input.peek() != char_traits<char>::eof()) sf::print(stream, ", ");
                     }
-                    sf::println(stream, "};");
                 }
+                sf::println(stream, ';');
             }
         }
     }
@@ -140,7 +135,7 @@ int main(int argc, char** argv)
 
     if (output)
     {
-        boost::nowide::ofstream stream{ to_path(output) };
+        boost::nowide::ofstream stream{ to_string_view(output).data() };
         compile(stream, inputs);
     }
     else

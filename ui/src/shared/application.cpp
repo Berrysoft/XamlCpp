@@ -1,5 +1,4 @@
 #include <boost/nowide/args.hpp>
-#include <cstdlib>
 #include <shared/application.hpp>
 #include <xaml/ptr.hpp>
 
