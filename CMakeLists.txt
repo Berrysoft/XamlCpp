@@ -165,7 +165,7 @@ elseif(${BUILD_GTK3})
 endif()
 
 if(APPLE)
-    find_package(Boost REQUIRED COMPONENTS iostreams container)
+    find_package(Boost REQUIRED COMPONENTS container)
 else()
     find_package(Boost REQUIRED)
 endif()

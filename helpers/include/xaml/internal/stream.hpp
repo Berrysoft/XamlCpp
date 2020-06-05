@@ -12,8 +12,7 @@
 #elif defined(__GLIBCXX__)
     #include <ext/stdio_filebuf.h>
 #else
-    #include <boost/iostreams/device/file_descriptor.hpp>
-    #include <boost/iostreams/stream.hpp>
+    #include <__std_stream>
 #endif
 
 template <typename Char, typename F, typename... Args>
@@ -35,8 +34,8 @@ decltype(auto) cfile_ostream_invoke(F&& f, std::FILE* file, Args&&... args) noex
 #elif defined(__GLIBCXX__)
     __gnu_cxx::stdio_filebuf<Char> buf{ file, std::ios_base::out };
 #else
-    static_assert(std::is_same_v<Char, char>);
-    boost::iostreams::stream_buffer<boost::iostreams::file_descriptor_sink> buf{ fileno(file), boost::iostreams::never_close_handle };
+    std::mbstate_t state;
+    std::__stdoutbuf<Char> buf{ file, &state };
 #endif
 
     std::basic_ostream<Char> stream{ &buf };
@@ -60,8 +59,8 @@ decltype(auto) cfile_istream_invoke(F&& f, std::FILE* file, Args&&... args) noex
 #elif defined(__GLIBCXX__)
     __gnu_cxx::stdio_filebuf<Char> buf{ file, std::ios_base::in };
 #else
-    static_assert(std::is_same_v<Char, char>);
-    boost::iostreams::stream_buffer<boost::iostreams::file_descriptor_sink> buf{ fileno(file), boost::iostreams::never_close_handle };
+    std::mbstate_t state;
+    std::__stdinbuf<Char> buf{ file, &state };
 #endif
 
     std::basic_istream<Char> stream{ &buf };
