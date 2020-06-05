@@ -108,7 +108,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
             int res = dlclose(m_handle);
             if (res) return XAML_E_FAIL;
         }
-        auto p = get_full_path(to_path(path));
+        auto p = get_full_path(path);
         XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
         m_handle = dlopen(p.c_str(), RTLD_LAZY);
         if (!m_handle)
