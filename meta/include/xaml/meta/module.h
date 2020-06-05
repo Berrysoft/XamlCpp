@@ -17,11 +17,12 @@ XAML_DECL_INTERFACE_(xaml_module, xaml_object)
     XAML_DECL_VTBL(xaml_module, XAML_MODULE_VTBL);
 
 #ifdef __cplusplus
-    xaml_result XAML_CALL get_method(std::string_view name, void** ptr) noexcept
+    template <typename F>
+    xaml_result XAML_CALL get_method(std::string_view name, F * *ptr) noexcept
     {
         xaml_ptr<xaml_string> name_str;
         XAML_RETURN_IF_FAILED(xaml_string_new_view(name, &name_str));
-        return get_method(name_str, ptr);
+        return get_method(name_str, (void**)ptr);
     }
 #endif // __cplusplus
 };

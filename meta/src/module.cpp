@@ -14,14 +14,14 @@ static constexpr bool has_prefix = false;
 #else
 static constexpr bool has_prefix = true;
 #endif // XAML_WIN32 && !XAML_MINGW
-static inline boost::nowide::filesystem::path module_prefix{ "lib" };
+static inline const std::string module_prefix{ "lib" };
 
 #ifdef XAML_WIN32
-static inline boost::nowide::filesystem::path module_extension{ ".dll" };
+static inline const boost::nowide::filesystem::path module_extension{ ".dll" };
 #elif defined(XAML_APPLE)
-static inline boost::nowide::filesystem::path module_extension{ ".dylib" };
+static inline const boost::nowide::filesystem::path module_extension{ ".dylib" };
 #else
-static inline boost::nowide::filesystem::path module_extension{ ".so" };
+static inline const boost::nowide::filesystem::path module_extension{ ".so" };
 #endif // XAML_WIN32
 
 using namespace std;
@@ -33,18 +33,7 @@ static path get_full_path(path const& name)
     path pname = name.filename();
     if constexpr (has_prefix)
     {
-        if (!pname.native().starts_with(module_prefix.native()))
-        {
-            pname = module_prefix;
-            pname += name;
-        }
-    }
-    else
-    {
-        if (pname.native().starts_with(module_prefix.native()))
-        {
-            pname = pname.native().substr(3);
-        }
+        pname = module_prefix + pname.string();
     }
     pname.replace_extension(module_extension);
     return pname;
@@ -108,7 +97,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
             int res = dlclose(m_handle);
             if (res) return XAML_E_FAIL;
         }
-        auto p = get_full_path(path);
+        auto p = get_full_path(to_string_view(path));
         XAML_RETURN_IF_FAILED(xaml_string_new(get_module_name(p), &m_name));
         m_handle = dlopen(p.c_str(), RTLD_LAZY);
         if (!m_handle)

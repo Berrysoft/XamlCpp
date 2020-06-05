@@ -134,7 +134,7 @@ int main(int argc, char** argv)
 
     if (output)
     {
-        boost::nowide::ofstream stream{ to_string_view(output) };
+        boost::nowide::ofstream stream{ path(to_string_view(output)) };
         compile(stream, inputs);
     }
     else

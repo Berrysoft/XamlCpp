@@ -72,7 +72,7 @@ public:
         if (!contains)
         {
             xaml_result (*pregister)(xaml_meta_context*) noexcept;
-            XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", (void**)&pregister));
+            XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", &pregister));
             XAML_RETURN_IF_FAILED(pregister(this));
             bool replaced;
             XAML_RETURN_IF_FAILED(m_modules->insert(name, mod, &replaced));
@@ -84,7 +84,7 @@ public:
     {
         XAML_RETURN_IF_FAILED(add_module(mod));
         xaml_result (*pdeps)(char const* const**) noexcept;
-        if (XAML_SUCCEEDED(mod->get_method("xaml_module_dependencies", (void**)&pdeps)))
+        if (XAML_SUCCEEDED(mod->get_method("xaml_module_dependencies", &pdeps)))
         {
             char const* const* arr;
             XAML_RETURN_IF_FAILED(pdeps(&arr));

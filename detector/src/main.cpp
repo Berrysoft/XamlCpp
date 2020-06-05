@@ -52,7 +52,7 @@ int main(int argc, char** argv)
         XAML_THROW_IF_FAILED(ctx->add_module(module));
 
     xaml_result (*pget_version)(xaml_version*);
-    XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", (void**)&pget_version));
+    XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", &pget_version));
 
     xaml_version ver;
     XAML_THROW_IF_FAILED(pget_version(&ver));
