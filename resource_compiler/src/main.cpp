@@ -51,7 +51,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
             auto it = find(begin(text_extensions), end(text_extensions), file.extension());
             bool text = it != end(text_extensions);
             ios_base::openmode mode = ios_base::in;
-            if (text) mode |= ios_base::binary;
+            if (!text) mode |= ios_base::binary;
             boost::nowide::ifstream input{ file, mode };
             if (input.is_open())
             {
