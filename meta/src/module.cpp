@@ -29,8 +29,8 @@ using boost::nowide::filesystem::path;
 
 static path get_full_path(path const& name)
 {
-    if (name.is_absolute()) return name;
     path pname = name.filename();
+    if (name != pname) return name;
     if constexpr (has_prefix)
     {
         pname = module_prefix + pname.string();
