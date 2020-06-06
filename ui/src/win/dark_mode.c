@@ -26,10 +26,10 @@ void WINAPI XamlInitializeDarkModeFunc(void)
 {
     if (!uxtheme)
     {
-        DWORD major, build;
-        RtlGetNtVersionNumbers(&major, NULL, &build);
+        DWORD build;
+        RtlGetNtVersionNumbers(NULL, NULL, &build);
         build &= ~0xF0000000;
-        if (major >= 10)
+        if (build >= 17763)
         {
             uxtheme = LoadLibraryEx(L"Uxtheme.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
             if (uxtheme)
