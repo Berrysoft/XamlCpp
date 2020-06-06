@@ -40,7 +40,7 @@ int main()
                 {
                     sf::print(cout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                sf::println<char>(cout);
+                sf::println(cout);
                 break;
             }
             case xaml_vector_changed_erase:
@@ -54,7 +54,7 @@ int main()
                 {
                     sf::print(cout, U("{} "), xaml_unbox_value<int>(obj));
                 }
-                sf::println<char>(cout);
+                sf::println(cout);
                 break;
             }
             case xaml_vector_changed_move:
