@@ -13,9 +13,7 @@ target_include_directories(xaml_cmdline
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers stream_format)
-
-target_link_libraries(xaml_cmdline PRIVATE Boost::headers)
+target_link_libraries(xaml_cmdline PUBLIC xaml_meta PRIVATE xaml_helpers stream_format Boost::headers)
 
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_cmdline PRIVATE "XAML_CMDLINE_API=__XAML_EXPORT")
