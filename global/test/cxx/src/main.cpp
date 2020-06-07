@@ -1,7 +1,6 @@
 #include <boost/nowide/args.hpp>
 #include <boost/nowide/iostream.hpp>
 #include <cassert>
-#include <iostream>
 #include <sf/format.hpp>
 #include <xaml/delegate.h>
 #include <xaml/enumerable.h>

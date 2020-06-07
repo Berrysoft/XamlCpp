@@ -1,6 +1,5 @@
 #define XAML_RAISE_LEVEL xaml_result_raise_warning
 
-#include <iostream>
 #include <rapidxml/xml_attribute.hpp>
 #include <rapidxml/xml_document.hpp>
 #include <sf/sformat.hpp>

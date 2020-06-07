@@ -13,7 +13,6 @@
 #endif // XAML_DEFAULT_HANDLER_COLOR
 
 #include <boost/nowide/iostream.hpp>
-#include <iostream>
 #include <map>
 #include <sf/format.hpp>
 #include <sf/sformat.hpp>
