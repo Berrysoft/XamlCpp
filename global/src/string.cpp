@@ -3,7 +3,7 @@
 #include <xaml/string.h>
 
 #ifdef XAML_WIN32
-    #include <boost/nowide/convert.hpp>
+    #include <nowide/convert.hpp>
 #endif // XAML_WIN32
 
 using namespace std;
@@ -112,36 +112,36 @@ ostream& operator<<(ostream& stream, xaml_ptr<xaml_string> const& str)
 #ifdef XAML_WIN32
 wstring to_wstring(string_view view)
 {
-    return boost::nowide::widen(view);
+    return nowide::widen(view);
 }
 
 pmr::wstring to_pmr_wstring(string_view str, pmr::polymorphic_allocator<wchar_t> alloc)
 {
-    return boost::nowide::convert<wchar_t>(str, alloc);
+    return nowide::convert<wchar_t>(str, alloc);
 }
 
 wstring_view __xaml_codecvt_pool_impl::operator()(string_view view)
 {
     size_t len = view.length() + 1;
     wchar_t* result = m_wide_allocator.allocate(len);
-    return boost::nowide::widen(result, len, view);
+    return nowide::widen(result, len, view);
 }
 
 string to_string(wstring_view view)
 {
-    return boost::nowide::narrow(view);
+    return nowide::narrow(view);
 }
 
 pmr::string to_pmr_string(wstring_view wstr, pmr::polymorphic_allocator<char> alloc)
 {
-    return boost::nowide::convert<char>(wstr, alloc);
+    return nowide::convert<char>(wstr, alloc);
 }
 
 string_view __xaml_codecvt_pool_impl::operator()(wstring_view view)
 {
     size_t len = view.length() * 2 + 1;
     char* result = m_allocator.allocate(len);
-    return boost::nowide::narrow(result, len, view);
+    return nowide::narrow(result, len, view);
 }
 #endif // XAML_WIN32
 

@@ -1,5 +1,5 @@
-#include <boost/nowide/args.hpp>
-#include <boost/nowide/iostream.hpp>
+#include <nowide/args.hpp>
+#include <nowide/iostream.hpp>
 #include <sf/format.hpp>
 #include <xaml/ui/application.h>
 
@@ -13,7 +13,7 @@ static int xaml_main_end(xaml_result hr, int* pcode) noexcept
     }
     else
     {
-        sf::println(boost::nowide::cerr, U("Unhandled exception: {:x8,s}"), hr);
+        sf::println(nowide::cerr, U("Unhandled exception: {:x8,s}"), hr);
         return (int)hr;
     }
 }
@@ -27,7 +27,7 @@ static xaml_result xaml_main_begin(int argc, char** argv, int* pcode) noexcept
 
 int main(int argc, char** argv)
 {
-    boost::nowide::args _(argc, argv);
+    nowide::args _(argc, argv);
     int code;
     return xaml_main_end(xaml_main_begin(argc, argv, &code), &code);
 }

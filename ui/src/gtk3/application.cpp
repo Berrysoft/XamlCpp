@@ -1,5 +1,5 @@
-#include <boost/nowide/cstdlib.hpp>
 #include <gtk/gtk.h>
+#include <nowide/cstdlib.hpp>
 #include <shared/application.hpp>
 #include <xaml/ui/application.h>
 
@@ -38,7 +38,7 @@ xaml_result xaml_application_impl::quit(int value) noexcept
 
 xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noexcept
 {
-    char* theme_buffer = boost::nowide::getenv("GTK_THEME");
+    char* theme_buffer = nowide::getenv("GTK_THEME");
     string_view theme = theme_buffer ? theme_buffer : string_view{};
     *ptheme = theme.ends_with(":dark") ? xaml_application_theme_dark : xaml_application_theme_light;
     return XAML_S_OK;

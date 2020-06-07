@@ -8,7 +8,7 @@ This project is NOT complete, and still needs a lot of work. Welcome issues and 
 The goal of XamlCpp is to write a cross-platfrom GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies, compared to Qt or so.
 
 ## Charset
-XamlCpp uses UTF-8 everywhere, which is ensured by `boost-nowide` on Windows.
+XamlCpp uses UTF-8 everywhere, which is ensured by a modified version of `boost-nowide` on Windows.
 
 ## Reflection
 XamlCpp supports reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.

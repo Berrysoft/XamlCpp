@@ -55,7 +55,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
     if (m_text)
     {
-        boost::nowide::wstackstring data;
+        nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
         XAML_RETURN_IF_WIN32_BOOL_FALSE(ComboBox_SetText(m_handle, data.c_str()));
     }
@@ -145,7 +145,7 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        boost::nowide::wstackstring data;
+        nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(s, &data));
         ComboBox_InsertString(m_handle, index, data.c_str());
     }
@@ -169,7 +169,7 @@ xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_o
     xaml_ptr<xaml_string> s = value.query<xaml_string>();
     if (s)
     {
-        boost::nowide::wstackstring data;
+        nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(s, &data));
         ComboBox_SetItemData(m_handle, index, data.c_str());
     }

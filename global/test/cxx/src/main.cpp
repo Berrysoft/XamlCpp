@@ -1,6 +1,6 @@
-#include <boost/nowide/args.hpp>
-#include <boost/nowide/iostream.hpp>
 #include <cassert>
+#include <nowide/args.hpp>
+#include <nowide/iostream.hpp>
 #include <sf/format.hpp>
 #include <xaml/delegate.h>
 #include <xaml/enumerable.h>
@@ -11,7 +11,7 @@
 #include <xaml/string.h>
 #include <xaml/vector.h>
 
-using boost::nowide::cout;
+using nowide::cout;
 
 int main()
 {

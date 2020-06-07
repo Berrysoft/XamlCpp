@@ -101,7 +101,7 @@ XAML_CATCH_RETURN_WINRT()
 xaml_result xaml_webview_edge::navigate(char const* uri) noexcept
 try
 {
-    boost::nowide::wstackstring data;
+    nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(uri, &data));
     m_view.Navigate(Uri{ (wstring_view)data });
     return XAML_S_OK;

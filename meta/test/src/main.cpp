@@ -1,5 +1,5 @@
-#include <boost/nowide/iostream.hpp>
 #include <calculator.h>
+#include <nowide/iostream.hpp>
 #include <sf/format.hpp>
 #include <xaml/meta/meta_context.h>
 #include <xaml/meta/type_info.h>
@@ -28,7 +28,7 @@ int main()
     xaml_ptr<xaml_delegate> handler;
     XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_test_calculator>, int>(
         [](xaml_ptr<xaml_test_calculator>, int i) {
-            sf::println(boost::nowide::cout, "Value changed: {}", i);
+            sf::println(nowide::cout, "Value changed: {}", i);
         },
         &handler)));
     int32_t token;

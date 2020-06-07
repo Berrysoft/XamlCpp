@@ -4,7 +4,7 @@
 #include <cstdio>
 
 #ifdef XAML_WIN32
-    #include <boost/nowide/iostream.hpp>
+    #include <nowide/iostream.hpp>
 #endif // XAML_WIN32
 
 #ifdef _MSVC_STL_VERSION
@@ -23,9 +23,9 @@ decltype(auto) cfile_ostream_invoke(F&& f, std::FILE* file, Args&&... args) noex
     switch (_fileno(file))
     {
     case 1:
-        return std::forward<F>(f)(boost::nowide::cout, std::forward<Args>(args)...);
+        return std::forward<F>(f)(nowide::cout, std::forward<Args>(args)...);
     case 2:
-        return std::forward<F>(f)(boost::nowide::cerr, std::forward<Args>(args)...);
+        return std::forward<F>(f)(nowide::cerr, std::forward<Args>(args)...);
     }
 #endif // XAML_WIN32
 
@@ -50,7 +50,7 @@ decltype(auto) cfile_istream_invoke(F&& f, std::FILE* file, Args&&... args) noex
     switch (_fileno(file))
     {
     case 0:
-        return std::forward<F>(f)(boost::nowide::cin, std::forward<Args>(args)...);
+        return std::forward<F>(f)(nowide::cin, std::forward<Args>(args)...);
     }
 #endif // XAML_WIN32
 

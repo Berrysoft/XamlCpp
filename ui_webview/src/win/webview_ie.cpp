@@ -106,7 +106,7 @@ xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rec
 xaml_result xaml_webview_ie::navigate(char const* uri) noexcept
 {
     wil::unique_variant empty{};
-    boost::nowide::wstackstring data;
+    nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(uri, &data));
     auto u = wil::make_bstr_nothrow(data.c_str());
     return m_browser->Navigate(u.get(), &empty, &empty, &empty, &empty);

@@ -1,12 +1,12 @@
-#include <boost/nowide/args.hpp>
-#include <boost/nowide/iostream.hpp>
 #include <iomanip>
+#include <nowide/args.hpp>
+#include <nowide/iostream.hpp>
 #include <options.h>
 #include <sf/format.hpp>
 #include <unordered_map>
 #include <xaml/version.h>
 
-using boost::nowide::cout;
+using nowide::cout;
 
 std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid const& type)
 {
@@ -25,7 +25,7 @@ std::string_view get_type_name(xaml_ptr<xaml_meta_context> const& ctx, xaml_guid
 
 int main(int argc, char** argv)
 {
-    boost::nowide::args _(argc, argv);
+    nowide::args _(argc, argv);
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));

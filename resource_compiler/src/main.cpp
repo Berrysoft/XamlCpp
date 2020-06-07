@@ -1,17 +1,17 @@
-#include <boost/nowide/args.hpp>
-#include <boost/nowide/filesystem.hpp>
-#include <boost/nowide/fstream.hpp>
-#include <boost/nowide/iostream.hpp>
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <nowide/args.hpp>
+#include <nowide/filesystem.hpp>
+#include <nowide/fstream.hpp>
+#include <nowide/iostream.hpp>
 #include <options.h>
 #include <sf/format.hpp>
 #include <sstream>
 #include <tuple>
 
 using namespace std;
-using boost::nowide::filesystem::path;
+using nowide::filesystem::path;
 
 string get_valid_name(string_view str, size_t index)
 {
@@ -52,7 +52,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
             bool text = it != end(text_extensions);
             ios_base::openmode mode = ios_base::in;
             if (!text) mode |= ios_base::binary;
-            boost::nowide::ifstream input{ file, mode };
+            nowide::ifstream input{ file, mode };
             if (input.is_open())
             {
                 string name = get_valid_name(file.string(), index++);
@@ -118,7 +118,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
 int main(int argc, char** argv)
 {
-    boost::nowide::args _(argc, argv);
+    nowide::args _(argc, argv);
 
     xaml_ptr<xaml_meta_context> cmdline_ctx;
     XAML_THROW_IF_FAILED(xaml_meta_context_new(&cmdline_ctx));
@@ -134,12 +134,12 @@ int main(int argc, char** argv)
 
     if (output)
     {
-        boost::nowide::ofstream stream{ path(to_string_view(output)) };
+        nowide::ofstream stream{ path(to_string_view(output)) };
         compile(stream, inputs);
     }
     else
     {
-        compile(boost::nowide::cout, inputs);
+        compile(nowide::cout, inputs);
     }
 
     return 0;

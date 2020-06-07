@@ -12,8 +12,8 @@
     #include <sf/color.hpp>
 #endif // XAML_DEFAULT_HANDLER_COLOR
 
-#include <boost/nowide/iostream.hpp>
 #include <map>
+#include <nowide/iostream.hpp>
 #include <sf/format.hpp>
 #include <sf/sformat.hpp>
 #include <sstream>
@@ -83,7 +83,7 @@ void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_lev
     else
 #endif // !XAML_DEFAULT_HANDLER_COLOR
     {
-        print_msg(boost::nowide::cerr, hr, level, msg);
+        print_msg(nowide::cerr, hr, level, msg);
     }
 }
 

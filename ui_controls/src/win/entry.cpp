@@ -42,7 +42,7 @@ xaml_result xaml_entry_internal::size_to_fit() noexcept
 
 xaml_result xaml_entry_internal::draw_text() noexcept
 {
-    boost::nowide::wstackstring data;
+    nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(m_text, &data));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(Edit_SetText(m_handle, data.c_str()));
     return XAML_S_OK;

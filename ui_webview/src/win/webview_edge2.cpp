@@ -101,7 +101,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
 
 xaml_result xaml_webview_edge2::navigate(char const* uri) noexcept
 {
-    boost::nowide::wstackstring data;
+    nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(uri, &data));
     return m_view->Navigate(data.c_str());
 }

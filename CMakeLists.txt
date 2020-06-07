@@ -187,7 +187,7 @@ add_subdirectory(StreamFormat)
 list(APPEND _XAML_TARGETS stream_format)
 
 add_subdirectory(nowide)
-list(APPEND _XAML_TARGETS boost_nowide)
+list(APPEND _XAML_TARGETS nowide)
 
 add_subdirectory(rapidxml)
 

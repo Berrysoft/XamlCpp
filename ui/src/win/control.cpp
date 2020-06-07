@@ -80,7 +80,7 @@ xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& s
     }
     else
     {
-        boost::nowide::wstackstring data;
+        nowide::wstackstring data;
         XAML_RETURN_IF_FAILED(to_wstring(str, &data));
         XAML_RETURN_IF_FAILED(measure_string(data, offset, pvalue));
         m_measure_str_cache = str;

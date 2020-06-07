@@ -169,7 +169,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
 {
     auto fsize = (FLOAT)font.size;
     if (fsize <= 0) return XAML_S_OK;
-    boost::nowide::wshort_stackstring ff;
+    nowide::wshort_stackstring ff;
     XAML_RETURN_IF_FAILED(to_wstring(font.font_family, &ff));
     wil::com_ptr_t<IDWriteTextFormat, wil::err_returncode_policy> format;
     XAML_RETURN_IF_FAILED(dwrite->CreateTextFormat(
@@ -179,7 +179,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
     auto size = target->GetSize();
     auto region = xaml_to_native<D2D1_RECT_F, xaml_rectangle>({ p.x, p.y, p.x, p.y });
-    boost::nowide::wstackstring data;
+    nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(str, &data));
     wil::com_ptr_t<IDWriteTextLayout, wil::err_returncode_policy> layout;
     XAML_RETURN_IF_FAILED(dwrite->CreateTextLayout(data.c_str(), (UINT32)data.length(), format.get(), size.width, size.height, &layout));

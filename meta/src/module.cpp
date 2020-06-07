@@ -1,4 +1,4 @@
-#include <boost/nowide/filesystem.hpp>
+#include <nowide/filesystem.hpp>
 #include <vector>
 #include <xaml/meta/module.h>
 
@@ -17,15 +17,15 @@ static constexpr bool has_prefix = true;
 static inline const std::string module_prefix{ "lib" };
 
 #ifdef XAML_WIN32
-static inline const boost::nowide::filesystem::path module_extension{ ".dll" };
+static inline const nowide::filesystem::path module_extension{ ".dll" };
 #elif defined(XAML_APPLE)
-static inline const boost::nowide::filesystem::path module_extension{ ".dylib" };
+static inline const nowide::filesystem::path module_extension{ ".dylib" };
 #else
-static inline const boost::nowide::filesystem::path module_extension{ ".so" };
+static inline const nowide::filesystem::path module_extension{ ".so" };
 #endif // XAML_WIN32
 
 using namespace std;
-using boost::nowide::filesystem::path;
+using nowide::filesystem::path;
 
 static path get_full_path(path const& name)
 {

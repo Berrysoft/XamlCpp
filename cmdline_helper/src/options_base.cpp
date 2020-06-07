@@ -1,6 +1,6 @@
-#include <boost/nowide/filesystem.hpp>
-#include <boost/nowide/iostream.hpp>
 #include <filesystem>
+#include <nowide/filesystem.hpp>
+#include <nowide/iostream.hpp>
 #include <options_base.hpp>
 #include <sf/format.hpp>
 #include <xaml/cmdline/deserializer.h>
@@ -9,7 +9,7 @@
 #include <xaml/result_handler.h>
 
 using namespace std;
-using boost::nowide::filesystem::path;
+using nowide::filesystem::path;
 
 xaml_result XAML_CALL xaml_cmdline_options_base_members(xaml_type_info_registration* __info) noexcept
 {
@@ -32,16 +32,16 @@ static xaml_result print_help(xaml_ptr<xaml_type_info> const& t) noexcept
 {
     xaml_ptr<xaml_cmdline_option> opt;
     XAML_RETURN_IF_FAILED(t->get_attribute(&opt));
-    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(boost::nowide::cout, opt));
+    XAML_RETURN_IF_FAILED(xaml_cmdline_option_print(nowide::cout, opt));
     return XAML_S_OK;
 }
 
 static void print_version() noexcept
 {
-    sf::print(boost::nowide::cout, U_(XAML_VERSION));
+    sf::print(nowide::cout, U_(XAML_VERSION));
 #ifdef XAML_COMMIT_HASH
     const std::string_view hash{ U_(XAML_COMMIT_HASH) };
-    sf::print(boost::nowide::cout, U("-{}"), hash.substr(0, 8));
+    sf::print(nowide::cout, U("-{}"), hash.substr(0, 8));
 #endif // XAML_COMMIT_HASH
 }
 
@@ -56,7 +56,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         xaml_result __hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
         if (XAML_FAILED(__hr))
         {
-            sf::println(boost::nowide::cerr, U("Command line parse error: {:x8,s}"), __hr);
+            sf::println(nowide::cerr, U("Command line parse error: {:x8,s}"), __hr);
             XAML_RETURN_IF_FAILED(print_help(t));
             exit(1);
         }
@@ -79,9 +79,9 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
     XAML_RETURN_IF_FAILED(options->get_no_logo(&no_logo));
     if (!no_logo)
     {
-        sf::print(boost::nowide::cout, U("{} "), exe.filename().u8string());
+        sf::print(nowide::cout, U("{} "), exe.filename().u8string());
         print_version();
-        sf::println(boost::nowide::cout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
+        sf::println(nowide::cout, U("\nCopyright (c) 2019-2020 Berrysoft\n"));
     }
 
     bool help;

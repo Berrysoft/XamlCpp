@@ -130,7 +130,7 @@ xaml_result xaml_window_internal::draw_size() noexcept
 
 xaml_result xaml_window_internal::draw_title() noexcept
 {
-    boost::nowide::wstackstring title;
+    nowide::wstackstring title;
     XAML_RETURN_IF_FAILED(to_wstring(m_title, &title));
     XAML_RETURN_IF_WIN32_BOOL_FALSE(SetWindowText(m_handle, title.c_str()));
     return XAML_S_OK;
