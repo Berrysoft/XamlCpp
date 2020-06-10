@@ -40,6 +40,7 @@ public:
         AT(xaml_map_view);
         AT(xaml_map);
         AT(xaml_observable_vector);
+        AT(xaml_converter);
         AT(bool);
         AT(char);
         AT(int8_t);
