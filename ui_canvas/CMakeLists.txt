@@ -1,6 +1,9 @@
 project(XamlCanvas CXX)
 
 file(GLOB CV_HEADERS "include/xaml/ui/controls/*.h")
+file(GLOB CV_WINDOWS_HEADERS "include/xaml/ui/win/controls/*.h")
+file(GLOB CV_COCOA_HEADERS "include/xaml/ui/cocoa/controls/*.h")
+file(GLOB CV_GTK3_HEADERS "include/xaml/ui/gtk3/controls/*.h")
 
 if(${BUILD_WINDOWS})
     file(GLOB CV_SOURCE "src/win/*.cpp")
@@ -36,3 +39,6 @@ endif()
 target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
 install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
+install(FILES ${CV_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win/controls)
+install(FILES ${CV_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa/controls)
+install(FILES ${CV_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3/controls)
