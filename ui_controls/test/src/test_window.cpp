@@ -12,6 +12,7 @@
 #include <xaml/ui/controls/password_entry.h>
 #include <xaml/ui/controls/progress.h>
 #include <xaml/ui/controls/stack_panel.h>
+#include <xaml/ui/controls/text_box.h>
 #include <xaml/ui/filebox.h>
 #include <xaml/ui/menu_bar.h>
 #include <xaml/ui/msgbox.h>
@@ -227,88 +228,107 @@ xaml_result xaml_test_window_impl::init() noexcept
         XAML_RETURN_IF_FAILED(xaml_combo_box_new(&box));
         box->set_halignment(xaml_halignment_center);
         box->set_valignment(xaml_valignment_top);
-        box->set_margin({ 10, 10, 10, 10 });
         box->set_items(m_combo_source);
         box->set_sel_id(1);
-        g->add_child(box);
-        xaml_grid_set_column(box, 1);
-        xaml_grid_set_row(box, 3);
-
-        xaml_ptr<xaml_stack_panel> panel;
-        XAML_RETURN_IF_FAILED(xaml_stack_panel_new(&panel));
-        panel->set_orientation(xaml_orientation_vertical);
-        panel->set_margin({ 5, 5, 5, 5 });
         {
-            xaml_ptr<xaml_button> btn;
-            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
-            btn->set_margin({ 5, 5, 5, 5 });
-            xaml_ptr<xaml_string> text;
-            XAML_RETURN_IF_FAILED(xaml_string_new(U("Push"), &text));
-            btn->set_text(text);
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
-                    xaml_ptr<xaml_string> item;
-                    XAML_RETURN_IF_FAILED(xaml_string_new(U("\U0001D49E-\u043F\u0440\u0438\u0432\u0435\u0442-\u3084\u3042"), &item));
-                    return m_combo_source->append(item);
-                },
-                &callback)));
-            int32_t token;
-            btn->add_click(callback, &token);
-            panel->add_child(btn);
+            xaml_ptr<xaml_grid> panel;
+            XAML_RETURN_IF_FAILED(xaml_grid_new(&panel));
+            XAML_RETURN_IF_FAILED(panel->set_margin({ 10, 10, 10, 10 }));
+            XAML_RETURN_IF_FAILED(panel->add_row({ 0, xaml_grid_layout_auto }));
+            XAML_RETURN_IF_FAILED(panel->add_row({ 1, xaml_grid_layout_star }));
+            panel->add_child(box);
+            {
+                xaml_ptr<xaml_text_box> text;
+                XAML_RETURN_IF_FAILED(xaml_text_box_new(&text));
+                xaml_ptr<xaml_string> text_text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(U("This is a long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long text.\n"
+                                                        "And this is the next line."),
+                                                      &text_text));
+                XAML_RETURN_IF_FAILED(text->set_text(text_text));
+                panel->add_child(text);
+                xaml_grid_set_row(text, 1);
+            }
+            g->add_child(panel);
+            xaml_grid_set_column(panel, 1);
+            xaml_grid_set_row(panel, 3);
         }
         {
-            xaml_ptr<xaml_button> btn;
-            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
-            btn->set_margin({ 5, 5, 5, 5 });
-            xaml_ptr<xaml_string> text;
-            XAML_RETURN_IF_FAILED(xaml_string_new(U("Pop"), &text));
-            btn->set_text(text);
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
-                    return m_combo_source->remove_at_end();
-                },
-                &callback)));
-            int32_t token;
-            btn->add_click(callback, &token);
-            panel->add_child(btn);
+            xaml_ptr<xaml_stack_panel> panel;
+            XAML_RETURN_IF_FAILED(xaml_stack_panel_new(&panel));
+            panel->set_orientation(xaml_orientation_vertical);
+            panel->set_margin({ 5, 5, 5, 5 });
+            {
+                xaml_ptr<xaml_button> btn;
+                XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+                btn->set_margin({ 5, 5, 5, 5 });
+                xaml_ptr<xaml_string> text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(U("Push"), &text));
+                btn->set_text(text);
+                xaml_ptr<xaml_delegate> callback;
+                XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                    [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
+                        xaml_ptr<xaml_string> item;
+                        XAML_RETURN_IF_FAILED(xaml_string_new(U("\U0001D49E-\u043F\u0440\u0438\u0432\u0435\u0442-\u3084\u3042"), &item));
+                        return m_combo_source->append(item);
+                    },
+                    &callback)));
+                int32_t token;
+                btn->add_click(callback, &token);
+                panel->add_child(btn);
+            }
+            {
+                xaml_ptr<xaml_button> btn;
+                XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+                btn->set_margin({ 5, 5, 5, 5 });
+                xaml_ptr<xaml_string> text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(U("Pop"), &text));
+                btn->set_text(text);
+                xaml_ptr<xaml_delegate> callback;
+                XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                    [this](xaml_ptr<xaml_button>) noexcept -> xaml_result {
+                        return m_combo_source->remove_at_end();
+                    },
+                    &callback)));
+                int32_t token;
+                btn->add_click(callback, &token);
+                panel->add_child(btn);
+            }
+            {
+                xaml_ptr<xaml_button> btn;
+                XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
+                btn->set_margin({ 5, 5, 5, 5 });
+                xaml_ptr<xaml_string> text;
+                XAML_RETURN_IF_FAILED(xaml_string_new(U("Show"), &text));
+                btn->set_text(text);
+                xaml_ptr<xaml_delegate> callback;
+                XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
+                    [this, box](xaml_ptr<xaml_button>) noexcept -> xaml_result {
+                        int32_t sel;
+                        XAML_RETURN_IF_FAILED(box->get_sel_id(&sel));
+                        int32_t size;
+                        XAML_RETURN_IF_FAILED(m_combo_source->get_size(&size));
+                        if (sel >= 0 && sel < size)
+                        {
+                            xaml_ptr<xaml_object> item;
+                            XAML_RETURN_IF_FAILED(m_combo_source->get_at(sel, &item));
+                            xaml_ptr<xaml_string> str;
+                            XAML_RETURN_IF_FAILED(item->query(&str));
+                            xaml_ptr<xaml_string> title;
+                            XAML_RETURN_IF_FAILED(xaml_string_new(U("Show selected item"), &title));
+                            xaml_msgbox_result res;
+                            XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, str, title, nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
+                        }
+                        return XAML_S_OK;
+                    },
+                    &callback)));
+                int32_t token;
+                btn->add_click(callback, &token);
+                panel->add_child(btn);
+            }
+            g->add_child(panel);
+            xaml_grid_set_column(panel, 2);
+            xaml_grid_set_row(panel, 3);
         }
-        {
-            xaml_ptr<xaml_button> btn;
-            XAML_RETURN_IF_FAILED(xaml_button_new(&btn));
-            btn->set_margin({ 5, 5, 5, 5 });
-            xaml_ptr<xaml_string> text;
-            XAML_RETURN_IF_FAILED(xaml_string_new(U("Show"), &text));
-            btn->set_text(text);
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-                [this, box](xaml_ptr<xaml_button>) noexcept -> xaml_result {
-                    int32_t sel;
-                    XAML_RETURN_IF_FAILED(box->get_sel_id(&sel));
-                    int32_t size;
-                    XAML_RETURN_IF_FAILED(m_combo_source->get_size(&size));
-                    if (sel >= 0 && sel < size)
-                    {
-                        xaml_ptr<xaml_object> item;
-                        XAML_RETURN_IF_FAILED(m_combo_source->get_at(sel, &item));
-                        xaml_ptr<xaml_string> str;
-                        XAML_RETURN_IF_FAILED(item->query(&str));
-                        xaml_ptr<xaml_string> title;
-                        XAML_RETURN_IF_FAILED(xaml_string_new(U("Show selected item"), &title));
-                        xaml_msgbox_result res;
-                        XAML_RETURN_IF_FAILED(xaml_msgbox(m_window, str, title, nullptr, xaml_msgbox_none, xaml_msgbox_buttons_ok, &res));
-                    }
-                    return XAML_S_OK;
-                },
-                &callback)));
-            int32_t token;
-            btn->add_click(callback, &token);
-            panel->add_child(btn);
-        }
-        g->add_child(panel);
-        xaml_grid_set_column(panel, 2);
-        xaml_grid_set_row(panel, 3);
     }
     {
         xaml_ptr<xaml_menu_bar> mbar;
