@@ -38,7 +38,7 @@ if(${BUILD_WINDOWS})
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
             message(STATUS "Download WebView2...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.515-prerelease ${CMAKE_BINARY_DIR}/webview2.nupkg)
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.538 ${CMAKE_BINARY_DIR}/webview2.nupkg)
             message(STATUS "WebView2 downloaded")
         endif()
 
@@ -63,7 +63,7 @@ if(${BUILD_WINDOWS})
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
             message(STATUS "Downloading CppWinRT...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200514.2 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200609.3 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
             message(STATUS "CppWinRT downloaded")
         endif()
 
