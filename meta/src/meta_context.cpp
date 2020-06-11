@@ -72,9 +72,9 @@ public:
         XAML_RETURN_IF_FAILED(m_modules->has_key(name, &contains));
         if (!contains)
         {
-            xaml_result (*pregister)(xaml_meta_context*) noexcept;
-            XAML_RETURN_IF_FAILED(mod->get_method("xaml_module_register", &pregister));
-            XAML_RETURN_IF_FAILED(pregister(this));
+            xaml_ptr<xaml_module_info> info;
+            XAML_RETURN_IF_FAILED(mod->get_info(&info));
+            XAML_RETURN_IF_FAILED(info->register_types(this));
             bool replaced;
             XAML_RETURN_IF_FAILED(m_modules->insert(name, mod, &replaced));
         }
@@ -84,15 +84,22 @@ public:
     xaml_result XAML_CALL add_module_recursive(xaml_module* mod) noexcept override
     {
         XAML_RETURN_IF_FAILED(add_module(mod));
-        xaml_result (*pdeps)(char const* const**) noexcept;
-        if (XAML_SUCCEEDED(mod->get_method("xaml_module_dependencies", &pdeps)))
+        xaml_ptr<xaml_module_info> info;
+        XAML_RETURN_IF_FAILED(mod->get_info(&info));
+        xaml_ptr<xaml_vector_view> dependencies;
+        XAML_RETURN_IF_FAILED(info->get_dependencies(&dependencies));
+        if (dependencies)
         {
-            char const* const* arr;
-            XAML_RETURN_IF_FAILED(pdeps(&arr));
-            for (size_t i = 0; arr[i]; i++)
+            XAML_FOREACH_START(dep_item, dependencies);
             {
-                XAML_RETURN_IF_FAILED(xaml_meta_context::add_module_recursive(arr[i]));
+                xaml_ptr<xaml_string> dep;
+                XAML_RETURN_IF_FAILED(dep_item->query(&dep));
+                xaml_ptr<xaml_module> m;
+                XAML_RETURN_IF_FAILED(xaml_module_new(&m));
+                XAML_RETURN_IF_FAILED(m->open(dep));
+                XAML_RETURN_IF_FAILED(add_module_recursive(m));
             }
+            XAML_FOREACH_END();
         }
         return XAML_S_OK;
     }

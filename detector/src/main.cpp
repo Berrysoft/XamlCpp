@@ -50,11 +50,12 @@ int main(int argc, char** argv)
     else
         XAML_THROW_IF_FAILED(ctx->add_module(module));
 
-    xaml_result (*pget_version)(xaml_version*);
-    XAML_THROW_IF_FAILED(module->get_method("xaml_module_version", &pget_version));
-
     xaml_version ver;
-    XAML_THROW_IF_FAILED(pget_version(&ver));
+    {
+        xaml_ptr<xaml_module_info> info;
+        XAML_RETURN_IF_FAILED(module->get_info(&info));
+        XAML_THROW_IF_FAILED(info->get_version(&ver));
+    }
 
     sf::println(cout, U("Module {} ({})"), quoted(to_string_view(path_str)), ver);
 

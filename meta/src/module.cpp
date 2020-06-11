@@ -58,6 +58,15 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         return m_name.query(ptr);
     }
 
+    xaml_result XAML_CALL get_info(xaml_module_info** ptr) noexcept override
+    {
+        xaml_result(XAML_CALL * pget_info)(xaml_module_info**) noexcept;
+        xaml_ptr<xaml_string> name;
+        XAML_RETURN_IF_FAILED(xaml_string_new_view("xaml_module_get_info", &name));
+        XAML_RETURN_IF_FAILED(get_method(name, (void**)&pget_info));
+        return pget_info(ptr);
+    }
+
 #ifdef XAML_WIN32
     HMODULE m_handle{};
 
@@ -76,7 +85,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     }
     XAML_CATCH_RETURN()
 
-    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
+    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept
     {
         if (!m_handle) return XAML_E_NOTIMPL;
         string_view data;
@@ -109,7 +118,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
     }
     XAML_CATCH_RETURN()
 
-    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept override
+    xaml_result XAML_CALL get_method(xaml_string* name, void** ptr) noexcept
     {
         if (!m_handle) return XAML_E_NOTIMPL;
         string_view data;
