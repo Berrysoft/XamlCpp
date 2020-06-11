@@ -20,6 +20,8 @@ struct xaml_text_box_internal : xaml_control_internal
     xaml_result XAML_CALL size_to_fit() noexcept override;
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
+#elif defined(XAML_UI_GTK3)
+    static void on_changed(GtkTextBuffer*, xaml_text_box_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

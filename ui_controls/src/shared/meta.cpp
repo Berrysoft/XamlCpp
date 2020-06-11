@@ -9,6 +9,7 @@
 #include <xaml/ui/controls/progress.h>
 #include <xaml/ui/controls/radio_box.h>
 #include <xaml/ui/controls/stack_panel.h>
+#include <xaml/ui/controls/text_box.h>
 #include <xaml/ui/controls/uniform_grid.h>
 #include <xaml/version.h>
 
@@ -37,6 +38,7 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result xaml_module_register(xaml_meta_context
     XAML_RETURN_IF_FAILED(xaml_label_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_entry_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_password_entry_register(ctx));
+    XAML_RETURN_IF_FAILED(xaml_text_box_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_items_base_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_combo_box_register(ctx));
     XAML_RETURN_IF_FAILED(xaml_menu_item_register(ctx));

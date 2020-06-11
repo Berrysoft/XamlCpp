@@ -1,5 +1,5 @@
+#include <shared/atomic_guard.hpp>
 #include <shared/entry.hpp>
-#include <xaml/ui/controls/entry.h>
 
 using namespace std;
 
@@ -48,10 +48,13 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
 
 void xaml_entry_internal::on_changed(GtkWidget*, xaml_entry_internal* self) noexcept
 {
+    xaml_atomic_guard guard{ self->m_text_changing };
+    guard.test_and_set();
     gchar const* data = gtk_entry_get_text(GTK_ENTRY(self->m_handle));
     xaml_ptr<xaml_string> text;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(data, &text));
     XAML_ASSERT_SUCCEEDED(self->set_text(text));
+    XAML_ASSERT_SUCCEEDED(self->parent_redraw());
 }
 
 xaml_result xaml_entry_internal::size_to_fit() noexcept
