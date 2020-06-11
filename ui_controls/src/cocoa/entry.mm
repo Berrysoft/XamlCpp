@@ -1,5 +1,6 @@
 #import <cocoa/XamlEntryDelegate.h>
 #include <cocoa/nsstring.hpp>
+#include <shared/atomic_guard.hpp>
 #include <shared/entry.hpp>
 #include <xaml/ui/controls/entry.h>
 
@@ -67,8 +68,11 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
 
 void xaml_entry_internal::on_changed() noexcept
 {
+    xaml_atomic_guard guard{ m_text_changing };
+    guard.test_and_set();
     NSTextField* textField = (NSTextField*)m_handle;
     xaml_ptr<xaml_string> str;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(textField.stringValue.UTF8String, &str));
     XAML_ASSERT_SUCCEEDED(set_text(str));
+    XAML_ASSERT_SUCCEEDED(parent_redraw());
 }
