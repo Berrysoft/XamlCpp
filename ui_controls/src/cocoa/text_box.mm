@@ -52,5 +52,4 @@ void xaml_text_box_internal::on_changed() noexcept
     xaml_ptr<xaml_string> str;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(textView.string.UTF8String, &str));
     XAML_ASSERT_SUCCEEDED(set_text(str));
-    XAML_ASSERT_SUCCEEDED(parent_redraw());
 }

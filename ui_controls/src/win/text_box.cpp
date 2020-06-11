@@ -77,7 +77,6 @@ xaml_result xaml_text_box_internal::wnd_proc(xaml_win32_window_message const& ms
                 xaml_ptr<xaml_string> text;
                 XAML_RETURN_IF_FAILED(xaml_string_new(t, &text));
                 XAML_RETURN_IF_FAILED(set_text(text));
-                XAML_RETURN_IF_FAILED(parent_redraw());
                 break;
             }
             }
