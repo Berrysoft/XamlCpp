@@ -1,5 +1,4 @@
 #include <vector>
-#include <wil/result_macros.h>
 #include <xaml/ui/msgbox.h>
 #include <xaml/ui/win/control.h>
 

@@ -1,7 +1,6 @@
 #include <atomic>
 #include <optional>
 #include <shared/menu_item.hpp>
-#include <wil/result_macros.h>
 #include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/menu_item.h>

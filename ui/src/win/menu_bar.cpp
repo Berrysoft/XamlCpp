@@ -1,5 +1,4 @@
 #include <shared/menu_bar.hpp>
-#include <wil/result_macros.h>
 #include <xaml/result_win32.h>
 #include <xaml/ui/menu_bar.h>
 #include <xaml/ui/window.h>

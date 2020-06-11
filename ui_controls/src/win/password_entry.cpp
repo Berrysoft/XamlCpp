@@ -1,5 +1,4 @@
 #include <shared/password_entry.hpp>
-#include <wil/result_macros.h>
 #include <windowsx.h>
 #include <xaml/ui/controls/password_entry.h>
 
