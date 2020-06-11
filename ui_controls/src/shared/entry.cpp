@@ -1,3 +1,4 @@
+#include <shared/atomic_guard.hpp>
 #include <shared/entry.hpp>
 #include <xaml/ui/controls/entry.h>
 
@@ -12,7 +13,8 @@ xaml_result XAML_CALL xaml_entry_internal::init() noexcept
     int32_t token;
     XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>>(
         [this](xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>) noexcept -> xaml_result {
-            if (m_handle)
+            xaml_atomic_guard guard{ m_text_changing };
+            if (m_handle && !guard.test_and_set())
             {
                 XAML_RETURN_IF_FAILED(draw_text());
                 XAML_RETURN_IF_FAILED(parent_redraw());

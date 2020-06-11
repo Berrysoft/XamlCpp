@@ -1,3 +1,4 @@
+#include <shared/atomic_guard.hpp>
 #include <shared/text_box.hpp>
 #include <windowsx.h>
 #include <xaml/internal/string.hpp>
@@ -67,16 +68,15 @@ xaml_result xaml_text_box_internal::wnd_proc(xaml_win32_window_message const& ms
             {
             case EN_UPDATE:
             {
+                xaml_atomic_guard guard{ m_text_changing };
+                guard.test_and_set();
                 int len = Edit_GetTextLength(m_handle);
                 wstring t(len, L'\0');
                 Edit_GetText(m_handle, t.data(), len + 1);
-                DWORD start, end;
-                SendMessage(m_handle, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
                 xaml_ptr<xaml_string> text;
                 XAML_RETURN_IF_FAILED(xaml_string_new(t, &text));
                 XAML_RETURN_IF_FAILED(set_text(text));
-                SetFocus(m_handle);
-                Edit_SetSel(m_handle, start, end);
+                XAML_RETURN_IF_FAILED(parent_redraw());
                 break;
             }
             }

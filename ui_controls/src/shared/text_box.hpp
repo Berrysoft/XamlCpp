@@ -1,11 +1,14 @@
 #ifndef XAML_UI_CONTROLS_SHARED_TEXT_BOX_HPP
 #define XAML_UI_CONTROLS_SHARED_TEXT_BOX_HPP
 
+#include <atomic>
 #include <shared/control.hpp>
 #include <xaml/ui/controls/text_box.h>
 
 struct xaml_text_box_internal : xaml_control_internal
 {
+    std::atomic_bool m_text_changing{ false };
+
     XAML_EVENT_IMPL(text_changed)
     XAML_PROP_STRING_EVENT_IMPL(text)
 
