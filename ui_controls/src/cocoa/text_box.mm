@@ -18,13 +18,14 @@ xaml_result xaml_text_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        NSTextView* textView = [NSTextView new];
+        NSScrollView* scrollView = [NSTextView scrollableTextView];
+        NSTextView* textView = scrollView.documentView;
         textView.richText = NO;
         textView.editable = YES;
         textView.selectable = YES;
         XamlTextBoxDelegate* delegate = [[XamlTextBoxDelegate alloc] initWithClassPointer:this];
         textView.delegate = delegate;
-        m_handle = textView;
+        m_handle = scrollView;
         m_delegate = delegate;
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
@@ -34,7 +35,8 @@ xaml_result xaml_text_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_text_box_internal::draw_text() noexcept
 {
-    NSTextView* textView = (NSTextView*)m_handle;
+    NSScrollView* scrollView = (NSScrollView*)m_handle;
+    NSTextView* textView = scrollView.documentView;
     NSString* ns_title;
     XAML_RETURN_IF_FAILED(get_NSString(m_text, &ns_title));
     textView.string = ns_title;
@@ -45,7 +47,8 @@ void xaml_text_box_internal::on_changed() noexcept
 {
     xaml_atomic_guard guard{ m_text_changing };
     guard.test_and_set();
-    NSTextView* textView = (NSTextView*)m_handle;
+    NSScrollView* scrollView = (NSScrollView*)m_handle;
+    NSTextView* textView = scrollView.documentView;
     xaml_ptr<xaml_string> str;
     XAML_ASSERT_SUCCEEDED(xaml_string_new(textView.string.UTF8String, &str));
     XAML_ASSERT_SUCCEEDED(set_text(str));
