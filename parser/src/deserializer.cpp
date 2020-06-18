@@ -69,17 +69,6 @@ xaml_result deserializer_impl::construct_impl(xaml_ptr<xaml_node> const& node, x
 {
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(node->get_type(&t));
-    xaml_ptr<xaml_string> map_class;
-    XAML_RETURN_IF_FAILED(node->get_map_class(&map_class));
-    if (map_class)
-    {
-        xaml_ptr<xaml_reflection_info> map_type;
-        if (XAML_SUCCEEDED(m_ctx->get_type_by_name(map_class, &map_type)))
-        {
-            t = nullptr;
-            XAML_RETURN_IF_FAILED(map_type->query(&t));
-        }
-    }
     xaml_ptr<xaml_object> c;
     XAML_RETURN_IF_FAILED(t->construct(&c));
     XAML_RETURN_IF_FAILED(deserialize_impl(c, node, root ? root : c, root_type));

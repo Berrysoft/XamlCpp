@@ -54,7 +54,6 @@ XAML_CLASS(xaml_node, { 0x85ad34c8, 0x3cba, 0x44eb, { 0x98, 0x1c, 0x67, 0xf7, 0x
 
 #define XAML_NODE_VTBL(type)                                       \
     XAML_VTBL_INHERIT(XAML_NODE_BASE_VTBL(type));                  \
-    XAML_PROP(map_class, type, xaml_string**, xaml_string*);       \
     XAML_PROP(resources, type, xaml_map**, xaml_map*);             \
     XAML_PROP(properties, type, xaml_vector**, xaml_vector*);      \
     XAML_PROP(collection_properties, type, xaml_map**, xaml_map*); \

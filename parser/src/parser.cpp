@@ -264,10 +264,6 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                 {
                     XAML_RETURN_IF_FAILED(mc->set_key(attr_value_str));
                 }
-                else if (attr_name == "class")
-                {
-                    XAML_RETURN_IF_FAILED(mc->set_map_class(attr_value_str));
-                }
             }
             else
             {
