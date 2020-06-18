@@ -111,6 +111,10 @@ if(${XAML_NO_RTTI})
     endif()
 endif()
 
+# Use absolute path for __FILE__
+if(MSVC)
+    list(APPEND XAML_COMPILE_OPTIONS "/FC")
+endif()
 
 # Disable char8_t
 if(MSVC)
