@@ -7,7 +7,7 @@ using namespace std;
 string xaml_result_get_message(xaml_result result)
 {
     if (result >= 0) return U("Ok");
-    switch (result)
+    switch ((uint32_t)result)
     {
     case XAML_E_FAIL:
         return U("Failed");
