@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly name="xaml_global">
+  <interface name="xaml_object" guid="af86e2e0-b12d-4c6a-9c5a-d7aa65101e90">
+    <property name="guid" type="guid" readonly="true"/>
+  </interface>
+  <interface name="xaml_box" guid="9a9177c7-cf5f-31ab-8495-96f58ac5df3a" inherits="xaml_object">
+    <property name="type" type="guid" readonly="true"/>
+  </interface>
+  <interface name="xaml_string" guid="c8386ec4-d28d-422f-9e44-36aa776339d3" inherits="xaml_object">
+    <property name="length" type="i32" readonly="true"/>
+  </interface>
+  <interface name="xaml_enumerator" guid="4f706e46-5b78-4504-bc4c-4a0c7d349e11" inherits="xaml_object">
+    <method name="move_next" ret="bool"/>
+    <property name="current" type="xaml_object" readonly="true"/>
+  </interface>
+  <interface name="xaml_enumerable" guid="7d0d584f-9d47-4375-8a4b-ab090fc2b095" inherits="xaml_object">
+    <property name="enumerator" type="xaml_enumerator" readonly="true"/>
+  </interface>
+  <interface name="xaml_vector_view" guid="8960a280-ddbb-4b5b-b4eb-276dd3906ed6" inherits="xaml_enumerable">
+    <indexer ret="xaml_object" arg="i32" readonly="true"/>
+    <method name="index_of" ret="i32" args="xaml_object"/>
+    <property name="size" type="i32" readonly="true"/>
+  </interface>
+  <interface name="xaml_vector" guid="ad5e7c14-969d-4e76-976e-c317b441125e" inherits="xaml_vector_view">
+    <indexer ret="xaml_object" arg="i32"/>
+    <method name="append" args="xaml_object"/>
+    <method name="insert_at" args="i32,xaml_object"/>
+    <method name="remove_at" args="i32"/>
+    <method name="remove_at_end"/>
+    <method name="clear"/>
+  </interface>
+  <interface name="xaml_delegate" guid="3a1a793a-8a83-4d40-8962-039e000c0fc3" inherits="xaml_object">
+    <method name="invoke" ret="xaml_object" args="xaml_vector_view"/>
+  </interface>
+  <interface name="xaml_event" guid="84577f0b-af47-4f60-8ee6-696b2bddca7f" inherits="xaml_delegate">
+    <method name="add" ret="i32" args="xaml_delegate"/>
+    <method name="remove" args="i32"/>
+  </interface>
+  <interface name="xaml_observable_vector" guid="c84cb35f-0a1c-40e2-8e1c-2c430b1bb6cf" inherits="xaml_vector">
+    <event name="vector_changed"/>
+  </interface>
+  <enum name="xaml_vector_changed_action">
+    <enum_item>add</enum_item>
+    <enum_item>erase</enum_item>
+    <enum_item>replace</enum_item>
+    <enum_item>move</enum_item>
+    <enum_item>reset</enum_item>
+  </enum>
+  <interface name="xaml_vector_changed_args" guid="f081fd5b-d6d3-4262-a7c7-5d25822d3b0a" inherits="xaml_object">
+    <property name="action" type="xaml_vector_changed_action" readonly="true"/>
+    <property name="new_items" type="xaml_vector_view" readonly="true"/>
+    <property name="new_index" type="i32" readonly="true"/>
+    <property name="old_items" type="xaml_vector_view" readonly="true"/>
+    <property name="old_index" type="i32" readonly="true"/>
+  </interface>
+</assembly>

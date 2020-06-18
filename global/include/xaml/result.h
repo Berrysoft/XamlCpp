@@ -4,7 +4,6 @@
 #ifdef __cplusplus
     #include <cassert>
     #include <cstdint>
-    #include <exception>
     #include <stdexcept>
 #else
     #include <assert.h>
@@ -83,13 +82,26 @@ EXTERN_C XAML_API void XAML_CALL xaml_result_raise_message(xaml_result, xaml_res
 #define XAML_E_OUTOFBOUNDS 0x80028CA1
 
 #ifdef __cplusplus
-struct xaml_result_error : std::exception
+XAML_API std::string xaml_result_get_message(xaml_result);
+
+struct xaml_result_error : std::runtime_error
 {
 private:
     xaml_result m_result;
 
 public:
-    xaml_result_error(xaml_result result) noexcept : m_result(result) {}
+    xaml_result_error(xaml_result result)
+        : runtime_error(xaml_result_get_message(result)), m_result(result) {}
+
+    xaml_result_error(xaml_result_error const& other) noexcept
+        : runtime_error(static_cast<std::runtime_error const&>(other)), m_result(other.m_result) {}
+
+    xaml_result_error& operator=(xaml_result_error const& other) noexcept
+    {
+        std::runtime_error::operator=(static_cast<std::runtime_error const&>(other));
+        m_result = other.m_result;
+        return *this;
+    }
 
     constexpr xaml_result get_result() const noexcept { return m_result; }
 };

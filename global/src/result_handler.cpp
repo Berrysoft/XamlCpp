@@ -63,9 +63,9 @@ static map<xaml_result_raise_level, sf::preset_color> s_level_color_map{
 static ostream& print_msg(ostream& stream, xaml_result hr, xaml_result_raise_level level, char const* msg)
 {
 #ifndef XAML_DEFAULT_HANDLER_COLOR
-    return sf::println(stream, U("{}: {:x8,s}: {}"), s_level_map[level], hr, msg);
+    return sf::println(stream, U("{}: {}: {}"), s_level_map[level], xaml_result_get_message(hr), msg);
 #else
-    return sf::println(stream, U("{}: {:x8,s}: {}"), sf::make_color_arg(s_level_map[level], s_level_color_map[level]), hr, msg);
+    return sf::println(stream, U("{}: {}: {}"), sf::make_color_arg(s_level_map[level], s_level_color_map[level]), xaml_result_get_message(hr), msg);
 #endif // !XAML_DEFAULT_HANDLER_COLOR
 }
 

@@ -56,7 +56,7 @@ xaml_result XAML_CALL xaml_cmdline_parse_and_print(xaml_meta_context* ctx, xaml_
         xaml_result __hr = xaml_cmdline_parse_argv(t, argc, argv, &opts);
         if (XAML_FAILED(__hr))
         {
-            sf::println(nowide::cerr, U("Command line parse error: {:x8,s}"), __hr);
+            sf::println(nowide::cerr, U("Command line parse error: {}"), xaml_result_get_message(__hr));
             XAML_RETURN_IF_FAILED(print_help(t));
             exit(1);
         }

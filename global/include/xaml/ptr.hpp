@@ -43,7 +43,7 @@ public:
     {
         try_add();
     }
-    constexpr xaml_ptr(xaml_ptr&& p) noexcept : m_ptr{ p.m_ptr } { p.m_ptr = nullptr; }
+    constexpr xaml_ptr(xaml_ptr&& p) noexcept : m_ptr{ std::exchange(p.m_ptr, nullptr) } {}
 
     ~xaml_ptr() { try_release(); }
 
@@ -91,8 +91,7 @@ public:
     constexpr xaml_ptr& operator=(xaml_ptr&& p) noexcept
     {
         try_release();
-        m_ptr = p.m_ptr;
-        p.m_ptr = nullptr;
+        m_ptr = std::exchange(p.m_ptr, nullptr);
         return *this;
     }
 
@@ -122,7 +121,7 @@ public:
     }
 
     template <typename D>
-    constexpr xaml_ptr<D> query() const noexcept
+    [[nodiscard]] constexpr xaml_ptr<D> query() const noexcept
     {
         if (m_ptr)
         {

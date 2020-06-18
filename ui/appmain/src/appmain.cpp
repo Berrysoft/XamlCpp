@@ -13,7 +13,7 @@ static int xaml_main_end(xaml_result hr, int* pcode) noexcept
     }
     else
     {
-        sf::println(nowide::cerr, U("Unhandled exception: {:x8,s}"), hr);
+        sf::println(nowide::cerr, U("Unhandled exception: {}"), xaml_result_get_message(hr));
         return (int)hr;
     }
 }
