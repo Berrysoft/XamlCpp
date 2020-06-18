@@ -5,6 +5,7 @@
     #include <cassert>
     #include <cstdint>
     #include <stdexcept>
+    #include <string>
 #else
     #include <assert.h>
     #include <stdint.h>
