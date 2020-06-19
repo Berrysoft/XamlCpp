@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<assembly name="xaml_global">
+<assembly name="xaml_global" prefix="xaml">
   <interface name="xaml_object" guid="af86e2e0-b12d-4c6a-9c5a-d7aa65101e90">
+    <method name="query" ret="void*" args="const guid&amp;"/>
+    <method name="add_ref" ret="u32" preserve="true"/>
+    <method name="release" ret="u32" preserve="true"/>
     <property name="guid" type="guid" readonly="true"/>
   </interface>
   <interface name="xaml_box" guid="9a9177c7-cf5f-31ab-8495-96f58ac5df3a" inherits="xaml_object">
     <property name="type" type="guid" readonly="true"/>
+    <property name="data" type="const void*" readonly="true"/>
+    <property name="size" type="i32" readonly="true"/>
+    <method name="set_data" args="const guid&amp;,const void*,i32"/>
   </interface>
   <interface name="xaml_string" guid="c8386ec4-d28d-422f-9e44-36aa776339d3" inherits="xaml_object">
     <property name="length" type="i32" readonly="true"/>
+    <property name="data" type="const char*" readonly="true"/>
   </interface>
   <interface name="xaml_enumerator" guid="4f706e46-5b78-4504-bc4c-4a0c7d349e11" inherits="xaml_object">
     <method name="move_next" ret="bool"/>
@@ -52,5 +59,24 @@
     <property name="new_index" type="i32" readonly="true"/>
     <property name="old_items" type="xaml_vector_view" readonly="true"/>
     <property name="old_index" type="i32" readonly="true"/>
+  </interface>
+  <interface name="xaml_key_value_pair" guid="41ea97bb-da95-430c-a81b-db06619f7e96" inherits="xaml_object">
+    <property name="key" type="xaml_object" readonly="true"/>
+    <property name="value" type="xaml_object" readonly="true"/>
+  </interface>
+  <interface name="xaml_hasher" guid="a7f9b6eb-a71a-4d5a-8454-2883941fb2b0" inherits="xaml_object">
+    <method name="hash" ret="i32" args="xaml_object"/>
+    <method name="equals" ret="bool" args="xaml_object,xaml_object"/>
+  </interface>
+  <interface name="xaml_map_view" guid="15549c22-40d1-4af1-ad81-0dd3da1a87ba" inherits="xaml_enumerable">
+    <method name="lookup" ret="xaml_object" args="xaml_object"/>
+    <method name="has_key" ret="bool" args="xaml_object"/>
+    <property name="size" type="i32"/>
+  </interface>
+  <interface name="xaml_map" guid="e457ba53-03d1-4047-ac85-83dd85346c7e" inherits="xaml_map_view">
+    <method name="insert" ret="bool" args="xaml_object,xaml_object"/>
+    <method name="remove" args="xaml_object"/>
+    <method name="clear"/>
+    <property name="hasher" type="xaml_hasher" readonly="true"/>
   </interface>
 </assembly>
