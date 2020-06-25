@@ -55,7 +55,7 @@ inline bool xaml_guid_equal(xaml_guid const* lhs, xaml_guid const* rhs)
 #ifdef __cplusplus
 constexpr std::size_t hash_value(xaml_guid const& g) noexcept
 {
-    std::size_t* ptr = (std::size_t*)&g;
+    std::size_t const* ptr = (std::size_t const*)&g;
     #if SIZE_MAX == UINT64_MAX
     static_assert(sizeof(std::size_t) == sizeof(std::uint64_t), "Unknown 64-bit platform.");
     return ptr[0] ^ ptr[1];

@@ -175,7 +175,7 @@ namespace std
     {
         size_t operator()(xaml_ptr<T> const& ptr) const noexcept
         {
-            return hash<intptr_t>{}((intptr_t)ptr.get());
+            return hash<intptr_t>{}(reinterpret_cast<intptr_t>(ptr.get()));
         }
     };
 } // namespace std

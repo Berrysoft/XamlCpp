@@ -50,7 +50,7 @@ XAML_DECL_INTERFACE(xaml_object)
     template <typename T>
     xaml_result XAML_CALL query(T * *ptr) noexcept
     {
-        return query(xaml_type_guid_v<T>, (void**)ptr);
+        return query(xaml_type_guid_v<T>, reinterpret_cast<void**>(ptr));
     }
 #endif // __cplusplus
 };

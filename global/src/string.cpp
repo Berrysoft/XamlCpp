@@ -17,7 +17,7 @@ struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
 
     xaml_result XAML_CALL get_length(int32_t* psize) noexcept override
     {
-        *psize = (int32_t)m_str.size();
+        *psize = static_cast<int32_t>(m_str.size());
         return XAML_S_OK;
     }
 
@@ -72,7 +72,7 @@ xaml_result XAML_CALL xaml_string_new(char const* str, xaml_string** ptr) noexce
 
 xaml_result XAML_CALL xaml_string_new_length(char const* str, int32_t length, xaml_string** ptr) noexcept
 {
-    return xaml_string_new(string_view(str, (size_t)length), ptr);
+    return xaml_string_new(string_view(str, static_cast<size_t>(length)), ptr);
 }
 
 xaml_result XAML_CALL xaml_string_new_view(char const* str, xaml_string** ptr) noexcept
@@ -194,5 +194,5 @@ xaml_result XAML_CALL xaml_string_substr(xaml_string* str, int32_t offset, int32
     if (offset < 0) return XAML_E_OUTOFBOUNDS;
     std::string_view view;
     XAML_RETURN_IF_FAILED(to_string_view(str, &view));
-    return xaml_string_new(view.substr((size_t)offset, (size_t)length), ptr);
+    return xaml_string_new(view.substr(static_cast<size_t>(offset), static_cast<size_t>(length)), ptr);
 }

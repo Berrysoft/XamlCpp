@@ -94,7 +94,7 @@ inline xaml_result to_string_view(xaml_ptr<xaml_string> const& str, std::string_
 
 inline std::string to_string(xaml_ptr<xaml_string> const& str)
 {
-    return (std::string)to_string_view(str);
+    return static_cast<std::string>(to_string_view(str));
 }
 
 inline xaml_result to_string(xaml_ptr<xaml_string> const& str, std::string* s) noexcept

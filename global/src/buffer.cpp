@@ -9,12 +9,12 @@ private:
     vector<uint8_t> m_buffer;
 
 public:
-    xaml_buffer_impl(int32_t size) noexcept : m_buffer((size_t)size) {}
+    xaml_buffer_impl(int32_t size) noexcept : m_buffer(static_cast<size_t>(size)) {}
     xaml_buffer_impl(vector<uint8_t>&& buffer) noexcept : m_buffer(move(buffer)) {}
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
-        *psize = (int32_t)m_buffer.size();
+        *psize = static_cast<int32_t>(m_buffer.size());
         return XAML_S_OK;
     }
 
@@ -43,7 +43,7 @@ private:
 
 public:
     xaml_buffer_reference_impl(uint8_t* data, int32_t size) noexcept : m_data(data), m_size(size) {}
-    xaml_buffer_reference_impl(vector<uint8_t>& buffer) noexcept : m_data(buffer.data()), m_size((int32_t)buffer.size()) {}
+    xaml_buffer_reference_impl(vector<uint8_t>& buffer) noexcept : m_data(buffer.data()), m_size(static_cast<int32_t>(buffer.size())) {}
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {

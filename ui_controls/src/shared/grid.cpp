@@ -194,8 +194,8 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
         {
             std::string_view str;
             XAML_RETURN_IF_FAILED(to_string_view(s, &str));
-            constexpr char __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
-            constexpr char __auto[] = { 'a', 'u', 't', 'o', '\0' };
+            constexpr char __delimeter[] = " ,\t\r\n";
+            constexpr char __auto[] = "auto";
             xaml_ptr<xaml_vector> result;
             XAML_RETURN_IF_FAILED(xaml_vector_new(&result));
             std::size_t offset = 0;
@@ -210,12 +210,12 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                 }
                 else if (lenstr.back() == '*')
                 {
-                    double rate = __stof<double, char>(lenstr.substr(0, lenstr.length() - 1));
+                    double rate = __stof<double>(lenstr.substr(0, lenstr.length() - 1));
                     len = { rate, xaml_grid_layout_star };
                 }
                 else
                 {
-                    double value = __stof<double, char>(lenstr);
+                    double value = __stof<double>(lenstr);
                     len = { value, xaml_grid_layout_abs };
                 }
                 xaml_ptr<xaml_object> item;

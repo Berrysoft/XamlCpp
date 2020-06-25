@@ -46,7 +46,7 @@ public:
 
     xaml_result XAML_CALL get_size(int32_t* psize) noexcept override
     {
-        *psize = (int32_t)m_vec.size();
+        *psize = static_cast<int32_t>(m_vec.size());
         return XAML_S_OK;
     }
 
@@ -56,7 +56,7 @@ public:
         {
             if (m_vec[i].get() == value)
             {
-                *pindex = (int32_t)i;
+                *pindex = static_cast<int32_t>(i);
                 return XAML_S_OK;
             }
         }
@@ -66,14 +66,14 @@ public:
 
     xaml_result XAML_CALL get_at(int32_t index, xaml_object** ptr) noexcept override
     {
-        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= static_cast<int32_t>(m_vec.size())) return XAML_E_OUTOFBOUNDS;
         auto& res = m_vec[index];
         return res->query(ptr);
     }
 
     xaml_result XAML_CALL set_at(int32_t index, xaml_object* obj) noexcept override
     {
-        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= static_cast<int32_t>(m_vec.size())) return XAML_E_OUTOFBOUNDS;
         m_vec[index] = obj;
         return XAML_S_OK;
     }
@@ -89,7 +89,7 @@ public:
     xaml_result XAML_CALL insert_at(int32_t index, xaml_object* obj) noexcept override
     try
     {
-        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= static_cast<int32_t>(m_vec.size())) return XAML_E_OUTOFBOUNDS;
         m_vec.insert(m_vec.begin() + index, obj);
         return XAML_S_OK;
     }
@@ -97,7 +97,7 @@ public:
 
     xaml_result XAML_CALL remove_at(int32_t index) noexcept override
     {
-        if (index < 0 || index >= (int32_t)m_vec.size()) return XAML_E_OUTOFBOUNDS;
+        if (index < 0 || index >= static_cast<int32_t>(m_vec.size())) return XAML_E_OUTOFBOUNDS;
         m_vec.erase(m_vec.begin() + index);
         return XAML_S_OK;
     }

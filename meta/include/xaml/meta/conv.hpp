@@ -58,297 +58,132 @@ struct __xaml_converter_helper
     }
 };
 
-template <typename TInt, typename TChar>
-struct __stoi_helper;
-
 template <typename TInt>
-struct __stoi_helper<TInt, char>
+struct __stoi_helper
 {
-    using string_view_type = std::string_view;
     using return_type = TInt;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
         long value = std::strtol(str.data(), nullptr, 10);
-        return (return_type)value;
+        return static_cast<return_type>(value);
     }
 };
 
 template <>
-struct __stoi_helper<unsigned long, char>
+struct __stoi_helper<unsigned long>
 {
-    using string_view_type = std::string_view;
     using return_type = unsigned long;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
-        unsigned long value = std::strtoul(str.data(), nullptr, 10);
-        return value;
+        return std::strtoul(str.data(), nullptr, 10);
     }
 };
 
 template <>
-struct __stoi_helper<long long, char>
+struct __stoi_helper<long long>
 {
-    using string_view_type = std::string_view;
     using return_type = long long;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
-        long long value = std::strtoll(str.data(), nullptr, 10);
-        return value;
+        return std::strtoll(str.data(), nullptr, 10);
     }
 };
 
 template <>
-struct __stoi_helper<unsigned long long, char>
+struct __stoi_helper<unsigned long long>
 {
-    using string_view_type = std::string_view;
     using return_type = unsigned long long;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
-        unsigned long long value = std::strtoull(str.data(), nullptr, 10);
-        return value;
+        return std::strtoull(str.data(), nullptr, 10);
     }
 };
+
+template <>
+struct __stoi_helper<bool>
+{
+    using return_type = bool;
+    return_type operator()(std::string_view str) const noexcept
+    {
+        constexpr const char __true_str[] = "true";
+        if (str.length() != 4) return false;
+        for (std::size_t i = 0; i < 4; i++)
+        {
+            if (std::tolower(str[i]) != __true_str[i]) return false;
+        }
+        return true;
+    }
+};
+
+template <>
+struct __stoi_helper<char>
+{
+    using return_type = char;
+    return_type operator()(std::string_view str) const noexcept
+    {
+        if (str.empty())
+            return 0;
+        else
+            return str[0];
+    }
+};
+
+template <typename T>
+constexpr bool __can_stoi_v = std::is_integral_v<T>;
 
 template <typename TInt>
-struct __stoi_helper<TInt, wchar_t>
+inline TInt __stoi(std::string_view str) noexcept
 {
-    using string_view_type = std::wstring_view;
-    using return_type = TInt;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        long value = std::wcstol(str.data(), nullptr, 10);
-        return (return_type)value;
-    }
-};
-
-template <>
-struct __stoi_helper<unsigned long, wchar_t>
-{
-    using string_view_type = std::wstring_view;
-    using return_type = unsigned long;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        unsigned long value = std::wcstoul(str.data(), nullptr, 10);
-        return value;
-    }
-};
-
-template <>
-struct __stoi_helper<long long, wchar_t>
-{
-    using string_view_type = std::wstring_view;
-    using return_type = long long;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        long long value = std::wcstoll(str.data(), nullptr, 10);
-        return value;
-    }
-};
-
-template <>
-struct __stoi_helper<unsigned long long, wchar_t>
-{
-    using string_view_type = std::wstring_view;
-    using return_type = unsigned long long;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        unsigned long long value = std::wcstoull(str.data(), nullptr, 10);
-        return value;
-    }
-};
-
-template <typename T>
-struct __can_stoi : std::false_type
-{
-};
-
-template <>
-struct __can_stoi<signed char> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<short> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<int> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<long> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<long long> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<unsigned char> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<unsigned short> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<unsigned int> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<unsigned long> : std::true_type
-{
-};
-
-template <>
-struct __can_stoi<unsigned long long> : std::true_type
-{
-};
-
-template <typename T>
-constexpr bool __can_stoi_v = __can_stoi<T>::value;
-
-template <typename TInt, typename TChar, typename = std::enable_if_t<__can_stoi_v<TInt>>>
-inline TInt __stoi(std::basic_string_view<TChar> str) noexcept
-{
-    return __stoi_helper<TInt, TChar>{}(str);
+    return __stoi_helper<TInt>{}(str);
 }
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stoi_v<T>>> : __xaml_converter_helper<T, __stoi<T, char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stoi_v<T>>> : __xaml_converter_helper<T, __stoi<T>>
 {
-};
-
-template <typename TFloat, typename TChar>
-struct __stof_helper;
-
-template <typename TFloat>
-struct __stof_helper<TFloat, char>
-{
-    using string_view_type = std::string_view;
-    using return_type = TFloat;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        float value = std::strtof(str.data(), nullptr);
-        return (return_type)value;
-    }
-};
-
-template <>
-struct __stof_helper<double, char>
-{
-    using string_view_type = std::string_view;
-    using return_type = double;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        double value = std::strtod(str.data(), nullptr);
-        return value;
-    }
-};
-
-template <>
-struct __stof_helper<long double, char>
-{
-    using string_view_type = std::string_view;
-    using return_type = long double;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        long double value = std::strtold(str.data(), nullptr);
-        return value;
-    }
 };
 
 template <typename TFloat>
-struct __stof_helper<TFloat, wchar_t>
+struct __stof_helper
 {
-    using string_view_type = std::wstring_view;
     using return_type = TFloat;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
-        float value = std::wcstof(str.data(), nullptr);
-        return (return_type)value;
+        float value = std::strtold(str.data(), nullptr);
+        return static_cast<return_type>(value);
     }
 };
 
 template <>
-struct __stof_helper<double, wchar_t>
+struct __stof_helper<float>
 {
-    using string_view_type = std::wstring_view;
+    using return_type = float;
+    return_type operator()(std::string_view str) const noexcept
+    {
+        return std::strtof(str.data(), nullptr);
+    }
+};
+
+template <>
+struct __stof_helper<double>
+{
     using return_type = double;
-    return_type operator()(string_view_type str) const noexcept
+    return_type operator()(std::string_view str) const noexcept
     {
-        double value = std::wcstod(str.data(), nullptr);
-        return value;
-    }
-};
-
-template <>
-struct __stof_helper<long double, wchar_t>
-{
-    using string_view_type = std::wstring_view;
-    using return_type = long double;
-    return_type operator()(string_view_type str) const noexcept
-    {
-        long double value = std::wcstold(str.data(), nullptr);
-        return value;
+        return std::strtod(str.data(), nullptr);
     }
 };
 
 template <typename T>
-struct __can_stof : std::false_type
-{
-};
+constexpr bool __can_stof_v = std::is_floating_point_v<T>;
 
-template <>
-struct __can_stof<float> : std::true_type
+template <typename TFloat>
+inline TFloat __stof(std::string_view str) noexcept
 {
-};
-
-template <>
-struct __can_stof<double> : std::true_type
-{
-};
-
-template <>
-struct __can_stof<long double> : std::true_type
-{
-};
-
-template <typename T>
-constexpr bool __can_stof_v = __can_stof<T>::value;
-
-template <typename TFloat, typename TChar, typename = std::enable_if_t<__can_stof_v<TFloat>>>
-inline TFloat __stof(std::basic_string_view<TChar> str) noexcept
-{
-    return __stof_helper<TFloat, TChar>{}(str);
+    return __stof_helper<TFloat>{}(str);
 }
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stof_v<T>>> : __xaml_converter_helper<T, __stof<T, char>>
-{
-};
-
-template <typename TChar>
-inline bool __stob(std::basic_string_view<TChar> str) noexcept
-{
-    constexpr TChar __true_str[] = { 't', 'r', 'u', 'e' };
-    if (str.length() != 4) return false;
-    for (std::int32_t i = 0; i < 4; i++)
-    {
-        if (std::tolower(str[i]) != __true_str[i]) return false;
-    }
-    return true;
-}
-
-template <>
-struct __xaml_converter<bool, void> : __xaml_converter_helper<bool, __stob<char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stof_v<T>>> : __xaml_converter_helper<T, __stof<T>>
 {
 };
 

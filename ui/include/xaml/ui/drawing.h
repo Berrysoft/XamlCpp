@@ -5,6 +5,7 @@
     #include <algorithm>
     #include <compare>
     #include <cstdint>
+    #include <string_view>
     #include <tuple>
     #include <xaml/meta/conv.hpp>
 #else
@@ -113,18 +114,17 @@ constexpr xaml_point operator/(xaml_point lhs, double rhs) { return lhs * (1 / r
 XAML_TYPE(xaml_point, { 0xd529263c, 0x9ea7, 0x4be9, { 0xa0, 0x81, 0x9a, 0xc1, 0x1e, 0x39, 0x38, 0x9f } })
 
 #ifdef __cplusplus
-template <typename TChar>
-inline std::tuple<double, double> __stot2d(std::basic_string_view<TChar> str) noexcept
+inline std::tuple<double, double> __stot2d(std::string_view str) noexcept
 {
-    constexpr TChar __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
+    constexpr const char __delimeter[] = " ,\t\r\n";
     std::size_t index = str.find_first_of(__delimeter);
-    if (index == std::basic_string_view<TChar>::npos)
+    if (index == std::string_view::npos)
     {
-        double d = __stof<double, TChar>(str);
+        double d = __stof<double>(str);
         return std::make_tuple(d, d);
     }
     std::size_t index2 = str.find_first_not_of(__delimeter, index);
-    return std::make_tuple(__stof<double, TChar>(str.substr(0, index)), __stof<double, TChar>(str.substr(index2)));
+    return std::make_tuple(__stof<double>(str.substr(0, index)), __stof<double>(str.substr(index2)));
 }
 
 template <typename T>
@@ -146,7 +146,7 @@ template <typename T>
 inline constexpr bool __can_stot2d_v = __can_stot2d<T>::value;
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stot2d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double>, __stot2d<char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stot2d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double>, __stot2d>
 {
 };
 #endif // __cplusplus
@@ -205,28 +205,27 @@ constexpr xaml_margin operator/(xaml_margin const& lhs, double rhs) { return lhs
 XAML_TYPE(xaml_margin, { 0xb31a5b36, 0x30c3, 0x408f, { 0xae, 0x44, 0xaf, 0xc2, 0xb6, 0x65, 0xc7, 0x3e } })
 
 #ifdef __cplusplus
-template <typename TChar>
-inline std::tuple<double, double, double, double> __stot4d(std::basic_string_view<TChar> str) noexcept
+inline std::tuple<double, double, double, double> __stot4d(std::string_view str) noexcept
 {
-    constexpr TChar __delimeter[] = { ' ', ',', '\t', '\r', '\n', '\0' };
+    constexpr const char __delimeter[] = " ,\t\r\n";
     std::size_t len1 = str.find_first_of(__delimeter);
-    if (len1 == std::basic_string_view<TChar>::npos)
+    if (len1 == std::string_view::npos)
     {
-        double d = __stof<double, TChar>(str);
+        double d = __stof<double>(str);
         return std::make_tuple(d, d, d, d);
     }
     std::size_t index2 = str.find_first_not_of(__delimeter, len1);
     std::size_t len2 = str.find_first_of(__delimeter, index2);
-    if (len2 == std::basic_string_view<TChar>::npos)
+    if (len2 == std::string_view::npos)
     {
-        double d1 = __stof<double, TChar>(str.substr(0, len1));
-        double d2 = __stof<double, TChar>(str.substr(index2));
+        double d1 = __stof<double>(str.substr(0, len1));
+        double d2 = __stof<double>(str.substr(index2));
         return std::make_tuple(d1, d2, d1, d2);
     }
     std::size_t index3 = str.find_first_not_of(__delimeter, len2);
     std::size_t len3 = str.find_first_of(__delimeter, index3);
     std::size_t index4 = str.find_first_not_of(__delimeter, len3);
-    return std::make_tuple(__stof<double, TChar>(str.substr(0, len1)), __stof<double, TChar>(str.substr(index2, len2 - index2)), __stof<double, TChar>(str.substr(index3, len3 - index3)), __stof<double, TChar>(str.substr(index4)));
+    return std::make_tuple(__stof<double>(str.substr(0, len1)), __stof<double>(str.substr(index2, len2 - index2)), __stof<double>(str.substr(index3, len3 - index3)), __stof<double>(str.substr(index4)));
 }
 
 template <typename T>
@@ -248,7 +247,7 @@ template <typename T>
 constexpr bool __can_stot4d_v = __can_stot4d<T>::value;
 
 template <typename T>
-struct __xaml_converter<T, std::enable_if_t<__can_stot4d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double, double, double>, __stot4d<char>>
+struct __xaml_converter<T, std::enable_if_t<__can_stot4d_v<T>>> : __xaml_tuple_converter_helper<T, std::tuple<double, double, double, double>, __stot4d>
 {
 };
 #endif // __cplusplus

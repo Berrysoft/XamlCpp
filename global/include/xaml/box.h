@@ -52,7 +52,7 @@ XAML_DECL_INTERFACE_(xaml_box, xaml_object)
         if (type != xaml_type_guid_v<T>) return XAML_E_NOINTERFACE;
         void const* data;
         XAML_RETURN_IF_FAILED(get_data(&data));
-        *ptr = (T const*)data;
+        *ptr = static_cast<T const*>(data);
         return XAML_S_OK;
     }
 #endif // __cplusplus

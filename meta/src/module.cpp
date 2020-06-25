@@ -63,7 +63,7 @@ struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_obj
         xaml_result(XAML_CALL * pget_info)(xaml_module_info**) noexcept;
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(xaml_string_new_view("xaml_module_get_info", &name));
-        XAML_RETURN_IF_FAILED(get_method(name, (void**)&pget_info));
+        XAML_RETURN_IF_FAILED(get_method(name, reinterpret_cast<void**>(&pget_info)));
         return pget_info(ptr);
     }
 
