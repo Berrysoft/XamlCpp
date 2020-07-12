@@ -88,6 +88,15 @@ struct parser_impl
     xaml_result parse_impl(xml_node& node, xaml_node** ptr) noexcept;
     xaml_result parse_impl(xml_node& node, xaml_ptr<xaml_type_info> const& t, xaml_node** ptr) noexcept;
     xaml_result parse(xaml_node** ptr) noexcept;
+
+    xaml_result add_include_file(xaml_reflection_info* info) noexcept
+    {
+        xaml_ptr<xaml_string> include_file;
+        XAML_RETURN_IF_FAILED(info->get_include_file(&include_file));
+        if (include_file)
+            XAML_RETURN_IF_FAILED(headers->append(include_file));
+        return XAML_S_OK;
+    }
 };
 
 xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr) noexcept
@@ -95,6 +104,8 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     string_view ns, name;
     size_t sep_index = 0;
     size_t i = 0;
+    // The start of `value` should be `foo ` or `ns:foo `,
+    // find `:` or space to determine type name and namespace.
     for (; i < value.length(); i++)
     {
         if (ns.empty() && value[i] == ':')
@@ -108,8 +119,10 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
             break;
         }
     }
+    // If namespace is empty, use default one.
     if (ns.empty()) ns = "xaml";
     if (name.empty()) name = value.substr(sep_index);
+    // Find the type
     xaml_ptr<xaml_reflection_info> info;
     {
         xaml_ptr<xaml_string> ns_str;
@@ -118,23 +131,26 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         XAML_RETURN_IF_FAILED(xaml_string_new(name, &name_str));
         XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, name_str, &info));
     }
+    XAML_RETURN_IF_FAILED(add_include_file(info));
     xaml_ptr<xaml_type_info> t;
     XAML_RETURN_IF_FAILED(info->query(&t));
-    xaml_ptr<xaml_string> include_file;
-    XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
-    if (include_file)
-        XAML_RETURN_IF_FAILED(headers->append(include_file));
+    // Give it a random name, because it won't have real name.
     xaml_ptr<xaml_string> node_name;
     XAML_RETURN_IF_FAILED(get_random_name(t, &node_name));
+    // Initialize the markup node.
     xaml_ptr<xaml_markup_node> node;
     XAML_RETURN_IF_FAILED(xaml_markup_node_new(&node));
     XAML_RETURN_IF_FAILED(node->set_type(t));
     XAML_RETURN_IF_FAILED(node->set_name(node_name));
+    // The properties of the node, assign at last.
     xaml_ptr<xaml_vector> props;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&props));
     while (i < value.length())
     {
+        // Skip spaces
         while (i < value.length() && isspace(value[i])) i++;
+        // Find `,` or `=`;
+        // the format should be `def_prop_value, prop=value, prop=value`
         size_t start_index = i;
         for (; i < value.length(); i++)
         {
@@ -146,29 +162,33 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
             else if (value[i] == '=')
                 break;
         }
+        // If not find, then it is default property
         if (i == value.length()) i = start_index;
+        // If it is default property, the name should be empty now
         string_view prop_name = value.substr(start_index, i - start_index);
+        // value[i] could be only `=` or the start of (default) value
         while (i < value.length() && value[i] == '=') i++;
+        // So `start_index` is at the start of value now
         start_index = i;
-        for (; i < value.length(); i++)
-        {
-            if (value[i] == ',') break;
-        }
+        // Find the end of value then
+        while (i < value.length() && value[i] != ',') i++;
+        // So we get the value
         string_view prop_value = value.substr(start_index, i - start_index);
+        // Bump i for next loop
         while (i < value.length() && value[i] == ',') i++;
+        // Get property name, especially for default one
         xaml_ptr<xaml_string> prop_name_str;
         if (prop_name.empty())
         {
             xaml_ptr<xaml_default_property> def_attr;
-            if (XAML_SUCCEEDED(t->get_attribute(&def_attr)))
-            {
-                XAML_RETURN_IF_FAILED(def_attr->get_default_property(&prop_name_str));
-            }
+            XAML_RETURN_IF_FAILED(t->get_attribute(&def_attr));
+            XAML_RETURN_IF_FAILED(def_attr->get_default_property(&prop_name_str));
         }
         else
         {
             XAML_RETURN_IF_FAILED(xaml_string_new(prop_name, &prop_name_str));
         }
+        // Find the property
         xaml_ptr<xaml_property_info> prop;
         XAML_RETURN_IF_FAILED(t->get_property(prop_name_str, &prop));
         bool can_write;
@@ -176,12 +196,14 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
         if (can_write)
         {
             xaml_ptr<xaml_node_base> node_value;
+            // The value maybe another markup node
             if (prop_value.starts_with('{') && prop_value.ends_with('}'))
             {
                 xaml_ptr<xaml_markup_node> ex;
                 XAML_RETURN_IF_FAILED(parse_markup(prop_value.substr(1, prop_value.length() - 2), &ex));
                 node_value = ex;
             }
+            // or a string
             else
             {
                 xaml_ptr<xaml_string> prop_value_str;
@@ -280,12 +302,9 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                         XAML_RETURN_IF_FAILED(xaml_string_new(class_name, &class_name_str));
                         XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(attr_ns_str, class_name_str, &info));
                     }
+                    XAML_RETURN_IF_FAILED(add_include_file(info));
                     xaml_ptr<xaml_type_info> t;
                     XAML_RETURN_IF_FAILED(info->query(&t));
-                    xaml_ptr<xaml_string> include_file;
-                    XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
-                    if (include_file)
-                        XAML_RETURN_IF_FAILED(headers->append(include_file));
                     xaml_ptr<xaml_property_info> prop;
                     {
                         xaml_ptr<xaml_string> aprop_name_str;
@@ -408,12 +427,9 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                     XAML_RETURN_IF_FAILED(xaml_string_new(class_name, &class_name_str));
                     XAML_RETURN_IF_FAILED(ctx->get_type_by_namespace_name(ns_str, class_name_str, &info));
                 }
+                XAML_RETURN_IF_FAILED(add_include_file(info));
                 xaml_ptr<xaml_type_info> t;
                 XAML_RETURN_IF_FAILED(info->query(&t));
-                xaml_ptr<xaml_string> include_file;
-                XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
-                if (include_file)
-                    XAML_RETURN_IF_FAILED(headers->append(include_file));
                 if (prop_name == "resources")
                 {
                     for (auto& cnode : c.nodes())
@@ -574,10 +590,7 @@ xaml_result parser_impl::parse_impl(xml_node& node, xaml_node** ptr) noexcept
 
 xaml_result parser_impl::parse_impl(xml_node& node, xaml_ptr<xaml_type_info> const& t, xaml_node** ptr) noexcept
 {
-    xaml_ptr<xaml_string> include_file;
-    XAML_RETURN_IF_FAILED(t->get_include_file(&include_file));
-    if (include_file)
-        XAML_RETURN_IF_FAILED(headers->append(include_file));
+    XAML_RETURN_IF_FAILED(add_include_file(t));
     xaml_ptr<xaml_node> mc;
     XAML_RETURN_IF_FAILED(xaml_node_new(&mc));
     XAML_RETURN_IF_FAILED(mc->set_type(t));
