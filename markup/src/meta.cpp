@@ -1,4 +1,5 @@
 #include <xaml/markup/binding.h>
+#include <xaml/markup/data_template.h>
 #include <xaml/markup/dynamic_resource.h>
 #include <xaml/markup/element_base.h>
 #include <xaml/meta/module.h>
@@ -23,6 +24,7 @@ struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module
         XAML_RETURN_IF_FAILED(xaml_binding_register(ctx));
         XAML_RETURN_IF_FAILED(xaml_binding_mode_register(ctx));
         XAML_RETURN_IF_FAILED(xaml_dynamic_resource_register(ctx));
+        XAML_RETURN_IF_FAILED(xaml_data_template_register(ctx));
         return XAML_S_OK;
     }
 };
