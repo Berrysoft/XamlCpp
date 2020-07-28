@@ -1,7 +1,4 @@
-#include <xaml/markup/binding.h>
-#include <xaml/markup/dynamic_resource.h>
-#include <xaml/markup/element_base.h>
-#include <xaml/meta/module.h>
+#include <xaml/parser/data_template.h>
 
 struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info, xaml_object>
 {
@@ -19,15 +16,12 @@ struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module
 
     xaml_result XAML_CALL register_types(xaml_meta_context* ctx) noexcept override
     {
-        XAML_RETURN_IF_FAILED(xaml_element_base_register(ctx));
-        XAML_RETURN_IF_FAILED(xaml_binding_register(ctx));
-        XAML_RETURN_IF_FAILED(xaml_binding_mode_register(ctx));
-        XAML_RETURN_IF_FAILED(xaml_dynamic_resource_register(ctx));
+        XAML_RETURN_IF_FAILED(xaml_data_template_register(ctx));
         return XAML_S_OK;
     }
 };
 
-EXTERN_C XAML_MARKUP_API xaml_result XAML_CALL xaml_module_get_info(xaml_module_info** ptr) noexcept
+EXTERN_C XAML_PARSER_API xaml_result XAML_CALL xaml_module_get_info(xaml_module_info** ptr) noexcept
 {
     return xaml_object_new<xaml_module_info_impl>(ptr);
 }
