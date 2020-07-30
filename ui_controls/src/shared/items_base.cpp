@@ -1,6 +1,17 @@
 #include <shared/items_base.hpp>
 #include <xaml/ui/controls/items_base.h>
 
+xaml_result xaml_items_base_internal::create_item(xaml_ptr<xaml_object>& item) noexcept
+{
+    if (m_items_template)
+    {
+        xaml_ptr<xaml_object> new_item;
+        XAML_RETURN_IF_FAILED(m_items_template->create(item, &new_item));
+        item = new_item;
+    }
+    return XAML_S_OK;
+}
+
 xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args> args) noexcept
 {
     xaml_vector_changed_action action;
@@ -22,6 +33,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
         {
             xaml_ptr<xaml_object> item;
             XAML_RETURN_IF_FAILED(new_items->get_at(i, &item));
+            XAML_RETURN_IF_FAILED(create_item(item));
             XAML_RETURN_IF_FAILED(insert_item(i + new_index, item));
         }
         break;
@@ -48,6 +60,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
         XAML_RETURN_IF_FAILED(new_items->get_at(0, &item));
         std::int32_t old_index;
         XAML_RETURN_IF_FAILED(args->get_old_index(&old_index));
+        XAML_RETURN_IF_FAILED(create_item(item));
         XAML_RETURN_IF_FAILED(replace_item(old_index, item));
         break;
     }
@@ -61,6 +74,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
         XAML_RETURN_IF_FAILED(args->get_old_index(&old_index));
         XAML_RETURN_IF_FAILED(args->get_new_index(&new_index));
         XAML_RETURN_IF_FAILED(remove_item(old_index));
+        XAML_RETURN_IF_FAILED(create_item(item));
         XAML_RETURN_IF_FAILED(insert_item(new_index, item));
         break;
     }

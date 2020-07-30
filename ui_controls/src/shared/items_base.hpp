@@ -8,6 +8,9 @@ struct xaml_items_base_internal : xaml_control_internal
 {
     XAML_EVENT_IMPL(items_changed)
     XAML_PROP_PTR_IMPL_BASE(items, xaml_observable_vector)
+    XAML_PROP_PTR_IMPL(items_template, xaml_template_base)
+
+    xaml_result XAML_CALL create_item(xaml_ptr<xaml_object>& item) noexcept;
 
     virtual xaml_result XAML_CALL insert_item(std::int32_t index, xaml_ptr<xaml_object> const& value) noexcept = 0;
     virtual xaml_result XAML_CALL remove_item(std::int32_t index) noexcept = 0;
@@ -31,6 +34,7 @@ struct xaml_items_base_implement : xaml_control_implement<T, Base..., xaml_items
 {
     XAML_EVENT_INTERNAL_IMPL(items_changed)
     XAML_PROP_PTR_INTERNAL_IMPL(items, xaml_observable_vector)
+    XAML_PROP_PTR_INTERNAL_IMPL(items_template, xaml_template_base)
 
     XAML_EVENT_INTERNAL_IMPL(sel_id_changed)
     XAML_PROP_INTERNAL_IMPL(sel_id, std::int32_t*, std::int32_t)
