@@ -3,12 +3,19 @@
 
 struct xaml_test_converter_impl : xaml_implement<xaml_test_converter_impl, xaml_test_converter, xaml_converter, xaml_object>
 {
-    xaml_result XAML_CALL convert(xaml_object* value, xaml_guid const&, xaml_object*, xaml_string*, xaml_object** ptr) noexcept override
+    xaml_result XAML_CALL convert(xaml_object* value, xaml_guid const&, xaml_object* param, xaml_string*, xaml_object** ptr) noexcept override
     {
         xaml_ptr<xaml_string> str;
         XAML_RETURN_IF_FAILED(value->query(&str));
         xaml_ptr<xaml_string> prefix;
-        XAML_RETURN_IF_FAILED(xaml_string_new_view(U("Text: "), &prefix));
+        if (param)
+        {
+            XAML_RETURN_IF_FAILED(param->query(&prefix));
+        }
+        else
+        {
+            XAML_RETURN_IF_FAILED(xaml_string_new_view(U("Text: "), &prefix));
+        }
         xaml_ptr<xaml_string> result;
         XAML_RETURN_IF_FAILED(xaml_string_concat(prefix, str, &result));
         return result->query(ptr);

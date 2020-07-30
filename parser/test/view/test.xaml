@@ -30,5 +30,14 @@
       <check_box margin="5">Check 4</check_box>
       <check_box margin="5">Check 5</check_box>
     </uniform_grid>
+    <combo_box grid.column="2" grid.row="3" margin="5" halignment="center" valignment="top" items="{binding items,element=model,mode=one_time}">
+      <combo_box.items_template>
+        <data_template converter_parameter="Prefix: ">
+          <data_template.converter>
+            <test:converter/>
+          </data_template.converter>
+        </data_template>
+      </combo_box.items_template>
+    </combo_box>
   </grid>
 </test:window>

@@ -221,74 +221,75 @@ public:
         }
         xaml_ptr<xaml_property_info> targetp;
         XAML_RETURN_IF_FAILED(target_type->get_property(target_prop, &targetp));
-        xaml_ptr<xaml_event_info> targete;
-        {
-            xaml_ptr<xaml_string> name;
-            XAML_RETURN_IF_FAILED(get_property_changed_event_name(target_prop, &name));
-            XAML_RETURN_IF_FAILED(target_type->get_event(name, &targete));
-        }
         xaml_ptr<xaml_property_info> sourcep;
         XAML_RETURN_IF_FAILED(source_type->get_property(source_prop, &sourcep));
-        xaml_ptr<xaml_event_info> sourcee;
-        {
-            xaml_ptr<xaml_string> name;
-            XAML_RETURN_IF_FAILED(get_property_changed_event_name(source_prop, &name));
-            XAML_RETURN_IF_FAILED(source_type->get_event(name, &sourcee));
-        }
         xaml_ptr<xaml_converter> conv_ptr = converter;
         xaml_ptr<xaml_object> conv_param = parameter;
         xaml_ptr<xaml_string> conv_lang = language;
+
+        auto set_to_target = [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
+            xaml_ptr<xaml_object> value;
+            XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
+            if (conv_ptr)
+            {
+                xaml_guid type;
+                XAML_RETURN_IF_FAILED(sourcep->get_type(&type));
+                xaml_ptr<xaml_object> conv_value;
+                XAML_RETURN_IF_FAILED(conv_ptr->convert(value, type, conv_param, conv_lang, &conv_value));
+                value = conv_value;
+            }
+            XAML_RETURN_IF_FAILED(targetp->set(target, value));
+            return XAML_S_OK;
+        };
+
+        auto set_to_source = [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
+            xaml_ptr<xaml_object> value;
+            XAML_RETURN_IF_FAILED(targetp->get(target, &value));
+            if (conv_ptr)
+            {
+                xaml_guid type;
+                XAML_RETURN_IF_FAILED(targetp->get_type(&type));
+                xaml_ptr<xaml_object> conv_value;
+                XAML_RETURN_IF_FAILED(conv_ptr->convert_back(value, type, conv_param, conv_lang, &conv_value));
+                value = conv_value;
+            }
+            XAML_RETURN_IF_FAILED(sourcep->set(source, value));
+            return XAML_S_OK;
+        };
+
         if (mode & xaml_binding_one_way)
         {
+            xaml_ptr<xaml_event_info> sourcee;
+            {
+                xaml_ptr<xaml_string> name;
+                XAML_RETURN_IF_FAILED(get_property_changed_event_name(source_prop, &name));
+                XAML_RETURN_IF_FAILED(source_type->get_event(name, &sourcee));
+            }
+
             xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
-                [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
-                    xaml_ptr<xaml_object> value;
-                    XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
-                    if (conv_ptr)
-                    {
-                        xaml_guid type;
-                        XAML_RETURN_IF_FAILED(sourcep->get_type(&type));
-                        xaml_ptr<xaml_object> conv_value;
-                        XAML_RETURN_IF_FAILED(conv_ptr->convert(value, type, conv_param, conv_lang, &conv_value));
-                        value = conv_value;
-                    }
-                    XAML_RETURN_IF_FAILED(targetp->set(target, value));
-                    return XAML_S_OK;
-                },
-                &callback)));
-            xaml_ptr<xaml_vector> args;
-            XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
-            xaml_ptr<xaml_object> obj;
-            XAML_RETURN_IF_FAILED(callback->invoke(args, &obj));
+            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_target, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(sourcee->add(source, callback, &token));
+            XAML_RETURN_IF_FAILED(set_to_target());
         }
         if (mode & xaml_binding_one_way_to_source)
         {
+            xaml_ptr<xaml_event_info> targete;
+            {
+                xaml_ptr<xaml_string> name;
+                XAML_RETURN_IF_FAILED(get_property_changed_event_name(target_prop, &name));
+                XAML_RETURN_IF_FAILED(target_type->get_event(name, &targete));
+            }
+
             xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void>(
-                [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
-                    xaml_ptr<xaml_object> value;
-                    XAML_RETURN_IF_FAILED(targetp->get(target, &value));
-                    if (conv_ptr)
-                    {
-                        xaml_guid type;
-                        XAML_RETURN_IF_FAILED(targetp->get_type(&type));
-                        xaml_ptr<xaml_object> conv_value;
-                        XAML_RETURN_IF_FAILED(conv_ptr->convert_back(value, type, conv_param, conv_lang, &conv_value));
-                        value = conv_value;
-                    }
-                    XAML_RETURN_IF_FAILED(sourcep->set(source, value));
-                    return XAML_S_OK;
-                },
-                &callback)));
-            xaml_ptr<xaml_vector> args;
-            XAML_RETURN_IF_FAILED(xaml_vector_new(&args));
-            xaml_ptr<xaml_object> obj;
-            XAML_RETURN_IF_FAILED(callback->invoke(args, &obj));
+            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_source, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(targete->add(target, callback, &token));
+            XAML_RETURN_IF_FAILED(set_to_source());
+        }
+        if (mode == xaml_binding_one_time)
+        {
+            XAML_RETURN_IF_FAILED(set_to_target());
         }
         return XAML_S_OK;
     }

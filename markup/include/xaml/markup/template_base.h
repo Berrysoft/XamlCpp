@@ -5,9 +5,10 @@
 
 XAML_CLASS(xaml_template_base, { 0xbbda09a5, 0xa66c, 0x466f, { 0x94, 0xc4, 0x8a, 0x3c, 0xe0, 0x51, 0x3e, 0xe6 } })
 
-#define XAML_TEMPLATE_BASE_VTBL(type)         \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)) \
-    XAML_METHOD(create, type, xaml_object*, xaml_object**)
+#define XAML_TEMPLATE_BASE_VTBL(type)                       \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type))               \
+    XAML_METHOD(create, type, xaml_object*, xaml_object**); \
+    XAML_PROP(data_type, type, xaml_guid*, xaml_guid XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_template_base, xaml_object)
 {

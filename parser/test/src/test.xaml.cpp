@@ -55,6 +55,13 @@ xaml_result xaml_test_window_internal::init() noexcept
     xaml_ptr<xaml_vector_view> headers;
     XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, data_str, &node, &headers));
     XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx, node, m_outer_this));
+    xaml_ptr<xaml_observable_vector> items;
+    XAML_RETURN_IF_FAILED(m_model->get_items(&items));
+    {
+        xaml_ptr<xaml_string> item;
+        XAML_RETURN_IF_FAILED(xaml_string_new("Hello", &item));
+        XAML_RETURN_IF_FAILED(items->append(item));
+    }
     return XAML_S_OK;
 }
 

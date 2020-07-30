@@ -16,4 +16,4 @@ XAML_DECL_INTERFACE_(xaml_test_converter, xaml_converter)
 EXTERN_C xaml_result XAML_CALL xaml_test_converter_new(xaml_test_converter**) XAML_NOEXCEPT;
 EXTERN_C xaml_result XAML_CALL xaml_test_converter_register(xaml_meta_context*) XAML_NOEXCEPT;
 
-#endif // !XAML_TEST_CONVERTER_H
+#endif // !XAML_TEST_CONVERTER2_H
