@@ -59,7 +59,17 @@ xaml_result xaml_test_window_internal::init() noexcept
     XAML_RETURN_IF_FAILED(m_model->get_items(&items));
     {
         xaml_ptr<xaml_string> item;
-        XAML_RETURN_IF_FAILED(xaml_string_new("Hello", &item));
+        XAML_RETURN_IF_FAILED(xaml_string_new("\u05e9\u05dc\u05d5\u05dd", &item));
+        XAML_RETURN_IF_FAILED(items->append(item));
+    }
+    {
+        xaml_ptr<xaml_string> item;
+        XAML_RETURN_IF_FAILED(xaml_string_new("锟斤拷", &item));
+        XAML_RETURN_IF_FAILED(items->append(item));
+    }
+    {
+        xaml_ptr<xaml_string> item;
+        XAML_RETURN_IF_FAILED(xaml_string_new("\u05e9-\u043c-\u03bd", &item));
         XAML_RETURN_IF_FAILED(items->append(item));
     }
     return XAML_S_OK;

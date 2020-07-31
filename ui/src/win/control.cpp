@@ -92,16 +92,14 @@ xaml_result xaml_control_internal::measure_string(xaml_ptr<xaml_string> const& s
 xaml_result xaml_control_internal::measure_string(wstring_view data, xaml_size const& offset, xaml_size* pvalue) noexcept
 {
     wil::unique_hdc_window hDC = wil::GetWindowDC(m_handle);
+    xaml_size real_value{};
     if (hDC && !data.empty())
     {
         SIZE s = {};
         XAML_RETURN_IF_WIN32_BOOL_FALSE(GetTextExtentPoint32(hDC.get(), data.data(), (DWORD)data.length(), &s));
-        *pvalue = xaml_from_native(s) + offset;
+        real_value = xaml_from_native(s);
     }
-    else
-    {
-        *pvalue = offset;
-    }
+    *pvalue = real_value + offset;
     return XAML_S_OK;
 }
 

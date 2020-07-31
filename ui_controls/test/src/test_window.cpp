@@ -240,6 +240,7 @@ xaml_result xaml_test_window_impl::init() noexcept
             {
                 xaml_ptr<xaml_text_box> text;
                 XAML_RETURN_IF_FAILED(xaml_text_box_new(&text));
+                XAML_RETURN_IF_FAILED(text->set_margin({ 5, 5, 5, 5 }));
                 xaml_ptr<xaml_string> text_text;
                 XAML_RETURN_IF_FAILED(xaml_string_new(U("This is a long long long long long long long long long long long long long long long long long long long long long long long long long long long long long long text.\n"
                                                         "And this is the next line."),

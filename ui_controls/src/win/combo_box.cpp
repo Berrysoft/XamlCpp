@@ -4,6 +4,7 @@
 #include <xaml/internal/string.hpp>
 #include <xaml/result_win32.h>
 #include <xaml/ui/controls/combo_box.h>
+#include <xaml/ui/win/dpi.h>
 
 #include <CommCtrl.h>
 
@@ -137,7 +138,7 @@ xaml_result xaml_combo_box_internal::size_to_fit() noexcept
                 wstring_view data;
                 XAML_RETURN_IF_FAILED(pool(s, &data));
                 xaml_size msize;
-                XAML_RETURN_IF_FAILED(measure_string(data, { 5, 5 }, &msize));
+                XAML_RETURN_IF_FAILED(measure_string(data, { 5, 10 }, &msize));
                 fw = (max)(fw, msize.width);
                 fh = (max)(fh, msize.height);
             }
