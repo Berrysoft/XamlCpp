@@ -218,11 +218,12 @@ xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg,
             bool dark = XamlIsDarkModeAllowedForApp();
             HDC hDC = (HDC)msg.wParam;
             HBRUSH brush = dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH);
-            HBRUSH orib = SelectBrush(hDC, brush);
-            RECT r;
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(GetClientRect(msg.hWnd, &r));
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left - 1, r.top - 1, r.right + 1, r.bottom + 1));
-            SelectBrush(hDC, orib);
+            {
+                auto sresult = wil::SelectObject(hDC, brush);
+                RECT r;
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetClientRect(msg.hWnd, &r));
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(Rectangle(hDC, r.left - 1, r.top - 1, r.right + 1, r.bottom + 1));
+            }
             *presult = 1;
             return XAML_S_OK;
         }
