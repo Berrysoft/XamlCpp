@@ -63,7 +63,7 @@ if(${BUILD_WINDOWS})
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
             message(STATUS "Downloading CppWinRT...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200703.9 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200729.8 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
             message(STATUS "CppWinRT downloaded")
         endif()
 
@@ -75,6 +75,7 @@ if(${BUILD_WINDOWS})
         execute_process(COMMAND ${CMAKE_BINARY_DIR}/cppwinrt/bin/cppwinrt.exe -in local -out ${CMAKE_BINARY_DIR}/cppwinrt/gen/)
 
         target_include_directories(xaml_ui_webview PRIVATE ${CMAKE_BINARY_DIR}/cppwinrt/gen)
+        target_compile_options(xaml_ui_webview PRIVATE "/await")
     endif()
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui_webview PUBLIC "-framework WebKit")
