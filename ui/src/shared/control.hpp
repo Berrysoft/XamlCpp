@@ -96,6 +96,10 @@ struct xaml_control_internal
 
     virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept { return XAML_S_OK; }
 
+    XAML_EVENT_IMPL(mouse_down)
+    XAML_EVENT_IMPL(mouse_up)
+    XAML_EVENT_IMPL(mouse_move)
+
     XAML_UI_API virtual xaml_result XAML_CALL size_to_fit() noexcept;
 
     XAML_UI_API virtual xaml_result XAML_CALL draw_size() noexcept;
@@ -208,6 +212,10 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_el
     xaml_result XAML_CALL set_size_noevent(xaml_size const& value) noexcept override { return m_internal.set_size_noevent(value); }
 
     xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override { return m_internal.draw(region); }
+
+    XAML_EVENT_INTERNAL_IMPL(mouse_down)
+    XAML_EVENT_INTERNAL_IMPL(mouse_up)
+    XAML_EVENT_INTERNAL_IMPL(mouse_move)
 
     xaml_result XAML_CALL size_to_fit() noexcept override { return m_internal.size_to_fit(); }
 

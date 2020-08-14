@@ -28,6 +28,17 @@ XAML_TYPE(xaml_valignment, { 0x71173440, 0xcbf1, 0x4fe9, { 0xbd, 0x93, 0x27, 0x0
 
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_valignment_register(xaml_meta_context*) XAML_NOEXCEPT;
 
+typedef enum xaml_mouse_button
+{
+    xaml_mouse_button_left,
+    xaml_mouse_button_right,
+    xaml_mouse_button_middle
+} xaml_mouse_button;
+
+XAML_TYPE(xaml_mouse_button, { 0x02160c5f, 0x4507, 0x4347, { 0x91, 0xa9, 0xcd, 0x15, 0xcd, 0x9f, 0xe3, 0x55 } })
+
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_mouse_button_register(xaml_meta_context*) XAML_NOEXCEPT;
+
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 
 #define XAML_CONTROL_VTBL(type)                                        \
@@ -46,6 +57,9 @@ XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb,
     XAML_EVENT(is_visible_changed, type);                              \
     XAML_METHOD(get_is_initialized, type, bool*);                      \
     XAML_METHOD(draw, type, xaml_rectangle XAML_CONST_REF);            \
+    XAML_EVENT(mouse_down, type);                                      \
+    XAML_EVENT(mouse_up, type);                                        \
+    XAML_EVENT(mouse_move, type);                                      \
     XAML_METHOD(size_to_fit, type);                                    \
     XAML_METHOD(parent_redraw, type);                                  \
     XAML_METHOD(set_size_noevent, type, xaml_size XAML_CONST_REF)

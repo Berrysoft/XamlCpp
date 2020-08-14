@@ -101,3 +101,13 @@ xaml_result XAML_CALL xaml_valignment_register(xaml_meta_context* ctx) noexcept
     XAML_ENUM_INFO_NEW(xaml_valignment, "xaml/ui/control.h");
     return ctx->add_type(__info);
 }
+
+xaml_result XAML_CALL xaml_mouse_button_register(xaml_meta_context* ctx) noexcept
+{
+    XAML_ENUM_INFO_MAP_NEW();
+    XAML_ENUM_INFO_ADD2(xaml_mouse_button, left);
+    XAML_ENUM_INFO_ADD2(xaml_mouse_button, right);
+    XAML_ENUM_INFO_ADD2(xaml_mouse_button, middle);
+    XAML_ENUM_INFO_NEW(xaml_mouse_button, "xaml/ui/control.h");
+    return ctx->add_type(__info);
+}
