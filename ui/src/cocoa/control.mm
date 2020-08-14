@@ -50,3 +50,18 @@ xaml_result xaml_control_internal::draw_visible() noexcept
     m_handle.hidden = !m_is_visible;
     return XAML_S_OK;
 }
+
+void xaml_control_internal::on_mouse_down_event(xaml_mouse_button button) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_down(m_outer_this, button));
+}
+
+void xaml_control_internal::on_mouse_up_event(xaml_mouse_button button) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_up(m_outer_this, button));
+}
+
+void xaml_control_internal::on_mouse_moved_event(xaml_point const& p) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, p));
+}

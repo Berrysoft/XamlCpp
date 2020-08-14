@@ -130,6 +130,10 @@ struct xaml_control_internal
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_IMPL(handle, OBJC_OBJECT(NSView), OBJC_OBJECT(NSView)*, OBJC_OBJECT(NSView))
     XAML_PROP_IMPL(delegate, OBJC_OBJECT(XamlDelegate), OBJC_OBJECT(XamlDelegate)*, OBJC_OBJECT(XamlDelegate))
+
+    XAML_UI_API void on_mouse_down_event(xaml_mouse_button) noexcept;
+    XAML_UI_API void on_mouse_up_event(xaml_mouse_button) noexcept;
+    XAML_UI_API void on_mouse_moved_event(xaml_point const&) noexcept;
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
 

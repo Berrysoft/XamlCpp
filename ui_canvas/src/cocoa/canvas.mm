@@ -10,6 +10,26 @@
 #include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/drawing_conv.hpp>
 
+static xaml_mouse_button get_mouse_button(NSEvent* event) noexcept
+{
+    switch (event.type)
+    {
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseUp:
+        return xaml_mouse_button_left;
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseUp:
+        return xaml_mouse_button_right;
+    default:
+        return xaml_mouse_button_other;
+    }
+}
+
+static xaml_point get_mouse_location() noexcept
+{
+    return xaml_from_native([NSEvent mouseLocation]);
+}
+
 @implementation XamlCanvasView : NSView
 @synthesize classPointer;
 
@@ -26,6 +46,30 @@
 {
     xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
     cv->on_draw_rect();
+}
+
+- (void)mouseDown:(NSEvent*)event
+{
+    xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
+    cv->on_mouse_down_event(get_mouse_button(event));
+}
+
+- (void)mouseUp:(NSEvent*)event
+{
+    xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
+    cv->on_mouse_up_event(get_mouse_button(event));
+}
+
+- (void)mouseDragged:(NSEvent*)event
+{
+    xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
+    cv->on_mouse_moved_event(get_mouse_location());
+}
+
+- (void)mouseMoved:(NSEvent*)event
+{
+    xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
+    cv->on_mouse_moved_event(get_mouse_location());
 }
 @end
 
@@ -241,4 +285,18 @@ void xaml_canvas_internal::on_draw_rect() noexcept
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, m_size));
     XAML_ASSERT_SUCCEEDED(on_redraw(m_outer_this, dc));
+}
+
+xaml_result xaml_canvas_internal::invalidate(const xaml_rectangle* prect) noexcept
+{
+    if (prect)
+    {
+        NSRect r = xaml_to_native<NSRect>(*prect);
+        [m_handle setNeedsDisplayInRect:r];
+    }
+    else
+    {
+        [m_handle setNeedsDisplay:YES];
+    }
+    return XAML_S_OK;
 }
