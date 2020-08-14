@@ -1,7 +1,9 @@
 #include <numbers>
 #include <shared/canvas.hpp>
 #include <win/d2d_conv.hpp>
+#include <windowsx.h>
 #include <xaml/internal/string.hpp>
+#include <xaml/result_win32.h>
 #include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/win/controls/brush.h>
 #include <xaml/ui/win/controls/pen.h>
@@ -240,6 +242,25 @@ xaml_result xaml_canvas_internal::wnd_proc(xaml_win32_window_message const& msg,
         *presult = TRUE;
         return XAML_S_OK;
     }
+    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN:
+        XAML_RETURN_IF_FAILED(on_mouse_down(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3)));
+        *presult = 0;
+        return XAML_S_OK;
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+        XAML_RETURN_IF_FAILED(on_mouse_up(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONUP) / 3)));
+        *presult = 0;
+        return XAML_S_OK;
+    case WM_MOUSEMOVE:
+    {
+        auto real_loc = xaml_from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
+        XAML_RETURN_IF_FAILED(on_mouse_move(m_outer_this, real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(m_handle)));
+        *presult = 0;
+        return XAML_S_OK;
+    }
     }
     return XAML_E_NOTIMPL;
 }
@@ -266,6 +287,20 @@ xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) n
         {
             XAML_RETURN_IF_FAILED(d2d->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_handle), &target));
         }
+    }
+    return XAML_S_OK;
+}
+
+xaml_result XAML_CALL xaml_canvas_internal::invalidate(xaml_rectangle const* prect) noexcept
+{
+    if (prect)
+    {
+        RECT r = xaml_to_native<RECT>(*prect * XamlGetDpiForWindow(m_handle) / USER_DEFAULT_SCREEN_DPI);
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(InvalidateRect(m_handle, &r, FALSE));
+    }
+    else
+    {
+        XAML_RETURN_IF_WIN32_BOOL_FALSE(InvalidateRect(m_handle, nullptr, FALSE));
     }
     return XAML_S_OK;
 }

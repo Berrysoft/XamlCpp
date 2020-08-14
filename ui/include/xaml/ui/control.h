@@ -32,7 +32,8 @@ typedef enum xaml_mouse_button
 {
     xaml_mouse_button_left,
     xaml_mouse_button_right,
-    xaml_mouse_button_middle
+    xaml_mouse_button_middle,
+    xaml_mouse_button_other
 } xaml_mouse_button;
 
 XAML_TYPE(xaml_mouse_button, { 0x02160c5f, 0x4507, 0x4347, { 0x91, 0xa9, 0xcd, 0x15, 0xcd, 0x9f, 0xe3, 0x55 } })

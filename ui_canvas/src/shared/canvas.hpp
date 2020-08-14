@@ -59,6 +59,8 @@ struct xaml_canvas_internal : xaml_control_internal
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
+    xaml_result XAML_CALL invalidate(xaml_rectangle const*) noexcept;
+
 #ifdef XAML_UI_WINDOWS
     wil::com_ptr_t<ID2D1HwndRenderTarget, wil::err_returncode_policy> target{ nullptr };
     wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
@@ -77,6 +79,9 @@ struct xaml_canvas_internal : xaml_control_internal
 struct xaml_canvas_impl : xaml_control_implement<xaml_canvas_impl, xaml_canvas_internal, xaml_canvas>
 {
     XAML_EVENT_INTERNAL_IMPL(redraw)
+
+    xaml_result XAML_CALL invalidate() noexcept override { return m_internal.invalidate(nullptr); }
+    xaml_result XAML_CALL invalidate_rect(xaml_rectangle const& rect) noexcept override { return m_internal.invalidate(&rect); }
 };
 
 #endif // !XAML_UI_CANVAS_SHARED_CANVAS_HPP

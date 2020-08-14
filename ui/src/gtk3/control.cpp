@@ -32,3 +32,39 @@ xaml_result xaml_control_internal::draw_visible() noexcept
     gtk_widget_set_visible(m_handle, m_is_visible);
     return XAML_S_OK;
 }
+
+gboolean xaml_control_internal::on_button_event(GtkWidget*, GdkEventButton* event, xaml_control_internal* self) noexcept
+{
+    xaml_mouse_button button;
+    switch (event->button)
+    {
+    case 1:
+        button = xaml_mouse_button_left;
+        break;
+    case 2:
+        button = xaml_mouse_button_middle;
+        break;
+    case 3:
+        button = xaml_mouse_button_right;
+        break;
+    default:
+        button = xaml_mouse_button_other;
+        break;
+    }
+    switch (event->type)
+    {
+    case GDK_BUTTON_PRESS:
+        XAML_ASSERT_SUCCEEDED(self->on_mouse_down(self->m_outer_this, button));
+        break;
+    case GDK_BUTTON_RELEASE:
+        XAML_ASSERT_SUCCEEDED(self->on_mouse_up(self->m_outer_this, button));
+        break;
+    }
+    return TRUE;
+}
+
+gboolean xaml_control_internal::on_button_motion(GtkWidget*, GdkEventMotion* event, xaml_control_internal* self) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(self->on_mouse_move(self->m_outer_this, xaml_point{ event->x, event->y }));
+    return TRUE;
+}

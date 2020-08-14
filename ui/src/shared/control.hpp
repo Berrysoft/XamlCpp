@@ -132,6 +132,9 @@ struct xaml_control_internal
     XAML_PROP_IMPL(delegate, OBJC_OBJECT(XamlDelegate), OBJC_OBJECT(XamlDelegate)*, OBJC_OBJECT(XamlDelegate))
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(handle, GtkWidget*, GtkWidget**, GtkWidget*)
+
+    XAML_UI_API static gboolean on_button_event(GtkWidget*, GdkEventButton*, xaml_control_internal*) noexcept;
+    XAML_UI_API static gboolean on_button_motion(GtkWidget*, GdkEventMotion*, xaml_control_internal*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL get_is_initialized(bool* pvalue) noexcept

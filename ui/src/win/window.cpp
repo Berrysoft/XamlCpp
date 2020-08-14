@@ -287,22 +287,6 @@ xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg,
             }
             break;
         }
-        //case WM_LBUTTONDOWN:
-        //case WM_RBUTTONDOWN:
-        //case WM_MBUTTONDOWN:
-        //    m_mouse_down(shared_from_this<window>(), (mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3));
-        //    break;
-        //case WM_LBUTTONUP:
-        //case WM_RBUTTONUP:
-        //case WM_MBUTTONUP:
-        //    m_mouse_up(shared_from_this<window>(), (mouse_button)((msg.Msg - WM_LBUTTONUP) / 3));
-        //    break;
-        //case WM_MOUSEMOVE:
-        //{
-        //    auto real_loc = from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
-        //    m_mouse_move(shared_from_this<window>(), real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(get_handle()->handle));
-        //    break;
-        //}
         case WM_DESTROY:
         {
             xaml_ptr<xaml_application> app;

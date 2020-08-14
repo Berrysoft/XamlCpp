@@ -172,6 +172,10 @@ xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
     {
         m_handle = gtk_drawing_area_new();
         g_signal_connect(G_OBJECT(m_handle), "draw", G_CALLBACK(xaml_canvas_internal::on_draw), this);
+        gtk_widget_add_events(m_handle, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_POINTER_MOTION_MASK);
+        g_signal_connect(G_OBJECT(m_handle), "button-press-event", G_CALLBACK(xaml_control_internal::on_button_event), this);
+        g_signal_connect(G_OBJECT(m_handle), "button-release-event", G_CALLBACK(xaml_control_internal::on_button_event), this);
+        g_signal_connect(G_OBJECT(m_handle), "motion-notify-event", G_CALLBACK(xaml_control_internal::on_button_motion), this);
         XAML_RETURN_IF_FAILED(draw_visible());
     }
     return set_rect(region);
@@ -183,4 +187,19 @@ gboolean xaml_canvas_internal::on_draw(GtkWidget*, cairo_t* cr, xaml_canvas_inte
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));
     XAML_ASSERT_SUCCEEDED(self->on_redraw(self->m_outer_this, dc));
     return FALSE;
+}
+
+xaml_result XAML_CALL xaml_canvas_internal::invalidate(xaml_rectangle const* prect) noexcept
+{
+    GdkRectangle r;
+    if (prect)
+    {
+        r = xaml_to_native<GdkRectangle>(*prect);
+    }
+    else
+    {
+        r = { 0, 0, (gint)m_size.width, (gint)m_size.height };
+    }
+    gtk_widget_queue_draw_area(m_handle, r.x, r.y, r.width, r.height);
+    return XAML_S_OK;
 }

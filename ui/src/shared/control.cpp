@@ -40,6 +40,10 @@ xaml_result xaml_control_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_valignment_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_visible_changed));
 
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_mouse_down));
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_mouse_up));
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_mouse_move));
+
     std::int32_t token;
     XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_control>, xaml_size>(
         [this](xaml_ptr<xaml_control>, xaml_size) noexcept -> xaml_result {
@@ -108,6 +112,7 @@ xaml_result XAML_CALL xaml_mouse_button_register(xaml_meta_context* ctx) noexcep
     XAML_ENUM_INFO_ADD2(xaml_mouse_button, left);
     XAML_ENUM_INFO_ADD2(xaml_mouse_button, right);
     XAML_ENUM_INFO_ADD2(xaml_mouse_button, middle);
+    XAML_ENUM_INFO_ADD2(xaml_mouse_button, other);
     XAML_ENUM_INFO_NEW(xaml_mouse_button, "xaml/ui/control.h");
     return ctx->add_type(__info);
 }
