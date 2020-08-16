@@ -95,7 +95,7 @@ xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, const xaml_r
 {
     path_rect(m_handle, rect);
     XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, rect));
-    cairo_stroke(m_handle);
+    cairo_fill(m_handle);
     return XAML_S_OK;
 }
 
@@ -125,7 +125,7 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
 {
     path_round_rect(m_handle, rect, round);
     XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, rect));
-    cairo_stroke(m_handle);
+    cairo_fill(m_handle);
     return XAML_S_OK;
 }
 
