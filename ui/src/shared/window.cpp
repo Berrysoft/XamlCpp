@@ -30,6 +30,12 @@ xaml_result xaml_window_internal::init() noexcept
             return XAML_S_OK;
         },
         &token)));
+    XAML_RETURN_IF_FAILED((m_title_changed->add_noexcept<xaml_ptr<xaml_window>, xaml_ptr<xaml_string>>(
+        [this](xaml_ptr<xaml_window>, xaml_ptr<xaml_string>) noexcept -> xaml_result {
+            if (m_handle) XAML_RETURN_IF_FAILED(draw_title());
+            return XAML_S_OK;
+        },
+        &token)));
     return XAML_S_OK;
 }
 
