@@ -25,9 +25,9 @@ static xaml_mouse_button get_mouse_button(NSEvent* event) noexcept
     }
 }
 
-static xaml_point get_mouse_location() noexcept
+static xaml_point get_mouse_location(NSView* view) noexcept
 {
-    return xaml_from_native([NSEvent mouseLocation]);
+    return xaml_from_native([view.window mouseLocationOutsideOfEventStream]);
 }
 
 @implementation XamlCanvasView : NSView
@@ -40,6 +40,19 @@ static xaml_point get_mouse_location() noexcept
         self.classPointer = ptr;
     }
     return self;
+}
+
+- (void)updateTrackingAreas
+{
+    if (self->area)
+    {
+        [self removeTrackingArea:self->area];
+    }
+    self->area = [[NSTrackingArea alloc] initWithRect:[self bounds]
+                                              options:NSTrackingMouseMoved | NSTrackingActiveAlways
+                                                owner:self
+                                             userInfo:nil];
+    [self addTrackingArea:self->area];
 }
 
 - (void)drawRect:(NSRect)dirtyRect
@@ -63,13 +76,13 @@ static xaml_point get_mouse_location() noexcept
 - (void)mouseDragged:(NSEvent*)event
 {
     xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
-    cv->on_mouse_moved_event(get_mouse_location());
+    cv->on_mouse_moved_event(get_mouse_location(self));
 }
 
 - (void)mouseMoved:(NSEvent*)event
 {
     xaml_canvas_internal* cv = (xaml_canvas_internal*)self.classPointer;
-    cv->on_mouse_moved_event(get_mouse_location());
+    cv->on_mouse_moved_event(get_mouse_location(self));
 }
 @end
 
@@ -223,6 +236,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         fontdes = [fontdes fontDescriptorWithSymbolicTraits:traits];
     }
     NSFont* nfont = [NSFont fontWithDescriptor:fontdes size:font.size];
+    if (!nfont) return XAML_S_OK;
     NSDictionary* attrs = @{
         NSFontAttributeName : nfont,
         NSForegroundColorAttributeName : [NSColor whiteColor]

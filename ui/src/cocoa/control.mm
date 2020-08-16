@@ -63,5 +63,6 @@ void xaml_control_internal::on_mouse_up_event(xaml_mouse_button button) noexcept
 
 void xaml_control_internal::on_mouse_moved_event(xaml_point const& p) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, p));
+    xaml_point realp = { p.x, m_size.height - p.y };
+    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, realp));
 }
