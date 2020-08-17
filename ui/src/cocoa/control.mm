@@ -14,6 +14,10 @@ xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexce
         {
             NSView* parent_view;
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_view));
+            if (![parent_view.subviews containsObject:m_handle])
+            {
+                [parent_view addSubview:m_handle];
+            }
             NSRect frame = m_handle.frame;
             NSRect const& parent_frame = parent_view.frame;
             frame.origin = { real.x, parent_frame.size.height - real.height - real.y };

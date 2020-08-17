@@ -1,12 +1,36 @@
+#include <gtk3/resources.hpp>
 #include <shared/control.hpp>
 #include <xaml/ui/control.h>
 #include <xaml/ui/drawing_conv.hpp>
+#include <xaml/ui/gtk3/xamlfixed.h>
 
 using namespace std;
 
 xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexcept
 {
     xaml_rectangle real = region - m_margin;
+    if (m_parent)
+    {
+        xaml_ptr<xaml_gtk3_control> native_parent;
+        if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
+        {
+            GtkWidget* parent_handle;
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
+            if (GTK_IS_CONTAINER(parent_handle))
+            {
+                g_list_free_unique_ptr children{ gtk_container_get_children(GTK_CONTAINER(parent_handle)) };
+                if (!g_list_find(children.get(), m_handle))
+                {
+                    gtk_container_add(GTK_CONTAINER(parent_handle), m_handle);
+                }
+                if (XAML_IS_FIXED(parent_handle))
+                {
+                    GtkAllocation alloc = xaml_to_native<GtkAllocation>(real);
+                    xaml_fixed_child_size_allocate(XAML_FIXED(parent_handle), m_handle, &alloc);
+                }
+            }
+        }
+    }
     XAML_RETURN_IF_FAILED(set_size_noevent({ real.width, real.height }));
     XAML_RETURN_IF_FAILED(draw_size());
     return XAML_S_OK;

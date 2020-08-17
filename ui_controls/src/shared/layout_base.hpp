@@ -7,10 +7,6 @@
 
 struct xaml_layout_base_internal : xaml_multicontainer_internal
 {
-#ifndef XAML_UI_WINDOWS
-    std::unordered_map<xaml_control*, bool> m_put_map;
-#endif // !XAML_UI_WINDOWS
-
     virtual xaml_result XAML_CALL draw_impl(xaml_rectangle const& region, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept;
 
     xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override;
