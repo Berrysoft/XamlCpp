@@ -24,7 +24,10 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pres) noexcept
 {
-    gtk_main();
+    if (m_main_wnd)
+    {
+        gtk_main();
+    }
     *pres = m_quit_value;
     return XAML_S_OK;
 }

@@ -200,7 +200,7 @@ list(APPEND _XAML_TARGETS nowide)
 
 if(${BUILD_PARSER})
     add_subdirectory(rapidxml)
-    list(APPEND _XAML_TARGET xaml_rapidxml)
+    list(APPEND _XAML_TARGETS xaml_rapidxml)
 endif()
 
 # /Zc:char8_t will be overrided by /std:c++latest
