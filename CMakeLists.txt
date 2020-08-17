@@ -185,7 +185,7 @@ option(BUILD_DETECTOR "Build detector." ON)
 option(BUILD_RESOURCE_COMPILER "Build resource compiler." ON)
 
 set(_XAML_TARGETS
-    xaml_global xaml_rapidxml
+    xaml_global
     xaml_meta xaml_markup
     xaml_ui xaml_ui_appmain
 )
@@ -198,7 +198,10 @@ list(APPEND _XAML_TARGETS stream_format)
 add_subdirectory(nowide)
 list(APPEND _XAML_TARGETS nowide)
 
-add_subdirectory(rapidxml)
+if(${BUILD_PARSER})
+    add_subdirectory(rapidxml)
+    list(APPEND _XAML_TARGET xaml_rapidxml)
+endif()
 
 # /Zc:char8_t will be overrided by /std:c++latest
 if(MSVC)
