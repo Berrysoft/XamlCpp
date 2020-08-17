@@ -18,4 +18,6 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_markup PRIVATE "XAML_MARKUP_API=__XAML_EXPORT")
 endif()
 
-install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
+if(${XAML_INSTALL})
+    install(FILES ${XAML_MARKUP_HEADERS} DESTINATION include/xaml/markup)
+endif()

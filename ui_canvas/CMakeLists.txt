@@ -38,7 +38,9 @@ endif()
 
 target_compile_definitions(xaml_ui_canvas PRIVATE "_USE_MATH_DEFINES")
 
-install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
-install(FILES ${CV_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win/controls)
-install(FILES ${CV_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa/controls)
-install(FILES ${CV_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3/controls)
+if(${XAML_INSTALL})
+    install(FILES ${CV_HEADERS} DESTINATION include/xaml/ui/controls)
+    install(FILES ${CV_WINDOWS_HEADERS} DESTINATION include/xaml/ui/win/controls)
+    install(FILES ${CV_COCOA_HEADERS} DESTINATION include/xaml/ui/cocoa/controls)
+    install(FILES ${CV_GTK3_HEADERS} DESTINATION include/xaml/ui/gtk3/controls)
+endif()

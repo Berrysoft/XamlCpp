@@ -39,7 +39,9 @@ if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")
 endif()
 
-install(FILES ${GLOBAL_HEADERS} DESTINATION include/xaml)
+if(${XAML_INSTALL})
+    install(FILES ${GLOBAL_HEADERS} DESTINATION include/xaml)
+endif()
 
 if(${BUILD_TESTS})
     add_subdirectory(test)

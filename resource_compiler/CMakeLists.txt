@@ -7,4 +7,6 @@ target_include_directories(xamlrc PUBLIC include)
 
 target_link_libraries(xamlrc PUBLIC xaml_cmdline PRIVATE xaml_cmdline_helper xaml_helpers stream_format nowide)
 
-install(TARGETS xamlrc RUNTIME DESTINATION bin)
+if(${XAML_INSTALL})
+    install(TARGETS xamlrc RUNTIME DESTINATION bin)
+endif()

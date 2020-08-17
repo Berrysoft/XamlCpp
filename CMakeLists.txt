@@ -187,6 +187,8 @@ set(_XAML_TARGETS
     xaml_cmdline xaml_cmdline_helper
 )
 
+option(XAML_INSTALL "Install XamlCpp components" ON)
+
 add_subdirectory(StreamFormat)
 list(APPEND _XAML_TARGETS stream_format)
 
@@ -223,7 +225,6 @@ add_subdirectory(detector)
 add_subdirectory(resource)
 add_subdirectory(resource_compiler)
 
-option(XAML_INSTALL "Install XamlCpp components" ON)
 if(${XAML_INSTALL})
     install(
         TARGETS ${_XAML_TARGETS}
