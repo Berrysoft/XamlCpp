@@ -38,7 +38,8 @@ static BOOL register_window_class() noexcept
     cls.lpfnWndProc = xaml_window_callback;
     cls.cbClsExtra = 0;
     cls.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    cls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+    cls.hIcon = nullptr;
+    cls.hIconSm = nullptr;
     cls.hbrBackground = nullptr;
     cls.lpszClassName = L"XamlWindow";
     cls.hInstance = GetModuleHandle(NULL);
