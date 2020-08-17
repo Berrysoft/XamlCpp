@@ -176,6 +176,7 @@ endif()
 
 option(BUILD_TESTS "Build tests." OFF)
 option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" OFF)
+option(BUILD_PARSER "Build XAML parser." ON)
 option(BUILD_WEBVIEW "Build webview." ON)
 option(BUILD_CANVAS "Build canvas." ON)
 option(BUILD_CONTROLS "Build controls." ON)
@@ -185,7 +186,7 @@ option(BUILD_RESOURCE_COMPILER "Build resource compiler." ON)
 
 set(_XAML_TARGETS
     xaml_global xaml_rapidxml
-    xaml_meta xaml_markup xaml_parser
+    xaml_meta xaml_markup
     xaml_ui xaml_ui_appmain
 )
 
@@ -209,8 +210,11 @@ add_subdirectory(global)
 add_subdirectory(helpers)
 add_subdirectory(meta)
 add_subdirectory(markup)
-add_subdirectory(parser)
 add_subdirectory(ui)
+if(${BUILD_PARSER})
+    add_subdirectory(parser)
+    list(APPEND _XAML_TARGETS xaml_parser)
+endif()
 if(${BUILD_CONTROLS})
     add_subdirectory(ui_controls)
     list(APPEND _XAML_TARGETS xaml_ui_controls)
