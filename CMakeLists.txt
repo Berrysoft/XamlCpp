@@ -223,13 +223,16 @@ add_subdirectory(detector)
 add_subdirectory(resource)
 add_subdirectory(resource_compiler)
 
-install(
-    TARGETS ${_XAML_TARGETS}
-    EXPORT xaml-targets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-)
-install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
-configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
-install(FILES ${PROJECT_BINARY_DIR}/xaml-config.cmake DESTINATION lib/cmake/xaml)
+option(XAML_INSTALL "Install XamlCpp components" ON)
+if(${XAML_INSTALL})
+    install(
+        TARGETS ${_XAML_TARGETS}
+        EXPORT xaml-targets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+    install(EXPORT xaml-targets DESTINATION lib/cmake/xaml)
+    configure_file(cmake/xaml-config.cmake.in ${PROJECT_BINARY_DIR}/xaml-config.cmake @ONLY)
+    install(FILES ${PROJECT_BINARY_DIR}/xaml-config.cmake DESTINATION lib/cmake/xaml)
+endif()
