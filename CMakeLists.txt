@@ -10,15 +10,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ENABLE_IPO OUTPUT output)
-
-if(ENABLE_IPO)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE ON)
-    message(STATUS "LTO is enabled for Release")
-endif()
-
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake/Modules")
+
+include(XamlCompilerHelper)
+xaml_check_ipo()
 
 # Options for target platforms.
 option(BUILD_WINDOWS "Build for Windows with Windows API")
@@ -100,13 +95,12 @@ endif()
 
 # Disable RTTI by default.
 option(XAML_NO_RTTI "Disable RTTI." ON)
+xaml_fix_rtti_flags()
 
 if(${XAML_NO_RTTI})
     if(MSVC)
-        string(REGEX REPLACE "/GR" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         list(APPEND XAML_CXX_COMPILE_OPTIONS "/GR-")
     else()
-        string(REGEX REPLACE "-frtti" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
         list(APPEND XAML_CXX_COMPILE_OPTIONS "-fno-rtti")
     endif()
 endif()
@@ -137,9 +131,8 @@ endif()
 #endif()
 
 # MSVC warnings
+xaml_fix_warning_flags()
 if(MSVC)
-    string(REGEX REPLACE "/W3" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-    string(REGEX REPLACE "/W3" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     list(APPEND XAML_COMPILE_OPTIONS "/W4" "/wd4458")
 endif()
 
@@ -203,11 +196,7 @@ if(${BUILD_PARSER})
     list(APPEND _XAML_TARGETS xaml_rapidxml)
 endif()
 
-# /Zc:char8_t will be overrided by /std:c++latest
-if(MSVC)
-    set(CMAKE_CXX20_STANDARD_COMPILE_OPTION "")
-    set(CMAKE_CXX20_EXTENSION_COMPILE_OPTION "")
-endif()
+xaml_fix_char8_t_flags()
 
 add_subdirectory(global)
 add_subdirectory(helpers)
