@@ -28,8 +28,8 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
     using native_timer_type = OBJC_OBJECT(NSTimer);
     using native_delegate_type = OBJC_OBJECT(XamlDelegate);
 
-    native_timer_type m_handle;
-    native_delegate_type m_delegate;
+    native_timer_type m_handle{ OBJC_NIL };
+    native_delegate_type m_delegate{ OBJC_NIL };
 
     void on_tick() noexcept;
 #elif defined(XAML_UI_GTK3)
