@@ -9,6 +9,10 @@
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <gtk/gtk.h>
+#elif defined(XAML_UI_QT5)
+    #include <QPoint>
+    #include <QRect>
+    #include <QSize>
 #endif // XAML_UI_WINDOWS
 
 template <typename To, typename From>
@@ -109,6 +113,36 @@ template <>
 inline NSColor* xaml_to_native<NSColor*, xaml_color>(xaml_color const& c) noexcept
 {
     return [NSColor colorWithCalibratedRed:(c.r / 255.0) green:(c.g / 255.0) blue:(c.b / 255.0) alpha:(c.a / 255.0)];
+}
+#elif defined(XAML_UI_QT5)
+constexpr xaml_size xaml_from_native(QSize const& s) noexcept
+{
+    return { (double)s.width(), (double)s.height() };
+}
+template <>
+constexpr QSize xaml_to_native<QSize, xaml_size>(xaml_size const& s) noexcept
+{
+    return { (int)s.width, (int)s.height };
+}
+
+constexpr xaml_point xaml_from_native(QPoint const& p) noexcept
+{
+    return { (double)p.x(), (double)p.y() };
+}
+template <>
+constexpr QPoint xaml_to_native<QPoint, xaml_point>(xaml_point const& p) noexcept
+{
+    return { (int)p.x, (int)p.y };
+}
+
+constexpr xaml_rectangle xaml_from_native(QRect const& r) noexcept
+{
+    return { (double)r.left(), (double)r.top(), (double)r.width(), (double)r.height() };
+}
+template <>
+constexpr QRect xaml_to_native<QRect, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { (int)r.x, (int)r.y, (int)(r.width), (int)(r.height) };
 }
 #endif // XAML_UI_WINDOWS
 

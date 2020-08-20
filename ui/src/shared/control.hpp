@@ -12,6 +12,8 @@
     #include <xaml/ui/cocoa/control.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/control.h>
+#elif defined(XAML_UI_QT5)
+    #include <xaml/ui/qt5/control.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_control_internal
@@ -20,7 +22,7 @@ struct xaml_control_internal
 
     XAML_UI_API virtual ~xaml_control_internal();
 
-    xaml_ptr<xaml_map> m_resources;
+    xaml_ptr<xaml_map> m_resources{};
 
     xaml_result XAML_CALL add_resource(xaml_string* key, xaml_object* value) noexcept
     {
@@ -139,6 +141,19 @@ struct xaml_control_internal
 
     XAML_UI_API static gboolean on_button_event(GtkWidget*, GdkEventButton*, xaml_control_internal*) noexcept;
     XAML_UI_API static gboolean on_button_motion(GtkWidget*, GdkEventMotion*, xaml_control_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    QScopedPointer<QWidget> m_handle{};
+    xaml_result XAML_CALL get_handle(QWidget** ptr) noexcept
+    {
+        *ptr = m_handle.get();
+        return XAML_S_OK;
+    }
+    xaml_result XAML_CALL set_handle(QWidget* value) noexcept
+    {
+        m_handle.reset(value);
+        return XAML_S_OK;
+    }
+
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL get_is_initialized(bool* pvalue) noexcept
@@ -179,6 +194,13 @@ struct xaml_gtk3_control_implement : xaml_inner_implement<T2, D, Base2>
 {
     xaml_result XAML_CALL get_handle(GtkWidget** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
     xaml_result XAML_CALL set_handle(GtkWidget* value) noexcept override { return this->m_outer->set_handle(value); }
+};
+#elif defined(XAML_UI_QT5)
+template <typename T2, typename D, typename Base2>
+struct xaml_qt5_control_implement : xaml_inner_implement<T2, D, Base2>
+{
+    xaml_result XAML_CALL get_handle(QWidget** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+    xaml_result XAML_CALL set_handle(QWidget* value) noexcept override { return this->m_outer->set_handle(value); }
 };
 #endif // XAML_UI_WINDOWS
 
@@ -256,6 +278,14 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_el
     } m_native_control;
 
     using native_control_type = xaml_gtk3_control;
+#elif defined(XAML_UI_QT5)
+    XAML_PROP_INTERNAL_IMPL(handle, QWidget**, QWidget*)
+
+    struct xaml_qt5_control_impl : xaml_qt5_control_implement<xaml_qt5_control_impl, T, xaml_qt5_control>
+    {
+    } m_native_control;
+
+    using native_control_type = xaml_qt5_control;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override

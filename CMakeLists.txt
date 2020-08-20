@@ -19,9 +19,10 @@ xaml_check_ipo()
 option(BUILD_WINDOWS "Build for Windows with Windows API")
 option(BUILD_COCOA "Build for Mac with Cocoa")
 option(BUILD_GTK3 "Build with GTK3")
+option(BUILD_QT5 "Build with QT5")
 
 # Select a platform automatically.
-if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3})
+if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3} AND NOT ${BUILD_QT5})
     if(WIN32 AND NOT MINGW)
         set(BUILD_WINDOWS ON)
     elseif(UNIX OR MINGW)
@@ -73,6 +74,8 @@ elseif(${BUILD_COCOA})
     list(APPEND XAML_OBJC_COMPILE_OPTIONS "-fobjc-arc")
 elseif(${BUILD_GTK3})
     list(APPEND XAML_BUILD_DEFINITIONS "XAML_UI_GTK3")
+elseif(${BUILD_QT5})
+    list(APPEND XAML_BUILD_DEFINITIONS "XAML_UI_QT5")
 endif()
 
 # Versions.
@@ -159,12 +162,8 @@ if(${BUILD_WINDOWS})
     find_package(WIL REQUIRED)
 elseif(${BUILD_GTK3})
     find_package(GTK3 REQUIRED)
-endif()
-
-if(APPLE)
-    find_package(Boost REQUIRED COMPONENTS container)
-else()
-    find_package(Boost REQUIRED)
+elseif(${BUILD_QT5})
+    find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets)
 endif()
 
 option(BUILD_TESTS "Build tests." OFF)
@@ -176,6 +175,22 @@ option(BUILD_CONTROLS "Build controls." ON)
 option(BUILD_CMDLINE "Build command line helpers." ON)
 option(BUILD_DETECTOR "Build detector." ON)
 option(BUILD_RESOURCE_COMPILER "Build resource compiler." ON)
+
+unset(_XAML_BOOST_COMPONENTS)
+
+if(APPLE)
+    if(${BUILD_PARSER})
+        set(_XAML_BOOST_COMPONENTS container)
+    endif()
+endif()
+
+if(_XAML_BOOST_COMPONENTS OR ${BUILD_CMDLINE})
+    if(_XAML_BOOST_COMPONENTS)
+        find_package(Boost REQUIRED COMPONENTS ${_XAML_BOOST_COMPONENTS})
+    else()
+        find_package(Boost REQUIRED)
+    endif()
+endif()
 
 set(_XAML_TARGETS
     xaml_global

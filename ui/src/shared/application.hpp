@@ -6,6 +6,8 @@
 
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/font_provider.h>
+#elif defined(XAML_UI_QT5)
+    #include <QApplication>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
@@ -14,6 +16,10 @@ protected:
     std::atomic<int> m_quit_value{ 0 };
     xaml_ptr<xaml_vector> m_cmd_lines{ nullptr };
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
+
+#ifdef XAML_UI_QT5
+    QScopedPointer<QApplication> m_native_app{};
+#endif // XAML_UI_QT5
 
 public:
     xaml_result XAML_CALL init(int, char**) noexcept;
