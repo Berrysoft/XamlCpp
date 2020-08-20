@@ -92,7 +92,7 @@ The `xmlns` should be `https://github.com/Berrysoft/XamlCpp/` to use default con
 The XAML parser uses a modified version of [rapidxml_ns](https://github.com/svgpp/rapidxml_ns). It is modified to use features of C++ 17 and simplified to support UTF-8 only for convenience.
 
 ## Detector
-XamlCpp provides a detector called `xmald` to show the reflection infomation of a dynamic library for XamlCpp.
+XamlCpp provides a detector called `xmald` to show the reflection information of a dynamic library for XamlCpp.
 
 ## Resource
 XamlCpp provides a resource compiler called `xamlrc`, to embed small files into the final program. It supports UTF-8 only.

@@ -26,7 +26,7 @@ xaml_result XAML_CALL xaml_detector_options_register(xaml_meta_context* ctx) noe
     XAML_RETURN_IF_FAILED(opt->add_arg('h', U("help"), U("help"), U("Print help message")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, U("version"), U("version"), U("Print version info")));
     XAML_RETURN_IF_FAILED(opt->add_arg('r', U("recursive"), U("recursive"), U("Load modules recursively")));
-    XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright infomation")));
+    XAML_RETURN_IF_FAILED(opt->add_arg(0, U("no-logo"), U("no_logo"), U("Cancellation to show copyright information")));
     XAML_RETURN_IF_FAILED(opt->add_arg(0, {}, U("path"), U("Library path")));
     XAML_RETURN_IF_FAILED(__info->add_attribute(opt.get()));
     return ctx->add_type(__info);
