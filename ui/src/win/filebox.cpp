@@ -36,17 +36,20 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         XAML_RETURN_IF_FAILED(handle->SetFileName(data.data()));
     }
     vector<COMDLG_FILTERSPEC> types;
-    XAML_FOREACH_START(f, m_filters);
+    if (m_filters)
     {
-        xaml_filebox_filter filter;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
-        wstring_view name_data;
-        XAML_RETURN_IF_FAILED(pool(filter.name, &name_data));
-        wstring_view pattern_data;
-        XAML_RETURN_IF_FAILED(pool(filter.pattern, &pattern_data));
-        types.push_back({ name_data.data(), pattern_data.data() });
+        XAML_FOREACH_START(f, m_filters);
+        {
+            xaml_filebox_filter filter;
+            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
+            wstring_view name_data;
+            XAML_RETURN_IF_FAILED(pool(filter.name, &name_data));
+            wstring_view pattern_data;
+            XAML_RETURN_IF_FAILED(pool(filter.pattern, &pattern_data));
+            types.push_back({ name_data.data(), pattern_data.data() });
+        }
+        XAML_FOREACH_END();
     }
-    XAML_FOREACH_END();
     XAML_RETURN_IF_FAILED(handle->SetFileTypes((UINT)types.size(), types.data()));
     if (m_multiple)
     {

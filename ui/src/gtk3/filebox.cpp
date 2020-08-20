@@ -38,15 +38,18 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
         XAML_RETURN_IF_FAILED(m_filename->get_data(&data));
         gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(handle), data);
     }
-    auto filter = gtk_file_filter_new();
-    XAML_FOREACH_START(f, m_filters);
+    if (m_filters)
     {
-        xaml_filebox_filter ff;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
-        gtk_file_filter_add_pattern(filter, ff.pattern);
+        auto filter = gtk_file_filter_new();
+        XAML_FOREACH_START(f, m_filters);
+        {
+            xaml_filebox_filter ff;
+            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
+            gtk_file_filter_add_pattern(filter, ff.pattern);
+        }
+        XAML_FOREACH_END();
+        gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(handle), filter);
     }
-    XAML_FOREACH_END();
-    gtk_file_chooser_set_filter(GTK_FILE_CHOOSER(handle), filter);
     gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(handle), m_multiple);
     auto res = gtk_dialog_run(GTK_DIALOG(handle));
     if (res != GTK_RESPONSE_ACCEPT) return XAML_E_FAIL;

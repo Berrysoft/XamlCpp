@@ -15,4 +15,10 @@ inline xaml_result to_QString(xaml_string* str, QString* ptr) noexcept
     return XAML_S_OK;
 }
 
+inline xaml_result xaml_string_new(QString const& str, xaml_string** ptr) noexcept
+{
+    auto arr = str.toUtf8();
+    return xaml_string_new_length(arr.data(), arr.size(), ptr);
+}
+
 #endif // !XAML_UI_QT5_QSTRING_HPP

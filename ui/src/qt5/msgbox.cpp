@@ -1,5 +1,6 @@
 #include <QAbstractButton>
 #include <QMessageBox>
+#include <QPushButton>
 #include <map>
 #include <qt5/qstring.hpp>
 #include <xaml/ui/msgbox.h>

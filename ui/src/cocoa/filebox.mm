@@ -43,19 +43,22 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     NSString* filename;
     XAML_RETURN_IF_FAILED(get_NSString(m_filename, &filename));
     handle.nameFieldStringValue = filename;
-    NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
-    XAML_FOREACH_START(f, m_filters);
+    if (m_filters)
     {
-        xaml_filebox_filter ff;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
-        string_view ffp = ff.pattern;
-        if (ffp.starts_with("*.")) ffp = ffp.substr(2);
-        NSString* pattern;
-        XAML_RETURN_IF_FAILED(get_NSString(ffp.data(), &pattern));
-        [filters addObject:pattern];
+        NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
+        XAML_FOREACH_START(f, m_filters);
+        {
+            xaml_filebox_filter ff;
+            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
+            string_view ffp = ff.pattern;
+            if (ffp.starts_with("*.")) ffp = ffp.substr(2);
+            NSString* pattern;
+            XAML_RETURN_IF_FAILED(get_NSString(ffp.data(), &pattern));
+            [filters addObject:pattern];
+        }
+        XAML_FOREACH_END();
+        handle.allowedFileTypes = filters;
     }
-    XAML_FOREACH_END();
-    handle.allowedFileTypes = filters;
     if (m_multiple) ((NSOpenPanel*)handle).allowsMultipleSelection = YES;
     auto res = [handle runModal];
     if (res != NSModalResponseOK) return XAML_E_FAIL;
