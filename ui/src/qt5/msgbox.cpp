@@ -4,7 +4,7 @@
 #include <map>
 #include <qt5/qstring.hpp>
 #include <xaml/ui/msgbox.h>
-#include <xaml/ui/qt5/control.h>
+#include <xaml/ui/qt5/control.hpp>
 
 using namespace std;
 
@@ -16,9 +16,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         xaml_ptr<xaml_qt5_control> native_control;
         if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            QWidget* handle;
-            XAML_RETURN_IF_FAILED(native_control->get_handle(&handle));
-            box.setParent(handle);
+            box.setParent(native_control->get_handle().get());
         }
     }
 

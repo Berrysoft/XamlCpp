@@ -12,7 +12,7 @@
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/menu_bar.h>
 #elif defined(XAML_UI_QT5)
-    #include <xaml/ui/qt5/menu_bar.h>
+    #include <xaml/ui/qt5/menu_bar.hpp>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_menu_bar_internal : xaml_multicontainer_internal

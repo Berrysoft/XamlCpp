@@ -13,7 +13,7 @@
     #include <xaml/ui/gtk3/window.h>
 #elif defined(XAML_UI_QT5)
     #include <QMainWindow>
-    #include <xaml/ui/qt5/window.h>
+    #include <xaml/ui/qt5/window.hpp>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_window_internal : xaml_container_internal

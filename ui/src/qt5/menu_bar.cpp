@@ -1,5 +1,6 @@
 #include <QMainWindow>
 #include <shared/menu_bar.hpp>
+#include <xaml/ui/qt5/control.hpp>
 
 xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
 {
@@ -7,12 +8,10 @@ xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
     xaml_ptr<xaml_qt5_control> native_parent;
     if (XAML_SUCCEEDED(parent->query(&native_parent)))
     {
-        QWidget* handle;
-        XAML_RETURN_IF_FAILED(native_parent->get_handle(&handle));
-        m_handle.reset(handle);
+        auto handle = native_parent->get_handle();
         if (!m_menu)
         {
-            if (auto window = qobject_cast<QMainWindow*>(handle))
+            if (auto window = handle.objectCast<QMainWindow>())
             {
                 m_menu = window->menuBar();
             }

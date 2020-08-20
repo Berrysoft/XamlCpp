@@ -2,7 +2,7 @@
 #include <qt5/qstring.hpp>
 #include <sf/sformat.hpp>
 #include <shared/filebox.hpp>
-#include <xaml/ui/qt5/control.h>
+#include <xaml/ui/qt5/control.hpp>
 
 using namespace std;
 
@@ -14,17 +14,17 @@ static ostream& operator<<(ostream& stream, xaml_filebox_filter const& filter)
 template <typename I>
 xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
-    QWidget* owner = nullptr;
+    QSharedPointer<QWidget> owner = nullptr;
     if (parent)
     {
         xaml_ptr<xaml_qt5_control> native_control;
         if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            XAML_RETURN_IF_FAILED(native_control->get_handle(&owner));
+            owner = native_control->get_handle();
         }
     }
 
-    QFileDialog dialog{ owner };
+    QFileDialog dialog{ owner.get() };
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {
         dialog.setAcceptMode(QFileDialog::AcceptOpen);

@@ -21,7 +21,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_button_internal::draw_text() noexcept
 {
-    if (auto button = qobject_cast<QAbstractButton*>(m_handle.get()))
+    if (auto button = m_handle.objectCast<QAbstractButton>())
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -32,7 +32,7 @@ xaml_result xaml_button_internal::draw_text() noexcept
 
 xaml_result xaml_button_internal::draw_default() noexcept
 {
-    if (auto button = qobject_cast<QPushButton*>(m_handle.get()))
+    if (auto button = m_handle.objectCast<QPushButton>())
     {
         button->setDefault(m_is_default);
     }

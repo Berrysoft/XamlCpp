@@ -9,11 +9,10 @@ xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexce
         xaml_ptr<xaml_qt5_control> native_parent;
         if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
         {
-            QWidget* parent_handle;
-            XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
+            auto parent_handle = native_parent->get_handle();
             if (!parent_handle->children().contains(m_handle.get()))
             {
-                if (auto layout = qobject_cast<QLayout*>(parent_handle))
+                if (auto layout = parent_handle.objectCast<QLayout>())
                 {
                     layout->addWidget(m_handle.get());
                 }
