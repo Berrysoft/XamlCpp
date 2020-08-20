@@ -2,6 +2,7 @@
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     m_native_app.reset(new QApplication(argc, argv));
     for (int i = 0; i < argc; i++)
     {
