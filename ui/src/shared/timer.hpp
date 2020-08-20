@@ -11,6 +11,8 @@
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <gtk/gtk.h>
+#elif defined(XAML_UI_QT5)
+    #include <QTimer>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object>
@@ -34,6 +36,8 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object
     void on_tick() noexcept;
 #elif defined(XAML_UI_GTK3)
     static gboolean on_timeout(xaml_timer_impl* self) noexcept;
+#elif defined(XAML_UI_QT5)
+    QTimer m_handle{};
 #endif // XAML_UI_WINDOWS
 
     xaml_timer_impl() noexcept
