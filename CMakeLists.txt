@@ -136,7 +136,7 @@ endif()
 # MSVC warnings
 xaml_fix_warning_flags()
 if(MSVC)
-    list(APPEND XAML_COMPILE_OPTIONS "/W4" "/wd4458")
+    list(APPEND XAML_COMPILE_OPTIONS "/W4" "/wd4458" "/wd5054")
 endif()
 
 option(BUILD_SHARED_LIBS "Build shared libs" ON)

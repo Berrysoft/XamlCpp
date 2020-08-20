@@ -34,6 +34,8 @@ if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui_controls PRIVATE wil xaml_helpers)
 elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui_controls PRIVATE gtk3)
+elseif(${BUILD_QT5})
+    target_link_libraries(xaml_ui_controls PRIVATE Qt5::Widgets)
 endif()
 
 if(${XAML_INSTALL})

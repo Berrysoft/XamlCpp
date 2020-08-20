@@ -58,7 +58,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     string filter_str = filterstream.str();
     if (!filter_str.empty())
     {
-        dialog.setNameFilter(QString(filter_str.data(), filter_str.length() - 2));
+        dialog.setNameFilter(filter_str.substr(0, filter_str.length() - 2).c_str());
     }
 
     dialog.show();

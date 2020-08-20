@@ -11,6 +11,8 @@
     #include <xaml/ui/cocoa/menu_bar.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/menu_bar.h>
+#elif defined(XAML_UI_QT5)
+    #include <xaml/ui/qt5/menu_bar.h>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_menu_bar_internal : xaml_multicontainer_internal
@@ -42,6 +44,10 @@ public:
     XAML_PROP_IMPL(menu, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu)*, OBJC_OBJECT(NSMenu))
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(menu, GtkMenuBar*, GtkMenuBar**, GtkMenuBar*)
+#elif defined(XAML_UI_QT5)
+    xaml_result XAML_CALL draw_visible() noexcept override;
+
+    XAML_PROP_IMPL(menu, QMenuBar*, QMenuBar**, QMenuBar*)
 #endif // XAML_UI_WINDOWS
 };
 
@@ -77,6 +83,16 @@ struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xa
     } m_native_menu_bar;
 
     using native_menu_bar_type = xaml_gtk3_menu_bar;
+#elif defined(XAML_UI_QT5)
+    XAML_PROP_INTERNAL_IMPL(menu, QMenuBar**, QMenuBar*)
+
+    struct xaml_qt5_menu_bar_impl : xaml_inner_implement<xaml_qt5_menu_bar_impl, xaml_menu_bar_impl, xaml_qt5_menu_bar>
+    {
+        xaml_result XAML_CALL get_handle(QMenuBar** pvalue) noexcept override { return m_outer->get_menu(pvalue); }
+        xaml_result XAML_CALL set_handle(QMenuBar* value) noexcept override { return m_outer->set_menu(value); }
+    } m_native_menu_bar;
+
+    using native_menu_bar_type = xaml_qt5_menu_bar;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override

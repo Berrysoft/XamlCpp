@@ -2,6 +2,7 @@
 #define XAML_UI_WINDOWS_WINDOW_H
 
 #include <Windows.h>
+#include <xaml/ui/win/control.h>
 #include <xaml/ui/window.h>
 
 XAML_CLASS(xaml_win32_window, { 0xa4ab9b2f, 0xad85, 0x498d, { 0xb8, 0x5c, 0xad, 0xb9, 0x68, 0xfb, 0x02, 0xcd } })
