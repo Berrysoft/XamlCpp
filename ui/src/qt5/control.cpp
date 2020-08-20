@@ -20,7 +20,7 @@ xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexce
             }
         }
     }
-    m_handle->setFixedSize({ (int)real.width, (int)real.height });
+    m_handle->setGeometry(xaml_to_native<QRect>(real));
     XAML_RETURN_IF_FAILED(set_size_noevent({ real.width, real.height }));
     XAML_RETURN_IF_FAILED(draw_size());
     return XAML_S_OK;
@@ -34,7 +34,7 @@ xaml_result xaml_control_internal::size_to_fit() noexcept
 
 xaml_result xaml_control_internal::draw_size() noexcept
 {
-    m_handle->setFixedSize(xaml_to_native<QSize>(m_size));
+    m_handle->resize(xaml_to_native<QSize>(m_size));
     return XAML_S_OK;
 }
 
