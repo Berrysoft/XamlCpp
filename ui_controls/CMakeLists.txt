@@ -11,6 +11,8 @@ elseif(${BUILD_COCOA})
     file(GLOB UIC_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
     file(GLOB UIC_SOURCE "src/gtk3/*.cpp")
+elseif(${BUILD_QT5})
+    file(GLOB UIC_SOURCE "src/qt5/*.cpp")
 endif()
 
 file(GLOB UIC_SHARED_SOURCE "src/shared/*.cpp")
