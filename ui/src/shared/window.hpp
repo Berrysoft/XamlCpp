@@ -12,6 +12,7 @@
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/window.h>
 #elif defined(XAML_UI_QT5)
+    #include <QMainWindow>
     #include <xaml/ui/qt5/window.h>
 #endif // XAML_UI_WINDOWS
 
@@ -106,6 +107,10 @@ struct xaml_window_internal : xaml_container_internal
     static void on_destroy(GtkWidget*, xaml_window_internal*) noexcept;
     static gboolean on_delete_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
     static gboolean on_configure_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    void on_resize_event(QResizeEvent* event) noexcept;
+    void on_move_event(QMoveEvent* event) noexcept;
+    void on_close_event(QCloseEvent* event) noexcept;
 #endif // XAML_UI_WINDOWS
 
     XAML_UI_API xaml_window_internal() noexcept;

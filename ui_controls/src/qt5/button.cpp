@@ -6,7 +6,11 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle.reset(new QPushButton);
+        auto button = new QPushButton();
+        m_handle.reset(button);
+        QObject::connect(
+            button, &QAbstractButton::clicked,
+            xaml_mem_fn(&xaml_button_internal::on_clicked, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
         XAML_RETURN_IF_FAILED(draw_default());
@@ -33,4 +37,9 @@ xaml_result xaml_button_internal::draw_default() noexcept
         button->setDefault(m_is_default);
     }
     return XAML_S_OK;
+}
+
+void xaml_button_internal::on_clicked(bool) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
 }

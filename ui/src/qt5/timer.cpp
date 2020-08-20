@@ -4,8 +4,7 @@ xaml_result xaml_timer_impl::start() noexcept
 {
     if (!m_is_enabled.exchange(true))
     {
-        m_handle.setInterval(m_interval);
-        m_handle.start();
+        m_handle.start(m_interval);
     }
     return XAML_S_OK;
 }
