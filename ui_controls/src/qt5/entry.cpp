@@ -8,11 +8,9 @@ xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
     {
         auto edit = new QLineEdit();
         m_handle.reset(edit);
-        QObject::connect(edit, &QLineEdit::textChanged, [this](QString const& text) noexcept -> void {
-            xaml_ptr<xaml_string> str;
-            XAML_ASSERT_SUCCEEDED(xaml_string_new(text, &str));
-            XAML_ASSERT_SUCCEEDED(set_text(str));
-        });
+        QObject::connect(
+            edit, &QLineEdit::textChanged,
+            xaml_mem_fn(&xaml_entry_internal::on_text_changed_event, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
         XAML_RETURN_IF_FAILED(draw_alignment());
@@ -52,4 +50,11 @@ xaml_result xaml_entry_internal::draw_alignment() noexcept
         edit->setAlignment(align);
     }
     return XAML_S_OK;
+}
+
+void xaml_entry_internal::on_text_changed_event(QString const& text) noexcept
+{
+    xaml_ptr<xaml_string> str;
+    XAML_ASSERT_SUCCEEDED(xaml_string_new(text, &str));
+    XAML_ASSERT_SUCCEEDED(set_text(str));
 }
