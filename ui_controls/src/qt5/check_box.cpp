@@ -20,8 +20,7 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
         XAML_RETURN_IF_FAILED(draw_default());
         XAML_RETURN_IF_FAILED(draw_checked());
     }
-    XAML_RETURN_IF_FAILED(set_rect(region));
-    return XAML_S_OK;
+    return set_rect(region);
 }
 
 xaml_result xaml_check_box_internal::draw_checked() noexcept
