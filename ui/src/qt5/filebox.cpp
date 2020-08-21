@@ -25,6 +25,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     }
 
     QFileDialog dialog{ owner.get() };
+    dialog.setWindowModality(Qt::WindowModal);
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {
         dialog.setAcceptMode(QFileDialog::AcceptOpen);
@@ -61,7 +62,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         dialog.setNameFilter(filter_str.substr(0, filter_str.length() - 2).c_str());
     }
 
-    dialog.show();
+    dialog.exec();
 
     m_results = nullptr;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));

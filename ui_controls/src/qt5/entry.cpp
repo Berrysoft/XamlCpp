@@ -6,10 +6,10 @@ xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        auto edit = new QLineEdit();
-        m_handle.reset(edit);
+        m_handle = create<QLineEdit>();
+        auto edit = m_handle.staticCast<QLineEdit>();
         QObject::connect(
-            edit, &QLineEdit::textChanged,
+            edit.get(), &QLineEdit::textChanged,
             xaml_mem_fn(&xaml_entry_internal::on_text_changed_event, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());

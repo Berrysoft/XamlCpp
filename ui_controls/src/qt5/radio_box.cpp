@@ -5,15 +5,15 @@ xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        auto button = new QRadioButton();
-        m_handle.reset(button);
+        m_handle = create<QRadioButton>();
+        auto button = m_handle.staticCast<QRadioButton>();
         QObject::connect(
-            button, &QAbstractButton::clicked,
+            button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(
                 &xaml_button_internal::on_clicked,
                 static_cast<xaml_button_internal*>(this)));
         QObject::connect(
-            button, &QRadioButton::toggled,
+            button.get(), &QRadioButton::toggled,
             xaml_mem_fn(&xaml_radio_box_internal::on_toggled, this));
         button->setAutoExclusive(false);
         XAML_RETURN_IF_FAILED(draw_visible());

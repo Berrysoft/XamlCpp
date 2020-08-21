@@ -5,15 +5,15 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        auto button = new QCheckBox();
-        m_handle.reset(button);
+        m_handle = create<QCheckBox>();
+        auto button = m_handle.staticCast<QCheckBox>();
         QObject::connect(
-            button, &QAbstractButton::clicked,
+            button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(
                 &xaml_button_internal::on_clicked,
                 static_cast<xaml_button_internal*>(this)));
         QObject::connect(
-            button, &QCheckBox::toggled,
+            button.get(), &QCheckBox::toggled,
             xaml_mem_fn(&xaml_check_box_internal::on_toggled, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());

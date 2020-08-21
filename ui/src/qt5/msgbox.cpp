@@ -19,6 +19,7 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
             box.setParent(native_control->get_handle().get());
         }
     }
+    box.setWindowModality(Qt::WindowModal);
 
     QString title_str;
     XAML_RETURN_IF_FAILED(to_QString(title, &title_str));

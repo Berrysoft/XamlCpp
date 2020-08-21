@@ -6,13 +6,13 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        auto combo = new QComboBox();
-        m_handle.reset(combo);
+        m_handle = create<QComboBox>();
+        auto combo = m_handle.staticCast<QComboBox>();
         QObject::connect(
-            combo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            combo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),
             xaml_mem_fn(&xaml_combo_box_internal::on_current_index_changed, this));
         QObject::connect(
-            combo, &QComboBox::currentTextChanged,
+            combo.get(), &QComboBox::currentTextChanged,
             xaml_mem_fn(&xaml_combo_box_internal::on_current_text_changed, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_items());

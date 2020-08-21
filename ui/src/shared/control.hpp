@@ -152,6 +152,20 @@ struct xaml_control_internal
     {
         m_handle = value;
     }
+
+    template <typename T, typename... Args>
+    QSharedPointer<QWidget> create(Args&&... args)
+    {
+        xaml_ptr<xaml_qt5_control> native_parent;
+        if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
+        {
+            return QSharedPointer<QWidget>{ new T(std::forward<Args>(args)..., native_parent->get_handle().get()) };
+        }
+        else
+        {
+            return QSharedPointer<QWidget>{ new T(std::forward<Args>(args)...) };
+        }
+    }
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL get_is_initialized(bool* pvalue) noexcept

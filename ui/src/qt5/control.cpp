@@ -4,15 +4,6 @@
 xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexcept
 {
     xaml_rectangle real = region - m_margin;
-    if (m_parent)
-    {
-        xaml_ptr<xaml_qt5_control> native_parent;
-        if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
-        {
-            auto parent_handle = native_parent->get_handle();
-            m_handle->setParent(parent_handle.get());
-        }
-    }
     m_handle->setGeometry(xaml_to_native<QRect>(real));
     XAML_RETURN_IF_FAILED(set_size_noevent({ real.width, real.height }));
     XAML_RETURN_IF_FAILED(draw_size());

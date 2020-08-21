@@ -6,10 +6,10 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        auto button = new QPushButton();
-        m_handle.reset(button);
+        m_handle = create<QPushButton>();
+        auto button = m_handle.staticCast<QPushButton>();
         QObject::connect(
-            button, &QAbstractButton::clicked,
+            button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(&xaml_button_internal::on_clicked, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());

@@ -184,7 +184,7 @@ private:
     xaml_canvas_internal* m_internal{};
 
 public:
-    XamlCanvas(xaml_canvas_internal* internal) noexcept : QWidget(), m_internal(internal) {}
+    XamlCanvas(xaml_canvas_internal* internal, QWidget* parent = nullptr) noexcept : QWidget(parent), m_internal(internal) {}
 
 private:
     void paintEvent(QPaintEvent* event) override { m_internal->on_paint_event(event); }
@@ -194,7 +194,7 @@ xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) n
 {
     if (!m_handle)
     {
-        m_handle.reset(new XamlCanvas(this));
+        m_handle = create<XamlCanvas>(this);
         XAML_RETURN_IF_FAILED(draw_visible());
     }
     return set_rect(region);

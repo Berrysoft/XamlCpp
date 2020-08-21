@@ -5,7 +5,7 @@ xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle.reset(new QProgressBar());
+        m_handle = create<QProgressBar>();
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_indeterminate());
     }
