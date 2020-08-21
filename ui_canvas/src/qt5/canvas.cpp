@@ -110,11 +110,11 @@ xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectang
 
 static QPainterPath get_round_rect_path(xaml_rectangle const& rect, xaml_size const& round)
 {
-    QPainterPath path;
-    path.arcTo(QRectF{ rect.x + rect.width - round.width, rect.y, round.width, round.height }, 0, 90 * 16);
-    path.arcTo(QRectF{ rect.x, rect.y, round.width, round.height }, 90 * 16, 90 * 16);
-    path.arcTo(QRectF{ rect.x, rect.y + rect.height - round.height, round.width, round.height }, 180 * 16, 90 * 16);
-    path.arcTo(QRectF{ rect.x + rect.width - round.width, rect.y + rect.height - round.height, round.width, round.height }, 270 * 16, 90 * 16);
+    QPainterPath path{ QPointF{ rect.x + rect.width, rect.y + round.height } };
+    path.arcTo(QRectF{ rect.x + rect.width - round.width, rect.y, round.width, round.height }, 0, 90);
+    path.arcTo(QRectF{ rect.x, rect.y, round.width, round.height }, 90, 90);
+    path.arcTo(QRectF{ rect.x, rect.y + rect.height - round.height, round.width, round.height }, 180, 90);
+    path.arcTo(QRectF{ rect.x + rect.width - round.width, rect.y + rect.height - round.height, round.width, round.height }, 270, 90);
     path.closeSubpath();
     return path;
 }
@@ -141,40 +141,43 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
 xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
     if (font.size <= 0) return XAML_S_OK;
-    QFont qfont{ font.font_family, (int)font.size, font.bold ? QFont::Bold : QFont::Normal, font.italic };
+    QFont qfont{ font.font_family, -1, font.bold ? QFont::Bold : QFont::Normal, font.italic };
+    qfont.setPixelSize((int)font.size);
     m_handle->setFont(qfont);
     QString text;
     XAML_RETURN_IF_FAILED(to_QString(str, &text));
     QFontMetricsF fm{ qfont };
-    QRectF rect = fm.boundingRect(text);
+    xaml_rectangle rect = xaml_from_native(fm.boundingRect(text));
     switch (font.halign)
     {
     case xaml_halignment_center:
-        rect.setX(p.x - rect.width() / 2);
+        rect.x = p.x - rect.width / 2;
         break;
     case xaml_halignment_right:
-        rect.setX(p.x - rect.width());
+        rect.x = p.x - rect.width;
         break;
     default:
-        rect.setX(p.x);
+        rect.x = p.x;
         break;
     }
     switch (font.valign)
     {
     case xaml_valignment_center:
-        rect.setY(p.y - rect.height() / 2);
+        rect.y = p.y - rect.height / 2;
         break;
     case xaml_valignment_bottom:
-        rect.setY(p.y - rect.height());
+        rect.y = p.y - rect.height;
         break;
     default:
-        rect.setY(p.y);
+        rect.y = p.y;
         break;
     }
     QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, xaml_from_native(rect), &qbrush));
-    m_handle->setPen(QPen{ qbrush, 1 });
-    m_handle->drawText(rect, text);
+    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, rect, &qbrush));
+    m_handle->setPen(QPen{ qbrush, 1.0 });
+    QTextOption option;
+    option.setWrapMode(QTextOption::NoWrap);
+    m_handle->drawText(xaml_to_native<QRectF>(rect), text, option);
     return XAML_S_OK;
 }
 
