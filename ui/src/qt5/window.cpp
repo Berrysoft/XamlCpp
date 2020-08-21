@@ -1,8 +1,10 @@
 #include <QCloseEvent>
 #include <QMainWindow>
+#include <QMenuBar>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QStatusBar>
 #include <qt5/qstring.hpp>
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
@@ -121,7 +123,12 @@ xaml_result xaml_window_internal::hide() noexcept
 
 xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
-    *pregion = xaml_from_native(m_handle->geometry());
+    if (auto window = m_handle.objectCast<QMainWindow>())
+    {
+        auto geometry = m_handle->geometry();
+        auto y = window->menuBar()->height();
+        *pregion = { 0, (double)y, (double)geometry.width(), (double)(geometry.height() - y) };
+    }
     return XAML_S_OK;
 }
 

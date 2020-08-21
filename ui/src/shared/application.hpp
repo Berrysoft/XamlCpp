@@ -22,6 +22,8 @@ protected:
 #endif // XAML_UI_QT5
 
 public:
+    ~xaml_application_impl() override;
+
     xaml_result XAML_CALL init(int, char**) noexcept;
 
     xaml_result XAML_CALL get_cmd_lines(xaml_vector_view** ptr) noexcept override

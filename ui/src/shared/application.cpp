@@ -5,6 +5,8 @@ using namespace std;
 
 static xaml_ptr<xaml_application> s_current;
 
+xaml_application_impl::~xaml_application_impl() {}
+
 xaml_result XAML_CALL xaml_application_init(xaml_application** ptr) noexcept
 {
     return xaml_application_init_with_args(0, nullptr, ptr);
