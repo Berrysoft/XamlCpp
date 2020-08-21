@@ -37,7 +37,6 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
     if (auto combo = m_handle.objectCast<QComboBox>(); combo && m_items)
     {
-        xaml_codecvt_pool pool;
         XAML_FOREACH_START(item, m_items);
         {
             XAML_RETURN_IF_FAILED(create_item(item));
