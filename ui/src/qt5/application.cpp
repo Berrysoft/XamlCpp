@@ -4,10 +4,12 @@
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
+    m_argc = argc;
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    m_native_app.reset(new QApplication(argc, argv));
+    m_native_app.reset(new QApplication(m_argc, argv));
     m_native_app->setFont(QApplication::font("QMenu"));
-    for (int i = 0; i < argc; i++)
+    QObject::connect(m_native_app.get(), &QGuiApplication::lastWindowClosed, m_native_app.get(), &QCoreApplication::quit, Qt::QueuedConnection);
+    for (int i = 0; i < m_argc; i++)
     {
         xaml_ptr<xaml_string> arg;
         XAML_RETURN_IF_FAILED(xaml_string_new(argv[i], &arg));

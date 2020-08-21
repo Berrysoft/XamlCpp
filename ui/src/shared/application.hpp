@@ -19,6 +19,7 @@ protected:
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
 
 #ifdef XAML_UI_QT5
+    int m_argc{};
     QSharedPointer<QApplication> m_native_app{};
 #endif // XAML_UI_QT5
 
