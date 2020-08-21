@@ -152,7 +152,6 @@ struct xaml_control_internal
     {
         m_handle = value;
     }
-
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL get_is_initialized(bool* pvalue) noexcept
