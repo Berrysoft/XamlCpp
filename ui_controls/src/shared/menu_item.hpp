@@ -11,6 +11,8 @@
     #include <xaml/ui/win/menu_bar.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/controls/menu_item.h>
+#elif defined(XAML_UI_QT5)
+    #include <xaml/ui/qt5/controls/menu_item.hpp>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_menu_item_internal : xaml_control_internal
@@ -37,6 +39,12 @@ struct xaml_menu_item_internal : xaml_control_internal
     void on_action() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_activate(GtkWidget*, xaml_menu_item_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    XAML_PROP_IMPL(action, QAction*, QAction**, QAction*)
+
+    virtual xaml_result XAML_CALL draw_append(QAction**) noexcept;
+
+    void on_triggerd() noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
@@ -57,6 +65,13 @@ struct xaml_cocoa_menu_item_implement : xaml_inner_implement<T, D, Base>
 {
     xaml_result XAML_CALL get_menu(OBJC_OBJECT(NSMenuItem)* pvalue) noexcept override { return this->m_outer->get_menu(pvalue); }
     xaml_result XAML_CALL set_menu(OBJC_OBJECT(NSMenuItem) value) noexcept override { return this->m_outer->set_menu(value); }
+};
+#elif defined(XAML_UI_QT5)
+template <typename T, typename D, typename Base>
+struct xaml_qt5_menu_item_implement : xaml_inner_implement<T, D, Base>
+{
+    xaml_result XAML_CALL get_action(QAction** pvalue) noexcept override { return this->m_outer->get_action(pvalue); }
+    xaml_result XAML_CALL set_action(QAction* value) noexcept override { return this->m_outer->set_action(value); }
 };
 #endif // XAML_UI_WINDOWS
 
@@ -83,6 +98,14 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
     using native_menu_item_type = xaml_cocoa_menu_item;
 
     XAML_PROP_INTERNAL_IMPL(menu, OBJC_OBJECT(NSMenuItem)*, OBJC_OBJECT(NSMenuItem))
+#elif defined(XAML_UI_QT5)
+    struct xaml_qt5_menu_item_impl : xaml_qt5_menu_item_implement<xaml_qt5_menu_item_impl, T, xaml_qt5_menu_item>
+    {
+    } m_native_menu_item;
+
+    using native_menu_item_type = xaml_qt5_menu_item;
+
+    XAML_PROP_INTERNAL_IMPL(action, QAction**, QAction*)
 #endif // XAML_UI_WINDOWS
 
 #ifndef XAML_UI_GTK3
@@ -181,7 +204,7 @@ struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item
     XAML_PROP_INTERNAL_IMPL(menu_handle, OBJC_OBJECT(NSMenu)*, OBJC_OBJECT(NSMenu))
 #endif // XAML_UI_WINDOWS
 
-#ifndef XAML_UI_GTK3
+#if defined(XAML_UI_WINDOWS) || defined(XAML_UI_COCOA)
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
     {
         if (type == xaml_type_guid_v<native_popup_menu_item_type>)
@@ -200,7 +223,7 @@ struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item
     {
         m_native_popup_menu_item.m_outer = this;
     }
-#endif // !XAML_UI_GTK3
+#endif // XAML_UI_WINDOWS || XAML_UI_COCOA
 };
 
 struct xaml_check_menu_item_internal : xaml_menu_item_internal
