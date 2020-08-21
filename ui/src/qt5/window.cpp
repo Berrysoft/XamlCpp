@@ -34,7 +34,12 @@ private:
     }
 };
 
-xaml_window_internal::~xaml_window_internal() {}
+xaml_window_internal::~xaml_window_internal()
+{
+    xaml_ptr<xaml_application> app;
+    XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
+    XAML_ASSERT_SUCCEEDED(app->window_removed(static_cast<xaml_window*>(m_outer_this)));
+}
 
 xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
@@ -170,8 +175,5 @@ void xaml_window_internal::on_close_event(QCloseEvent* event) noexcept
     else
     {
         event->accept();
-        xaml_ptr<xaml_application> app;
-        XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
-        XAML_ASSERT_SUCCEEDED(app->window_removed(static_cast<xaml_window*>(m_outer_this)));
     }
 }

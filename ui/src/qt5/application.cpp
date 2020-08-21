@@ -18,7 +18,9 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
-    *pvalue = m_quit_value != 0 ? (int)m_quit_value : m_native_app->exec();
+    int result = m_native_app->exec();
+    m_native_app.reset();
+    *pvalue = m_quit_value != 0 ? (int)m_quit_value : result;
     return XAML_S_OK;
 }
 
