@@ -20,6 +20,8 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <cairo.h>
+#elif defined(XAML_UI_QT5)
+    #include <QPainter>
 #endif // XAML_UI_GTK3
 
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>
@@ -39,6 +41,10 @@ struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xam
     cairo_t* m_handle;
 
     xaml_drawing_context_impl(cairo_t* handle) noexcept : m_handle(handle) {}
+#elif defined(XAML_UI_QT5)
+    QPainter* m_handle;
+
+    xaml_drawing_context_impl(QPainter* handle) noexcept : m_handle(handle) {}
 #endif // XAML_UI_GTK3
 
     xaml_result XAML_CALL draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept override;
@@ -71,6 +77,8 @@ struct xaml_canvas_internal : xaml_control_internal
     void on_draw_rect() noexcept;
 #elif defined(XAML_UI_GTK3)
     static gboolean on_draw(GtkWidget*, cairo_t*, xaml_canvas_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    void on_paint_event(QPaintEvent*) noexcept;
 #endif // XAML_UI_GTK3
 
     xaml_result XAML_CALL init() noexcept override;

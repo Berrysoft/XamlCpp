@@ -26,7 +26,7 @@ xaml_result xaml_text_box_internal::draw_text() noexcept
     if (auto edit = m_handle.objectCast<QTextEdit>())
     {
         QString text;
-        XAML_RETURN_IF_FAILED(m_text, &text);
+        XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
         edit->setText(text);
     }
     return XAML_S_OK;
