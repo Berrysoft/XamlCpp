@@ -10,13 +10,7 @@ xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexce
         if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
         {
             auto parent_handle = native_parent->get_handle();
-            if (!parent_handle->children().contains(m_handle.get()))
-            {
-                if (auto layout = parent_handle.objectCast<QLayout>())
-                {
-                    layout->addWidget(m_handle.get());
-                }
-            }
+            m_handle->setParent(parent_handle.get());
         }
     }
     m_handle->setGeometry(xaml_to_native<QRect>(real));

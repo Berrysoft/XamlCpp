@@ -8,7 +8,6 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
     if (!m_handle)
     {
         XAML_RETURN_IF_FAILED(draw_append(&m_action));
-        XAML_RETURN_IF_FAILED(draw_visible());
     }
     return XAML_S_OK;
 }
