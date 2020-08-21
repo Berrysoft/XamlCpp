@@ -126,7 +126,7 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
     if (auto window = m_handle.objectCast<QMainWindow>())
     {
         auto geometry = m_handle->geometry();
-        auto y = window->menuBar()->height();
+        auto y = m_menu_bar ? window->menuBar()->height() : 0;
         *pregion = { 0, (double)y, (double)geometry.width(), (double)(geometry.height() - y) };
     }
     return XAML_S_OK;

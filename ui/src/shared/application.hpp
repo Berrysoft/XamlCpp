@@ -8,6 +8,7 @@
     #include <xaml/ui/win/font_provider.h>
 #elif defined(XAML_UI_QT5)
     #include <QApplication>
+    #include <QSharedPointer>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
@@ -18,7 +19,7 @@ protected:
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
 
 #ifdef XAML_UI_QT5
-    QScopedPointer<QApplication> m_native_app{};
+    QSharedPointer<QApplication> m_native_app{};
 #endif // XAML_UI_QT5
 
 public:

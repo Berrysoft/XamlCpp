@@ -1,3 +1,4 @@
+#include <QFont>
 #include <shared/application.hpp>
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
@@ -5,6 +6,7 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     m_native_app.reset(new QApplication(argc, argv));
+    m_native_app->setFont(QApplication::font("QMenu"));
     for (int i = 0; i < argc; i++)
     {
         xaml_ptr<xaml_string> arg;
