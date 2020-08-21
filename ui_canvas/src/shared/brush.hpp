@@ -9,6 +9,8 @@
     #include <xaml/ui/cocoa/controls/brush.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/controls/brush.h>
+#elif defined(XAML_UI_QT5)
+    #include <xaml/ui/qt5/controls/brush.hpp>
 #endif // XAML_UI_WINDOWS
 
 template <typename T, typename... Base>
@@ -41,6 +43,15 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
     } m_native_brush;
 
     using native_brush_type = xaml_gtk3_brush;
+#elif defined(XAML_UI_QT5)
+    virtual xaml_result XAML_CALL create(xaml_rectangle const&, QBrush*) noexcept = 0;
+
+    struct xaml_qt5_brush_impl : xaml_inner_implement<xaml_qt5_brush_impl, T, xaml_qt5_brush>
+    {
+        xaml_result XAML_CALL create(xaml_rectangle const& region, QBrush* ptr) noexcept override { return this->m_outer->set(region, ptr); }
+    } m_native_brush;
+
+    using native_brush_type = xaml_qt5_brush;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
@@ -73,6 +84,8 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
     xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
+#elif defined(XAML_UI_QT5)
+    xaml_result XAML_CALL create(xaml_rectangle const&, QBrush*) noexcept override;
 #endif // XAML_UI_WINDOWS
 
     xaml_solid_brush_impl(xaml_color color) noexcept : m_color(color)
@@ -134,6 +147,8 @@ struct xaml_linear_gradient_brush_impl : xaml_gradient_brush_implement<xaml_line
     xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
+#elif defined(XAML_UI_QT5)
+    xaml_result XAML_CALL create(xaml_rectangle const&, QBrush*) noexcept override;
 #endif // XAML_UI_WINDOWS
 };
 
@@ -149,6 +164,8 @@ struct xaml_radial_gradient_brush_impl : xaml_gradient_brush_implement<xaml_radi
     xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
+#elif defined(XAML_UI_QT5)
+    xaml_result XAML_CALL create(xaml_rectangle const&, QBrush*) noexcept override;
 #endif // XAML_UI_WINDOWS
 
     xaml_radial_gradient_brush_impl() noexcept : m_origin({ 0.5, 0.5 }), m_center({ 0.5, 0.5 }), m_radius({ 0.5, 0.5 })

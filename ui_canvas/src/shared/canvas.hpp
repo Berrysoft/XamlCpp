@@ -21,6 +21,7 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
 #elif defined(XAML_UI_GTK3)
     #include <cairo.h>
 #elif defined(XAML_UI_QT5)
+    #include <QPaintEvent>
     #include <QPainter>
 #endif // XAML_UI_GTK3
 

@@ -125,6 +125,16 @@ constexpr QSize xaml_to_native<QSize, xaml_size>(xaml_size const& s) noexcept
     return { (int)s.width, (int)s.height };
 }
 
+constexpr xaml_size xaml_from_native(QSizeF const& s) noexcept
+{
+    return { s.width(), s.height() };
+}
+template <>
+constexpr QSizeF xaml_to_native<QSizeF, xaml_size>(xaml_size const& s) noexcept
+{
+    return { s.width, s.height };
+}
+
 constexpr xaml_point xaml_from_native(QPoint const& p) noexcept
 {
     return { (double)p.x(), (double)p.y() };
@@ -135,6 +145,16 @@ constexpr QPoint xaml_to_native<QPoint, xaml_point>(xaml_point const& p) noexcep
     return { (int)p.x, (int)p.y };
 }
 
+constexpr xaml_point xaml_from_native(QPointF const& p) noexcept
+{
+    return { p.x(), p.y() };
+}
+template <>
+constexpr QPointF xaml_to_native<QPointF, xaml_point>(xaml_point const& p) noexcept
+{
+    return { p.x, p.y };
+}
+
 constexpr xaml_rectangle xaml_from_native(QRect const& r) noexcept
 {
     return { (double)r.left(), (double)r.top(), (double)r.width(), (double)r.height() };
@@ -143,6 +163,16 @@ template <>
 constexpr QRect xaml_to_native<QRect, xaml_rectangle>(xaml_rectangle const& r) noexcept
 {
     return { (int)r.x, (int)r.y, (int)(r.width), (int)(r.height) };
+}
+
+constexpr xaml_rectangle xaml_from_native(QRectF const& r) noexcept
+{
+    return { r.left(), r.top(), r.width(), r.height() };
+}
+template <>
+constexpr QRectF xaml_to_native<QRectF, xaml_rectangle>(xaml_rectangle const& r) noexcept
+{
+    return { r.x, r.y, r.width, r.height };
 }
 #endif // XAML_UI_WINDOWS
 
