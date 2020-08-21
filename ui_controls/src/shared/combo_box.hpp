@@ -30,6 +30,9 @@ struct xaml_combo_box_internal : xaml_items_base_internal
     void on_changed() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_changed(GtkWidget*, xaml_combo_box_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    void on_current_index_changed(int) noexcept;
+    void on_current_text_changed(QString const&) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;
