@@ -8,16 +8,16 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
     {
         m_handle = create<QComboBox>();
         auto combo = m_handle.staticCast<QComboBox>();
+        XAML_RETURN_IF_FAILED(draw_visible());
+        XAML_RETURN_IF_FAILED(draw_items());
+        XAML_RETURN_IF_FAILED(draw_sel());
+        XAML_RETURN_IF_FAILED(draw_editable());
         QObject::connect(
             combo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),
             xaml_mem_fn(&xaml_combo_box_internal::on_current_index_changed, this));
         QObject::connect(
             combo.get(), &QComboBox::currentTextChanged,
             xaml_mem_fn(&xaml_combo_box_internal::on_current_text_changed, this));
-        XAML_RETURN_IF_FAILED(draw_visible());
-        XAML_RETURN_IF_FAILED(draw_items());
-        XAML_RETURN_IF_FAILED(draw_sel());
-        XAML_RETURN_IF_FAILED(draw_editable());
     }
     return set_rect(region);
 }
@@ -37,6 +37,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
     if (auto combo = m_handle.objectCast<QComboBox>(); combo && m_items)
     {
+        QStringList list;
         XAML_FOREACH_START(item, m_items);
         {
             XAML_RETURN_IF_FAILED(create_item(item));
@@ -45,10 +46,11 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
             {
                 QString ss;
                 XAML_RETURN_IF_FAILED(to_QString(s, &ss));
-                combo->addItem(ss);
+                list.append(std::move(ss));
             }
         }
         XAML_FOREACH_END();
+        combo->addItems(list);
     }
     return XAML_S_OK;
 }
@@ -126,7 +128,14 @@ void xaml_combo_box_internal::on_current_index_changed(int index) noexcept
 
 void xaml_combo_box_internal::on_current_text_changed(QString const& text) noexcept
 {
-    xaml_ptr<xaml_string> text_str;
-    XAML_ASSERT_SUCCEEDED(xaml_string_new(text, &text_str));
-    XAML_ASSERT_SUCCEEDED(set_text(text_str));
+    if (m_is_editable)
+    {
+        xaml_ptr<xaml_string> text_str;
+        XAML_ASSERT_SUCCEEDED(xaml_string_new(text, &text_str));
+        XAML_ASSERT_SUCCEEDED(set_text(text_str));
+    }
+    else
+    {
+        XAML_ASSERT_SUCCEEDED(set_text(nullptr));
+    }
 }
