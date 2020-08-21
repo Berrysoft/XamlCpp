@@ -48,7 +48,7 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
 
     struct xaml_qt5_brush_impl : xaml_inner_implement<xaml_qt5_brush_impl, T, xaml_qt5_brush>
     {
-        xaml_result XAML_CALL create(xaml_rectangle const& region, QBrush* ptr) noexcept override { return this->m_outer->set(region, ptr); }
+        xaml_result XAML_CALL create(xaml_rectangle const& region, QBrush* ptr) noexcept override { return this->m_outer->create(region, ptr); }
     } m_native_brush;
 
     using native_brush_type = xaml_qt5_brush;

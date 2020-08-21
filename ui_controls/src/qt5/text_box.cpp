@@ -32,9 +32,12 @@ xaml_result xaml_text_box_internal::draw_text() noexcept
     return XAML_S_OK;
 }
 
-void xaml_text_box_internal::on_text_changed_event(QString const& text) noexcept
+void xaml_text_box_internal::on_text_changed_event() noexcept
 {
-    xaml_ptr<xaml_string> str;
-    XAML_ASSERT_SUCCEEDED(xaml_string_new(text, &str));
-    XAML_ASSERT_SUCCEEDED(set_text(str));
+    if (auto edit = m_handle.objectCast<QTextEdit>())
+    {
+        xaml_ptr<xaml_string> str;
+        XAML_ASSERT_SUCCEEDED(xaml_string_new(edit->toPlainText(), &str));
+        XAML_ASSERT_SUCCEEDED(set_text(str));
+    }
 }

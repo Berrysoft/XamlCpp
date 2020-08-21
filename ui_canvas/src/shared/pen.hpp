@@ -50,7 +50,7 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
 
     struct xaml_qt5_pen_impl : xaml_inner_implement<xaml_qt5_pen_impl, T, xaml_qt5_pen>
     {
-        xaml_result XAML_CALL create(xaml_rectangle const& region, QPen* ptr) noexcept override { return this->m_outer->set(region, ptr); }
+        xaml_result XAML_CALL create(xaml_rectangle const& region, QPen* ptr) noexcept override { return this->m_outer->create(region, ptr); }
     } m_native_pen;
 
     using native_pen_type = xaml_qt5_pen;

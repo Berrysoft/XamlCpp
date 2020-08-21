@@ -25,7 +25,7 @@ struct xaml_text_box_internal : xaml_control_internal
 #elif defined(XAML_UI_GTK3)
     static void on_changed(GtkTextBuffer*, xaml_text_box_internal*) noexcept;
 #elif defined(XAML_UI_QT5)
-    void on_text_changed_event(QString const&) noexcept;
+    void on_text_changed_event() noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

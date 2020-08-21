@@ -53,6 +53,11 @@ xaml_result xaml_menu_item_internal::draw_append(QAction** ptr) noexcept
     return XAML_S_OK;
 }
 
+void xaml_menu_item_internal::on_triggerd() noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
+}
+
 xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)

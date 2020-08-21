@@ -81,7 +81,7 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
         {
             QString ss;
             XAML_RETURN_IF_FAILED(to_QString(s, &ss));
-            combo->addItem(ss);
+            combo->insertItem(index, ss);
         }
     }
     return XAML_S_OK;

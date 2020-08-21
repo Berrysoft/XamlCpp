@@ -3,6 +3,8 @@
 #include <shared/point.hpp>
 #include <xaml/ui/drawing_conv.hpp>
 
+using namespace std;
+
 xaml_result xaml_solid_brush_impl::create(xaml_rectangle const&, QBrush* ptr) noexcept
 {
     *ptr = QBrush{ QColor{ (uint32_t)m_color } };
@@ -35,10 +37,12 @@ xaml_result xaml_linear_gradient_brush_impl::create(xaml_rectangle const& region
 xaml_result xaml_radial_gradient_brush_impl::create(xaml_rectangle const& region, QBrush* ptr) noexcept
 {
     QRadialGradient gradient{
-        xaml_to_native<QPointF>(lerp_point(region, m_center)), 0,
-        xaml_to_native<QPointF>(lerp_point(region, m_origin)), m_radius
+        xaml_to_native<QPointF>(lerp_point(region, m_center)), m_radius.width,
+        xaml_to_native<QPointF>(lerp_point(region, m_origin))
     };
     XAML_RETURN_IF_FAILED(set_colors(gradient, m_gradient_stops));
-    *ptr = QBrush{ gradient };
+    QBrush brush{ gradient };
+    brush.setTransform(QTransform::fromScale(1.0, m_radius.height / m_radius.width));
+    *ptr = move(brush);
     return XAML_S_OK;
 }
