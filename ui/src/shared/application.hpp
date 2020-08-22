@@ -35,7 +35,7 @@ public:
 
     xaml_result XAML_CALL get_main_window(xaml_window** ptr) noexcept override
     {
-        return m_main_wnd->query(ptr);
+        return m_main_wnd.query(ptr);
     }
 
     xaml_result XAML_CALL run(int*) noexcept override;

@@ -84,8 +84,6 @@ if(${BUILD_WINDOWS})
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui_webview PUBLIC "-framework WebKit")
 elseif(${BUILD_GTK3})
-    find_package(WEBKIT4 REQUIRED)
-
     target_link_libraries(xaml_ui_webview PRIVATE gtk3 webkit4)
 elseif(${BUILD_QT5})
     target_link_libraries(xaml_ui_webview PRIVATE Qt5::WebEngineWidgets)

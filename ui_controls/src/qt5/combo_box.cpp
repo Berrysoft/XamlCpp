@@ -1,4 +1,5 @@
 #include <QComboBox>
+#include <QStringListModel>
 #include <qt5/qstring.hpp>
 #include <shared/combo_box.hpp>
 
@@ -8,10 +9,10 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
     {
         m_handle = create<QComboBox>();
         auto combo = m_handle.staticCast<QComboBox>();
-        XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_items());
         XAML_RETURN_IF_FAILED(draw_sel());
         XAML_RETURN_IF_FAILED(draw_editable());
+        XAML_RETURN_IF_FAILED(draw_visible());
         QObject::connect(
             combo.get(), QOverload<int>::of(&QComboBox::currentIndexChanged),
             xaml_mem_fn(&xaml_combo_box_internal::on_current_index_changed, this));
@@ -50,6 +51,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
             }
         }
         XAML_FOREACH_END();
+        combo->clear();
         combo->addItems(list);
     }
     return XAML_S_OK;

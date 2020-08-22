@@ -1,6 +1,6 @@
 if(UNIX AND NOT APPLE)
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(WEBKIT4 REQUIRED webkit2gtk-4.0)
+    pkg_check_modules(WEBKIT4 webkit2gtk-4.0)
 endif()
 
 if(${WEBKIT4_FOUND})

@@ -42,7 +42,8 @@ It also supports high DPI settings even on Windows.
 |Name|API set|Supported OS|Recommanded OS|
 |-|-|-|-|
 |Win32|Windows API|Windows\*|Windows|
-|GTK+3|GLib, Gdk, Gtk|Windows, Linux, MacOS|Linux, Windows/MinGW|
+|GTK+3|GLib, Gdk, Gtk|Windows, Linux, MacOS|Windows/MinGW64, Linux|
+|QT5|Qt5::Widgets|Windows, Linux, MacOS|Windows, Linux, MacOS|
 |Cocoa|Cocoa|MacOS|MacOS|
 
 \* At least Windows 7.
@@ -57,6 +58,7 @@ A canvas control.
 |-|-|
 |Win32|Direct2D|
 |GTK+3|Cairo|
+|QT5|QPainter|
 |Cocoa|NSGraphicsContext|
 
 ### WebView
@@ -66,6 +68,7 @@ A webview control.
 |-|-|
 |Win32|Edge(Chromium) -> Edge -> IE \*|
 |GTK+3|Webkit \*\*|
+|QT5|Qt5::WebEngine|
 |Cocoa|WebKit|
 
 \* Indicates the search order. IE is supported to ensure it could be used.
@@ -98,23 +101,20 @@ XamlCpp provides a detector called `xmald` to show the reflection information of
 XamlCpp provides a resource compiler called `xamlrc`, to embed small files into the final program. It supports UTF-8 only.
 
 ## Build
-A C++17-compliant compiler is required. Actually it needs C++20, but no compiler is compliant...
+A C++17-compliant compiler is required. Actually it needs C++ 20, but no compiler is compliant...
 
-This project assumes it is built by GCC 10.0+ or Clang 10.0+ when using GNU or LLVM toolchains.
-### Build on Windows
+This project assumes it is built by MSVC 19.27+, GCC 10.0+ or Clang 10.0+.
+
+`boost` is required on Windows, for `nowide`; it is also required on all platforms for `cmdline`.
+
+### Build for Win32
+`wil` is required. Other packages will be downloaded from NuGet when configuring.
+### Build for GTK+3
 #### MSVC
-`wil` and `boost-multi-index` are required. `vcpkg` is recommanded for installing. Other packages will be downloaded from NuGet when configuring.
-#### MinGW
-`gtk`, `pkgconfig` and `boost` are required. MSYS2 is recommanded for installing and building.
-
-It is not possible now to build target Windows API with MinGW toolchain, because `wil` isn't supported by GCC or Clang/MinGW.
-### Build on Linux
-`gtk`, `webkit2gtk` and `pkgconfig` are required.
-### Build on Mac
-Mac OS 10.15+ is required for some C++17 features (`<any>` and `<filesystem>`)
-
-`boost` is required.
-#### Cocoa
+`gtk` is required.
+#### MinGW64 & Linux & MacOS
+`gtk` and `pkgconfig` are required. `webkit2gtk` is also required on Linux for `webview`.
+### Build for QT5
+`qt5-base` is required. `qt5-webengine` is also required for `webview`.
+### Build for Cocoa
 No other package is needed.
-#### Gtk
-`gtk` and `pkgconfig` are also required.
