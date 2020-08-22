@@ -45,6 +45,8 @@ struct xaml_webview_internal : xaml_control_internal
     void on_navigated() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_load_changed(WebKitWebView*, WebKitLoadEvent, xaml_webview_internal*) noexcept;
+#elif defined(XAML_UI_QT5)
+    void on_url_changed(QUrl const&) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

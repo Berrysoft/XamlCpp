@@ -8,6 +8,8 @@ elseif(${BUILD_COCOA})
     file(GLOB WV_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
     file(GLOB WV_SOURCE "src/gtk3/*.cpp")
+elseif(${BUILD_QT5})
+    file(GLOB WV_SOURCE "src/qt5/*.cpp")
 endif()
 
 file(GLOB WV_SHARED_SOURCE "src/shared/*.cpp")
@@ -85,6 +87,8 @@ elseif(${BUILD_GTK3})
     find_package(WEBKIT4 REQUIRED)
 
     target_link_libraries(xaml_ui_webview PRIVATE gtk3 webkit4)
+elseif(${BUILD_QT5})
+    target_link_libraries(xaml_ui_webview PRIVATE Qt5::WebEngineWidgets)
 endif()
 
 if(${XAML_INSTALL})
