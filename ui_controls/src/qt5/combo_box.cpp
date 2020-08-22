@@ -9,7 +9,7 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QComboBox>();
+        XAML_RETURN_IF_FAILED(create<QComboBox>());
         auto combo = static_cast<QComboBox*>(m_handle);
         XAML_RETURN_IF_FAILED(draw_items());
         XAML_RETURN_IF_FAILED(draw_sel());

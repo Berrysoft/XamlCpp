@@ -197,7 +197,7 @@ xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) n
 {
     if (!m_handle)
     {
-        m_handle = create<XamlCanvas>(this);
+        XAML_RETURN_IF_FAILED(create<XamlCanvas>(this));
         XAML_RETURN_IF_FAILED(draw_visible());
     }
     return set_rect(region);

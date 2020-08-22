@@ -8,7 +8,7 @@ xaml_result xaml_text_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QTextEdit>();
+        XAML_RETURN_IF_FAILED(create<QTextEdit>());
         auto edit = static_cast<QTextEdit*>(m_handle);
         edit->setLineWrapMode(QTextEdit::WidgetWidth);
         edit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);

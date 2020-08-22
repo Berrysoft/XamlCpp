@@ -8,7 +8,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QPushButton>();
+        XAML_RETURN_IF_FAILED(create<QPushButton>());
         auto button = static_cast<QPushButton*>(m_handle);
         QObject::connect(
             button, &QAbstractButton::clicked,

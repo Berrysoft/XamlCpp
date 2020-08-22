@@ -15,7 +15,7 @@ private:
     xaml_window_internal* m_internal{};
 
 public:
-    XamlMainWindow(xaml_window_internal* internal) : QMainWindow(), m_internal(internal) {}
+    XamlMainWindow(xaml_window_internal* internal, QWidget* parent = nullptr) : QMainWindow(parent), m_internal(internal) {}
 
 private:
     void resizeEvent(QResizeEvent* event) override
@@ -40,7 +40,7 @@ xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
-        m_handle = new XamlMainWindow(this);
+        XAML_RETURN_IF_FAILED(create<XamlMainWindow>(this));
         m_handle->setAttribute(Qt::WA_DeleteOnClose);
         xaml_ptr<xaml_application> app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&app));

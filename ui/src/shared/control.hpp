@@ -145,22 +145,23 @@ struct xaml_control_internal
     XAML_PROP_IMPL(handle, QWidget*, QWidget**, QWidget*)
 
     template <typename T, typename... Args>
-    QWidget* create(Args&&... args)
+    xaml_result XAML_CALL create(Args&&... args)
     {
         QWidget* handle = nullptr;
         xaml_ptr<xaml_qt5_control> native_parent;
-        if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
+        if (m_parent && XAML_SUCCEEDED(m_parent->query(&native_parent)))
         {
-            native_parent->get_handle(&handle);
+            XAML_RETURN_IF_FAILED(native_parent->get_handle(&handle));
         }
         if (handle)
         {
-            return new T(std::forward<Args>(args)..., handle);
+            m_handle = new T(std::forward<Args>(args)..., handle);
         }
         else
         {
-            return new T(std::forward<Args>(args)...);
+            m_handle = new T(std::forward<Args>(args)...);
         }
+        return XAML_S_OK;
     }
 #endif // XAML_UI_WINDOWS
 

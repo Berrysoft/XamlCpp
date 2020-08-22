@@ -8,7 +8,7 @@ xaml_result xaml_webview_internal::draw(const xaml_rectangle& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QWebEngineView>();
+        XAML_RETURN_IF_FAILED(create<QWebEngineView>());
         auto webview = static_cast<QWebEngineView*>(m_handle);
         QObject::connect(
             webview, &QWebEngineView::urlChanged,

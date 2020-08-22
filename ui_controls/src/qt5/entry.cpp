@@ -8,7 +8,7 @@ xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QLineEdit>();
+        XAML_RETURN_IF_FAILED(create<QLineEdit>());
         auto edit = static_cast<QLineEdit*>(m_handle);
         QObject::connect(
             edit, &QLineEdit::textEdited,

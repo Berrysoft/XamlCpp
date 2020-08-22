@@ -6,7 +6,7 @@ xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QLabel>();
+        XAML_RETURN_IF_FAILED(create<QLabel>());
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
         XAML_RETURN_IF_FAILED(draw_alignment());

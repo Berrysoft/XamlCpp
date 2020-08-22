@@ -7,7 +7,7 @@ xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QRadioButton>();
+        XAML_RETURN_IF_FAILED(create<QRadioButton>());
         auto button = static_cast<QRadioButton*>(m_handle);
         QObject::connect(
             button, &QAbstractButton::clicked,

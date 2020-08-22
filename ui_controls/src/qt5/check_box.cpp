@@ -7,7 +7,7 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QCheckBox>();
+        XAML_RETURN_IF_FAILED(create<QCheckBox>());
         auto button = static_cast<QCheckBox*>(m_handle);
         QObject::connect(
             button, &QAbstractButton::clicked,

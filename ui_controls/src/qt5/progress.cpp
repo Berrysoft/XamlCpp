@@ -7,7 +7,7 @@ xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
-        m_handle = create<QProgressBar>();
+        XAML_RETURN_IF_FAILED(create<QProgressBar>());
         auto progress = static_cast<QProgressBar*>(m_handle);
         progress->setTextVisible(false);
         XAML_RETURN_IF_FAILED(draw_visible());
