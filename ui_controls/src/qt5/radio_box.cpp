@@ -1,12 +1,14 @@
 #include <QRadioButton>
 #include <shared/radio_box.hpp>
 
+using namespace std;
+
 xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
         m_handle = create<QRadioButton>();
-        auto button = m_handle.staticCast<QRadioButton>();
+        auto button = static_pointer_cast<QRadioButton>(m_handle);
         QObject::connect(
             button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(
@@ -27,7 +29,7 @@ xaml_result xaml_radio_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_radio_box_internal::draw_checked() noexcept
 {
-    if (auto button = m_handle.objectCast<QRadioButton>())
+    if (auto button = qobject_pointer_cast<QRadioButton>(m_handle))
     {
         button->setChecked(m_is_checked);
     }

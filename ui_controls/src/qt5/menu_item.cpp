@@ -4,6 +4,8 @@
 #include <xaml/ui/qt5/control.hpp>
 #include <xaml/ui/qt5/menu_bar.hpp>
 
+using namespace std;
+
 xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
@@ -44,7 +46,7 @@ xaml_result xaml_menu_item_internal::draw_append(QAction** ptr) noexcept
 
     if (pmenu || pbar)
     {
-        if (auto menu = m_handle.objectCast<QMenu>(); menu && menu != pmenu)
+        if (auto menu = qobject_pointer_cast<QMenu>(m_handle); menu && menu.get() != pmenu)
         {
             if (pmenu)
                 *ptr = pmenu->addMenu(menu.get());
@@ -73,8 +75,8 @@ xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) no
 {
     if (!m_handle)
     {
-        auto menu = QSharedPointer<QMenu>(new QMenu);
-        m_handle = menu.staticCast<QWidget>();
+        auto menu = make_shared<QMenu>();
+        m_handle = static_pointer_cast<QWidget>(menu);
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
         menu->setTitle(text);

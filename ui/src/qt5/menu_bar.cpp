@@ -11,7 +11,7 @@ xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
         auto handle = native_parent->get_handle();
         if (!m_menu)
         {
-            if (auto window = handle.objectCast<QMainWindow>())
+            if (auto window = qobject_pointer_cast<QMainWindow>(handle))
             {
                 m_menu = window->menuBar();
             }

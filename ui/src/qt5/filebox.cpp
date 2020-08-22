@@ -14,7 +14,7 @@ static ostream& operator<<(ostream& stream, xaml_filebox_filter const& filter)
 template <typename I>
 xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
-    QSharedPointer<QWidget> owner = nullptr;
+    shared_ptr<QWidget> owner = nullptr;
     if (parent)
     {
         xaml_ptr<xaml_qt5_control> native_control;

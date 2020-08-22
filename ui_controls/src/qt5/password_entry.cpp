@@ -11,7 +11,7 @@ xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noe
 
 xaml_result xaml_password_entry_internal::draw_password_char() noexcept
 {
-    if (auto edit = m_handle.objectCast<QLineEdit>())
+    if (auto edit = qobject_pointer_cast<QLineEdit>(m_handle))
     {
         edit->setEchoMode(QLineEdit::Password);
     }

@@ -2,12 +2,14 @@
 #include <qt5/qstring.hpp>
 #include <shared/button.hpp>
 
+using namespace std;
+
 xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
         m_handle = create<QPushButton>();
-        auto button = m_handle.staticCast<QPushButton>();
+        auto button = static_pointer_cast<QPushButton>(m_handle);
         QObject::connect(
             button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(&xaml_button_internal::on_clicked, this));
@@ -20,7 +22,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_button_internal::draw_text() noexcept
 {
-    if (auto button = m_handle.objectCast<QAbstractButton>())
+    if (auto button = qobject_pointer_cast<QAbstractButton>(m_handle))
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -31,7 +33,7 @@ xaml_result xaml_button_internal::draw_text() noexcept
 
 xaml_result xaml_button_internal::draw_default() noexcept
 {
-    if (auto button = m_handle.objectCast<QPushButton>())
+    if (auto button = qobject_pointer_cast<QPushButton>(m_handle))
     {
         button->setDefault(m_is_default);
     }

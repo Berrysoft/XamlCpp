@@ -16,7 +16,7 @@ xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_label_internal::draw_text() noexcept
 {
-    if (auto label = m_handle.objectCast<QLabel>())
+    if (auto label = qobject_pointer_cast<QLabel>(m_handle))
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -27,7 +27,7 @@ xaml_result xaml_label_internal::draw_text() noexcept
 
 xaml_result xaml_label_internal::draw_alignment() noexcept
 {
-    if (auto label = m_handle.objectCast<QLabel>())
+    if (auto label = qobject_pointer_cast<QLabel>(m_handle))
     {
         Qt::Alignment align;
         switch (m_text_halignment)

@@ -1,12 +1,14 @@
 #include <QCheckBox>
 #include <shared/check_box.hpp>
 
+using namespace std;
+
 xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
         m_handle = create<QCheckBox>();
-        auto button = m_handle.staticCast<QCheckBox>();
+        auto button = static_pointer_cast<QCheckBox>(m_handle);
         QObject::connect(
             button.get(), &QAbstractButton::clicked,
             xaml_mem_fn(
@@ -25,7 +27,7 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_check_box_internal::draw_checked() noexcept
 {
-    if (auto button = m_handle.objectCast<QCheckBox>())
+    if (auto button = qobject_pointer_cast<QCheckBox>(m_handle))
     {
         button->setCheckState(m_is_checked ? Qt::Checked : Qt::Unchecked);
     }

@@ -8,20 +8,20 @@
     #include <xaml/ui/win/font_provider.h>
 #elif defined(XAML_UI_QT5)
     #include <QApplication>
-    #include <QSharedPointer>
+    #include <memory>
 #endif // XAML_UI_WINDOWS
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
 {
 protected:
+#ifdef XAML_UI_QT5
+    int m_argc{};
+    std::unique_ptr<QApplication> m_native_app{};
+#endif // XAML_UI_QT5
+
     std::atomic<int> m_quit_value{ 0 };
     xaml_ptr<xaml_vector> m_cmd_lines{ nullptr };
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
-
-#ifdef XAML_UI_QT5
-    int m_argc{};
-    QSharedPointer<QApplication> m_native_app{};
-#endif // XAML_UI_QT5
 
 public:
     ~xaml_application_impl() override;
@@ -52,6 +52,7 @@ public:
     {
         if (m_main_wnd.get() == window)
         {
+            m_main_wnd = nullptr;
             return quit(0);
         }
         return XAML_S_OK;

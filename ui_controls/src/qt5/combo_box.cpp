@@ -3,12 +3,14 @@
 #include <qt5/qstring.hpp>
 #include <shared/combo_box.hpp>
 
+using namespace std;
+
 xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
     if (!m_handle)
     {
         m_handle = create<QComboBox>();
-        auto combo = m_handle.staticCast<QComboBox>();
+        auto combo = static_pointer_cast<QComboBox>(m_handle);
         XAML_RETURN_IF_FAILED(draw_items());
         XAML_RETURN_IF_FAILED(draw_sel());
         XAML_RETURN_IF_FAILED(draw_editable());
@@ -25,7 +27,7 @@ xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_combo_box_internal::draw_text() noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>(); combo && m_text)
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle); combo && m_text)
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -36,7 +38,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
 
 xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>(); combo && m_items)
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle); combo && m_items)
     {
         QStringList list;
         XAML_FOREACH_START(item, m_items);
@@ -59,7 +61,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
 
 xaml_result xaml_combo_box_internal::draw_sel() noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         combo->setCurrentIndex(m_sel_id);
     }
@@ -68,7 +70,7 @@ xaml_result xaml_combo_box_internal::draw_sel() noexcept
 
 xaml_result xaml_combo_box_internal::draw_editable() noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         combo->setEditable(m_is_editable);
     }
@@ -77,7 +79,7 @@ xaml_result xaml_combo_box_internal::draw_editable() noexcept
 
 xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         xaml_ptr<xaml_string> s = value.query<xaml_string>();
         if (s)
@@ -92,7 +94,7 @@ xaml_result xaml_combo_box_internal::insert_item(int32_t index, xaml_ptr<xaml_ob
 
 xaml_result xaml_combo_box_internal::remove_item(int32_t index) noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         combo->removeItem(index);
     }
@@ -101,7 +103,7 @@ xaml_result xaml_combo_box_internal::remove_item(int32_t index) noexcept
 
 xaml_result xaml_combo_box_internal::clear_items() noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         combo->clear();
     }
@@ -110,7 +112,7 @@ xaml_result xaml_combo_box_internal::clear_items() noexcept
 
 xaml_result xaml_combo_box_internal::replace_item(int32_t index, xaml_ptr<xaml_object> const& value) noexcept
 {
-    if (auto combo = m_handle.objectCast<QComboBox>())
+    if (auto combo = qobject_pointer_cast<QComboBox>(m_handle))
     {
         xaml_ptr<xaml_string> s = value.query<xaml_string>();
         if (s)

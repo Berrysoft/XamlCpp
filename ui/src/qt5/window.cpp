@@ -123,7 +123,7 @@ xaml_result xaml_window_internal::hide() noexcept
 
 xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
-    if (auto window = m_handle.objectCast<QMainWindow>())
+    if (auto window = qobject_pointer_cast<QMainWindow>(m_handle))
     {
         auto geometry = m_handle->geometry();
         auto y = m_menu_bar ? window->menuBar()->height() : 0;
@@ -170,5 +170,8 @@ void xaml_window_internal::on_close_event(QCloseEvent* event) noexcept
     else
     {
         event->accept();
+        xaml_ptr<xaml_application> app;
+        XAML_ASSERT_SUCCEEDED(xaml_application_current(&app));
+        XAML_ASSERT_SUCCEEDED(app->window_removed(static_cast<xaml_window*>(m_outer_this)));
     }
 }

@@ -39,7 +39,7 @@ elseif(${BUILD_COCOA})
 elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui PRIVATE gtk3)
 elseif(${BUILD_QT5})
-    target_link_libraries(xaml_ui PRIVATE Qt5::Widgets)
+    target_link_libraries(xaml_ui PRIVATE Qt5::Widgets stream_format)
 endif()
 
 if(${XAML_INSTALL})
