@@ -142,28 +142,24 @@ struct xaml_control_internal
     XAML_UI_API static gboolean on_button_event(GtkWidget*, GdkEventButton*, xaml_control_internal*) noexcept;
     XAML_UI_API static gboolean on_button_motion(GtkWidget*, GdkEventMotion*, xaml_control_internal*) noexcept;
 #elif defined(XAML_UI_QT5)
-    std::shared_ptr<QWidget> m_handle{};
-
-    std::shared_ptr<QWidget> XAML_CALL get_handle() noexcept
-    {
-        return m_handle;
-    }
-    void XAML_CALL set_handle(std::shared_ptr<QWidget> const& value) noexcept
-    {
-        m_handle = value;
-    }
+    XAML_PROP_IMPL(handle, QWidget*, QWidget**, QWidget*)
 
     template <typename T, typename... Args>
-    std::shared_ptr<QWidget> create(Args&&... args)
+    QWidget* create(Args&&... args)
     {
+        QWidget* handle = nullptr;
         xaml_ptr<xaml_qt5_control> native_parent;
         if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
         {
-            return std::make_shared<T>(std::forward<Args>(args)..., native_parent->get_handle().get());
+            native_parent->get_handle(&handle);
+        }
+        if (handle)
+        {
+            return new T(std::forward<Args>(args)..., handle);
         }
         else
         {
-            return std::make_shared<T>(std::forward<Args>(args)...);
+            return new T(std::forward<Args>(args)...);
         }
     }
 #endif // XAML_UI_WINDOWS
@@ -211,8 +207,8 @@ struct xaml_gtk3_control_implement : xaml_inner_implement<T2, D, Base2>
 template <typename T2, typename D, typename Base2>
 struct xaml_qt5_control_implement : xaml_inner_implement<T2, D, Base2>
 {
-    std::shared_ptr<QWidget> XAML_CALL get_handle() noexcept override { return this->m_outer->get_handle(); }
-    void XAML_CALL set_handle(std::shared_ptr<QWidget> const& value) noexcept override { return this->m_outer->set_handle(value); }
+    xaml_result XAML_CALL get_handle(QWidget** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+    xaml_result XAML_CALL set_handle(QWidget* value) noexcept override { return this->m_outer->set_handle(value); }
 };
 #endif // XAML_UI_WINDOWS
 
@@ -291,14 +287,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_el
 
     using native_control_type = xaml_gtk3_control;
 #elif defined(XAML_UI_QT5)
-    std::shared_ptr<QWidget> XAML_CALL get_handle() noexcept
-    {
-        return this->m_internal.get_handle();
-    }
-    void XAML_CALL set_handle(std::shared_ptr<QWidget> const& value) noexcept
-    {
-        return this->m_internal.set_handle(value);
-    }
+    XAML_PROP_INTERNAL_IMPL(handle, QWidget**, QWidget*)
 
     struct xaml_qt5_control_impl : xaml_qt5_control_implement<xaml_qt5_control_impl, T, xaml_qt5_control>
     {

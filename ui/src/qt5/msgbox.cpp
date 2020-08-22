@@ -10,15 +10,16 @@ using namespace std;
 
 xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
 {
-    QMessageBox box{};
+    QWidget* owner = nullptr;
     if (parent)
     {
         xaml_ptr<xaml_qt5_control> native_control;
         if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            box.setParent(native_control->get_handle().get());
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&owner));
         }
     }
+    QMessageBox box{ owner };
     box.setWindowModality(Qt::WindowModal);
 
     QString title_str;

@@ -8,7 +8,7 @@ xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QProgressBar>();
-        auto progress = static_pointer_cast<QProgressBar>(m_handle);
+        auto progress = static_cast<QProgressBar*>(m_handle);
         progress->setTextVisible(false);
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_indeterminate());
@@ -18,7 +18,7 @@ xaml_result xaml_progress_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_progress_internal::draw_progress() noexcept
 {
-    if (auto progress = qobject_pointer_cast<QProgressBar>(m_handle))
+    if (auto progress = qobject_cast<QProgressBar*>(m_handle))
     {
         if (m_is_indeterminate)
         {

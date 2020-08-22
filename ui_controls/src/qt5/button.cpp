@@ -9,9 +9,9 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QPushButton>();
-        auto button = static_pointer_cast<QPushButton>(m_handle);
+        auto button = static_cast<QPushButton*>(m_handle);
         QObject::connect(
-            button.get(), &QAbstractButton::clicked,
+            button, &QAbstractButton::clicked,
             xaml_mem_fn(&xaml_button_internal::on_clicked, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
@@ -22,7 +22,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_button_internal::draw_text() noexcept
 {
-    if (auto button = qobject_pointer_cast<QAbstractButton>(m_handle))
+    if (auto button = qobject_cast<QAbstractButton*>(m_handle))
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -33,7 +33,7 @@ xaml_result xaml_button_internal::draw_text() noexcept
 
 xaml_result xaml_button_internal::draw_default() noexcept
 {
-    if (auto button = qobject_pointer_cast<QPushButton>(m_handle))
+    if (auto button = qobject_cast<QPushButton*>(m_handle))
     {
         button->setDefault(m_is_default);
     }

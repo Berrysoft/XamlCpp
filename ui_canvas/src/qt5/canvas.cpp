@@ -211,7 +211,7 @@ xaml_result XAML_CALL xaml_canvas_internal::invalidate(xaml_rectangle const*) no
 
 void xaml_canvas_internal::on_paint_event(QPaintEvent*) noexcept
 {
-    QPainter painter{ m_handle.get() };
+    QPainter painter{ m_handle };
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, &painter));
     XAML_ASSERT_SUCCEEDED(on_redraw(m_outer_this, dc));

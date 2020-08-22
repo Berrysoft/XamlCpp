@@ -14,17 +14,17 @@ static ostream& operator<<(ostream& stream, xaml_filebox_filter const& filter)
 template <typename I>
 xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
-    shared_ptr<QWidget> owner = nullptr;
+    QWidget* owner = nullptr;
     if (parent)
     {
         xaml_ptr<xaml_qt5_control> native_control;
         if (XAML_SUCCEEDED(parent->query(&native_control)))
         {
-            owner = native_control->get_handle();
+            XAML_RETURN_IF_FAILED(native_control->get_handle(&owner));
         }
     }
 
-    QFileDialog dialog{ owner.get() };
+    QFileDialog dialog{ owner };
     dialog.setWindowModality(Qt::WindowModal);
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {

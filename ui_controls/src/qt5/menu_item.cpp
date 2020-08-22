@@ -15,7 +15,7 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
             xaml_ptr<xaml_qt5_control> native_parnet;
             if (XAML_SUCCEEDED(m_parent->query(&native_parnet)))
             {
-                m_handle = native_parnet->get_handle();
+                XAML_RETURN_IF_FAILED(native_parnet->get_handle(&m_handle));
             }
         }
     }
@@ -39,19 +39,21 @@ xaml_result xaml_menu_item_internal::draw_append(QAction** ptr) noexcept
             xaml_ptr<xaml_qt5_control> native_menu_item;
             if (XAML_SUCCEEDED(m_parent->query(&native_menu_item)))
             {
-                pmenu = qobject_cast<QMenu*>(native_menu_item->get_handle().get());
+                QWidget* handle;
+                XAML_RETURN_IF_FAILED(native_menu_item->get_handle(&handle));
+                pmenu = qobject_cast<QMenu*>(handle);
             }
         }
     }
 
     if (pmenu || pbar)
     {
-        if (auto menu = qobject_pointer_cast<QMenu>(m_handle); menu && menu.get() != pmenu)
+        if (auto menu = qobject_cast<QMenu*>(m_handle); menu && menu != pmenu)
         {
             if (pmenu)
-                *ptr = pmenu->addMenu(menu.get());
+                *ptr = pmenu->addMenu(menu);
             else
-                *ptr = pbar->addMenu(menu.get());
+                *ptr = pbar->addMenu(menu);
         }
         else
         {
@@ -75,8 +77,8 @@ xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) no
 {
     if (!m_handle)
     {
-        auto menu = make_shared<QMenu>();
-        m_handle = static_pointer_cast<QWidget>(menu);
+        auto menu = new QMenu();
+        m_handle = static_cast<QWidget*>(menu);
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
         menu->setTitle(text);

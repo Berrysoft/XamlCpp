@@ -40,7 +40,8 @@ xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
-        m_handle.reset(new XamlMainWindow(this));
+        m_handle = new XamlMainWindow(this);
+        m_handle->setAttribute(Qt::WA_DeleteOnClose);
         xaml_ptr<xaml_application> app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&app));
         XAML_RETURN_IF_FAILED(app->window_added(static_cast<xaml_window*>(m_outer_this)));
@@ -123,7 +124,7 @@ xaml_result xaml_window_internal::hide() noexcept
 
 xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noexcept
 {
-    if (auto window = qobject_pointer_cast<QMainWindow>(m_handle))
+    if (auto window = qobject_cast<QMainWindow*>(m_handle))
     {
         auto geometry = m_handle->geometry();
         auto y = m_menu_bar ? window->menuBar()->height() : 0;

@@ -8,14 +8,14 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QCheckBox>();
-        auto button = static_pointer_cast<QCheckBox>(m_handle);
+        auto button = static_cast<QCheckBox*>(m_handle);
         QObject::connect(
-            button.get(), &QAbstractButton::clicked,
+            button, &QAbstractButton::clicked,
             xaml_mem_fn(
                 &xaml_button_internal::on_clicked,
                 static_cast<xaml_button_internal*>(this)));
         QObject::connect(
-            button.get(), &QCheckBox::toggled,
+            button, &QCheckBox::toggled,
             xaml_mem_fn(&xaml_check_box_internal::on_toggled, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
@@ -27,7 +27,7 @@ xaml_result xaml_check_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_check_box_internal::draw_checked() noexcept
 {
-    if (auto button = qobject_pointer_cast<QCheckBox>(m_handle))
+    if (auto button = qobject_cast<QCheckBox*>(m_handle))
     {
         button->setCheckState(m_is_checked ? Qt::Checked : Qt::Unchecked);
     }

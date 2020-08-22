@@ -9,9 +9,9 @@ xaml_result xaml_webview_internal::draw(const xaml_rectangle& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QWebEngineView>();
-        auto webview = static_pointer_cast<QWebEngineView>(m_handle);
+        auto webview = static_cast<QWebEngineView*>(m_handle);
         QObject::connect(
-            webview.get(), &QWebEngineView::urlChanged,
+            webview, &QWebEngineView::urlChanged,
             xaml_mem_fn(&xaml_webview_internal::on_url_changed, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_uri());
@@ -21,7 +21,7 @@ xaml_result xaml_webview_internal::draw(const xaml_rectangle& region) noexcept
 
 xaml_result xaml_webview_internal::draw_uri() noexcept
 {
-    if (auto webview = qobject_pointer_cast<QWebEngineView>(m_handle))
+    if (auto webview = qobject_cast<QWebEngineView*>(m_handle))
     {
         QString uri;
         XAML_RETURN_IF_FAILED(to_QString(m_uri, &uri));
@@ -36,7 +36,7 @@ xaml_result xaml_webview_internal::draw_uri() noexcept
 
 xaml_result xaml_webview_internal::go_forward() noexcept
 {
-    if (auto webview = qobject_pointer_cast<QWebEngineView>(m_handle))
+    if (auto webview = qobject_cast<QWebEngineView*>(m_handle))
     {
         webview->forward();
     }
@@ -45,7 +45,7 @@ xaml_result xaml_webview_internal::go_forward() noexcept
 
 xaml_result xaml_webview_internal::go_back() noexcept
 {
-    if (auto webview = qobject_pointer_cast<QWebEngineView>(m_handle))
+    if (auto webview = qobject_cast<QWebEngineView*>(m_handle))
     {
         webview->back();
     }
@@ -66,7 +66,7 @@ xaml_result xaml_webview_internal::get_can_go_back(bool* pvalue) noexcept
 
 void xaml_webview_internal::on_url_changed(const QUrl& url) noexcept
 {
-    if (auto webview = qobject_pointer_cast<QWebEngineView>(m_handle))
+    if (auto webview = qobject_cast<QWebEngineView*>(m_handle))
     {
         xaml_ptr<xaml_string> uri;
         XAML_ASSERT_SUCCEEDED(xaml_string_new(url.toString(), &uri));

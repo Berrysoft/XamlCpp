@@ -9,11 +9,11 @@ xaml_result xaml_text_box_internal::draw(xaml_rectangle const& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QTextEdit>();
-        auto edit = static_pointer_cast<QTextEdit>(m_handle);
+        auto edit = static_cast<QTextEdit*>(m_handle);
         edit->setLineWrapMode(QTextEdit::WidgetWidth);
         edit->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
         QObject::connect(
-            edit.get(), &QTextEdit::textChanged,
+            edit, &QTextEdit::textChanged,
             xaml_mem_fn(&xaml_text_box_internal::on_text_changed_event, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
@@ -23,7 +23,7 @@ xaml_result xaml_text_box_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_text_box_internal::draw_text() noexcept
 {
-    if (auto edit = qobject_pointer_cast<QTextEdit>(m_handle))
+    if (auto edit = qobject_cast<QTextEdit*>(m_handle))
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -37,7 +37,7 @@ xaml_result xaml_text_box_internal::draw_text() noexcept
 
 void xaml_text_box_internal::on_text_changed_event() noexcept
 {
-    if (auto edit = qobject_pointer_cast<QTextEdit>(m_handle))
+    if (auto edit = qobject_cast<QTextEdit*>(m_handle))
     {
         xaml_ptr<xaml_string> str;
         XAML_ASSERT_SUCCEEDED(xaml_string_new(edit->toPlainText(), &str));

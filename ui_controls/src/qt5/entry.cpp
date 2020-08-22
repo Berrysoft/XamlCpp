@@ -9,9 +9,9 @@ xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
     if (!m_handle)
     {
         m_handle = create<QLineEdit>();
-        auto edit = static_pointer_cast<QLineEdit>(m_handle);
+        auto edit = static_cast<QLineEdit*>(m_handle);
         QObject::connect(
-            edit.get(), &QLineEdit::textEdited,
+            edit, &QLineEdit::textEdited,
             xaml_mem_fn(&xaml_entry_internal::on_text_changed_event, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_text());
@@ -22,7 +22,7 @@ xaml_result xaml_entry_internal::draw(xaml_rectangle const& region) noexcept
 
 xaml_result xaml_entry_internal::draw_text() noexcept
 {
-    if (auto edit = qobject_pointer_cast<QLineEdit>(m_handle))
+    if (auto edit = qobject_cast<QLineEdit*>(m_handle))
     {
         QString text;
         XAML_RETURN_IF_FAILED(to_QString(m_text, &text));
@@ -33,7 +33,7 @@ xaml_result xaml_entry_internal::draw_text() noexcept
 
 xaml_result xaml_entry_internal::draw_alignment() noexcept
 {
-    if (auto edit = qobject_pointer_cast<QLineEdit>(m_handle))
+    if (auto edit = qobject_cast<QLineEdit*>(m_handle))
     {
         Qt::Alignment align;
         switch (m_text_halignment)
