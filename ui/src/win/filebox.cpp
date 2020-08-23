@@ -11,6 +11,8 @@ using namespace std;
 template <typename I>
 xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
+    auto __init = wil::CoInitializeEx(COINIT_APARTMENTTHREADED);
+
     wil::com_ptr_t<IFileDialog, wil::err_returncode_policy> handle;
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {
