@@ -5,6 +5,7 @@
 #include <QResizeEvent>
 #include <QScreen>
 #include <QStatusBar>
+#include <QWindow>
 #include <qt5/qstring.hpp>
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
@@ -135,8 +136,15 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
 
 xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
 {
-    *pvalue = m_handle->screen()->logicalDotsPerInch();
-    return XAML_S_OK;
+    if (auto window = m_handle->windowHandle())
+    {
+        if (auto screen = window->screen())
+        {
+            *pvalue = screen->logicalDotsPerInch();
+            return XAML_S_OK;
+        }
+    }
+    return XAML_E_NOTIMPL;
 }
 
 void xaml_window_internal::on_resize_event(QResizeEvent* event) noexcept
