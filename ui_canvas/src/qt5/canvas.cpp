@@ -147,7 +147,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     QString text;
     XAML_RETURN_IF_FAILED(to_QString(str, &text));
     QFontMetricsF fm{ qfont };
-    xaml_rectangle rect = xaml_from_native(fm.boundingRect(text));
+    xaml_rectangle rect = { 0, 0, fm.horizontalAdvance(text), fm.height() };
     switch (font.halign)
     {
     case xaml_halignment_center:
