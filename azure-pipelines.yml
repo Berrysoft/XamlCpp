@@ -37,21 +37,21 @@ jobs:
         msystem: 'MINGW32'
         bindir: 'C:\msys64\mingw32\bin'
         bindir2: 'C:/msys64/mingw32/bin'
-      linux:
+      linux_gtk:
         imageName: 'ubuntu-latest'
         plat: 'linux'
         rid: 'linux'
         def: '-DBUILD_GTK3=on'
+      linux_qt:
+        imageName: 'ubuntu-latest'
+        plat: 'linux'
+        rid: 'linux-qt'
+        def: '-DBUILD_QT5=on'
       mac:
         imageName: 'macos-latest'
         plat: 'mac'
         rid: 'mac'
         def: '-DBUILD_COCOA=on'
-      mac_gtk:
-        imageName: 'macos-latest'
-        plat: 'mac'
-        rid: 'mac-gtk'
-        def: '-DBUILD_GTK3=on'
   pool:
     vmImage: $(imageName)
 
@@ -79,20 +79,25 @@ jobs:
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
       sudo add-apt-repository ppa:mhier/libboost-latest
-      sudo apt-get install gcc-10 g++-10 libgtk-3-dev libwebkit2gtk-4.0-dev ninja-build libboost1.70-dev
+      sudo apt-get install gcc-10 g++-10 ninja-build libboost1.70-dev
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
-    displayName: 'Install linux dependencies'
+    displayName: 'Install ninja & boost & gcc'
+    condition: eq(variables.plat, 'linux')
+
+  - script: |
+      sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev
+    displayName: 'Install gtk'
     condition: eq(variables.rid, 'linux')
+
+  - script: |
+      sudo apt-get install qtbase5-dev qtwebengine5-dev
+    displayName: 'Install qt5'
+    condition: eq(variables.rid, 'linux-qt')
 
   - script: |
       brew install ninja boost llvm
     displayName: 'Install ninja & boost & llvm'
     condition: eq(variables.plat, 'mac')
-
-  - script: |
-      brew install gtk+3 pkgconfig
-    displayName: 'Install gtk'
-    condition: eq(variables.rid, 'mac-gtk')
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
