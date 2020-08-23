@@ -62,7 +62,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
         dialog.setNameFilter(filter_str.substr(0, filter_str.length() - 2).c_str());
     }
 
-    dialog.exec();
+    if (dialog.exec() == QDialog::Rejected) return XAML_E_FAIL;
 
     m_results = nullptr;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));
