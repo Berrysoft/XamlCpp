@@ -38,12 +38,12 @@ jobs:
         bindir: 'C:\msys64\mingw32\bin'
         bindir2: 'C:/msys64/mingw32/bin'
       linux_gtk:
-        imageName: 'ubuntu-latest'
+        imageName: 'ubuntu-20.04'
         plat: 'linux'
         rid: 'linux'
         def: '-DBUILD_GTK3=on'
       linux_qt:
-        imageName: 'ubuntu-latest'
+        imageName: 'ubuntu-20.04'
         plat: 'linux'
         rid: 'linux-qt'
         def: '-DBUILD_QT5=on'
@@ -79,7 +79,7 @@ jobs:
   - script: |
       sudo add-apt-repository ppa:ubuntu-toolchain-r/ppa
       sudo add-apt-repository ppa:mhier/libboost-latest
-      sudo apt-get install gcc-10 g++-10 ninja-build libboost1.70-dev
+      sudo apt-get install gcc-10 g++-10 ninja-build libboost1.74-dev
       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 100 --slave /usr/bin/g++ g++ /usr/bin/g++-10 --slave /usr/bin/gcov gcov /usr/bin/gcov-10
     displayName: 'Install ninja & boost & gcc'
     condition: eq(variables.plat, 'linux')
