@@ -187,10 +187,16 @@ private:
     xaml_canvas_internal* m_internal{};
 
 public:
-    XamlCanvas(xaml_canvas_internal* internal, QWidget* parent = nullptr) noexcept : QWidget(parent), m_internal(internal) {}
+    XamlCanvas(xaml_canvas_internal* internal, QWidget* parent = nullptr) noexcept : QWidget(parent), m_internal(internal)
+    {
+        setMouseTracking(true);
+    }
 
 private:
     void paintEvent(QPaintEvent* event) override { m_internal->on_paint_event(event); }
+    void mouseMoveEvent(QMouseEvent* event) override { m_internal->on_mouse_move_event(event); }
+    void mousePressEvent(QMouseEvent* event) override { m_internal->on_mouse_press_event(event); }
+    void mouseReleaseEvent(QMouseEvent* event) override { m_internal->on_mouse_release_event(event); }
 };
 
 xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) noexcept
@@ -215,4 +221,34 @@ void xaml_canvas_internal::on_paint_event(QPaintEvent*) noexcept
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, &painter));
     XAML_ASSERT_SUCCEEDED(on_redraw(m_outer_this, dc));
+}
+
+void xaml_canvas_internal::on_mouse_move_event(QMouseEvent* event) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, xaml_from_native(event->localPos())));
+}
+
+static constexpr xaml_mouse_button get_mouse_button(Qt::MouseButton button) noexcept
+{
+    switch (button)
+    {
+    case Qt::LeftButton:
+        return xaml_mouse_button_left;
+    case Qt::RightButton:
+        return xaml_mouse_button_right;
+    case Qt::MidButton:
+        return xaml_mouse_button_middle;
+    default:
+        return xaml_mouse_button_other;
+    }
+}
+
+void xaml_canvas_internal::on_mouse_press_event(QMouseEvent* event) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_down(m_outer_this, get_mouse_button(event->button())));
+}
+
+void xaml_canvas_internal::on_mouse_release_event(QMouseEvent* event) noexcept
+{
+    XAML_ASSERT_SUCCEEDED(on_mouse_up(m_outer_this, get_mouse_button(event->button())));
 }

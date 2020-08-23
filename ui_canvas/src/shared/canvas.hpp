@@ -80,6 +80,9 @@ struct xaml_canvas_internal : xaml_control_internal
     static gboolean on_draw(GtkWidget*, cairo_t*, xaml_canvas_internal*) noexcept;
 #elif defined(XAML_UI_QT5)
     void on_paint_event(QPaintEvent*) noexcept;
+    void on_mouse_move_event(QMouseEvent*) noexcept;
+    void on_mouse_press_event(QMouseEvent*) noexcept;
+    void on_mouse_release_event(QMouseEvent*) noexcept;
 #endif // XAML_UI_GTK3
 
     xaml_result XAML_CALL init() noexcept override;
