@@ -30,8 +30,8 @@ endif()
 
 target_link_libraries(xaml_ui_webview PUBLIC xaml_ui)
 if(${BUILD_WINDOWS})
-    option(BUILD_WEBVIEW2 "Build webview2 which uses Edge(Chromium)." ON)
-    option(BUILD_EDGE "Build webview which uses Edge." ON)
+    option(BUILD_WEBVIEW2 "Build target webview2 which uses Edge(Chromium)." ON)
+    option(BUILD_EDGE "Build target webview which uses Edge." ON)
 
     target_link_libraries(xaml_ui_webview PUBLIC ShLwApi PRIVATE wil xaml_helpers)
 
@@ -86,7 +86,14 @@ elseif(${BUILD_COCOA})
 elseif(${BUILD_GTK3})
     target_link_libraries(xaml_ui_webview PRIVATE gtk3 webkit4)
 elseif(${BUILD_QT5})
-    target_link_libraries(xaml_ui_webview PRIVATE Qt5::WebEngineWidgets)
+    option(BUILD_WEBKIT "Build target Qt5::WebKitWidgets." OFF)
+
+    if(${BUILD_WEBKIT})
+        target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_WEBKIT")
+        target_link_libraries(xaml_ui_webview PRIVATE Qt5::WebKitWidgets)
+    else()
+        target_link_libraries(xaml_ui_webview PRIVATE Qt5::WebEngineWidgets)
+    endif()
 endif()
 
 if(${XAML_INSTALL})
