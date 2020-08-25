@@ -23,6 +23,17 @@ static xaml_result get_brush(QPainter*, xaml_brush* brush, xaml_rectangle const&
     return XAML_S_OK;
 }
 
+static xaml_result set_brush(QPainter* handle, xaml_brush* brush, xaml_rectangle const& region) noexcept
+{
+    xaml_ptr<xaml_qt5_brush> native_brush;
+    XAML_RETURN_IF_FAILED(brush->query(&native_brush));
+    QBrush qbrush;
+    XAML_RETURN_IF_FAILED(native_brush->create(region, &qbrush));
+    handle->setPen(Qt::transparent);
+    handle->setBrush(qbrush);
+    return XAML_S_OK;
+}
+
 static xaml_result set_pen(QPainter* handle, xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
     xaml_ptr<xaml_qt5_pen> native_pen;
@@ -30,6 +41,7 @@ static xaml_result set_pen(QPainter* handle, xaml_pen* pen, xaml_rectangle const
     QPen qpen;
     XAML_RETURN_IF_FAILED(native_pen->create(region, &qpen));
     handle->setPen(qpen);
+    handle->setBrush(Qt::transparent);
     return XAML_S_OK;
 }
 
@@ -52,13 +64,8 @@ xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle co
 xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangle const& region, double start_angle, double end_angle) noexcept
 {
     CHECK_SIZE(region);
-    QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, region, &qbrush));
-    xaml_point center = { region.x + region.width / 2, region.y + region.height / 2 };
-    QPainterPath path{ xaml_to_native<QPointF>(center) };
-    path.arcTo(xaml_to_native<QRectF>(region), get_drawing_angle(start_angle), get_drawing_angle(end_angle - start_angle));
-    path.closeSubpath();
-    m_handle->fillPath(path, qbrush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, region));
+    m_handle->drawPie(xaml_to_native<QRectF>(region), get_drawing_angle(start_angle), get_drawing_angle(end_angle - start_angle));
     return XAML_S_OK;
 }
 
@@ -73,11 +80,8 @@ xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangl
 xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, xaml_rectangle const& region) noexcept
 {
     CHECK_SIZE(region);
-    QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, region, &qbrush));
-    QPainterPath path;
-    path.addEllipse(xaml_to_native<QRectF>(region));
-    m_handle->fillPath(path, qbrush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, region));
+    m_handle->drawEllipse(xaml_to_native<QRectF>(region));
     return XAML_S_OK;
 }
 
@@ -102,9 +106,8 @@ xaml_result xaml_drawing_context_impl::draw_rect(xaml_pen* pen, xaml_rectangle c
 xaml_result xaml_drawing_context_impl::fill_rect(xaml_brush* brush, xaml_rectangle const& rect) noexcept
 {
     CHECK_SIZE(rect);
-    QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, rect, &qbrush));
-    m_handle->fillRect(xaml_to_native<QRectF>(rect), qbrush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, rect));
+    m_handle->drawRect(xaml_to_native<QRectF>(rect));
     return XAML_S_OK;
 }
 
@@ -132,9 +135,8 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
 {
     CHECK_SIZE(rect);
     CHECK_SIZE(round);
-    QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, rect, &qbrush));
-    m_handle->fillPath(get_round_rect_path(rect, round), qbrush);
+    XAML_RETURN_IF_FAILED(set_brush(m_handle, brush, rect));
+    m_handle->drawPath(get_round_rect_path(rect, round));
     return XAML_S_OK;
 }
 
@@ -172,9 +174,9 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         rect.y = p.y;
         break;
     }
-    QBrush qbrush;
-    XAML_RETURN_IF_FAILED(get_brush(m_handle, brush, rect, &qbrush));
-    m_handle->setPen(QPen{ qbrush, 1.0 });
+    xaml_ptr<xaml_brush_pen> pen;
+    XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush, 1, &pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, rect));
     QTextOption option;
     option.setWrapMode(QTextOption::NoWrap);
     m_handle->drawText(xaml_to_native<QRectF>(rect), text, option);

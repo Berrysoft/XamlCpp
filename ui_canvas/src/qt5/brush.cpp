@@ -36,13 +36,14 @@ xaml_result xaml_linear_gradient_brush_impl::create(xaml_rectangle const& region
 
 xaml_result xaml_radial_gradient_brush_impl::create(xaml_rectangle const& region, QBrush* ptr) noexcept
 {
+    xaml_size real_radius = { m_radius.width * region.width, m_radius.height * region.height };
     QRadialGradient gradient{
-        xaml_to_native<QPointF>(lerp_point(region, m_center)), m_radius.width,
+        xaml_to_native<QPointF>(lerp_point(region, m_center)), real_radius.width,
         xaml_to_native<QPointF>(lerp_point(region, m_origin))
     };
     XAML_RETURN_IF_FAILED(set_colors(gradient, m_gradient_stops));
     QBrush brush{ gradient };
-    brush.setTransform(QTransform::fromScale(1.0, m_radius.height / m_radius.width));
+    brush.setTransform(QTransform::fromScale(1.0, real_radius.height / real_radius.width));
     *ptr = move(brush);
     return XAML_S_OK;
 }
