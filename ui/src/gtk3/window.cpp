@@ -13,7 +13,11 @@ xaml_window_internal::~xaml_window_internal()
 {
     if (m_handle && !gtk_widget_in_destruction(m_window_handle))
     {
+#if GTK_CHECK_VERSION(4, 0, 0)
+        gtk_window_destroy(m_window_handle);
+#else
         gtk_widget_destroy(m_window_handle);
+#endif // GTK 4.0.0
     }
 }
 

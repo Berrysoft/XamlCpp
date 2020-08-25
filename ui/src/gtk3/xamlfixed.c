@@ -176,7 +176,12 @@ void xaml_fixed_child_size_allocate(XamlFixed* self, GtkWidget* child, GtkAlloca
     XamlFixedPrivate* priv = XAML_FIXED_PRIVATE(self);
 
     GtkAllocation* child_alloc = g_hash_table_lookup(priv->children, child);
-    g_return_if_fail(child_alloc);
+    if (!child_alloc)
+    {
+        xaml_fixed_add(GTK_CONTAINER(self), child);
+        child_alloc = g_hash_table_lookup(priv->children, child);
+        g_return_if_fail(child_alloc);
+    }
 
     *child_alloc = *alloc;
 
