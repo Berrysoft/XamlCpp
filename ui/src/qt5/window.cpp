@@ -136,6 +136,13 @@ xaml_result xaml_window_internal::get_client_region(xaml_rectangle* pregion) noe
 
 xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    if (auto screen = m_handle->screen())
+    {
+        *pvalue = screen->logicalDotsPerInch();
+        return XAML_S_OK;
+    }
+#else
     if (auto window = m_handle->windowHandle())
     {
         if (auto screen = window->screen())
@@ -144,7 +151,9 @@ xaml_result xaml_window_internal::get_dpi(double* pvalue) noexcept
             return XAML_S_OK;
         }
     }
-    return XAML_E_NOTIMPL;
+#endif // QT_VERSION >= 5.14.0
+    *pvalue = 96.0;
+    return XAML_S_OK;
 }
 
 void xaml_window_internal::on_resize_event(QResizeEvent* event) noexcept

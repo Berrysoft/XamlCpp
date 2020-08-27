@@ -15,14 +15,6 @@ using std::numbers::pi;
 
 using namespace std;
 
-static xaml_result get_brush(QPainter*, xaml_brush* brush, xaml_rectangle const& region, QBrush* ptr) noexcept
-{
-    xaml_ptr<xaml_qt5_brush> native_brush;
-    XAML_RETURN_IF_FAILED(brush->query(&native_brush));
-    XAML_RETURN_IF_FAILED(native_brush->create(region, ptr));
-    return XAML_S_OK;
-}
-
 static xaml_result set_brush(QPainter* handle, xaml_brush* brush, xaml_rectangle const& region) noexcept
 {
     xaml_ptr<xaml_qt5_brush> native_brush;

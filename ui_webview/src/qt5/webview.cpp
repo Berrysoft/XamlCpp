@@ -1,3 +1,5 @@
+#include <QScreen>
+#include <QWindow>
 #include <qt5/qstring.hpp>
 #include <shared/webview.hpp>
 
@@ -24,6 +26,28 @@ xaml_result xaml_webview_internal::draw(const xaml_rectangle& region) noexcept
             xaml_mem_fn(&xaml_webview_internal::on_url_changed, this));
         XAML_RETURN_IF_FAILED(draw_visible());
         XAML_RETURN_IF_FAILED(draw_uri());
+    }
+    if (auto webview = qobject_cast<q_webview_t*>(m_handle))
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        if (auto screen = webview->screen())
+        {
+            webview->setZoomFactor(screen->logicalDotsPerInch() / 96.0);
+        }
+#else
+        QWidget* parent = webview;
+        while (auto current = parent->parentWidget())
+        {
+            parent = current;
+        }
+        if (auto window = parent->windowHandle())
+        {
+            if (auto screen = window->screen())
+            {
+                webview->setZoomFactor(screen->logicalDotsPerInch() / 96.0);
+            }
+        }
+#endif // QT_VERSION >= 5.14.0
     }
     return set_rect(region);
 }
