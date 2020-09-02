@@ -10,7 +10,9 @@ static wchar_t s_default_char{ L'*' };
 
 xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         if (!m_handle)
         {
@@ -22,7 +24,7 @@ xaml_result xaml_password_entry_internal::draw(xaml_rectangle const& region) noe
             params.y = 0;
             params.width = 100;
             params.height = 50;
-            params.parent = m_parent;
+            params.parent = parent;
             XAML_RETURN_IF_FAILED(create(params));
             s_default_char = Edit_GetPasswordChar(m_handle);
             XAML_RETURN_IF_FAILED(draw_password_char());

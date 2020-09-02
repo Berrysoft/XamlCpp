@@ -11,7 +11,9 @@ using namespace std;
 
 xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         if (!m_handle)
         {
@@ -22,7 +24,7 @@ xaml_result xaml_button_internal::draw(xaml_rectangle const& region) noexcept
             params.y = 0;
             params.width = 50;
             params.height = 14;
-            params.parent = m_parent;
+            params.parent = parent;
             XAML_RETURN_IF_FAILED(create(params));
             XAML_RETURN_IF_FAILED(draw_visible());
             XAML_RETURN_IF_FAILED(draw_text());

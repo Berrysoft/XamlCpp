@@ -41,7 +41,27 @@ struct xaml_control_internal
     }
 
     XAML_EVENT_IMPL(parent_changed)
-    XAML_PROP_EVENT_IMPL(parent, xaml_element_base*, xaml_element_base**, xaml_element_base*)
+
+    xaml_ptr<xaml_weak_reference> m_parent{};
+
+    xaml_result XAML_CALL get_parent(xaml_element_base** ptr) noexcept
+    {
+        if (m_parent)
+        {
+            return m_parent->resolve(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
+    }
+
+    xaml_result XAML_CALL set_parent(xaml_element_base* value) noexcept
+    {
+        m_parent = nullptr;
+        return value->get_weak_reference(&m_parent);
+    }
 
     XAML_EVENT_IMPL(size_changed)
     XAML_PROP_EVENT_IMPL(size, xaml_size, xaml_size*, xaml_size const&)
@@ -214,7 +234,7 @@ struct xaml_qt5_control_implement : xaml_inner_implement<T2, D, Base2>
 #endif // XAML_UI_WINDOWS
 
 template <typename T, typename Internal, typename... Base>
-struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>
+struct xaml_control_implement : xaml_weak_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>
 {
     Internal m_internal;
 
@@ -307,7 +327,7 @@ struct xaml_control_implement : xaml_implement<T, Base..., xaml_control, xaml_el
         }
         else
         {
-            return xaml_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>::query(type, ptr);
+            return xaml_weak_implement<T, Base..., xaml_control, xaml_element_base, xaml_object>::query(type, ptr);
         }
     }
 

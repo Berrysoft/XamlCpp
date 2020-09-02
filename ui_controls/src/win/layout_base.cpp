@@ -4,10 +4,12 @@
 
 xaml_result xaml_layout_base_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_win32_control> native_parent;
-        XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+        XAML_RETURN_IF_FAILED(parent->query(&native_parent));
         XAML_RETURN_IF_FAILED(native_parent->get_handle(&m_handle));
         xaml_ptr<xaml_application> current_app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));

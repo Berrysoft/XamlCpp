@@ -92,10 +92,12 @@ xaml_result xaml_radio_menu_item_internal::init() noexcept
 #ifndef XAML_UI_GTK3
 xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
 {
-    if (m_parent && m_is_checked)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent && m_is_checked)
     {
         xaml_ptr<xaml_menu_bar> multic;
-        if (XAML_SUCCEEDED(m_parent->query(&multic)))
+        if (XAML_SUCCEEDED(parent->query(&multic)))
         {
             xaml_ptr<xaml_vector_view> children;
             XAML_RETURN_IF_FAILED(multic->get_children(&children));

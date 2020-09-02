@@ -267,7 +267,9 @@ xaml_result xaml_canvas_internal::wnd_proc(xaml_win32_window_message const& msg,
 
 xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         if (!m_handle)
         {
@@ -278,7 +280,7 @@ xaml_result XAML_CALL xaml_canvas_internal::draw(xaml_rectangle const& region) n
             params.y = 0;
             params.width = 100;
             params.height = 50;
-            params.parent = m_parent;
+            params.parent = parent;
             XAML_RETURN_IF_FAILED(create(params));
             XAML_RETURN_IF_FAILED(draw_visible());
         }

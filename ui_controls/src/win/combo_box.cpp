@@ -41,7 +41,9 @@ xaml_result xaml_combo_box_internal::wnd_proc(xaml_win32_window_message const& m
 
 xaml_result xaml_combo_box_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         if (!m_handle)
         {
@@ -96,7 +98,9 @@ xaml_result xaml_combo_box_internal::draw_sel() noexcept
 
 xaml_result xaml_combo_box_internal::draw_editable() noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_win32_window_create_params params = {};
         params.class_name = WC_COMBOBOX;
@@ -105,7 +109,7 @@ xaml_result xaml_combo_box_internal::draw_editable() noexcept
         params.y = 0;
         params.width = 100;
         params.height = 50;
-        params.parent = m_parent;
+        params.parent = parent;
         if (m_is_editable)
         {
             params.style |= CBS_DROPDOWN;

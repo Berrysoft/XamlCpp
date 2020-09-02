@@ -12,10 +12,12 @@ xaml_control_internal::~xaml_control_internal() {}
 
 xaml_result xaml_control_internal::parent_redraw() noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_control> control;
-        if (XAML_SUCCEEDED(m_parent->query(&control)))
+        if (XAML_SUCCEEDED(parent->query(&control)))
         {
             return control->parent_redraw();
         }
