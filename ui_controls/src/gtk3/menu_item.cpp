@@ -59,8 +59,10 @@ xaml_result xaml_check_menu_item_internal::draw(xaml_rectangle const&) noexcept
         m_handle = gtk_check_menu_item_new_with_label(data);
         g_signal_connect(G_OBJECT(m_handle), "activate", G_CALLBACK(xaml_menu_item_internal::on_activate), this);
         {
+            xaml_ptr<xaml_element_base> parent;
+            XAML_RETURN_IF_FAILED(get_parent(&parent));
             xaml_ptr<xaml_gtk3_control> native_parent;
-            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            XAML_RETURN_IF_FAILED(parent->query(&native_parent));
             GtkWidget* parent_handle;
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
             gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);
@@ -85,8 +87,10 @@ xaml_result xaml_radio_menu_item_internal::draw(xaml_rectangle const&) noexcept
         m_handle = gtk_radio_menu_item_new_with_label(nullptr, data);
         g_signal_connect(G_OBJECT(m_handle), "activate", G_CALLBACK(xaml_menu_item_internal::on_activate), this);
         {
+            xaml_ptr<xaml_element_base> parent;
+            XAML_RETURN_IF_FAILED(get_parent(&parent));
             xaml_ptr<xaml_gtk3_control> native_parent;
-            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            XAML_RETURN_IF_FAILED(parent->query(&native_parent));
             GtkWidget* parent_handle;
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
             gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);
@@ -105,10 +109,12 @@ xaml_result xaml_radio_menu_item_internal::draw_checked() noexcept
 
 xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
 {
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_popup_menu_item> multic;
-        if (XAML_SUCCEEDED(m_parent->query(&multic)))
+        if (XAML_SUCCEEDED(parent->query(&multic)))
         {
             xaml_ptr<xaml_vector_view> children;
             XAML_RETURN_IF_FAILED(multic->get_submenu(&children));
@@ -148,8 +154,10 @@ xaml_result xaml_separator_menu_item_internal::draw(xaml_rectangle const&) noexc
     {
         m_handle = gtk_separator_menu_item_new();
         {
+            xaml_ptr<xaml_element_base> parent;
+            XAML_RETURN_IF_FAILED(get_parent(&parent));
             xaml_ptr<xaml_gtk3_control> native_parent;
-            XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+            XAML_RETURN_IF_FAILED(parent->query(&native_parent));
             GtkWidget* parent_handle;
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));
             gtk_menu_shell_append(GTK_MENU_SHELL(parent_handle), m_handle);

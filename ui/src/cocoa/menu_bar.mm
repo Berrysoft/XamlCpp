@@ -7,10 +7,12 @@ using namespace std;
 
 xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const& region) noexcept
 {
-    if (m_parent && !m_menu)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent && !m_menu)
     {
         xaml_ptr<xaml_cocoa_window> native_parent;
-        XAML_RETURN_IF_FAILED(m_parent->query(&native_parent));
+        XAML_RETURN_IF_FAILED(parent->query(&native_parent));
         NSMenu* menu_bar;
         XAML_RETURN_IF_FAILED(native_parent->get_menu_bar(&menu_bar));
         m_menu = menu_bar;

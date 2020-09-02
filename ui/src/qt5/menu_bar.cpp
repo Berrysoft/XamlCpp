@@ -4,7 +4,8 @@
 
 xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
 {
-    auto parent = m_parent;
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
     xaml_ptr<xaml_qt5_control> native_parent;
     if (XAML_SUCCEEDED(parent->query(&native_parent)))
     {

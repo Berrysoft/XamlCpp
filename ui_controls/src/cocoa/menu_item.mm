@@ -18,17 +18,19 @@ using namespace std;
 xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     NSMenu* hpmenu = nil;
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_cocoa_popup_menu_item> native_menu_item;
-        if (XAML_SUCCEEDED(m_parent->query(&native_menu_item)))
+        if (XAML_SUCCEEDED(parent->query(&native_menu_item)))
         {
             XAML_RETURN_IF_FAILED(native_menu_item->get_handle(&hpmenu));
         }
         else
         {
             xaml_ptr<xaml_cocoa_menu_bar> native_menu_bar;
-            if (XAML_SUCCEEDED(m_parent->query(&native_menu_bar)))
+            if (XAML_SUCCEEDED(parent->query(&native_menu_bar)))
             {
                 XAML_RETURN_IF_FAILED(native_menu_bar->get_handle(&hpmenu));
             }

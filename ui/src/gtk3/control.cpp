@@ -9,10 +9,12 @@ using namespace std;
 xaml_result xaml_control_internal::set_rect(xaml_rectangle const& region) noexcept
 {
     xaml_rectangle real = region - m_margin;
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_gtk3_control> native_parent;
-        if (XAML_SUCCEEDED(m_parent->query(&native_parent)))
+        if (XAML_SUCCEEDED(parent->query(&native_parent)))
         {
             GtkWidget* parent_handle;
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&parent_handle));

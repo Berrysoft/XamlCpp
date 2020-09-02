@@ -168,8 +168,10 @@ struct xaml_control_internal
     xaml_result XAML_CALL create(Args&&... args)
     {
         QWidget* handle = nullptr;
+        xaml_ptr<xaml_element_base> parent;
+        XAML_RETURN_IF_FAILED(get_parent(&parent));
         xaml_ptr<xaml_qt5_control> native_parent;
-        if (m_parent && XAML_SUCCEEDED(m_parent->query(&native_parent)))
+        if (parent && XAML_SUCCEEDED(parent->query(&native_parent)))
         {
             XAML_RETURN_IF_FAILED(native_parent->get_handle(&handle));
         }

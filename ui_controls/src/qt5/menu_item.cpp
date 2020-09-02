@@ -10,10 +10,12 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
-        if (m_parent)
+        xaml_ptr<xaml_element_base> parent;
+        XAML_RETURN_IF_FAILED(get_parent(&parent));
+        if (parent)
         {
             xaml_ptr<xaml_qt5_control> native_parnet;
-            if (XAML_SUCCEEDED(m_parent->query(&native_parnet)))
+            if (XAML_SUCCEEDED(parent->query(&native_parnet)))
             {
                 XAML_RETURN_IF_FAILED(native_parnet->get_handle(&m_handle));
             }
@@ -27,17 +29,19 @@ xaml_result xaml_menu_item_internal::draw_append(QAction** ptr) noexcept
 {
     QMenu* pmenu = nullptr;
     QMenuBar* pbar = nullptr;
-    if (m_parent)
+    xaml_ptr<xaml_element_base> parent;
+    XAML_RETURN_IF_FAILED(get_parent(&parent));
+    if (parent)
     {
         xaml_ptr<xaml_qt5_menu_bar> native_menu_bar;
-        if (XAML_SUCCEEDED(m_parent->query(&native_menu_bar)))
+        if (XAML_SUCCEEDED(parent->query(&native_menu_bar)))
         {
             XAML_RETURN_IF_FAILED(native_menu_bar->get_handle(&pbar));
         }
         else
         {
             xaml_ptr<xaml_qt5_control> native_menu_item;
-            if (XAML_SUCCEEDED(m_parent->query(&native_menu_item)))
+            if (XAML_SUCCEEDED(parent->query(&native_menu_item)))
             {
                 QWidget* handle;
                 XAML_RETURN_IF_FAILED(native_menu_item->get_handle(&handle));
