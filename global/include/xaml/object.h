@@ -57,7 +57,19 @@ XAML_DECL_INTERFACE(xaml_object)
 
 #ifdef __cplusplus
 template <typename T, typename D, typename... Base>
-struct xaml_implement : D
+struct __xaml_query_implement : D
+{
+    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override;
+
+    xaml_result XAML_CALL get_guid(xaml_guid* pvalue) noexcept override
+    {
+        *pvalue = xaml_type_guid_v<D>;
+        return XAML_S_OK;
+    }
+};
+
+template <typename T, typename D, typename... Base>
+struct xaml_implement : __xaml_query_implement<T, D, Base...>
 {
     std::atomic<std::uint32_t> m_ref_count{ 1 };
 
@@ -73,14 +85,6 @@ struct xaml_implement : D
             delete static_cast<T*>(this);
         }
         return res;
-    }
-
-    xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override;
-
-    xaml_result XAML_CALL get_guid(xaml_guid* pvalue) noexcept override
-    {
-        *pvalue = xaml_type_guid_v<D>;
-        return XAML_S_OK;
     }
 };
 
@@ -117,7 +121,7 @@ struct __query_impl<>
 };
 
 template <typename T, typename D, typename... Base>
-inline xaml_result xaml_implement<T, D, Base...>::query(xaml_guid const& type, void** ptr) noexcept
+inline xaml_result __xaml_query_implement<T, D, Base...>::query(xaml_guid const& type, void** ptr) noexcept
 {
     return __query_impl<D, Base...>{}(static_cast<T*>(this), type, ptr);
 }
