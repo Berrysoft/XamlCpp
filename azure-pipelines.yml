@@ -128,7 +128,7 @@ jobs:
     displayName: 'Configure all projects'
     condition: eq(variables.plat, 'mac')
     inputs:
-      cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DBUILD_TESTS=on -DCMAKE_OSX_ARCHITECTURES="x86_64;x86_64h"
+      cmakeArgs: .. $(def) -GNinja -DCMAKE_C_COMPILER=$(macLLVMPath)/clang -DCMAKE_CXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_OBJC_COMPILER=$(macLLVMPath)/clang -DCMAKE_OBJCXX_COMPILER=$(macLLVMPath)/clang++ -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$(Build.ArtifactStagingDirectory)/$(rid) -DBUILD_TESTS=on
 
   - script: |
       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" $(arch)
