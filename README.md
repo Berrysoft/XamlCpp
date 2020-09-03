@@ -5,19 +5,27 @@ This project is NOT complete, and still needs a lot of work. Welcome issues and 
 
 [![Azure DevOps builds](https://strawberry-vs.visualstudio.com/XamlCpp/_apis/build/status/Berrysoft.XamlCpp?branch=master)](https://strawberry-vs.visualstudio.com/XamlCpp/_build?definitionId=12)
 ## Goal
-The goal of XamlCpp is to write a cross-platfrom GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies, compared to Qt or so.
+The goal of XamlCpp is to write a cross-platfrom and cross-language\* GUI application easily and quickly. It uses a dialect of XAML to discribe the UI, but may not support all features like other XAML frameworks do. The final application should be tiny, with a few dependencies.
+
+\* At first, I only want to target C++, and that's why it is called Xaml**Cpp**. Now it also targets C, with Rust and C#, in principle.
 
 ## Charset
 XamlCpp uses UTF-8 everywhere, which is ensured by a modified version of `boost-nowide` on Windows.
 
-## Reflection
-XamlCpp supports reflection. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically.
+## Object Model and Reflection
+The object model of XamlCpp is inspired by COM. But there are some difference:
+* COM uses `stdcall` for standard calling convention, while XamlCpp uses `cdecl` on Windows.
+* In most cases, COM needs a server to manage the classes and memory, but XamlCpp needs not.
+* COM distinguishes classes and interfaces. XamlCpp only provides interfaces, and the implementations could only be constructed by specified functions.
+* COM uses `PascalName`, while XamlCpp uses `snake_name`.
+
+But there are many more similarities. For example, the definition of `xaml_result` is the same as `HRESULT`, and even the value means the same; both of them don't use exceptions; the object model looks like the same, and some GUIDs of primitive types is the same as .NET(which WAS COM+ at first).
+
+Writing a class for XamlCpp is more complicated than a normal C++ class, but simpler than COM. You don't need `idl` files and non-standard keywords, but predefined helper macros. Such a definition of the interface could be easily projected to C, Rust and C#, which means different languages could cooperate (maybe not that?) easily.
+
+XamlCpp supports reflection by this object model. All registered class could be constructed dynamically, and methods, properties and events registered could be accessed dynamically. Note that reflection is not free nor type-secure. Programmers are responsible for the cost and type checking, and any type mismatch is undefined behavior.
 
 A simple example is [here](./meta/test/src/main.cpp).
-
-It doesn't use the RTTI feature of C++, instead, it ownes an stable implementation, because the constraints of the standard are too loose to implement reflection.
-
-The object model of XamlCpp is inspired by COM. The only difference is that COM uses `stdcall` for calling convention, but XamlCpp uses `cdecl`.
 
 ## GUI
 XamlCpp is a cross-platform GUI framework. With some simple, platform-specific work, you can make your application run on all platforms supported.
@@ -28,12 +36,16 @@ GUI is divided into several parts.
 The basic UI project is responsible for the main loop, windows and system dialogs. It is necessary to run a GUI application.
 
 ### Screenshots
-|Platform|Win32|GTK+3|Cocoa|
-|-|-|-|-|
-|Light|![Win32 Light](./assets/win.light.png)|![Gtk Light](./assets/gtk.light.png)|![Cocoa Light](./assets/cocoa.light.png)|
-|Dark|![Win32 Dark](./assets/win.dark.png)|![Gtk Dark](./assets/gtk.dark.png)|![Cocoa Dark](./assets/cocoa.dark.png)|
+|Platform|Light|Dark|
+|-|-|-|
+|Win32|![Win32 Light](./assets/win.light.png)|![Win32 Dark](./assets/win.dark.png)|
+|GTK+3|![Gtk Light](./assets/gtk.light.png)|![Gtk Dark](./assets/gtk.dark.png)|
+|QT5|![Qt Light](./assets/qt.light.png)|![Qt Dark](./assets/qt.dark.png)|
+|Cocoa|![Cocoa Light](./assets/cocoa.light.png)|![Cocoa Dark](./assets/cocoa.dark.png)|
 
 \* Due to API limitation, dark mode for Win32 is not completed.
+
+\*\* Screenshots of Gtk and Qt is captured on KDE with theme Breeze.
 
 ### UI
 It supports desktop environment with concepts of "window" and "screen", and many dialogs like "message box" and "file box".
@@ -43,7 +55,7 @@ It also supports high DPI settings even on Windows.
 |-|-|-|-|
 |Win32|Windows API|Windows\*|Windows|
 |GTK+3|GLib, Gdk, Gtk|Windows, Linux, MacOS|Windows/MinGW64, Linux|
-|QT5|Qt5::Widgets|Windows, Linux, MacOS|Windows, Linux, MacOS|
+|QT5|Qt5Widgets|Windows, Linux, MacOS|Windows, Linux, MacOS|
 |Cocoa|Cocoa|MacOS|MacOS|
 
 \* At least Windows 7.
@@ -68,12 +80,14 @@ A webview control.
 |-|-|
 |Win32|Edge(Chromium) -> Edge -> IE \*|
 |GTK+3|Webkit \*\*|
-|QT5|Qt5::WebEngine|
+|QT5|Qt5WebEngine or Qt5WebKit \*\*\*|
 |Cocoa|WebKit|
 
 \* Indicates the search order. IE is supported to ensure it could be used.
 
 \*\* Linux only because of the limitation of webkit2gtk.
+
+\*\*\* Could be specified in configuration.
 
 ## XAML
 XamlCpp uses a dialect of XAML, which may support XAML Standard in the future. XAML files are either interpreted at run-time, or compiled to C++ code at compile-time.
@@ -115,6 +129,6 @@ This project assumes it is built by MSVC 19.27+, GCC 10.0+ or Clang 10.0+.
 #### MinGW64 & Linux & MacOS
 `gtk` and `pkgconfig` are required. `webkit2gtk` is also required on Linux for `webview`.
 ### Build for QT5
-`qt5-base` is required. `qt5-webengine` is also required for `webview`.
+`qt5-base` is required. `qt5-webengine` or `qt5-webkit` is also required for `webview`.
 ### Build for Cocoa
 No other package is needed.
