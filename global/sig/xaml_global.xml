@@ -79,4 +79,10 @@
     <method name="clear"/>
     <property name="hasher" type="xaml_hasher" readonly="true"/>
   </interface>
+  <interface name="xaml_weak_reference" guid="b93ad9e2-3037-45d3-bcdd-f318b1f64490" inherits="xaml_object">
+    <method name="resolve" ret="void*" args="const guid&amp;"/>
+  </interface>
+  <interface name="xaml_weak_reference_source" guid="0e09bb36-8879-4eab-8151-8f938a67d3a0" inherits="xaml_object">
+    <property name="weak_reference" type="xaml_weak_reference" readonly="true"/>
+  </interface>
 </assembly>
