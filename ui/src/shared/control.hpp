@@ -59,8 +59,10 @@ struct xaml_control_internal
 
     xaml_result XAML_CALL set_parent(xaml_element_base* value) noexcept
     {
+        xaml_ptr<xaml_weak_reference_source> source;
+        XAML_RETURN_IF_FAILED(value->query(&source));
         m_parent = nullptr;
-        return value->get_weak_reference(&m_parent);
+        return source->get_weak_reference(&m_parent);
     }
 
     XAML_EVENT_IMPL(size_changed)
