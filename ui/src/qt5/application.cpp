@@ -1,4 +1,5 @@
 #include <QFont>
+#include <QPalette>
 #include <shared/application.hpp>
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
@@ -35,6 +36,7 @@ xaml_result xaml_application_impl::quit(int value) noexcept
 
 xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noexcept
 {
-    *ptheme = xaml_application_theme_light;
+    auto back = m_native_app->palette().color(QPalette::Window);
+    *ptheme = back.green() > 127 ? xaml_application_theme_light : xaml_application_theme_dark;
     return XAML_S_OK;
 }
