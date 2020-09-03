@@ -59,6 +59,8 @@ XAML_DECL_INTERFACE(xaml_object)
 template <typename T, typename D, typename... Base>
 struct __xaml_query_implement : D
 {
+    virtual ~__xaml_query_implement() {}
+
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override;
 
     xaml_result XAML_CALL get_guid(xaml_guid* pvalue) noexcept override
@@ -72,8 +74,6 @@ template <typename T, typename D, typename... Base>
 struct xaml_implement : __xaml_query_implement<T, D, Base...>
 {
     std::atomic<std::uint32_t> m_ref_count{ 1 };
-
-    virtual ~xaml_implement() {}
 
     std::uint32_t XAML_CALL add_ref() noexcept override { return ++m_ref_count; }
 

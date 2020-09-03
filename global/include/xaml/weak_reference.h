@@ -51,12 +51,11 @@ struct __xaml_weak_reference_implement : __xaml_query_implement<__xaml_weak_refe
 };
 
 template <typename T, typename D, typename... Base>
-struct xaml_weak_implement : __xaml_query_implement<T, D, Base...>
+struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
 {
     std::atomic<std::intptr_t> m_ref_count{ 1 };
-    using __weakref_t = __xaml_weak_reference_implement<T, D, Base...>;
 
-    virtual ~xaml_weak_implement() {}
+    using __weakref_t = __xaml_weak_reference_implement<T, D, Base...>;
 
     std::uint32_t XAML_CALL add_ref() noexcept override
     {
@@ -117,13 +116,20 @@ struct xaml_weak_implement : __xaml_query_implement<T, D, Base...>
         *ptr = control;
         return XAML_S_OK;
     }
+};
 
-    struct __weak_reference_source : xaml_inner_implement<__weak_reference_source, xaml_weak_implement<T, D, Base...>, xaml_weak_reference_source>
-    {
-        xaml_result XAML_CALL get_weak_reference(xaml_weak_reference** ptr) noexcept override { return this->m_outer->get_weak_reference(ptr); }
-    } m_source;
+template <typename T, typename D, typename... Base>
+struct __xaml_weak_reference_source_implement : xaml_inner_implement<__xaml_weak_reference_source_implement<T, D, Base...>, __xaml_weak_implement<T, D, Base...>, xaml_weak_reference_source>
+{
+    xaml_result XAML_CALL get_weak_reference(xaml_weak_reference** ptr) noexcept override { return this->m_outer->get_weak_reference(ptr); }
+};
 
-    xaml_weak_implement() noexcept { m_source.m_outer = this; }
+template <typename T1, typename T2>
+struct __xaml_weak_compressed_implement : T1
+{
+    T2 m_source;
+
+    __xaml_weak_compressed_implement() noexcept { m_source.m_outer = this; }
 
     xaml_result XAML_CALL query(xaml_guid const& type, void** ptr) noexcept override
     {
@@ -135,9 +141,25 @@ struct xaml_weak_implement : __xaml_query_implement<T, D, Base...>
         }
         else
         {
-            return __xaml_query_implement<T, D, Base...>::query(type, ptr);
+            return T1::query(type, ptr);
         }
     }
+};
+
+template <typename T1>
+struct __xaml_weak_compressed_implement<T1, void> : T1
+{
+};
+
+template <typename T, typename D, typename... Base>
+struct xaml_weak_implement
+    : __xaml_weak_compressed_implement<
+          __xaml_weak_implement<T, D, Base...>,
+          std::conditional_t<
+              std::is_base_of_v<xaml_weak_reference_source, D>,
+              void,
+              __xaml_weak_reference_source_implement<T, D, Base...>>>
+{
 };
 
 template <typename T, typename D, typename... Base>
@@ -152,7 +174,7 @@ inline std::uint32_t __xaml_weak_reference_implement<T, D, Base...>::release() n
     std::uint32_t res = --(m_weak_ref_count);
     if (res == 0)
     {
-        auto impl = static_cast<xaml_weak_implement<T, D, Base...>*>(m_ptr);
+        auto impl = static_cast<__xaml_weak_implement<T, D, Base...>*>(m_ptr);
         auto ref = m_strong_ref_count.load();
         if (ref > 0)
         {
