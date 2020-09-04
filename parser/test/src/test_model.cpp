@@ -1,9 +1,10 @@
 #include <test_model.h>
 #include <xaml/event.h>
+#include <xaml/weak_reference.h>
 
 #define m_outer_this this
 
-struct xaml_test_model_impl : xaml_implement<xaml_test_model_impl, xaml_test_model, xaml_object>
+struct xaml_test_model_impl : xaml_weak_implement<xaml_test_model_impl, xaml_test_model, xaml_object>
 {
     XAML_EVENT_IMPL(text_changed)
     XAML_PROP_STRING_EVENT_IMPL(text)

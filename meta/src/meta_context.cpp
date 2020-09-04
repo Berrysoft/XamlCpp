@@ -201,12 +201,17 @@ public:
         return xaml_string_new(move(name_view), ptr);
     }
 
-    xaml_result XAML_CALL bind(xaml_object* target, xaml_string* target_prop, xaml_object* source, xaml_string* source_prop, xaml_binding_mode mode, xaml_converter* converter, xaml_object* parameter, xaml_string* language) noexcept override
+    xaml_result XAML_CALL bind(xaml_weak_reference* wtarget, xaml_string* target_prop, xaml_weak_reference* wsource, xaml_string* source_prop, xaml_binding_mode mode, xaml_converter* converter, xaml_object* parameter, xaml_string* language) noexcept override
     {
+        xaml_ptr<xaml_object> starget;
+        XAML_RETURN_IF_FAILED(wtarget->resolve(&starget));
+        xaml_ptr<xaml_object> ssource;
+        XAML_RETURN_IF_FAILED(wsource->resolve(&ssource));
+        if (!(starget && ssource)) return XAML_E_INVALIDARG;
         xaml_ptr<xaml_type_info> target_type;
         {
             xaml_guid id;
-            XAML_RETURN_IF_FAILED(target->get_guid(&id));
+            XAML_RETURN_IF_FAILED(starget->get_guid(&id));
             xaml_ptr<xaml_reflection_info> info;
             XAML_RETURN_IF_FAILED(get_type(id, &info));
             XAML_RETURN_IF_FAILED(info->query(&target_type));
@@ -214,7 +219,7 @@ public:
         xaml_ptr<xaml_type_info> source_type;
         {
             xaml_guid id;
-            XAML_RETURN_IF_FAILED(source->get_guid(&id));
+            XAML_RETURN_IF_FAILED(ssource->get_guid(&id));
             xaml_ptr<xaml_reflection_info> info;
             XAML_RETURN_IF_FAILED(get_type(id, &info));
             XAML_RETURN_IF_FAILED(info->query(&source_type));
@@ -227,33 +232,53 @@ public:
         xaml_ptr<xaml_object> conv_param = parameter;
         xaml_ptr<xaml_string> conv_lang = language;
 
-        auto set_to_target = [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
-            xaml_ptr<xaml_object> value;
-            XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
-            if (conv_ptr)
+        auto set_to_target =
+            [wsource = xaml_ptr<xaml_weak_reference>{ wsource }, sourcep,
+             wtarget = xaml_ptr<xaml_weak_reference>{ wtarget }, targetp,
+             conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
+            xaml_ptr<xaml_object> source;
+            XAML_RETURN_IF_FAILED(wsource->resolve(&source));
+            xaml_ptr<xaml_object> target;
+            XAML_RETURN_IF_FAILED(wtarget->resolve(&target));
+            if (source && target)
             {
-                xaml_guid type;
-                XAML_RETURN_IF_FAILED(sourcep->get_type(&type));
-                xaml_ptr<xaml_object> conv_value;
-                XAML_RETURN_IF_FAILED(conv_ptr->convert(value, type, conv_param, conv_lang, &conv_value));
-                value = conv_value;
+                xaml_ptr<xaml_object> value;
+                XAML_RETURN_IF_FAILED(sourcep->get(source, &value));
+                if (conv_ptr)
+                {
+                    xaml_guid type;
+                    XAML_RETURN_IF_FAILED(sourcep->get_type(&type));
+                    xaml_ptr<xaml_object> conv_value;
+                    XAML_RETURN_IF_FAILED(conv_ptr->convert(value, type, conv_param, conv_lang, &conv_value));
+                    value = conv_value;
+                }
+                XAML_RETURN_IF_FAILED(targetp->set(target, value));
             }
-            XAML_RETURN_IF_FAILED(targetp->set(target, value));
             return XAML_S_OK;
         };
 
-        auto set_to_source = [source, sourcep, target, targetp, conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
-            xaml_ptr<xaml_object> value;
-            XAML_RETURN_IF_FAILED(targetp->get(target, &value));
-            if (conv_ptr)
+        auto set_to_source =
+            [wsource = xaml_ptr<xaml_weak_reference>{ wsource }, sourcep,
+             wtarget = xaml_ptr<xaml_weak_reference>{ wtarget }, targetp,
+             conv_ptr, conv_param, conv_lang]() noexcept -> xaml_result {
+            xaml_ptr<xaml_object> source;
+            XAML_RETURN_IF_FAILED(wsource->resolve(&source));
+            xaml_ptr<xaml_object> target;
+            XAML_RETURN_IF_FAILED(wtarget->resolve(&target));
+            if (source && target)
             {
-                xaml_guid type;
-                XAML_RETURN_IF_FAILED(targetp->get_type(&type));
-                xaml_ptr<xaml_object> conv_value;
-                XAML_RETURN_IF_FAILED(conv_ptr->convert_back(value, type, conv_param, conv_lang, &conv_value));
-                value = conv_value;
+                xaml_ptr<xaml_object> value;
+                XAML_RETURN_IF_FAILED(targetp->get(target, &value));
+                if (conv_ptr)
+                {
+                    xaml_guid type;
+                    XAML_RETURN_IF_FAILED(targetp->get_type(&type));
+                    xaml_ptr<xaml_object> conv_value;
+                    XAML_RETURN_IF_FAILED(conv_ptr->convert_back(value, type, conv_param, conv_lang, &conv_value));
+                    value = conv_value;
+                }
+                XAML_RETURN_IF_FAILED(sourcep->set(source, value));
             }
-            XAML_RETURN_IF_FAILED(sourcep->set(source, value));
             return XAML_S_OK;
         };
 
@@ -269,7 +294,7 @@ public:
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_target, &callback));
             int32_t token;
-            XAML_RETURN_IF_FAILED(sourcee->add(source, callback, &token));
+            XAML_RETURN_IF_FAILED(sourcee->add(ssource, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_target());
         }
         if (mode & xaml_binding_one_way_to_source)
@@ -284,7 +309,7 @@ public:
             xaml_ptr<xaml_delegate> callback;
             XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_source, &callback));
             int32_t token;
-            XAML_RETURN_IF_FAILED(targete->add(target, callback, &token));
+            XAML_RETURN_IF_FAILED(targete->add(starget, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_source());
         }
         if (mode == xaml_binding_one_time)

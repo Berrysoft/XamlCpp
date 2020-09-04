@@ -6,8 +6,8 @@
 #include <xaml/meta/module.h>
 #include <xaml/meta/reflection_info.h>
 #include <xaml/meta/type_info.h>
-#include <xaml/object.h>
 #include <xaml/vector.h>
+#include <xaml/weak_reference.h>
 
 typedef enum xaml_binding_mode
 {
@@ -34,7 +34,7 @@ XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 
     XAML_METHOD(get_type_by_namespace_name, type, xaml_string*, xaml_string*, xaml_reflection_info**); \
     XAML_METHOD(get_name_by_namespace_name, type, xaml_string*, xaml_string*, xaml_string**);          \
     XAML_METHOD(add_type, type, xaml_reflection_info*);                                                \
-    XAML_METHOD(bind, type, xaml_object*, xaml_string*, xaml_object*, xaml_string*, xaml_binding_mode, xaml_converter*, xaml_object*, xaml_string*)
+    XAML_METHOD(bind, type, xaml_weak_reference*, xaml_string*, xaml_weak_reference*, xaml_string*, xaml_binding_mode, xaml_converter*, xaml_object*, xaml_string*)
 
 XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
 {
@@ -65,6 +65,24 @@ XAML_DECL_INTERFACE_(xaml_meta_context, xaml_object)
         XAML_RETURN_IF_FAILED(xaml_string_new_view(path, &path_str));
         XAML_RETURN_IF_FAILED(m->open(path_str));
         return add_module_recursive(m);
+    }
+
+    xaml_result XAML_CALL bind(xaml_weak_reference_source * target, xaml_string * targetp, xaml_weak_reference_source * source, xaml_string * sourcep, xaml_binding_mode mode, xaml_converter * converter, xaml_object * parameter, xaml_string * language) noexcept
+    {
+        xaml_ptr<xaml_weak_reference> wtarget;
+        XAML_RETURN_IF_FAILED(target->get_weak_reference(&wtarget));
+        xaml_ptr<xaml_weak_reference> wsource;
+        XAML_RETURN_IF_FAILED(source->get_weak_reference(&wsource));
+        return bind(wtarget, targetp, wsource, sourcep, mode, converter, parameter, language);
+    }
+
+    xaml_result XAML_CALL bind(xaml_object * target, xaml_string * targetp, xaml_object * source, xaml_string * sourcep, xaml_binding_mode mode, xaml_converter * converter, xaml_object * parameter, xaml_string * language) noexcept
+    {
+        xaml_ptr<xaml_weak_reference_source> targets;
+        XAML_RETURN_IF_FAILED(target->query(&targets));
+        xaml_ptr<xaml_weak_reference_source> sources;
+        XAML_RETURN_IF_FAILED(source->query(&sources));
+        return bind(targets, targetp, sources, sourcep, mode, converter, parameter, language);
     }
 #endif // __cplusplus
 };
