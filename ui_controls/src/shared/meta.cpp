@@ -13,7 +13,7 @@
 #include <xaml/ui/controls/text_box.h>
 #include <xaml/ui/controls/uniform_grid.h>
 
-struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info, xaml_object>
+struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info>
 {
     xaml_ptr<xaml_vector> m_dependencies;
 

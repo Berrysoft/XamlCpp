@@ -36,8 +36,8 @@ struct xaml_button_internal : xaml_control_internal
     xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_button_implement : xaml_control_implement<T, Internal, Base..., xaml_button>
+template <typename T, typename Internal, typename Base>
+struct xaml_button_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_EVENT_INTERNAL_IMPL(text_changed)
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
@@ -48,7 +48,7 @@ struct xaml_button_implement : xaml_control_implement<T, Internal, Base..., xaml
     XAML_EVENT_INTERNAL_IMPL(click)
 };
 
-struct xaml_button_impl : xaml_button_implement<xaml_button_impl, xaml_button_internal>
+struct xaml_button_impl : xaml_button_implement<xaml_button_impl, xaml_button_internal, xaml_button>
 {
 };
 

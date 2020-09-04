@@ -13,8 +13,8 @@
     #include <xaml/ui/qt5/controls/pen.hpp>
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename... Base>
-struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
+template <typename T, typename Base>
+struct xaml_pen_implement : xaml_implement<T, Base>
 {
     XAML_PROP_IMPL(width, double, double*, double)
 
@@ -66,7 +66,7 @@ struct xaml_pen_implement : xaml_implement<T, Base..., xaml_pen, xaml_object>
         }
         else
         {
-            return xaml_implement<T, Base..., xaml_pen, xaml_object>::query(type, ptr);
+            return xaml_implement<T, Base>::query(type, ptr);
         }
     }
 

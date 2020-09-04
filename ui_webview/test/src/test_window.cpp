@@ -7,7 +7,7 @@
 
 using namespace std;
 
-struct xaml_test_window_impl : xaml_implement<xaml_test_window_impl, xaml_test_window, xaml_object>
+struct xaml_test_window_impl : xaml_implement<xaml_test_window_impl, xaml_test_window>
 {
     xaml_ptr<xaml_window> m_window{};
 

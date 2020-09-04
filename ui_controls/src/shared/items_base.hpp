@@ -29,8 +29,8 @@ struct xaml_items_base_internal : xaml_control_internal
     xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename... Base>
-struct xaml_items_base_implement : xaml_control_implement<T, Base..., xaml_items_base>
+template <typename T, typename Internal, typename Base>
+struct xaml_items_base_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_EVENT_INTERNAL_IMPL(items_changed)
     XAML_PROP_PTR_INTERNAL_IMPL(items, xaml_observable_vector)

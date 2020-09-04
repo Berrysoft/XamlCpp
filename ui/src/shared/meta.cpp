@@ -2,7 +2,7 @@
 #include <xaml/ui/menu_bar.h>
 #include <xaml/ui/window.h>
 
-struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info, xaml_object>
+struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info>
 {
     xaml_ptr<xaml_vector> m_dependencies;
 

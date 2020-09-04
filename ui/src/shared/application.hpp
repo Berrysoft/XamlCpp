@@ -11,7 +11,7 @@
     #include <memory>
 #endif // XAML_UI_WINDOWS
 
-struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application, xaml_object>
+struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application>
 {
 protected:
 #ifdef XAML_UI_QT5

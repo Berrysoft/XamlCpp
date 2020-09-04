@@ -1,7 +1,7 @@
 #include <test_converter.h>
 #include <xaml/meta/meta_macros.h>
 
-struct xaml_test_converter_impl : xaml_implement<xaml_test_converter_impl, xaml_test_converter, xaml_converter, xaml_object>
+struct xaml_test_converter_impl : xaml_implement<xaml_test_converter_impl, xaml_test_converter>
 {
     xaml_result XAML_CALL convert(xaml_object* value, xaml_guid const&, xaml_object* param, xaml_string*, xaml_object** ptr) noexcept override
     {

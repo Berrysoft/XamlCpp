@@ -15,7 +15,7 @@
     #include <QTimer>
 #endif // XAML_UI_WINDOWS
 
-struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer, xaml_object>
+struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer>
 {
     XAML_PROP_IMPL(interval, std::int32_t, std::int32_t*, std::int32_t)
     XAML_PROP_IMPL_BASE(is_enabled, std::atomic_bool, bool*)

@@ -75,8 +75,8 @@ struct xaml_qt5_menu_item_implement : xaml_inner_implement<T, D, Base>
 };
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., xaml_menu_item>
+template <typename T, typename Internal, typename Base>
+struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
     XAML_EVENT_INTERNAL_IMPL(click)
@@ -119,7 +119,7 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
         }
         else
         {
-            return xaml_control_implement<T, Internal, Base..., xaml_menu_item>::query(type, ptr);
+            return xaml_control_implement<T, Internal, Base>::query(type, ptr);
         }
     }
 
@@ -130,7 +130,7 @@ struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base..., x
 #endif // !XAML_UI_GTK3
 };
 
-struct xaml_menu_item_impl : xaml_menu_item_implement<xaml_menu_item_impl, xaml_menu_item_internal>
+struct xaml_menu_item_impl : xaml_menu_item_implement<xaml_menu_item_impl, xaml_menu_item_internal, xaml_menu_item>
 {
 };
 

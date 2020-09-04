@@ -36,8 +36,8 @@ struct xaml_entry_internal : xaml_control_internal
     xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_entry_implement : xaml_control_implement<T, Internal, Base..., xaml_entry>
+template <typename T, typename Internal, typename Base>
+struct xaml_entry_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_EVENT_INTERNAL_IMPL(text_changed)
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
@@ -45,7 +45,7 @@ struct xaml_entry_implement : xaml_control_implement<T, Internal, Base..., xaml_
     XAML_PROP_INTERNAL_IMPL(text_halignment, xaml_halignment*, xaml_halignment)
 };
 
-struct xaml_entry_impl : xaml_entry_implement<xaml_entry_impl, xaml_entry_internal>
+struct xaml_entry_impl : xaml_entry_implement<xaml_entry_impl, xaml_entry_internal, xaml_entry>
 {
 };
 

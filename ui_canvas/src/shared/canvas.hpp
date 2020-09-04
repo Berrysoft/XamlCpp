@@ -25,7 +25,7 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
     #include <QPainter>
 #endif // XAML_UI_GTK3
 
-struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context, xaml_object>
+struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context>
 {
 #ifdef XAML_UI_WINDOWS
     wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> target{ nullptr };

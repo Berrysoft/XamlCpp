@@ -4,7 +4,7 @@
 #include <xaml/markup/element_base.h>
 #include <xaml/meta/module.h>
 
-struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info, xaml_object>
+struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info>
 {
     xaml_result XAML_CALL get_version(xaml_version* pver) noexcept override
     {

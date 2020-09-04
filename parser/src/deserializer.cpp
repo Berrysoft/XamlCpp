@@ -7,7 +7,7 @@
 
 using namespace std;
 
-struct xaml_deserializer_context_impl : xaml_implement<xaml_deserializer_context_impl, xaml_markup_context, xaml_object>
+struct xaml_deserializer_context_impl : xaml_implement<xaml_deserializer_context_impl, xaml_markup_context>
 {
     xaml_object* m_current;
     xaml_result XAML_CALL get_current_element(xaml_object** ptr) noexcept override

@@ -64,20 +64,20 @@ struct xaml_webview_impl : xaml_control_implement<xaml_webview_impl, xaml_webvie
     xaml_result XAML_CALL go_back() noexcept override { return m_internal.go_back(); }
 };
 
-struct xaml_webview_web_request_impl : xaml_implement<xaml_webview_web_request_impl, xaml_webview_web_request, xaml_object>
+struct xaml_webview_web_request_impl : xaml_implement<xaml_webview_web_request_impl, xaml_webview_web_request>
 {
     XAML_PROP_PTR_IMPL(method, xaml_string)
     XAML_PROP_PTR_IMPL(uri, xaml_string)
     XAML_PROP_PTR_IMPL(data, xaml_buffer)
 };
 
-struct xaml_webview_web_response_impl : xaml_implement<xaml_webview_web_response_impl, xaml_webview_web_response, xaml_object>
+struct xaml_webview_web_response_impl : xaml_implement<xaml_webview_web_response_impl, xaml_webview_web_response>
 {
     XAML_PROP_PTR_IMPL(content_type, xaml_string)
     XAML_PROP_PTR_IMPL(data, xaml_buffer)
 };
 
-struct xaml_webview_resource_requested_args_impl : xaml_implement<xaml_webview_resource_requested_args_impl, xaml_webview_resource_requested_args, xaml_object>
+struct xaml_webview_resource_requested_args_impl : xaml_implement<xaml_webview_resource_requested_args_impl, xaml_webview_resource_requested_args>
 {
     XAML_PROP_PTR_IMPL(request, xaml_webview_web_request)
     XAML_PROP_PTR_IMPL(response, xaml_webview_web_response)

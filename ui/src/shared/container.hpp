@@ -29,8 +29,8 @@ struct xaml_container_internal : xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_container_implement : xaml_control_implement<T, Internal, Base..., xaml_container>
+template <typename T, typename Internal, typename Base>
+struct xaml_container_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_EVENT_INTERNAL_IMPL(child_changed)
     XAML_PROP_PTR_INTERNAL_IMPL(child, xaml_control)
@@ -76,8 +76,8 @@ struct xaml_multicontainer_internal : xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL init() noexcept override;
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_multicontainer_implement : xaml_control_implement<T, Internal, Base..., xaml_multicontainer>
+template <typename T, typename Internal, typename Base>
+struct xaml_multicontainer_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view**)
     XAML_CPROP_INTERNAL_IMPL(child, xaml_control*, xaml_control*)

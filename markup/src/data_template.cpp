@@ -1,6 +1,6 @@
 #include <xaml/markup/data_template.h>
 
-struct xaml_data_template_impl : xaml_implement<xaml_data_template_impl, xaml_data_template, xaml_template_base, xaml_object>
+struct xaml_data_template_impl : xaml_implement<xaml_data_template_impl, xaml_data_template>
 {
     XAML_PROP_IMPL(data_type, xaml_guid, xaml_guid*, xaml_guid const&)
     XAML_PROP_PTR_IMPL(converter, xaml_converter)

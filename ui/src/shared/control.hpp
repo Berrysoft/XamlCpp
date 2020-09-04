@@ -235,8 +235,8 @@ struct xaml_qt5_control_implement : xaml_inner_implement<T2, D, Base2>
 };
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_control_implement : xaml_weak_implement<T, Base..., xaml_control, xaml_element_base, xaml_weak_reference_source, xaml_object>
+template <typename T, typename Internal, typename Base>
+struct xaml_control_implement : xaml_weak_implement<T, Base>
 {
     Internal m_internal;
 
@@ -329,7 +329,7 @@ struct xaml_control_implement : xaml_weak_implement<T, Base..., xaml_control, xa
         }
         else
         {
-            return xaml_weak_implement<T, Base..., xaml_control, xaml_element_base, xaml_weak_reference_source, xaml_object>::query(type, ptr);
+            return xaml_weak_implement<T, Base>::query(type, ptr);
         }
     }
 

@@ -117,8 +117,8 @@ struct xaml_window_internal : xaml_container_internal
     XAML_UI_API ~xaml_window_internal();
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xaml_window>
+template <typename T, typename Internal, typename Base>
+struct xaml_window_implement : xaml_container_implement<T, Internal, Base>
 {
     XAML_PROP_PTR_INTERNAL_IMPL(menu_bar, xaml_control)
 
@@ -204,7 +204,7 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
         }
         else
         {
-            return xaml_container_implement<T, Internal, Base..., xaml_window>::query(type, ptr);
+            return xaml_container_implement<T, Internal, Base>::query(type, ptr);
         }
     }
 
@@ -214,7 +214,7 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base..., xa
     }
 };
 
-struct xaml_window_impl : xaml_window_implement<xaml_window_impl, xaml_window_internal>
+struct xaml_window_impl : xaml_window_implement<xaml_window_impl, xaml_window_internal, xaml_window>
 {
 };
 

@@ -2,7 +2,7 @@
 
 using namespace std;
 
-struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding, xaml_markup_extension, xaml_object>
+struct xaml_binding_impl : xaml_implement<xaml_binding_impl, xaml_binding>
 {
     XAML_PROP_PTR_IMPL(element, xaml_string)
     XAML_PROP_PTR_IMPL(path, xaml_string)

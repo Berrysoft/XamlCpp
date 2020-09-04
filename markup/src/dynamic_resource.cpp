@@ -16,7 +16,7 @@ static xaml_result find_resource(xaml_ptr<xaml_element_base> element, xaml_ptr<x
     return XAML_E_KEYNOTFOUND;
 }
 
-struct xaml_dynamic_resource_impl : xaml_implement<xaml_dynamic_resource_impl, xaml_dynamic_resource, xaml_markup_extension, xaml_object>
+struct xaml_dynamic_resource_impl : xaml_implement<xaml_dynamic_resource_impl, xaml_dynamic_resource>
 {
     XAML_PROP_PTR_IMPL(key, xaml_string)
 

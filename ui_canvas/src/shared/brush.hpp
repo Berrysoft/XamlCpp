@@ -13,8 +13,8 @@
     #include <xaml/ui/qt5/controls/brush.hpp>
 #endif // XAML_UI_WINDOWS
 
-template <typename T, typename... Base>
-struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object>
+template <typename T, typename Base>
+struct xaml_brush_implement : xaml_implement<T, Base>
 {
 #ifdef XAML_UI_WINDOWS
     virtual xaml_result XAML_CALL create(ID2D1RenderTarget*, xaml_rectangle const&, ID2D1Brush**) noexcept = 0;
@@ -64,7 +64,7 @@ struct xaml_brush_implement : xaml_implement<T, Base..., xaml_brush, xaml_object
         }
         else
         {
-            return xaml_implement<T, Base..., xaml_brush, xaml_object>::query(type, ptr);
+            return xaml_implement<T, Base>::query(type, ptr);
         }
     }
 
@@ -93,8 +93,8 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
     }
 };
 
-template <typename T, typename... Base>
-struct xaml_gradient_brush_implement : xaml_brush_implement<T, Base..., xaml_gradient_brush>
+template <typename T, typename Base>
+struct xaml_gradient_brush_implement : xaml_brush_implement<T, Base>
 {
     xaml_ptr<xaml_vector> m_gradient_stops;
 

@@ -18,7 +18,7 @@ struct option_entry
     xaml_ptr<xaml_string> help_text;
 };
 
-struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_cmdline_option, xaml_object>
+struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_cmdline_option>
 {
     multi_index_container<
         option_entry,

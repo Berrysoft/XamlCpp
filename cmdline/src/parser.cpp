@@ -4,7 +4,7 @@
 
 using namespace std;
 
-struct xaml_cmdline_options_impl : xaml_implement<xaml_cmdline_options_impl, xaml_cmdline_options, xaml_object>
+struct xaml_cmdline_options_impl : xaml_implement<xaml_cmdline_options_impl, xaml_cmdline_options>
 {
     XAML_PROP_PTR_IMPL(properties, xaml_map)
     XAML_PROP_PTR_IMPL(collection_properties, xaml_map)

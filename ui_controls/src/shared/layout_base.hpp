@@ -12,8 +12,8 @@ struct xaml_layout_base_internal : xaml_multicontainer_internal
     xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override;
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Internal, Base..., xaml_layout_base>
+template <typename T, typename Internal, typename Base>
+struct xaml_layout_base_implement : xaml_multicontainer_implement<T, Internal, Base>
 {
 };
 

@@ -10,8 +10,8 @@ struct xaml_node_base_internal
     XAML_PROP_PTR_IMPL(key, xaml_string)
 };
 
-template <typename T, typename Internal, typename... Base>
-struct xaml_node_base_implement : xaml_implement<T, Base..., xaml_node_base, xaml_object>
+template <typename T, typename Internal, typename Base>
+struct xaml_node_base_implement : xaml_implement<T, Base>
 {
     Internal m_internal;
 
@@ -76,7 +76,7 @@ xaml_result XAML_CALL xaml_node_new(xaml_node** ptr) noexcept
     return xaml_object_new<xaml_node_impl>(ptr);
 }
 
-struct xaml_attribute_event_impl : xaml_implement<xaml_attribute_event_impl, xaml_attribute_event, xaml_object>
+struct xaml_attribute_event_impl : xaml_implement<xaml_attribute_event_impl, xaml_attribute_event>
 {
     XAML_PROP_PTR_IMPL_BASE(info, xaml_event_info)
     XAML_PROP_PTR_IMPL_BASE(value, xaml_string)
@@ -90,7 +90,7 @@ xaml_result XAML_CALL xaml_attribute_event_new(xaml_event_info* info, xaml_strin
     return xaml_object_new<xaml_attribute_event_impl>(ptr, info, value);
 }
 
-struct xaml_attribute_property_impl : xaml_implement<xaml_attribute_property_impl, xaml_attribute_property, xaml_object>
+struct xaml_attribute_property_impl : xaml_implement<xaml_attribute_property_impl, xaml_attribute_property>
 {
     XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
     XAML_PROP_PTR_IMPL_BASE(info, xaml_property_info)
@@ -105,7 +105,7 @@ xaml_result XAML_CALL xaml_attribute_property_new(xaml_type_info* type, xaml_pro
     return xaml_object_new<xaml_attribute_property_impl>(ptr, type, info, value);
 }
 
-struct xaml_attribute_collection_property_impl : xaml_implement<xaml_attribute_collection_property_impl, xaml_attribute_collection_property, xaml_object>
+struct xaml_attribute_collection_property_impl : xaml_implement<xaml_attribute_collection_property_impl, xaml_attribute_collection_property>
 {
     XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
     XAML_PROP_PTR_IMPL_BASE(info, xaml_collection_property_info)
