@@ -38,16 +38,26 @@ XAML_DECL_INTERFACE_(xaml_weak_reference_source, xaml_object)
 };
 
 #ifdef __cplusplus
-template <typename T, typename D, typename... Base>
-struct __xaml_weak_reference_implement : __xaml_query_implement<__xaml_weak_reference_implement<T, D, Base...>, xaml_weak_reference, xaml_object>
+struct __xaml_weak_reference_implement : xaml_implement<__xaml_weak_reference_implement, xaml_weak_reference, xaml_object>
 {
-    std::atomic<std::uint32_t> m_weak_ref_count{};
     std::atomic<std::uint32_t> m_strong_ref_count{};
     xaml_object* m_ptr{};
 
-    std::uint32_t XAML_CALL add_ref() noexcept override;
-    std::uint32_t XAML_CALL release() noexcept override;
-    xaml_result XAML_CALL resolve(xaml_guid const&, void**) noexcept override;
+    __xaml_weak_reference_implement() { this->m_ref_count = 2; }
+
+    xaml_result XAML_CALL resolve(xaml_guid const& type, void** ptr) noexcept override
+    {
+        *ptr = nullptr;
+        std::uint32_t ref;
+        do
+        {
+            ref = m_strong_ref_count.load();
+            if (ref == 0) return XAML_S_OK;
+        } while (!m_strong_ref_count.compare_exchange_strong(ref, ref + 1));
+        xaml_result hr = m_ptr->query(type, ptr);
+        m_ptr->release();
+        return hr;
+    }
 };
 
 template <typename T, typename D, typename... Base>
@@ -55,7 +65,32 @@ struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
 {
     std::atomic<std::intptr_t> m_ref_count{ 1 };
 
-    using __weakref_t = __xaml_weak_reference_implement<T, D, Base...>;
+    using __weakref_t = __xaml_weak_reference_implement;
+
+    static constexpr std::intptr_t __encode(__weakref_t* ptr) noexcept
+    {
+        return (reinterpret_cast<std::intptr_t>(ptr) >> 1) | (std::numeric_limits<std::intptr_t>::min)();
+    }
+
+    static constexpr __weakref_t* __decode(std::intptr_t count) noexcept
+    {
+        return reinterpret_cast<__weakref_t*>(count << 1);
+    }
+
+    static constexpr bool __is_ptr(std::intptr_t count) noexcept
+    {
+        return count < 0;
+    }
+
+    ~__xaml_weak_implement() override
+    {
+        auto count = m_ref_count.load();
+        if (__is_ptr(count))
+        {
+            auto control = __decode(count);
+            control->release();
+        }
+    }
 
     std::uint32_t XAML_CALL add_ref() noexcept override
     {
@@ -63,34 +98,33 @@ struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
         do
         {
             count = m_ref_count.load();
-            if (count < 0)
+            if (__is_ptr(count))
             {
-                auto control = reinterpret_cast<__weakref_t*>(count << 1);
+                auto control = __decode(count);
                 return ++(control->m_strong_ref_count);
             }
         } while (!m_ref_count.compare_exchange_strong(count, count + 1));
         return static_cast<std::uint32_t>(count + 1);
     }
 
-    std::uint32_t XAML_CALL release() noexcept override
+    inline std::uint32_t __release_impl() noexcept
     {
         std::intptr_t count;
         do
         {
             count = m_ref_count.load();
-            if (count < 0)
+            if (__is_ptr(count))
             {
                 auto control = reinterpret_cast<__weakref_t*>(count << 1);
-                std::uint32_t res = --(control->m_strong_ref_count);
-                if (res == 0)
-                {
-                    delete static_cast<T*>(this);
-                    control->m_ptr = nullptr;
-                }
-                return res;
+                return --(control->m_strong_ref_count);
             }
         } while (!m_ref_count.compare_exchange_strong(count, count - 1));
-        std::uint32_t res = static_cast<std::uint32_t>(count - 1);
+        return static_cast<std::uint32_t>(count - 1);
+    }
+
+    std::uint32_t XAML_CALL release() noexcept override
+    {
+        std::uint32_t res = __release_impl();
         if (res == 0)
         {
             delete static_cast<T*>(this);
@@ -102,19 +136,34 @@ struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
     {
         __weakref_t* control;
         std::intptr_t count = m_ref_count.load();
-        if (count < 0)
+        if (__is_ptr(count))
         {
-            control = reinterpret_cast<__weakref_t*>(count << 1);
+            control = __decode(count);
+            control->add_ref();
+            *ptr = control;
+            return XAML_S_OK;
         }
-        else
+        control = new (std::nothrow) __weakref_t();
+        if (control == nullptr) return XAML_E_OUTOFMEMORY;
+        std::intptr_t new_count = __encode(control);
+        while (true)
         {
-            control = new __weakref_t();
             control->m_ptr = this;
-            control->m_strong_ref_count = static_cast<std::uint32_t>(m_ref_count.exchange((reinterpret_cast<std::intptr_t>(control) >> 1) | (std::numeric_limits<std::intptr_t>::min)()));
+            control->m_strong_ref_count = static_cast<std::uint32_t>(count);
+            if (m_ref_count.compare_exchange_strong(count, new_count))
+            {
+                *ptr = control;
+                return XAML_S_OK;
+            }
+            else if (__is_ptr(count))
+            {
+                delete control;
+                control = __decode(count);
+                control->add_ref();
+                *ptr = control;
+                return XAML_S_OK;
+            }
         }
-        ++control->m_weak_ref_count;
-        *ptr = control;
-        return XAML_S_OK;
     }
 };
 
@@ -161,46 +210,6 @@ struct xaml_weak_implement
               __xaml_weak_reference_source_implement<T, D, Base...>>>
 {
 };
-
-template <typename T, typename D, typename... Base>
-inline std::uint32_t __xaml_weak_reference_implement<T, D, Base...>::add_ref() noexcept
-{
-    return ++m_weak_ref_count;
-}
-
-template <typename T, typename D, typename... Base>
-inline std::uint32_t __xaml_weak_reference_implement<T, D, Base...>::release() noexcept
-{
-    std::uint32_t res = --(m_weak_ref_count);
-    if (res == 0)
-    {
-        auto impl = static_cast<__xaml_weak_implement<T, D, Base...>*>(m_ptr);
-        auto ref = m_strong_ref_count.load();
-        if (ref > 0)
-        {
-            impl->m_ref_count = ref;
-        }
-        delete this;
-    }
-    return res;
-}
-
-template <typename T, typename D, typename... Base>
-inline xaml_result __xaml_weak_reference_implement<T, D, Base...>::resolve(xaml_guid const& type, void** ptr) noexcept
-{
-    if (m_ptr)
-    {
-        ++m_strong_ref_count;
-        xaml_result hr = m_ptr->query(type, ptr);
-        m_ptr->release();
-        return hr;
-    }
-    else
-    {
-        *ptr = nullptr;
-        return XAML_S_OK;
-    }
-}
 #endif // __cplusplus
 
 #endif // !XAML_WEAK_REFERENCE_H
