@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
+struct xaml_observable_vector_impl : xaml_implement<xaml_observable_vector_impl, xaml_observable_vector>
 {
 private:
     xaml_ptr<xaml_vector> m_vec{ nullptr };
@@ -126,7 +126,7 @@ xaml_result XAML_CALL xaml_observable_vector_new(xaml_observable_vector** ptr) n
     return xaml_object_init<xaml_observable_vector_impl>(ptr);
 }
 
-struct xaml_vector_changed_args_impl : xaml_implement<xaml_vector_changed_args_impl, xaml_vector_changed_args, xaml_object>
+struct xaml_vector_changed_args_impl : xaml_implement<xaml_vector_changed_args_impl, xaml_vector_changed_args>
 {
 private:
     xaml_vector_changed_action m_action;

@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_delegate_impl : xaml_implement<xaml_delegate_impl, xaml_delegate, xaml_object>
+struct xaml_delegate_impl : xaml_implement<xaml_delegate_impl, xaml_delegate>
 {
 private:
     function<xaml_result(xaml_vector_view*, xaml_object**)> m_func;

@@ -4,7 +4,7 @@ using namespace std;
 
 using inner_map_type = unordered_map<xaml_ptr<xaml_object>, xaml_ptr<xaml_object>, __std_xaml_hasher, __std_xaml_eq>;
 
-struct xaml_key_value_pair_impl : xaml_implement<xaml_key_value_pair_impl, xaml_key_value_pair, xaml_object>
+struct xaml_key_value_pair_impl : xaml_implement<xaml_key_value_pair_impl, xaml_key_value_pair>
 {
 private:
     xaml_ptr<xaml_object> m_key;
@@ -29,7 +29,7 @@ xaml_result XAML_CALL xaml_key_value_pair_new(xaml_object* key, xaml_object* val
     return xaml_object_new<xaml_key_value_pair_impl>(ptr, key, value);
 }
 
-struct xaml_map_enumerator_impl : xaml_implement<xaml_map_enumerator_impl, xaml_enumerator, xaml_object>
+struct xaml_map_enumerator_impl : xaml_implement<xaml_map_enumerator_impl, xaml_enumerator>
 {
 private:
     inner_map_type::const_iterator m_begin, m_end;
@@ -62,7 +62,7 @@ public:
     }
 };
 
-struct xaml_hasher_impl : xaml_implement<xaml_hasher_impl, xaml_hasher, xaml_object>
+struct xaml_hasher_impl : xaml_implement<xaml_hasher_impl, xaml_hasher>
 {
 private:
     function<xaml_result(xaml_object*, int32_t*)> m_func;
@@ -131,7 +131,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher** ptr) noexcept
         ptr);
 }
 
-struct xaml_map_impl : xaml_implement<xaml_map_impl, xaml_map, xaml_map_view, xaml_enumerable, xaml_object>
+struct xaml_map_impl : xaml_implement<xaml_map_impl, xaml_map>
 {
 private:
     inner_map_type m_map{};

@@ -5,7 +5,7 @@
 
 using namespace std;
 
-struct xaml_property_info_impl : xaml_implement<xaml_property_info_impl, xaml_property_info, xaml_object>
+struct xaml_property_info_impl : xaml_implement<xaml_property_info_impl, xaml_property_info>
 {
 private:
     xaml_ptr<xaml_string> m_name;

@@ -49,7 +49,7 @@ static path::string_type get_module_name(path file)
     return result;
 }
 
-struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module, xaml_object>
+struct xaml_module_impl : xaml_implement<xaml_module_impl, xaml_module>
 {
     xaml_ptr<xaml_string> m_name;
 

@@ -16,7 +16,7 @@ struct xaml_test_calculator_internal
     }
 };
 
-struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator, xaml_object>
+struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xaml_test_calculator>
 {
     xaml_test_calculator_internal m_internal;
 

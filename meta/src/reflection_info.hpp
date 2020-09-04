@@ -4,8 +4,8 @@
 #include <xaml/meta/reflection_info.h>
 #include <xaml/ptr.hpp>
 
-template <typename T, typename... Base>
-struct xaml_reflection_info_implement : xaml_implement<T, Base..., xaml_reflection_info, xaml_object>
+template <typename T, typename Base>
+struct xaml_reflection_info_implement : xaml_implement<T, Base>
 {
     xaml_guid m_type;
     xaml_ptr<xaml_string> m_name;

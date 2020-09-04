@@ -2,7 +2,7 @@
 
 using namespace std;
 
-struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method_info, xaml_delegate, xaml_object>
+struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method_info>
 {
     xaml_ptr<xaml_string> m_name;
     function<xaml_result(xaml_vector_view*)> m_func;

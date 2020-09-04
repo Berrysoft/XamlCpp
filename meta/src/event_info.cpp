@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_event_info_impl : xaml_implement<xaml_event_info_impl, xaml_event_info, xaml_object>
+struct xaml_event_info_impl : xaml_implement<xaml_event_info_impl, xaml_event_info>
 {
 private:
     xaml_ptr<xaml_string> m_name;

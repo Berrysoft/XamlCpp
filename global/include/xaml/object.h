@@ -13,8 +13,23 @@
 #include <xaml/utility.h>
 
 #ifdef __cplusplus
+template <typename T>
+struct xaml_base
+{
+    using type = void;
+};
+
+template <typename T>
+using xaml_base_t = typename xaml_base<T>::type;
+
     #define XAML_DECL_INTERFACE(name) struct XAML_NOVTBL name
-    #define XAML_DECL_INTERFACE_(name, base) struct XAML_NOVTBL name : base
+    #define XAML_DECL_INTERFACE_(name, base) \
+        template <>                          \
+        struct xaml_base<name>               \
+        {                                    \
+            using type = base;               \
+        };                                   \
+        struct XAML_NOVTBL name : base
     #define XAML_ARGS(type, ...) (__VA_ARGS__)
     #define XAML_METHOD_(type, name, tname, ...) virtual type XAML_CALL name XAML_ARGS(tname, __VA_ARGS__) noexcept = 0
     #define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, __VA_ARGS__)
@@ -56,7 +71,7 @@ XAML_DECL_INTERFACE(xaml_object)
 };
 
 #ifdef __cplusplus
-template <typename T, typename D, typename... Base>
+template <typename T, typename D>
 struct __xaml_query_implement : D
 {
     virtual ~__xaml_query_implement() {}
@@ -70,8 +85,8 @@ struct __xaml_query_implement : D
     }
 };
 
-template <typename T, typename D, typename... Base>
-struct xaml_implement : __xaml_query_implement<T, D, Base...>
+template <typename T, typename D>
+struct xaml_implement : __xaml_query_implement<T, D>
 {
     std::atomic<std::uint32_t> m_ref_count{ 1 };
 
@@ -88,42 +103,39 @@ struct xaml_implement : __xaml_query_implement<T, D, Base...>
     }
 };
 
-template <typename... B>
-struct __query_impl;
-
-template <typename B1, typename... B>
-struct __query_impl<B1, B...>
+template <typename D>
+struct __query_impl
 {
     template <typename T>
-    xaml_result XAML_CALL operator()(T* self, xaml_guid const& type, void** ptr) const noexcept
+    xaml_result operator()(T* self, xaml_guid const& type, void** ptr) const noexcept
     {
-        if (type == xaml_type_guid_v<B1>)
+        if (type == xaml_type_guid_v<D>)
         {
             self->add_ref();
-            *ptr = static_cast<B1*>(self);
+            *ptr = static_cast<D*>(self);
             return XAML_S_OK;
         }
         else
         {
-            return __query_impl<B...>{}(self, type, ptr);
+            return __query_impl<xaml_base_t<D>>{}(self, type, ptr);
         }
     }
 };
 
 template <>
-struct __query_impl<>
+struct __query_impl<void>
 {
     template <typename T>
-    xaml_result XAML_CALL operator()(T*, xaml_guid const&, void**) const noexcept
+    xaml_result operator()(T*, xaml_guid const&, void**) const noexcept
     {
         return XAML_E_NOINTERFACE;
     }
 };
 
-template <typename T, typename D, typename... Base>
-inline xaml_result __xaml_query_implement<T, D, Base...>::query(xaml_guid const& type, void** ptr) noexcept
+template <typename T, typename D>
+inline xaml_result __xaml_query_implement<T, D>::query(xaml_guid const& type, void** ptr) noexcept
 {
-    return __query_impl<D, Base...>{}(static_cast<T*>(this), type, ptr);
+    return __query_impl<D>{}(static_cast<T*>(this), type, ptr);
 }
 
 template <typename D, typename T, typename... Args, typename = std::enable_if_t<noexcept(D(std::declval<Args&&>()...))>>

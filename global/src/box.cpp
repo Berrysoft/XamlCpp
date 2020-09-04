@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_box_impl : xaml_implement<xaml_box_impl, xaml_box, xaml_object>
+struct xaml_box_impl : xaml_implement<xaml_box_impl, xaml_box>
 {
 private:
     xaml_guid m_type{};

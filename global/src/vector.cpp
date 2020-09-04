@@ -5,7 +5,7 @@ using namespace std;
 
 using inner_vector_type = vector<xaml_ptr<xaml_object>>;
 
-struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl, xaml_enumerator, xaml_object>
+struct xaml_vector_enumerator_impl : xaml_implement<xaml_vector_enumerator_impl, xaml_enumerator>
 {
 private:
     inner_vector_type::const_iterator m_begin, m_end;
@@ -36,7 +36,7 @@ public:
     }
 };
 
-struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector, xaml_vector_view, xaml_enumerable, xaml_object>
+struct xaml_vector_impl : xaml_implement<xaml_vector_impl, xaml_vector>
 {
 private:
     inner_vector_type m_vec{};

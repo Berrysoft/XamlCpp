@@ -1,7 +1,7 @@
 #include <xaml/meta/meta_context.h>
 #include <xaml/observable_vector.h>
 
-struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context, xaml_object>
+struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context>
 {
 private:
     xaml_ptr<xaml_map> m_modules;

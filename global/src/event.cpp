@@ -6,7 +6,7 @@
 
 using namespace std;
 
-struct xaml_event_impl : xaml_implement<xaml_event_impl, xaml_event, xaml_delegate, xaml_object>
+struct xaml_event_impl : xaml_implement<xaml_event_impl, xaml_event>
 {
 private:
     atomic<int32_t> index{ 0 };

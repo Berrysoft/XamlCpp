@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_buffer_impl : xaml_implement<xaml_buffer_impl, xaml_buffer, xaml_object>
+struct xaml_buffer_impl : xaml_implement<xaml_buffer_impl, xaml_buffer>
 {
 private:
     vector<uint8_t> m_buffer;
@@ -35,7 +35,7 @@ xaml_result XAML_CALL xaml_buffer_new(vector<uint8_t>&& vec, xaml_buffer** ptr) 
     return xaml_object_new<xaml_buffer_impl>(ptr, move(vec));
 }
 
-struct xaml_buffer_reference_impl : xaml_implement<xaml_buffer_reference_impl, xaml_buffer, xaml_object>
+struct xaml_buffer_reference_impl : xaml_implement<xaml_buffer_reference_impl, xaml_buffer>
 {
 private:
     uint8_t* m_data;

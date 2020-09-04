@@ -3,7 +3,7 @@
 
 using namespace std;
 
-struct xaml_default_property_impl : xaml_implement<xaml_default_property_impl, xaml_default_property, xaml_object>
+struct xaml_default_property_impl : xaml_implement<xaml_default_property_impl, xaml_default_property>
 {
 private:
     xaml_ptr<xaml_string> m_def_prop;

@@ -13,7 +13,7 @@ xaml_result XAML_CALL xaml_basic_type_info_new(xaml_guid const& type, xaml_strin
     return xaml_object_new<xaml_basic_type_info_impl>(ptr, type, name, include_file);
 }
 
-struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_type_info_registration_impl, xaml_type_info_registration, xaml_type_info>
+struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_type_info_registration_impl, xaml_type_info_registration>
 {
     xaml_ptr<xaml_map> m_attr_map;
     xaml_ptr<xaml_delegate> m_ctor{ nullptr };

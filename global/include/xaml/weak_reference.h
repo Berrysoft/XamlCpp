@@ -38,7 +38,7 @@ XAML_DECL_INTERFACE_(xaml_weak_reference_source, xaml_object)
 };
 
 #ifdef __cplusplus
-struct __xaml_weak_reference_implement : xaml_implement<__xaml_weak_reference_implement, xaml_weak_reference, xaml_object>
+struct __xaml_weak_reference_implement : xaml_implement<__xaml_weak_reference_implement, xaml_weak_reference>
 {
     std::atomic<std::uint32_t> m_strong_ref_count{};
     xaml_object* m_ptr{};
@@ -60,8 +60,8 @@ struct __xaml_weak_reference_implement : xaml_implement<__xaml_weak_reference_im
     }
 };
 
-template <typename T, typename D, typename... Base>
-struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
+template <typename T, typename D>
+struct __xaml_weak_implement : __xaml_query_implement<T, D>
 {
     std::atomic<std::intptr_t> m_ref_count{ 1 };
 
@@ -167,8 +167,8 @@ struct __xaml_weak_implement : __xaml_query_implement<T, D, Base...>
     }
 };
 
-template <typename T, typename D, typename... Base>
-struct __xaml_weak_reference_source_implement : xaml_inner_implement<__xaml_weak_reference_source_implement<T, D, Base...>, __xaml_weak_implement<T, D, Base...>, xaml_weak_reference_source>
+template <typename T, typename D>
+struct __xaml_weak_reference_source_implement : xaml_inner_implement<__xaml_weak_reference_source_implement<T, D>, __xaml_weak_implement<T, D>, xaml_weak_reference_source>
 {
     xaml_result XAML_CALL get_weak_reference(xaml_weak_reference** ptr) noexcept override { return this->m_outer->get_weak_reference(ptr); }
 };
@@ -200,14 +200,14 @@ struct __xaml_weak_compressed_implement<T1, void> : T1
 {
 };
 
-template <typename T, typename D, typename... Base>
+template <typename T, typename D>
 struct xaml_weak_implement
     : __xaml_weak_compressed_implement<
-          __xaml_weak_implement<T, D, Base...>,
+          __xaml_weak_implement<T, D>,
           std::conditional_t<
               std::is_base_of_v<xaml_weak_reference_source, D>,
               void,
-              __xaml_weak_reference_source_implement<T, D, Base...>>>
+              __xaml_weak_reference_source_implement<T, D>>>
 {
 };
 #endif // __cplusplus

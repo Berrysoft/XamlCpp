@@ -9,7 +9,7 @@
 using namespace std;
 
 template <typename T, typename String>
-struct xaml_string_implement : xaml_implement<T, xaml_string, xaml_object>
+struct xaml_string_implement : xaml_implement<T, xaml_string>
 {
     String m_str{};
 

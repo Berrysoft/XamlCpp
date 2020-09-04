@@ -2,7 +2,7 @@
 
 using namespace std;
 
-struct xaml_collection_property_info_impl : xaml_implement<xaml_collection_property_info_impl, xaml_collection_property_info, xaml_object>
+struct xaml_collection_property_info_impl : xaml_implement<xaml_collection_property_info_impl, xaml_collection_property_info>
 {
 private:
     xaml_ptr<xaml_string> m_name;
