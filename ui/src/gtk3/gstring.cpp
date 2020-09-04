@@ -2,7 +2,7 @@
 
 using namespace std;
 
-struct xaml_string_hstring_impl : xaml_implement<xaml_string_hstring_impl, xaml_string, xaml_object>
+struct xaml_string_hstring_impl : xaml_implement<xaml_string_hstring_impl, xaml_string>
 {
     g_free_unique_ptr<gchar> m_str;
 
