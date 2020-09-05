@@ -55,14 +55,14 @@ STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID, WORD
         if (args_res)
         {
             pDispParams->rgvarg[0].pvarVal->boolVal = VARIANT_TRUE;
-            wil::com_ptr_t<IDispatch, wil::err_returncode_policy> pDisp = pDispParams->rgvarg[6].pdispVal;
-            wil::com_ptr_t<IWebBrowser2, wil::err_returncode_policy> browser;
+            wil::com_ptr_nothrow<IDispatch> pDisp = pDispParams->rgvarg[6].pdispVal;
+            wil::com_ptr_nothrow<IWebBrowser2> browser;
             RETURN_IF_FAILED(pDisp.query_to(&browser));
             RETURN_IF_FAILED(browser->Stop());
             RETURN_IF_FAILED(m_webview->navigate(U("about:blank")));
-            wil::com_ptr_t<IDispatch, wil::err_returncode_policy> doc;
+            wil::com_ptr_nothrow<IDispatch> doc;
             RETURN_IF_FAILED(browser->get_Document(&doc));
-            wil::com_ptr_t<IPersistStreamInit, wil::err_returncode_policy> psi;
+            wil::com_ptr_nothrow<IPersistStreamInit> psi;
             RETURN_IF_FAILED(doc.query_to(&psi));
             xaml_ptr<xaml_buffer> buffer;
             RETURN_IF_FAILED(args_res->get_data(&buffer));
@@ -70,7 +70,7 @@ STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID, WORD
             RETURN_IF_FAILED(buffer->get_data(&data));
             int32_t size;
             RETURN_IF_FAILED(buffer->get_size(&size));
-            wil::com_ptr_t<IStream, wil::err_returncode_policy> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
+            wil::com_ptr_nothrow<IStream> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
             RETURN_IF_FAILED(psi->Load(res_data.get()));
         }
         break;
@@ -97,7 +97,7 @@ xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rec
     RECT r = xaml_to_native<RECT>(rect);
     m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
     m_sink = new WebBrowserSink(this);
-    wil::com_ptr_t<IUnknown, wil::err_returncode_policy> control;
+    wil::com_ptr_nothrow<IUnknown> control;
     XAML_RETURN_IF_FAILED(m_container.CreateControlEx(L"Shell.Explorer.2", nullptr, nullptr, &control, __uuidof(DWebBrowserEvents2), m_sink.get()));
     XAML_RETURN_IF_FAILED(control.query_to<IWebBrowser2>(&m_browser));
     return callback();

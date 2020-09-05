@@ -28,11 +28,11 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context>
 {
 #ifdef XAML_UI_WINDOWS
-    wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> target{ nullptr };
-    wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
-    wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> dwrite{ nullptr };
+    wil::com_ptr_nothrow<ID2D1RenderTarget> target{ nullptr };
+    wil::com_ptr_nothrow<ID2D1Factory> d2d{ nullptr };
+    wil::com_ptr_nothrow<IDWriteFactory> dwrite{ nullptr };
 
-    xaml_drawing_context_impl(wil::com_ptr_t<ID2D1RenderTarget, wil::err_returncode_policy> const& target, wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> const& d2d, wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> const& dwrite) noexcept
+    xaml_drawing_context_impl(wil::com_ptr_nothrow<ID2D1RenderTarget> const& target, wil::com_ptr_nothrow<ID2D1Factory> const& d2d, wil::com_ptr_nothrow<IDWriteFactory> const& dwrite) noexcept
         : target(target), d2d(d2d), dwrite(dwrite) {}
 #elif defined(XAML_UI_COCOA)
     xaml_size m_size;
@@ -69,9 +69,9 @@ struct xaml_canvas_internal : xaml_control_internal
     xaml_result XAML_CALL invalidate(xaml_rectangle const*) noexcept;
 
 #ifdef XAML_UI_WINDOWS
-    wil::com_ptr_t<ID2D1HwndRenderTarget, wil::err_returncode_policy> target{ nullptr };
-    wil::com_ptr_t<ID2D1Factory, wil::err_returncode_policy> d2d{ nullptr };
-    wil::com_ptr_t<IDWriteFactory, wil::err_returncode_policy> dwrite{ nullptr };
+    wil::com_ptr_nothrow<ID2D1HwndRenderTarget> target{ nullptr };
+    wil::com_ptr_nothrow<ID2D1Factory> d2d{ nullptr };
+    wil::com_ptr_nothrow<IDWriteFactory> dwrite{ nullptr };
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const&, LRESULT*) noexcept override;
 #elif defined(XAML_UI_COCOA)

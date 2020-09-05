@@ -45,7 +45,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                         RETURN_IF_FAILED(xaml_webview_web_request_new(&args_req));
                                         RETURN_IF_FAILED(args->set_request(args_req));
 
-                                        wil::com_ptr_t<ICoreWebView2WebResourceRequest, wil::err_returncode_policy> req;
+                                        wil::com_ptr_nothrow<ICoreWebView2WebResourceRequest> req;
                                         RETURN_IF_FAILED(e->get_Request(&req));
 
                                         wil::unique_cotaskmem_string method;
@@ -72,12 +72,12 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                                             RETURN_IF_FAILED(buffer->get_data(&data));
                                             int32_t size;
                                             RETURN_IF_FAILED(buffer->get_size(&size));
-                                            wil::com_ptr_t<IStream, wil::err_returncode_policy> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
+                                            wil::com_ptr_nothrow<IStream> res_data = SHCreateMemStream((const BYTE*)data, (UINT)size);
                                             xaml_ptr<xaml_string> ct_str;
                                             RETURN_IF_FAILED(args_res->get_content_type(&ct_str));
                                             wstring ct;
                                             RETURN_IF_FAILED(to_wstring(ct_str, &ct));
-                                            wil::com_ptr_t<ICoreWebView2WebResourceResponse, wil::err_returncode_policy> response;
+                                            wil::com_ptr_nothrow<ICoreWebView2WebResourceResponse> response;
                                             RETURN_IF_FAILED(env->CreateWebResourceResponse(res_data.get(), 200, L"OK", (L"Content-Type: " + ct).c_str(), &response));
                                             RETURN_IF_FAILED(e->put_Response(response.get()));
                                         }

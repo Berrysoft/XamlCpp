@@ -13,7 +13,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
 {
     auto __init = wil::CoInitializeEx(COINIT_APARTMENTTHREADED);
 
-    wil::com_ptr_t<IFileDialog, wil::err_returncode_policy> handle;
+    wil::com_ptr_nothrow<IFileDialog> handle;
     if constexpr (std::is_same_v<I, xaml_open_filebox>)
     {
         XAML_RETURN_IF_FAILED(CoCreateInstance(__uuidof(FileOpenDialog), nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&handle)));
@@ -74,14 +74,14 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_results));
     if (m_multiple)
     {
-        wil::com_ptr_t<IFileOpenDialog, wil::err_returncode_policy> open_dlg = handle.try_query<IFileOpenDialog>();
-        wil::com_ptr_t<IShellItemArray, wil::err_returncode_policy> items;
+        wil::com_ptr_nothrow<IFileOpenDialog> open_dlg = handle.try_query<IFileOpenDialog>();
+        wil::com_ptr_nothrow<IShellItemArray> items;
         XAML_RETURN_IF_FAILED(open_dlg->GetResults(&items));
         DWORD count;
         XAML_RETURN_IF_FAILED(items->GetCount(&count));
         for (DWORD i = 0; i < count; i++)
         {
-            wil::com_ptr_t<IShellItem, wil::err_returncode_policy> item;
+            wil::com_ptr_nothrow<IShellItem> item;
             XAML_RETURN_IF_FAILED(items->GetItemAt(i, &item));
             wil::unique_cotaskmem_string name;
             XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));
@@ -92,7 +92,7 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     }
     else
     {
-        wil::com_ptr_t<IShellItem, wil::err_returncode_policy> item;
+        wil::com_ptr_nothrow<IShellItem> item;
         XAML_RETURN_IF_FAILED(handle->GetResult(&item));
         wil::unique_cotaskmem_string name;
         XAML_RETURN_IF_FAILED(item->GetDisplayName(SIGDN_FILESYSPATH, &name));

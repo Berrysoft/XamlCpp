@@ -8,7 +8,7 @@ using namespace std;
 
 xaml_result xaml_solid_brush_impl::create(ID2D1RenderTarget* target, xaml_rectangle const&, ID2D1Brush** ptr) noexcept
 {
-    wil::com_ptr_t<ID2D1SolidColorBrush, wil::err_returncode_policy> brush;
+    wil::com_ptr_nothrow<ID2D1SolidColorBrush> brush;
     XAML_RETURN_IF_FAILED(target->CreateSolidColorBrush(D2D1::ColorF((uint32_t)m_color), &brush));
     return brush.copy_to(ptr);
 }
@@ -30,7 +30,7 @@ xaml_result xaml_linear_gradient_brush_impl::create(ID2D1RenderTarget* target, x
 {
     wil::com_ptr_t<ID2D1GradientStopCollection, wil::err_exception_policy> stop_collection;
     XAML_RETURN_IF_FAILED(get_STOPs(target, m_gradient_stops, &stop_collection));
-    wil::com_ptr_t<ID2D1LinearGradientBrush, wil::err_returncode_policy> brush;
+    wil::com_ptr_nothrow<ID2D1LinearGradientBrush> brush;
     XAML_RETURN_IF_FAILED(target->CreateLinearGradientBrush(
         D2D1::LinearGradientBrushProperties(
             xaml_to_native<D2D1_POINT_2F>(lerp_point(region, m_start_point)),
@@ -43,7 +43,7 @@ xaml_result xaml_radial_gradient_brush_impl::create(ID2D1RenderTarget* target, x
 {
     wil::com_ptr_t<ID2D1GradientStopCollection, wil::err_exception_policy> stop_collection;
     XAML_RETURN_IF_FAILED(get_STOPs(target, m_gradient_stops, &stop_collection));
-    wil::com_ptr_t<ID2D1RadialGradientBrush, wil::err_returncode_policy> brush;
+    wil::com_ptr_nothrow<ID2D1RadialGradientBrush> brush;
     XAML_RETURN_IF_FAILED(target->CreateRadialGradientBrush(
         D2D1::RadialGradientBrushProperties(
             xaml_to_native<D2D1_POINT_2F>(lerp_point(region, m_center)),
