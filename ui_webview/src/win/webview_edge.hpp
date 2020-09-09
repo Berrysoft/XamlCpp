@@ -1,10 +1,11 @@
+#include <wil/com.h>
 #include <win/webview.hpp>
 
-#include "winrt/Windows.Web.UI.Interop.h"
+#include <Windows.Web.UI.Interop.h>
 
 struct xaml_webview_edge : xaml_win32_webview
 {
-    winrt::Windows::Web::UI::Interop::WebViewControl m_view{ nullptr };
+    wil::com_ptr_nothrow<ABI::Windows::Web::UI::IWebViewControl> m_view{ nullptr };
 
     xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) noexcept override;
 

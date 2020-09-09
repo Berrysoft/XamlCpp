@@ -3,7 +3,7 @@ project(XamlWebView CXX)
 file(GLOB WV_HEADERS "include/xaml/ui/controls/*.h")
 
 if(${BUILD_WINDOWS})
-    file(GLOB WV_SOURCE "src/win/*.cpp")
+    file(GLOB WV_SOURCE "src/win/*.c*")
 elseif(${BUILD_COCOA})
     file(GLOB WV_SOURCE "src/cocoa/*.mm")
 elseif(${BUILD_GTK3})
@@ -64,22 +64,6 @@ if(${BUILD_WINDOWS})
 
     if(${BUILD_EDGE})
         target_compile_definitions(xaml_ui_webview PRIVATE "XAML_UI_WEBVIEW_EDGE")
-
-        if(NOT EXISTS "${CMAKE_BINARY_DIR}/cppwinrt.nupkg")
-            message(STATUS "Downloading CppWinRT...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Windows.CppWinRT/2.0.200729.8 ${CMAKE_BINARY_DIR}/cppwinrt.nupkg)
-            message(STATUS "Downloading CppWinRT... done")
-        endif()
-
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cppwinrt)
-        execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_BINARY_DIR}/cppwinrt.nupkg
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/cppwinrt
-        )
-
-        execute_process(COMMAND ${CMAKE_BINARY_DIR}/cppwinrt/bin/cppwinrt.exe -in local -out ${CMAKE_BINARY_DIR}/cppwinrt/gen/)
-
-        target_include_directories(xaml_ui_webview PRIVATE ${CMAKE_BINARY_DIR}/cppwinrt/gen)
-        target_compile_options(xaml_ui_webview PRIVATE "/await")
     endif()
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui_webview PUBLIC "-framework WebKit")
