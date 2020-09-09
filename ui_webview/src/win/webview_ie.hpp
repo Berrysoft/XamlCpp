@@ -6,36 +6,17 @@
 #include <atlbase.h>
 #include <atlwin.h>
 
+#include <wrl.h>
+
 struct xaml_webview_ie;
 
-class WebBrowserSink : public DWebBrowserEvents2
+struct WebBrowserSink : Microsoft::WRL::RuntimeClass<Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, DWebBrowserEvents2>
 {
-protected:
-    std::atomic<ULONG> m_ref;
     xaml_webview_ie* m_webview;
     BOOL m_can_go_forward;
     BOOL m_can_go_back;
 
-public:
-    WebBrowserSink(xaml_webview_ie* view) : m_ref(0), m_webview(view) {}
-    ~WebBrowserSink() {}
-
-    STDMETHODIMP QueryInterface(REFIID riid, void** ppvObject) override;
-
-    ULONG STDMETHODCALLTYPE AddRef() override
-    {
-        return ++m_ref;
-    }
-
-    ULONG STDMETHODCALLTYPE Release() override
-    {
-        ULONG res = --m_ref;
-        if (res == 0)
-        {
-            delete this;
-        }
-        return res;
-    }
+    WebBrowserSink(xaml_webview_ie* view) : m_webview(view) {}
 
     STDMETHODIMP GetTypeInfoCount(UINT* pctinfo) override
     {

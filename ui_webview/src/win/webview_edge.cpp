@@ -62,10 +62,9 @@ xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& r
     HRESULT __hr = task->put_Completed(
         Callback<IAsyncOperationCompletedHandler<WebViewControl*>>(
             [this, callback](IAsyncOperation<WebViewControl*>* operation, AsyncStatus status) {
-                m_view = nullptr;
                 if (status == AsyncStatus::Completed)
                 {
-                    RETURN_IF_FAILED(operation->GetResults(&m_view));
+                    RETURN_IF_FAILED(operation->GetResults(m_view.put()));
                     EventRegistrationToken token;
                     RETURN_IF_FAILED(m_view->add_NavigationCompleted(
                         Callback<ITypedEventHandler<IWebViewControl*, WebViewControlNavigationCompletedEventArgs*>>(
@@ -118,7 +117,7 @@ xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& r
                                 {
                                     xaml_ptr<xaml_buffer> b;
                                     XAML_RETURN_IF_FAILED(args_res->get_data(&b));
-                                    auto buffer = Make<ArrayViewBuffer>(b);
+                                    wil::com_ptr_nothrow<ArrayViewBuffer> buffer = Make<ArrayViewBuffer>(b);
                                     if (!buffer) return E_OUTOFMEMORY;
                                     wil::com_ptr_nothrow<IHttpResponseMessage> message;
                                     RETURN_IF_FAILED(ActivateInstance(HStringReference(RuntimeClass_Windows_Web_Http_HttpResponseMessage).Get(), &message));
@@ -126,7 +125,7 @@ xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& r
                                     {
                                         wil::com_ptr_nothrow<IHttpBufferContentFactory> content_factory;
                                         RETURN_IF_FAILED(GetActivationFactory(HStringReference(RuntimeClass_Windows_Web_Http_HttpBufferContent).Get(), &content_factory));
-                                        RETURN_IF_FAILED(content_factory->CreateFromBuffer(buffer.Get(), &content));
+                                        RETURN_IF_FAILED(content_factory->CreateFromBuffer(buffer.get(), &content));
                                     }
                                     RETURN_IF_FAILED(message->put_Content(content.get()));
                                     RETURN_IF_FAILED(e->put_Response(message.get()));
@@ -162,14 +161,14 @@ xaml_result xaml_webview_edge::navigate(char const* uri) noexcept
 xaml_result xaml_webview_edge::set_visible(bool vis) noexcept
 {
     wil::com_ptr_nothrow<IWebViewControlSite> view;
-    XAML_RETURN_IF_FAILED(m_view->QueryInterface(&view));
+    XAML_RETURN_IF_FAILED(m_view.query_to(&view));
     return view->put_IsVisible(vis);
 }
 
 xaml_result xaml_webview_edge::set_location(xaml_point const& p) noexcept
 {
     wil::com_ptr_nothrow<IWebViewControlSite> view;
-    XAML_RETURN_IF_FAILED(m_view->QueryInterface(&view));
+    XAML_RETURN_IF_FAILED(m_view.query_to(&view));
     Rect bounds;
     XAML_RETURN_IF_FAILED(view->get_Bounds(&bounds));
     return view->put_Bounds({ (FLOAT)p.x, (FLOAT)p.y, bounds.Width, bounds.Height });
@@ -178,7 +177,7 @@ xaml_result xaml_webview_edge::set_location(xaml_point const& p) noexcept
 xaml_result xaml_webview_edge::set_size(xaml_size const& s) noexcept
 {
     wil::com_ptr_nothrow<IWebViewControlSite> view;
-    XAML_RETURN_IF_FAILED(m_view->QueryInterface(&view));
+    XAML_RETURN_IF_FAILED(m_view.query_to(&view));
     Rect bounds;
     XAML_RETURN_IF_FAILED(view->get_Bounds(&bounds));
     return view->put_Bounds({ bounds.X, bounds.Y, (FLOAT)s.width, (FLOAT)s.height });
@@ -187,7 +186,7 @@ xaml_result xaml_webview_edge::set_size(xaml_size const& s) noexcept
 xaml_result xaml_webview_edge::set_rect(xaml_rectangle const& rect) noexcept
 {
     wil::com_ptr_nothrow<IWebViewControlSite> view;
-    XAML_RETURN_IF_FAILED(m_view->QueryInterface(&view));
+    XAML_RETURN_IF_FAILED(m_view.query_to(&view));
     return view->put_Bounds({ (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height });
 }
 

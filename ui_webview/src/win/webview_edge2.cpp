@@ -23,7 +23,7 @@ xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& 
                             RETURN_IF_FAILED(result);
                             m_host = webview;
                             RETURN_IF_FAILED(m_host->put_Bounds(xaml_to_native<RECT>(rect)));
-                            RETURN_IF_FAILED(m_host->get_CoreWebView2(&m_view));
+                            RETURN_IF_FAILED(m_host->get_CoreWebView2(m_view.put()));
                             EventRegistrationToken token;
                             RETURN_IF_FAILED(m_view->add_NavigationCompleted(
                                 Callback<ICoreWebView2NavigationCompletedEventHandler>(

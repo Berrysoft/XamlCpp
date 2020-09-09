@@ -11,21 +11,6 @@ using namespace std;
 
 CComModule _Module;
 
-STDMETHODIMP WebBrowserSink::QueryInterface(REFIID riid, void** ppvObject)
-{
-    if (IsBadWritePtr(ppvObject, sizeof(void*)))
-        return E_POINTER;
-    *ppvObject = nullptr;
-    if (riid == __uuidof(IUnknown) || riid == __uuidof(IDispatch) || riid == __uuidof(DWebBrowserEvents2))
-    {
-        AddRef();
-        *ppvObject = this;
-        return S_OK;
-    }
-    else
-        return E_NOINTERFACE;
-}
-
 STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID, WORD, DISPPARAMS* pDispParams, VARIANT*, EXCEPINFO*, UINT*)
 {
     if (riid != IID_NULL)
@@ -96,10 +81,10 @@ xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rec
 {
     RECT r = xaml_to_native<RECT>(rect);
     m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);
-    m_sink = new WebBrowserSink(this);
+    m_sink = Microsoft::WRL::Make<WebBrowserSink>(this);
     wil::com_ptr_nothrow<IUnknown> control;
     XAML_RETURN_IF_FAILED(m_container.CreateControlEx(L"Shell.Explorer.2", nullptr, nullptr, &control, __uuidof(DWebBrowserEvents2), m_sink.get()));
-    XAML_RETURN_IF_FAILED(control.query_to<IWebBrowser2>(&m_browser));
+    XAML_RETURN_IF_FAILED(control.query_to(m_browser.put()));
     return callback();
 }
 
