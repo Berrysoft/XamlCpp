@@ -6,6 +6,10 @@
 
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/font_provider.h>
+#elif defined(XAML_UI_WINRT)
+    #include <wrl.h>
+
+    #include <Windows.UI.Xaml.h>
 #elif defined(XAML_UI_QT5)
     #include <QApplication>
     #include <memory>
@@ -14,10 +18,12 @@
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application>
 {
 protected:
-#ifdef XAML_UI_QT5
+#ifdef XAML_UI_WINRT
+    Microsoft::WRL::ComPtr<ABI::Windows::UI::Xaml::IApplication> m_native_app{};
+#elif defined(XAML_UI_QT5)
     int m_argc{};
     std::unique_ptr<QApplication> m_native_app{};
-#endif // XAML_UI_QT5
+#endif
 
     std::atomic<int> m_quit_value{ 0 };
     xaml_ptr<xaml_vector> m_cmd_lines{ nullptr };

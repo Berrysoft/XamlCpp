@@ -17,12 +17,13 @@ xaml_check_ipo()
 
 # Options for target platforms.
 option(BUILD_WINDOWS "Build for Windows with Windows API")
+option(BUILD_WINRT "Build for Windows Runtime")
 option(BUILD_COCOA "Build for Mac with Cocoa")
 option(BUILD_GTK3 "Build with GTK3")
 option(BUILD_QT5 "Build with QT5")
 
 # Select a platform automatically.
-if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3} AND NOT ${BUILD_QT5})
+if(NOT ${BUILD_WINDOWS} AND NOT ${BUILD_WINRT} AND NOT ${BUILD_COCOA} AND NOT ${BUILD_GTK3} AND NOT ${BUILD_QT5})
     if(WIN32 AND NOT MINGW)
         set(BUILD_WINDOWS ON)
     elseif(UNIX OR MINGW)
@@ -69,6 +70,8 @@ endif()
 if(${BUILD_WINDOWS})
     list(APPEND XAML_BUILD_DEFINITIONS "UNICODE" "_UNICODE" "XAML_UI_WINDOWS")
     list(APPEND XAML_BUILD_INTERNAL_DEFINITIONS "_WIN32_WINNT=_WIN32_WINNT_WIN7")
+elseif(${BUILD_WINRT})
+    list(APPEND XAML_BUILD_DEFINITIONS "UNICODE" "_UNICODE" "XAML_UI_WINRT")
 elseif(${BUILD_COCOA})
     list(APPEND XAML_BUILD_DEFINITIONS "XAML_UI_COCOA")
     list(APPEND XAML_OBJC_COMPILE_OPTIONS "-fobjc-arc")
