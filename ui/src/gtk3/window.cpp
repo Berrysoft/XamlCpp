@@ -3,6 +3,7 @@
 #include <shared/window.hpp>
 #include <xaml/ui/application.h>
 #include <xaml/ui/drawing_conv.hpp>
+#include <xaml/ui/gtk3/application.h>
 #include <xaml/ui/gtk3/xamlfixed.h>
 #include <xaml/ui/menu_bar.h>
 #include <xaml/ui/window.h>
@@ -25,13 +26,17 @@ xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
 {
     if (!m_handle)
     {
-        m_window_handle = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+        xaml_ptr<xaml_application> app;
+        XAML_RETURN_IF_FAILED(xaml_application_current(&app));
+        xaml_ptr<xaml_gtk3_application> native_app;
+        XAML_RETURN_IF_FAILED(app->query(&native_app));
+        GtkApplication* gtk_native_app;
+        XAML_RETURN_IF_FAILED(native_app->get_handle(&gtk_native_app));
+        m_window_handle = gtk_application_window_new(gtk_native_app);
         m_vbox_handle = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         m_handle = xaml_fixed_new();
         gtk_container_add(GTK_CONTAINER(m_window_handle), m_vbox_handle);
         gtk_box_pack_end(GTK_BOX(m_vbox_handle), m_handle, TRUE, TRUE, 0);
-        xaml_ptr<xaml_application> app;
-        XAML_RETURN_IF_FAILED(xaml_application_current(&app));
         XAML_RETURN_IF_FAILED(app->window_added(static_cast<xaml_window*>(m_outer_this)));
         g_signal_connect(G_OBJECT(m_window_handle), "destroy", G_CALLBACK(xaml_window_internal::on_destroy), this);
         g_signal_connect(G_OBJECT(m_window_handle), "delete-event", G_CALLBACK(xaml_window_internal::on_delete_event), this);

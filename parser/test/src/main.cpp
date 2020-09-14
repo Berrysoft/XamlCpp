@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result XAML_CALL xaml_main(xaml_application* app, int* pcode) noexcept
+xaml_result XAML_CALL xaml_main(xaml_application*) noexcept
 {
     xaml_ptr<xaml_meta_context> ctx;
     XAML_RETURN_IF_FAILED(xaml_meta_context_new(&ctx));
@@ -17,6 +17,5 @@ xaml_result XAML_CALL xaml_main(xaml_application* app, int* pcode) noexcept
     XAML_RETURN_IF_FAILED(xaml_test_converter_register(ctx));
     xaml_ptr<xaml_test_window> wnd;
     XAML_RETURN_IF_FAILED(xaml_test_window_new(ctx, &wnd));
-    XAML_RETURN_IF_FAILED(wnd->show());
-    return app->run(pcode);
+    return wnd->show();
 }
