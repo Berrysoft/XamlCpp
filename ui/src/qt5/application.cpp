@@ -4,6 +4,7 @@
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_activate));
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     m_argc = argc;
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -21,6 +22,7 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
+    XAML_RETURN_IF_FAILED(on_activate(this));
     int result = m_native_app->exec();
     m_native_app.reset();
     *pvalue = m_quit_value != 0 ? (int)m_quit_value : result;

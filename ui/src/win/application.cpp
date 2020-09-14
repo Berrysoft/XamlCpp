@@ -48,6 +48,7 @@ static BOOL register_window_class() noexcept
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_activate));
     m_font_provider.m_outer = this;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
@@ -67,6 +68,7 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
+    XAML_RETURN_IF_FAILED(on_activate(this));
     while (true)
     {
         BOOL res;
