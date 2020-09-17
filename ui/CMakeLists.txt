@@ -39,6 +39,8 @@ if(${BUILD_WINDOWS})
     target_link_libraries(xaml_ui PRIVATE Comctl32 ntdll UxTheme Dwmapi wil xaml_helpers)
 elseif(${BUILD_WINRT})
     target_link_libraries(xaml_ui PRIVATE runtimeobject)
+
+    target_compile_definitions(xaml_ui PUBLIC "WINAPI_FAMILY=WINAPI_FAMILY_PC_APP")
 elseif(${BUILD_COCOA})
     target_link_libraries(xaml_ui PUBLIC "-framework Cocoa")
 elseif(${BUILD_GTK3})

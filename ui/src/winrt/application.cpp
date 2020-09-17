@@ -43,8 +43,7 @@ struct XamlApplication : RuntimeClass<IApplicationOverrides>
 
     STDMETHODIMP OnLaunched(ILaunchActivatedEventArgs*)
     {
-        int code;
-        return xaml_main(m_impl, &code);
+        return m_impl->on_activate(m_impl);
     }
 };
 
