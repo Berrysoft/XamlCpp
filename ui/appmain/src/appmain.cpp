@@ -3,17 +3,6 @@
 #include <sf/format.hpp>
 #include <xaml/ui/application.h>
 
-#ifdef XAML_UI_WINRT
-    #include <wrl.h>
-
-    #include <Windows.UI.Xaml.h>
-
-using namespace ABI::Windows::Foundation;
-using namespace ABI::Windows::UI::Xaml;
-using namespace Microsoft::WRL;
-using namespace Microsoft::WRL::Wrappers;
-#endif // XAML_UI_WINRT
-
 using namespace std;
 
 static int xaml_main_end(xaml_result hr, int* pcode) noexcept
@@ -31,21 +20,13 @@ static int xaml_main_end(xaml_result hr, int* pcode) noexcept
 
 static xaml_result xaml_main_begin(int argc, char** argv, int* pcode) noexcept
 {
-#ifdef XAML_UI_WINRT
-    ComPtr<IApplicationStatics> app_statics;
-    XAML_RETURN_IF_FAILED(GetActivationFactory(HStringReference(RuntimeClass_Windows_UI_Xaml_Application).Get(), &app_statics));
-    return app_statics->Start(
-        Callback<IApplicationInitializationCallback>(
-            [=](IApplicationInitializationCallbackParams* e) {
-                xaml_ptr<xaml_application> app;
-                return xaml_application_init_with_args(argc, argv, &app);
-            })
-            .Get());
-#else
     xaml_ptr<xaml_application> app;
     XAML_RETURN_IF_FAILED(xaml_application_init_with_args(argc, argv, &app));
-    return xaml_main(app, pcode);
-#endif // XAML_UI_WINRT
+    xaml_ptr<xaml_delegate> callback;
+    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_application>>(xaml_main, &callback)));
+    int32_t token;
+    XAML_RETURN_IF_FAILED(app->add_activate(callback, &token));
+    return app->run(pcode);
 }
 
 int main(int argc, char** argv)

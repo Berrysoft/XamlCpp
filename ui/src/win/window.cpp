@@ -19,7 +19,7 @@
 
 using namespace std;
 
-static unordered_map<HWND, xaml_window_internal*> window_map;
+static unordered_map<HWND, xaml_ptr<xaml_weak_reference>> window_map;
 
 static wil::unique_hbrush edit_normal_back{ CreateSolidBrush(RGB(33, 33, 33)) };
 constexpr COLORREF black_color{ RGB(0, 0, 0) };
@@ -28,46 +28,51 @@ constexpr COLORREF white_color{ RGB(255, 255, 255) };
 LRESULT CALLBACK xaml_window_callback(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) noexcept
 {
     xaml_win32_window_message msg = { hWnd, Msg, wParam, lParam };
-    auto wnd = window_map[hWnd];
-    if (wnd)
+    auto weak_wnd = window_map[hWnd];
+    if (weak_wnd)
     {
-        LPARAM result;
-        xaml_result __hr = wnd->wnd_proc(msg, &result);
-        switch (msg.Msg)
+        xaml_ptr<xaml_win32_window> wnd;
+        XAML_RETURN_IF_FAILED(weak_wnd->resolve(&wnd));
+        if (wnd)
         {
-        case WM_NCCREATE:
-            XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
-            break;
-        case WM_CTLCOLORSTATIC:
-            if (XAML_FAILED(__hr))
+            LPARAM result;
+            xaml_result __hr = wnd->wnd_proc(msg, &result);
+            switch (msg.Msg)
             {
-                bool dark = XamlIsDarkModeAllowedForApp();
-                HDC hDC = (HDC)wParam;
-                SetBkMode(hDC, TRANSPARENT);
-                if (dark)
+            case WM_NCCREATE:
+                XAML_RETURN_IF_WIN32_BOOL_FALSE(XamlEnableNonClientDpiScaling(hWnd));
+                break;
+            case WM_CTLCOLORSTATIC:
+                if (XAML_FAILED(__hr))
                 {
+                    bool dark = XamlIsDarkModeAllowedForApp();
+                    HDC hDC = (HDC)wParam;
+                    SetBkMode(hDC, TRANSPARENT);
+                    if (dark)
+                    {
+                        SetTextColor(hDC, white_color);
+                        SetBkColor(hDC, black_color);
+                    }
+                    return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+                }
+                break;
+            case WM_CTLCOLOREDIT:
+                if (XAML_FAILED(__hr) && XamlIsDarkModeAllowedForApp())
+                {
+                    HDC hDC = (HDC)wParam;
+                    HWND hEdit = (HWND)lParam;
                     SetTextColor(hDC, white_color);
                     SetBkColor(hDC, black_color);
+                    POINT p;
+                    XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
+                    XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
+                    bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
+                    return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
                 }
-                return (LRESULT)(dark ? GetStockBrush(BLACK_BRUSH) : GetStockBrush(WHITE_BRUSH));
+                break;
             }
-            break;
-        case WM_CTLCOLOREDIT:
-            if (XAML_FAILED(__hr) && XamlIsDarkModeAllowedForApp())
-            {
-                HDC hDC = (HDC)wParam;
-                HWND hEdit = (HWND)lParam;
-                SetTextColor(hDC, white_color);
-                SetBkColor(hDC, black_color);
-                POINT p;
-                XAML_RETURN_IF_WIN32_BOOL_FALSE(GetCursorPos(&p));
-                XAML_RETURN_IF_WIN32_BOOL_FALSE(ScreenToClient(hWnd, &p));
-                bool isHover = hEdit == ChildWindowFromPoint(hWnd, p);
-                return (intptr_t)(isHover ? GetStockBrush(BLACK_BRUSH) : edit_normal_back.get());
-            }
-            break;
+            if (XAML_SUCCEEDED(__hr)) return result;
         }
-        if (XAML_SUCCEEDED(__hr)) return result;
     }
     return DefWindowProc(hWnd, Msg, wParam, lParam);
 }
@@ -76,8 +81,7 @@ xaml_result XAML_CALL xaml_window_from_native(HWND hWnd, xaml_window** ptr) noex
 {
     if (auto wnd = window_map[hWnd])
     {
-        xaml_ptr<xaml_object> obj = wnd->m_outer_this;
-        return obj->query(ptr);
+        return wnd->resolve(ptr);
     }
     return XAML_E_KEYNOTFOUND;
 }
@@ -103,7 +107,9 @@ xaml_result xaml_window_internal::draw(xaml_rectangle const&) noexcept
         xaml_ptr<xaml_application> app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&app));
         XAML_RETURN_IF_FAILED(app->window_added(static_cast<xaml_window*>(m_outer_this)));
-        window_map[m_handle] = this;
+        xaml_ptr<xaml_weak_reference> weak_outer;
+        XAML_RETURN_IF_FAILED(static_cast<xaml_weak_reference_source*>(m_outer_this)->get_weak_reference(&weak_outer));
+        window_map[m_handle] = weak_outer;
         XAML_RETURN_IF_FAILED(draw_resizable());
         XAML_RETURN_IF_FAILED(draw_title());
     }

@@ -18,6 +18,7 @@ using namespace std;
 
 xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 {
+    XAML_RETURN_IF_FAILED(xaml_event_new(&m_activate));
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     for (int i = 0; i < argc; i++)
     {
@@ -34,6 +35,7 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pres) noexcept
 {
+    XAML_RETURN_IF_FAILED(on_activate(this));
     [NSApp run];
     *pres = m_quit_value;
     return XAML_S_OK;
