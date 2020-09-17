@@ -29,7 +29,7 @@ struct XamlApplication : RuntimeClass<IApplicationOverrides>
         XAML_RETURN_IF_FAILED(GetActivationFactory(HStringReference(RuntimeClass_Windows_UI_Xaml_Application).Get(), &app_factory));
         ComPtr<IInspectable> inner;
         XAML_RETURN_IF_FAILED(app_factory->CreateInstance(this, &inner, &m_instance));
-        return inner->QueryInterface(m_base.GetAddressOf());
+        return inner.As(&m_base);
     }
 
     STDMETHODIMP OnActivated(IActivatedEventArgs* args) { return m_base->OnActivated(args); }

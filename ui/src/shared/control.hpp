@@ -8,6 +8,10 @@
 
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/control.h>
+#elif defined(XAML_UI_WINRT)
+    #include <xaml/ui/winrt/control.h>
+
+    #include <wrl.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/control.h>
 #elif defined(XAML_UI_GTK3)
@@ -149,6 +153,18 @@ struct xaml_control_internal
     XAML_UI_API xaml_result XAML_CALL set_real_size(xaml_size const&) noexcept;
     XAML_UI_API xaml_result XAML_CALL get_real_margin(xaml_margin*) noexcept;
     XAML_UI_API xaml_result XAML_CALL set_real_margin(xaml_margin const&) noexcept;
+#elif defined(XAML_UI_WINRT)
+    Microsoft::WRL::ComPtr<ABI::Windows::UI::Xaml::IFrameworkElement> m_handle;
+
+    xaml_result XAML_CALL get_handle(ABI::Windows::UI::Xaml::IFrameworkElement** ptr) noexcept
+    {
+        return m_handle->QueryInterface(ptr);
+    }
+
+    xaml_result XAML_CALL set_handle(ABI::Windows::UI::Xaml::IFrameworkElement* value) noexcept
+    {
+        m_handle = value;
+    }
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_IMPL(handle, OBJC_OBJECT(NSView), OBJC_OBJECT(NSView)*, OBJC_OBJECT(NSView))
     XAML_PROP_IMPL(delegate, OBJC_OBJECT(XamlDelegate), OBJC_OBJECT(XamlDelegate)*, OBJC_OBJECT(XamlDelegate))
@@ -209,6 +225,13 @@ struct xaml_win32_control_implement : xaml_inner_implement<T2, D, Base2>
     xaml_result XAML_CALL set_real_size(xaml_size const& value) noexcept override { return this->m_outer->set_real_size(value); }
     xaml_result XAML_CALL get_real_margin(xaml_margin* pvalue) noexcept override { return this->m_outer->get_real_margin(pvalue); }
     xaml_result XAML_CALL set_real_margin(xaml_margin const& value) noexcept override { return this->m_outer->set_real_margin(value); }
+};
+#elif defined(XAML_UI_WINRT)
+template <typename T2, typename D, typename Base2>
+struct xaml_winrt_control_implement : xaml_inner_implement<T2, D, Base2>
+{
+    xaml_result XAML_CALL get_handle(ABI::Windows::UI::Xaml::IFrameworkElement** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
+    xaml_result XAML_CALL set_handle(ABI::Windows::UI::Xaml::IFrameworkElement* value) noexcept override { return this->m_outer->set_handle(value); }
 };
 #elif defined(XAML_UI_COCOA)
 template <typename T2, typename D, typename Base2>
@@ -292,6 +315,14 @@ struct xaml_control_implement : xaml_weak_implement<T, Base>
     XAML_PROP_INTERNAL_IMPL(real_margin, xaml_margin*, xaml_margin const&)
 
     xaml_result XAML_CALL wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept { return m_internal.wnd_proc(msg, presult); }
+#elif defined(XAML_UI_WINRT)
+    struct xaml_winrt_control_impl : xaml_winrt_control_implement<xaml_winrt_control_impl, T, xaml_winrt_control>
+    {
+    } m_native_control;
+
+    using native_control_type = xaml_winrt_control;
+
+    XAML_PROP_INTERNAL_IMPL(handle, ABI::Windows::UI::Xaml::IFrameworkElement**, ABI::Windows::UI::Xaml::IFrameworkElement*)
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_INTERNAL_IMPL(handle, OBJC_OBJECT(NSView)*, OBJC_OBJECT(NSView))
     XAML_PROP_INTERNAL_IMPL(delegate, OBJC_OBJECT(XamlDelegate)*, OBJC_OBJECT(XamlDelegate))

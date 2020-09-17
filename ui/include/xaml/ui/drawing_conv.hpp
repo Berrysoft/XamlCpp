@@ -5,6 +5,8 @@
 
 #ifdef XAML_UI_WINDOWS
     #include <Windows.h>
+#elif defined(XAML_UI_WINRT)
+    #include <Windows.Foundation.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
@@ -47,6 +49,16 @@ template <>
 constexpr RECT xaml_to_native<RECT, xaml_rectangle>(xaml_rectangle const& r) noexcept
 {
     return { (LONG)r.x, (LONG)r.y, (LONG)(r.x + r.width), (LONG)(r.y + r.height) };
+}
+#elif defined(XAML_UI_WINRT)
+constexpr xaml_size xaml_from_native(ABI::Windows::Foundation::Size const& s) noexcept
+{
+    return { (double)s.Width, (double)s.Height };
+}
+template <>
+constexpr ABI::Windows::Foundation::Size xaml_to_native<ABI::Windows::Foundation::Size, xaml_size>(xaml_size const& s) noexcept
+{
+    return { (FLOAT)s.width, (FLOAT)s.height };
 }
 #elif defined(XAML_UI_GTK3)
 constexpr xaml_size xaml_from_native(gint width, gint height) noexcept
