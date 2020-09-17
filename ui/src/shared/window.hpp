@@ -7,6 +7,8 @@
 
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/window.h>
+#elif defined(XAML_UI_WINRT)
+    #include <xaml/ui/winrt/window.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/window.h>
 #elif defined(XAML_UI_GTK3)
@@ -155,6 +157,12 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base>
     } m_native_window;
 
     using native_window_type = xaml_win32_window;
+#elif defined(XAML_UI_WINRT)
+    struct xaml_winrt_window_impl : xaml_winrt_control_implement<xaml_winrt_window_impl, T, xaml_winrt_window>
+    {
+    } m_native_window;
+
+    using native_window_type = xaml_winrt_window;
 #elif defined(XAML_UI_COCOA)
     XAML_PROP_INTERNAL_IMPL(window_handle, OBJC_OBJECT(NSWindow)*, OBJC_OBJECT(NSWindow))
     XAML_PROP_INTERNAL_IMPL(menu_bar_handle, OBJC_OBJECT(NSMenu)*, OBJC_OBJECT(NSMenu))
