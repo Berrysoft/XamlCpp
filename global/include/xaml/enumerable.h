@@ -53,36 +53,17 @@ XAML_DECL_INTERFACE_T_(xaml_enumerable, xaml_object, XAML_ENUMERABLE_T_VTBL)
 #endif // __cplusplus
 
 #ifdef __cplusplus
-template <typename T>
-struct __xaml_enumerable_value;
-
-template <typename T>
-struct __xaml_enumerable_value<xaml_enumerable<T>*>
-{
-    using type = T;
-};
-
-template <typename T>
-struct __xaml_enumerable_value<xaml_ptr<xaml_enumerable<T>>>
-{
-    using type = T;
-};
-
-template <typename T>
-using __xaml_enumerable_value_t = typename __xaml_enumerable_value<T>::type;
-
-    #define XAML_FOREACH_START(item, enumerable)                              \
-        do                                                                    \
-        {                                                                     \
-            using __item_t = __xaml_enumerable_value_t<decltype(enumerable)>; \
-            xaml_ptr<xaml_enumerator<__item_t>> __e;                          \
-            XAML_RETURN_IF_FAILED(enumerable->get_enumerator(&__e));          \
-            while (true)                                                      \
-            {                                                                 \
-                bool __moved;                                                 \
-                XAML_RETURN_IF_FAILED(__e->move_next(&__moved));              \
-                if (!__moved) break;                                          \
-                xaml_interface_var_t<__item_t> item;                          \
+    #define XAML_FOREACH_START(type, item, enumerable)               \
+        do                                                           \
+        {                                                            \
+            xaml_ptr<xaml_enumerator<type>> __e;                     \
+            XAML_RETURN_IF_FAILED(enumerable->get_enumerator(&__e)); \
+            while (true)                                             \
+            {                                                        \
+                bool __moved;                                        \
+                XAML_RETURN_IF_FAILED(__e->move_next(&__moved));     \
+                if (!__moved) break;                                 \
+                xaml_interface_var_t<type> item;                     \
                 XAML_RETURN_IF_FAILED(__e->get_current(&item))
 
     #define XAML_FOREACH_END() \

@@ -44,6 +44,11 @@ using xaml_base_t = typename xaml_base<T>::type;
             XAML_DECL_VTBL_T(bname<tname>, vname, T, xaml_interface_t<T>); \
         };                                                                 \
         template <typename T>                                              \
+        struct xaml_base<bname<T>>                                         \
+        {                                                                  \
+            using type = base;                                             \
+        };                                                                 \
+        template <typename T>                                              \
         struct xaml_type_guid<bname<T>>                                    \
         {                                                                  \
             static constexpr xaml_guid value = xaml_guid_##bname;          \
