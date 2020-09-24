@@ -26,7 +26,7 @@ struct xaml_event : xaml_delegate<TS, TE>
 template <typename TS, typename TE>
 struct xaml_base<xaml_event<TS, TE>>
 {
-    using base = xaml_delegate<TS, TE>;
+    using type = xaml_delegate<TS, TE>;
 };
 
 template <typename TS, typename TE>
@@ -47,7 +47,7 @@ struct xaml_type_guid<xaml_event<TS, TE>>
 
 #ifdef __cplusplus
 template <typename TS, typename TE>
-struct __xaml_event_implement : xaml_implement<__xaml_event_implement<TS, TE>, xaml_delegate<TS, TE>>
+struct __xaml_event_implement : xaml_implement<__xaml_event_implement<TS, TE>, xaml_event<TS, TE>>
 {
     std::atomic<std::int32_t> m_index{ 0 };
     std::map<std::int32_t, xaml_ptr<xaml_delegate<TS, TE>>> m_callbacks{};
@@ -64,7 +64,7 @@ struct __xaml_event_implement : xaml_implement<__xaml_event_implement<TS, TE>, x
         XAML_CATCH_RETURN()
     }
 
-    xaml_result XAML_CALL remove(int32_t token) noexcept override
+    xaml_result XAML_CALL remove(std::int32_t token) noexcept override
     {
         auto it = m_callbacks.find(token);
         if (it == m_callbacks.end()) return XAML_E_KEYNOTFOUND;
@@ -81,6 +81,12 @@ struct __xaml_event_implement : xaml_implement<__xaml_event_implement<TS, TE>, x
         return XAML_S_OK;
     }
 };
+
+template <typename TS, typename TE>
+xaml_result XAML_CALL xaml_event_new(xaml_event<TS, TE>** ptr) noexcept
+{
+    return xaml_object_new<__xaml_event_implement<TS, TE>>(ptr);
+}
 #endif // __cplusplus
 
 #endif // !XAML_EVENT_H

@@ -80,10 +80,10 @@ struct __xaml_delegate_implement : xaml_implement<__xaml_delegate_implement<Args
     }
 };
 
-template <typename... Args>
-xaml_result XAML_CALL xaml_delegate_new(std::function<xaml_result(xaml_interface_t<Args>...)>&& func, xaml_delegate<Args...>** ptr) noexcept
+template <typename... Args, typename F>
+xaml_result XAML_CALL xaml_delegate_new(F&& func, xaml_delegate<Args...>** ptr) noexcept
 {
-    return xaml_object_new<__xaml_delegate_implement<Args...>>(ptr, std::move(func));
+    return xaml_object_new_catch<__xaml_delegate_implement<Args...>>(ptr, std::move(func));
 }
 
 template <typename T, typename Return, typename... Args>

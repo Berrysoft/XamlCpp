@@ -102,10 +102,10 @@ public:
         return result;
     }
 
-    xaml_ptr<xaml_object> operator*() const
+    xaml_interface_var_t<T> operator*() const
     {
-        if (!m_enumerator) return nullptr;
-        xaml_ptr<xaml_object> res;
+        if (!m_enumerator) return {};
+        xaml_interface_var_t<T> res;
         XAML_THROW_IF_FAILED(m_enumerator->get_current(&res));
         return res;
     }
@@ -117,23 +117,31 @@ public:
 };
 
 template <typename T>
-inline __xaml_enumerator_iterator<T> begin(xaml_ptr<xaml_enumerable<T>> const& enumerable)
+struct xaml_enumerable_wrapper
 {
-    xaml_ptr<xaml_enumerator<T>> e;
-    XAML_THROW_IF_FAILED(enumerable->get_enumerator(&e));
-    bool ok;
-    XAML_THROW_IF_FAILED(e->move_next(&ok));
-    if (ok)
-        return { std::move(e) };
-    else
-        return {};
-}
+    xaml_ptr<xaml_enumerable<T>> m_enumerable;
 
-template <typename T>
-inline __xaml_enumerator_iterator<T> end(xaml_ptr<xaml_enumerable<T>> const&) noexcept
-{
-    return {};
-}
+    xaml_enumerable_wrapper(xaml_ptr<xaml_enumerable<T>> const& enumerable) : m_enumerable(enumerable)
+    {
+    }
+
+    __xaml_enumerator_iterator<T> begin()
+    {
+        xaml_ptr<xaml_enumerator<T>> e;
+        XAML_THROW_IF_FAILED(m_enumerable->get_enumerator(&e));
+        bool ok;
+        XAML_THROW_IF_FAILED(e->move_next(&ok));
+        if (ok)
+            return { std::move(e) };
+        else
+            return {};
+    }
+
+    __xaml_enumerator_iterator<T> end() noexcept
+    {
+        return {};
+    }
+};
 #endif // __cplusplus
 
 #endif // !XAML_ENUMERABLE_H
