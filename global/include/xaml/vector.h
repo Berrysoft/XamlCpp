@@ -19,13 +19,13 @@ __XAML_TYPE_NAME_BASE(xaml_vector_view, { 0x8960a280, 0xddbb, 0x4b5b, { 0xb4, 0x
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_vector_view, xaml_enumerable<T>, XAML_VECTOR_VIEW_T_VTBL)
 
-    #define XAML_VECTOR_VIEW_T_TYPE(type) typedef xaml_vector_view<type> xaml_vector_view__##type;
+    #define XAML_VECTOR_VIEW_T_TYPE(type) typedef xaml_vector_view<type> xaml_vector_view__##type##__;
 
     #define XAML_VECTOR_VIEW_T_V_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type)
     #define XAML_VECTOR_VIEW_T_O_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type)
 #else
     #define XAML_VECTOR_VIEW_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_vector_view, XAML_VECTOR_VIEW_T_VTBL, type_name, type_interface)
+        XAML_DECL_INTERFACE_T_(xaml_vector_view, type_name, XAML_VECTOR_VIEW_T_VTBL, type_name, type_interface)
 
     #define XAML_VECTOR_VIEW_T_V_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type, type)
     #define XAML_VECTOR_VIEW_T_O_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type, type*)
@@ -45,13 +45,13 @@ __XAML_TYPE_NAME_BASE(xaml_vector, { 0xad5e7c14, 0x969d, 0x4e76, { 0x97, 0x6e, 0
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_vector, xaml_vector_view<T>, XAML_VECTOR_T_VTBL)
 
-    #define XAML_VECTOR_T_TYPE(type) typedef xaml_vector<type> xaml_vector__##type;
+    #define XAML_VECTOR_T_TYPE(type) typedef xaml_vector<type> xaml_vector__##type##__;
 
     #define XAML_VECTOR_T_V_TYPE(type) XAML_VECTOR_T_TYPE(type)
     #define XAML_VECTOR_T_O_TYPE(type) XAML_VECTOR_T_TYPE(type)
 #else
     #define XAML_VECTOR_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_vector, XAML_VECTOR_T_VTBL, type_name, type_interface)
+        XAML_DECL_INTERFACE_T_(xaml_vector, type_name, XAML_VECTOR_T_VTBL, type_name, type_interface)
 
     #define XAML_VECTOR_T_V_TYPE(type) XAML_VECTOR_T_TYPE(type, type)
     #define XAML_VECTOR_T_O_TYPE(type) XAML_VECTOR_T_TYPE(type, type*)
