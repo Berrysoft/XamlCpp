@@ -11,16 +11,16 @@
 
 __XAML_TYPE_NAME_BASE(xaml_event, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0x2b, 0xdd, 0xca, 0x7f } })
 
-#define XAML_EVENT_T_T_VTBL(type, TA1N, TA1I, TA2N, TA2I)                              \
-    XAML_VTBL_INHERIT(XAML_DELEGATE_T_T_VTBL(type, TA1N, TA1I, TA2N, TA2I));           \
-    XAML_METHOD(add, type, xaml_delegate__##TA1N##____##TA2N##__*, XAML_STD int32_t*); \
+#define XAML_EVENT_T_T_VTBL(type, TA1N, TA1I, TA2N, TA2I)                           \
+    XAML_VTBL_INHERIT(XAML_DELEGATE_T_T_VTBL(type, TA1N, TA1I, TA2N, TA2I));        \
+    XAML_METHOD(add, type, XAML_DELEGATE_T_T_NAME(TA1N, TA2N)*, XAML_STD int32_t*); \
     XAML_METHOD(remove, type, XAML_STD int32_t)
 
 #ifdef __cplusplus
 template <typename TS, typename TE>
 struct xaml_event : xaml_delegate<TS, TE>
 {
-    XAML_DECL_VTBL_T(xaml_event<TS, TE>, XAML_EVENT_T_T_VTBL, TS, xaml_interface_t<TS>, TE, xaml_interface_t<TE>);
+    XAML_EVENT_T_T_VTBL(xaml_event, TS, xaml_interface_t<TS>, TE, xaml_interface_t<TE>);
 };
 
 template <typename TS, typename TE>
@@ -54,7 +54,7 @@ struct __xaml_event_implement : xaml_implement<__xaml_event_implement<TS, TE>, x
 
     xaml_result XAML_CALL add(xaml_delegate<TS, TE>* handler, std::int32_t* ptoken) noexcept override
     {
-        std::int32_t token = ++index;
+        std::int32_t token = ++m_index;
         try
         {
             m_callbacks.emplace(token, handler);

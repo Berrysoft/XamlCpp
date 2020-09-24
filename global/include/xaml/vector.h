@@ -109,7 +109,7 @@ struct __xaml_vector_implement : xaml_implement<__xaml_vector_implement<T>, xaml
     {
         for (size_t i = 0; i < m_vec.size(); i++)
         {
-            if (m_vec[i].get() == value)
+            if (m_vec[i] == value)
             {
                 *pindex = static_cast<int32_t>(i);
                 return XAML_S_OK;
