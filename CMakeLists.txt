@@ -130,8 +130,9 @@ endif()
 
 # Enable MSVC new preprocessor
 if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang"))
+    set(CMAKE_C11_STANDARD_COMPILE_OPTION "/std:c11")
+    set(CMAKE_C11_EXTENSION_COMPILE_OPTION "/std:c11")
     list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
-    list(APPEND XAML_C_COMPILE_OPTIONS "/std:c11")
 endif()
 
 # MSVC warnings
