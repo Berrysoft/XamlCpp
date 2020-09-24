@@ -51,7 +51,7 @@ struct xaml_type_guid<xaml_delegate<Args...>>
     #define XAML_DELEGATE_T_O_T_O_TYPE(a1type, a2type) XAML_DELEGATE_T_T_TYPE(a1type, a2type)
 #else
     #define XAML_DELEGATE_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_delegate, XAML_DELEGATE_T_VTBL, type_name, type_interface)
+        XAML_DECL_INTERFACE_T_(xaml_delegate, type_name, XAML_DELEGATE_T_VTBL, type_name, type_interface)
 
     #define XAML_DELEGATE_T_V_TYPE(type) XAML_DELEGATE_T_TYPE(type, type)
     #define XAML_DELEGATE_T_O_TYPE(type) XAML_DELEGATE_T_type(type, type*)
@@ -61,7 +61,7 @@ struct xaml_type_guid<xaml_delegate<Args...>>
     #define XAML_DELEGATE_T_T_TYPE(a1type_name, a1type_interface, a2type_name, a2type_interface) \
         XAML_DECL_INTERFACE_T_(xaml_delegate, a1type_name##____##a2type_name, XAML_DELEGATE_T_T_VTBL, a1type_name, a1type_interface, a2type_name, a2type_interface)
 
-    #define XAML_DELEGATE_T_O_T_O_TYPE(a1type, a2type) XAML_DELEGATE_T_T_T_TYPE(a1type, a1type*, a2type, a2type*)
+    #define XAML_DELEGATE_T_O_T_O_TYPE(a1type, a2type) XAML_DELEGATE_T_T_TYPE(a1type, a1type*, a2type, a2type*)
 #endif // __cplusplus
 
 #ifdef __cplusplus

@@ -21,7 +21,7 @@ __XAML_TYPE_NAME_BASE(xaml_vector_changed_args, { 0xf081fd5b, 0xd6d3, 0x4262, { 
     XAML_METHOD(get_action, type, xaml_vector_changed_action*);      \
     XAML_METHOD(get_new_items, type, XAML_VECTOR_VIEW_T_NAME(TN)**); \
     XAML_METHOD(get_new_index, type, XAML_STD int32_t*);             \
-    XAML_METHOD(get_old_items, type, XAML_VECTOR_VIEW_T_NAME(TI)**); \
+    XAML_METHOD(get_old_items, type, XAML_VECTOR_VIEW_T_NAME(TN)**); \
     XAML_METHOD(get_old_index, type, XAML_STD int32_t*)
 
 #ifdef __cplusplus
@@ -30,6 +30,17 @@ XAML_DECL_INTERFACE_T_(xaml_vector_changed_args, xaml_object, XAML_VECTOR_CHANGE
     #define XAML_VECTOR_CHANGED_ARGS_T_NAME(type) xaml_vector_changed_args<type>
 
     #define XAML_VECTOR_CHANGED_ARGS_T_TYPE(type) typedef xaml_vector_changed_args<type> xaml_vector_changed_args__##type##__;
+
+    #define XAML_VECTOR_CHANGED_ARGS_T_V_TYPE(type) XAML_VECTOR_CHANGED_ARGS_T_TYPE(type)
+    #define XAML_VECTOR_CHANGED_ARGS_T_O_TYPE(type) XAML_VECTOR_CHANGED_ARGS_T_TYPE(type)
+#else
+    #define XAML_VECTOR_CHANGED_ARGS_T_NAME(type) xaml_vector_changed_args__##type##__
+
+    #define XAML_VECTOR_CHANGED_ARGS_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_vector_changed_args, type_name, XAML_VECTOR_CHANGED_ARGS_T_VTBL, type_name, type_interface)
+
+    #define XAML_VECTOR_CHANGED_ARGS_T_V_TYPE(type) XAML_VECTOR_CHANGED_ARGS_T_TYPE(type, type)
+    #define XAML_VECTOR_CHANGED_ARGS_T_O_TYPE(type) XAML_VECTOR_CHANGED_ARGS_T_TYPE(type, type*)
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -83,15 +94,26 @@ xaml_result XAML_CALL xaml_vector_changed_args_new(xaml_vector_changed_action ac
 
 __XAML_TYPE_NAME_BASE(xaml_observable_vector, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0x2c, 0x43, 0x0b, 0x1b, 0xb6, 0xcf } })
 
-#define XAML_OBSERVABLE_VECTOR_T_VTBL(type, TN, TI)                                                                                      \
-    XAML_VTBL_INHERIT(XAML_VECTOR_T_VTBL(type, TN, TI));                                                                                 \
-    XAML_METHOD(add_vector_changed, type, XAML_DELEGATE_T_T_NAME(xaml_object, XAML_VECTOR_CHANGED_ARGS_T_NAME(TN))*, XAML_STD int32_t*); \
+#define __XAML_DELEGATE_T_T_NAME(a, b) XAML_DELEGATE_T_T_NAME(a, b)
+
+#define XAML_OBSERVABLE_VECTOR_T_VTBL(type, TN, TI)                                                                                        \
+    XAML_VTBL_INHERIT(XAML_VECTOR_T_VTBL(type, TN, TI));                                                                                   \
+    XAML_METHOD(add_vector_changed, type, __XAML_DELEGATE_T_T_NAME(xaml_object, XAML_VECTOR_CHANGED_ARGS_T_NAME(TN))*, XAML_STD int32_t*); \
     XAML_METHOD(remove_vector_changed, type, XAML_STD int32_t)
 
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_observable_vector, xaml_vector<T>, XAML_OBSERVABLE_VECTOR_T_VTBL)
 
-    #define XAML_OBSERVABLE_VECTOR_T_TYPE(type) typedef xaml_observable_vector<type>, xaml_observable_vector__##type##__;
+    #define XAML_OBSERVABLE_VECTOR_T_TYPE(type) typedef xaml_observable_vector<type> xaml_observable_vector__##type##__;
+
+    #define XAML_OBSERVABLE_VECTOR_T_V_TYPE(type) XAML_OBSERVABLE_VECTOR_T_TYPE(type)
+    #define XAML_OBSERVABLE_VECTOR_T_O_TYPE(type) XAML_OBSERVABLE_VECTOR_T_TYPE(type)
+#else
+    #define XAML_OBSERVABLE_VECTOR_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_observable_vector, type_name, XAML_OBSERVABLE_VECTOR_T_VTBL, type_name, type_interface)
+
+    #define XAML_OBSERVABLE_VECTOR_T_V_TYPE(type) XAML_OBSERVABLE_VECTOR_T_TYPE(type, type)
+    #define XAML_OBSERVABLE_VECTOR_T_O_TYPE(type) XAML_OBSERVABLE_VECTOR_T_TYPE(type, type*)
 #endif // __cplusplus
 
 #ifdef __cplusplus
@@ -209,7 +231,7 @@ struct __xaml_observable_vector_implement : xaml_implement<__xaml_observable_vec
 template <typename T>
 xaml_result XAML_CALL xaml_observable_vector_new(xaml_observable_vector<T>** ptr) noexcept
 {
-    return xaml_object_init<__xaml_observable_vector_implement<T>>(ptr);
+    return xaml_object_init_catch<__xaml_observable_vector_implement<T>>(ptr);
 }
 #endif // __cplusplus
 

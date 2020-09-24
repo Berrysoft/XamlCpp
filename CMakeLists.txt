@@ -129,9 +129,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang")
 endif()
 
 # Enable MSVC new preprocessor
-#if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang"))
-#    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
-#endif()
+if(MSVC AND (NOT CMAKE_CXX_COMPILER_ID MATCHES "[Cc]lang"))
+    list(APPEND XAML_COMPILE_OPTIONS "/Zc:preprocessor" "/wd5104" "/wd5105")
+    list(APPEND XAML_C_COMPILE_OPTIONS "/std:c11")
+endif()
 
 # MSVC warnings
 xaml_fix_warning_flags()
