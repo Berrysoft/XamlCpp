@@ -35,6 +35,19 @@ using xaml_base_t = typename xaml_base<T>::type;
     #define XAML_METHOD(name, tname, ...) XAML_METHOD_(xaml_result, name, tname, __VA_ARGS__)
     #define XAML_VTBL_INHERIT(x)
     #define XAML_DECL_VTBL(type, vtbl) vtbl(type)
+    #define XAML_DECL_VTBL_T(type, vtbl, ...) vtbl(type, __VA_ARGS__)
+
+    #define XAML_DECL_INTERFACE_T_(bname, base, vname)                     \
+        template <typename T>                                              \
+        struct bname : base                                                \
+        {                                                                  \
+            XAML_DECL_VTBL_T(bname<tname>, vname, T, xaml_interface_t<T>); \
+        };                                                                 \
+        template <typename T>                                              \
+        struct xaml_type_guid<bname<T>>                                    \
+        {                                                                  \
+            static constexpr xaml_guid value = xaml_guid_##bname;          \
+        };
 #else
     #define XAML_DECL_INTERFACE(name) struct name
     #define XAML_DECL_INTERFACE_(name, base) struct name
@@ -47,6 +60,17 @@ using xaml_base_t = typename xaml_base<T>::type;
         {                               \
             vname(type);                \
         } const* const vtbl
+    #define XAML_DECL_VTBL_T(type, vname, ...) \
+        struct                                 \
+        {                                      \
+            vname(type, __VA_ARGS__);          \
+        } const* const vtbl
+
+    #define XAML_DECL_INTERFACE_T_(bname, tname, vname, ...)      \
+        typedef struct bname__##tname                             \
+        {                                                         \
+            XAML_DECL_VTBL_T(bname__##tname, vname, __VA_ARGS__); \
+        } bname__##tname;
 #endif // __cplusplus
 
 XAML_CLASS(xaml_object, { 0xaf86e2e0, 0xb12d, 0x4c6a, { 0x9c, 0x5a, 0xd7, 0xaa, 0x65, 0x10, 0x1e, 0x90 } })

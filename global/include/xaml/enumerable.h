@@ -9,41 +9,80 @@
 
 #include <xaml/object.h>
 
-XAML_CLASS(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x0c, 0x7d, 0x34, 0x9e, 0x11 } })
+__XAML_TYPE_NAME_BASE(xaml_enumerator, { 0x4f706e46, 0x5b78, 0x4504, { 0xbc, 0x4c, 0x4a, 0x0c, 0x7d, 0x34, 0x9e, 0x11 } })
 
-#define XAML_ENUMERATOR_VTBL(type)             \
+#define XAML_ENUMERATOR_T_VTBL(type, TN, TI)   \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
     XAML_METHOD(move_next, type, bool*);       \
-    XAML_METHOD(get_current, type, xaml_object**)
-
-XAML_DECL_INTERFACE_(xaml_enumerator, xaml_object)
-{
-    XAML_DECL_VTBL(xaml_enumerator, XAML_ENUMERATOR_VTBL);
-};
-
-XAML_CLASS(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4b, 0xab, 0x09, 0x0f, 0xc2, 0xb0, 0x95 } })
-
-#define XAML_ENUMERABLE_VTBL(type)             \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(get_enumerator, type, xaml_enumerator**)
-
-XAML_DECL_INTERFACE_(xaml_enumerable, xaml_object)
-{
-    XAML_DECL_VTBL(xaml_enumerable, XAML_ENUMERABLE_VTBL);
-};
+    XAML_METHOD(get_current, type, TI*)
 
 #ifdef __cplusplus
-    #define XAML_FOREACH_START(item, enumerable)                     \
-        do                                                           \
-        {                                                            \
-            xaml_ptr<xaml_enumerator> __e;                           \
-            XAML_RETURN_IF_FAILED(enumerable->get_enumerator(&__e)); \
-            while (true)                                             \
-            {                                                        \
-                bool __moved;                                        \
-                XAML_RETURN_IF_FAILED(__e->move_next(&__moved));     \
-                if (!__moved) break;                                 \
-                xaml_ptr<xaml_object> item;                          \
+XAML_DECL_INTERFACE_T_(xaml_enumerator, xaml_object, XAML_ENUMERATOR_T_VTBL)
+
+    #define XAML_ENUMERATOR_T_TYPE(type) typedef xaml_enumerator<type> xaml_enumerator__##type;
+
+    #define XAML_ENUMERATOR_T_V_TYPE(type) XAML_ENUMERATOR_T_TYPE(type)
+    #define XAML_ENUMERATOR_T_O_TYPE(type) XAML_ENUMERATOR_T_TYPE(type)
+#else
+    #define XAML_ENUMERATOR_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_enumerator, XAML_ENUMERATOR_T_VTBL, type_name, type_interface)
+
+    #define XAML_ENUMERATOR_T_V_TYPE(type) XAML_ENUMERATOR_T_TYPE(type, type)
+    #define XAML_ENUMERATOR_T_O_TYPE(type) XAML_ENUMERATOR_T_TYPE(type, type*)
+#endif // __cplusplus
+
+__XAML_TYPE_NAME_BASE(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4b, 0xab, 0x09, 0x0f, 0xc2, 0xb0, 0x95 } })
+
+#define XAML_ENUMERABLE_T_VTBL(type, TN, TI)   \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
+    XAML_METHOD(get_enumerator, type, xaml_enumerator__##TN**)
+
+#ifdef __cplusplus
+XAML_DECL_INTERFACE_T_(xaml_enumerable, xaml_object, XAML_ENUMERABLE_T_VTBL)
+
+    #define XAML_ENUMERABLE_T_TYPE(type) typedef xaml_enumerable<type> xaml_enumerable__##type;
+
+    #define XAML_ENUMERABLE_T_V_TYPE(type) XAML_ENUMERABLE_T_TYPE(type)
+    #define XAML_ENUMERABLE_T_O_TYPE(type) XAML_ENUMERABLE_T_TYPE(type)
+#else
+    #define XAML_ENUMERABLE_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_enumerable, XAML_ENUMERABLE_T_VTBL, type_name, type_interface)
+
+    #define XAML_ENUMERABLE_T_V_TYPE(type) XAML_ENUMERABLE_T_TYPE(type, type)
+    #define XAML_ENUMERABLE_T_O_TYPE(type) XAML_ENUMERABLE_T_TYPE(type, type*)
+#endif // __cplusplus
+
+#ifdef __cplusplus
+template <typename T>
+struct __xaml_enumerable_value;
+
+template <typename T>
+struct __xaml_enumerable_value<xaml_enumerable<T>*>
+{
+    using type = T;
+};
+
+template <typename T>
+struct __xaml_enumerable_value<xaml_ptr<xaml_enumerable<T>>>
+{
+    using type = T;
+};
+
+template <typename T>
+using __xaml_enumerable_value_t = typename __xaml_enumerable_value<T>::type;
+
+    #define XAML_FOREACH_START(item, enumerable)                              \
+        do                                                                    \
+        {                                                                     \
+            using __item_t = __xaml_enumerable_value_t<decltype(enumerable)>; \
+            xaml_ptr<xaml_enumerator<__item_t>> __e;                          \
+            XAML_RETURN_IF_FAILED(enumerable->get_enumerator(&__e));          \
+            while (true)                                                      \
+            {                                                                 \
+                bool __moved;                                                 \
+                XAML_RETURN_IF_FAILED(__e->move_next(&__moved));              \
+                if (!__moved) break;                                          \
+                xaml_interface_var_t<__item_t> item;                          \
                 XAML_RETURN_IF_FAILED(__e->get_current(&item))
 
     #define XAML_FOREACH_END() \
@@ -51,14 +90,15 @@ XAML_DECL_INTERFACE_(xaml_enumerable, xaml_object)
         }                      \
         while (0)
 
+template <typename T>
 struct __xaml_enumerator_iterator
 {
 private:
-    xaml_ptr<xaml_enumerator> m_enumerator{ nullptr };
+    xaml_ptr<xaml_enumerator<T>> m_enumerator{ nullptr };
 
 public:
     __xaml_enumerator_iterator() noexcept {}
-    __xaml_enumerator_iterator(xaml_ptr<xaml_enumerator>&& e) noexcept : m_enumerator(std::move(e)) {}
+    __xaml_enumerator_iterator(xaml_ptr<xaml_enumerator<T>>&& e) noexcept : m_enumerator(std::move(e)) {}
 
     __xaml_enumerator_iterator& operator++()
     {
@@ -91,10 +131,10 @@ public:
     }
 };
 
-template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
-inline __xaml_enumerator_iterator begin(xaml_ptr<T> const& enumerable)
+template <typename T>
+inline __xaml_enumerator_iterator<T> begin(xaml_ptr<xaml_enumerable<T>> const& enumerable)
 {
-    xaml_ptr<xaml_enumerator> e;
+    xaml_ptr<xaml_enumerator<T>> e;
     XAML_THROW_IF_FAILED(enumerable->get_enumerator(&e));
     bool ok;
     XAML_THROW_IF_FAILED(e->move_next(&ok));
@@ -104,20 +144,8 @@ inline __xaml_enumerator_iterator begin(xaml_ptr<T> const& enumerable)
         return {};
 }
 
-template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
-inline __xaml_enumerator_iterator begin(T* enumerable)
-{
-    return begin(xaml_ptr<T>(enumerable));
-}
-
-template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
-inline __xaml_enumerator_iterator end(xaml_ptr<T> const&) noexcept
-{
-    return {};
-}
-
-template <typename T, typename = std::enable_if_t<std::is_base_of_v<xaml_enumerable, T>>>
-inline __xaml_enumerator_iterator end(T*) noexcept
+template <typename T>
+inline __xaml_enumerator_iterator<T> end(xaml_ptr<xaml_enumerable<T>> const&) noexcept
 {
     return {};
 }
