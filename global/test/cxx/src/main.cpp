@@ -4,7 +4,7 @@
 #include <sf/format.hpp>
 #include <xaml/delegate.h>
 #include <xaml/enumerable.h>
-//#include <xaml/map.h>
+#include <xaml/map.h>
 #include <xaml/observable_vector.h>
 #include <xaml/ptr.hpp>
 #include <xaml/result.h>
@@ -35,10 +35,11 @@ int main()
                 sf::print(cout, U("Add item at {}: "), index);
                 xaml_ptr<xaml_vector_view<int32_t>> new_items;
                 XAML_RETURN_IF_FAILED(args->get_new_items(&new_items));
-                for (auto obj : xaml_enumerable_wrapper<int32_t>(new_items))
+                XAML_FOREACH_START(int32_t, obj, new_items);
                 {
                     sf::print(cout, U("{} "), obj);
                 }
+                XAML_FOREACH_END();
                 sf::println(cout);
                 break;
             }
@@ -49,10 +50,11 @@ int main()
                 sf::print(cout, U("Erase item at {}: "), index);
                 xaml_ptr<xaml_vector_view<int32_t>> old_items;
                 XAML_RETURN_IF_FAILED(args->get_old_items(&old_items));
-                for (auto obj : xaml_enumerable_wrapper<int32_t>(old_items))
+                XAML_FOREACH_START(int32_t, obj, old_items);
                 {
                     sf::print(cout, U("{} "), obj);
                 }
+                XAML_FOREACH_END();
                 sf::println(cout);
                 break;
             }
@@ -111,14 +113,12 @@ int main()
 
     XAML_THROW_IF_FAILED(vec->clear());
 
-    //xaml_ptr<xaml_hasher> hasher;
-    //XAML_THROW_IF_FAILED(xaml_hasher_new<int>(&hasher));
-    //xaml_ptr<xaml_map> map;
-    //XAML_THROW_IF_FAILED(xaml_map_new_with_hasher(hasher, &map));
-    //bool replaced;
-    //XAML_THROW_IF_FAILED(map->insert(xaml_box_value(1), str, &replaced));
-    //XAML_THROW_IF_FAILED(map->insert(xaml_box_value(2), vec, &replaced));
-    //xaml_ptr<xaml_object> obj1;
-    //XAML_THROW_IF_FAILED(map->lookup(xaml_box_value(1), &obj1));
-    //sf::println(cout, xaml_unbox_value<xaml_ptr<xaml_string>>(obj1));
+    xaml_ptr<xaml_map<int32_t, xaml_object>> map;
+    XAML_THROW_IF_FAILED(xaml_map_new(&map));
+    bool replaced;
+    XAML_THROW_IF_FAILED(map->insert(1, str, &replaced));
+    XAML_THROW_IF_FAILED(map->insert(2, vec, &replaced));
+    xaml_ptr<xaml_object> obj1;
+    XAML_THROW_IF_FAILED(map->lookup(1, &obj1));
+    sf::println(cout, xaml_unbox_value<xaml_ptr<xaml_string>>(obj1));
 }
