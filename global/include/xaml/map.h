@@ -12,19 +12,68 @@
 
 #include <xaml/enumerable.h>
 
-XAML_CLASS(xaml_key_value_pair, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
+__XAML_TYPE_NAME_BASE(xaml_key_value_pair, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
 
-#define XAML_KEY_VALUE_PAIR_VTBL(type)         \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(get_key, type, xaml_object**); \
-    XAML_METHOD(get_value, type, xaml_object**)
+#define XAML_KEY_VALUE_PAIR_T_T_VTBL(type, TKeyN, TKeyI, TValueN, TValueI) \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                             \
+    XAML_METHOD(get_key, type, TKeyI*);                                    \
+    XAML_METHOD(get_value, type, TValueI*)
 
-XAML_DECL_INTERFACE_(xaml_key_value_pair, xaml_object)
+#ifdef __cplusplus
+template <typename TKey, typename TValue>
+struct xaml_key_value_pair : xaml_object
 {
-    XAML_DECL_VTBL(xaml_key_value_pair, XAML_KEY_VALUE_PAIR_VTBL);
+    XAML_KEY_VALUE_PAIR_T_T_VTBL(xaml_key_value_pair, TKey, xaml_interface_t<TKey>, TValue, xaml_interface_t<TValue>);
 };
 
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_key_value_pair_new(xaml_object*, xaml_object*, xaml_key_value_pair**) XAML_NOEXCEPT;
+template <typename TKey, typename TValue>
+struct xaml_base<xaml_key_value_pair<TKey, TValue>>
+{
+    using type = xaml_object;
+};
+
+template <typename TKey, typename TValue>
+struct xaml_type_guid<xaml_key_value_pair<TKey, TValue>>
+{
+    static constexpr xaml_guid value = xaml_guid_xaml_key_value_pair;
+};
+
+    #define XAML_KEY_VALUE_PAIR_T_T_NAME(tkey, tvalue) xaml_key_value_pair<tkey, tvalue>
+
+    #define XAML_KEY_VALUE_PAIR_T_T_TYPE(tkey, tkey_interface, tvalue, tvalue_interface) typedef xaml_key_value_pair<tkey, tvalue> xaml_key_value_pair__##tkey##____##tvalue##__;
+#else
+    #define XAML_KEY_VALUE_PAIR_T_T_NAME(tkey, tvalue) xaml_key_value_pair__##tkey##____##tvalue##__
+
+    #define XAML_KEY_VALUE_PAIR_T_T_TYPE(tkey_name, tkey_interface, tvalue_name, tvalue_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_key_value_pair, tkey_name##____##tvalue_name, XAML_KEY_VALUE_PAIR_T_T_VTBL, tkey_name, tkey_interface, tvalue_name, tvalue_interface)
+#endif // __cplusplus
+
+#ifdef __cplusplus
+template <typename TKey, typename TValue>
+struct __xaml_key_value_pair_implement : xaml_implement<__xaml_key_value_pair_implement<TKey, TValue>, xaml_key_value_pair<TKey, TValue>>
+{
+    xaml_interface_var_t<TKey> m_key;
+    xaml_interface_var_t<TValue> m_value;
+
+    __xaml_key_value_pair_implement(xaml_interface_t<TKey> key, xaml_interface_t<TValue> value) noexcept : m_key(std::move(key)), m_value(std::move(value)) {}
+
+    xaml_result XAML_CALL get_key(xaml_interface_t<TKey>* ptr) noexcept override
+    {
+        return xaml_interface_assign<TKey>(m_key, ptr);
+    }
+
+    xaml_result XAML_CALL get_value(xaml_interface_t<TValue>* ptr) noexcept override
+    {
+        return xaml_interface_assign<TValue>(m_value, ptr);
+    }
+};
+
+template <typename TKey, typename TValue>
+xaml_result XAML_CALL xaml_key_value_pair_new(xaml_interface_t<TKey> key, xaml_interface_t<TValue> value, xaml_key_value_pair<TKey, TValue>** ptr) noexcept
+{
+    return xaml_object_new<__xaml_key_value_pair_implement<TKey, TValue>>(ptr, std::move(key), std::move(value));
+}
+#endif // __cplusplus
 
 XAML_CLASS(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 

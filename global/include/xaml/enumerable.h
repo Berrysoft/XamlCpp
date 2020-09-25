@@ -21,19 +21,14 @@ XAML_DECL_INTERFACE_T_(xaml_enumerator, xaml_object, XAML_ENUMERATOR_T_VTBL)
 
     #define XAML_ENUMERATOR_T_NAME(type) xaml_enumerator<type>
 
-    #define XAML_ENUMERATOR_T_TYPE(type) typedef xaml_enumerator<type> xaml_enumerator__##type##__;
-
-    #define XAML_ENUMERATOR_T_V_TYPE(type) XAML_ENUMERATOR_T_TYPE(type)
-    #define XAML_ENUMERATOR_T_O_TYPE(type) XAML_ENUMERATOR_T_TYPE(type)
+    #define __XAML_ENUMERATOR_T_TYPE(type) typedef xaml_enumerator<type> xaml_enumerator__##type##__;
 #else
     #define XAML_ENUMERATOR_T_NAME(type) xaml_enumerator__##type##__
 
-    #define XAML_ENUMERATOR_T_TYPE(type_name, type_interface) \
+    #define __XAML_ENUMERATOR_T_TYPE(type_name, type_interface) \
         XAML_DECL_INTERFACE_T_(xaml_enumerator, type_name, XAML_ENUMERATOR_T_VTBL, type_name, type_interface)
-
-    #define XAML_ENUMERATOR_T_V_TYPE(type) XAML_ENUMERATOR_T_TYPE(type, type)
-    #define XAML_ENUMERATOR_T_O_TYPE(type) XAML_ENUMERATOR_T_TYPE(type, type*)
 #endif // __cplusplus
+#define XAML_ENUMERATOR_T_TYPE(type) __XAML_ENUMERATOR_T_TYPE(type)
 
 __XAML_TYPE_NAME_BASE(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4b, 0xab, 0x09, 0x0f, 0xc2, 0xb0, 0x95 } })
 
@@ -44,17 +39,16 @@ __XAML_TYPE_NAME_BASE(xaml_enumerable, { 0x7d0d584f, 0x9d47, 0x4375, { 0x8a, 0x4
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_enumerable, xaml_object, XAML_ENUMERABLE_T_VTBL)
 
-    #define XAML_ENUMERABLE_T_TYPE(type) typedef xaml_enumerable<type> xaml_enumerable__##type##__;
+    #define XAML_ENUMERABLE_T_NAME(type) xaml_enumerable<type>
 
-    #define XAML_ENUMERABLE_T_V_TYPE(type) XAML_ENUMERABLE_T_TYPE(type)
-    #define XAML_ENUMERABLE_T_O_TYPE(type) XAML_ENUMERABLE_T_TYPE(type)
+    #define __XAML_ENUMERABLE_T_TYPE(type) typedef xaml_enumerable<type> xaml_enumerable__##type##__;
 #else
-    #define XAML_ENUMERABLE_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_enumerable, type_name, XAML_ENUMERABLE_T_VTBL, type_name, type_interface)
+    #define XAML_ENUMEABLE_T_NAME(type) xaml_enumerable__##type##__
 
-    #define XAML_ENUMERABLE_T_V_TYPE(type) XAML_ENUMERABLE_T_TYPE(type, type)
-    #define XAML_ENUMERABLE_T_O_TYPE(type) XAML_ENUMERABLE_T_TYPE(type, type*)
+    #define __XAML_ENUMERABLE_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_enumerable, type_name, XAML_ENUMERABLE_T_VTBL, type_name, type_interface)
 #endif // __cplusplus
+#define XAML_ENUMERABLE_T_TYPE(type) __XAML_ENUMERABLE_T_TYPE(type)
 
 #ifdef __cplusplus
     #define XAML_FOREACH_START(type, item, enumerable)               \

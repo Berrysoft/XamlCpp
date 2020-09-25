@@ -35,15 +35,12 @@ struct xaml_type_guid<xaml_event<TS, TE>>
     static constexpr xaml_guid value = xaml_guid_xaml_event;
 };
 
-    #define XAML_EVENT_T_T_TYPE(type1, type2) typedef xaml_event<type1, type2> xaml_event__##type1##____##type2##__;
-
-    #define XAML_EVENT_T_O_T_O_TYPE(type1, type2) XAML_EVENT_T_T_TYPE(type1, type2)
+    #define __XAML_EVENT_T_T_TYPE(type1, type2) typedef xaml_event<type1, type2> xaml_event__##type1##____##type2##__;
 #else
-    #define XAML_EVENT_T_T_TYPE(type1_name, type1_interface, type2_name, type2_interface) \
+    #define __XAML_EVENT_T_T_TYPE(type1_name, type1_interface, type2_name, type2_interface) \
         XAML_DECL_INTERFACE_T_(xaml_event, type1_name##____##type2_name, XAML_EVENT_T_T_VTBL, type1_name, type1_interface, type2_name, type2_interface)
-
-    #define XAML_EVENT_T_O_T_O_TYPE(type1, type2) XAML_EVENT_T_T_TYPE(type1, type1*, type2, type2*)
 #endif // __cplusplus
+#define XAML_EVENT_T_T_TYPE(type1, type2) __XAML_EVENT_T_T_TYPE(type1, type2)
 
 #ifdef __cplusplus
 template <typename TS, typename TE>

@@ -11,7 +11,7 @@ xaml_result XAML_CALL print_string(xaml_string* str)
     XAML_RETURN_IF_FAILED(str->vtbl->get_data(str, &data));
     int32_t length;
     XAML_RETURN_IF_FAILED(str->vtbl->get_length(str, &length));
-    printf(U("%*s "), (int)length, data);
+    printf(U("%*s "), length, data);
     return XAML_S_OK;
 }
 

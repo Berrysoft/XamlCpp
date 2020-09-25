@@ -21,19 +21,14 @@ XAML_DECL_INTERFACE_T_(xaml_vector_view, xaml_enumerable<T>, XAML_VECTOR_VIEW_T_
 
     #define XAML_VECTOR_VIEW_T_NAME(type) xaml_vector_view<type>
 
-    #define XAML_VECTOR_VIEW_T_TYPE(type) typedef xaml_vector_view<type> xaml_vector_view__##type##__;
-
-    #define XAML_VECTOR_VIEW_T_V_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type)
-    #define XAML_VECTOR_VIEW_T_O_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type)
+    #define __XAML_VECTOR_VIEW_T_TYPE(type) typedef xaml_vector_view<type> xaml_vector_view__##type##__;
 #else
     #define XAML_VECTOR_VIEW_T_NAME(type) xaml_vector_view__##type##__
 
-    #define XAML_VECTOR_VIEW_T_TYPE(type_name, type_interface) \
+    #define __XAML_VECTOR_VIEW_T_TYPE(type_name, type_interface) \
         XAML_DECL_INTERFACE_T_(xaml_vector_view, type_name, XAML_VECTOR_VIEW_T_VTBL, type_name, type_interface)
-
-    #define XAML_VECTOR_VIEW_T_V_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type, type)
-    #define XAML_VECTOR_VIEW_T_O_TYPE(type) XAML_VECTOR_VIEW_T_TYPE(type, type*)
 #endif // __cplusplus
+#define XAML_VECTOR_VIEW_T_TYPE(type) __XAML_VECTOR_VIEW_T_TYPE(type)
 
 __XAML_TYPE_NAME_BASE(xaml_vector, { 0xad5e7c14, 0x969d, 0x4e76, { 0x97, 0x6e, 0xc3, 0x17, 0xb4, 0x41, 0x12, 0x5e } })
 
@@ -49,17 +44,16 @@ __XAML_TYPE_NAME_BASE(xaml_vector, { 0xad5e7c14, 0x969d, 0x4e76, { 0x97, 0x6e, 0
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_vector, xaml_vector_view<T>, XAML_VECTOR_T_VTBL)
 
-    #define XAML_VECTOR_T_TYPE(type) typedef xaml_vector<type> xaml_vector__##type##__;
+    #define XAML_VECTOR_T_NAME(type) xaml_vector<type>
 
-    #define XAML_VECTOR_T_V_TYPE(type) XAML_VECTOR_T_TYPE(type)
-    #define XAML_VECTOR_T_O_TYPE(type) XAML_VECTOR_T_TYPE(type)
+    #define __XAML_VECTOR_T_TYPE(type) typedef xaml_vector<type> xaml_vector__##type##__;
 #else
-    #define XAML_VECTOR_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_vector, type_name, XAML_VECTOR_T_VTBL, type_name, type_interface)
+    #define XAML_VECTOR_T_NAME(type) xaml_vector__##type##__
 
-    #define XAML_VECTOR_T_V_TYPE(type) XAML_VECTOR_T_TYPE(type, type)
-    #define XAML_VECTOR_T_O_TYPE(type) XAML_VECTOR_T_TYPE(type, type*)
+    #define __XAML_VECTOR_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_vector, type_name, XAML_VECTOR_T_VTBL, type_name, type_interface)
 #endif // __cplusplus
+#define XAML_VECTOR_T_TYPE(type) __XAML_VECTOR_T_TYPE(type)
 
 #ifdef __cplusplus
 template <typename T>
