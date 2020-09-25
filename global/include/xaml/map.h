@@ -11,6 +11,7 @@
 #endif // __cplusplus
 
 #include <xaml/enumerable.h>
+#include <xaml/string.h>
 
 __XAML_TYPE_NAME_BASE(xaml_key_value_pair, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
 
@@ -78,10 +79,10 @@ xaml_result XAML_CALL xaml_key_value_pair_new(xaml_interface_t<TKey> key, xaml_i
 
 __XAML_TYPE_NAME_BASE(xaml_map_view, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 
-#define XAML_MAP_VIEW_T_T_VTBL(type, TKeyN, TKeyI, TValueN, TValueI)                                         \
-    XAML_VTBL_INHERIT(XAML_ENUMERABLE_T_VTBL(type, XAML_T_O(XAML_KEY_VALUE_PAIR_T_T_NAME(TKeyN, TValueN)))); \
-    XAML_METHOD(lookup, type, TKeyI, TValueI*);                                                              \
-    XAML_METHOD(has_key, type, TKeyI, bool*);                                                                \
+#define XAML_MAP_VIEW_T_T_VTBL(type, TKeyN, TKeyI, TValueN, TValueI)                                                                              \
+    XAML_VTBL_INHERIT(XAML_ENUMERABLE_T_VTBL(type, XAML_KEY_VALUE_PAIR_T_T_NAME(TKeyN, TValueN), XAML_KEY_VALUE_PAIR_T_T_NAME(TKeyN, TValueN)*)); \
+    XAML_METHOD(lookup, type, TKeyI, TValueI*);                                                                                                   \
+    XAML_METHOD(has_key, type, TKeyI, bool*);                                                                                                     \
     XAML_METHOD(get_size, type, XAML_STD int32_t*)
 
 #ifdef __cplusplus
@@ -271,6 +272,7 @@ struct xaml_type_guid<xaml_map<TKey, TValue>>
     #define __XAML_MAP_T_T_TYPE(tkey_name, tkey_interface, tvalue_name, tvalue_interface) \
         XAML_DECL_INTERFACE_T_(xaml_map, tkey_name##____##tvalue_name, XAML_MAP_T_T_VTBL, tkey_name, tkey_interface, tvalue_name, tvalue_interface)
 #endif // __cplusplus
+#define XAML_MAP_T_T_TYPE(tkey, tvalue) __XAML_MAP_T_T_TYPE(tkey, tvalue)
 
 #ifdef __cplusplus
 template <typename TKey, typename TValue>

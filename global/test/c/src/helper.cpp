@@ -11,3 +11,8 @@ xaml_result XAML_CALL xaml_observable_vector__xaml_string___new(xaml_observable_
 {
     return xaml_observable_vector_new(ptr);
 }
+
+xaml_result XAML_CALL xaml_map__int32_t____xaml_object___new(xaml_map__int32_t____xaml_object__** ptr) noexcept
+{
+    return xaml_map_new(ptr);
+}

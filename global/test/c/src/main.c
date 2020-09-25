@@ -112,6 +112,24 @@ xaml_result main_impl()
     XAML_GOTO_IF_FAILED(vec->vtbl->add_vector_changed(vec, callback, &token), clean_callback);
     XAML_GOTO_IF_FAILED(vec->vtbl->append(vec, str), clean_callback);
     XAML_GOTO_IF_FAILED(vec->vtbl->remove_at(vec, 0), clean_callback);
+
+    xaml_map__int32_t____xaml_object__* map;
+    XAML_GOTO_IF_FAILED(xaml_map__int32_t____xaml_object___new(&map), clean_callback);
+    bool replaced;
+    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 1, (xaml_object*)str, &replaced), clean_map);
+    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 2, (xaml_object*)vec, &replaced), clean_map);
+    xaml_object* obj1;
+    XAML_GOTO_IF_FAILED(map->vtbl->lookup(map, 1, &obj1), clean_map);
+    xaml_string* str1;
+    XAML_GOTO_IF_FAILED(obj1->vtbl->query(obj1, &xaml_guid_xaml_string, (void**)&str1), clean_obj1);
+    XAML_GOTO_IF_FAILED(print_string(str1), clean_str1);
+clean_str1:
+    str1->vtbl->release(str1);
+clean_obj1:
+    obj1->vtbl->release(obj1);
+clean_map:
+    map->vtbl->release(map);
+
 clean_callback:
     callback->vtbl->release(callback);
 clean_vec:
