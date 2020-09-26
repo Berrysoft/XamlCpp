@@ -16,7 +16,7 @@ xaml_result XAML_CALL xaml_basic_type_info_new(xaml_guid const& type, xaml_strin
 struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_type_info_registration_impl, xaml_type_info_registration>
 {
     xaml_ptr<xaml_map<xaml_guid, xaml_object>> m_attr_map;
-    xaml_ptr<xaml_constructor> m_ctor{ nullptr };
+    xaml_ptr<xaml_constructor_info> m_ctor{ nullptr };
     xaml_ptr<xaml_map<xaml_string, xaml_method_info>> m_method_map;
     xaml_ptr<xaml_map<xaml_string, xaml_property_info>> m_prop_map;
     xaml_ptr<xaml_map<xaml_string, xaml_collection_property_info>> m_cprop_map;
@@ -53,7 +53,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         return m_attr_map->insert(type, attr, nullptr);
     }
 
-    xaml_result XAML_CALL get_constructor(xaml_constructor** ptr) noexcept override
+    xaml_result XAML_CALL get_constructor(xaml_constructor_info** ptr) noexcept override
     {
         if (m_ctor)
         {
@@ -66,7 +66,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         }
     }
 
-    xaml_result XAML_CALL set_constructor(xaml_constructor* d) noexcept override
+    xaml_result XAML_CALL set_constructor(xaml_constructor_info* d) noexcept override
     {
         m_ctor = d;
         return XAML_S_OK;
@@ -90,7 +90,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         return m_method_map->insert(name, method, &replaced);
     }
 
-    xaml_result XAML_CALL get_properties(xaml_map_view** ptr) noexcept override
+    xaml_result XAML_CALL get_properties(xaml_map_view<xaml_string, xaml_property_info>** ptr) noexcept override
     {
         return m_prop_map->query(ptr);
     }
@@ -110,7 +110,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         return m_prop_map->insert(name, prop, &replaced);
     }
 
-    xaml_result XAML_CALL get_collection_properties(xaml_map_view** ptr) noexcept override
+    xaml_result XAML_CALL get_collection_properties(xaml_map_view<xaml_string, xaml_collection_property_info>** ptr) noexcept override
     {
         return m_cprop_map->query(ptr);
     }
@@ -130,7 +130,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
         return m_cprop_map->insert(name, prop, &replaced);
     }
 
-    xaml_result XAML_CALL get_events(xaml_map_view** ptr) noexcept override
+    xaml_result XAML_CALL get_events(xaml_map_view<xaml_string, xaml_event_info>** ptr) noexcept override
     {
         return m_event_map->query(ptr);
     }
