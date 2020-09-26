@@ -2,7 +2,6 @@
 #define XAML_BOX_H
 
 #ifdef __cplusplus
-    #include <cstring>
     #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
@@ -10,55 +9,54 @@
 #include <xaml/string.h>
 #include <xaml/version.h>
 
-XAML_CLASS(xaml_box, { 0x9a9177c7, 0xcf5f, 0x31ab, { 0x84, 0x95, 0x96, 0xf5, 0x8a, 0xc5, 0xdf, 0x3a } })
+__XAML_TYPE_NAME_BASE(xaml_box, { 0x9a9177c7, 0xcf5f, 0x31ab, { 0x84, 0x95, 0x96, 0xf5, 0x8a, 0xc5, 0xdf, 0x3a } })
 
-#define XAML_BOX_VTBL(type)                         \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));      \
-    XAML_METHOD(get_type, type, xaml_guid*);        \
-    XAML_METHOD(get_data, type, void const**);      \
-    XAML_METHOD(get_size, type, XAML_STD int32_t*); \
-    XAML_METHOD(set_data, type, xaml_guid XAML_CONST_REF, void const*, XAML_STD int32_t)
-
-XAML_DECL_INTERFACE_(xaml_box, xaml_object)
-{
-    XAML_DECL_VTBL(xaml_box, XAML_BOX_VTBL);
+#define XAML_BOX_T_VTBL(type, TN, TI)          \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
+    XAML_METHOD(get_value, type, TI*);         \
+    XAML_METHOD(set_value, type, TI XAML_CONST_REF)
 
 #ifdef __cplusplus
-    template <typename T>
-    xaml_result XAML_CALL set_value(T const& value)
-    {
-        return set_data(xaml_type_guid_v<T>, &value, sizeof(T));
-    }
+XAML_DECL_INTERFACE_T_(xaml_box, xaml_object, XAML_BOX_T_VTBL)
 
-    template <typename T>
-    xaml_result XAML_CALL get_value(T * value)
-    {
-        xaml_guid type;
-        XAML_RETURN_IF_FAILED(get_type(&type));
-        if (type != xaml_type_guid_v<T>) return XAML_E_NOINTERFACE;
-        void const* data;
-        XAML_RETURN_IF_FAILED(get_data(&data));
-        std::int32_t size;
-        XAML_RETURN_IF_FAILED(get_size(&size));
-        std::memcpy(value, data, size);
-        return XAML_S_OK;
-    }
+    #define XAML_BOX_T_NAME(type) xaml_box<type>
 
-    template <typename T>
-    xaml_result XAML_CALL get_value_ptr(T const** ptr)
-    {
-        xaml_guid type;
-        XAML_RETURN_IF_FAILED(get_type(&type));
-        if (type != xaml_type_guid_v<T>) return XAML_E_NOINTERFACE;
-        void const* data;
-        XAML_RETURN_IF_FAILED(get_data(&data));
-        *ptr = static_cast<T const*>(data);
-        return XAML_S_OK;
-    }
+    #define __XAML_BOX_T_TYPE(type) typedef xaml_box<type> xaml_box__##type##__;
+#else
+    #define XAML_BOX_T_NAME(type) xaml_box__##type##__
+
+    #define __XAML_BOX_T_TYPE(type_name, type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_box, type_name, XAML_BOX_T_VTBL, type_name, type_interface)
 #endif // __cplusplus
+#define XAML_BOX_T_TYPE(type) __XAML_BOX_T_TYPE(type)
+
+#ifdef __cplusplus
+template <typename T>
+struct __xaml_box_implement : xaml_implement<__xaml_box_implement<T>, xaml_box<T>>
+{
+    T m_value;
+
+    __xaml_box_implement(T const& value) noexcept : m_value(value) {}
+
+    xaml_result XAML_CALL get_value(T* ptr) noexcept override
+    {
+        *ptr = m_value;
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL set_value(T const& value) noexcept override
+    {
+        m_value = value;
+        return XAML_S_OK;
+    }
 };
 
-EXTERN_C XAML_API xaml_result XAML_CALL xaml_box_new(xaml_guid XAML_CONST_REF, void const*, int32_t, xaml_box**) XAML_NOEXCEPT;
+template <typename T>
+xaml_result XAML_CALL xaml_box_new(T const& value, xaml_box<T>** ptr) noexcept
+{
+    return xaml_object_new<__xaml_box_implement<T>>(ptr, value);
+}
+#endif // __cplusplus
 
 XAML_TYPE(bool, { 0xc3a0fdbf, 0xa30b, 0x315e, { 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae } })
 XAML_TYPE(char, { 0x2d08eb84, 0x64e6, 0x3688, { 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d } })
@@ -75,19 +73,34 @@ XAML_TYPE(double, { 0x9144b7d6, 0x3d5f, 0x3b29, { 0x81, 0x31, 0xff, 0x0d, 0xb5, 
 XAML_TYPE(xaml_guid, { 0x3c88cf27, 0x75ef, 0x3412, { 0x86, 0x88, 0x70, 0x59, 0xee, 0xb2, 0x65, 0x4c } })
 XAML_TYPE(xaml_version, { 0x9fd1fbb5, 0xc8a0, 0x3ad2, { 0x90, 0x47, 0xfb, 0xfd, 0x22, 0x21, 0x54, 0x9b } })
 
-#ifdef __cplusplus
-template <typename T>
-inline xaml_result XAML_CALL xaml_box_new(T const& value, xaml_box** ptr) noexcept
-{
-    return xaml_box_new(xaml_type_guid_v<T>, &value, sizeof(T), ptr);
-}
+#define __XAML_BOX_DECL_GEN(type)   \
+    XAML_BOX_T_TYPE(XAML_T_V(type)) \
+    EXTERN_C XAML_API xaml_result XAML_CALL xaml_box__##type##___new(type, xaml_box__##type##__** ptr) XAML_NOEXCEPT;
 
+__XAML_BOX_DECL_GEN(bool)
+__XAML_BOX_DECL_GEN(char)
+__XAML_BOX_DECL_GEN(int8_t)
+__XAML_BOX_DECL_GEN(int16_t)
+__XAML_BOX_DECL_GEN(int32_t)
+__XAML_BOX_DECL_GEN(int64_t)
+__XAML_BOX_DECL_GEN(uint8_t)
+__XAML_BOX_DECL_GEN(uint16_t)
+__XAML_BOX_DECL_GEN(uint32_t)
+__XAML_BOX_DECL_GEN(uint64_t)
+__XAML_BOX_DECL_GEN(float)
+__XAML_BOX_DECL_GEN(double)
+__XAML_BOX_DECL_GEN(xaml_guid)
+__XAML_BOX_DECL_GEN(xaml_version)
+
+#undef __XAML_BOX_DECL_GEN
+
+#ifdef __cplusplus
 template <typename T, typename = void>
 struct __xaml_box_impl
 {
-    using boxed_type = xaml_box;
+    using boxed_type = xaml_box<T>;
 
-    xaml_result operator()(T const& value, xaml_box** ptr) const noexcept
+    xaml_result operator()(T const& value, xaml_box<T>** ptr) const noexcept
     {
         return xaml_box_new(value, ptr);
     }
@@ -98,7 +111,7 @@ struct __xaml_unbox_impl
 {
     xaml_result operator()(xaml_ptr<xaml_object> const& obj, T* value) const noexcept
     {
-        xaml_ptr<xaml_box> box;
+        xaml_ptr<xaml_box<T>> box;
         XAML_RETURN_IF_FAILED(obj->query(&box));
         return box->get_value(value);
     }
