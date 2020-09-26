@@ -80,6 +80,39 @@ inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result
         param_types,
         ptr);
 }
+
+template <typename...>
+struct __xaml_delegate_pack_args_impl;
+
+template <typename Arg1, typename... Args>
+struct __xaml_delegate_pack_args_impl<Arg1, Args...>
+{
+    xaml_result operator()(xaml_ptr<xaml_vector<xaml_object>> const& res, Arg1&& arg1, Args&&... args) const noexcept
+    {
+        xaml_ptr<xaml_object> obj;
+        XAML_RETURN_IF_FAILED(xaml_box_value(std::forward<Arg1>(arg1), &obj));
+        XAML_RETURN_IF_FAILED(res->append(obj));
+        return __xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...);
+    }
+};
+
+template <>
+struct __xaml_delegate_pack_args_impl<>
+{
+    xaml_result operator()(xaml_ptr<xaml_vector<xaml_object>> const&) const noexcept
+    {
+        return XAML_S_OK;
+    }
+};
+
+template <typename... Args>
+xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view<xaml_object>** ptr, Args&&... args) noexcept
+{
+    xaml_ptr<xaml_vector> res;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&res));
+    XAML_RETURN_IF_FAILED(__xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...));
+    return res->query(ptr);
+}
 #endif // __cplusplus
 
 XAML_CLASS(xaml_constructor_info, { 0x467e2274, 0x5fc5, 0x4d57, { 0x99, 0x5c, 0x38, 0x3e, 0x60, 0xaa, 0x1e, 0x93 } })
