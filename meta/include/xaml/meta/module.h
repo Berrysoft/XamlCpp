@@ -8,12 +8,15 @@
 
 typedef struct xaml_meta_context xaml_meta_context;
 
+XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_string))
+XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_string))
+
 XAML_CLASS(xaml_module_info, { 0x29dfda45, 0xb751, 0x42af, { 0x94, 0x43, 0xc1, 0x68, 0xd7, 0x41, 0x80, 0x8b } })
 
-#define XAML_MODULE_INFO_VTBL(type)                          \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));               \
-    XAML_METHOD(get_version, type, xaml_version*);           \
-    XAML_METHOD(get_dependencies, type, xaml_vector_view**); \
+#define XAML_MODULE_INFO_VTBL(type)                                              \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                   \
+    XAML_METHOD(get_version, type, xaml_version*);                               \
+    XAML_METHOD(get_dependencies, type, XAML_VECTOR_VIEW_T_NAME(xaml_string)**); \
     XAML_METHOD(register_types, type, xaml_meta_context*)
 
 XAML_DECL_INTERFACE_(xaml_module_info, xaml_object)
