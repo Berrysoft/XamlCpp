@@ -104,8 +104,12 @@ struct xaml_type_guid<xaml_map_view<TKey, TValue>>
     static constexpr xaml_guid value = xaml_guid_xaml_map_view;
 };
 
+    #define XAML_MAP_VIEW_T_T_NAME(tkey, tvalue) xaml_map_view<tkey, tvalue>
+
     #define __XAML_MAP_VIEW_T_T_TYPE(tkey, tvalue) typedef xaml_map_view<tkey, tvalue> xaml_map_view__##tkey##____##tvalue##__;
 #else
+    #define XAML_MAP_VIEW_T_T_NAME(tkey, tvalue) xaml_map_view__##tkey##____##tvalue##__
+
     #define __XAML_MAP_VIEW_T_T_TYPE(tkey_name, tkey_interface, tvalue_name, tvalue_interface) \
         XAML_DECL_INTERFACE_T_(xaml_map_view, tkey_name##____##tvalue_name, XAML_MAP_VIEW_T_T_VTBL, tkey_name, tkey_interface, tvalue_name, tvalue_interface)
 #endif // __cplusplus
@@ -348,7 +352,7 @@ struct __xaml_map_implement : xaml_implement<__xaml_map_implement<TKey, TValue>,
         {
             it->second = value;
         }
-        *pb = !inserted;
+        if (pb) *pb = !inserted;
         return XAML_S_OK;
     }
 

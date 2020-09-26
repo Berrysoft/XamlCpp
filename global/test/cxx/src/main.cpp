@@ -115,9 +115,8 @@ int main()
 
     xaml_ptr<xaml_map<int32_t, xaml_object>> map;
     XAML_THROW_IF_FAILED(xaml_map_new(&map));
-    bool replaced;
-    XAML_THROW_IF_FAILED(map->insert(1, str, &replaced));
-    XAML_THROW_IF_FAILED(map->insert(2, vec, &replaced));
+    XAML_THROW_IF_FAILED(map->insert(1, str, nullptr));
+    XAML_THROW_IF_FAILED(map->insert(2, vec, nullptr));
     xaml_ptr<xaml_object> obj1;
     XAML_THROW_IF_FAILED(map->lookup(1, &obj1));
     sf::println(cout, xaml_unbox_value<xaml_ptr<xaml_string>>(obj1));

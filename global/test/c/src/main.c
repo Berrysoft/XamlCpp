@@ -115,9 +115,8 @@ xaml_result main_impl()
 
     xaml_map__int32_t____xaml_object__* map;
     XAML_GOTO_IF_FAILED(xaml_map__int32_t____xaml_object___new(&map), clean_callback);
-    bool replaced;
-    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 1, (xaml_object*)str, &replaced), clean_map);
-    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 2, (xaml_object*)vec, &replaced), clean_map);
+    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 1, (xaml_object*)str, NULL), clean_map);
+    XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 2, (xaml_object*)vec, NULL), clean_map);
     xaml_object* obj1;
     XAML_GOTO_IF_FAILED(map->vtbl->lookup(map, 1, &obj1), clean_map);
     xaml_string* str1;
