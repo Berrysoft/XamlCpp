@@ -1,6 +1,8 @@
 #include <xaml/meta/meta_context.h>
 #include <xaml/observable_vector.h>
 
+using namespace std;
+
 struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context>
 {
 private:
@@ -291,8 +293,9 @@ public:
                 XAML_RETURN_IF_FAILED(source_type->get_event(name, &sourcee));
             }
 
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_target, &callback));
+            xaml_ptr<xaml_method_info> callback;
+            XAML_RETURN_IF_FAILED(xaml_method_info_new(
+                nullptr, [set_to_target](xaml_vector_view<xaml_object>*) -> xaml_result { return set_to_target(); }, nullptr, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(sourcee->add(ssource, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_target());
@@ -306,8 +309,9 @@ public:
                 XAML_RETURN_IF_FAILED(target_type->get_event(name, &targete));
             }
 
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_source, &callback));
+            xaml_ptr<xaml_method_info> callback;
+            XAML_RETURN_IF_FAILED(xaml_method_info_new(
+                nullptr, [set_to_source](xaml_vector_view<xaml_object>*) -> xaml_result { return set_to_source(); }, nullptr, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(targete->add(starget, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_source());
