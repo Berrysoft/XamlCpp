@@ -97,9 +97,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
 
     xaml_result XAML_CALL get_property(xaml_string* name, xaml_property_info** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_prop_map->lookup(name, &value));
-        return value->query(ptr);
+        return m_prop_map->lookup(name, ptr);
     }
 
     xaml_result XAML_CALL add_property(xaml_property_info* prop) noexcept override
@@ -117,9 +115,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
 
     xaml_result XAML_CALL get_collection_property(xaml_string* name, xaml_collection_property_info** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_cprop_map->lookup(name, &value));
-        return value->query(ptr);
+        return m_cprop_map->lookup(name, ptr);
     }
 
     xaml_result XAML_CALL add_collection_property(xaml_collection_property_info* prop) noexcept override
@@ -137,9 +133,7 @@ struct xaml_type_info_registration_impl : xaml_reflection_info_implement<xaml_ty
 
     xaml_result XAML_CALL get_event(xaml_string* name, xaml_event_info** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_event_map->lookup(name, &value));
-        return value->query(ptr);
+        return m_event_map->lookup(name, ptr);
     }
 
     xaml_result XAML_CALL add_event(xaml_event_info* ev) noexcept override
