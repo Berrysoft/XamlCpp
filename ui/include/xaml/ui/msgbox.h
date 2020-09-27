@@ -1,6 +1,11 @@
 #ifndef XAML_UI_MSGBOX_H
 #define XAML_UI_MSGBOX_H
 
+#ifdef __cplusplus
+    #include <compare>
+    #include <string_view>
+#endif // __cplusplus
+
 #include <xaml/ui/window.h>
 
 typedef enum xaml_msgbox_style
@@ -43,6 +48,13 @@ struct xaml_msgbox_custom_button
 {
     xaml_msgbox_result result;
     char const* text;
+
+#ifdef __cplusplus
+    bool operator==(xaml_msgbox_custom_button const& btn) const
+    {
+        return result == btn.result && std::string_view{ text } == btn.text;
+    }
+#endif // __cplusplus
 };
 
 XAML_TYPE(xaml_msgbox_custom_button, { 0x519f6660, 0x380e, 0x44d4, { 0x98, 0xc1, 0x3d, 0x40, 0xa1, 0xd7, 0x9e, 0xa6 } })

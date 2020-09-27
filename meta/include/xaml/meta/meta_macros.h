@@ -244,24 +244,21 @@
         xaml_ptr<xaml_enum_info> __info;                                  \
         XAML_RETURN_IF_FAILED(xaml_enum_info_new<type>(__type_name, __include_file, __map, &__info))
 
-    #define XAML_ENUM_INFO_MAP_NEW()                                           \
-        xaml_ptr<xaml_map> __map;                                              \
-        do                                                                     \
-        {                                                                      \
-            xaml_ptr<xaml_hasher> __hasher;                                    \
-            XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&__hasher));      \
-            XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(__hasher, &__map)); \
+    #define XAML_ENUM_INFO_MAP_NEW()                                      \
+        xaml_ptr<xaml_map<xaml_string, std::int32_t>> __map;              \
+        do                                                                \
+        {                                                                 \
+            xaml_ptr<xaml_hasher<xaml_string>> __hasher;                  \
+            XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&__hasher)); \
+            XAML_RETURN_IF_FAILED(xaml_map_new(__hasher.get(), &__map));  \
         } while (0)
 
-    #define XAML_ENUM_INFO_ADD(name, value)                                 \
-        do                                                                  \
-        {                                                                   \
-            xaml_ptr<xaml_string> __name;                                   \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(name), &__name));       \
-            xaml_ptr<xaml_object> __box;                                    \
-            XAML_RETURN_IF_FAILED(xaml_box_value(value, &__box));           \
-            bool replaced;                                                  \
-            XAML_RETURN_IF_FAILED(__map->insert(__name, __box, &replaced)); \
+    #define XAML_ENUM_INFO_ADD(name, value)                                                          \
+        do                                                                                           \
+        {                                                                                            \
+            xaml_ptr<xaml_string> __name;                                                            \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(name), &__name));                                \
+            XAML_RETURN_IF_FAILED(__map->insert(__name, static_cast<std::int32_t>(value), nullptr)); \
         } while (0)
 
     #define XAML_ENUM_INFO_ADD2(type, name) XAML_ENUM_INFO_ADD(#name, type##_##name)

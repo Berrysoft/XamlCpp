@@ -79,7 +79,7 @@ struct xaml_multicontainer_internal : xaml_control_internal
 template <typename T, typename Internal, typename Base>
 struct xaml_multicontainer_implement : xaml_control_implement<T, Internal, Base>
 {
-    XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view**)
+    XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view<xaml_control>**)
     XAML_CPROP_INTERNAL_IMPL(child, xaml_control*, xaml_control*)
 };
 

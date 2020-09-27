@@ -17,9 +17,7 @@ protected:
 public:
     xaml_result XAML_CALL get_result(xaml_string** ptr) noexcept
     {
-        xaml_ptr<xaml_object> obj;
-        XAML_RETURN_IF_FAILED(m_results->get_at(0, &obj));
-        return obj->query(ptr);
+        return m_results->get_at(0, ptr);
     }
 
     xaml_result XAML_CALL get_results(xaml_vector_view<xaml_string>** ptr) noexcept

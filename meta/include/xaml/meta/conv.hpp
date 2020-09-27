@@ -17,7 +17,7 @@ public:
     {
         if (obj)
         {
-            if (auto box = obj.query<xaml_box>())
+            if (auto box = obj.query<xaml_box<std::decay_t<T>>>())
             {
                 return box->get_value(value);
             }

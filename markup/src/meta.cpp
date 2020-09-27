@@ -12,7 +12,7 @@ struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_dependencies(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_dependencies(xaml_vector_view<xaml_string>** ptr) noexcept override
     {
         *ptr = nullptr;
         return XAML_S_OK;

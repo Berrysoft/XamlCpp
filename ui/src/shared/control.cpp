@@ -31,9 +31,9 @@ xaml_result xaml_control_internal::parent_redraw() noexcept
 
 xaml_result xaml_control_internal::init() noexcept
 {
-    xaml_ptr<xaml_hasher> hasher;
+    xaml_ptr<xaml_hasher<xaml_string>> hasher;
     XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
-    XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &m_resources));
+    XAML_RETURN_IF_FAILED(xaml_map_new(hasher.get(), &m_resources));
 
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_parent_changed));
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_size_changed));
@@ -47,8 +47,8 @@ xaml_result xaml_control_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_mouse_move));
 
     std::int32_t token;
-    XAML_RETURN_IF_FAILED((m_size_changed->add_noexcept<xaml_ptr<xaml_control>, xaml_size>(
-        [this](xaml_ptr<xaml_control>, xaml_size) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_size_changed->add(
+        [this](xaml_object*, xaml_size) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_size());
@@ -57,8 +57,8 @@ xaml_result xaml_control_internal::init() noexcept
             return XAML_S_OK;
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_is_visible_changed->add_noexcept<xaml_ptr<xaml_control>, bool>(
-        [this](xaml_ptr<xaml_control>, bool) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_is_visible_changed->add(
+        [this](xaml_object*, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_visible());
             return XAML_S_OK;
         },
