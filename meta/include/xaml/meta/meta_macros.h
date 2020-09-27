@@ -171,44 +171,44 @@
             XAML_RETURN_IF_FAILED(__info->add_method(__method_info));                                                                   \
         } while (0)
 
-    #define XAML_TYPE_INFO_ADD_PROP(prop, vtype)                                                                                             \
-        do                                                                                                                                   \
-        {                                                                                                                                    \
-            xaml_ptr<xaml_string> __prop_name;                                                                                               \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                  \
-            xaml_ptr<xaml_property_info> __prop_info;                                                                                        \
-            XAML_RETURN_IF_FAILED(xaml_property_info_new<vtype>(__prop_name, &self_type::get_##prop, &self_type::set_##prop, &__prop_info)); \
-            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                                        \
+    #define XAML_TYPE_INFO_ADD_PROP(prop, vtype)                                                                                               \
+        do                                                                                                                                     \
+        {                                                                                                                                      \
+            xaml_ptr<xaml_string> __prop_name;                                                                                                 \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                    \
+            xaml_ptr<xaml_property_info> __prop_info;                                                                                          \
+            XAML_RETURN_IF_FAILED((xaml_property_info_new<vtype>(__prop_name, &self_type::get_##prop, &self_type::set_##prop, &__prop_info))); \
+            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                                          \
         } while (0)
 
-    #define XAML_TYPE_INFO_ADD_PROP_RD(prop, vtype)                                                                  \
-        do                                                                                                           \
-        {                                                                                                            \
-            xaml_ptr<xaml_string> __prop_name;                                                                       \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                          \
-            xaml_ptr<xaml_property_info> __prop_info;                                                                \
-            XAML_RETURN_IF_FAILED(xaml_property_info_new<vtype>(__prop_name, &self_type::get_##prop, &__prop_info)); \
-            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                \
+    #define XAML_TYPE_INFO_ADD_PROP_RD(prop, vtype)                                                                    \
+        do                                                                                                             \
+        {                                                                                                              \
+            xaml_ptr<xaml_string> __prop_name;                                                                         \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                            \
+            xaml_ptr<xaml_property_info> __prop_info;                                                                  \
+            XAML_RETURN_IF_FAILED((xaml_property_info_new<vtype>(__prop_name, &self_type::get_##prop, &__prop_info))); \
+            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                  \
         } while (0)
 
-    #define XAML_TYPE_INFO_ADD_APROP(type, prop, vtype)                                                                            \
-        do                                                                                                                         \
-        {                                                                                                                          \
-            xaml_ptr<xaml_string> __prop_name;                                                                                     \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                        \
-            xaml_ptr<xaml_property_info> __prop_info;                                                                              \
-            XAML_RETURN_IF_FAILED(xaml_property_info_new<vtype>(__prop_name, type##_get_##prop, type##_set_##prop, &__prop_info)); \
-            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                              \
+    #define XAML_TYPE_INFO_ADD_APROP(type, prop, vtype)                                                                              \
+        do                                                                                                                           \
+        {                                                                                                                            \
+            xaml_ptr<xaml_string> __prop_name;                                                                                       \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                          \
+            xaml_ptr<xaml_property_info> __prop_info;                                                                                \
+            XAML_RETURN_IF_FAILED((xaml_property_info_new<vtype>(__prop_name, type##_get_##prop, type##_set_##prop, &__prop_info))); \
+            XAML_RETURN_IF_FAILED(__info->add_property(__prop_info));                                                                \
         } while (0)
 
-    #define XAML_TYPE_INFO_ADD_CPROP(prop, vtype)                                                                                                          \
-        do                                                                                                                                                 \
-        {                                                                                                                                                  \
-            xaml_ptr<xaml_string> __prop_name;                                                                                                             \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                                \
-            xaml_ptr<xaml_collection_property_info> __prop_info;                                                                                           \
-            XAML_RETURN_IF_FAILED(xaml_collection_property_info_new<vtype>(__prop_name, &self_type::add_##prop, &self_type::remove_##prop, &__prop_info)); \
-            XAML_RETURN_IF_FAILED(__info->add_collection_property(__prop_info));                                                                           \
+    #define XAML_TYPE_INFO_ADD_CPROP(prop, vtype)                                                                                                            \
+        do                                                                                                                                                   \
+        {                                                                                                                                                    \
+            xaml_ptr<xaml_string> __prop_name;                                                                                                               \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(#prop), &__prop_name));                                                                                  \
+            xaml_ptr<xaml_collection_property_info> __prop_info;                                                                                             \
+            XAML_RETURN_IF_FAILED((xaml_collection_property_info_new<vtype>(__prop_name, &self_type::add_##prop, &self_type::remove_##prop, &__prop_info))); \
+            XAML_RETURN_IF_FAILED(__info->add_collection_property(__prop_info));                                                                             \
         } while (0)
 
     #define XAML_TYPE_INFO_ADD_EVENT(event)                                                                                               \
