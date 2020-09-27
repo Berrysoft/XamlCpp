@@ -83,6 +83,12 @@ constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...), T* obj) 
 {
     return [=](Args... args) -> Return { return (obj->*f)(std::forward<Args>(args)...); };
 }
+
+template <typename T, typename Return, typename... Args>
+constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...)) noexcept
+{
+    return [=](T* obj, Args... args) -> Return { return (obj->*f)(std::forward<Args>(args)...); };
+}
 #endif // __cplusplus
 
 #endif // !XAML_DELEGATE_H

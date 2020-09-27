@@ -72,8 +72,8 @@ xaml_result XAML_CALL __xaml_delegate_noexcept_impl_invoke_void(std::function<xa
     return __xaml_delegate_noexcept_impl_invoke_void_impl<Args...>(func, args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
 }
 
-template <typename T, typename... Args>
-inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result (XAML_CALL T::*func)(Args...) noexcept, xaml_method_info** ptr) noexcept
+template <typename... Args>
+inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_interface_t<Args>...)> func, xaml_method_info** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
     xaml_ptr<xaml_vector<xaml_guid>> param_types;
@@ -84,11 +84,11 @@ inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result
             [func](xaml_vector_view<xaml_object>* args) noexcept -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
-                if (size < sizeof...(Args) + 1) return XAML_E_INVALIDARG;
-                return __xaml_delegate_noexcept_impl_invoke_void<xaml_ptr<T>, Args...>(
-                    std::function<xaml_result(xaml_ptr<T>, Args...)>{
-                        [func](xaml_ptr<T> self, Args... args) noexcept -> xaml_result {
-                            return (self.get()->*func)(std::forward<Args>(args)...);
+                if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
+                return __xaml_delegate_noexcept_impl_invoke_void<xaml_interface_t<Args>...>(
+                    std::function<xaml_result(xaml_interface_t<Args>...)>{
+                        [func](xaml_interface_t<Args>... args) noexcept -> xaml_result {
+                            return func(std::forward<xaml_interface_t<Args>>(args)...);
                         } },
                     args);
             } },
@@ -123,7 +123,7 @@ struct __xaml_delegate_pack_args_impl<>
 template <typename... Args>
 xaml_result XAML_CALL xaml_delegate_pack_args(xaml_vector_view<xaml_object>** ptr, Args&&... args) noexcept
 {
-    xaml_ptr<xaml_vector> res;
+    xaml_ptr<xaml_vector<xaml_object>> res;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&res));
     XAML_RETURN_IF_FAILED(__xaml_delegate_pack_args_impl<Args...>{}(res, std::forward<Args>(args)...));
     return res->query(ptr);

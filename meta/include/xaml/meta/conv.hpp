@@ -42,7 +42,7 @@ struct __xaml_converter_helper
     {
         if (obj)
         {
-            if (auto box = obj.query<xaml_box>())
+            if (auto box = obj.query<xaml_box<T>>())
             {
                 return box->get_value(value);
             }
