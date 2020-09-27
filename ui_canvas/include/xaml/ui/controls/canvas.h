@@ -38,10 +38,10 @@ XAML_DECL_INTERFACE_(xaml_drawing_context, xaml_object)
 
 XAML_CLASS(xaml_canvas, { 0x111d5785, 0x4e7e, 0x48c6, { 0x8d, 0xd6, 0x39, 0xab, 0x4a, 0x9c, 0x19, 0x97 } })
 
-#define XAML_CANVAS_VTBL(type)                  \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type)); \
-    XAML_EVENT(redraw, type);                   \
-    XAML_METHOD(invalidate, type);              \
+#define XAML_CANVAS_VTBL(type)                                   \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                  \
+    XAML_EVENT(redraw, type, xaml_object, xaml_drawing_context); \
+    XAML_METHOD(invalidate, type);                               \
     XAML_METHOD(invalidate_rect, type, xaml_rectangle XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_canvas, xaml_control)

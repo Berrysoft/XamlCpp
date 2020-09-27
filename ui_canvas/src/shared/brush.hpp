@@ -96,34 +96,25 @@ struct xaml_solid_brush_impl : xaml_brush_implement<xaml_solid_brush_impl, xaml_
 template <typename T, typename Base>
 struct xaml_gradient_brush_implement : xaml_brush_implement<T, Base>
 {
-    xaml_ptr<xaml_vector> m_gradient_stops;
+    xaml_ptr<xaml_vector<xaml_gradient_stop>> m_gradient_stops;
 
-    xaml_result XAML_CALL get_stops(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_stops(xaml_vector_view<xaml_gradient_stop>** ptr) noexcept override
     {
         return m_gradient_stops.query(ptr);
     }
 
     xaml_result XAML_CALL add_stop(xaml_gradient_stop const& stop) noexcept override
     {
-        xaml_ptr<xaml_object> box;
-        XAML_RETURN_IF_FAILED(xaml_box_value(stop, &box));
-        return m_gradient_stops->append(box);
+        return m_gradient_stops->append(stop);
     }
 
     xaml_result XAML_CALL remove_stop(xaml_gradient_stop const& stop) noexcept override
     {
-        std::int32_t size;
-        XAML_RETURN_IF_FAILED(m_gradient_stops->get_size(&size));
-        for (std::int32_t i = 0; i < size; i++)
+        std::int32_t index;
+        XAML_RETURN_IF_FAILED(m_gradient_stops->index_of(stop, &index));
+        if (index != -1)
         {
-            xaml_ptr<xaml_object> box;
-            XAML_RETURN_IF_FAILED(m_gradient_stops->get_at(i, &box));
-            xaml_gradient_stop const* pitem;
-            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pitem));
-            if (*pitem == stop)
-            {
-                return m_gradient_stops->remove_at(i);
-            }
+            return m_gradient_stops->remove_at(index);
         }
         return XAML_S_OK;
     }

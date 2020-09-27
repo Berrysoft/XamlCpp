@@ -42,11 +42,21 @@ typedef struct xaml_gradient_stop
 
 XAML_TYPE(xaml_gradient_stop, { 0xe2ccbf44, 0x1909, 0x41c6, { 0x88, 0x85, 0x70, 0x7c, 0x94, 0x2e, 0xe4, 0xe5 } })
 
+#ifndef xaml_enumerator__xaml_gradient_stop__defined
+    #define xaml_enumerator__xaml_gradient_stop__defined
+XAML_ENUMERATOR_T_TYPE(XAML_T_V(xaml_gradient_stop))
+#endif // !xaml_enumerator__xaml_gradient_stop__defined
+
+#ifndef xaml_vector_view__xaml_gradient_stop__defined
+    #define xaml_vector_view__xaml_gradient_stop__defined
+XAML_VECTOR_VIEW_T_TYPE(XAML_T_V(xaml_gradient_stop))
+#endif // !xaml_vector_view__xaml_gradient_stop__defined
+
 XAML_CLASS(xaml_gradient_brush, { 0x6fca23d8, 0xc758, 0x484c, { 0x91, 0x2b, 0xc0, 0x94, 0x03, 0x59, 0xa4, 0x77 } })
 
-#define XAML_GRADIENT_BRUSH_VTBL(type)                \
-    XAML_VTBL_INHERIT(XAML_BRUSH_VTBL(type));         \
-    XAML_METHOD(get_stops, type, xaml_vector_view**); \
+#define XAML_GRADIENT_BRUSH_VTBL(type)                                           \
+    XAML_VTBL_INHERIT(XAML_BRUSH_VTBL(type));                                    \
+    XAML_METHOD(get_stops, type, XAML_VECTOR_VIEW_T_NAME(xaml_gradient_stop)**); \
     XAML_CPROP(stop, type, xaml_gradient_stop XAML_CONST_REF, xaml_gradient_stop XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_gradient_brush, xaml_brush)
