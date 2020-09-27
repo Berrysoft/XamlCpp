@@ -73,23 +73,91 @@ XAML_TYPE(double, { 0x9144b7d6, 0x3d5f, 0x3b29, { 0x81, 0x31, 0xff, 0x0d, 0xb5, 
 XAML_TYPE(xaml_guid, { 0x3c88cf27, 0x75ef, 0x3412, { 0x86, 0x88, 0x70, 0x59, 0xee, 0xb2, 0x65, 0x4c } })
 XAML_TYPE(xaml_version, { 0x9fd1fbb5, 0xc8a0, 0x3ad2, { 0x90, 0x47, 0xfb, 0xfd, 0x22, 0x21, 0x54, 0x9b } })
 
-#define __XAML_BOX_DECL_GEN(type)   \
-    XAML_BOX_T_TYPE(XAML_T_V(type)) \
+#define __XAML_BOX_DECL_GEN(type) \
     EXTERN_C XAML_API xaml_result XAML_CALL xaml_box__##type##___new(type, xaml_box__##type##__** ptr) XAML_NOEXCEPT;
 
+#ifndef xaml_box__bool__defined
+    #define xaml_box__bool__defined
+XAML_BOX_T_TYPE(XAML_T_V(bool))
+#endif // !xaml_box__bool__defined
 __XAML_BOX_DECL_GEN(bool)
+
+#ifndef xaml_box__char__defined
+    #define xaml_box__char__defined
+XAML_BOX_T_TYPE(XAML_T_V(char))
+#endif // !xaml_box__char__defined
 __XAML_BOX_DECL_GEN(char)
+
+#ifndef xaml_box__int8_t__defined
+    #define xaml_box__int8_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(int8_t))
+#endif // !xaml_box__int8_t__defined
 __XAML_BOX_DECL_GEN(int8_t)
+
+#ifndef xaml_box__int16_t__defined
+    #define xaml_box__int16_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(int16_t))
+#endif // !xaml_box__int16_t__defined
 __XAML_BOX_DECL_GEN(int16_t)
+
+#ifndef xaml_box__int32_t__defined
+    #define xaml_box__int32_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(int32_t))
+#endif // !xaml_box__int32_t__defined
 __XAML_BOX_DECL_GEN(int32_t)
+
+#ifndef xaml_box__int64_t__defined
+    #define xaml_box__int64_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(int64_t))
+#endif // !xaml_box__int64_t__defined
 __XAML_BOX_DECL_GEN(int64_t)
+
+#ifndef xaml_box__uint8_t__defined
+    #define xaml_box__uint8_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(uint8_t))
+#endif // !xaml_box__uint8_t__defined
 __XAML_BOX_DECL_GEN(uint8_t)
+
+#ifndef xaml_box__uint16_t__defined
+    #define xaml_box__uint16_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(uint16_t))
+#endif // !xaml_box__uint16_t__defined
 __XAML_BOX_DECL_GEN(uint16_t)
+
+#ifndef xaml_box__uint32_t__defined
+    #define xaml_box__uint32_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(uint32_t))
+#endif // !xaml_box__uint32_t__defined
 __XAML_BOX_DECL_GEN(uint32_t)
+
+#ifndef xaml_box__uint64_t__defined
+    #define xaml_box__uint64_t__defined
+XAML_BOX_T_TYPE(XAML_T_V(uint64_t))
+#endif // !xaml_box__uint64_t__defined
 __XAML_BOX_DECL_GEN(uint64_t)
+
+#ifndef xaml_box__float__defined
+    #define xaml_box__float__defined
+XAML_BOX_T_TYPE(XAML_T_V(float))
+#endif // !xaml_box__float__defined
 __XAML_BOX_DECL_GEN(float)
+
+#ifndef xaml_box__double__defined
+    #define xaml_box__double__defined
+XAML_BOX_T_TYPE(XAML_T_V(double))
+#endif // !xaml_box__double__defined
 __XAML_BOX_DECL_GEN(double)
+
+#ifndef xaml_box__xaml_guid__defined
+    #define xaml_box__xaml_guid__defined
+XAML_BOX_T_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_box__xaml_guid__defined
 __XAML_BOX_DECL_GEN(xaml_guid)
+
+#ifndef xaml_box__xaml_version__defined
+    #define xaml_box__xaml_version__defined
+XAML_BOX_T_TYPE(XAML_T_V(xaml_version))
+#endif // !xaml_box__xaml_version__defined
 __XAML_BOX_DECL_GEN(xaml_version)
 
 #undef __XAML_BOX_DECL_GEN

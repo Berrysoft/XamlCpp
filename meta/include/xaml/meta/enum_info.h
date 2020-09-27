@@ -8,9 +8,20 @@
 #include <xaml/map.h>
 #include <xaml/meta/reflection_info.h>
 
+#ifndef xaml_key_value_pair__xaml_string____int32_t__defined
+    #define xaml_key_value_pair__xaml_string____int32_t__defined
 XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
+#endif // !xaml_key_value_pair__xaml_string____int32_t__defined
+
+#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
+    #define xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
 XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____int32_t__))
+#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
+
+#ifndef xaml_map_view__xaml_string____int32_t__defined
+    #define xaml_map_view__xaml_string____int32_t__defined
 XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
+#endif // !xaml_map_view__xaml_string____int32_t__defined
 
 XAML_CLASS(xaml_enum_info, { 0x51dcc841, 0xc0d0, 0x4c8b, { 0x9f, 0x9f, 0xed, 0x7b, 0x48, 0xa1, 0xa9, 0xd9 } })
 

@@ -136,7 +136,10 @@ XAML_DECL_INTERFACE_T_(xaml_hasher, xaml_object, XAML_HASHER_T_VTBL)
 #endif // __cplusplus
 #define XAML_HASHER_T_TYPE(type) __XAML_HASHER_T_TYPE(type)
 
+#ifndef xaml_hasher__xaml_string__defined
+    #define xaml_hasher__xaml_string__defined
 XAML_HASHER_T_TYPE(XAML_T_O(xaml_string))
+#endif // !xaml_hasher__xaml_string__defined
 
 EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_string_default(XAML_HASHER_T_NAME(xaml_string) **) XAML_NOEXCEPT;
 

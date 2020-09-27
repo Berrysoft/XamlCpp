@@ -5,10 +5,25 @@
 #include <xaml/object.h>
 #include <xaml/vector.h>
 
+#ifndef xaml_enumerator__xaml_object__defined
+    #define xaml_enumerator__xaml_object__defined
 XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_enumerator__xaml_object__defined
+
+#ifndef xaml_vector_view__xaml_object__defined
+    #define xaml_vector_view__xaml_object__defined
 XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_vector_view__xaml_object__defined
+
+#ifndef xaml_enumerator__xaml_guid__defined
+    #define xaml_enumerator__xaml_guid__defined
 XAML_ENUMERATOR_T_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_enumerator__xaml_guid__defined
+
+#ifndef xaml_vector_view__xaml_guid__defined
+    #define xaml_vector_view__xaml_guid__defined
 XAML_VECTOR_VIEW_T_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_vector_view__xaml_guid__defined
 
 XAML_CLASS(xaml_method_info, { 0xac6df520, 0x582e, 0x46e3, { 0xbd, 0x8b, 0xfb, 0x30, 0x34, 0x3e, 0x16, 0xa1 } })
 
