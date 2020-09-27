@@ -8,11 +8,11 @@ struct xaml_filebox_impl : xaml_implement<xaml_filebox_impl<I>, I>
 {
     XAML_PROP_PTR_IMPL(title, xaml_string)
     XAML_PROP_PTR_IMPL(filename, xaml_string)
-    XAML_PROP_PTR_IMPL(filters, xaml_vector_view)
+    XAML_PROP_PTR_IMPL(filters, xaml_vector_view<xaml_filebox_filter>)
     XAML_PROP_IMPL(multiple, bool, bool*, bool)
 
 protected:
-    xaml_ptr<xaml_vector> m_results{};
+    xaml_ptr<xaml_vector<xaml_string>> m_results{};
 
 public:
     xaml_result XAML_CALL get_result(xaml_string** ptr) noexcept
@@ -22,7 +22,7 @@ public:
         return obj->query(ptr);
     }
 
-    xaml_result XAML_CALL get_results(xaml_vector_view** ptr) noexcept
+    xaml_result XAML_CALL get_results(xaml_vector_view<xaml_string>** ptr) noexcept
     {
         return m_results->query(ptr);
     }

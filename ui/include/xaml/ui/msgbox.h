@@ -47,7 +47,17 @@ struct xaml_msgbox_custom_button
 
 XAML_TYPE(xaml_msgbox_custom_button, { 0x519f6660, 0x380e, 0x44d4, { 0x98, 0xc1, 0x3d, 0x40, 0xa1, 0xd7, 0x9e, 0xa6 } })
 
+#ifndef xaml_enumerator__xaml_msgbox_custom_button__defined
+    #define xaml_enumerator__xaml_msgbox_custor_button__defined
+XAML_ENUMERATOR_T_TYPE(XAML_T_V(xaml_msgbox_custom_button))
+#endif // !xaml_enumerator__xaml_msgbox_custom_button__defined
+
+#ifndef xaml_vector_view__xaml_msgbox_custom_button__defined
+    #define xaml_vector_view__xaml_msgbox_custom_button__defined
+XAML_VECTOR_VIEW_T_TYPE(XAML_T_V(xaml_msgbox_custom_button))
+#endif // !xaml_vector_view__xaml_msgbox_custom_button__defined
+
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, xaml_msgbox_buttons, xaml_msgbox_result*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox_custom(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, xaml_vector_view*, xaml_msgbox_result*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox_custom(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, XAML_VECTOR_VIEW_T_NAME(xaml_msgbox_custom_button) *, xaml_msgbox_result*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_MSGBOX_H

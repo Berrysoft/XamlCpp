@@ -13,7 +13,7 @@ static void CALLBACK on_win32_timer_tick(HWND, UINT, UINT_PTR nIdEvent, DWORD)
     auto self = timer_map[nIdEvent];
     if (self)
     {
-        self->on_tick(self);
+        self->m_tick->invoke(self, self);
     }
 }
 

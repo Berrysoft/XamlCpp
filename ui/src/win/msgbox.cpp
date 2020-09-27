@@ -6,7 +6,7 @@
 
 using namespace std;
 
-xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view<xaml_msgbox_custom_button>* buttons, xaml_msgbox_result* presult) noexcept
 {
     TASKDIALOGCONFIG config{};
     config.cbSize = sizeof(TASKDIALOGCONFIG);
@@ -41,15 +41,11 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
     }
     TASKDIALOG_COMMON_BUTTON_FLAGS flags = 0;
     vector<TASKDIALOG_BUTTON> cbs;
-    XAML_FOREACH_START(b, buttons);
+    XAML_FOREACH_START(xaml_msgbox_custom_button, button, buttons);
     {
-        xaml_ptr<xaml_box> box;
-        XAML_RETURN_IF_FAILED(b->query(&box));
-        xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
         wstring_view data;
-        XAML_RETURN_IF_FAILED(pool(button->text, &data));
-        cbs.push_back({ (int)button->result, data.data() });
+        XAML_RETURN_IF_FAILED(pool(button.text, &data));
+        cbs.push_back({ (int)button.result, data.data() });
     }
     XAML_FOREACH_END();
     config.dwCommonButtons = flags;

@@ -19,7 +19,7 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer>
 {
     XAML_PROP_IMPL(interval, std::int32_t, std::int32_t*, std::int32_t)
     XAML_PROP_IMPL_BASE(is_enabled, std::atomic_bool, bool*)
-    XAML_EVENT_IMPL(tick)
+    XAML_EVENT_IMPL(tick, xaml_object, xaml_timer)
 
     xaml_result XAML_CALL start() noexcept override;
     xaml_result XAML_CALL stop() noexcept override;
