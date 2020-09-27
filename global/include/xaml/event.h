@@ -21,6 +21,14 @@ template <typename TS, typename TE>
 struct xaml_event : xaml_delegate<TS, TE>
 {
     XAML_EVENT_T_T_VTBL(xaml_event, TS, xaml_interface_t<TS>, TE, xaml_interface_t<TE>);
+
+    template <typename F>
+    xaml_result XAML_CALL add(F&& func, std::int32_t* ptoken) noexcept
+    {
+        xaml_ptr<xaml_delegate<TS, TE>> handler;
+        XAML_RETURN_IF_FAILED((xaml_delegate_new<TS, TE>(std::forward<F>(func), &handler)));
+        return add(handler.get(), ptoken);
+    }
 };
 
 template <typename TS, typename TE>

@@ -29,9 +29,9 @@ struct xaml_window_internal : xaml_container_internal
     XAML_UI_API xaml_result XAML_CALL close() noexcept;
     XAML_UI_API xaml_result XAML_CALL hide() noexcept;
 
-    XAML_EVENT_IMPL(is_resizable_changed)
+    XAML_EVENT_IMPL(is_resizable_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_resizable, bool, bool*, bool)
-    XAML_EVENT_IMPL(location_changed)
+    XAML_EVENT_IMPL(location_changed, xaml_object, xaml_point)
     XAML_PROP_EVENT_IMPL(location, xaml_point, xaml_point*, xaml_point const&)
 
     xaml_result XAML_CALL get_x(double* pvalue) noexcept
@@ -45,7 +45,7 @@ struct xaml_window_internal : xaml_container_internal
         if (m_location.x != value)
         {
             m_location.x = value;
-            return on_location_changed(m_outer_this, m_location);
+            return m_location_changed->invoke(m_outer_this, m_location);
         }
         return XAML_S_OK;
     }
@@ -61,15 +61,15 @@ struct xaml_window_internal : xaml_container_internal
         if (m_location.y != value)
         {
             m_location.y = value;
-            return on_location_changed(m_outer_this, m_location);
+            return m_location_changed->invoke(m_outer_this, m_location);
         }
         return XAML_S_OK;
     }
 
-    XAML_EVENT_IMPL(title_changed)
+    XAML_EVENT_IMPL(title_changed, xaml_object, xaml_string)
     XAML_PROP_STRING_EVENT_IMPL(title)
 
-    XAML_EVENT_IMPL(closing)
+    XAML_EVENT_IMPL(closing, xaml_object, xaml_box<bool>)
 
     XAML_UI_API xaml_result XAML_CALL get_client_region(xaml_rectangle*) noexcept;
     XAML_UI_API xaml_result XAML_CALL get_dpi(double*) noexcept;
@@ -126,19 +126,19 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base>
     xaml_result XAML_CALL close() noexcept override { return this->m_internal.close(); }
     xaml_result XAML_CALL hide() noexcept override { return this->m_internal.hide(); }
 
-    XAML_EVENT_INTERNAL_IMPL(is_resizable_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_resizable_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_resizable, bool*, bool)
 
-    XAML_EVENT_INTERNAL_IMPL(location_changed)
+    XAML_EVENT_INTERNAL_IMPL(location_changed, xaml_object, xaml_point)
     XAML_PROP_INTERNAL_IMPL(location, xaml_point*, xaml_point const&)
 
     XAML_PROP_INTERNAL_IMPL(x, double*, double)
     XAML_PROP_INTERNAL_IMPL(y, double*, double)
 
-    XAML_EVENT_INTERNAL_IMPL(title_changed)
+    XAML_EVENT_INTERNAL_IMPL(title_changed, xaml_object, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(title, xaml_string)
 
-    XAML_EVENT_INTERNAL_IMPL(closing)
+    XAML_EVENT_INTERNAL_IMPL(closing, xaml_object, xaml_box<bool>)
 
     XAML_PROP_INTERNAL_IMPL_BASE(client_region, xaml_rectangle*)
     XAML_PROP_INTERNAL_IMPL_BASE(dpi, double*)

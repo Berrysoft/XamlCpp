@@ -12,18 +12,28 @@ typedef enum xaml_application_theme
     xaml_application_theme_dark
 } xaml_application_theme;
 
+#ifndef xaml_enumerator__xaml_string__defined
+    #define xaml_enumerator__xaml_string__defined
+XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_string))
+#endif // !xaml_enumerator__xaml_string__defined
+
+#ifndef xaml_vector_view__xaml_string__defined
+    #define xaml_vector_view__xaml_string__defined
+XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_string))
+#endif // !xaml_vector_view__xaml_string__defined
+
 XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0x66, 0x54, 0xa3, 0x30, 0x12 } })
 
-#define XAML_APPLICATION_VTBL(type)                        \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));             \
-    XAML_METHOD(run, type, int*);                          \
-    XAML_METHOD(quit, type, int);                          \
-    XAML_METHOD(get_cmd_lines, type, xaml_vector_view**);  \
-    XAML_METHOD(get_main_window, type, xaml_window**);     \
-    XAML_METHOD(get_theme, type, xaml_application_theme*); \
-    XAML_METHOD(window_added, type, xaml_window*);         \
-    XAML_METHOD(window_removed, type, xaml_window*);       \
-    XAML_EVENT(activate, type)
+#define XAML_APPLICATION_VTBL(type)                                           \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                \
+    XAML_METHOD(run, type, int*);                                             \
+    XAML_METHOD(quit, type, int);                                             \
+    XAML_METHOD(get_cmd_lines, type, XAML_VECTOR_VIEW_T_NAME(xaml_string)**); \
+    XAML_METHOD(get_main_window, type, xaml_window**);                        \
+    XAML_METHOD(get_theme, type, xaml_application_theme*);                    \
+    XAML_METHOD(window_added, type, xaml_window*);                            \
+    XAML_METHOD(window_removed, type, xaml_window*);                          \
+    XAML_EVENT(activate, type, xaml_object, xaml_application)
 
 XAML_DECL_INTERFACE_(xaml_application, xaml_object)
 {

@@ -5,7 +5,7 @@ using namespace std;
 xaml_result xaml_multicontainer_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept
 {
     optional<LPARAM> result{ nullopt };
-    XAML_FOREACH_START(c, m_children);
+    XAML_FOREACH_START(xaml_control, c, m_children);
     {
         xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
         if (win32_control)

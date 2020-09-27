@@ -42,27 +42,27 @@ EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_mouse_button_register(xaml_meta_
 
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 
-#define XAML_CONTROL_VTBL(type)                                        \
-    XAML_VTBL_INHERIT(XAML_ELEMENT_BASE_VTBL(type));                   \
-    XAML_PROP(size, type, xaml_size*, xaml_size XAML_CONST_REF);       \
-    XAML_PROP(width, type, double*, double);                           \
-    XAML_PROP(height, type, double*, double);                          \
-    XAML_EVENT(size_changed, type);                                    \
-    XAML_PROP(margin, type, xaml_margin*, xaml_margin XAML_CONST_REF); \
-    XAML_EVENT(margin_changed, type);                                  \
-    XAML_PROP(halignment, type, xaml_halignment*, xaml_halignment);    \
-    XAML_EVENT(halignment_changed, type);                              \
-    XAML_PROP(valignment, type, xaml_valignment*, xaml_valignment);    \
-    XAML_EVENT(valignment_changed, type);                              \
-    XAML_PROP(is_visible, type, bool*, bool);                          \
-    XAML_EVENT(is_visible_changed, type);                              \
-    XAML_METHOD(get_is_initialized, type, bool*);                      \
-    XAML_METHOD(draw, type, xaml_rectangle XAML_CONST_REF);            \
-    XAML_EVENT(mouse_down, type);                                      \
-    XAML_EVENT(mouse_up, type);                                        \
-    XAML_EVENT(mouse_move, type);                                      \
-    XAML_METHOD(size_to_fit, type);                                    \
-    XAML_METHOD(parent_redraw, type);                                  \
+#define XAML_CONTROL_VTBL(type)                                         \
+    XAML_VTBL_INHERIT(XAML_ELEMENT_BASE_VTBL(type));                    \
+    XAML_PROP(size, type, xaml_size*, xaml_size XAML_CONST_REF);        \
+    XAML_PROP(width, type, double*, double);                            \
+    XAML_PROP(height, type, double*, double);                           \
+    XAML_EVENT(size_changed, type, xaml_object, xaml_size);             \
+    XAML_PROP(margin, type, xaml_margin*, xaml_margin XAML_CONST_REF);  \
+    XAML_EVENT(margin_changed, type, xaml_object, xaml_margin);         \
+    XAML_PROP(halignment, type, xaml_halignment*, xaml_halignment);     \
+    XAML_EVENT(halignment_changed, type, xaml_object, xaml_halignment); \
+    XAML_PROP(valignment, type, xaml_valignment*, xaml_valignment);     \
+    XAML_EVENT(valignment_changed, type, xaml_object, xaml_valignment); \
+    XAML_PROP(is_visible, type, bool*, bool);                           \
+    XAML_EVENT(is_visible_changed, type, xaml_object, bool);            \
+    XAML_METHOD(get_is_initialized, type, bool*);                       \
+    XAML_METHOD(draw, type, xaml_rectangle XAML_CONST_REF);             \
+    XAML_EVENT(mouse_down, type, xaml_object, xaml_mouse_button);       \
+    XAML_EVENT(mouse_up, type, xaml_object, xaml_mouse_button);         \
+    XAML_EVENT(mouse_move, type, xaml_object, xaml_point);              \
+    XAML_METHOD(size_to_fit, type);                                     \
+    XAML_METHOD(parent_redraw, type);                                   \
     XAML_METHOD(set_size_noevent, type, xaml_size XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_control, xaml_element_base)

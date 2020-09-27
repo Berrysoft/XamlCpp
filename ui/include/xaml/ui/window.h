@@ -12,14 +12,14 @@ XAML_CLASS(xaml_window, { 0xf65be476, 0xbef3, 0x4d90, { 0xa6, 0xcd, 0x89, 0x33, 
     XAML_METHOD(close, type);                                          \
     XAML_METHOD(hide, type);                                           \
     XAML_PROP(is_resizable, type, bool*, bool);                        \
-    XAML_EVENT(is_resizable_changed, type);                            \
+    XAML_EVENT(is_resizable_changed, type, xaml_object, bool);         \
     XAML_PROP(location, type, xaml_point*, xaml_point XAML_CONST_REF); \
-    XAML_EVENT(location_changed, type);                                \
+    XAML_EVENT(location_changed, type, xaml_object, xaml_point);       \
     XAML_PROP(x, type, double*, double);                               \
     XAML_PROP(y, type, double*, double);                               \
     XAML_PROP(title, type, xaml_string**, xaml_string*);               \
-    XAML_EVENT(title_changed, type);                                   \
-    XAML_EVENT(closing, type);                                         \
+    XAML_EVENT(title_changed, type, xaml_object, xaml_string);         \
+    XAML_EVENT(closing, type, xaml_object, XAML_BOX_T_NAME(bool));     \
     XAML_METHOD(get_client_region, type, xaml_rectangle*);             \
     XAML_METHOD(get_dpi, type, double*)
 
