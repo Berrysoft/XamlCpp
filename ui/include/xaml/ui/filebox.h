@@ -1,6 +1,10 @@
 #ifndef XAML_UI_FILEBOX_H
 #define XAML_UI_FILEBOX_H
 
+#ifdef __cplusplus
+    #include <string_view>
+#endif // __cplusplus
+
 #include <xaml/ui/window.h>
 
 typedef struct xaml_filebox_filter xaml_filebox_filter;
@@ -9,6 +13,13 @@ struct xaml_filebox_filter
 {
     char const* name;
     char const* pattern;
+
+#ifdef __cplusplus
+    bool operator==(xaml_filebox_filter const& f) const noexcept
+    {
+        return std::string_view{ name } == f.name && std::string_view{ pattern } == f.pattern;
+    }
+#endif // __cplusplus
 };
 
 XAML_TYPE(xaml_filebox_filter, { 0xff79e816, 0x280b, 0x4e03, { 0x99, 0x12, 0xba, 0x3c, 0x1a, 0x74, 0xcb, 0x94 } })
