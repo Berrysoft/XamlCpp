@@ -6,7 +6,7 @@
 
 struct xaml_label_internal : xaml_control_internal
 {
-    XAML_EVENT_IMPL(text_changed)
+    XAML_EVENT_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_PROP_IMPL(text_halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
@@ -25,7 +25,7 @@ struct xaml_label_internal : xaml_control_internal
 
 struct xaml_label_impl : xaml_control_implement<xaml_label_impl, xaml_label_internal, xaml_label>
 {
-    XAML_EVENT_INTERNAL_IMPL(text_changed)
+    XAML_EVENT_INTERNAL_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
 
     XAML_PROP_INTERNAL_IMPL(text_halignment, xaml_halignment*, xaml_halignment)

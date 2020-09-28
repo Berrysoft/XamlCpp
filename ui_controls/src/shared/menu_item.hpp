@@ -18,7 +18,7 @@
 struct xaml_menu_item_internal : xaml_control_internal
 {
     XAML_PROP_PTR_IMPL(text, xaml_string)
-    XAML_EVENT_IMPL(click)
+    XAML_EVENT_IMPL(click, xaml_object, xaml_event_args)
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
@@ -79,7 +79,7 @@ template <typename T, typename Internal, typename Base>
 struct xaml_menu_item_implement : xaml_control_implement<T, Internal, Base>
 {
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
-    XAML_EVENT_INTERNAL_IMPL(click)
+    XAML_EVENT_INTERNAL_IMPL(click, xaml_object, xaml_event_args)
 
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_menu_item_impl : xaml_win32_menu_item_implement<xaml_win32_menu_item_impl, T, xaml_win32_menu_item>
@@ -137,10 +137,10 @@ struct xaml_menu_item_impl : xaml_menu_item_implement<xaml_menu_item_impl, xaml_
 struct xaml_popup_menu_item_internal : xaml_menu_item_internal
 {
 protected:
-    xaml_ptr<xaml_vector> m_submenu;
+    xaml_ptr<xaml_vector<xaml_menu_item>> m_submenu;
 
 public:
-    xaml_result XAML_CALL get_submenu(xaml_vector_view** ptr) noexcept
+    xaml_result XAML_CALL get_submenu(xaml_vector_view<xaml_menu_item>** ptr) noexcept
     {
         return m_submenu->query(ptr);
     }
@@ -178,7 +178,7 @@ public:
 
 struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item_impl, xaml_popup_menu_item_internal, xaml_popup_menu_item>
 {
-    XAML_PROP_PTR_INTERNAL_IMPL_BASE(submenu, xaml_vector_view)
+    XAML_PROP_PTR_INTERNAL_IMPL_BASE(submenu, xaml_vector_view<xaml_menu_item>)
 
     XAML_CPROP_INTERNAL_IMPL(submenu, xaml_menu_item*, xaml_menu_item*)
 
@@ -228,7 +228,7 @@ struct xaml_popup_menu_item_impl : xaml_menu_item_implement<xaml_popup_menu_item
 
 struct xaml_check_menu_item_internal : xaml_menu_item_internal
 {
-    XAML_EVENT_IMPL(is_checked_changed)
+    XAML_EVENT_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
@@ -240,13 +240,13 @@ struct xaml_check_menu_item_internal : xaml_menu_item_internal
 
 struct xaml_check_menu_item_impl : xaml_menu_item_implement<xaml_check_menu_item_impl, xaml_check_menu_item_internal, xaml_check_menu_item>
 {
-    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
 };
 
 struct xaml_radio_menu_item_internal : xaml_menu_item_internal
 {
-    XAML_EVENT_IMPL(is_checked_changed)
+    XAML_EVENT_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
     XAML_PROP_PTR_IMPL(group, xaml_string)
 
@@ -260,7 +260,7 @@ struct xaml_radio_menu_item_internal : xaml_menu_item_internal
 
 struct xaml_radio_menu_item_impl : xaml_menu_item_implement<xaml_radio_menu_item_impl, xaml_radio_menu_item_internal, xaml_radio_menu_item>
 {
-    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
 
     XAML_PROP_PTR_INTERNAL_IMPL(group, xaml_string)

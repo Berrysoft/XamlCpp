@@ -13,7 +13,9 @@ static void CALLBACK on_win32_timer_tick(HWND, UINT, UINT_PTR nIdEvent, DWORD)
     auto self = timer_map[nIdEvent];
     if (self)
     {
-        self->m_tick->invoke(self, self);
+        xaml_ptr<xaml_event_args> args;
+        XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+        XAML_ASSERT_SUCCEEDED(self->m_tick->invoke(self, args));
     }
 }
 

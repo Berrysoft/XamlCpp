@@ -8,7 +8,7 @@ XAML_CLASS(xaml_text_box, { 0x081aa775, 0x6209, 0x4a2a, { 0xbb, 0x24, 0x78, 0x5b
 #define XAML_TEXT_BOX_VTBL(type)                        \
     XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));         \
     XAML_PROP(text, type, xaml_string**, xaml_string*); \
-    XAML_EVENT(text_changed, type)
+    XAML_EVENT(text_changed, type, xaml_object, xaml_string)
 
 XAML_DECL_INTERFACE_(xaml_text_box, xaml_control)
 {

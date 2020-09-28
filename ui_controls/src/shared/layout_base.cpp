@@ -5,10 +5,8 @@ using namespace std;
 
 xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
 {
-    XAML_FOREACH_START(c, m_children);
+    XAML_FOREACH_START(xaml_control, cc, m_children);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(c->query(&cc));
         bool inited;
         XAML_RETURN_IF_FAILED(cc->get_is_initialized(&inited));
         if (!inited)

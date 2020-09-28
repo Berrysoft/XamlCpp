@@ -68,7 +68,9 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
-    XAML_RETURN_IF_FAILED(m_activate->invoke(this, this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_RETURN_IF_FAILED(xaml_event_args_empty(&args));
+    XAML_RETURN_IF_FAILED(m_activate->invoke(this, args));
     while (true)
     {
         BOOL res;

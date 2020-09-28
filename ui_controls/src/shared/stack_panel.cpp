@@ -12,10 +12,8 @@ xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, f
     if (m_orientation == xaml_orientation_vertical)
     {
         double suby = real.y;
-        XAML_FOREACH_START(c, m_children);
+        XAML_FOREACH_START(xaml_control, cc, m_children);
         {
-            xaml_ptr<xaml_control> cc;
-            XAML_RETURN_IF_FAILED(c->query(&cc));
             xaml_margin cm;
             XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
             xaml_size cs;
@@ -31,10 +29,8 @@ xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, f
     else
     {
         double subx = real.x;
-        XAML_FOREACH_START(c, m_children);
+        XAML_FOREACH_START(xaml_control, cc, m_children);
         {
-            xaml_ptr<xaml_control> cc;
-            XAML_RETURN_IF_FAILED(c->query(&cc));
             xaml_margin cm;
             XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
             xaml_size cs;
@@ -55,10 +51,8 @@ xaml_result xaml_stack_panel_internal::size_to_fit() noexcept
     if (m_orientation == xaml_orientation_vertical)
     {
         double height = 0;
-        XAML_FOREACH_START(c, m_children);
+        XAML_FOREACH_START(xaml_control, cc, m_children);
         {
-            xaml_ptr<xaml_control> cc;
-            XAML_RETURN_IF_FAILED(c->query(&cc));
             xaml_margin cm;
             XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
             xaml_size cs;
@@ -71,10 +65,8 @@ xaml_result xaml_stack_panel_internal::size_to_fit() noexcept
     else
     {
         double width = 0;
-        XAML_FOREACH_START(c, m_children);
+        XAML_FOREACH_START(xaml_control, cc, m_children);
         {
-            xaml_ptr<xaml_control> cc;
-            XAML_RETURN_IF_FAILED(c->query(&cc));
             xaml_margin cm;
             XAML_RETURN_IF_FAILED(cc->get_margin(&cm));
             xaml_size cs;

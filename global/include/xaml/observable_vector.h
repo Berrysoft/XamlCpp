@@ -17,7 +17,7 @@ typedef enum xaml_vector_changed_action
 __XAML_TYPE_NAME_BASE(xaml_vector_changed_args_1, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7, 0x5d, 0x25, 0x82, 0x2d, 0x3b, 0x0a } })
 
 #define XAML_VECTOR_CHANGED_ARGS_1_VTBL(type, TN, TI)                \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                       \
+    XAML_VTBL_INHERIT(XAML_EVENT_ARGS_VTBL(type));                   \
     XAML_METHOD(get_action, type, xaml_vector_changed_action*);      \
     XAML_METHOD(get_new_items, type, XAML_VECTOR_VIEW_1_NAME(TN)**); \
     XAML_METHOD(get_new_index, type, XAML_STD int32_t*);             \
@@ -25,7 +25,7 @@ __XAML_TYPE_NAME_BASE(xaml_vector_changed_args_1, { 0xf081fd5b, 0xd6d3, 0x4262, 
     XAML_METHOD(get_old_index, type, XAML_STD int32_t*)
 
 #ifdef __cplusplus
-XAML_DECL_INTERFACE_T_(xaml_vector_changed_args, xaml_object, XAML_VECTOR_CHANGED_ARGS_1_VTBL)
+XAML_DECL_INTERFACE_T_(xaml_vector_changed_args, xaml_event_args, XAML_VECTOR_CHANGED_ARGS_1_VTBL)
 
     #define XAML_VECTOR_CHANGED_ARGS_1_NAME(type) xaml_vector_changed_args<type>
 
@@ -99,8 +99,12 @@ __XAML_TYPE_NAME_BASE(xaml_observable_vector_1, { 0xc84cb35f, 0x0a1c, 0x40e2, { 
 #ifdef __cplusplus
 XAML_DECL_INTERFACE_T_(xaml_observable_vector, xaml_vector<T>, XAML_OBSERVABLE_VECTOR_1_VTBL)
 
+    #define XAML_OBSERVABLE_VECTOR_1_NAME(type) xaml_observable_vector<type>
+
     #define __XAML_OBSERVABLE_VECTOR_1_TYPE(type) typedef xaml_observable_vector<type> xaml_observable_vector_1__##type;
 #else
+    #define XAML_OBSERVABLE_VECTOR_1_NAME(type) xaml_observable_vector_1__##type
+
     #define __XAML_OBSERVABLE_VECTOR_1_TYPE(type_name, type_interface) \
         XAML_DECL_INTERFACE_T_(xaml_observable_vector_1, type_name, XAML_OBSERVABLE_VECTOR_1_VTBL, type_name, type_interface)
 #endif // __cplusplus

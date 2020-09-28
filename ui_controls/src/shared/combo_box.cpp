@@ -11,8 +11,8 @@ xaml_result xaml_combo_box_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_editable_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_items_changed->add_noexcept<xaml_ptr<xaml_items_base>, xaml_ptr<xaml_observable_vector>>(
-        [this](xaml_ptr<xaml_items_base>, xaml_ptr<xaml_observable_vector>) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_items_changed->add(
+        [this](xaml_object*, xaml_observable_vector<xaml_object>*) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_items());
             return XAML_S_OK;
         },

@@ -9,7 +9,7 @@ struct xaml_entry_internal : xaml_control_internal
 {
     std::atomic_bool m_text_changing{ false };
 
-    XAML_EVENT_IMPL(text_changed)
+    XAML_EVENT_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_STRING_EVENT_IMPL(text)
 
     XAML_PROP_IMPL(text_halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
@@ -39,7 +39,7 @@ struct xaml_entry_internal : xaml_control_internal
 template <typename T, typename Internal, typename Base>
 struct xaml_entry_implement : xaml_control_implement<T, Internal, Base>
 {
-    XAML_EVENT_INTERNAL_IMPL(text_changed)
+    XAML_EVENT_INTERNAL_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
 
     XAML_PROP_INTERNAL_IMPL(text_halignment, xaml_halignment*, xaml_halignment)

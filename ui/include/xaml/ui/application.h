@@ -1,6 +1,7 @@
 #ifndef XAML_UI_APPLICATION_H
 #define XAML_UI_APPLICATION_H
 
+#include <xaml/event.h>
 #include <xaml/object.h>
 #include <xaml/string.h>
 #include <xaml/ui/window.h>
@@ -33,7 +34,7 @@ XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0
     XAML_METHOD(get_theme, type, xaml_application_theme*);                    \
     XAML_METHOD(window_added, type, xaml_window*);                            \
     XAML_METHOD(window_removed, type, xaml_window*);                          \
-    XAML_EVENT(activate, type, xaml_object, xaml_application)
+    XAML_EVENT(activate, type, xaml_object, xaml_event_args)
 
 XAML_DECL_INTERFACE_(xaml_application, xaml_object)
 {

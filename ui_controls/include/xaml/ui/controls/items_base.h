@@ -7,13 +7,13 @@
 
 XAML_CLASS(xaml_items_base, { 0xfad67a33, 0x4a5f, 0x4915, { 0xa1, 0x77, 0xe6, 0x1e, 0x89, 0xc7, 0x5e, 0x26 } })
 
-#define XAML_ITEMS_BASE_VTBL(type)                                              \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                                 \
-    XAML_PROP(items, type, xaml_observable_vector**, xaml_observable_vector*);  \
-    XAML_EVENT(items_changed, type);                                            \
-    XAML_PROP(items_template, type, xaml_template_base**, xaml_template_base*); \
-    XAML_PROP(sel_id, type, XAML_STD int32_t*, XAML_STD int32_t);               \
-    XAML_EVENT(sel_id_changed, type)
+#define XAML_ITEMS_BASE_VTBL(type)                                                                                     \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                                                                        \
+    XAML_PROP(items, type, XAML_OBSERVABLE_VECTOR_1_NAME(xaml_object)**, XAML_OBSERVABLE_VECTOR_1_NAME(xaml_object)*); \
+    XAML_EVENT(items_changed, type, xaml_object, XAML_OBSERVABLE_VECTOR_1_NAME(xaml_object));                          \
+    XAML_PROP(items_template, type, xaml_template_base**, xaml_template_base*);                                        \
+    XAML_PROP(sel_id, type, XAML_STD int32_t*, XAML_STD int32_t);                                                      \
+    XAML_EVENT(sel_id_changed, type, xaml_object, int32_t)
 
 XAML_DECL_INTERFACE_(xaml_items_base, xaml_control)
 {

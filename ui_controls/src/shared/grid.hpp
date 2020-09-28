@@ -6,55 +6,37 @@
 
 struct xaml_grid_internal : xaml_layout_base_internal
 {
-    XAML_PROP_PTR_IMPL(columns, xaml_vector)
-    XAML_PROP_PTR_IMPL(rows, xaml_vector)
+    XAML_PROP_PTR_IMPL(columns, xaml_vector<xaml_grid_length>)
+    XAML_PROP_PTR_IMPL(rows, xaml_vector<xaml_grid_length>)
 
     xaml_result XAML_CALL add_column(xaml_grid_length const& length) noexcept
     {
-        xaml_ptr<xaml_object> box;
-        XAML_RETURN_IF_FAILED(xaml_box_value(length, &box));
-        return m_columns->append(box);
+        return m_columns->append(length);
     }
 
     xaml_result XAML_CALL remove_column(xaml_grid_length const& length) noexcept
     {
-        int32_t size;
-        XAML_RETURN_IF_FAILED(m_columns->get_size(&size));
-        for (int32_t i = 0; i < size; i++)
+        std::int32_t index;
+        XAML_RETURN_IF_FAILED(m_columns->index_of(length, &index));
+        if (index != -1)
         {
-            xaml_ptr<xaml_object> box;
-            XAML_RETURN_IF_FAILED(m_columns->get_at(i, &box));
-            xaml_grid_length const* pvalue;
-            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pvalue));
-            if (*pvalue == length)
-            {
-                return m_columns->remove_at(i);
-            }
+            XAML_RETURN_IF_FAILED(m_columns->remove_at(index));
         }
         return XAML_S_OK;
     }
 
     xaml_result XAML_CALL add_row(xaml_grid_length const& length) noexcept
     {
-        xaml_ptr<xaml_object> box;
-        XAML_RETURN_IF_FAILED(xaml_box_value(length, &box));
-        return m_rows->append(box);
+        return m_rows->append(length);
     }
 
     xaml_result XAML_CALL remove_row(xaml_grid_length const& length) noexcept
     {
-        int32_t size;
-        XAML_RETURN_IF_FAILED(m_rows->get_size(&size));
-        for (int32_t i = 0; i < size; i++)
+        std::int32_t index;
+        XAML_RETURN_IF_FAILED(m_rows->index_of(length, &index));
+        if (index != -1)
         {
-            xaml_ptr<xaml_object> box;
-            XAML_RETURN_IF_FAILED(m_rows->get_at(i, &box));
-            xaml_grid_length const* pvalue;
-            XAML_RETURN_IF_FAILED(box.query<xaml_box>()->get_value_ptr(&pvalue));
-            if (*pvalue == length)
-            {
-                return m_rows->remove_at(i);
-            }
+            XAML_RETURN_IF_FAILED(m_rows->remove_at(index));
         }
         return XAML_S_OK;
     }
@@ -66,8 +48,8 @@ struct xaml_grid_internal : xaml_layout_base_internal
 
 struct xaml_grid_impl : xaml_layout_base_implement<xaml_grid_impl, xaml_grid_internal, xaml_grid>
 {
-    XAML_PROP_PTR_INTERNAL_IMPL(columns, xaml_vector)
-    XAML_PROP_PTR_INTERNAL_IMPL(rows, xaml_vector)
+    XAML_PROP_PTR_INTERNAL_IMPL(columns, xaml_vector<xaml_grid_length>)
+    XAML_PROP_PTR_INTERNAL_IMPL(rows, xaml_vector<xaml_grid_length>)
 
     XAML_CPROP_INTERNAL_IMPL(column, xaml_grid_length const&, xaml_grid_length const&)
     XAML_CPROP_INTERNAL_IMPL(row, xaml_grid_length const&, xaml_grid_length const&)

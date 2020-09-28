@@ -29,7 +29,9 @@ xaml_result xaml_menu_item_internal::wnd_proc(xaml_win32_window_message const& m
     {
         if (LOWORD(msg.wParam) == m_menu_id)
         {
-            XAML_RETURN_IF_FAILED(on_click(m_outer_this));
+            xaml_ptr<xaml_event_args> args;
+            XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+            XAML_ASSERT_SUCCEEDED(m_click->invoke(m_outer_this, args));
         }
         break;
     }
@@ -95,7 +97,7 @@ xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const&) noexcept
 xaml_result xaml_popup_menu_item_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* pres) noexcept
 {
     std::optional<LPARAM> result;
-    XAML_FOREACH_START(c, m_submenu);
+    XAML_FOREACH_START(xaml_menu_item, c, m_submenu);
     {
         xaml_ptr<xaml_win32_control> win32_control = c.query<xaml_win32_control>();
         if (win32_control)
@@ -116,11 +118,9 @@ xaml_result xaml_popup_menu_item_internal::wnd_proc(xaml_win32_window_message co
 
 xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
 {
-    XAML_FOREACH_START(child, m_submenu);
+    XAML_FOREACH_START(xaml_menu_item, child, m_submenu);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(child->query(&cc));
-        XAML_RETURN_IF_FAILED(cc->draw({}));
+        XAML_RETURN_IF_FAILED(child->draw({}));
     }
     XAML_FOREACH_END();
     return XAML_S_OK;

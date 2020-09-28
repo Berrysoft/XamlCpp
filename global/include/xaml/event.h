@@ -98,27 +98,15 @@ xaml_result XAML_CALL xaml_event_new(xaml_event<TS, TE>** ptr) noexcept
 }
 #endif // __cplusplus
 
-//__XAML_TYPE_NAME_BASE(xaml_event_args_1, { 0xb2998082, 0x5a53, 0x4ab0, { 0xa3, 0xc4, 0x2c, 0x6a, 0x90, 0xf1, 0x23, 0x4a } })
-//
-//#define XAML_EVENT_ARGS_1_VTBL(type, TN, TI) XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type))
-//
-//#ifdef __cplusplus
-//XAML_DECL_INTERFACE_T_(xaml_event_args, xaml_object, XAML_EVENT_ARGS_1_VTBL)
-//
-//    #define XAML_EVENT_ARGS_1_NAME(type) xaml_event_args<type>
-//
-//    #define __XAML_EVENT_ARGS_1_TYPE(type) typedef xaml_event_args<type> xaml_event_args_1__##type;
-//#else
-//    #define XAML_EVENT_ARGS_1_NAME(type) xaml_event_args_1__##type
-//
-//    #define __XAML_EVENT_ARGS_1_TYPE(type_name, type_interface) \
-//        XAML_DECL_INTERFACE_T_(xaml_event_args_1, type_name, XAML_EVENT_ARGS_1_VTBL, type_name, type_interface)
-//#endif // __cplusplus
-//#define XAML_EVENT_ARGS_1_TYPE(type) __XAML_EVENT_ARGS_1_TYPE(type)
-//
-//#ifndef xaml_event_args_1__xaml_object_defined
-//    #define xaml_event_args_1__xaml_object_defined
-//XAML_EVENT_ARGS_1_TYPE(XAML_T_O(xaml_object))
-//#endif // !xaml_event_args_1__xaml_object_defined
+XAML_CLASS(xaml_event_args, { 0xb2998082, 0x5a53, 0x4ab0, { 0xa3, 0xc4, 0x2c, 0x6a, 0x90, 0xf1, 0x23, 0x4a } })
+
+#define XAML_EVENT_ARGS_VTBL(type) XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type))
+
+XAML_DECL_INTERFACE_(xaml_event_args, xaml_object)
+{
+    XAML_DECL_VTBL(xaml_event_args, XAML_EVENT_ARGS_VTBL);
+};
+
+EXTERN_C XAML_API xaml_result XAML_CALL xaml_event_args_empty(xaml_event_args**) XAML_NOEXCEPT;
 
 #endif // !XAML_EVENT_H

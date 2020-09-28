@@ -8,11 +8,11 @@ XAML_CLASS(xaml_progress, { 0x505267df, 0x2287, 0x4c64, { 0xab, 0xf2, 0xb2, 0xea
 #define XAML_PROGRESS_VTBL(type)                                   \
     XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                    \
     XAML_PROP(value, type, XAML_STD int32_t*, XAML_STD int32_t);   \
-    XAML_EVENT(value_changed, type);                               \
+    XAML_EVENT(value_changed, type, xaml_object, int32_t);         \
     XAML_PROP(minimum, type, XAML_STD int32_t*, XAML_STD int32_t); \
     XAML_PROP(maximum, type, XAML_STD int32_t*, XAML_STD int32_t); \
     XAML_PROP(is_indeterminate, type, bool*, bool);                \
-    XAML_EVENT(is_indeterminate_changed, type)
+    XAML_EVENT(is_indeterminate_changed, type, xaml_object, bool)
 
 XAML_DECL_INTERFACE_(xaml_progress, xaml_control)
 {

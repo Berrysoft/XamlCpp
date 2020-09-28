@@ -11,14 +11,14 @@ xaml_result xaml_progress_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_indeterminate_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_value_changed->add_noexcept<xaml_ptr<xaml_progress>, int32_t>(
-        [this](xaml_ptr<xaml_progress>, int32_t) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_value_changed->add(
+        [this](xaml_object*, int32_t) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_progress());
             return XAML_S_OK;
         },
         &token)));
-    XAML_RETURN_IF_FAILED((m_is_indeterminate_changed->add_noexcept<xaml_ptr<xaml_progress>, bool>(
-        [this](xaml_ptr<xaml_progress>, bool) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_is_indeterminate_changed->add(
+        [this](xaml_object*, bool) noexcept -> xaml_result {
             if (m_handle) XAML_RETURN_IF_FAILED(draw_indeterminate());
             return XAML_S_OK;
         },
@@ -27,8 +27,8 @@ xaml_result xaml_progress_internal::init() noexcept
 #ifdef XAML_UI_GTK3
     XAML_RETURN_IF_FAILED(xaml_timer_new_interval(100ms, &m_pulse_timer));
     {
-        xaml_ptr<xaml_delegate> callback;
-        XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_timer>>(xaml_mem_fn(&xaml_progress_internal::on_pulse, this), &callback)));
+        xaml_ptr<xaml_delegate<xaml_object, xaml_event_args>> callback;
+        XAML_RETURN_IF_FAILED((xaml_delegate_new(xaml_mem_fn(&xaml_progress_internal::on_pulse, this), &callback)));
         XAML_RETURN_IF_FAILED(m_pulse_timer->add_tick(callback, &token));
     }
 #endif // XAML_UI_GTK3

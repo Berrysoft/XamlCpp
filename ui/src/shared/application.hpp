@@ -65,7 +65,7 @@ public:
         return XAML_S_OK;
     }
 
-    XAML_EVENT_IMPL(activate, xaml_object, xaml_application)
+    XAML_EVENT_IMPL(activate, xaml_object, xaml_event_args)
 
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_font_provider_impl : xaml_inner_implement<xaml_win32_font_provider_impl, xaml_application_impl, xaml_win32_font_provider>

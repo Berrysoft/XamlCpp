@@ -49,8 +49,8 @@ xaml_result xaml_check_menu_item_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
     int32_t token;
-    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_check_menu_item>, bool>(
-        [this](xaml_ptr<xaml_check_menu_item>, bool) noexcept -> xaml_result {
+    return m_is_checked_changed->add(
+        [this](xaml_object*, bool) noexcept -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
 #elif defined(XAML_UI_COCOA)
@@ -71,8 +71,8 @@ xaml_result xaml_radio_menu_item_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
     int32_t token;
-    return m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_menu_item>, bool>(
-        [this](xaml_ptr<xaml_radio_menu_item>, bool) noexcept -> xaml_result {
+    return m_is_checked_changed->add(
+        [this](xaml_object*, bool) noexcept -> xaml_result {
 #ifdef XAML_UI_WINDOWS
             if (m_menu_id)
 #elif defined(XAML_UI_COCOA)
@@ -99,9 +99,9 @@ xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
         xaml_ptr<xaml_menu_bar> multic;
         if (XAML_SUCCEEDED(parent->query(&multic)))
         {
-            xaml_ptr<xaml_vector_view> children;
+            xaml_ptr<xaml_vector_view<xaml_control>> children;
             XAML_RETURN_IF_FAILED(multic->get_children(&children));
-            XAML_FOREACH_START(c, children);
+            XAML_FOREACH_START(xaml_control, c, children);
             {
                 if (auto rc = c.query<xaml_radio_menu_item>())
                 {

@@ -9,7 +9,7 @@ struct xaml_text_box_internal : xaml_control_internal
 {
     std::atomic_bool m_text_changing{ false };
 
-    XAML_EVENT_IMPL(text_changed)
+    XAML_EVENT_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_STRING_EVENT_IMPL(text)
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
@@ -33,7 +33,7 @@ struct xaml_text_box_internal : xaml_control_internal
 
 struct xaml_text_box_impl : xaml_control_implement<xaml_text_box_impl, xaml_text_box_internal, xaml_text_box>
 {
-    XAML_EVENT_INTERNAL_IMPL(text_changed)
+    XAML_EVENT_INTERNAL_IMPL(text_changed, xaml_object, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(text, xaml_string)
 };
 
