@@ -18,21 +18,21 @@ XAML_DECL_INTERFACE_(xaml_container, xaml_control)
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_container_members(xaml_type_info_registration*) XAML_NOEXCEPT;
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_container_register(xaml_meta_context*) XAML_NOEXCEPT;
 
-#ifndef xaml_enumerator__xaml_control__defined
-    #define xaml_enumerator__xaml_control__defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_control))
-#endif // !xaml_enumerator__xaml_control__defined
+#ifndef xaml_enumerator_1__xaml_control_defined
+    #define xaml_enumerator_1__xaml_control_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_control))
+#endif // !xaml_enumerator_1__xaml_control_defined
 
-#ifndef xaml_vector_view__xaml_control__defined
-    #define xaml_vector_view__xaml_control__defined
-XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_control))
-#endif // !xaml_vector_view__xaml_control__defined
+#ifndef xaml_vector_view_1__xaml_control_defined
+    #define xaml_vector_view_1__xaml_control_defined
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_O(xaml_control))
+#endif // !xaml_vector_view_1__xaml_control_defined
 
 XAML_CLASS(xaml_multicontainer, { 0xc9a53763, 0x404b, 0x4531, { 0xba, 0x56, 0x56, 0x01, 0xc9, 0x49, 0x05, 0x8d } })
 
 #define XAML_MULTICONTAINER_VTBL(type)                                        \
     XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));                               \
-    XAML_METHOD(get_children, type, XAML_VECTOR_VIEW_T_NAME(xaml_control)**); \
+    XAML_METHOD(get_children, type, XAML_VECTOR_VIEW_1_NAME(xaml_control)**); \
     XAML_CPROP(child, type, xaml_control*, xaml_control*)
 
 XAML_DECL_INTERFACE_(xaml_multicontainer, xaml_control)

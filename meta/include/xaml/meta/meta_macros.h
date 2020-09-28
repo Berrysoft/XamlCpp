@@ -19,8 +19,8 @@
     XAML_METHOD(add_##name, type, atype);    \
     XAML_METHOD(remove_##name, type, rtype)
 
-#define XAML_EVENT(name, type, ts, te)                                                 \
-    XAML_METHOD(add_##name, type, XAML_DELEGATE_T_T_NAME(ts, te)*, XAML_STD int32_t*); \
+#define XAML_EVENT(name, type, ts, te)                                               \
+    XAML_METHOD(add_##name, type, XAML_DELEGATE_2_NAME(ts, te)*, XAML_STD int32_t*); \
     XAML_METHOD(remove_##name, type, XAML_STD int32_t)
 
 #ifdef __cplusplus

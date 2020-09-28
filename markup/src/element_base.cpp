@@ -3,7 +3,7 @@
 xaml_result XAML_CALL xaml_element_base_members(xaml_type_info_registration* __info) noexcept
 {
     using self_type = xaml_element_base;
-    XAML_TYPE_INFO_ADD_PROP_RD(resources, XAML_MAP_VIEW_T_T_NAME(xaml_string, xaml_object));
+    XAML_TYPE_INFO_ADD_PROP_RD(resources, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_object));
     XAML_TYPE_INFO_ADD_EVENT(parent_changed);
     return XAML_S_OK;
 }
