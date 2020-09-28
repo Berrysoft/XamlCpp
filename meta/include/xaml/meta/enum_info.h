@@ -8,26 +8,26 @@
 #include <xaml/map.h>
 #include <xaml/meta/reflection_info.h>
 
-#ifndef xaml_key_value_pair__xaml_string____int32_t__defined
-    #define xaml_key_value_pair__xaml_string____int32_t__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
-#endif // !xaml_key_value_pair__xaml_string____int32_t__defined
+#ifndef xaml_key_value_pair_2__xaml_string__int32_t_defined
+    #define xaml_key_value_pair_2__xaml_string__int32_t_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
+#endif // !xaml_key_value_pair_2__xaml_string__int32_t_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____int32_t__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____int32_t____defined
+#ifndef xaml_enumerator_2__xaml_key_value_pair_2__xaml_string__int32_t_defined
+    #define xaml_enumerator_2__xaml_key_value_pair_2__xaml_string__int32_t_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__int32_t))
+#endif // !xaml_enumerator_2__xaml_key_value_pair_2__xaml_string__int32_t_defined
 
-#ifndef xaml_map_view__xaml_string____int32_t__defined
-    #define xaml_map_view__xaml_string____int32_t__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
-#endif // !xaml_map_view__xaml_string____int32_t__defined
+#ifndef xaml_map_view_2__xaml_string__int32_t_defined
+    #define xaml_map_view_2__xaml_string__int32_t_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_V(int32_t))
+#endif // !xaml_map_view_2__xaml_string__int32_t_defined
 
 XAML_CLASS(xaml_enum_info, { 0x51dcc841, 0xc0d0, 0x4c8b, { 0x9f, 0x9f, 0xed, 0x7b, 0x48, 0xa1, 0xa9, 0xd9 } })
 
-#define XAML_ENUM_INFO_VTBL(type)                                                  \
-    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                            \
-    XAML_METHOD(get_values, type, XAML_MAP_VIEW_T_T_NAME(xaml_string, int32_t)**); \
+#define XAML_ENUM_INFO_VTBL(type)                                                \
+    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                          \
+    XAML_METHOD(get_values, type, XAML_MAP_VIEW_2_NAME(xaml_string, int32_t)**); \
     XAML_METHOD(get_value, type, xaml_string*, int32_t*)
 
 XAML_DECL_INTERFACE_(xaml_enum_info, xaml_reflection_info)
@@ -35,7 +35,7 @@ XAML_DECL_INTERFACE_(xaml_enum_info, xaml_reflection_info)
     XAML_DECL_VTBL(xaml_enum_info, XAML_ENUM_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_enum_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, XAML_MAP_VIEW_T_T_NAME(xaml_string, int32_t) *, xaml_enum_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_enum_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, XAML_MAP_VIEW_2_NAME(xaml_string, int32_t) *, xaml_enum_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T>

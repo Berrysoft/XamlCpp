@@ -15,7 +15,7 @@ xaml_result XAML_CALL print_string(xaml_string* str)
     return XAML_S_OK;
 }
 
-xaml_result XAML_CALL observable_vector_changed_callback(xaml_object* sender, xaml_vector_changed_args__xaml_string__* e)
+xaml_result XAML_CALL observable_vector_changed_callback(xaml_object* sender, xaml_vector_changed_args_1__xaml_string* e)
 {
     (void)sender;
     xaml_result hr;
@@ -28,7 +28,7 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_object* sender, xa
         int32_t index;
         XAML_GOTO_IF_FAILED(e->vtbl->get_new_index(e, &index), exit);
         printf(U("Add item at %d: "), index);
-        xaml_vector_view__xaml_string__* new_items;
+        xaml_vector_view_1__xaml_string* new_items;
         XAML_GOTO_IF_FAILED(e->vtbl->get_new_items(e, &new_items), exit);
         int32_t size;
         XAML_GOTO_IF_FAILED(new_items->vtbl->get_size(new_items, &size), clean_new_items_1);
@@ -55,7 +55,7 @@ xaml_result XAML_CALL observable_vector_changed_callback(xaml_object* sender, xa
         int32_t index;
         XAML_GOTO_IF_FAILED(e->vtbl->get_new_index(e, &index), exit);
         printf(U("Erase item at %d: "), index);
-        xaml_vector_view__xaml_string__* old_items;
+        xaml_vector_view_1__xaml_string* old_items;
         XAML_GOTO_IF_FAILED(e->vtbl->get_old_items(e, &old_items), exit);
         int32_t size;
         XAML_GOTO_IF_FAILED(old_items->vtbl->get_size(old_items, &size), clean_old_items_2);
@@ -104,17 +104,17 @@ xaml_result main_impl()
     xaml_result hr;
     xaml_string* str;
     XAML_GOTO_IF_FAILED(xaml_string_new_view(U("Hello world!"), &str), exit);
-    xaml_observable_vector__xaml_string__* vec;
-    XAML_GOTO_IF_FAILED(xaml_observable_vector__xaml_string___new(&vec), clean_str);
-    xaml_delegate__xaml_object____xaml_vector_changed_args__xaml_string____* callback;
-    XAML_GOTO_IF_FAILED(xaml_delegate__xaml_object____xaml_vector_changed_args__xaml_string_____new(observable_vector_changed_callback, &callback), clean_vec);
+    xaml_observable_vector_1__xaml_string* vec;
+    XAML_GOTO_IF_FAILED(xaml_observable_vector_1__xaml_string_new(&vec), clean_str);
+    xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string* callback;
+    XAML_GOTO_IF_FAILED(xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string_new(observable_vector_changed_callback, &callback), clean_vec);
     int32_t token;
     XAML_GOTO_IF_FAILED(vec->vtbl->add_vector_changed(vec, callback, &token), clean_callback);
     XAML_GOTO_IF_FAILED(vec->vtbl->append(vec, str), clean_callback);
     XAML_GOTO_IF_FAILED(vec->vtbl->remove_at(vec, 0), clean_callback);
 
-    xaml_map__int32_t____xaml_object__* map;
-    XAML_GOTO_IF_FAILED(xaml_map__int32_t____xaml_object___new(&map), clean_callback);
+    xaml_map_2__int32_t__xaml_object* map;
+    XAML_GOTO_IF_FAILED(xaml_map_2__int32_t__xaml_object_new(&map), clean_callback);
     XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 1, (xaml_object*)str, NULL), clean_map);
     XAML_GOTO_IF_FAILED(map->vtbl->insert(map, 2, (xaml_object*)vec, NULL), clean_map);
     xaml_object* obj1;

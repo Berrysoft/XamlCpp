@@ -36,21 +36,21 @@ using xaml_base_t = typename xaml_base<T>::type;
     #define XAML_VTBL_INHERIT(x)
     #define XAML_DECL_VTBL(type, vtbl) vtbl(type)
 
-    #define XAML_DECL_INTERFACE_T_(bname, base, vname)            \
-        template <typename T>                                     \
-        struct bname : base                                       \
-        {                                                         \
-            vname(bname<T>, T, xaml_interface_t<T>);              \
-        };                                                        \
-        template <typename T>                                     \
-        struct xaml_base<bname<T>>                                \
-        {                                                         \
-            using type = base;                                    \
-        };                                                        \
-        template <typename T>                                     \
-        struct xaml_type_guid<bname<T>>                           \
-        {                                                         \
-            static constexpr xaml_guid value = xaml_guid_##bname; \
+    #define XAML_DECL_INTERFACE_T_(bname, base, vname)                \
+        template <typename T>                                         \
+        struct bname : base                                           \
+        {                                                             \
+            vname(bname<T>, T, xaml_interface_t<T>);                  \
+        };                                                            \
+        template <typename T>                                         \
+        struct xaml_base<bname<T>>                                    \
+        {                                                             \
+            using type = base;                                        \
+        };                                                            \
+        template <typename T>                                         \
+        struct xaml_type_guid<bname<T>>                               \
+        {                                                             \
+            static constexpr xaml_guid value = xaml_guid_##bname##_1; \
         };
 
     #define XAML_T_V(type) type
@@ -68,14 +68,14 @@ using xaml_base_t = typename xaml_base<T>::type;
             vname(type);                \
         } const* const vtbl
 
-    #define XAML_DECL_INTERFACE_T_(bname, tname, vname, ...)      \
-        typedef struct bname##__##tname##__ bname##__##tname##__; \
-        struct bname##__##tname##__                               \
-        {                                                         \
-            struct                                                \
-            {                                                     \
-                vname(bname##__##tname##__, __VA_ARGS__);         \
-            } const* const vtbl;                                  \
+    #define XAML_DECL_INTERFACE_T_(bname, tname, vname, ...) \
+        typedef struct bname##__##tname bname##__##tname;    \
+        struct bname##__##tname                              \
+        {                                                    \
+            struct                                           \
+            {                                                \
+                vname(bname##__##tname, __VA_ARGS__);        \
+            } const* const vtbl;                             \
         };
 
     #define XAML_T_V(type) type, type

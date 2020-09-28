@@ -10,14 +10,10 @@
 #include <xaml/object.h>
 #include <xaml/vector.h>
 
-__XAML_TYPE_NAME_BASE(xaml_delegate, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e, 0x00, 0x0c, 0x0f, 0xc3 } })
+__XAML_TYPE_NAME_BASE(xaml_delegate_2, { 0x3a1a793a, 0x8a83, 0x4d40, { 0x89, 0x62, 0x03, 0x9e, 0x00, 0x0c, 0x0f, 0xc3 } })
 
-#define XAML_DELEGATE_T_VTBL(type, TN, TI)     \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type)); \
-    XAML_METHOD(invoke, type, TI)
-
-#define XAML_DELEGATE_T_T_VTBL(type, TA1N, TA1I, TA2N, TA2I) \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));               \
+#define XAML_DELEGATE_2_VTBL(type, TA1N, TA1I, TA2N, TA2I) \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));             \
     XAML_METHOD(invoke, type, TA1I, TA2I)
 
 #ifdef __cplusplus
@@ -36,25 +32,19 @@ struct xaml_base<xaml_delegate<Args...>>
 template <typename... Args>
 struct xaml_type_guid<xaml_delegate<Args...>>
 {
-    static constexpr xaml_guid value = xaml_guid_xaml_delegate;
+    static constexpr xaml_guid value = xaml_guid_xaml_delegate_2;
 };
 
-    #define __XAML_DELEGATE_T_TYPE(type) typedef xaml_delegate<type> xaml_delegate__##type##__;
+    #define XAML_DELEGATE_2_NAME(a1type, a2type) xaml_delegate<a1type, a2type>
 
-    #define XAML_DELEGATE_T_T_NAME(a1type, a2type) xaml_delegate<a1type, a2type>
-
-    #define __XAML_DELEGATE_T_T_TYPE(a1type, a2type) typedef xaml_delegate<a1type, a2type> xaml_delegate__##a1type##____##a2type##__;
+    #define __XAML_DELEGATE_2_TYPE(a1type, a2type) typedef xaml_delegate<a1type, a2type> xaml_delegate_2__##a1type##__##a2type;
 #else
-    #define __XAML_DELEGATE_T_TYPE(type_name, type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_delegate, type_name, XAML_DELEGATE_T_VTBL, type_name, type_interface)
+    #define XAML_DELEGATE_2_NAME(a1type, a2type) xaml_delegate_2__##a1type##__##a2type
 
-    #define XAML_DELEGATE_T_T_NAME(a1type, a2type) xaml_delegate__##a1type##____##a2type##__
-
-    #define __XAML_DELEGATE_T_T_TYPE(a1type_name, a1type_interface, a2type_name, a2type_interface) \
-        XAML_DECL_INTERFACE_T_(xaml_delegate, a1type_name##____##a2type_name, XAML_DELEGATE_T_T_VTBL, a1type_name, a1type_interface, a2type_name, a2type_interface)
+    #define __XAML_DELEGATE_2_TYPE(a1type_name, a1type_interface, a2type_name, a2type_interface) \
+        XAML_DECL_INTERFACE_T_(xaml_delegate_2, a1type_name##__##a2type_name, XAML_DELEGATE_2_VTBL, a1type_name, a1type_interface, a2type_name, a2type_interface)
 #endif // __cplusplus
-#define XAML_DELEGATE_T_TYPE(type) __XAML_DELEGATE_T_TYPE(type)
-#define XAML_DELEGATE_T_T_TYPE(t1, t2) __XAML_DELEGATE_T_T_TYPE(t1, t2)
+#define XAML_DELEGATE_2_TYPE(t1, t2) __XAML_DELEGATE_2_TYPE(t1, t2)
 
 #ifdef __cplusplus
 template <typename... Args>

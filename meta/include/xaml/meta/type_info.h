@@ -20,100 +20,100 @@ XAML_DECL_INTERFACE_(xaml_basic_type_info, xaml_reflection_info)
 
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_basic_type_info_new(xaml_guid XAML_CONST_REF, xaml_string*, xaml_string*, xaml_basic_type_info**) XAML_NOEXCEPT;
 
-#ifndef xaml_hasher__xaml_guid__defined
-    #define xaml_hasher__xaml_guid__defined
-XAML_HASHER_T_TYPE(XAML_T_V(xaml_guid))
-#endif // !xaml_hasher__xaml_guid__defined
+#ifndef xaml_hasher_1__xaml_guid_defined
+    #define xaml_hasher_1__xaml_guid_defined
+XAML_HASHER_1_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_hasher_1__xaml_guid_defined
 
-#ifndef xaml_key_value_pair__xaml_guid____xaml_object__defined
-    #define xaml_key_value_pair__xaml_guid____xaml_object__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_object))
-#endif // !xaml_key_value_pair__xaml_guid____xaml_object__defined
+#ifndef xaml_key_value_pair_2__xaml_guid__xaml_object_defined
+    #define xaml_key_value_pair_2__xaml_guid__xaml_object_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_object))
+#endif // !xaml_key_value_pair_2__xaml_guid__xaml_object_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_guid____xaml_object____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_guid____xaml_object____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_guid____xaml_object__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_guid____xaml_object____defined
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_object_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_object_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_guid__xaml_object))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_object_defined
 
-#ifndef xaml_map_view__xaml_guid____xaml_object__defined
-    #define xaml_map_view__xaml_guid____xaml_object__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_object))
-#endif // !xaml_map_view__xaml_guid____xaml_object____defined
+#ifndef xaml_map_view_2__xaml_guid__xaml_object_defined
+    #define xaml_map_view_2__xaml_guid__xaml_object_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_object))
+#endif // !xaml_map_view_2__xaml_guid__xaml_object_defined
 
-#ifndef xaml_key_value_pair__xaml_string____xaml_method_info__defined
-    #define xaml_key_value_pair__xaml_string____xaml_method_info__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_method_info))
-#endif // !xaml_key_value_pair__xaml_string____xaml_method_info__defined
+#ifndef xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
+    #define xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_method_info))
+#endif // !xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_method_info____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_method_info____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____xaml_method_info__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_method_info____defined
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__xaml_method_info))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_method_info_defined
 
-#ifndef xaml_map_view__xaml_string____xaml_method_info__defined
-    #define xaml_map_view__xaml_string____xaml_method_info__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_method_info))
-#endif // !xaml_map_view__xaml_string____xaml_method_info__defined
+#ifndef xaml_map_view_2__xaml_string__xaml_method_info_defined
+    #define xaml_map_view_2__xaml_string__xaml_method_info_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_method_info))
+#endif // !xaml_map_view_2__xaml_string__xaml_method_info_defined
 
-#ifndef xaml_key_value_pair__xaml_string____xaml_property_info__defined
-    #define xaml_key_value_pair__xaml_string____xaml_property_info__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_property_info))
-#endif // !xaml_key_value_pair__xaml_string____xaml_property_info__defined
+#ifndef xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
+    #define xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_property_info))
+#endif // !xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_property_info____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_property_info____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____xaml_property_info__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_property_info____defined
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__xaml_property_info))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_property_info_defined
 
-#ifndef xaml_map_view__xaml_string____xaml_property_info__defined
-    #define xaml_map_view__xaml_string____xaml_property_info__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_property_info))
-#endif // !xaml_map_view__xaml_string____xaml_property_info__defined
+#ifndef xaml_map_view_2__xaml_string__xaml_property_info_defined
+    #define xaml_map_view_2__xaml_string__xaml_property_info_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_property_info))
+#endif // !xaml_map_view_2__xaml_string__xaml_property_info_defined
 
-#ifndef xaml_key_value_pair__xaml_string____xaml_collection_property_info__defined
-    #define xaml_key_value_pair__xaml_string____xaml_collection_property_info__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_collection_property_info))
-#endif // !xaml_key_value_pair__xaml_string____xaml_collection_property_info__defined
+#ifndef xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
+    #define xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_collection_property_info))
+#endif // !xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_collection_property_info____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_collection_property_info____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____xaml_collection_property_info__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_collection_property_info____defined
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__xaml_collection_property_info))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_collection_property_info_defined
 
-#ifndef xaml_map_view__xaml_string____xaml_collection_property_info__defined
-    #define xaml_map_view__xaml_string____xaml_collection_property_info__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_collection_property_info))
-#endif // !xaml_map_view__xaml_string____xaml_collection_property_info__defined
+#ifndef xaml_map_view_2__xaml_string__xaml_collection_property_info_defined
+    #define xaml_map_view_2__xaml_string__xaml_collection_property_info_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_collection_property_info))
+#endif // !xaml_map_view_2__xaml_string__xaml_collection_property_info_defined
 
-#ifndef xaml_key_value_pair__xaml_string____xaml_event_info__defined
-    #define xaml_key_value_pair__xaml_string____xaml_event_info__defined
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_event_info))
-#endif // !xaml_key_value_pair__xaml_string____xaml_event_info__defined
+#ifndef xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
+    #define xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_event_info))
+#endif // !xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
 
-#ifndef xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_event_info____defined
-    #define xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_event_info____defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__xaml_string____xaml_event_info__))
-#endif // !xaml_enumerator__xaml_key_value_pair__xaml_string____xaml_event_info____defined
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__xaml_event_info))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_event_info_defined
 
-#ifndef xaml_map_view__xaml_string____xaml_event_info__defined
-    #define xaml_map_view__xaml_string____xaml_event_info__defined
-XAML_MAP_VIEW_T_T_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_event_info))
-#endif // !xaml_map_view__xaml_string____xaml_event_info__defined
+#ifndef xaml_map_view_2__xaml_string__xaml_event_info_defined
+    #define xaml_map_view_2__xaml_string__xaml_event_info_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_event_info))
+#endif // !xaml_map_view_2__xaml_string__xaml_event_info_defined
 
 XAML_CLASS(xaml_type_info, { 0x3de3b2c1, 0x09d6, 0x433c, { 0xbf, 0x40, 0x40, 0x2d, 0xfe, 0x28, 0xda, 0x1d } })
 
-#define XAML_TYPE_INFO_VTBL(type)                                                                                       \
-    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                                                                 \
-    XAML_METHOD(get_attributes, type, XAML_MAP_VIEW_T_T_NAME(xaml_guid, xaml_object)**);                                \
-    XAML_METHOD(get_attribute, type, xaml_guid XAML_CONST_REF, void**);                                                 \
-    XAML_METHOD(get_constructor, type, xaml_constructor_info**);                                                        \
-    XAML_METHOD(get_methods, type, XAML_MAP_VIEW_T_T_NAME(xaml_string, xaml_method_info)**);                            \
-    XAML_METHOD(get_method, type, xaml_string*, xaml_method_info**);                                                    \
-    XAML_METHOD(get_properties, type, XAML_MAP_VIEW_T_T_NAME(xaml_string, xaml_property_info)**);                       \
-    XAML_METHOD(get_property, type, xaml_string*, xaml_property_info**);                                                \
-    XAML_METHOD(get_collection_properties, type, XAML_MAP_VIEW_T_T_NAME(xaml_string, xaml_collection_property_info)**); \
-    XAML_METHOD(get_collection_property, type, xaml_string*, xaml_collection_property_info**);                          \
-    XAML_METHOD(get_events, type, XAML_MAP_VIEW_T_T_NAME(xaml_string, xaml_event_info)**);                              \
+#define XAML_TYPE_INFO_VTBL(type)                                                                                     \
+    XAML_VTBL_INHERIT(XAML_REFLECTION_INFO_VTBL(type));                                                               \
+    XAML_METHOD(get_attributes, type, XAML_MAP_VIEW_2_NAME(xaml_guid, xaml_object)**);                                \
+    XAML_METHOD(get_attribute, type, xaml_guid XAML_CONST_REF, void**);                                               \
+    XAML_METHOD(get_constructor, type, xaml_constructor_info**);                                                      \
+    XAML_METHOD(get_methods, type, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_method_info)**);                            \
+    XAML_METHOD(get_method, type, xaml_string*, xaml_method_info**);                                                  \
+    XAML_METHOD(get_properties, type, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_property_info)**);                       \
+    XAML_METHOD(get_property, type, xaml_string*, xaml_property_info**);                                              \
+    XAML_METHOD(get_collection_properties, type, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_collection_property_info)**); \
+    XAML_METHOD(get_collection_property, type, xaml_string*, xaml_collection_property_info**);                        \
+    XAML_METHOD(get_events, type, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_event_info)**);                              \
     XAML_METHOD(get_event, type, xaml_string*, xaml_event_info**)
 
 XAML_DECL_INTERFACE_(xaml_type_info, xaml_reflection_info)

@@ -5,22 +5,22 @@
 #include <xaml/observable_vector.h>
 #include <xaml/string.h>
 
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_string))
-XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_string))
-XAML_VECTOR_CHANGED_ARGS_T_TYPE(XAML_T_O(xaml_string))
-XAML_DELEGATE_T_T_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_vector_changed_args__xaml_string__))
-XAML_OBSERVABLE_VECTOR_T_TYPE(XAML_T_O(xaml_string))
-XAML_KEY_VALUE_PAIR_T_T_TYPE(XAML_T_V(int32_t), XAML_T_O(xaml_object))
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_key_value_pair__int32_t____xaml_object__))
-XAML_HASHER_T_TYPE(XAML_T_V(int32_t))
-XAML_MAP_T_T_TYPE(XAML_T_V(int32_t), XAML_T_O(xaml_object))
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_string))
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_O(xaml_string))
+XAML_VECTOR_CHANGED_ARGS_1_TYPE(XAML_T_O(xaml_string))
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_vector_changed_args_1__xaml_string))
+XAML_OBSERVABLE_VECTOR_1_TYPE(XAML_T_O(xaml_string))
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_V(int32_t), XAML_T_O(xaml_object))
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__int32_t__xaml_object))
+XAML_HASHER_1_TYPE(XAML_T_V(int32_t))
+XAML_MAP_2_TYPE(XAML_T_V(int32_t), XAML_T_O(xaml_object))
 
-EXTERN_C xaml_result XAML_CALL xaml_delegate__xaml_object____xaml_vector_changed_args__xaml_string_____new(
-    xaml_result (*p)(xaml_object*, xaml_vector_changed_args__xaml_string__*),
-    xaml_delegate__xaml_object____xaml_vector_changed_args__xaml_string____**) XAML_NOEXCEPT;
+EXTERN_C xaml_result XAML_CALL xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string_new(
+    xaml_result (*p)(xaml_object*, xaml_vector_changed_args_1__xaml_string*),
+    xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string**) XAML_NOEXCEPT;
 
-EXTERN_C xaml_result XAML_CALL xaml_observable_vector__xaml_string___new(xaml_observable_vector__xaml_string__** ptr) XAML_NOEXCEPT;
+EXTERN_C xaml_result XAML_CALL xaml_observable_vector_1__xaml_string_new(xaml_observable_vector_1__xaml_string** ptr) XAML_NOEXCEPT;
 
-EXTERN_C xaml_result XAML_CALL xaml_map__int32_t____xaml_object___new(xaml_map__int32_t____xaml_object__** ptr) XAML_NOEXCEPT;
+EXTERN_C xaml_result XAML_CALL xaml_map_2__int32_t__xaml_object_new(xaml_map_2__int32_t__xaml_object** ptr) XAML_NOEXCEPT;
 
 #endif // !XAML_TEST_C_HELPER_H

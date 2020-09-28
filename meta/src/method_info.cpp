@@ -29,7 +29,7 @@ struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method
     }
 };
 
-xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view<xaml_object>*), xaml_vector_view__xaml_guid__* param_types, xaml_method_info** ptr) noexcept
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view<xaml_object>*), xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
 {
     return xaml_object_new_catch<xaml_method_info_impl>(ptr, name, func, param_types);
 }

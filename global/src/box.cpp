@@ -3,10 +3,10 @@
 
 using namespace std;
 
-#define __XAML_BOX_DEF_GEN(type)                                                                    \
-    xaml_result XAML_CALL xaml_box__##type##___new(type value, xaml_box__##type##__** ptr) noexcept \
-    {                                                                                               \
-        return xaml_box_new<type>(value, ptr);                                                      \
+#define __XAML_BOX_DEF_GEN(type)                                                                  \
+    xaml_result XAML_CALL xaml_box_1__##type##_new(type value, xaml_box_1__##type** ptr) noexcept \
+    {                                                                                             \
+        return xaml_box_new<type>(value, ptr);                                                    \
     }
 
 __XAML_BOX_DEF_GEN(bool)

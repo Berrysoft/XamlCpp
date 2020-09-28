@@ -5,13 +5,13 @@
 
 XAML_CLASS(xaml_button, { 0xe35d0bbe, 0xbec8, 0x4376, { 0xaa, 0xb6, 0xa9, 0x01, 0xed, 0xb4, 0x3d, 0x9f } })
 
-#define XAML_BUTTON_VTBL(type)                          \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));         \
-    XAML_PROP(text, type, xaml_string**, xaml_string*); \
-    XAML_EVENT(text_changed, type);                     \
-    XAML_PROP(is_default, type, bool*, bool);           \
-    XAML_EVENT(is_default_changed, type);               \
-    XAML_EVENT(click, type)
+#define XAML_BUTTON_VTBL(type)                                \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));               \
+    XAML_PROP(text, type, xaml_string**, xaml_string*);       \
+    XAML_EVENT(text_changed, type, xaml_object, xaml_string); \
+    XAML_PROP(is_default, type, bool*, bool);                 \
+    XAML_EVENT(is_default_changed, type, xaml_object, bool);  \
+    XAML_EVENT(click, type, xaml_object, xaml_object)
 
 XAML_DECL_INTERFACE_(xaml_button, xaml_control)
 {

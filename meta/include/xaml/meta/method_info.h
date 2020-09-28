@@ -5,40 +5,40 @@
 #include <xaml/object.h>
 #include <xaml/vector.h>
 
-#ifndef xaml_enumerator__xaml_object__defined
-    #define xaml_enumerator__xaml_object__defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_O(xaml_object))
-#endif // !xaml_enumerator__xaml_object__defined
+#ifndef xaml_enumerator_1__xaml_object_defined
+    #define xaml_enumerator_1__xaml_object_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_enumerator_1__xaml_object_defined
 
-#ifndef xaml_vector_view__xaml_object__defined
-    #define xaml_vector_view__xaml_object__defined
-XAML_VECTOR_VIEW_T_TYPE(XAML_T_O(xaml_object))
-#endif // !xaml_vector_view__xaml_object__defined
+#ifndef xaml_vector_view_1__xaml_object_defined
+    #define xaml_vector_view_1__xaml_object_defined
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_vector_view_1__xaml_object_defined
 
-#ifndef xaml_enumerator__xaml_guid__defined
-    #define xaml_enumerator__xaml_guid__defined
-XAML_ENUMERATOR_T_TYPE(XAML_T_V(xaml_guid))
-#endif // !xaml_enumerator__xaml_guid__defined
+#ifndef xaml_enumerator_1__xaml_guid_defined
+    #define xaml_enumerator_1__xaml_guid_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_enumerator_1__xaml_guid_defined
 
-#ifndef xaml_vector_view__xaml_guid__defined
-    #define xaml_vector_view__xaml_guid__defined
-XAML_VECTOR_VIEW_T_TYPE(XAML_T_V(xaml_guid))
-#endif // !xaml_vector_view__xaml_guid__defined
+#ifndef xaml_vector_view_1__xaml_guid_defined
+    #define xaml_vector_view_1__xaml_guid_defined
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_vector_view_1__xaml_guid_defined
 
 XAML_CLASS(xaml_method_info, { 0xac6df520, 0x582e, 0x46e3, { 0xbd, 0x8b, 0xfb, 0x30, 0x34, 0x3e, 0x16, 0xa1 } })
 
 #define XAML_METHOD_INFO_VTBL(type)                                                  \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                       \
-    XAML_METHOD(invoke, type, XAML_VECTOR_VIEW_T_NAME(xaml_object)*, xaml_object**); \
+    XAML_METHOD(invoke, type, XAML_VECTOR_VIEW_1_NAME(xaml_object)*, xaml_object**); \
     XAML_METHOD(get_name, type, xaml_string**);                                      \
-    XAML_METHOD(get_param_types, type, XAML_VECTOR_VIEW_T_NAME(xaml_guid)**)
+    XAML_METHOD(get_param_types, type, XAML_VECTOR_VIEW_1_NAME(xaml_guid)**)
 
 XAML_DECL_INTERFACE_(xaml_method_info, xaml_object)
 {
     XAML_DECL_VTBL(xaml_method_info, XAML_METHOD_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(XAML_VECTOR_VIEW_T_NAME(xaml_object) *) XAML_NOEXCEPT, XAML_VECTOR_VIEW_T_NAME(xaml_guid) *, xaml_method_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(XAML_VECTOR_VIEW_1_NAME(xaml_object) *) XAML_NOEXCEPT, XAML_VECTOR_VIEW_1_NAME(xaml_guid) *, xaml_method_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view<xaml_object>*)>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
