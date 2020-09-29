@@ -58,7 +58,10 @@ xaml_result XAML_CALL xaml_box_new(T const& value, xaml_box<T>** ptr) noexcept
 }
 #endif // __cplusplus
 
-XAML_TYPE(bool, { 0xc3a0fdbf, 0xa30b, 0x315e, { 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae } })
+// Different type names will cause troubles
+typedef bool xaml_bool;
+
+XAML_TYPE(xaml_bool, { 0xc3a0fdbf, 0xa30b, 0x315e, { 0xb0, 0x19, 0x42, 0xab, 0xac, 0xf7, 0x2c, 0xae } })
 XAML_TYPE(char, { 0x2d08eb84, 0x64e6, 0x3688, { 0x80, 0xd7, 0xe0, 0xc5, 0x48, 0xac, 0x36, 0x2d } })
 XAML_TYPE_NAME(XAML_STD int8_t, int8, { 0xdc3c96bc, 0x48ce, 0x3ef7, { 0x8c, 0x15, 0x37, 0xbc, 0x7e, 0xc8, 0x07, 0xa1 } })
 XAML_TYPE_NAME(XAML_STD int16_t, int16, { 0xe3e8f6e4, 0xe677, 0x3436, { 0x8e, 0x0e, 0x96, 0x3d, 0x3d, 0x6f, 0x81, 0x0a } })
@@ -76,11 +79,11 @@ XAML_TYPE(xaml_version, { 0x9fd1fbb5, 0xc8a0, 0x3ad2, { 0x90, 0x47, 0xfb, 0xfd, 
 #define __XAML_BOX_DECL_GEN(type) \
     EXTERN_C XAML_API xaml_result XAML_CALL xaml_box_1__##type##_new(type, xaml_box_1__##type** ptr) XAML_NOEXCEPT;
 
-#ifndef xaml_box_1__bool_defined
-    #define xaml_box_1__bool_defined
-XAML_BOX_1_TYPE(XAML_T_V(bool))
-#endif // !xaml_box_1__bool_defined
-__XAML_BOX_DECL_GEN(bool)
+#ifndef xaml_box_1__xaml_bool_defined
+    #define xaml_box_1__xaml_bool_defined
+XAML_BOX_1_TYPE(XAML_T_V(xaml_bool))
+#endif // !xaml_box_1__xaml_bool_defined
+__XAML_BOX_DECL_GEN(xaml_bool)
 
 #ifndef xaml_box_1__char_defined
     #define xaml_box_1__char_defined

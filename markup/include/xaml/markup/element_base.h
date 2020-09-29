@@ -23,6 +23,11 @@ XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_object))
 
 XAML_CLASS(xaml_element_base, { 0x326263f6, 0x2e97, 0x4b7d, { 0xb2, 0xbd, 0x29, 0x4c, 0x49, 0x6a, 0x5a, 0xfe } })
 
+#ifndef xaml_delegate_2__xaml_object__xaml_element_base_defined
+    #define xaml_delegate_2__xaml_object__xaml_element_base_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_element_base))
+#endif // !xaml_delegate_2__xaml_object__xaml_element_base_defined
+
 #define XAML_ELEMENT_BASE_VTBL(type)                                                    \
     XAML_VTBL_INHERIT(XAML_WEAK_REFERENCE_SOURCE_VTBL(type));                           \
     XAML_METHOD(add_resource, type, xaml_string*, xaml_object*);                        \

@@ -23,6 +23,11 @@ XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_string))
 XAML_VECTOR_VIEW_1_TYPE(XAML_T_O(xaml_string))
 #endif // !xaml_vector_view_1__xaml_string_defined
 
+#ifndef xaml_delegate_2__xaml_object__xaml_event_args_defined
+    #define xaml_delegate_2__xaml_object__xaml_event_args_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_event_args))
+#endif // !xaml_delegate_2__xaml_object__xaml_event_args_defined
+
 XAML_CLASS(xaml_application, { 0x842f00fd, 0xf03c, 0x4c05, { 0xb8, 0x5f, 0x18, 0x66, 0x54, 0xa3, 0x30, 0x12 } })
 
 #define XAML_APPLICATION_VTBL(type)                                           \

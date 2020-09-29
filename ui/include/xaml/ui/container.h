@@ -3,6 +3,11 @@
 
 #include <xaml/ui/control.h>
 
+#ifndef xaml_delegate_2__xaml_object__xaml_control_defined
+    #define xaml_delegate_2__xaml_object__xaml_control_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_control))
+#endif // !xaml_delegate_2__xaml_object__xaml_control_defined
+
 XAML_CLASS(xaml_container, { 0x211a9bce, 0xc31a, 0x42ab, { 0x8f, 0x4e, 0x2d, 0x45, 0x0f, 0xb2, 0xc3, 0xa9 } })
 
 #define XAML_CONTAINER_VTBL(type)                          \

@@ -9,7 +9,7 @@ using namespace std;
         return xaml_box_new<type>(value, ptr);                                                    \
     }
 
-__XAML_BOX_DEF_GEN(bool)
+__XAML_BOX_DEF_GEN(xaml_bool)
 __XAML_BOX_DEF_GEN(char)
 __XAML_BOX_DEF_GEN(int8_t)
 __XAML_BOX_DEF_GEN(int16_t)

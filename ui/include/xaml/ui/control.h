@@ -40,6 +40,41 @@ XAML_TYPE(xaml_mouse_button, { 0x02160c5f, 0x4507, 0x4347, { 0x91, 0xa9, 0xcd, 0
 
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_mouse_button_register(xaml_meta_context*) XAML_NOEXCEPT;
 
+#ifndef xaml_delegate_2__xaml_object__xaml_size_defined
+    #define xaml_delegate_2__xaml_object__xaml_size_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_size))
+#endif // !xaml_delegate_2__xaml_object__xaml_size_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_margin_defined
+    #define xaml_delegate_2__xaml_object__xaml_margin_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_margin))
+#endif // !xaml_delegate_2__xaml_object__xaml_margin_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_halignment_defined
+    #define xaml_delegate_2__xaml_object__xaml_halignment_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_halignment))
+#endif // !xaml_delegate_2__xaml_object__xaml_halignment_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_valignment_defined
+    #define xaml_delegate_2__xaml_object__xaml_valignment_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_valignment))
+#endif // !xaml_delegate_2__xaml_object__xaml_valignment_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_bool_defined
+    #define xaml_delegate_2__xaml_object__xaml_bool_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_bool))
+#endif // !xaml_delegate_2__xaml_object__xaml_bool_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_mouse_button_defined
+    #define xaml_delegate_2__xaml_object__xaml_mouse_button_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_mouse_button))
+#endif // !xaml_delegate_2__xaml_object__xaml_mouse_button_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_point_defined
+    #define xaml_delegate_2__xaml_object__xaml_point_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_V(xaml_point))
+#endif // !xaml_delegate_2__xaml_object__xaml_point_defined
+
 XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb, 0x95, 0x72, 0x72, 0xa2 } })
 
 #define XAML_CONTROL_VTBL(type)                                         \
@@ -55,7 +90,7 @@ XAML_CLASS(xaml_control, { 0x389f559a, 0x48bb, 0x49a7, { 0xa0, 0x16, 0x1d, 0xcb,
     XAML_PROP(valignment, type, xaml_valignment*, xaml_valignment);     \
     XAML_EVENT(valignment_changed, type, xaml_object, xaml_valignment); \
     XAML_PROP(is_visible, type, bool*, bool);                           \
-    XAML_EVENT(is_visible_changed, type, xaml_object, bool);            \
+    XAML_EVENT(is_visible_changed, type, xaml_object, xaml_bool);       \
     XAML_METHOD(get_is_initialized, type, bool*);                       \
     XAML_METHOD(draw, type, xaml_rectangle XAML_CONST_REF);             \
     XAML_EVENT(mouse_down, type, xaml_object, xaml_mouse_button);       \
