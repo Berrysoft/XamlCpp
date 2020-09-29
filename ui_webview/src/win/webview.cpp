@@ -103,7 +103,7 @@ xaml_result xaml_webview_internal::draw_create() noexcept
         return XAML_S_OK;
     });
     m_webview->set_resource_requested([this](xaml_ptr<xaml_webview_resource_requested_args> args) noexcept -> xaml_result {
-        return on_resource_requested(m_outer_this, args);
+        return m_resource_requested->invoke(m_outer_this, args);
     });
     m_created.store(true);
     XAML_RETURN_IF_FAILED(draw_visible());

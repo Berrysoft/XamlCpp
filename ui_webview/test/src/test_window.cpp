@@ -56,13 +56,13 @@ xaml_result xaml_test_window_impl::init() noexcept
     {
         xaml_ptr<xaml_application> current_app;
         XAML_RETURN_IF_FAILED(xaml_application_current(&current_app));
-        xaml_ptr<xaml_vector_view> argv;
+        xaml_ptr<xaml_vector_view<xaml_string>> argv;
         XAML_RETURN_IF_FAILED(current_app->get_cmd_lines(&argv));
         int32_t size;
         XAML_RETURN_IF_FAILED(argv->get_size(&size));
         if (size > 1)
         {
-            xaml_ptr<xaml_object> item;
+            xaml_ptr<xaml_string> item;
             XAML_RETURN_IF_FAILED(argv->get_at(1, &item));
             XAML_RETURN_IF_FAILED(item->query(&uri_str));
         }
@@ -79,9 +79,9 @@ xaml_result xaml_test_window_impl::init() noexcept
     XAML_RETURN_IF_FAILED(abar->set_text(uri_str));
 
     {
-        xaml_ptr<xaml_delegate> callback;
-        XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_webview>, xaml_ptr<xaml_string>>(
-            [abar](xaml_ptr<xaml_webview>, xaml_ptr<xaml_string> uri) noexcept -> xaml_result {
+        xaml_ptr<xaml_delegate<xaml_object, xaml_string>> callback;
+        XAML_RETURN_IF_FAILED((xaml_delegate_new(
+            [abar](xaml_object*, xaml_string* uri) noexcept -> xaml_result {
                 return abar->set_text(uri);
             },
             &callback)));
@@ -89,9 +89,9 @@ xaml_result xaml_test_window_impl::init() noexcept
         XAML_RETURN_IF_FAILED(view->add_uri_changed(callback, &token));
     }
     {
-        xaml_ptr<xaml_delegate> callback;
-        XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_button>>(
-            [abar, view](xaml_ptr<xaml_button>) noexcept -> xaml_result {
+        xaml_ptr<xaml_delegate<xaml_object, xaml_event_args>> callback;
+        XAML_RETURN_IF_FAILED((xaml_delegate_new(
+            [abar, view](xaml_object*, xaml_event_args*) noexcept -> xaml_result {
                 xaml_ptr<xaml_string> uri;
                 XAML_RETURN_IF_FAILED(abar->get_text(&uri));
                 return view->set_uri(uri);
