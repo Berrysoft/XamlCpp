@@ -37,8 +37,18 @@ struct xaml_test_window_impl : xaml_window_implement<xaml_test_window_impl, xaml
 
     XAML_PROP_PTR_INTERNAL_IMPL(model, xaml_test_model)
 
-    xaml_result XAML_CALL on_button_click(xaml_button* btn) noexcept override { return m_internal.on_button_click(btn); }
-    xaml_result XAML_CALL on_canvas_redraw(xaml_canvas* cv, xaml_drawing_context* dc) noexcept override { return m_internal.on_canvas_redraw(cv, dc); }
+    xaml_result XAML_CALL on_button_click(xaml_object* sender, xaml_event_args*) noexcept override
+    {
+        xaml_ptr<xaml_button> btn;
+        XAML_RETURN_IF_FAILED(sender->query(&btn));
+        return m_internal.on_button_click(btn);
+    }
+    xaml_result XAML_CALL on_canvas_redraw(xaml_object* sender, xaml_drawing_context* dc) noexcept override
+    {
+        xaml_ptr<xaml_canvas> cv;
+        XAML_RETURN_IF_FAILED(sender->query(&cv));
+        return m_internal.on_canvas_redraw(cv, dc);
+    }
 };
 
 xaml_result xaml_test_window_internal::init() noexcept
@@ -52,10 +62,10 @@ xaml_result xaml_test_window_internal::init() noexcept
     xaml_ptr<xaml_string> data_str;
     XAML_RETURN_IF_FAILED(xaml_string_new_view_length((char const*)data, size - 1, &data_str));
     xaml_ptr<xaml_node> node;
-    xaml_ptr<xaml_vector_view> headers;
+    xaml_ptr<xaml_vector_view<xaml_string>> headers;
     XAML_RETURN_IF_FAILED(xaml_parser_parse_string(m_ctx, data_str, &node, &headers));
     XAML_RETURN_IF_FAILED(xaml_parser_deserialize_inplace(m_ctx, node, m_outer_this));
-    xaml_ptr<xaml_observable_vector> items;
+    xaml_ptr<xaml_observable_vector<xaml_object>> items;
     XAML_RETURN_IF_FAILED(m_model->get_items(&items));
     {
         xaml_ptr<xaml_string> item;
@@ -147,7 +157,7 @@ xaml_result XAML_CALL xaml_test_window_register(xaml_meta_context* ctx) noexcept
     XAML_TYPE_INFO_NEW(xaml_test_window, "test.xaml.h");
     XAML_RETURN_IF_FAILED(xaml_window_members(__info));
     XAML_TYPE_INFO_ADD_PROP(model, xaml_test_model);
-    XAML_TYPE_INFO_ADD_METHOD(on_button_click);
-    XAML_TYPE_INFO_ADD_METHOD(on_canvas_redraw);
+    XAML_TYPE_INFO_ADD_METHOD(on_button_click, xaml_object, xaml_event_args);
+    XAML_TYPE_INFO_ADD_METHOD(on_canvas_redraw, xaml_object, xaml_drawing_context);
     return ctx->add_type(__info);
 }

@@ -161,14 +161,14 @@
             __info->set_constructor(__ctor);                                   \
         } while (0)
 
-    #define XAML_TYPE_INFO_ADD_METHOD(method, ...)                                                                                      \
-        do                                                                                                                              \
-        {                                                                                                                               \
-            xaml_ptr<xaml_string> __method_name;                                                                                        \
-            XAML_RETURN_IF_FAILED(xaml_string_new(U(#method), &__method_name));                                                         \
-            xaml_ptr<xaml_method_info> __method_info;                                                                                   \
-            XAML_RETURN_IF_FAILED((xaml_method_info_new<__VA_ARGS__>(__method_name, xaml_mem_fn(&self_type::method), &__method_info))); \
-            XAML_RETURN_IF_FAILED(__info->add_method(__method_info));                                                                   \
+    #define XAML_TYPE_INFO_ADD_METHOD(method, ...)                                                                                                 \
+        do                                                                                                                                         \
+        {                                                                                                                                          \
+            xaml_ptr<xaml_string> __method_name;                                                                                                   \
+            XAML_RETURN_IF_FAILED(xaml_string_new(U(#method), &__method_name));                                                                    \
+            xaml_ptr<xaml_method_info> __method_info;                                                                                              \
+            XAML_RETURN_IF_FAILED((xaml_method_info_new<self_type, __VA_ARGS__>(__method_name, xaml_mem_fn(&self_type::method), &__method_info))); \
+            XAML_RETURN_IF_FAILED(__info->add_method(__method_info));                                                                              \
         } while (0)
 
     #define XAML_TYPE_INFO_ADD_PROP(prop, vtype)                                                                                               \

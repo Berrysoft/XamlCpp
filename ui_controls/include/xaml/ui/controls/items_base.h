@@ -5,6 +5,26 @@
 #include <xaml/observable_vector.h>
 #include <xaml/ui/control.h>
 
+#ifndef xaml_enumerator_1__xaml_object_defined
+    #define xaml_enumerator_1__xaml_object_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_enumerator_1__xaml_object_defined
+
+#ifndef xaml_vector_changed_args_1__xaml_object_defined
+    #define xaml_vector_changed_args_1__xaml_object_defined
+XAML_VECTOR_CHANGED_ARGS_1_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_vector_changed_args_1__xaml_object_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_object_defined
+    #define xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_object_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_vector_changed_args_1__xaml_object))
+#endif // !xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_object_defined
+
+#ifndef xaml_observable_vector_1__xaml_object_defined
+    #define xaml_observable_vector_1__xaml_object_defined
+XAML_OBSERVABLE_VECTOR_1_TYPE(XAML_T_O(xaml_object))
+#endif // !xaml_observable_vector_1__xaml_object_defined
+
 XAML_CLASS(xaml_items_base, { 0xfad67a33, 0x4a5f, 0x4915, { 0xa1, 0x77, 0xe6, 0x1e, 0x89, 0xc7, 0x5e, 0x26 } })
 
 #define XAML_ITEMS_BASE_VTBL(type)                                                                                     \
