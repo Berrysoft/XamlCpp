@@ -159,7 +159,13 @@
     #ifdef __cplusplus
         #define XAML_CONSTEXPR constexpr
     #else
-        #define XAML_CONSTEXPR inline
+        #ifdef _MSC_VER
+            #define XAML_CONSTEXPR __forceinline inline
+        #elif defined(__GNUC__)
+            #define XAML_CONSTEXPR __attribute__((always_inline)) inline
+        #else
+            #define XAML_CONSTEXPR inline
+        #endif // _MSC_VER
     #endif // __cplusplus
 #endif // !XAML_CONSTEXPR
 
