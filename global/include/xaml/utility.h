@@ -160,7 +160,7 @@
         #define XAML_CONSTEXPR constexpr
     #else
         #ifdef _MSC_VER
-            #define XAML_CONSTEXPR __forceinline inline
+            #define XAML_CONSTEXPR __forceinline
         #elif defined(__GNUC__)
             #define XAML_CONSTEXPR __attribute__((always_inline)) inline
         #else

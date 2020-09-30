@@ -12,6 +12,7 @@ static void destroy_all(void)
 
 xaml_result XAML_CALL xaml_main(xaml_application* app)
 {
+    (void)app;
     xaml_result hr;
     // Construct a window.
     XAML_GOTO_IF_FAILED(xaml_test_window_new(&wnd), exit);
