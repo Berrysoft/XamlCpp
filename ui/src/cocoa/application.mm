@@ -35,7 +35,9 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pres) noexcept
 {
-    XAML_RETURN_IF_FAILED(on_activate(this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_RETURN_IF_FAILED(xaml_event_args_empty(&args));
+    XAML_RETURN_IF_FAILED(m_activate->invoke(this, args));
     [NSApp run];
     *pres = m_quit_value;
     return XAML_S_OK;

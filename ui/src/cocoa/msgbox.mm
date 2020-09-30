@@ -20,7 +20,7 @@ static NSAlertStyle get_style(xaml_msgbox_style style) noexcept
     }
 }
 
-xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view<xaml_msgbox_custom_button>* buttons, xaml_msgbox_result* presult) noexcept
 {
     NSWindow* parent_handle = nil;
     if (parent)
@@ -50,15 +50,11 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
     }
     alert.alertStyle = get_style(style);
     vector<xaml_msgbox_result> res;
-    XAML_FOREACH_START(b, buttons);
+    XAML_FOREACH_START(xaml_msgbox_custom_button, button, buttons);
     {
-        xaml_ptr<xaml_box> box;
-        XAML_RETURN_IF_FAILED(b->query(&box));
-        xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
-        res.push_back(button->result);
+        res.push_back(button.result);
         NSString* text;
-        XAML_RETURN_IF_FAILED(get_NSString(button->text, &text));
+        XAML_RETURN_IF_FAILED(get_NSString(button.text, &text));
         [alert addButtonWithTitle:text];
     }
     XAML_FOREACH_END();

@@ -298,7 +298,7 @@ void xaml_canvas_internal::on_draw_rect() noexcept
 {
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, m_size));
-    XAML_ASSERT_SUCCEEDED(on_redraw(m_outer_this, dc));
+    XAML_ASSERT_SUCCEEDED(m_redraw->invoke(m_outer_this, dc));
 }
 
 xaml_result xaml_canvas_internal::invalidate(const xaml_rectangle* prect) noexcept

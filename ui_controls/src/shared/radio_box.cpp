@@ -24,7 +24,7 @@ xaml_result xaml_radio_box_internal::init() noexcept
 
 #ifdef XAML_UI_COCOA
     XAML_RETURN_IF_FAILED((m_click->add(
-        [this](xaml_oobject*, xaml_event_args*) noexcept -> xaml_result {
+        [this](xaml_object*, xaml_event_args*) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(on_state_changed());

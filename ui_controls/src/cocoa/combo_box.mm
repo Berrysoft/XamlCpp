@@ -67,7 +67,7 @@ xaml_result xaml_combo_box_internal::draw_text() noexcept
 xaml_result xaml_combo_box_internal::draw_items() noexcept
 {
     NSComboBox* combo = (NSComboBox*)m_handle;
-    XAML_FOREACH_START(item, m_items);
+    XAML_FOREACH_START(xaml_object, item, m_items);
     {
         XAML_RETURN_IF_FAILED(create_item(item));
         xaml_ptr<xaml_string> s = item.query<xaml_string>();

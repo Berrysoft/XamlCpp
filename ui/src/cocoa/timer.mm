@@ -23,7 +23,9 @@ using namespace std;
 
 void xaml_timer_impl::on_tick() noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_tick(this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(m_tick->invoke(this, args));
 }
 
 xaml_result xaml_timer_impl::start() noexcept

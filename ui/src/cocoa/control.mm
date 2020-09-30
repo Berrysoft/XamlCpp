@@ -59,16 +59,16 @@ xaml_result xaml_control_internal::draw_visible() noexcept
 
 void xaml_control_internal::on_mouse_down_event(xaml_mouse_button button) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_down(m_outer_this, button));
+    XAML_ASSERT_SUCCEEDED(m_mouse_down->invoke(m_outer_this, button));
 }
 
 void xaml_control_internal::on_mouse_up_event(xaml_mouse_button button) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_up(m_outer_this, button));
+    XAML_ASSERT_SUCCEEDED(m_mouse_up->invoke(m_outer_this, button));
 }
 
 void xaml_control_internal::on_mouse_moved_event(xaml_point const& p) noexcept
 {
     xaml_point realp = { p.x, m_size.height - p.y };
-    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, realp));
+    XAML_ASSERT_SUCCEEDED(m_mouse_move->invoke(m_outer_this, realp));
 }
