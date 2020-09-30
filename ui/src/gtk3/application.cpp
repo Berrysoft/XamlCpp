@@ -45,5 +45,7 @@ xaml_result xaml_application_impl::get_theme(xaml_application_theme* ptheme) noe
 
 void xaml_application_impl::on_activate_event(GApplication*, xaml_application_impl* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(self->on_activate(self));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(self->m_activate->invoke(self, args));
 }

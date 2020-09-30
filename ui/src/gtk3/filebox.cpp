@@ -41,10 +41,8 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     if (m_filters)
     {
         auto filter = gtk_file_filter_new();
-        XAML_FOREACH_START(f, m_filters);
+        XAML_FOREACH_START(xaml_filebox_filter, ff, m_filters);
         {
-            xaml_filebox_filter ff;
-            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
             gtk_file_filter_add_pattern(filter, ff.pattern);
         }
         XAML_FOREACH_END();

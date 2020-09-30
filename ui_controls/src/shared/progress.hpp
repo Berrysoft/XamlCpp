@@ -28,7 +28,7 @@ struct xaml_progress_internal : xaml_control_internal
 #elif defined(XAML_UI_GTK3)
     xaml_ptr<xaml_timer> m_pulse_timer;
 
-    xaml_result XAML_CALL on_pulse(xaml_timer*, xaml_event_args*) noexcept;
+    xaml_result XAML_CALL on_pulse(xaml_object*, xaml_event_args*) noexcept;
 #endif // XAML_UI_WINDOWS
 
     xaml_result XAML_CALL init() noexcept override;

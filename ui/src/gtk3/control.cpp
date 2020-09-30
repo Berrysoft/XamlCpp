@@ -72,10 +72,10 @@ gboolean xaml_control_internal::on_button_event(GtkWidget*, GdkEventButton* even
     switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-        XAML_ASSERT_SUCCEEDED(self->on_mouse_down(self->m_outer_this, button));
+        XAML_ASSERT_SUCCEEDED(self->m_mouse_down->invoke(self->m_outer_this, button));
         break;
     case GDK_BUTTON_RELEASE:
-        XAML_ASSERT_SUCCEEDED(self->on_mouse_up(self->m_outer_this, button));
+        XAML_ASSERT_SUCCEEDED(self->m_mouse_up->invoke(self->m_outer_this, button));
         break;
     }
     return TRUE;
@@ -83,6 +83,6 @@ gboolean xaml_control_internal::on_button_event(GtkWidget*, GdkEventButton* even
 
 gboolean xaml_control_internal::on_button_motion(GtkWidget*, GdkEventMotion* event, xaml_control_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(self->on_mouse_move(self->m_outer_this, xaml_point{ event->x, event->y }));
+    XAML_ASSERT_SUCCEEDED(self->m_mouse_move->invoke(self->m_outer_this, xaml_point{ event->x, event->y }));
     return TRUE;
 }

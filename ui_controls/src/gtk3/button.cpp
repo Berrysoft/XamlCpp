@@ -30,5 +30,7 @@ xaml_result xaml_button_internal::draw_default() noexcept { return XAML_S_OK; }
 
 void xaml_button_internal::on_clicked(GtkWidget*, xaml_button_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(self->on_click(self->m_outer_this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(self->m_click->invoke(self->m_outer_this, args));
 }

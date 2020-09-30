@@ -21,7 +21,7 @@ static GtkMessageType get_style(xaml_msgbox_style style) noexcept
     }
 }
 
-xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view<xaml_msgbox_custom_button>* buttons, xaml_msgbox_result* presult) noexcept
 {
     GtkWidget* parent_handle = nullptr;
     if (parent)
@@ -54,13 +54,9 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
         XAML_RETURN_IF_FAILED(message->get_data(&data));
         gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", data);
     }
-    XAML_FOREACH_START(b, buttons);
+    XAML_FOREACH_START(xaml_msgbox_custom_button, button, buttons);
     {
-        xaml_ptr<xaml_box> box;
-        XAML_RETURN_IF_FAILED(b->query(&box));
-        xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(box->get_value_ptr(&button));
-        gtk_dialog_add_button(GTK_DIALOG(dialog), button->text, (gint)button->result);
+        gtk_dialog_add_button(GTK_DIALOG(dialog), button.text, (gint)button.result);
     }
     XAML_FOREACH_END();
     xaml_msgbox_result result = (xaml_msgbox_result)gtk_dialog_run(GTK_DIALOG(dialog));
