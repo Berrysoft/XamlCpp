@@ -2,6 +2,7 @@
 #define XAML_UI_WEBVIEW_WEBVIEW_H
 
 #include <xaml/buffer.h>
+#include <xaml/event.h>
 #include <xaml/ui/control.h>
 
 XAML_CLASS(xaml_webview_web_request, { 0xa1c28b95, 0x1a77, 0x4cb4, { 0xa3, 0xbd, 0xd4, 0x3a, 0x71, 0x47, 0x94, 0xc4 } })
@@ -35,7 +36,7 @@ EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_web_response_new
 XAML_CLASS(xaml_webview_resource_requested_args, { 0x507c59c1, 0x5775, 0x484e, { 0x9c, 0xe5, 0xbc, 0x34, 0x23, 0x85, 0x5a, 0x0b } })
 
 #define XAML_WEBVIEW_RESOURCE_REQUESTED_ARGS_VTBL(type)                              \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                       \
+    XAML_VTBL_INHERIT(XAML_EVENT_ARGS_VTBL(type));                                   \
     XAML_PROP(request, type, xaml_webview_web_request**, xaml_webview_web_request*); \
     XAML_PROP(response, type, xaml_webview_web_response**, xaml_webview_web_response*)
 
