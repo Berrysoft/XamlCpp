@@ -41,7 +41,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
     if (auto combo = qobject_cast<QComboBox*>(m_handle); combo && m_items)
     {
         QStringList list;
-        XAML_FOREACH_START(item, m_items);
+        XAML_FOREACH_START(xaml_object, item, m_items);
         {
             XAML_RETURN_IF_FAILED(create_item(item));
             xaml_ptr<xaml_string> s = item.query<xaml_string>();

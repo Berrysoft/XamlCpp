@@ -26,10 +26,8 @@ xaml_result xaml_menu_bar_internal::draw(xaml_rectangle const&) noexcept
 
 xaml_result xaml_menu_bar_internal::draw_submenu() noexcept
 {
-    XAML_FOREACH_START(child, m_children);
+    XAML_FOREACH_START(xaml_control, cc, m_children);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(child->query(&cc));
         XAML_RETURN_IF_FAILED(cc->draw({}));
     }
     XAML_FOREACH_END();

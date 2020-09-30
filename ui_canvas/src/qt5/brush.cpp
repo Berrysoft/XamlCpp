@@ -11,12 +11,10 @@ xaml_result xaml_solid_brush_impl::create(xaml_rectangle const&, QBrush* ptr) no
     return XAML_S_OK;
 }
 
-static xaml_result set_colors(QGradient& gradient, xaml_ptr<xaml_vector> const& colors) noexcept
+static xaml_result set_colors(QGradient& gradient, xaml_ptr<xaml_vector<xaml_gradient_stop>> const& colors) noexcept
 {
-    XAML_FOREACH_START(item, colors);
+    XAML_FOREACH_START(xaml_gradient_stop, stop, colors);
     {
-        xaml_gradient_stop stop;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(item, &stop));
         gradient.setColorAt(stop.position, (uint32_t)stop.color);
     }
     XAML_FOREACH_END();

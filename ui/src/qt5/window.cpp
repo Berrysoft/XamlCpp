@@ -176,9 +176,9 @@ void xaml_window_internal::on_move_event(QMoveEvent* event) noexcept
 
 void xaml_window_internal::on_close_event(QCloseEvent* event) noexcept
 {
-    xaml_ptr<xaml_object> handled;
-    XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
-    XAML_ASSERT_SUCCEEDED(on_closing(m_outer_this, handled));
+    xaml_ptr<xaml_box<bool>> handled;
+    XAML_ASSERT_SUCCEEDED(__xaml_box_impl<bool>{}(false, &handled));
+    XAML_ASSERT_SUCCEEDED(m_closing->invoke(m_outer_this, handled));
     bool value;
     XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled, &value));
     if (value)

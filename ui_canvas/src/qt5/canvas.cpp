@@ -214,12 +214,12 @@ void xaml_canvas_internal::on_paint_event(QPaintEvent*) noexcept
     QPainter painter{ m_handle };
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, &painter));
-    XAML_ASSERT_SUCCEEDED(on_redraw(m_outer_this, dc));
+    XAML_ASSERT_SUCCEEDED(m_redraw->invoke(m_outer_this, dc));
 }
 
 void xaml_canvas_internal::on_mouse_move_event(QMouseEvent* event) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_move(m_outer_this, xaml_from_native(event->localPos())));
+    XAML_ASSERT_SUCCEEDED(m_mouse_move->invoke(m_outer_this, xaml_from_native(event->localPos())));
 }
 
 static constexpr xaml_mouse_button get_mouse_button(Qt::MouseButton button) noexcept
@@ -239,10 +239,10 @@ static constexpr xaml_mouse_button get_mouse_button(Qt::MouseButton button) noex
 
 void xaml_canvas_internal::on_mouse_press_event(QMouseEvent* event) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_down(m_outer_this, get_mouse_button(event->button())));
+    XAML_ASSERT_SUCCEEDED(m_mouse_down->invoke(m_outer_this, get_mouse_button(event->button())));
 }
 
 void xaml_canvas_internal::on_mouse_release_event(QMouseEvent* event) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_mouse_up(m_outer_this, get_mouse_button(event->button())));
+    XAML_ASSERT_SUCCEEDED(m_mouse_up->invoke(m_outer_this, get_mouse_button(event->button())));
 }
