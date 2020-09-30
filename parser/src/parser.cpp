@@ -38,7 +38,7 @@ XAML_CATCH_RETURN()
 struct parser_impl
 {
     xaml_ptr<xaml_meta_context> ctx{ nullptr };
-    xaml_ptr<xaml_vector> headers{};
+    xaml_ptr<xaml_vector<xaml_string>> headers{};
     xml_document doc{};
 
     xaml_result load_string(string_view s) noexcept
@@ -143,7 +143,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
     XAML_RETURN_IF_FAILED(node->set_type(t));
     XAML_RETURN_IF_FAILED(node->set_name(node_name));
     // The properties of the node, assign at last.
-    xaml_ptr<xaml_vector> props;
+    xaml_ptr<xaml_vector<xaml_attribute_property>> props;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&props));
     while (i < value.length())
     {
@@ -225,7 +225,7 @@ xaml_result parser_impl::parse_markup(string_view value, xaml_markup_node** ptr)
 static constexpr string_view x_ns{ "https://github.com/Berrysoft/XamlCpp/xaml/" };
 
 // Add string node to properties vector
-static xaml_result props_add_string_property(xaml_ptr<xaml_vector> const& props, xaml_ptr<xaml_type_info> const& t, xaml_ptr<xaml_property_info> const& prop, string_view value) noexcept
+static xaml_result props_add_string_property(xaml_ptr<xaml_vector<xaml_attribute_property>> const& props, xaml_ptr<xaml_type_info> const& t, xaml_ptr<xaml_property_info> const& prop, string_view value) noexcept
 {
     xaml_ptr<xaml_string> attr_value_str;
     XAML_RETURN_IF_FAILED(xaml_string_new(value, &attr_value_str));
@@ -238,56 +238,53 @@ static xaml_result props_add_string_property(xaml_ptr<xaml_vector> const& props,
 }
 
 // Get values vector from a collection proeperty
-static xaml_result get_cprop_values(xaml_ptr<xaml_map> const& cprops, xaml_ptr<xaml_collection_property_info> const& cprop, xaml_ptr<xaml_type_info> const& type, xaml_vector** pvalues) noexcept
+static xaml_result get_cprop_values(xaml_ptr<xaml_map<xaml_string, xaml_attribute_collection_property>> const& cprops, xaml_ptr<xaml_collection_property_info> const& cprop, xaml_ptr<xaml_type_info> const& type, xaml_vector<xaml_node>** pvalues) noexcept
 {
     xaml_ptr<xaml_attribute_collection_property> cprop_item;
-    xaml_ptr<xaml_vector> values;
-    xaml_ptr<xaml_object> item;
+    xaml_ptr<xaml_vector<xaml_node>> values;
     xaml_ptr<xaml_string> prop_name_str;
     XAML_RETURN_IF_FAILED(cprop->get_name(&prop_name_str));
-    if (XAML_SUCCEEDED(cprops->lookup(prop_name_str, &item)))
+    if (XAML_SUCCEEDED(cprops->lookup(prop_name_str, &cprop_item)))
     {
-        XAML_RETURN_IF_FAILED(item->query(&cprop_item));
         XAML_RETURN_IF_FAILED(cprop_item->get_values(&values));
     }
     else
     {
         XAML_RETURN_IF_FAILED(xaml_vector_new(&values));
         XAML_RETURN_IF_FAILED(xaml_attribute_collection_property_new(type, cprop, values, &cprop_item));
-        bool replaced;
-        XAML_RETURN_IF_FAILED(cprops->insert(prop_name_str, cprop_item, &replaced));
+        XAML_RETURN_IF_FAILED(cprops->insert(prop_name_str, cprop_item, nullptr));
     }
     return values.query(pvalues);
 }
 
 xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& node) noexcept
 {
-    xaml_ptr<xaml_map> reses;
+    xaml_ptr<xaml_map<xaml_string, xaml_node>> reses;
     XAML_RETURN_IF_FAILED(mc->get_resources(&reses));
     if (!reses)
     {
-        xaml_ptr<xaml_hasher> hasher;
+        xaml_ptr<xaml_hasher<xaml_string>> hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &reses));
+        XAML_RETURN_IF_FAILED(xaml_map_new(hasher.get(), &reses));
         XAML_RETURN_IF_FAILED(mc->set_resources(reses));
     }
-    xaml_ptr<xaml_vector> props;
+    xaml_ptr<xaml_vector<xaml_attribute_property>> props;
     XAML_RETURN_IF_FAILED(mc->get_properties(&props));
     if (!props)
     {
         XAML_RETURN_IF_FAILED(xaml_vector_new(&props));
         XAML_RETURN_IF_FAILED(mc->set_properties(props));
     }
-    xaml_ptr<xaml_map> cprops;
+    xaml_ptr<xaml_map<xaml_string, xaml_attribute_collection_property>> cprops;
     XAML_RETURN_IF_FAILED(mc->get_collection_properties(&cprops));
     if (!cprops)
     {
-        xaml_ptr<xaml_hasher> hasher;
+        xaml_ptr<xaml_hasher<xaml_string>> hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(hasher, &cprops));
+        XAML_RETURN_IF_FAILED(xaml_map_new(hasher.get(), &cprops));
         XAML_RETURN_IF_FAILED(mc->set_collection_properties(cprops));
     }
-    xaml_ptr<xaml_vector> events;
+    xaml_ptr<xaml_vector<xaml_attribute_event>> events;
     XAML_RETURN_IF_FAILED(mc->get_events(&events));
     if (!events)
     {
@@ -505,7 +502,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                             XAML_RETURN_IF_FAILED(cprop->get_can_add(&can_add));
                             if (can_add)
                             {
-                                xaml_ptr<xaml_vector> values;
+                                xaml_ptr<xaml_vector<xaml_node>> values;
                                 XAML_RETURN_IF_FAILED(get_cprop_values(cprops, cprop, type, &values));
                                 for (auto& cnode : c.nodes())
                                 {
@@ -557,7 +554,7 @@ xaml_result parser_impl::parse_members(xaml_ptr<xaml_node> const& mc, xml_node& 
                         XAML_RETURN_IF_FAILED(info2->get_can_add(&can_add));
                         if (can_add)
                         {
-                            xaml_ptr<xaml_vector> values;
+                            xaml_ptr<xaml_vector<xaml_node>> values;
                             XAML_RETURN_IF_FAILED(get_cprop_values(cprops, info2, type, &values));
                             XAML_RETURN_IF_FAILED(values->append(child));
                         }
@@ -618,14 +615,14 @@ xaml_result parser_impl::parse(xaml_node** ptr) noexcept
     return parse_impl(root_node, ptr);
 }
 
-static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_meta_context* ctx, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+static xaml_result XAML_CALL xaml_parse_parse_impl(parser_impl& parser, xaml_meta_context* ctx, xaml_node** ptr, xaml_vector_view<xaml_string>** pheaders) noexcept
 {
     parser.ctx = ctx;
     XAML_RETURN_IF_FAILED(parser.parse(ptr));
     return parser.headers->query(pheaders);
 }
 
-xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, xaml_string* str, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, xaml_string* str, xaml_node** ptr, xaml_vector_view<xaml_string>** pheaders) noexcept
 {
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());
@@ -635,7 +632,7 @@ xaml_result XAML_CALL xaml_parser_parse_string(xaml_meta_context* ctx, xaml_stri
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
 
-xaml_result XAML_CALL xaml_parser_parse_buffer(xaml_meta_context* ctx, xaml_buffer* buffer, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+xaml_result XAML_CALL xaml_parser_parse_buffer(xaml_meta_context* ctx, xaml_buffer* buffer, xaml_node** ptr, xaml_vector_view<xaml_string>** pheaders) noexcept
 {
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());
@@ -643,7 +640,7 @@ xaml_result XAML_CALL xaml_parser_parse_buffer(xaml_meta_context* ctx, xaml_buff
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
 
-xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* stream, xaml_node** ptr, xaml_vector_view<xaml_string>** pheaders) noexcept
 {
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());
@@ -651,7 +648,7 @@ xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, FILE* str
     return xaml_parse_parse_impl(parser, ctx, ptr, pheaders);
 }
 
-xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, istream& stream, xaml_node** ptr, xaml_vector_view** pheaders) noexcept
+xaml_result XAML_CALL xaml_parser_parse_stream(xaml_meta_context* ctx, istream& stream, xaml_node** ptr, xaml_vector_view<xaml_string>** pheaders) noexcept
 {
     parser_impl parser{};
     XAML_RETURN_IF_FAILED(parser.init());

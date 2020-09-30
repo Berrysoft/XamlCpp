@@ -27,10 +27,10 @@ XAML_VECTOR_VIEW_1_TYPE(XAML_T_V(xaml_guid))
 
 XAML_CLASS(xaml_method_info, { 0xac6df520, 0x582e, 0x46e3, { 0xbd, 0x8b, 0xfb, 0x30, 0x34, 0x3e, 0x16, 0xa1 } })
 
-#define XAML_METHOD_INFO_VTBL(type)                                                  \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                       \
-    XAML_METHOD(invoke, type, XAML_VECTOR_VIEW_1_NAME(xaml_object)*, xaml_object**); \
-    XAML_METHOD(get_name, type, xaml_string**);                                      \
+#define XAML_METHOD_INFO_VTBL(type)                                   \
+    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                        \
+    XAML_METHOD(invoke, type, XAML_VECTOR_VIEW_1_NAME(xaml_object)*); \
+    XAML_METHOD(get_name, type, xaml_string**);                       \
     XAML_METHOD(get_param_types, type, XAML_VECTOR_VIEW_1_NAME(xaml_guid)**)
 
 XAML_DECL_INTERFACE_(xaml_method_info, xaml_object)
@@ -39,6 +39,7 @@ XAML_DECL_INTERFACE_(xaml_method_info, xaml_object)
 };
 
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(XAML_VECTOR_VIEW_1_NAME(xaml_object) *) XAML_NOEXCEPT, XAML_VECTOR_VIEW_1_NAME(xaml_guid) *, xaml_method_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_bind(xaml_method_info*, XAML_VECTOR_VIEW_1_NAME(xaml_object) *, xaml_method_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view<xaml_object>*)>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
