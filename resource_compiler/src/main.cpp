@@ -38,7 +38,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view<xaml_string>> const& inp
     size_t index{ 0 };
     map<path, string> rc_map{};
 
-    for (auto item : xaml_enumerable_wrapper<xaml_string>{ inputs })
+    for (auto item : inputs)
     {
         path file = to_string_view(item);
 #ifndef XAML_APPLE

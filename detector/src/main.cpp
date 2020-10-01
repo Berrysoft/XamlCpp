@@ -62,7 +62,7 @@ int main(int argc, char** argv)
     xaml_ptr<xaml_map_view<xaml_guid, xaml_reflection_info>> types;
     XAML_THROW_IF_FAILED(ctx->get_types(&types));
 
-    for (auto pair : xaml_enumerable_wrapper<xaml_key_value_pair<xaml_guid, xaml_reflection_info>>{ types })
+    for (auto pair : types)
     {
         xaml_ptr<xaml_reflection_info> info;
         XAML_THROW_IF_FAILED(pair->get_value(&info));
@@ -77,7 +77,7 @@ int main(int argc, char** argv)
             {
                 xaml_ptr<xaml_map_view<xaml_string, xaml_property_info>> props;
                 XAML_THROW_IF_FAILED(t->get_properties(&props));
-                for (auto pair2 : xaml_enumerable_wrapper<xaml_key_value_pair<xaml_string, xaml_property_info>>{ props })
+                for (auto pair2 : props)
                 {
                     xaml_ptr<xaml_string> key;
                     XAML_THROW_IF_FAILED(pair2->get_key(&key));
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
             {
                 xaml_ptr<xaml_map_view<xaml_string, xaml_collection_property_info>> props;
                 XAML_THROW_IF_FAILED(t->get_collection_properties(&props));
-                for (auto pair2 : xaml_enumerable_wrapper<xaml_key_value_pair<xaml_string, xaml_collection_property_info>>{ props })
+                for (auto pair2 : props)
                 {
                     xaml_ptr<xaml_string> key;
                     XAML_THROW_IF_FAILED(pair2->get_key(&key));
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
             {
                 xaml_ptr<xaml_map_view<xaml_string, xaml_event_info>> props;
                 XAML_THROW_IF_FAILED(t->get_events(&props));
-                for (auto pair2 : xaml_enumerable_wrapper<xaml_key_value_pair<xaml_string, xaml_event_info>>{ props })
+                for (auto pair2 : props)
                 {
                     xaml_ptr<xaml_string> key;
                     XAML_THROW_IF_FAILED(pair2->get_key(&key));
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
             sf::println(cout, U("  included in <{}>"), include_file);
             xaml_ptr<xaml_map_view<xaml_string, int32_t>> values;
             XAML_THROW_IF_FAILED(e->get_values(&values));
-            for (auto pair2 : xaml_enumerable_wrapper<xaml_key_value_pair<xaml_string, int32_t>>{ values })
+            for (auto pair2 : values)
             {
                 xaml_ptr<xaml_string> key;
                 XAML_THROW_IF_FAILED(pair2->get_key(&key));

@@ -68,6 +68,26 @@ XAML_DECL_INTERFACE_T_(xaml_enumerable, xaml_object, XAML_ENUMERABLE_1_VTBL)
         while (0)
 
 template <typename T>
+struct __xaml_enumerator_traits;
+
+template <typename T>
+struct __xaml_enumerator_traits<xaml_enumerator<T>>
+{
+    using value_type = T;
+};
+
+template <typename T>
+struct __xaml_function_traits;
+
+template <typename Return, typename T, typename... Args>
+struct __xaml_function_traits<Return (XAML_CALL T::*)(Args...) noexcept>
+{
+    using return_type = Return;
+    using class_type = T;
+    using arg_types = std::tuple<Args...>;
+};
+
+template <typename T>
 struct __xaml_enumerator_iterator
 {
 private:
@@ -109,17 +129,35 @@ public:
 };
 
 template <typename T>
-struct xaml_enumerable_wrapper
+struct __xaml_enumerable_traits
 {
-    xaml_ptr<xaml_enumerable<T>> m_enumerable;
+    using enumerator_type = std::remove_pointer_t<std::remove_pointer_t<std::tuple_element_t<0, typename __xaml_function_traits<decltype(&T::get_enumerator)>::arg_types>>>;
+    using value_type = typename __xaml_enumerator_traits<enumerator_type>::value_type;
+};
 
-    xaml_enumerable_wrapper(xaml_ptr<xaml_enumerable<T>> const& enumerable) : m_enumerable(enumerable)
+template <typename T>
+concept __xaml_enumerable_like = requires(xaml_ptr<T> a)
+{
+    {
+        a
+    }
+    ->std::convertible_to<xaml_ptr<xaml_enumerable<typename __xaml_enumerable_traits<T>::value_type>>>;
+};
+
+template <__xaml_enumerable_like T>
+struct __xaml_enumerable_wrapper
+{
+    xaml_ptr<T> m_enumerable;
+
+    __xaml_enumerable_wrapper(xaml_ptr<T> const& enumerable) noexcept : m_enumerable(enumerable)
     {
     }
 
-    __xaml_enumerator_iterator<T> begin()
+    using value_type = typename __xaml_enumerable_traits<T>::value_type;
+
+    __xaml_enumerator_iterator<value_type> begin()
     {
-        xaml_ptr<xaml_enumerator<T>> e;
+        xaml_ptr<xaml_enumerator<value_type>> e;
         XAML_THROW_IF_FAILED(m_enumerable->get_enumerator(&e));
         bool ok;
         XAML_THROW_IF_FAILED(e->move_next(&ok));
@@ -129,11 +167,23 @@ struct xaml_enumerable_wrapper
             return {};
     }
 
-    __xaml_enumerator_iterator<T> end() noexcept
+    __xaml_enumerator_iterator<value_type> end() noexcept
     {
         return {};
     }
 };
+
+template <__xaml_enumerable_like T>
+auto begin(xaml_ptr<T> ptr)
+{
+    return __xaml_enumerable_wrapper<T>{ ptr }.begin();
+}
+
+template <__xaml_enumerable_like T>
+auto end(xaml_ptr<T> ptr) noexcept
+{
+    return __xaml_enumerable_wrapper<T>{ ptr }.end();
+}
 #endif // __cplusplus
 
 #endif // !XAML_ENUMERABLE_H
