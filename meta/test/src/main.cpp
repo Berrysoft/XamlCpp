@@ -42,7 +42,7 @@ int main()
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(xaml_box_value(U("plus")), &method));
         xaml_ptr<xaml_vector_view<xaml_object>> args;
-        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
+        XAML_THROW_IF_FAILED(xaml_method_info_pack_args(&args, obj, 1, 1));
         XAML_THROW_IF_FAILED(method->invoke(args));
     }
     // Get the property named "value".
@@ -60,7 +60,7 @@ int main()
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(xaml_box_value(U("minus")), &method));
         xaml_ptr<xaml_vector_view<xaml_object>> args;
-        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
+        XAML_THROW_IF_FAILED(xaml_method_info_pack_args(&args, obj, 1, 1));
         XAML_THROW_IF_FAILED(method->invoke(args));
     }
 }

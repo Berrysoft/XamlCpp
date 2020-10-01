@@ -36,7 +36,7 @@ inline xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, xaml_result 
             XAML_RETURN_IF_FAILED((xaml_delegate_new<TS, TE>(
                 [method = xaml_ptr<xaml_method_info>{ method }](xaml_interface_t<TS> sender, xaml_interface_t<TE> e) -> xaml_result {
                     xaml_ptr<xaml_vector_view<xaml_object>> args;
-                    XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&args, sender, e));
+                    XAML_RETURN_IF_FAILED(xaml_method_info_pack_args(&args, sender, e));
                     return method->invoke(args);
                 },
                 &handler)));

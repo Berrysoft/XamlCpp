@@ -7,6 +7,44 @@
 
 using namespace std;
 
+xaml_result XAML_CALL xaml_method_info_bind(xaml_method_info* func, xaml_vector_view<xaml_object>* args, xaml_method_info** ptr) noexcept
+{
+    xaml_ptr<xaml_string> name;
+    XAML_RETURN_IF_FAILED(func->get_name(&name));
+    xaml_ptr<xaml_vector_view<xaml_guid>> param_types;
+    XAML_RETURN_IF_FAILED(func->get_param_types(&param_types));
+    int32_t size;
+    XAML_RETURN_IF_FAILED(args->get_size(&size));
+    int32_t psize;
+    XAML_RETURN_IF_FAILED(param_types->get_size(&psize));
+    xaml_ptr<xaml_vector<xaml_guid>> npts;
+    XAML_RETURN_IF_FAILED(xaml_vector_new(&npts));
+    for (int32_t i = size; i < psize; i++)
+    {
+        xaml_guid t;
+        XAML_RETURN_IF_FAILED(param_types->get_at(i, &t));
+        XAML_RETURN_IF_FAILED(npts->append(t));
+    }
+    return xaml_method_info_new(
+        name,
+        [func = xaml_ptr<xaml_method_info>(func), args = xaml_ptr<xaml_vector_view<xaml_object>>(args)](xaml_vector_view<xaml_object>* remain_args) noexcept -> xaml_result {
+            xaml_ptr<xaml_vector<xaml_object>> real_args;
+            XAML_RETURN_IF_FAILED(xaml_vector_new(&real_args));
+            XAML_FOREACH_START(xaml_object, a, args);
+            {
+                XAML_RETURN_IF_FAILED(real_args->append(a));
+            }
+            XAML_FOREACH_END();
+            XAML_FOREACH_START(xaml_object, a, remain_args);
+            {
+                XAML_RETURN_IF_FAILED(real_args->append(a));
+            }
+            XAML_FOREACH_END();
+            return func->invoke(real_args);
+        },
+        npts, ptr);
+}
+
 struct xaml_deserializer_context_impl : xaml_implement<xaml_deserializer_context_impl, xaml_markup_context>
 {
     xaml_object* m_current;
@@ -178,7 +216,7 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
             xaml_ptr<xaml_method_info> method;
             XAML_RETURN_IF_FAILED(root_type->get_method(ev_value, &method));
             xaml_ptr<xaml_vector_view<xaml_object>> bind_args;
-            XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&bind_args, root));
+            XAML_RETURN_IF_FAILED(xaml_method_info_pack_args(&bind_args, root));
             xaml_ptr<xaml_method_info> binded_method;
             XAML_RETURN_IF_FAILED(xaml_method_info_bind(method, bind_args, &binded_method));
             xaml_ptr<xaml_event_info> info;
