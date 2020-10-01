@@ -1,6 +1,11 @@
 #ifndef XAML_UI_MSGBOX_H
 #define XAML_UI_MSGBOX_H
 
+#ifdef __cplusplus
+    #include <compare>
+    #include <string_view>
+#endif // __cplusplus
+
 #include <xaml/ui/window.h>
 
 typedef enum xaml_msgbox_style
@@ -43,11 +48,28 @@ struct xaml_msgbox_custom_button
 {
     xaml_msgbox_result result;
     char const* text;
+
+#ifdef __cplusplus
+    bool operator==(xaml_msgbox_custom_button const& btn) const
+    {
+        return result == btn.result && std::string_view{ text } == btn.text;
+    }
+#endif // __cplusplus
 };
 
 XAML_TYPE(xaml_msgbox_custom_button, { 0x519f6660, 0x380e, 0x44d4, { 0x98, 0xc1, 0x3d, 0x40, 0xa1, 0xd7, 0x9e, 0xa6 } })
 
+#ifndef xaml_enumerator_1__xaml_msgbox_custom_button_defined
+    #define xaml_enumerator_1__xaml_msgbox_custom_button_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_V(xaml_msgbox_custom_button))
+#endif // !xaml_enumerator_1__xaml_msgbox_custom_button_defined
+
+#ifndef xaml_vector_view_1__xaml_msgbox_custom_button_defined
+    #define xaml_vector_view_1__xaml_msgbox_custom_button_defined
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_V(xaml_msgbox_custom_button))
+#endif // !xaml_vector_view_1__xaml_msgbox_custom_button_defined
+
 EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, xaml_msgbox_buttons, xaml_msgbox_result*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox_custom(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, xaml_vector_view*, xaml_msgbox_result*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_API xaml_result XAML_CALL xaml_msgbox_custom(xaml_window*, xaml_string*, xaml_string*, xaml_string*, xaml_msgbox_style, XAML_VECTOR_VIEW_1_NAME(xaml_msgbox_custom_button) *, xaml_msgbox_result*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_MSGBOX_H

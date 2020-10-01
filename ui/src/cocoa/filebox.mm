@@ -46,10 +46,8 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* owner) noexcept
     if (m_filters)
     {
         NSMutableArray<NSString*>* filters = [[NSMutableArray alloc] init];
-        XAML_FOREACH_START(f, m_filters);
+        XAML_FOREACH_START(xaml_filebox_filter, ff, m_filters);
         {
-            xaml_filebox_filter ff;
-            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &ff));
             string_view ffp = ff.pattern;
             if (ffp.starts_with("*.")) ffp = ffp.substr(2);
             NSString* pattern;

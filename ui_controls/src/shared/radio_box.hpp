@@ -6,7 +6,7 @@
 
 struct xaml_radio_box_internal : xaml_button_internal
 {
-    XAML_EVENT_IMPL(is_checked_changed)
+    XAML_EVENT_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
 
     XAML_PROP_PTR_IMPL(group, xaml_string)
@@ -32,7 +32,7 @@ struct xaml_radio_box_internal : xaml_button_internal
 
 struct xaml_radio_box_impl : xaml_button_implement<xaml_radio_box_impl, xaml_radio_box_internal, xaml_radio_box>
 {
-    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
 
     XAML_PROP_PTR_INTERNAL_IMPL(group, xaml_string)

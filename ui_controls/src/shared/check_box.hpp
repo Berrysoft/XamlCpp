@@ -6,7 +6,7 @@
 
 struct xaml_check_box_internal : xaml_button_internal
 {
-    XAML_EVENT_IMPL(is_checked_changed)
+    XAML_EVENT_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_checked, bool, bool*, bool)
 
     virtual xaml_result XAML_CALL draw_checked() noexcept;
@@ -29,7 +29,7 @@ struct xaml_check_box_internal : xaml_button_internal
 
 struct xaml_check_box_impl : xaml_button_implement<xaml_check_box_impl, xaml_check_box_internal, xaml_check_box>
 {
-    XAML_EVENT_INTERNAL_IMPL(is_checked_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_checked_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_checked, bool*, bool)
 };
 

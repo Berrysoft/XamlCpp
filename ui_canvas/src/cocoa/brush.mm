@@ -22,16 +22,14 @@ xaml_result xaml_solid_brush_impl::draw(NSBezierPath* path, xaml_size const&, xa
     return XAML_S_OK;
 }
 
-static xaml_result get_Gradient(xaml_ptr<xaml_vector> const& stops, NSGradient** pres) noexcept
+static xaml_result get_Gradient(xaml_ptr<xaml_vector<xaml_gradient_stop>> const& stops, NSGradient** pres) noexcept
 {
     NSMutableArray<NSColor*>* colors = [NSMutableArray<NSColor*> new];
     vector<CGFloat> locations;
-    XAML_FOREACH_START(item, stops);
+    XAML_FOREACH_START(xaml_gradient_stop, item, stops);
     {
-        xaml_gradient_stop const* pitem;
-        XAML_RETURN_IF_FAILED(item.query<xaml_box>()->get_value_ptr(&pitem));
-        [colors addObject:xaml_to_native<NSColor*>(pitem->color)];
-        locations.push_back(pitem->position);
+        [colors addObject:xaml_to_native<NSColor*>(item.color)];
+        locations.push_back(item.position);
     }
     XAML_FOREACH_END();
     NSGradient* gradient = [[NSGradient alloc] initWithColors:colors

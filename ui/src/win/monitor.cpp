@@ -7,18 +7,16 @@ using namespace std;
 
 struct xaml_monitor_get_args
 {
-    xaml_vector* vec;
+    xaml_vector<xaml_monitor>* vec;
     xaml_result res;
 };
 
-static xaml_result XAML_CALL xaml_monitor_enum(HMONITOR m, xaml_vector* vec)
+static xaml_result XAML_CALL xaml_monitor_enum(HMONITOR m, xaml_vector<xaml_monitor>* vec)
 {
     MONITORINFO info = {};
     info.cbSize = sizeof(MONITORINFO);
     XAML_RETURN_IF_WIN32_BOOL_FALSE(GetMonitorInfo(m, &info));
-    xaml_ptr<xaml_object> value;
-    XAML_RETURN_IF_FAILED(xaml_box_value<xaml_monitor>({ xaml_from_native(info.rcMonitor), xaml_from_native(info.rcWork) }));
-    return vec->append(value);
+    return vec->append({ xaml_from_native(info.rcMonitor), xaml_from_native(info.rcWork) });
 }
 
 static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
@@ -36,9 +34,9 @@ static BOOL CALLBACK MonitorEnum(HMONITOR m, HDC, LPRECT, LPARAM arg)
     }
 }
 
-xaml_result XAML_CALL xaml_monitor_get_all(xaml_vector_view** ptr) noexcept
+xaml_result XAML_CALL xaml_monitor_get_all(xaml_vector_view<xaml_monitor>** ptr) noexcept
 {
-    xaml_ptr<xaml_vector> result;
+    xaml_ptr<xaml_vector<xaml_monitor>> result;
     XAML_RETURN_IF_FAILED(xaml_vector_new(&result));
     xaml_monitor_get_args args{ result, XAML_S_OK };
     XAML_RETURN_IF_WIN32_BOOL_FALSE(EnumDisplayMonitors(nullptr, nullptr, MonitorEnum, (LPARAM)&args));

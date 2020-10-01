@@ -3,8 +3,6 @@
 
 #ifdef __cplusplus
     #include <chrono>
-#else
-    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/meta/meta_macros.h>
@@ -18,7 +16,7 @@ XAML_CLASS(xaml_timer, { 0x21621654, 0xf5ed, 0x4b24, { 0xb2, 0xea, 0x1d, 0xf1, 0
     XAML_METHOD(get_is_enabled, type, bool*);                       \
     XAML_METHOD(start, type);                                       \
     XAML_METHOD(stop, type);                                        \
-    XAML_EVENT(tick, type)
+    XAML_EVENT(tick, type, xaml_object, xaml_event_args)
 
 XAML_DECL_INTERFACE_(xaml_timer, xaml_object)
 {

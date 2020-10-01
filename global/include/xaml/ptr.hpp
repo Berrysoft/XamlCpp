@@ -186,4 +186,51 @@ inline std::size_t hash_value(xaml_ptr<T> const& ptr) noexcept
     return std::hash<xaml_ptr<T>>{}(ptr);
 }
 
+struct xaml_object;
+
+template <typename T, typename = void>
+struct __xaml_interface
+{
+    using type = T;
+    using var_type = T;
+
+    xaml_result assign(type v, type* ptr) const noexcept
+    {
+        *ptr = v;
+        return XAML_S_OK;
+    }
+};
+
+template <typename T>
+struct __xaml_interface<T, std::enable_if_t<std::is_base_of_v<xaml_object, T>>>
+{
+    using type = T*;
+    using var_type = xaml_ptr<T>;
+
+    xaml_result assign(type v, type* ptr) const noexcept
+    {
+        if (v)
+        {
+            return v->query(ptr);
+        }
+        else
+        {
+            *ptr = nullptr;
+            return XAML_S_OK;
+        }
+    }
+};
+
+template <typename T>
+using xaml_interface_t = typename __xaml_interface<T>::type;
+
+template <typename T>
+using xaml_interface_var_t = typename __xaml_interface<T>::var_type;
+
+template <typename T>
+inline xaml_result xaml_interface_assign(xaml_interface_t<T> v, xaml_interface_t<T>* ptr) noexcept
+{
+    return __xaml_interface<T>{}.assign(v, ptr);
+}
+
 #endif // !XAML_PTR_HPP

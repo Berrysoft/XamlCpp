@@ -28,7 +28,7 @@ xaml_result xaml_progress_internal::draw_indeterminate() noexcept
         return draw_progress();
 }
 
-xaml_result xaml_progress_internal::on_pulse(xaml_ptr<xaml_timer>) noexcept
+xaml_result xaml_progress_internal::on_pulse(xaml_object*, xaml_event_args*) noexcept
 {
     if (m_is_indeterminate)
         gtk_progress_bar_pulse(GTK_PROGRESS_BAR(m_handle));

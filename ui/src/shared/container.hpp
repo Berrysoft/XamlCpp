@@ -13,7 +13,7 @@ struct xaml_container_internal : xaml_control_internal
     XAML_UI_API xaml_container_internal() noexcept;
     XAML_UI_API ~xaml_container_internal();
 
-    XAML_EVENT_IMPL(child_changed)
+    XAML_EVENT_IMPL(child_changed, xaml_object, xaml_control)
     XAML_PROP_PTR_IMPL_BASE(child, xaml_control)
     xaml_result XAML_CALL set_child(xaml_control* value) noexcept
     {
@@ -21,7 +21,7 @@ struct xaml_container_internal : xaml_control_internal
         {
             m_child = value;
             XAML_RETURN_IF_FAILED(m_child->set_parent(static_cast<xaml_control*>(m_outer_this)));
-            return on_child_changed(m_outer_this, m_child);
+            return m_child_changed->invoke(m_outer_this, m_child);
         }
         return XAML_S_OK;
     }
@@ -32,7 +32,7 @@ struct xaml_container_internal : xaml_control_internal
 template <typename T, typename Internal, typename Base>
 struct xaml_container_implement : xaml_control_implement<T, Internal, Base>
 {
-    XAML_EVENT_INTERNAL_IMPL(child_changed)
+    XAML_EVENT_INTERNAL_IMPL(child_changed, xaml_object, xaml_control)
     XAML_PROP_PTR_INTERNAL_IMPL(child, xaml_control)
 };
 
@@ -41,9 +41,9 @@ struct xaml_multicontainer_internal : xaml_control_internal
     XAML_UI_API xaml_multicontainer_internal() noexcept;
     XAML_UI_API ~xaml_multicontainer_internal();
 
-    xaml_ptr<xaml_vector> m_children;
+    xaml_ptr<xaml_vector<xaml_control>> m_children;
 
-    xaml_result XAML_CALL get_children(xaml_vector_view** ptr) noexcept
+    xaml_result XAML_CALL get_children(xaml_vector_view<xaml_control>** ptr) noexcept
     {
         return m_children->query(ptr);
     }
@@ -79,7 +79,7 @@ struct xaml_multicontainer_internal : xaml_control_internal
 template <typename T, typename Internal, typename Base>
 struct xaml_multicontainer_implement : xaml_control_implement<T, Internal, Base>
 {
-    XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view**)
+    XAML_PROP_INTERNAL_IMPL_BASE(children, xaml_vector_view<xaml_control>**)
     XAML_CPROP_INTERNAL_IMPL(child, xaml_control*, xaml_control*)
 };
 

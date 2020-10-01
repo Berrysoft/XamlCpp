@@ -100,31 +100,25 @@ template <typename T>
 inline constexpr bool xaml_type_has_guid_v = xaml_type_has_guid<T>::value;
 #endif // __cplusplus
 
-#ifndef XAML_TYPE_NAME
-    #define __XAML_TYPE_NAME_BASE(name, ...) \
-        XAML_CONSTEXPR_VAR xaml_guid xaml_guid_##name = __VA_ARGS__;
-    #ifdef __cplusplus
-        #define XAML_TYPE_NAME(type, name, ...)                      \
-            __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)                 \
-            template <>                                              \
-            struct xaml_type_guid<type>                              \
-            {                                                        \
-                static constexpr xaml_guid value = xaml_guid_##name; \
-            };
-    #else
-        #define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
-    #endif // __cplusplus
-#endif // !XAML_TYPE_NAME
+#define __XAML_TYPE_NAME_BASE(name, ...) \
+    XAML_CONSTEXPR_VAR xaml_guid xaml_guid_##name = __VA_ARGS__;
+#ifdef __cplusplus
+    #define XAML_TYPE_NAME(type, name, ...)                      \
+        __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)                 \
+        template <>                                              \
+        struct xaml_type_guid<type>                              \
+        {                                                        \
+            static constexpr xaml_guid value = xaml_guid_##name; \
+        };
+#else
+    #define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
+#endif // __cplusplus
 
-#ifndef XAML_TYPE
-    #define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
-#endif // !XAML_TYPE
-
-#ifndef XAML_CLASS
-    #define XAML_CLASS(type, ...) \
-        typedef struct type type; \
-        XAML_TYPE(type, __VA_ARGS__)
-#endif // !XAML_CLASS
+#define XAML_TYPE_BASE(type, ...) __XAML_TYPE_NAME_BASE(type, __VA_ARGS__)
+#define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
+#define XAML_CLASS(type, ...) \
+    typedef struct type type; \
+    XAML_TYPE(type, __VA_ARGS__)
 
 XAML_TYPE(void, { 0x00000000, 0x0000, 0x0000, { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 } })
 

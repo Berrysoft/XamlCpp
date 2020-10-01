@@ -31,7 +31,7 @@ string get_valid_name(string_view str, size_t index)
 constexpr string_view tab = "    ";
 constexpr string_view text_extensions[] = { ".txt", ".xml", ".xaml", ".md" };
 
-void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
+void compile(ostream& stream, xaml_ptr<xaml_vector_view<xaml_string>> const& inputs)
 {
     sf::println(stream, "#include <xaml/resource/resource.h>");
 
@@ -40,7 +40,7 @@ void compile(ostream& stream, xaml_ptr<xaml_vector_view> const& inputs)
 
     for (auto item : inputs)
     {
-        path file = to_string_view(item.query<xaml_string>());
+        path file = to_string_view(item);
 #ifndef XAML_APPLE
         if (!rc_map.contains(file))
 #else
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
     xaml_ptr<xaml_rc_options> options;
     XAML_THROW_IF_FAILED(xaml_cmdline_parse_and_print(cmdline_ctx, argc, argv, &options));
 
-    xaml_ptr<xaml_vector_view> inputs;
+    xaml_ptr<xaml_vector_view<xaml_string>> inputs;
     XAML_THROW_IF_FAILED(options->get_inputs(&inputs));
 
     xaml_ptr<xaml_string> output;

@@ -74,7 +74,7 @@ xaml_result xaml_combo_box_internal::draw_items() noexcept
     if (m_items)
     {
         xaml_codecvt_pool pool;
-        XAML_FOREACH_START(item, m_items);
+        XAML_FOREACH_START(xaml_object, item, m_items);
         {
             XAML_RETURN_IF_FAILED(create_item(item));
             xaml_ptr<xaml_string> s = item.query<xaml_string>();
@@ -133,7 +133,7 @@ xaml_result xaml_combo_box_internal::size_to_fit() noexcept
     if (m_items)
     {
         xaml_codecvt_pool pool;
-        XAML_FOREACH_START(item, m_items);
+        XAML_FOREACH_START(xaml_object, item, m_items);
         {
             XAML_RETURN_IF_FAILED(create_item(item));
             xaml_ptr<xaml_string> s = item.query<xaml_string>();

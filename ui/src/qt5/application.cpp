@@ -22,7 +22,9 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
 
 xaml_result xaml_application_impl::run(int* pvalue) noexcept
 {
-    XAML_RETURN_IF_FAILED(on_activate(this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_RETURN_IF_FAILED(xaml_event_args_empty(&args));
+    XAML_RETURN_IF_FAILED(m_activate->invoke(this, args));
     int result = m_native_app->exec();
     m_native_app.reset();
     *pvalue = m_quit_value != 0 ? (int)m_quit_value : result;

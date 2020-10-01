@@ -18,7 +18,9 @@ xaml_result xaml_menu_item_internal::draw(xaml_rectangle const&) noexcept
 
 void xaml_menu_item_internal::on_activate(GtkWidget*, xaml_menu_item_internal* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(self->on_click(self->m_outer_this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(self->m_click->invoke(self->m_outer_this, args));
 }
 
 xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
@@ -34,10 +36,8 @@ xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) no
 xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
 {
     GtkWidget* subm = gtk_menu_new();
-    XAML_FOREACH_START(child, m_submenu);
+    XAML_FOREACH_START(xaml_menu_item, cc, m_submenu);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(child->query(&cc));
         XAML_RETURN_IF_FAILED(cc->draw({}));
         xaml_ptr<xaml_gtk3_control> native_control;
         XAML_RETURN_IF_FAILED(cc->query(&native_control));
@@ -116,9 +116,9 @@ xaml_result xaml_radio_menu_item_internal::draw_group() noexcept
         xaml_ptr<xaml_popup_menu_item> multic;
         if (XAML_SUCCEEDED(parent->query(&multic)))
         {
-            xaml_ptr<xaml_vector_view> children;
+            xaml_ptr<xaml_vector_view<xaml_menu_item>> children;
             XAML_RETURN_IF_FAILED(multic->get_submenu(&children));
-            XAML_FOREACH_START(c, children);
+            XAML_FOREACH_START(xaml_menu_item, c, children);
             {
                 if (auto rc = c.query<xaml_radio_menu_item>())
                 {

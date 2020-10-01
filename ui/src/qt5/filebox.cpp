@@ -48,10 +48,8 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     ostringstream filterstream;
     if (m_filters)
     {
-        XAML_FOREACH_START(f, m_filters);
+        XAML_FOREACH_START(xaml_filebox_filter, filter, m_filters);
         {
-            xaml_filebox_filter filter;
-            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
             filterstream << filter;
         }
         XAML_FOREACH_END();

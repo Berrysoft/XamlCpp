@@ -157,9 +157,9 @@ void xaml_window_internal::on_destroy(GtkWidget*, xaml_window_internal* self) no
 
 gboolean xaml_window_internal::on_delete_event(GtkWidget*, GdkEvent*, xaml_window_internal* self) noexcept
 {
-    xaml_ptr<xaml_object> handled;
-    XAML_ASSERT_SUCCEEDED(xaml_box_value(false, &handled));
-    XAML_ASSERT_SUCCEEDED(self->on_closing(self->m_outer_this, handled));
+    xaml_ptr<xaml_box<bool>> handled;
+    XAML_ASSERT_SUCCEEDED(xaml_box_new(false, &handled));
+    XAML_ASSERT_SUCCEEDED(self->m_closing->invoke(self->m_outer_this, handled));
     bool value;
     XAML_ASSERT_SUCCEEDED(xaml_unbox_value(handled, &value));
     return value;

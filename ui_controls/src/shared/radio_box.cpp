@@ -11,8 +11,8 @@ xaml_result xaml_radio_box_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_is_checked_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_is_checked_changed->add_noexcept<xaml_ptr<xaml_radio_box>, bool>(
-        [this](xaml_ptr<xaml_radio_box>, bool) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_is_checked_changed->add(
+        [this](xaml_object*, bool) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(draw_checked());
@@ -23,8 +23,8 @@ xaml_result xaml_radio_box_internal::init() noexcept
         &token)));
 
 #ifdef XAML_UI_COCOA
-    XAML_RETURN_IF_FAILED((m_click->add_noexcept<xaml_ptr<xaml_radio_box>>(
-        [this](xaml_ptr<xaml_radio_box>) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_click->add(
+        [this](xaml_object*, xaml_event_args*) noexcept -> xaml_result {
             if (m_handle)
             {
                 XAML_RETURN_IF_FAILED(on_state_changed());
@@ -46,9 +46,9 @@ xaml_result xaml_radio_box_internal::draw_group() noexcept
         xaml_ptr<xaml_multicontainer> multic;
         if (XAML_SUCCEEDED(parent->query(&multic)))
         {
-            xaml_ptr<xaml_vector_view> children;
+            xaml_ptr<xaml_vector_view<xaml_control>> children;
             XAML_RETURN_IF_FAILED(multic->get_children(&children));
-            XAML_FOREACH_START(c, children);
+            XAML_FOREACH_START(xaml_control, c, children);
             {
                 if (auto rc = c.query<xaml_radio_box>())
                 {

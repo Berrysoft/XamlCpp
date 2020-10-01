@@ -68,7 +68,9 @@ xaml_result xaml_menu_item_internal::draw_append(NSMenu* pmenu) noexcept
 
 void xaml_menu_item_internal::on_action() noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(m_click->invoke(m_outer_this, args));
 }
 
 xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) noexcept
@@ -78,10 +80,8 @@ xaml_result xaml_popup_menu_item_internal::draw(xaml_rectangle const& region) no
 
 xaml_result xaml_popup_menu_item_internal::draw_submenu() noexcept
 {
-    XAML_FOREACH_START(child, m_submenu);
+    XAML_FOREACH_START(xaml_menu_item, cc, m_submenu);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(child->query(&cc));
         XAML_RETURN_IF_FAILED(cc->draw({}));
     }
     XAML_FOREACH_END();

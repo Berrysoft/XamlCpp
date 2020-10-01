@@ -12,7 +12,7 @@ xaml_result xaml_items_base_internal::create_item(xaml_ptr<xaml_object>& item) n
     return XAML_S_OK;
 }
 
-xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args> args) noexcept
+xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_object*, xaml_vector_changed_args<xaml_object>* args) noexcept
 {
     xaml_vector_changed_action action;
     XAML_RETURN_IF_FAILED(args->get_action(&action));
@@ -23,7 +23,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
         [[fallthrough]];
     case xaml_vector_changed_add:
     {
-        xaml_ptr<xaml_vector_view> new_items;
+        xaml_ptr<xaml_vector_view<xaml_object>> new_items;
         XAML_RETURN_IF_FAILED(args->get_new_items(&new_items));
         std::int32_t size;
         XAML_RETURN_IF_FAILED(new_items->get_size(&size));
@@ -40,7 +40,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
     }
     case xaml_vector_changed_erase:
     {
-        xaml_ptr<xaml_vector_view> old_items;
+        xaml_ptr<xaml_vector_view<xaml_object>> old_items;
         XAML_RETURN_IF_FAILED(args->get_old_items(&old_items));
         std::int32_t size;
         XAML_RETURN_IF_FAILED(old_items->get_size(&size));
@@ -54,7 +54,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
     }
     case xaml_vector_changed_replace:
     {
-        xaml_ptr<xaml_vector_view> new_items;
+        xaml_ptr<xaml_vector_view<xaml_object>> new_items;
         XAML_RETURN_IF_FAILED(args->get_new_items(&new_items));
         xaml_ptr<xaml_object> item;
         XAML_RETURN_IF_FAILED(new_items->get_at(0, &item));
@@ -66,7 +66,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
     }
     case xaml_vector_changed_move:
     {
-        xaml_ptr<xaml_vector_view> new_items;
+        xaml_ptr<xaml_vector_view<xaml_object>> new_items;
         XAML_RETURN_IF_FAILED(args->get_new_items(&new_items));
         xaml_ptr<xaml_object> item;
         XAML_RETURN_IF_FAILED(new_items->get_at(0, &item));
@@ -82,7 +82,7 @@ xaml_result xaml_items_base_internal::on_items_vector_changed(xaml_ptr<xaml_obse
     return XAML_S_OK;
 }
 
-xaml_result xaml_items_base_internal::set_items(xaml_observable_vector* value) noexcept
+xaml_result xaml_items_base_internal::set_items(xaml_observable_vector<xaml_object>* value) noexcept
 {
     if (m_items.get() != value)
     {
@@ -94,10 +94,10 @@ xaml_result xaml_items_base_internal::set_items(xaml_observable_vector* value) n
         m_items = value;
         if (m_items)
         {
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, xaml_ptr<xaml_observable_vector>, xaml_ptr<xaml_vector_changed_args>>([this](xaml_ptr<xaml_observable_vector> sender, xaml_ptr<xaml_vector_changed_args> args) noexcept -> xaml_result { return on_items_vector_changed(sender, args); }, &callback)));
+            xaml_ptr<xaml_delegate<xaml_object, xaml_vector_changed_args<xaml_object>>> callback;
+            XAML_RETURN_IF_FAILED((xaml_delegate_new(xaml_mem_fn(&xaml_items_base_internal::on_items_vector_changed, this), &callback)));
             XAML_RETURN_IF_FAILED(m_items->add_vector_changed(callback, &m_items_changed_token));
-            XAML_RETURN_IF_FAILED(on_items_changed(m_outer_this, m_items));
+            XAML_RETURN_IF_FAILED(m_items_changed->invoke(m_outer_this, m_items));
         }
     }
     return XAML_S_OK;
@@ -115,7 +115,7 @@ xaml_result XAML_CALL xaml_items_base_members(xaml_type_info_registration* __inf
 {
     using self_type = xaml_items_base;
     XAML_RETURN_IF_FAILED(xaml_control_members(__info));
-    XAML_TYPE_INFO_ADD_PROP_EVENT(items, xaml_observable_vector);
+    XAML_TYPE_INFO_ADD_PROP_EVENT(items, xaml_observable_vector<xaml_object>);
     XAML_TYPE_INFO_ADD_PROP(items_template, xaml_template_base);
     XAML_TYPE_INFO_ADD_PROP_EVENT(sel_id, int32_t);
     return XAML_S_OK;

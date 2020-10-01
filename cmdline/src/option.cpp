@@ -18,6 +18,40 @@ struct option_entry
     xaml_ptr<xaml_string> help_text;
 };
 
+struct xaml_cmdline_option_for_each_args_impl : xaml_implement<xaml_cmdline_option_for_each_args_impl, xaml_cmdline_option_for_each_args>
+{
+    option_entry m_entry{};
+
+    xaml_cmdline_option_for_each_args_impl(char short_arg, xaml_string* long_arg, xaml_string* prop, xaml_string* help_text) noexcept
+        : m_entry{ short_arg, {}, long_arg, prop, help_text } {}
+
+    xaml_result XAML_CALL get_short_arg(char* pvalue) noexcept override
+    {
+        *pvalue = m_entry.short_arg;
+        return XAML_S_OK;
+    }
+
+    xaml_result XAML_CALL get_long_arg(xaml_string** ptr) noexcept override
+    {
+        return m_entry.long_arg.query(ptr);
+    }
+
+    xaml_result XAML_CALL get_prop(xaml_string** ptr) noexcept override
+    {
+        return m_entry.prop.query(ptr);
+    }
+
+    xaml_result XAML_CALL get_help_text(xaml_string** ptr) noexcept override
+    {
+        return m_entry.help_text.query(ptr);
+    }
+};
+
+xaml_result XAML_CALL xaml_cmdline_option_for_each_args_new(char short_arg, xaml_string* long_arg, xaml_string* prop, xaml_string* help_text, xaml_cmdline_option_for_each_args** ptr) noexcept
+{
+    return xaml_object_new<xaml_cmdline_option_for_each_args_impl>(ptr, short_arg, long_arg, prop, help_text);
+}
+
 struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_cmdline_option>
 {
     multi_index_container<
@@ -39,7 +73,7 @@ struct xaml_cmdline_option_impl : xaml_implement<xaml_cmdline_option_impl, xaml_
     xaml_result XAML_CALL find_long_arg(xaml_string* name, xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL get_default_property(xaml_string** ptr) noexcept override;
     xaml_result XAML_CALL add_arg(char, xaml_string*, xaml_string*, xaml_string*) noexcept override;
-    xaml_result XAML_CALL for_each_entry(xaml_delegate* handler) noexcept override;
+    xaml_result XAML_CALL for_each_entry(xaml_delegate<xaml_object, xaml_cmdline_option_for_each_args>* handler) noexcept override;
 };
 
 xaml_result xaml_cmdline_option_impl::find_short_arg(char name, xaml_string** ptr) noexcept
@@ -94,14 +128,13 @@ try
 }
 XAML_CATCH_RETURN()
 
-xaml_result xaml_cmdline_option_impl::for_each_entry(xaml_delegate* handler) noexcept
+xaml_result xaml_cmdline_option_impl::for_each_entry(xaml_delegate<xaml_object, xaml_cmdline_option_for_each_args>* handler) noexcept
 {
     for (auto& entry : m_map)
     {
-        xaml_ptr<xaml_vector_view> args;
-        XAML_RETURN_IF_FAILED(xaml_delegate_pack_args(&args, entry.short_arg, entry.long_arg, entry.prop, entry.help_text));
-        xaml_ptr<xaml_object> obj;
-        XAML_RETURN_IF_FAILED(handler->invoke(args, &obj));
+        xaml_ptr<xaml_cmdline_option_for_each_args> args;
+        XAML_RETURN_IF_FAILED(xaml_cmdline_option_for_each_args_new(entry.short_arg, entry.long_arg, entry.prop, entry.help_text, &args));
+        XAML_RETURN_IF_FAILED(handler->invoke(this, args));
     }
     return XAML_S_OK;
 }
@@ -113,11 +146,15 @@ xaml_result XAML_CALL xaml_cmdline_option_new(xaml_cmdline_option** ptr) noexcep
 
 static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>& stream, xaml_cmdline_option* opt) noexcept
 {
-    xaml_ptr<xaml_delegate> callback;
-    XAML_RETURN_IF_FAILED((xaml_delegate_new_noexcept<void, char, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>, xaml_ptr<xaml_string>>(
-        [&stream](char short_arg, xaml_ptr<xaml_string> long_arg, xaml_ptr<xaml_string> prop, xaml_ptr<xaml_string> help_text) noexcept -> xaml_result {
+    xaml_ptr<xaml_delegate<xaml_object, xaml_cmdline_option_for_each_args>> callback;
+    XAML_RETURN_IF_FAILED((xaml_delegate_new(
+        [&stream](xaml_object*, xaml_cmdline_option_for_each_args* e) noexcept -> xaml_result {
             try
             {
+                char short_arg;
+                XAML_RETURN_IF_FAILED(e->get_short_arg(&short_arg));
+                xaml_ptr<xaml_string> long_arg;
+                XAML_RETURN_IF_FAILED(e->get_long_arg(&long_arg));
                 std::string arg_str;
                 std::string_view long_arg_view;
                 XAML_RETURN_IF_FAILED(to_string_view(long_arg, &long_arg_view));
@@ -144,6 +181,8 @@ static xaml_result XAML_CALL xaml_cmdline_option_print_impl(basic_ostream<char>&
                     }
                 }
                 sf::print(stream, U("  {:l22}"), arg_str);
+                xaml_ptr<xaml_string> help_text;
+                XAML_RETURN_IF_FAILED(e->get_help_text(&help_text));
                 string_view help_text_data;
                 XAML_RETURN_IF_FAILED(to_string_view(help_text, &help_text_data));
                 sf::println(stream, help_text_data);

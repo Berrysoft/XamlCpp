@@ -6,7 +6,9 @@ using namespace std;
 
 gboolean xaml_timer_impl::on_timeout(xaml_timer_impl* self) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(self->on_tick(self));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(self->m_tick->invoke(self, args));
     return self->m_is_enabled;
 }
 

@@ -22,7 +22,7 @@ struct xaml_control_internal
 
     XAML_UI_API virtual ~xaml_control_internal();
 
-    xaml_ptr<xaml_map> m_resources{};
+    xaml_ptr<xaml_map<xaml_string, xaml_object>> m_resources{};
 
     xaml_result XAML_CALL add_resource(xaml_string* key, xaml_object* value) noexcept
     {
@@ -35,12 +35,12 @@ struct xaml_control_internal
         return m_resources->lookup(key, pvalue);
     }
 
-    xaml_result XAML_CALL get_resources(xaml_map_view** ptr) noexcept
+    xaml_result XAML_CALL get_resources(xaml_map_view<xaml_string, xaml_object>** ptr) noexcept
     {
         return m_resources.query(ptr);
     }
 
-    XAML_EVENT_IMPL(parent_changed)
+    XAML_EVENT_IMPL(parent_changed, xaml_object, xaml_element_base)
 
     xaml_ptr<xaml_weak_reference> m_parent{};
 
@@ -63,7 +63,7 @@ struct xaml_control_internal
         return value->get_weak_reference(&m_parent);
     }
 
-    XAML_EVENT_IMPL(size_changed)
+    XAML_EVENT_IMPL(size_changed, xaml_object, xaml_size)
     XAML_PROP_EVENT_IMPL(size, xaml_size, xaml_size*, xaml_size const&)
 
     xaml_result XAML_CALL get_width(double* pvalue) noexcept
@@ -76,7 +76,7 @@ struct xaml_control_internal
         if (m_size.width != value)
         {
             m_size.width = value;
-            return on_size_changed(m_outer_this, m_size);
+            return m_size_changed->invoke(m_outer_this, m_size);
         }
         return XAML_S_OK;
     }
@@ -91,21 +91,21 @@ struct xaml_control_internal
         if (m_size.height != value)
         {
             m_size.height = value;
-            return on_size_changed(m_outer_this, m_size);
+            return m_size_changed->invoke(m_outer_this, m_size);
         }
         return XAML_S_OK;
     }
 
-    XAML_EVENT_IMPL(margin_changed)
+    XAML_EVENT_IMPL(margin_changed, xaml_object, xaml_margin)
     XAML_PROP_EVENT_IMPL(margin, xaml_margin, xaml_margin*, xaml_margin const&)
 
-    XAML_EVENT_IMPL(halignment_changed)
+    XAML_EVENT_IMPL(halignment_changed, xaml_object, xaml_halignment)
     XAML_PROP_EVENT_IMPL(halignment, xaml_halignment, xaml_halignment*, xaml_halignment)
 
-    XAML_EVENT_IMPL(valignment_changed)
+    XAML_EVENT_IMPL(valignment_changed, xaml_object, xaml_valignment)
     XAML_PROP_EVENT_IMPL(valignment, xaml_valignment, xaml_valignment*, xaml_valignment)
 
-    XAML_EVENT_IMPL(is_visible_changed)
+    XAML_EVENT_IMPL(is_visible_changed, xaml_object, bool)
     XAML_PROP_EVENT_IMPL(is_visible, bool, bool*, bool)
 
     XAML_UI_API xaml_result XAML_CALL parent_redraw() noexcept;
@@ -118,9 +118,9 @@ struct xaml_control_internal
 
     virtual xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept { return XAML_S_OK; }
 
-    XAML_EVENT_IMPL(mouse_down)
-    XAML_EVENT_IMPL(mouse_up)
-    XAML_EVENT_IMPL(mouse_move)
+    XAML_EVENT_IMPL(mouse_down, xaml_object, xaml_mouse_button)
+    XAML_EVENT_IMPL(mouse_up, xaml_object, xaml_mouse_button)
+    XAML_EVENT_IMPL(mouse_move, xaml_object, xaml_point)
 
     XAML_UI_API virtual xaml_result XAML_CALL size_to_fit() noexcept;
 
@@ -242,27 +242,27 @@ struct xaml_control_implement : xaml_weak_implement<T, Base>
 
     xaml_result XAML_CALL add_resource(xaml_string* key, xaml_object* value) noexcept override { return m_internal.add_resource(key, value); }
     xaml_result XAML_CALL get_resource(xaml_string* key, xaml_object** pvalue) noexcept override { return m_internal.get_resource(key, pvalue); }
-    xaml_result XAML_CALL get_resources(xaml_map_view** ptr) noexcept override { return m_internal.get_resources(ptr); }
+    xaml_result XAML_CALL get_resources(xaml_map_view<xaml_string, xaml_object>** ptr) noexcept override { return m_internal.get_resources(ptr); }
 
-    XAML_EVENT_INTERNAL_IMPL(parent_changed)
+    XAML_EVENT_INTERNAL_IMPL(parent_changed, xaml_object, xaml_element_base)
     XAML_PROP_INTERNAL_IMPL(parent, xaml_element_base**, xaml_element_base*)
 
-    XAML_EVENT_INTERNAL_IMPL(size_changed)
+    XAML_EVENT_INTERNAL_IMPL(size_changed, xaml_object, xaml_size)
     XAML_PROP_INTERNAL_IMPL(size, xaml_size*, xaml_size const&)
 
     XAML_PROP_INTERNAL_IMPL(width, double*, double)
     XAML_PROP_INTERNAL_IMPL(height, double*, double)
 
-    XAML_EVENT_INTERNAL_IMPL(margin_changed)
+    XAML_EVENT_INTERNAL_IMPL(margin_changed, xaml_object, xaml_margin)
     XAML_PROP_INTERNAL_IMPL(margin, xaml_margin*, xaml_margin const&)
 
-    XAML_EVENT_INTERNAL_IMPL(halignment_changed)
+    XAML_EVENT_INTERNAL_IMPL(halignment_changed, xaml_object, xaml_halignment)
     XAML_PROP_INTERNAL_IMPL(halignment, xaml_halignment*, xaml_halignment)
 
-    XAML_EVENT_INTERNAL_IMPL(valignment_changed)
+    XAML_EVENT_INTERNAL_IMPL(valignment_changed, xaml_object, xaml_valignment)
     XAML_PROP_INTERNAL_IMPL(valignment, xaml_valignment*, xaml_valignment)
 
-    XAML_EVENT_INTERNAL_IMPL(is_visible_changed)
+    XAML_EVENT_INTERNAL_IMPL(is_visible_changed, xaml_object, bool)
     XAML_PROP_INTERNAL_IMPL(is_visible, bool*, bool)
 
     XAML_PROP_INTERNAL_IMPL_BASE(is_initialized, bool*)
@@ -273,9 +273,9 @@ struct xaml_control_implement : xaml_weak_implement<T, Base>
 
     xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override { return m_internal.draw(region); }
 
-    XAML_EVENT_INTERNAL_IMPL(mouse_down)
-    XAML_EVENT_INTERNAL_IMPL(mouse_up)
-    XAML_EVENT_INTERNAL_IMPL(mouse_move)
+    XAML_EVENT_INTERNAL_IMPL(mouse_down, xaml_object, xaml_mouse_button)
+    XAML_EVENT_INTERNAL_IMPL(mouse_up, xaml_object, xaml_mouse_button)
+    XAML_EVENT_INTERNAL_IMPL(mouse_move, xaml_object, xaml_point)
 
     xaml_result XAML_CALL size_to_fit() noexcept override { return m_internal.size_to_fit(); }
 

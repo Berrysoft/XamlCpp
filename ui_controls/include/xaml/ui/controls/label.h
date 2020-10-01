@@ -5,10 +5,10 @@
 
 XAML_CLASS(xaml_label, { 0xa859441c, 0x825c, 0x4682, { 0x8e, 0x04, 0xe2, 0x4d, 0x62, 0x59, 0xe0, 0x87 } })
 
-#define XAML_LABEL_VTBL(type)                           \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));         \
-    XAML_PROP(text, type, xaml_string**, xaml_string*); \
-    XAML_EVENT(text_changed, type);                     \
+#define XAML_LABEL_VTBL(type)                                 \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));               \
+    XAML_PROP(text, type, xaml_string**, xaml_string*);       \
+    XAML_EVENT(text_changed, type, xaml_object, xaml_string); \
     XAML_PROP(text_halignment, type, xaml_halignment*, xaml_halignment)
 
 XAML_DECL_INTERFACE_(xaml_label, xaml_control)

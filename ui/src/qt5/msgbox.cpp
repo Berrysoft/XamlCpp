@@ -8,7 +8,7 @@
 
 using namespace std;
 
-xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view* buttons, xaml_msgbox_result* presult) noexcept
+xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* message, xaml_string* title, xaml_string* instruction, xaml_msgbox_style style, xaml_vector_view<xaml_msgbox_custom_button>* buttons, xaml_msgbox_result* presult) noexcept
 {
     QWidget* owner = nullptr;
     if (parent)
@@ -44,13 +44,9 @@ xaml_result XAML_CALL xaml_msgbox_custom(xaml_window* parent, xaml_string* messa
     }
 
     map<QAbstractButton*, xaml_msgbox_result> result_map;
-    XAML_FOREACH_START(b, buttons);
+    XAML_FOREACH_START(xaml_msgbox_custom_button, button, buttons);
     {
-        xaml_ptr<xaml_box> bbox;
-        XAML_RETURN_IF_FAILED(b->query(&bbox));
-        xaml_msgbox_custom_button const* button;
-        XAML_RETURN_IF_FAILED(bbox->get_value_ptr(&button));
-        result_map.emplace(box.addButton(button->text, QMessageBox::AcceptRole), button->result);
+        result_map.emplace(box.addButton(button.text, QMessageBox::AcceptRole), button.result);
     }
     XAML_FOREACH_END();
     switch (style)

@@ -80,5 +80,7 @@ xaml_result xaml_button_internal::draw_default() noexcept
 
 void xaml_button_internal::on_action() noexcept
 {
-    XAML_ASSERT_SUCCEEDED(on_click(m_outer_this));
+    xaml_ptr<xaml_event_args> args;
+    XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+    XAML_ASSERT_SUCCEEDED(m_click->invoke(m_outer_this, args));
 }

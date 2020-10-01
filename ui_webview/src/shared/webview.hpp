@@ -15,10 +15,10 @@ struct xaml_webview_internal : xaml_control_internal
 {
     std::atomic_bool m_navigating{ false };
 
-    XAML_EVENT_IMPL(uri_changed)
+    XAML_EVENT_IMPL(uri_changed, xaml_object, xaml_string)
     XAML_PROP_STRING_EVENT_IMPL(uri)
 
-    XAML_EVENT_IMPL(resource_requested)
+    XAML_EVENT_IMPL(resource_requested, xaml_object, xaml_webview_resource_requested_args)
 
     xaml_result XAML_CALL get_can_go_forward(bool*) noexcept;
     xaml_result XAML_CALL get_can_go_back(bool*) noexcept;
@@ -54,11 +54,11 @@ struct xaml_webview_internal : xaml_control_internal
 
 struct xaml_webview_impl : xaml_control_implement<xaml_webview_impl, xaml_webview_internal, xaml_webview>
 {
-    XAML_EVENT_INTERNAL_IMPL(uri_changed)
+    XAML_EVENT_INTERNAL_IMPL(uri_changed, xaml_object, xaml_string)
     XAML_PROP_PTR_INTERNAL_IMPL(uri, xaml_string)
     XAML_PROP_INTERNAL_IMPL_BASE(can_go_forward, bool*)
     XAML_PROP_INTERNAL_IMPL_BASE(can_go_back, bool*)
-    XAML_EVENT_INTERNAL_IMPL(resource_requested)
+    XAML_EVENT_INTERNAL_IMPL(resource_requested, xaml_object, xaml_webview_resource_requested_args)
 
     xaml_result XAML_CALL go_forward() noexcept override { return m_internal.go_forward(); }
     xaml_result XAML_CALL go_back() noexcept override { return m_internal.go_back(); }

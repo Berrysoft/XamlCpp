@@ -40,10 +40,8 @@ xaml_result xaml_filebox_impl<I>::show(xaml_window* parent) noexcept
     vector<COMDLG_FILTERSPEC> types;
     if (m_filters)
     {
-        XAML_FOREACH_START(f, m_filters);
+        XAML_FOREACH_START(xaml_filebox_filter, filter, m_filters);
         {
-            xaml_filebox_filter filter;
-            XAML_RETURN_IF_FAILED(xaml_unbox_value(f, &filter));
             wstring_view name_data;
             XAML_RETURN_IF_FAILED(pool(filter.name, &name_data));
             wstring_view pattern_data;

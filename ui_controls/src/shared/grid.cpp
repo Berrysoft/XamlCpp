@@ -13,13 +13,11 @@ xaml_result xaml_grid_internal::init() noexcept
     return XAML_S_OK;
 }
 
-static xaml_result get_max_compact(int32_t index, xaml_ptr<xaml_vector> const& children, bool vertical, double* presult) noexcept
+static xaml_result get_max_compact(int32_t index, xaml_ptr<xaml_vector<xaml_control>> const& children, bool vertical, double* presult) noexcept
 {
     double result = 0;
-    XAML_FOREACH_START(c, children);
+    XAML_FOREACH_START(xaml_control, cc, children);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(c->query(&cc));
         int32_t crow, ccol, crows, ccols;
         XAML_RETURN_IF_FAILED(xaml_grid_get_column(cc, &ccol));
         XAML_RETURN_IF_FAILED(xaml_grid_get_row(cc, &crow));
@@ -40,7 +38,7 @@ static xaml_result get_max_compact(int32_t index, xaml_ptr<xaml_vector> const& c
     return XAML_S_OK;
 }
 
-static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_ptr<xaml_vector> const& children, double total, bool vertical, vector<tuple<double, double>>* presult) noexcept
+static xaml_result get_real_length(xaml_ptr<xaml_vector<xaml_grid_length>> const& lengths, xaml_ptr<xaml_vector<xaml_control>> const& children, double total, bool vertical, vector<tuple<double, double>>* presult) noexcept
 {
     int32_t size;
     XAML_RETURN_IF_FAILED(lengths->get_size(&size));
@@ -55,10 +53,8 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
     double total_remain = total;
     for (int32_t i = 0; i < size; i++)
     {
-        xaml_ptr<xaml_object> lengths_item;
-        XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item, &length));
+        XAML_RETURN_IF_FAILED(lengths->get_at(i, &length));
         switch (length.layout)
         {
         case xaml_grid_layout_abs:
@@ -80,10 +76,8 @@ static xaml_result get_real_length(xaml_ptr<xaml_vector> const& lengths, xaml_pt
     }
     for (int32_t i = 0; i < size; i++)
     {
-        xaml_ptr<xaml_object> lengths_item;
-        XAML_RETURN_IF_FAILED(lengths->get_at(i, &lengths_item));
         xaml_grid_length length;
-        XAML_RETURN_IF_FAILED(xaml_unbox_value(lengths_item, &length));
+        XAML_RETURN_IF_FAILED(lengths->get_at(i, &length));
         if (length.layout == xaml_grid_layout_star)
         {
             get<0>(result[i]) = total_remain * length.value / total_star;
@@ -163,10 +157,8 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
     vector<tuple<double, double>> columns, rows;
     XAML_RETURN_IF_FAILED(get_real_length(m_columns, m_children, real.width, false, &columns));
     XAML_RETURN_IF_FAILED(get_real_length(m_rows, m_children, real.height, true, &rows));
-    XAML_FOREACH_START(c, m_children);
+    XAML_FOREACH_START(xaml_control, cc, m_children);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(c->query(&cc));
         xaml_grid_index const& index = s_grid_indecies[cc];
         double subx = get<1>(columns[(min)((size_t)index.column, columns.size() - 1)]) + real.x;
         double suby = get<1>(rows[(min)((size_t)index.row, rows.size() - 1)]) + real.y;
@@ -182,11 +174,11 @@ xaml_result xaml_grid_internal::draw_impl(xaml_rectangle const& region, function
 }
 
 template <>
-struct __xaml_converter<xaml_ptr<xaml_vector>, void>
+struct __xaml_converter<xaml_ptr<xaml_vector<xaml_grid_length>>, void>
 {
-    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_vector** ptr) const noexcept
+    xaml_result operator()(xaml_ptr<xaml_object> const& obj, xaml_vector<xaml_grid_length>** ptr) const noexcept
     {
-        if (auto vec = obj.query<xaml_vector>())
+        if (auto vec = obj.query<xaml_vector<xaml_grid_length>>())
         {
             return vec->query(ptr);
         }
@@ -196,7 +188,7 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
             XAML_RETURN_IF_FAILED(to_string_view(s, &str));
             constexpr char __delimeter[] = " ,\t\r\n";
             constexpr char __auto[] = "auto";
-            xaml_ptr<xaml_vector> result;
+            xaml_ptr<xaml_vector<xaml_grid_length>> result;
             XAML_RETURN_IF_FAILED(xaml_vector_new(&result));
             std::size_t offset = 0;
             do
@@ -218,9 +210,7 @@ struct __xaml_converter<xaml_ptr<xaml_vector>, void>
                     double value = __stof<double>(lenstr);
                     len = { value, xaml_grid_layout_abs };
                 }
-                xaml_ptr<xaml_object> item;
-                XAML_RETURN_IF_FAILED(xaml_box_value(len, &item));
-                XAML_RETURN_IF_FAILED(result->append(item));
+                XAML_RETURN_IF_FAILED(result->append(len));
                 offset = str.find_first_not_of(__delimeter, index);
             } while (offset != std::string_view::npos);
             return result->query(ptr);
@@ -242,8 +232,8 @@ xaml_result XAML_CALL xaml_grid_members(xaml_type_info_registration* __info) noe
     using self_type = xaml_grid;
     XAML_RETURN_IF_FAILED(xaml_layout_base_members(__info));
     XAML_TYPE_INFO_ADD_CTOR(xaml_grid_new);
-    XAML_TYPE_INFO_ADD_PROP(columns, xaml_vector);
-    XAML_TYPE_INFO_ADD_PROP(rows, xaml_vector);
+    XAML_TYPE_INFO_ADD_PROP(columns, xaml_vector<xaml_grid_length>);
+    XAML_TYPE_INFO_ADD_PROP(rows, xaml_vector<xaml_grid_length>);
     XAML_TYPE_INFO_ADD_CPROP(column, xaml_grid_length);
     XAML_TYPE_INFO_ADD_CPROP(row, xaml_grid_length);
     XAML_TYPE_INFO_ADD_APROP(xaml_grid, column, int32_t);

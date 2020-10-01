@@ -66,8 +66,12 @@ xaml_result xaml_button_internal::wnd_proc(xaml_win32_window_message const& msg,
             switch (HIWORD(msg.wParam))
             {
             case BN_CLICKED:
-                on_click(static_cast<xaml_button*>(m_outer_this));
+            {
+                xaml_ptr<xaml_event_args> args;
+                XAML_ASSERT_SUCCEEDED(xaml_event_args_empty(&args));
+                XAML_ASSERT_SUCCEEDED(m_click->invoke(static_cast<xaml_button*>(m_outer_this), args));
                 break;
+            }
             }
         }
     }

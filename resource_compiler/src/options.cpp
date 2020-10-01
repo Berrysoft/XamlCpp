@@ -4,7 +4,7 @@
 
 struct xaml_rc_options_impl : xaml_cmdline_options_base_implement<xaml_rc_options_impl, xaml_rc_options>
 {
-    xaml_ptr<xaml_vector> m_inputs;
+    xaml_ptr<xaml_vector<xaml_string>> m_inputs;
 
     xaml_result XAML_CALL add_input(xaml_string* value) noexcept override
     {
@@ -17,10 +17,10 @@ struct xaml_rc_options_impl : xaml_cmdline_options_base_implement<xaml_rc_option
         XAML_RETURN_IF_FAILED(m_inputs->get_size(&size));
         for (int32_t i = 0; i < size; i++)
         {
-            xaml_ptr<xaml_object> obj;
+            xaml_ptr<xaml_string> obj;
             XAML_RETURN_IF_FAILED(m_inputs->get_at(i, &obj));
             bool equals;
-            XAML_RETURN_IF_FAILED(xaml_string_equals(value, obj.query<xaml_string>(), &equals));
+            XAML_RETURN_IF_FAILED(xaml_string_equals(value, obj, &equals));
             if (equals)
             {
                 return m_inputs->remove_at(i);
@@ -29,7 +29,7 @@ struct xaml_rc_options_impl : xaml_cmdline_options_base_implement<xaml_rc_option
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_inputs(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_inputs(xaml_vector_view<xaml_string>** ptr) noexcept override
     {
         return m_inputs->query(ptr);
     }

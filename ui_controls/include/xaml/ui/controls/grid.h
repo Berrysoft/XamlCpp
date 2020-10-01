@@ -32,13 +32,23 @@ struct xaml_grid_length
 
 XAML_TYPE(xaml_grid_length, { 0xfed37e9d, 0x1f3b, 0x4247, { 0x82, 0x69, 0x95, 0x56, 0x09, 0x93, 0xf3, 0x84 } })
 
+#ifndef xaml_enumerator_1__xaml_grid_length_defined
+    #define xaml_enumerator_1__xaml_grid_length_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_V(xaml_grid_length))
+#endif // !xaml_enumerator_1__xaml_grid_length_defined
+
+#ifndef xaml_vector_1__xaml_grid_length_defined
+    #define xaml_vector_1__xaml_grid_length_defined
+XAML_VECTOR_1_TYPE(XAML_T_V(xaml_grid_length))
+#endif // !xaml_vector_1__xaml_grid_length_defined
+
 XAML_CLASS(xaml_grid, { 0x72737dd1, 0x7c10, 0x46e6, { 0x82, 0x38, 0x06, 0x2f, 0x43, 0x6b, 0xb0, 0x24 } })
 
-#define XAML_GRID_VTBL(type)                                                                    \
-    XAML_VTBL_INHERIT(XAML_LAYOUT_BASE_VTBL(type));                                             \
-    XAML_PROP(columns, type, xaml_vector**, xaml_vector*);                                      \
-    XAML_PROP(rows, type, xaml_vector**, xaml_vector*);                                         \
-    XAML_CPROP(column, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF); \
+#define XAML_GRID_VTBL(type)                                                                                 \
+    XAML_VTBL_INHERIT(XAML_LAYOUT_BASE_VTBL(type));                                                          \
+    XAML_PROP(columns, type, XAML_VECTOR_1_NAME(xaml_grid_length)**, XAML_VECTOR_1_NAME(xaml_grid_length)*); \
+    XAML_PROP(rows, type, XAML_VECTOR_1_NAME(xaml_grid_length)**, XAML_VECTOR_1_NAME(xaml_grid_length)*);    \
+    XAML_CPROP(column, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF);              \
     XAML_CPROP(row, type, xaml_grid_length XAML_CONST_REF, xaml_grid_length XAML_CONST_REF)
 
 XAML_DECL_INTERFACE_(xaml_grid, xaml_layout_base)

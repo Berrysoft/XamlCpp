@@ -19,16 +19,51 @@ typedef enum xaml_binding_mode
 
 XAML_TYPE(xaml_binding_mode, { 0x01f3d35e, 0x73cc, 0x4abd, { 0xbc, 0xa9, 0xe5, 0x07, 0x70, 0x9e, 0x06, 0x9a } })
 
+#ifndef xaml_key_value_pair_2__xaml_string__xaml_module_defined
+    #define xaml_key_value_pair_2__xaml_string__xaml_module_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_module))
+#endif // !xaml_key_value_pair_2__xaml_string__xaml_module_defined
+
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_module_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_module_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_string__xaml_module))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_string__xaml_module_defined
+
+#ifndef xaml_map_view_2__xaml_string__xaml_module_defined
+    #define xaml_map_view_2__xaml_string__xaml_module_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_O(xaml_string), XAML_T_O(xaml_module))
+#endif // !xaml_map_view_2__xaml_string__xaml_module_defined
+
+#ifndef xaml_hasher_1__xaml_guid_defined
+    #define xaml_hasher_1__xaml_guid_defined
+XAML_HASHER_1_TYPE(XAML_T_V(xaml_guid))
+#endif // !xaml_hasher_1__xaml_guid_defined
+
+#ifndef xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+    #define xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+XAML_KEY_VALUE_PAIR_2_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_reflection_info))
+#endif // !xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+
+#ifndef xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+    #define xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_key_value_pair_2__xaml_guid__xaml_reflection_info))
+#endif // !xaml_enumerator_1__xaml_key_value_pair_2__xaml_guid__xaml_reflection_info_defined
+
+#ifndef xaml_map_view_2__xaml_guid__xaml_reflection_defined
+    #define xaml_map_view_2__xaml_guid__xaml_reflection_defined
+XAML_MAP_VIEW_2_TYPE(XAML_T_V(xaml_guid), XAML_T_O(xaml_reflection_info))
+#endif // !xaml_map_view_2__xaml_guid__xaml_reflection_defined
+
 XAML_CLASS(xaml_meta_context, { 0x8b4549b1, 0xfb13, 0x444b, { 0xa5, 0xc1, 0x5b, 0x5e, 0xa5, 0x3a, 0x02, 0xda } })
 
 #define XAML_META_CONTEXT_VTBL(type)                                                                   \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                                         \
-    XAML_METHOD(get_modules, type, xaml_vector_view**);                                                \
+    XAML_METHOD(get_modules, type, XAML_MAP_VIEW_2_NAME(xaml_string, xaml_module)**);                  \
     XAML_METHOD(add_module, type, xaml_module*);                                                       \
     XAML_METHOD(add_module_recursive, type, xaml_module*);                                             \
     XAML_METHOD(get_namespace, type, xaml_string*, xaml_string**);                                     \
     XAML_METHOD(add_namespace, type, xaml_string*, xaml_string*);                                      \
-    XAML_METHOD(get_types, type, xaml_map_view**);                                                     \
+    XAML_METHOD(get_types, type, XAML_MAP_VIEW_2_NAME(xaml_guid, xaml_reflection_info)**);             \
     XAML_METHOD(get_type, type, xaml_guid XAML_CONST_REF, xaml_reflection_info**);                     \
     XAML_METHOD(get_type_by_name, type, xaml_string*, xaml_reflection_info**);                         \
     XAML_METHOD(get_type_by_namespace_name, type, xaml_string*, xaml_string*, xaml_reflection_info**); \

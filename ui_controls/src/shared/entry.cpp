@@ -11,8 +11,8 @@ xaml_result XAML_CALL xaml_entry_internal::init() noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_text_changed));
 
     int32_t token;
-    XAML_RETURN_IF_FAILED((m_text_changed->add_noexcept<xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>>(
-        [this](xaml_ptr<xaml_entry>, xaml_ptr<xaml_string>) noexcept -> xaml_result {
+    XAML_RETURN_IF_FAILED((m_text_changed->add(
+        [this](xaml_object*, xaml_string*) noexcept -> xaml_result {
             xaml_atomic_guard guard{ m_text_changing };
             if (m_handle && !guard.test_and_set())
             {

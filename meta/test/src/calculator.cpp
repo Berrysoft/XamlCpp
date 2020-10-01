@@ -6,7 +6,7 @@ struct xaml_test_calculator_internal
 {
     xaml_object* m_outer_this{};
 
-    XAML_EVENT_IMPL(value_changed)
+    XAML_EVENT_IMPL(value_changed, xaml_object, int)
     XAML_PROP_EVENT_IMPL(value, int, int*, int);
 
     xaml_result XAML_CALL init() noexcept
@@ -22,7 +22,7 @@ struct xaml_test_calculator_impl : xaml_implement<xaml_test_calculator_impl, xam
 
     xaml_test_calculator_impl() noexcept : xaml_implement() { m_internal.m_outer_this = this; }
 
-    XAML_EVENT_INTERNAL_IMPL(value_changed)
+    XAML_EVENT_INTERNAL_IMPL(value_changed, xaml_object, int)
 
     XAML_PROP_INTERNAL_IMPL(value, int*, int)
 
@@ -48,8 +48,8 @@ xaml_result XAML_CALL xaml_test_calculator_register(xaml_meta_context* ctx) noex
 {
     XAML_TYPE_INFO_NEW(xaml_test_calculator, "calculator.h");
     XAML_TYPE_INFO_ADD_CTOR(xaml_test_calculator_new);
-    XAML_TYPE_INFO_ADD_METHOD(plus);
-    XAML_TYPE_INFO_ADD_METHOD(minus);
+    XAML_TYPE_INFO_ADD_METHOD(plus, int, int);
+    XAML_TYPE_INFO_ADD_METHOD(minus, int, int);
     XAML_TYPE_INFO_ADD_PROP_EVENT(value, int);
     return ctx->add_type(__info);
 }

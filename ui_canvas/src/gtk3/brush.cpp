@@ -12,13 +12,11 @@ xaml_result xaml_solid_brush_impl::set(cairo_t* handle, xaml_rectangle const&) n
     return XAML_S_OK;
 }
 
-static xaml_result add_stops(cairo_pattern_t* pattern, xaml_ptr<xaml_vector> const& stops) noexcept
+static xaml_result add_stops(cairo_pattern_t* pattern, xaml_ptr<xaml_vector<xaml_gradient_stop>> const& stops) noexcept
 {
-    XAML_FOREACH_START(item, stops);
+    XAML_FOREACH_START(xaml_gradient_stop, item, stops);
     {
-        xaml_gradient_stop const* pitem;
-        XAML_RETURN_IF_FAILED(item.query<xaml_box>()->get_value_ptr(&pitem));
-        cairo_pattern_add_color_stop_rgba(pattern, pitem->position, pitem->color.r / 255.0, pitem->color.g / 255.0, pitem->color.b / 255.0, pitem->color.a / 255.0);
+        cairo_pattern_add_color_stop_rgba(pattern, item.position, item.color.r / 255.0, item.color.g / 255.0, item.color.b / 255.0, item.color.a / 255.0);
     }
     XAML_FOREACH_END();
     return XAML_S_OK;

@@ -42,12 +42,12 @@ xaml_result XAML_CALL xaml_string_node_new(xaml_string_node** ptr) noexcept
 
 struct xaml_markup_node_internal : xaml_node_base_internal
 {
-    XAML_PROP_PTR_IMPL(properties, xaml_vector)
+    XAML_PROP_PTR_IMPL(properties, xaml_vector<xaml_attribute_property>)
 };
 
 struct xaml_markup_node_impl : xaml_node_base_implement<xaml_markup_node_impl, xaml_markup_node_internal, xaml_markup_node>
 {
-    XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector)
+    XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector<xaml_attribute_property>)
 };
 
 xaml_result XAML_CALL xaml_markup_node_new(xaml_markup_node** ptr) noexcept
@@ -57,18 +57,18 @@ xaml_result XAML_CALL xaml_markup_node_new(xaml_markup_node** ptr) noexcept
 
 struct xaml_node_internal : xaml_node_base_internal
 {
-    XAML_PROP_PTR_IMPL(resources, xaml_map)
-    XAML_PROP_PTR_IMPL(properties, xaml_vector)
-    XAML_PROP_PTR_IMPL(collection_properties, xaml_map)
-    XAML_PROP_PTR_IMPL(events, xaml_vector)
+    XAML_PROP_PTR_IMPL(resources, xaml_map_2__xaml_string__xaml_node)
+    XAML_PROP_PTR_IMPL(properties, xaml_vector_1__xaml_attribute_property)
+    XAML_PROP_PTR_IMPL(collection_properties, xaml_map_2__xaml_string__xaml_attribute_collection_property)
+    XAML_PROP_PTR_IMPL(events, xaml_vector_1__xaml_attribute_event)
 };
 
 struct xaml_node_impl : xaml_node_base_implement<xaml_node_impl, xaml_node_internal, xaml_node>
 {
-    XAML_PROP_PTR_INTERNAL_IMPL(resources, xaml_map)
-    XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector)
-    XAML_PROP_PTR_INTERNAL_IMPL(collection_properties, xaml_map)
-    XAML_PROP_PTR_INTERNAL_IMPL(events, xaml_vector)
+    XAML_PROP_PTR_INTERNAL_IMPL(resources, xaml_map_2__xaml_string__xaml_node)
+    XAML_PROP_PTR_INTERNAL_IMPL(properties, xaml_vector_1__xaml_attribute_property)
+    XAML_PROP_PTR_INTERNAL_IMPL(collection_properties, xaml_map_2__xaml_string__xaml_attribute_collection_property)
+    XAML_PROP_PTR_INTERNAL_IMPL(events, xaml_vector_1__xaml_attribute_event)
 };
 
 xaml_result XAML_CALL xaml_node_new(xaml_node** ptr) noexcept
@@ -109,13 +109,13 @@ struct xaml_attribute_collection_property_impl : xaml_implement<xaml_attribute_c
 {
     XAML_PROP_PTR_IMPL_BASE(type, xaml_type_info)
     XAML_PROP_PTR_IMPL_BASE(info, xaml_collection_property_info)
-    XAML_PROP_PTR_IMPL_BASE(values, xaml_vector)
+    XAML_PROP_PTR_IMPL_BASE(values, xaml_vector<xaml_node>)
 
-    xaml_attribute_collection_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_collection_property_info> const& info, xaml_ptr<xaml_vector> const& values) noexcept
+    xaml_attribute_collection_property_impl(xaml_ptr<xaml_type_info> const& type, xaml_ptr<xaml_collection_property_info> const& info, xaml_ptr<xaml_vector<xaml_node>> const& values) noexcept
         : m_type(type), m_info(info), m_values(values) {}
 };
 
-xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* type, xaml_collection_property_info* info, xaml_vector* values, xaml_attribute_collection_property** ptr) noexcept
+xaml_result XAML_CALL xaml_attribute_collection_property_new(xaml_type_info* type, xaml_collection_property_info* info, xaml_vector<xaml_node>* values, xaml_attribute_collection_property** ptr) noexcept
 {
     return xaml_object_new<xaml_attribute_collection_property_impl>(ptr, type, info, values);
 }

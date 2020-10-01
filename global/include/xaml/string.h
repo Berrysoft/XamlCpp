@@ -10,8 +10,6 @@
     #ifdef XAML_WIN32
         #include <memory_resource>
     #endif // XAML_WIN32
-#else
-    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>

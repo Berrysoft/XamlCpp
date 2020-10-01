@@ -236,7 +236,7 @@ xaml_result xaml_canvas_internal::wnd_proc(xaml_win32_window_message const& msg,
             XAML_RETURN_IF_FAILED(target.query_to(&ctx_target));
             xaml_ptr<xaml_drawing_context> dc;
             XAML_RETURN_IF_FAILED(xaml_object_new<xaml_drawing_context_impl>(&dc, ctx_target, d2d, dwrite));
-            XAML_RETURN_IF_FAILED(on_redraw(m_outer_this, dc));
+            XAML_RETURN_IF_FAILED(m_redraw->invoke(m_outer_this, dc));
             XAML_RETURN_IF_FAILED(target->EndDraw());
         }
         *presult = TRUE;
@@ -245,19 +245,19 @@ xaml_result xaml_canvas_internal::wnd_proc(xaml_win32_window_message const& msg,
     case WM_LBUTTONDOWN:
     case WM_RBUTTONDOWN:
     case WM_MBUTTONDOWN:
-        XAML_RETURN_IF_FAILED(on_mouse_down(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3)));
+        XAML_RETURN_IF_FAILED(m_mouse_down->invoke(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONDOWN) / 3)));
         *presult = 0;
         return XAML_S_OK;
     case WM_LBUTTONUP:
     case WM_RBUTTONUP:
     case WM_MBUTTONUP:
-        XAML_RETURN_IF_FAILED(on_mouse_up(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONUP) / 3)));
+        XAML_RETURN_IF_FAILED(m_mouse_up->invoke(m_outer_this, (xaml_mouse_button)((msg.Msg - WM_LBUTTONUP) / 3)));
         *presult = 0;
         return XAML_S_OK;
     case WM_MOUSEMOVE:
     {
         auto real_loc = xaml_from_native(POINT{ GET_X_LPARAM(msg.lParam), GET_Y_LPARAM(msg.lParam) });
-        XAML_RETURN_IF_FAILED(on_mouse_move(m_outer_this, real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(m_handle)));
+        XAML_RETURN_IF_FAILED(m_mouse_move->invoke(m_outer_this, real_loc * USER_DEFAULT_SCREEN_DPI / XamlGetDpiForWindow(m_handle)));
         *presult = 0;
         return XAML_S_OK;
     }

@@ -8,7 +8,7 @@ XAML_CLASS(xaml_menu_item, { 0xbaa16b2b, 0x1cca, 0x4a7c, { 0x8b, 0xbe, 0x96, 0x2
 #define XAML_MENU_ITEM_VTBL(type)                       \
     XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));         \
     XAML_PROP(text, type, xaml_string**, xaml_string*); \
-    XAML_EVENT(click, type)
+    XAML_EVENT(click, type, xaml_object, xaml_event_args)
 
 XAML_DECL_INTERFACE_(xaml_menu_item, xaml_control)
 {
@@ -21,9 +21,9 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_menu_item_register(xaml
 
 XAML_CLASS(xaml_popup_menu_item, { 0xc1445529, 0x6932, 0x46a0, { 0xb9, 0x47, 0x2f, 0xe0, 0x04, 0x63, 0xa1, 0x27 } })
 
-#define XAML_POPUP_MENU_ITEM_VTBL(type)                 \
-    XAML_VTBL_INHERIT(XAML_MENU_ITEM_VTBL(type));       \
-    XAML_METHOD(get_submenu, type, xaml_vector_view**); \
+#define XAML_POPUP_MENU_ITEM_VTBL(type)                                        \
+    XAML_VTBL_INHERIT(XAML_MENU_ITEM_VTBL(type));                              \
+    XAML_METHOD(get_submenu, type, XAML_VECTOR_VIEW_1_NAME(xaml_menu_item)**); \
     XAML_CPROP(submenu, type, xaml_menu_item*, xaml_menu_item*)
 
 XAML_DECL_INTERFACE_(xaml_popup_menu_item, xaml_menu_item)
@@ -40,7 +40,7 @@ XAML_CLASS(xaml_check_menu_item, { 0xba31cca6, 0x5bb1, 0x4b90, { 0xab, 0x1a, 0x3
 #define XAML_CHECK_MENU_ITEM_VTBL(type)           \
     XAML_VTBL_INHERIT(XAML_MENU_ITEM_VTBL(type)); \
     XAML_PROP(is_checked, type, bool*, bool);     \
-    XAML_EVENT(is_checked_changed, type)
+    XAML_EVENT(is_checked_changed, type, xaml_object, bool)
 
 XAML_DECL_INTERFACE_(xaml_check_menu_item, xaml_menu_item)
 {
@@ -53,10 +53,10 @@ EXTERN_C XAML_UI_CONTROLS_API xaml_result XAML_CALL xaml_check_menu_item_registe
 
 XAML_CLASS(xaml_radio_menu_item, { 0x49494137, 0x05e4, 0x477f, { 0xa5, 0x2a, 0xef, 0x07, 0x4e, 0xca, 0x9c, 0x20 } })
 
-#define XAML_RADIO_MENU_ITEM_VTBL(type)           \
-    XAML_VTBL_INHERIT(XAML_MENU_ITEM_VTBL(type)); \
-    XAML_PROP(is_checked, type, bool*, bool);     \
-    XAML_EVENT(is_checked_changed, type);         \
+#define XAML_RADIO_MENU_ITEM_VTBL(type)                      \
+    XAML_VTBL_INHERIT(XAML_MENU_ITEM_VTBL(type));            \
+    XAML_PROP(is_checked, type, bool*, bool);                \
+    XAML_EVENT(is_checked_changed, type, xaml_object, bool); \
     XAML_PROP(group, type, xaml_string**, xaml_string*)
 
 XAML_DECL_INTERFACE_(xaml_radio_menu_item, xaml_menu_item)

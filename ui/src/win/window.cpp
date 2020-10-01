@@ -281,9 +281,9 @@ xaml_result xaml_window_internal::wnd_proc(xaml_win32_window_message const& msg,
         }
         case WM_CLOSE:
         {
-            xaml_ptr<xaml_object> handled;
-            XAML_RETURN_IF_FAILED(xaml_box_value(false, &handled));
-            XAML_RETURN_IF_FAILED(on_closing(m_outer_this, handled));
+            xaml_ptr<xaml_box<bool>> handled;
+            XAML_RETURN_IF_FAILED(xaml_box_new(false, &handled));
+            XAML_RETURN_IF_FAILED(m_closing->invoke(m_outer_this, handled));
             bool value;
             XAML_RETURN_IF_FAILED(xaml_unbox_value(handled, &value));
             if (value)

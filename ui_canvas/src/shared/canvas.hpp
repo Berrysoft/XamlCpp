@@ -62,7 +62,7 @@ struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xam
 
 struct xaml_canvas_internal : xaml_control_internal
 {
-    XAML_EVENT_IMPL(redraw)
+    XAML_EVENT_IMPL(redraw, xaml_object, xaml_drawing_context)
 
     xaml_result XAML_CALL draw(xaml_rectangle const&) noexcept override;
 
@@ -90,7 +90,7 @@ struct xaml_canvas_internal : xaml_control_internal
 
 struct xaml_canvas_impl : xaml_control_implement<xaml_canvas_impl, xaml_canvas_internal, xaml_canvas>
 {
-    XAML_EVENT_INTERNAL_IMPL(redraw)
+    XAML_EVENT_INTERNAL_IMPL(redraw, xaml_object, xaml_drawing_context)
 
     xaml_result XAML_CALL invalidate() noexcept override { return m_internal.invalidate(nullptr); }
     xaml_result XAML_CALL invalidate_rect(xaml_rectangle const& rect) noexcept override { return m_internal.invalidate(&rect); }

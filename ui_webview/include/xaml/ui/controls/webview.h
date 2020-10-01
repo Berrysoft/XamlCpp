@@ -2,28 +2,8 @@
 #define XAML_UI_WEBVIEW_WEBVIEW_H
 
 #include <xaml/buffer.h>
+#include <xaml/event.h>
 #include <xaml/ui/control.h>
-
-XAML_CLASS(xaml_webview, { 0xb39028bb, 0xc65f, 0x4df9, { 0xa0, 0xef, 0xf2, 0x04, 0x30, 0x77, 0x40, 0xda } })
-
-#define XAML_WEBVIEW_VTBL(type)                        \
-    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));        \
-    XAML_PROP(uri, type, xaml_string**, xaml_string*); \
-    XAML_EVENT(uri_changed, type);                     \
-    XAML_METHOD(get_can_go_forward, type, bool*);      \
-    XAML_METHOD(get_can_go_back, type, bool*);         \
-    XAML_METHOD(go_forward, type);                     \
-    XAML_METHOD(go_back, type);                        \
-    XAML_EVENT(resource_requested, type)
-
-XAML_DECL_INTERFACE_(xaml_webview, xaml_control)
-{
-    XAML_DECL_VTBL(xaml_webview, XAML_WEBVIEW_VTBL);
-};
-
-EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_new(xaml_webview**) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_members(xaml_type_info_registration*) XAML_NOEXCEPT;
-EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 XAML_CLASS(xaml_webview_web_request, { 0xa1c28b95, 0x1a77, 0x4cb4, { 0xa3, 0xbd, 0xd4, 0x3a, 0x71, 0x47, 0x94, 0xc4 } })
 
@@ -56,7 +36,7 @@ EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_web_response_new
 XAML_CLASS(xaml_webview_resource_requested_args, { 0x507c59c1, 0x5775, 0x484e, { 0x9c, 0xe5, 0xbc, 0x34, 0x23, 0x85, 0x5a, 0x0b } })
 
 #define XAML_WEBVIEW_RESOURCE_REQUESTED_ARGS_VTBL(type)                              \
-    XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                                       \
+    XAML_VTBL_INHERIT(XAML_EVENT_ARGS_VTBL(type));                                   \
     XAML_PROP(request, type, xaml_webview_web_request**, xaml_webview_web_request*); \
     XAML_PROP(response, type, xaml_webview_web_response**, xaml_webview_web_response*)
 
@@ -66,5 +46,36 @@ XAML_DECL_INTERFACE_(xaml_webview_resource_requested_args, xaml_object)
 };
 
 EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_resource_requested_args_new(xaml_webview_resource_requested_args**) XAML_NOEXCEPT;
+
+#ifndef xaml_delegate_2__xaml_object__xaml_string_defined
+    #define xaml_delegate_2__xaml_object__xaml_string_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_string))
+#endif // !xaml_delegate_2__xaml_object__xaml_string_defined
+
+#ifndef xaml_delegate_2__xaml_object__xaml_webview_resource_requested_args_defined
+    #define xaml_delegate_2__xaml_object__xaml_webview_resource_requested_args_defined
+XAML_DELEGATE_2_TYPE(XAML_T_O(xaml_object), XAML_T_O(xaml_webview_resource_requested_args))
+#endif // !xaml_delegate_2__xaml_object__xaml_webview_resource_requested_args_defined
+
+XAML_CLASS(xaml_webview, { 0xb39028bb, 0xc65f, 0x4df9, { 0xa0, 0xef, 0xf2, 0x04, 0x30, 0x77, 0x40, 0xda } })
+
+#define XAML_WEBVIEW_VTBL(type)                              \
+    XAML_VTBL_INHERIT(XAML_CONTROL_VTBL(type));              \
+    XAML_PROP(uri, type, xaml_string**, xaml_string*);       \
+    XAML_EVENT(uri_changed, type, xaml_object, xaml_string); \
+    XAML_METHOD(get_can_go_forward, type, bool*);            \
+    XAML_METHOD(get_can_go_back, type, bool*);               \
+    XAML_METHOD(go_forward, type);                           \
+    XAML_METHOD(go_back, type);                              \
+    XAML_EVENT(resource_requested, type, xaml_object, xaml_webview_resource_requested_args)
+
+XAML_DECL_INTERFACE_(xaml_webview, xaml_control)
+{
+    XAML_DECL_VTBL(xaml_webview, XAML_WEBVIEW_VTBL);
+};
+
+EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_new(xaml_webview**) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_members(xaml_type_info_registration*) XAML_NOEXCEPT;
+EXTERN_C XAML_UI_WEBVIEW_API xaml_result XAML_CALL xaml_webview_register(xaml_meta_context*) XAML_NOEXCEPT;
 
 #endif // !XAML_UI_WEBVIEW_WEBVIEW_H

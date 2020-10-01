@@ -25,10 +25,12 @@ int main()
     xaml_ptr<xaml_event_info> ev;
     XAML_THROW_IF_FAILED(t->get_event(xaml_box_value(U("value_changed")), &ev));
     // Add a handler to the event of the object.
-    xaml_ptr<xaml_delegate> handler;
-    XAML_THROW_IF_FAILED((xaml_delegate_new<void, xaml_ptr<xaml_test_calculator>, int>(
-        [](xaml_ptr<xaml_test_calculator>, int i) {
+    xaml_ptr<xaml_method_info> handler;
+    XAML_THROW_IF_FAILED((xaml_method_info_new<xaml_test_calculator, int>(
+        nullptr,
+        [](xaml_test_calculator*, int i) -> xaml_result {
             sf::println(nowide::cout, "Value changed: {}", i);
+            return XAML_S_OK;
         },
         &handler)));
     int32_t token;
@@ -39,10 +41,9 @@ int main()
         // and the handler will be called.
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(xaml_box_value(U("plus")), &method));
-        xaml_ptr<xaml_vector_view> args;
-        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
-        xaml_ptr<xaml_object> res;
-        XAML_THROW_IF_FAILED(method->invoke(args, &res));
+        xaml_ptr<xaml_vector_view<xaml_object>> args;
+        XAML_THROW_IF_FAILED(xaml_method_info_pack_args(&args, obj, 1, 1));
+        XAML_THROW_IF_FAILED(method->invoke(args));
     }
     // Get the property named "value".
     xaml_ptr<xaml_property_info> prop;
@@ -58,9 +59,8 @@ int main()
         // because the handler has been removed.
         xaml_ptr<xaml_method_info> method;
         XAML_THROW_IF_FAILED(t->get_method(xaml_box_value(U("minus")), &method));
-        xaml_ptr<xaml_vector_view> args;
-        XAML_THROW_IF_FAILED(xaml_delegate_pack_args(&args, obj, 1, 1));
-        xaml_ptr<xaml_object> res;
-        XAML_THROW_IF_FAILED(method->invoke(args, &res));
+        xaml_ptr<xaml_vector_view<xaml_object>> args;
+        XAML_THROW_IF_FAILED(xaml_method_info_pack_args(&args, obj, 1, 1));
+        XAML_THROW_IF_FAILED(method->invoke(args));
     }
 }

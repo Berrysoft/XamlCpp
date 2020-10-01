@@ -33,9 +33,9 @@ xaml_result xaml_radio_box_internal::draw_group() noexcept
         xaml_ptr<xaml_multicontainer> multic;
         if (XAML_SUCCEEDED(parent->query(&multic)))
         {
-            xaml_ptr<xaml_vector_view> children;
+            xaml_ptr<xaml_vector_view<xaml_control>> children;
             XAML_RETURN_IF_FAILED(multic->get_children(&children));
-            XAML_FOREACH_START(c, children);
+            XAML_FOREACH_START(xaml_control, c, children);
             {
                 if (auto rc = c.query<xaml_radio_box>())
                 {

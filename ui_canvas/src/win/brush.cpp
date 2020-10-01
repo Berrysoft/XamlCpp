@@ -13,14 +13,12 @@ xaml_result xaml_solid_brush_impl::create(ID2D1RenderTarget* target, xaml_rectan
     return brush.copy_to(ptr);
 }
 
-static xaml_result get_STOPs(ID2D1RenderTarget* target, xaml_ptr<xaml_vector> const& vec, ID2D1GradientStopCollection** ptr) noexcept
+static xaml_result get_STOPs(ID2D1RenderTarget* target, xaml_ptr<xaml_vector<xaml_gradient_stop>> const& vec, ID2D1GradientStopCollection** ptr) noexcept
 {
     vector<D2D1_GRADIENT_STOP> stops;
-    XAML_FOREACH_START(item, vec);
+    XAML_FOREACH_START(xaml_gradient_stop, item, vec);
     {
-        xaml_gradient_stop const* pitem;
-        XAML_RETURN_IF_FAILED(item.query<xaml_box>()->get_value_ptr(&pitem));
-        stops.push_back(D2D1::GradientStop((FLOAT)pitem->position, D2D1::ColorF((uint32_t)pitem->color)));
+        stops.push_back(D2D1::GradientStop((FLOAT)item.position, D2D1::ColorF((uint32_t)item.color)));
     }
     XAML_FOREACH_END();
     return target->CreateGradientStopCollection(stops.data(), (UINT32)stops.size(), ptr);

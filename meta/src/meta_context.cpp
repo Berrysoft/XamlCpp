@@ -1,27 +1,27 @@
 #include <xaml/meta/meta_context.h>
 #include <xaml/observable_vector.h>
 
+using namespace std;
+
 struct xaml_meta_context_impl : xaml_implement<xaml_meta_context_impl, xaml_meta_context>
 {
 private:
-    xaml_ptr<xaml_map> m_modules;
-    xaml_ptr<xaml_map> m_namespace;
-    xaml_ptr<xaml_map> m_type_info_map;
-    xaml_ptr<xaml_map> m_basic_type_info_map;
-    xaml_ptr<xaml_map> m_name_info_map;
+    xaml_ptr<xaml_map<xaml_string, xaml_module>> m_modules;
+    xaml_ptr<xaml_map<xaml_string, xaml_string>> m_namespace;
+    xaml_ptr<xaml_map<xaml_guid, xaml_reflection_info>> m_type_info_map;
+    xaml_ptr<xaml_map<xaml_guid, xaml_string>> m_basic_type_info_map;
+    xaml_ptr<xaml_map<xaml_string, xaml_reflection_info>> m_name_info_map;
 
 public:
     xaml_result init() noexcept
     {
-        xaml_ptr<xaml_hasher> guid_hasher;
-        XAML_RETURN_IF_FAILED(xaml_hasher_new<xaml_guid>(&guid_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher, &m_type_info_map));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(guid_hasher, &m_basic_type_info_map));
-        xaml_ptr<xaml_hasher> string_hasher;
+        XAML_RETURN_IF_FAILED(xaml_map_new(&m_type_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new(&m_basic_type_info_map));
+        xaml_ptr<xaml_hasher<xaml_string>> string_hasher;
         XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&string_hasher));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_modules));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_namespace));
-        XAML_RETURN_IF_FAILED(xaml_map_new_with_hasher(string_hasher, &m_name_info_map));
+        XAML_RETURN_IF_FAILED(xaml_map_new(string_hasher.get(), &m_modules));
+        XAML_RETURN_IF_FAILED(xaml_map_new(string_hasher.get(), &m_namespace));
+        XAML_RETURN_IF_FAILED(xaml_map_new(string_hasher.get(), &m_name_info_map));
 
 #define AT(type)                                                                                           \
     do                                                                                                     \
@@ -35,11 +35,11 @@ public:
 
         AT(xaml_object);
         AT(xaml_string);
-        AT(xaml_vector_view);
-        AT(xaml_vector);
-        AT(xaml_map_view);
-        AT(xaml_map);
-        AT(xaml_observable_vector);
+        //AT(xaml_vector_view);
+        //AT(xaml_vector);
+        //AT(xaml_map_view);
+        //AT(xaml_map);
+        //AT(xaml_observable_vector);
         AT(xaml_converter);
         AT(bool);
         AT(char);
@@ -59,7 +59,7 @@ public:
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL get_modules(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_modules(xaml_map_view<xaml_string, xaml_module>** ptr) noexcept override
     {
         return m_modules->query(ptr);
     }
@@ -86,14 +86,12 @@ public:
         XAML_RETURN_IF_FAILED(add_module(mod));
         xaml_ptr<xaml_module_info> info;
         XAML_RETURN_IF_FAILED(mod->get_info(&info));
-        xaml_ptr<xaml_vector_view> dependencies;
+        xaml_ptr<xaml_vector_view<xaml_string>> dependencies;
         XAML_RETURN_IF_FAILED(info->get_dependencies(&dependencies));
         if (dependencies)
         {
-            XAML_FOREACH_START(dep_item, dependencies);
+            XAML_FOREACH_START(xaml_string, dep, dependencies);
             {
-                xaml_ptr<xaml_string> dep;
-                XAML_RETURN_IF_FAILED(dep_item->query(&dep));
                 xaml_ptr<xaml_module> m;
                 XAML_RETURN_IF_FAILED(xaml_module_new(&m));
                 XAML_RETURN_IF_FAILED(m->open(dep));
@@ -106,36 +104,27 @@ public:
 
     xaml_result XAML_CALL get_namespace(xaml_string* xml_ns, xaml_string** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> item;
-        XAML_RETURN_IF_FAILED(m_namespace->lookup(xml_ns, &item));
-        return item->query(ptr);
+        return m_namespace->lookup(xml_ns, ptr);
     }
 
     xaml_result XAML_CALL add_namespace(xaml_string* xml_ns, xaml_string* ns) noexcept override
     {
-        bool replaced;
-        return m_namespace->insert(xml_ns, ns, &replaced);
+        return m_namespace->insert(xml_ns, ns, nullptr);
     }
 
-    xaml_result XAML_CALL get_types(xaml_map_view** ptr) noexcept override
+    xaml_result XAML_CALL get_types(xaml_map_view<xaml_guid, xaml_reflection_info>** ptr) noexcept override
     {
         return m_type_info_map->query(ptr);
     }
 
     xaml_result XAML_CALL get_type(xaml_guid const& type, xaml_reflection_info** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_type_info_map->lookup(key, &value));
-        return value->query(ptr);
+        return m_type_info_map->lookup(type, ptr);
     }
 
     xaml_result XAML_CALL get_type_by_name(xaml_string* name, xaml_reflection_info** ptr) noexcept override
     {
-        xaml_ptr<xaml_object> item;
-        XAML_RETURN_IF_FAILED(m_name_info_map->lookup(name, &item));
-        return item->query(ptr);
+        return m_name_info_map->lookup(name, ptr);
     }
 
     xaml_result XAML_CALL get_type_by_namespace_name(xaml_string* ns, xaml_string* name, xaml_reflection_info** ptr) noexcept override
@@ -148,11 +137,12 @@ public:
     xaml_result XAML_CALL get_name_by_namespace_name(xaml_string* ns, xaml_string* name, xaml_string** ptr) noexcept override
     {
         xaml_ptr<xaml_string> real_ns = ns;
-        xaml_ptr<xaml_object> item;
-        if (XAML_SUCCEEDED(m_namespace->lookup(ns, &item)))
         {
-            real_ns = nullptr;
-            XAML_RETURN_IF_FAILED(item->query(&real_ns));
+            xaml_ptr<xaml_string> item;
+            if (XAML_SUCCEEDED(m_namespace->lookup(ns, &item)))
+            {
+                real_ns = item;
+            }
         }
         std::string_view ns_view;
         XAML_RETURN_IF_FAILED(xaml_unbox_value(real_ns, &ns_view));
@@ -169,28 +159,18 @@ public:
         XAML_RETURN_IF_FAILED(info->get_type(&type));
         xaml_ptr<xaml_string> name;
         XAML_RETURN_IF_FAILED(info->get_name(&name));
-        xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        bool replaced;
-        XAML_RETURN_IF_FAILED(m_type_info_map->insert(key, info, &replaced));
-        return m_name_info_map->insert(name, info, &replaced);
+        XAML_RETURN_IF_FAILED(m_type_info_map->insert(type, info, nullptr));
+        return m_name_info_map->insert(name, info, nullptr);
     }
 
     xaml_result XAML_CALL get_basic_type(xaml_guid const& type, xaml_string** ptr) noexcept
     {
-        xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        xaml_ptr<xaml_object> value;
-        XAML_RETURN_IF_FAILED(m_basic_type_info_map->lookup(key, &value));
-        return value->query(ptr);
+        return m_basic_type_info_map->lookup(type, ptr);
     }
 
     xaml_result XAML_CALL add_basic_type(xaml_guid const& type, xaml_string* name) noexcept
     {
-        xaml_ptr<xaml_object> key;
-        XAML_RETURN_IF_FAILED(xaml_box_value(type, &key));
-        bool replaced;
-        return m_basic_type_info_map->insert(key, name, &replaced);
+        return m_basic_type_info_map->insert(type, name, nullptr);
     }
 
     static xaml_result XAML_CALL get_property_changed_event_name(xaml_ptr<xaml_string> const& name, xaml_string** ptr) noexcept
@@ -291,8 +271,9 @@ public:
                 XAML_RETURN_IF_FAILED(source_type->get_event(name, &sourcee));
             }
 
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_target, &callback));
+            xaml_ptr<xaml_method_info> callback;
+            XAML_RETURN_IF_FAILED(xaml_method_info_new(
+                nullptr, [set_to_target](xaml_vector_view<xaml_object>*) -> xaml_result { return set_to_target(); }, nullptr, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(sourcee->add(ssource, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_target());
@@ -306,8 +287,9 @@ public:
                 XAML_RETURN_IF_FAILED(target_type->get_event(name, &targete));
             }
 
-            xaml_ptr<xaml_delegate> callback;
-            XAML_RETURN_IF_FAILED(xaml_delegate_new_noexcept<void>(set_to_source, &callback));
+            xaml_ptr<xaml_method_info> callback;
+            XAML_RETURN_IF_FAILED(xaml_method_info_new(
+                nullptr, [set_to_source](xaml_vector_view<xaml_object>*) -> xaml_result { return set_to_source(); }, nullptr, &callback));
             int32_t token;
             XAML_RETURN_IF_FAILED(targete->add(starget, callback, &token));
             XAML_RETURN_IF_FAILED(set_to_source());

@@ -27,7 +27,7 @@ protected:
 #endif
 
     std::atomic<int> m_quit_value{ 0 };
-    xaml_ptr<xaml_vector> m_cmd_lines{ nullptr };
+    xaml_ptr<xaml_vector<xaml_string>> m_cmd_lines{ nullptr };
     xaml_ptr<xaml_window> m_main_wnd{ nullptr };
 
 public:
@@ -35,7 +35,7 @@ public:
 
     xaml_result XAML_CALL init(int, char**) noexcept;
 
-    xaml_result XAML_CALL get_cmd_lines(xaml_vector_view** ptr) noexcept override
+    xaml_result XAML_CALL get_cmd_lines(xaml_vector_view<xaml_string>** ptr) noexcept override
     {
         return m_cmd_lines->query(ptr);
     }
@@ -65,7 +65,7 @@ public:
         return XAML_S_OK;
     }
 
-    XAML_EVENT_IMPL(activate)
+    XAML_EVENT_IMPL(activate, xaml_object, xaml_event_args)
 
 #ifdef XAML_UI_WINDOWS
     struct xaml_win32_font_provider_impl : xaml_inner_implement<xaml_win32_font_provider_impl, xaml_application_impl, xaml_win32_font_provider>

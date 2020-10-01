@@ -185,7 +185,7 @@ gboolean xaml_canvas_internal::on_draw(GtkWidget*, cairo_t* cr, xaml_canvas_inte
 {
     xaml_ptr<xaml_drawing_context> dc;
     XAML_ASSERT_SUCCEEDED(xaml_object_new<xaml_drawing_context_impl>(&dc, cr));
-    XAML_ASSERT_SUCCEEDED(self->on_redraw(self->m_outer_this, dc));
+    XAML_ASSERT_SUCCEEDED(self->m_redraw->invoke(self->m_outer_this, dc));
     return FALSE;
 }
 

@@ -55,10 +55,8 @@ xaml_result xaml_uniform_grid_internal::draw_impl(xaml_rectangle const& region, 
         int32_t x = 0, y = 0;
         if (m_orientation == xaml_orientation_vertical)
         {
-            XAML_FOREACH_START(c, m_children);
+            XAML_FOREACH_START(xaml_control, cc, m_children);
             {
-                xaml_ptr<xaml_control> cc;
-                XAML_RETURN_IF_FAILED(c->query(&cc));
                 xaml_rectangle subrect = { real.x + x * w, real.y + y * h, w, h };
                 XAML_RETURN_IF_FAILED(cc->draw(subrect));
                 if (func) func(cc, subrect);
@@ -73,10 +71,8 @@ xaml_result xaml_uniform_grid_internal::draw_impl(xaml_rectangle const& region, 
         }
         else
         {
-            XAML_FOREACH_START(c, m_children);
+            XAML_FOREACH_START(xaml_control, cc, m_children);
             {
-                xaml_ptr<xaml_control> cc;
-                XAML_RETURN_IF_FAILED(c->query(&cc));
                 xaml_rectangle subrect = { real.x + x * w, real.y + y * h, w, h };
                 XAML_RETURN_IF_FAILED(cc->draw(subrect));
                 if (func) func(cc, subrect);
@@ -109,10 +105,8 @@ xaml_result xaml_uniform_grid_internal::size_to_fit() noexcept
         cs = (n + rs - 1) / rs;
     }
     double mw = 0, mh = 0;
-    XAML_FOREACH_START(c, m_children);
+    XAML_FOREACH_START(xaml_control, cc, m_children);
     {
-        xaml_ptr<xaml_control> cc;
-        XAML_RETURN_IF_FAILED(c->query(&cc));
         XAML_RETURN_IF_FAILED(cc->size_to_fit());
         xaml_size csize;
         XAML_RETURN_IF_FAILED(cc->get_size(&csize));
