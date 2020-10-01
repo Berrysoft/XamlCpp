@@ -2,6 +2,7 @@
 #define XAML_ENUMERABLE_H
 
 #ifdef __cplusplus
+    #include <type_traits>
     #include <xaml/ptr.hpp>
 #endif // __cplusplus
 
@@ -136,15 +137,15 @@ struct __xaml_enumerable_traits
 };
 
 template <typename T>
-concept __xaml_enumerable_like = requires(xaml_ptr<T> a)
+struct __xaml_is_enumerable
 {
-    {
-        a
-    }
-    ->std::convertible_to<xaml_ptr<xaml_enumerable<typename __xaml_enumerable_traits<T>::value_type>>>;
+    static constexpr bool value = std::is_convertible_v<xaml_ptr<T>, xaml_ptr<xaml_enumerable<typename __xaml_enumerable_traits<T>::value_type>>>;
 };
 
-template <__xaml_enumerable_like T>
+template <typename T>
+inline constexpr bool __xaml_is_enumerable_v = __xaml_is_enumerable<T>::value;
+
+template <typename T, typename = std::enable_if_t<__xaml_is_enumerable_v<T>>>
 struct __xaml_enumerable_wrapper
 {
     xaml_ptr<T> m_enumerable;
@@ -173,13 +174,13 @@ struct __xaml_enumerable_wrapper
     }
 };
 
-template <__xaml_enumerable_like T>
+template <typename T, typename = std::enable_if_t<__xaml_is_enumerable_v<T>>>
 auto begin(xaml_ptr<T> ptr)
 {
     return __xaml_enumerable_wrapper<T>{ ptr }.begin();
 }
 
-template <__xaml_enumerable_like T>
+template <typename T, typename = std::enable_if_t<__xaml_is_enumerable_v<T>>>
 auto end(xaml_ptr<T> ptr) noexcept
 {
     return __xaml_enumerable_wrapper<T>{ ptr }.end();
