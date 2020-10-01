@@ -279,6 +279,12 @@ xaml_result xaml_box_value(T const& value, xaml_object** ptr) noexcept
 }
 
 template <typename T>
+xaml_result xaml_box_value_s(T const& value, __xaml_boxed_t<T>** ptr) noexcept
+{
+    return __xaml_box_impl<T>{}(value, ptr);
+}
+
+template <typename T>
 xaml_ptr<__xaml_boxed_t<T>> xaml_box_value(T const& value)
 {
     xaml_ptr<__xaml_boxed_t<T>> obj;

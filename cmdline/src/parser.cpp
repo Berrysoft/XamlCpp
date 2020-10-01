@@ -14,7 +14,7 @@ template <typename S2>
 static xaml_result props_insert(xaml_ptr<xaml_map<xaml_property_info, xaml_string>> const& props, xaml_ptr<xaml_property_info> const& info, S2&& value) noexcept
 {
     xaml_ptr<xaml_string> value_str;
-    XAML_RETURN_IF_FAILED(__xaml_box_impl<remove_reference_t<S2>>{}(std::forward<S2>(value), &value_str));
+    XAML_RETURN_IF_FAILED(xaml_box_value_s<S2>(std::forward<S2>(value), &value_str));
     return props->insert(info, value_str, nullptr);
 }
 
@@ -22,7 +22,7 @@ template <typename S>
 static xaml_result cprops_values(xaml_ptr<xaml_map<xaml_string, xaml_key_value_pair<xaml_collection_property_info, xaml_vector<xaml_string>>>> const& cprops, S&& str, xaml_ptr<xaml_collection_property_info> const& cprop, xaml_vector<xaml_string>** ptr) noexcept
 {
     xaml_ptr<xaml_string> key_str;
-    XAML_RETURN_IF_FAILED(__xaml_box_impl<remove_reference_t<S>>{}(std::forward<S>(str), &key_str));
+    XAML_RETURN_IF_FAILED(xaml_box_value_s<S>(std::forward<S>(str), &key_str));
     xaml_ptr<xaml_vector<xaml_string>> values;
     {
         xaml_ptr<xaml_key_value_pair<xaml_collection_property_info, xaml_vector<xaml_string>>> pair;
