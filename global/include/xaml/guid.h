@@ -114,6 +114,7 @@ inline constexpr bool xaml_type_has_guid_v = xaml_type_has_guid<T>::value;
     #define XAML_TYPE_NAME(type, name, ...) __XAML_TYPE_NAME_BASE(name, __VA_ARGS__)
 #endif // __cplusplus
 
+#define XAML_TYPE_BASE(type, ...) __XAML_TYPE_NAME_BASE(type, __VA_ARGS__)
 #define XAML_TYPE(type, ...) XAML_TYPE_NAME(type, type, __VA_ARGS__)
 #define XAML_CLASS(type, ...) \
     typedef struct type type; \

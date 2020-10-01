@@ -14,7 +14,7 @@ typedef enum xaml_vector_changed_action
     xaml_vector_changed_reset
 } xaml_vector_changed_action;
 
-__XAML_TYPE_NAME_BASE(xaml_vector_changed_args_1, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7, 0x5d, 0x25, 0x82, 0x2d, 0x3b, 0x0a } })
+XAML_TYPE_BASE(xaml_vector_changed_args_1, { 0xf081fd5b, 0xd6d3, 0x4262, { 0xa7, 0xc7, 0x5d, 0x25, 0x82, 0x2d, 0x3b, 0x0a } })
 
 #define XAML_VECTOR_CHANGED_ARGS_1_VTBL(type, TN, TI)                \
     XAML_VTBL_INHERIT(XAML_EVENT_ARGS_VTBL(type));                   \
@@ -87,7 +87,7 @@ xaml_result XAML_CALL xaml_vector_changed_args_new(xaml_vector_changed_action ac
 }
 #endif // __cplusplus
 
-__XAML_TYPE_NAME_BASE(xaml_observable_vector_1, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0x2c, 0x43, 0x0b, 0x1b, 0xb6, 0xcf } })
+XAML_TYPE_BASE(xaml_observable_vector_1, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0x2c, 0x43, 0x0b, 0x1b, 0xb6, 0xcf } })
 
 #define __XAML_DELEGATE_2_NAME(a, b) XAML_DELEGATE_2_NAME(a, b)
 

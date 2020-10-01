@@ -11,7 +11,7 @@
 #include <xaml/enumerable.h>
 #include <xaml/string.h>
 
-__XAML_TYPE_NAME_BASE(xaml_key_value_pair_2, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
+XAML_TYPE_BASE(xaml_key_value_pair_2, { 0x41ea97bb, 0xda95, 0x430c, { 0xa8, 0x1b, 0xdb, 0x06, 0x61, 0x9f, 0x7e, 0x96 } })
 
 #define XAML_KEY_VALUE_PAIR_2_VTBL(type, TKeyN, TKeyI, TValueN, TValueI) \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));                           \
@@ -75,7 +75,7 @@ xaml_result XAML_CALL xaml_key_value_pair_new(xaml_interface_t<TKey> key, xaml_i
 }
 #endif // __cplusplus
 
-__XAML_TYPE_NAME_BASE(xaml_map_view_2, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
+XAML_TYPE_BASE(xaml_map_view_2, { 0x15549c22, 0x40d1, 0x4af1, { 0xad, 0x81, 0x0d, 0xd3, 0xda, 0x1a, 0x87, 0xba } })
 
 #define XAML_MAP_VIEW_2_VTBL(type, TKeyN, TKeyI, TValueN, TValueI)                                                                            \
     XAML_VTBL_INHERIT(XAML_ENUMERABLE_1_VTBL(type, XAML_KEY_VALUE_PAIR_2_NAME(TKeyN, TValueN), XAML_KEY_VALUE_PAIR_2_NAME(TKeyN, TValueN)*)); \
@@ -113,7 +113,7 @@ struct xaml_type_guid<xaml_map_view<TKey, TValue>>
 #endif // __cplusplus
 #define XAML_MAP_VIEW_2_TYPE(tkey, tvalue) __XAML_MAP_VIEW_2_TYPE(tkey, tvalue)
 
-__XAML_TYPE_NAME_BASE(xaml_hasher_1, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
+XAML_TYPE_BASE(xaml_hasher_1, { 0xa7f9b6eb, 0xa71a, 0x4d5a, { 0x84, 0x54, 0x28, 0x83, 0x94, 0x1f, 0xb2, 0xb0 } })
 
 #define XAML_HASHER_1_VTBL(type, TN, TI)            \
     XAML_VTBL_INHERIT(XAML_OBJECT_VTBL(type));      \
@@ -240,7 +240,7 @@ public:
 };
 #endif // __cplusplus
 
-__XAML_TYPE_NAME_BASE(xaml_map_2, { 0xe457ba53, 0x03d1, 0x4047, { 0xac, 0x85, 0x83, 0xdd, 0x85, 0x34, 0x6c, 0x7e } })
+XAML_TYPE_BASE(xaml_map_2, { 0xe457ba53, 0x03d1, 0x4047, { 0xac, 0x85, 0x83, 0xdd, 0x85, 0x34, 0x6c, 0x7e } })
 
 #define XAML_MAP_2_VTBL(type, TKeyN, TKeyI, TValueN, TValueI)                      \
     XAML_VTBL_INHERIT(XAML_MAP_VIEW_2_VTBL(type, TKeyN, TKeyI, TValueN, TValueI)); \

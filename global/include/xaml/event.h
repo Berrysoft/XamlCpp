@@ -9,7 +9,7 @@
 #include <xaml/delegate.h>
 #include <xaml/object.h>
 
-__XAML_TYPE_NAME_BASE(xaml_event_2, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0x2b, 0xdd, 0xca, 0x7f } })
+XAML_TYPE_BASE(xaml_event_2, { 0x84577f0b, 0xaf47, 0x4f60, { 0x8e, 0xe6, 0x69, 0x6b, 0x2b, 0xdd, 0xca, 0x7f } })
 
 #define XAML_EVENT_2_VTBL(type, TA1N, TA1I, TA2N, TA2I)                           \
     XAML_VTBL_INHERIT(XAML_DELEGATE_2_VTBL(type, TA1N, TA1I, TA2N, TA2I));        \
