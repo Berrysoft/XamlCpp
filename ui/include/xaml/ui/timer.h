@@ -3,8 +3,6 @@
 
 #ifdef __cplusplus
     #include <chrono>
-#else
-    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/meta/meta_macros.h>

@@ -6,8 +6,6 @@
     #include <xaml/box.h>
     #include <xaml/meta/conv.hpp>
     #include <xaml/ptr.hpp>
-#else
-    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>

@@ -3,8 +3,6 @@
 
 #ifdef __cplusplus
     #include <xaml/ptr.hpp>
-#else
-    #include <stdbool.h>
 #endif // __cplusplus
 
 #include <xaml/object.h>

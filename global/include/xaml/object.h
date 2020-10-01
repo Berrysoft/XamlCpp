@@ -5,12 +5,16 @@
     #include <atomic>
     #include <cstddef>
 #else
+    #include <stdbool.h>
     #include <stddef.h>
 #endif // __cplusplus
 
 #include <xaml/guid.h>
 #include <xaml/result.h>
 #include <xaml/utility.h>
+
+// Different type names will cause troubles
+typedef bool xaml_bool;
 
 #ifdef __cplusplus
 template <typename T>
