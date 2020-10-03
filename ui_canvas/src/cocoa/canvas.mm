@@ -222,7 +222,7 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
     return set_brush(path, brush, m_size, rect);
 }
 
-static xaml_result measure_string_impl(xaml_size const& m_size, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue, NSAttributedString** pastr) noexcept
+static xaml_result measure_string_impl(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue, NSAttributedString** pastr) noexcept
 {
     NSString* font_name;
     XAML_RETURN_IF_FAILED(get_NSString(font.font_family, &font_name));
@@ -246,14 +246,14 @@ static xaml_result measure_string_impl(xaml_size const& m_size, xaml_drawing_fon
     NSAttributedString* astr = [[NSAttributedString alloc] initWithString:data
                                                                attributes:attrs];
     NSSize str_size = astr.size;
-    NSPoint location = NSMakePoint(p.x, m_size.height - p.y - str_size.height);
+    auto [x, y] = p;
     switch (font.halign)
     {
     case xaml_halignment_center:
-        location.x -= str_size.width / 2;
+        x -= str_size.width / 2;
         break;
     case xaml_halignment_right:
-        location.x -= str_size.width;
+        x -= str_size.width;
         break;
     default:
         break;
@@ -261,15 +261,15 @@ static xaml_result measure_string_impl(xaml_size const& m_size, xaml_drawing_fon
     switch (font.valign)
     {
     case xaml_valignment_center:
-        location.y += str_size.height / 2;
+        y -= str_size.height / 2;
         break;
     case xaml_valignment_bottom:
-        location.y += str_size.height;
+        y -= str_size.height;
         break;
     default:
         break;
     }
-    *pvalue = { location.x, location.y, str_size.width, str_size.height };
+    *pvalue = { x, y, str_size.width, str_size.height };
     if (pastr) *pastr = astr;
     return XAML_S_OK;
 }
@@ -278,7 +278,8 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
 {
     xaml_rectangle rect;
     NSAttributedString* astr;
-    XAML_RETURN_IF_FAILED(measure_string_impl(m_size, font, p, str, &rect, &astr));
+    XAML_RETURN_IF_FAILED(measure_string_impl(font, p, str, &rect, &astr));
+    auto location = NSMakePoint(rect.x, m_size.height - rect.y - rect.height);
     return draw_mask(
         m_size,
         [astr, &location]() noexcept -> xaml_result {
@@ -286,13 +287,13 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
             return XAML_S_OK;
         },
         [this, brush, &rect]() noexcept -> xaml_result {
-            return fill_rect(brush, { rect.x, m_size.height - rect.height - rect.y, rect.width, rect.height });
+            return fill_rect(brush, rect);
         });
 }
 
 xaml_result xaml_drawing_context_impl::measure_string(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue) noexcept
 {
-    return measure_string_impl(m_size, font, p, str, pvalue, nullptr);
+    return measure_string_impl(font, p, str, pvalue, nullptr);
 }
 
 xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
