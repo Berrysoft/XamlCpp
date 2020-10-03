@@ -58,6 +58,7 @@ struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xam
     xaml_result XAML_CALL draw_round_rect(xaml_pen* pen, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
     xaml_result XAML_CALL fill_round_rect(xaml_brush* brush, xaml_rectangle const& rect, xaml_size const& round) noexcept override;
     xaml_result XAML_CALL draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept override;
+    xaml_result XAML_CALL measure_string(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* psize) noexcept override;
 };
 
 struct xaml_canvas_internal : xaml_control_internal

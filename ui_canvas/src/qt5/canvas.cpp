@@ -134,6 +134,21 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
 
 xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
 {
+    xaml_rectangle rect;
+    XAML_RETURN_IF_FAILED(measure_string(font, p, str, &rect));
+    xaml_ptr<xaml_brush_pen> pen;
+    XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush, 1, &pen));
+    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, rect));
+    QTextOption option;
+    option.setWrapMode(QTextOption::NoWrap);
+    QString text;
+    XAML_RETURN_IF_FAILED(to_QString(str, &text));
+    m_handle->drawText(xaml_to_native<QRectF>(rect), text, option);
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_impl::measure_string(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue) noexcept
+{
     if (font.size <= 0) return XAML_S_OK;
     QFont qfont{ font.font_family, -1, font.bold ? QFont::Bold : QFont::Normal, font.italic };
     qfont.setPixelSize((int)font.size);
@@ -166,12 +181,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         rect.y = p.y;
         break;
     }
-    xaml_ptr<xaml_brush_pen> pen;
-    XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush, 1, &pen));
-    XAML_RETURN_IF_FAILED(set_pen(m_handle, pen, rect));
-    QTextOption option;
-    option.setWrapMode(QTextOption::NoWrap);
-    m_handle->drawText(xaml_to_native<QRectF>(rect), text, option);
+    *pvalue = rect;
     return XAML_S_OK;
 }
 

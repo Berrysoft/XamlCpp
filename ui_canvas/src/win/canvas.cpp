@@ -167,10 +167,9 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
     return XAML_S_OK;
 }
 
-xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+static xaml_result measure_string_impl(ID2D1RenderTarget* target, IDWriteFactory* dwrite, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue, IDWriteTextLayout** playout) noexcept
 {
     auto fsize = (FLOAT)font.size;
-    if (fsize <= 0) return XAML_S_OK;
     nowide::wshort_stackstring ff;
     XAML_RETURN_IF_FAILED(to_wstring(font.font_family, &ff));
     wil::com_ptr_nothrow<IDWriteTextFormat> format;
@@ -180,7 +179,7 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
         font.italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL,
         DWRITE_FONT_STRETCH_NORMAL, fsize, L"", &format));
     auto size = target->GetSize();
-    auto region = xaml_to_native<D2D1_RECT_F, xaml_rectangle>({ p.x, p.y, p.x, p.y });
+    xaml_rectangle region = { p.x, p.y, p.x, p.y };
     nowide::wstackstring data;
     XAML_RETURN_IF_FAILED(to_wstring(str, &data));
     wil::com_ptr_nothrow<IDWriteTextLayout> layout;
@@ -190,10 +189,10 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     switch (font.halign)
     {
     case xaml_halignment_center:
-        region.left -= metrics.width / 2;
+        region.x -= metrics.width / 2;
         break;
     case xaml_halignment_right:
-        region.left -= metrics.width;
+        region.x -= metrics.width;
         break;
     default:
         break;
@@ -201,18 +200,36 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     switch (font.valign)
     {
     case xaml_valignment_center:
-        region.top -= metrics.height / 2;
+        region.y -= metrics.height / 2;
         break;
     case xaml_valignment_bottom:
-        region.top -= metrics.height;
+        region.y -= metrics.height;
         break;
     default:
         break;
     }
-    wil::com_ptr_nothrow<ID2D1Brush> b;
-    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush, { region.left, region.top, metrics.width, metrics.height }, &b));
-    target->DrawTextLayout(D2D1::Point2F(region.left, region.top), layout.get(), b.get());
+    region.width = metrics.width;
+    region.height = metrics.height;
+    *pvalue = region;
+    if (playout) XAML_RETURN_IF_FAILED(layout.copy_to(playout));
     return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+{
+    xaml_rectangle region;
+    wil::com_ptr_nothrow<IDWriteTextLayout> layout;
+    XAML_RETURN_IF_FAILED(measure_string_impl(target.get(), dwrite.get(), font, p, str, &region, &layout));
+    CHECK_SIZE(region);
+    wil::com_ptr_nothrow<ID2D1Brush> b;
+    XAML_RETURN_IF_FAILED(get_Brush(target.get(), brush, region, &b));
+    target->DrawTextLayout(D2D1::Point2F((FLOAT)region.x, (FLOAT)region.y), layout.get(), b.get());
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_impl::measure_string(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue) noexcept
+{
+    return measure_string_impl(target.get(), dwrite.get(), font, p, str, pvalue, nullptr);
 }
 
 xaml_result xaml_canvas_internal::wnd_proc(xaml_win32_window_message const& msg, LRESULT* presult) noexcept

@@ -451,7 +451,11 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_object* sender, xaml_dr
     XAML_RETURN_IF_FAILED(brush3->set_origin({ 0.2, 0.5 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::white_smoke, 0 }));
     XAML_RETURN_IF_FAILED(brush3->add_stop({ colors::pink, 1 }));
-    XAML_RETURN_IF_FAILED(dc->draw_string(brush3, { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom }, { cx, cy }, text));
+    xaml_drawing_font str_font = { U("Arial"), r / 5, false, false, xaml_halignment_center, xaml_valignment_bottom };
+    XAML_RETURN_IF_FAILED(dc->draw_string(brush3, str_font, { cx, cy }, text));
+    xaml_rectangle str_rect;
+    XAML_RETURN_IF_FAILED(dc->measure_string(str_font, { cx, cy }, text, &str_rect));
+    XAML_RETURN_IF_FAILED(dc->draw_rect(pen1, str_rect));
     return XAML_S_OK;
 }
 
