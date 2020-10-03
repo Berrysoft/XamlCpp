@@ -222,7 +222,7 @@ xaml_result xaml_drawing_context_impl::fill_round_rect(xaml_brush* brush, xaml_r
     return set_brush(path, brush, m_size, rect);
 }
 
-xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+static xaml_result measure_string_impl(xaml_size const& m_size, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue, NSAttributedString** pastr) noexcept
 {
     NSString* font_name;
     XAML_RETURN_IF_FAILED(get_NSString(font.font_family, &font_name));
@@ -269,15 +269,30 @@ xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawi
     default:
         break;
     }
+    *pvalue = { location.x, location.y, str_size.width, str_size.height };
+    if (pastr) *pastr = astr;
+    return XAML_S_OK;
+}
+
+xaml_result xaml_drawing_context_impl::draw_string(xaml_brush* brush, xaml_drawing_font const& font, xaml_point const& p, xaml_string* str) noexcept
+{
+    xaml_rectangle rect;
+    NSAttributedString* astr;
+    XAML_RETURN_IF_FAILED(measure_string_impl(m_size, font, p, str, &rect, &astr));
     return draw_mask(
         m_size,
         [astr, &location]() noexcept -> xaml_result {
             [astr drawAtPoint:location];
             return XAML_S_OK;
         },
-        [this, brush, &location, &str_size]() noexcept -> xaml_result {
-            return fill_rect(brush, { location.x, m_size.height - str_size.height - location.y, str_size.width, str_size.height });
+        [this, brush, &rect]() noexcept -> xaml_result {
+            return fill_rect(brush, { rect.x, m_size.height - rect.height - rect.y, rect.width, rect.height });
         });
+}
+
+xaml_result xaml_drawing_context_impl::measure_string(xaml_drawing_font const& font, xaml_point const& p, xaml_string* str, xaml_rectangle* pvalue) noexcept
+{
+    return measure_string_impl(m_size, font, p, str, pvalue, nullptr);
 }
 
 xaml_result xaml_canvas_internal::draw(const xaml_rectangle& region) noexcept
