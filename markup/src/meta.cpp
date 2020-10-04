@@ -2,6 +2,7 @@
 #include <xaml/markup/data_template.h>
 #include <xaml/markup/dynamic_resource.h>
 #include <xaml/markup/element_base.h>
+#include <xaml/markup/platform.h>
 #include <xaml/meta/module.h>
 
 struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module_info>
@@ -26,6 +27,8 @@ struct xaml_module_info_impl : xaml_implement<xaml_module_info_impl, xaml_module
         XAML_RETURN_IF_FAILED(xaml_dynamic_resource_register(ctx));
         XAML_RETURN_IF_FAILED(xaml_template_base_register(ctx));
         XAML_RETURN_IF_FAILED(xaml_data_template_register(ctx));
+        XAML_RETURN_IF_FAILED(xaml_platform_on_register(ctx));
+        XAML_RETURN_IF_FAILED(xaml_platform_register(ctx));
         return XAML_S_OK;
     }
 };
