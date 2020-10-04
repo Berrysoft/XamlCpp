@@ -22,6 +22,14 @@
     </stack_panel>
     <label x:name="mylabel" grid.column="0" grid.row="2" margin="5, 0" text_halignment="center" valignment="center" text="{binding text,element=model,mode=one_way,converter={dynamic_resource conv}}"/>
     <button x:name="mybutton" grid.column="1" grid.row="2" is_default="true" valignment="center" click="on_button_click" text="{binding text,element=model,mode=one_way}"/>
+    <label grid.column="2" grid.row="2" margin="5,0" text_halignment="center" valignment="center">
+      <platform>
+        <platform_on platform="windows" value="Welcome to Windows!"/>
+        <platform_on platform="gtk3" value="Welcome to GTK3!"/>
+        <platform_on platform="qt5" value="Welcome to QT5!"/>
+        <platform_on platform="cocoa" value="Welcome to Cocoa!"/>
+      </platform>
+    </label>
     <canvas grid.column="0" grid.row="3" margin="10" redraw="on_canvas_redraw"/>
     <uniform_grid grid.column="1" grid.row="3" margin="5" valignment="top">
       <check_box margin="5">Check 1</check_box>

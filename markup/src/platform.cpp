@@ -86,7 +86,9 @@ struct xaml_platform_impl : xaml_implement<xaml_platform_impl, xaml_platform>
 
     xaml_result XAML_CALL init() noexcept
     {
-        return xaml_map_new(&m_map);
+        xaml_ptr<xaml_hasher<xaml_string>> hasher;
+        XAML_RETURN_IF_FAILED(xaml_hasher_string_default(&hasher));
+        return xaml_map_new(hasher.get(), &m_map);
     }
 };
 

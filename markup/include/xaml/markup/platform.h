@@ -4,10 +4,10 @@
 #include <xaml/markup/markup_extension.h>
 #include <xaml/meta/meta_macros.h>
 
-#define XAML_PLATFORM_WINDOWS U("Windows")
-#define XAML_PLATFORM_GTK3 U("GTK3")
-#define XAML_PLATFORM_QT5 U("QT5")
-#define XAML_PLATFORM_COCOA U("Cocoa")
+#define XAML_PLATFORM_WINDOWS U("windows")
+#define XAML_PLATFORM_GTK3 U("gtk3")
+#define XAML_PLATFORM_QT5 U("qt5")
+#define XAML_PLATFORM_COCOA U("cocoa")
 
 #ifdef XAML_UI_WINDOWS
     #define XAML_PLATFORM_CURRENT XAML_PLATFORM_WINDOWS

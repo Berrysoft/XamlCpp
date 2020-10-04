@@ -180,7 +180,19 @@ xaml_result deserializer_impl::deserialize_impl(xaml_ptr<xaml_object> const& mc,
             {
                 xaml_ptr<xaml_object> c;
                 XAML_RETURN_IF_FAILED(construct_impl(cnode, root, root_type, &c));
-                XAML_RETURN_IF_FAILED(info->set(mc, c));
+                xaml_ptr<xaml_markup_extension> e;
+                if (XAML_SUCCEEDED(c->query(&e)))
+                {
+                    xaml_ptr<xaml_string> info_name;
+                    XAML_RETURN_IF_FAILED(info->get_name(&info_name));
+                    xaml_ptr<xaml_markup_context> context;
+                    XAML_RETURN_IF_FAILED(xaml_object_new<xaml_deserializer_context_impl>(&context, mc, mc, info_name, symbols));
+                    XAML_RETURN_IF_FAILED(e->provide(m_ctx, context));
+                }
+                else
+                {
+                    XAML_RETURN_IF_FAILED(info->set(mc, c));
+                }
             }
         }
         XAML_FOREACH_END();
