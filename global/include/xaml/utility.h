@@ -121,23 +121,35 @@
 
 #ifndef XAML_LIKELY
     #ifdef __cplusplus
-        #define XAML_LIKELY [[likely]]
+        #if __has_cpp_attribute(likely)
+            #define XAML_LIKELY [[likely]]
+        #else
+            #define XAML_LIKELY
+        #endif // likely
     #else
         #define XAML_LIKELY
     #endif // __cplusplus
 #endif // !XAML_LIKELY
 
 #ifndef XAML_UNLIKELY
-    #ifdef __cplusplus
-        #define XAML_UNLIKELY [[unlikely]]
+    #if defined(__cplusplus)
+        #if __has_cpp_attribute(unlikely)
+            #define XAML_UNLIKELY [[unlikely]]
+        #else
+            #define XAML_UNLIKELY
+        #endif // unlikely
     #else
         #define XAML_UNLIKELY
     #endif // __cplusplus
 #endif // !XAML_UNLIKELY
 
 #ifndef XAML_MAYBE_UNUSED
-    #ifdef __cplusplus
-        #define XAML_MAYBE_UNUSED [[maybe_unused]]
+    #if defined(__cplusplus)
+        #if __has_cpp_attribute(maybe_unused)
+            #define XAML_MAYBE_UNUSED [[maybe_unused]]
+        #else
+            #define XAML_MAYBE_UNUSED
+        #endif // maybe_unused
     #else
         #ifdef __GNUC__
             #define XAML_MAYBE_UNUSED __attribute__((__unused__))
