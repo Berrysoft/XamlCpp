@@ -7,7 +7,7 @@
 
 using namespace std;
 
-xaml_result XAML_CALL xaml_method_info_bind(xaml_method_info* func, xaml_vector_view<xaml_object>* args, xaml_method_info** ptr) noexcept
+static xaml_result XAML_CALL xaml_method_info_bind(xaml_method_info* func, xaml_vector_view<xaml_object>* args, xaml_method_info** ptr) noexcept
 {
     xaml_ptr<xaml_string> name;
     XAML_RETURN_IF_FAILED(func->get_name(&name));
