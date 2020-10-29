@@ -69,26 +69,6 @@ XAML_DECL_INTERFACE_T_(xaml_enumerable, xaml_object, XAML_ENUMERABLE_1_VTBL)
         while (0)
 
 template <typename T>
-struct __xaml_enumerator_traits;
-
-template <typename T>
-struct __xaml_enumerator_traits<xaml_enumerator<T>>
-{
-    using value_type = T;
-};
-
-template <typename T>
-struct __xaml_function_traits;
-
-template <typename Return, typename T, typename... Args>
-struct __xaml_function_traits<Return (XAML_CALL T::*)(Args...) noexcept>
-{
-    using return_type = Return;
-    using class_type = T;
-    using arg_types = std::tuple<Args...>;
-};
-
-template <typename T>
 struct __xaml_enumerator_iterator
 {
 private:
@@ -127,6 +107,26 @@ public:
     {
         return m_enumerator == nullptr && rhs.m_enumerator == nullptr;
     }
+};
+
+template <typename T>
+struct __xaml_enumerator_traits;
+
+template <typename T>
+struct __xaml_enumerator_traits<xaml_enumerator<T>>
+{
+    using value_type = T;
+};
+
+template <typename T>
+struct __xaml_function_traits;
+
+template <typename Return, typename T, typename... Args>
+struct __xaml_function_traits<Return (XAML_CALL T::*)(Args...) noexcept>
+{
+    using return_type = Return;
+    using class_type = T;
+    using arg_types = std::tuple<Args...>;
 };
 
 template <typename T>
