@@ -119,7 +119,7 @@ A C++17-compliant compiler is required. Actually it needs C++ 20, but no compile
 
 This project assumes it is built by MSVC 19.27+, GCC 10.0+ or Clang 10.0+.
 
-`boost` is required on Windows, for `nowide`; it is also required on all platforms for `cmdline`.
+`boost` is required on all platforms for `cmdline`.
 
 ### Build for Win32
 `wil` is required. Other packages will be downloaded from NuGet when configuring.
@@ -129,6 +129,6 @@ This project assumes it is built by MSVC 19.27+, GCC 10.0+ or Clang 10.0+.
 #### MinGW64 & Linux & MacOS
 `gtk` and `pkgconfig` are required. `webkit2gtk` is also required on Linux for `webview`.
 ### Build for QT5
-`qt5-base` is required. `qt5-webengine` or `qt5-webkit` is also required for `webview`.
+`qt5-base` is required. Either `qt5-webengine` or `qt5-webkit` is also required for `webview`.
 ### Build for Cocoa
 No other package is needed.
