@@ -31,9 +31,19 @@ target_include_directories(xaml_global
     PUBLIC 
         $<INSTALL_INTERFACE:include>    
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-target_link_libraries(xaml_global PRIVATE stream_format nowide)
+target_link_libraries(xaml_global PRIVATE stream_format nowide PUBLIC function2)
+
+target_compile_definitions(xaml_global
+    PUBLIC
+        $<BUILD_INTERFACE:"XAML_BUILD">
+)
+
+if(${SUPPORT_FUNCTION2})
+    target_compile_definitions(xaml_global PUBLIC "SUPPORT_FUNCTION2")
+endif()
 
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")

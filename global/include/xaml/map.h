@@ -6,6 +6,9 @@
     #include <unordered_map>
     #include <xaml/box.h>
     #include <xaml/ptr.hpp>
+    #ifdef SUPPORT_FUNCTION2
+        #include <function2/function2.hpp>
+    #endif // SUPPORT_FUNCTION2
 #endif // __cplusplus
 
 #include <xaml/enumerable.h>
@@ -145,8 +148,13 @@ EXTERN_C XAML_API xaml_result XAML_CALL xaml_hasher_string_default(XAML_HASHER_1
 template <typename T>
 struct __xaml_hasher_implement : xaml_implement<__xaml_hasher_implement<T>, xaml_hasher<T>>
 {
+    #ifdef SUPPORT_FUNCTION2
+    using hash_func_type = fu2::unique_function<xaml_result(xaml_interface_t<T>, int32_t*) noexcept>;
+    using eq_func_type = fu2::unique_function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*) noexcept>;
+    #else
     using hash_func_type = std::function<xaml_result(xaml_interface_t<T>, int32_t*)>;
     using eq_func_type = std::function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*)>;
+    #endif // SUPPORT_FUNCTION2
 
     hash_func_type m_func;
     eq_func_type m_eq_func;
@@ -165,17 +173,29 @@ struct __xaml_hasher_implement : xaml_implement<__xaml_hasher_implement<T>, xaml
     }
 };
 
+    #ifdef SUPPORT_FUNCTION2
+template <typename T>
+xaml_result XAML_CALL xaml_hasher_new(fu2::unique_function<xaml_result(xaml_interface_t<T>, std::int32_t*) noexcept>&& hfunc, fu2::unique_function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*) noexcept>&& eqfunc, xaml_hasher<T>** ptr) noexcept
+{
+    return xaml_object_new<__xaml_hasher_implement<T>>(ptr, std::move(hfunc), std::move(eqfunc));
+}
+    #else
 template <typename T>
 xaml_result XAML_CALL xaml_hasher_new(std::function<xaml_result(xaml_interface_t<T>, std::int32_t*)>&& hfunc, std::function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*)>&& eqfunc, xaml_hasher<T>** ptr) noexcept
 {
     return xaml_object_new<__xaml_hasher_implement<T>>(ptr, std::move(hfunc), std::move(eqfunc));
 }
+    #endif // SUPPORT_FUNCTION2
 
 template <typename T>
 xaml_result XAML_CALL xaml_hasher_new(xaml_hasher<T>** ptr) noexcept
 {
     return xaml_hasher_new(
+    #ifdef SUPPORT_FUNCTION2
+        fu2::unique_function<xaml_result(xaml_interface_t<T>, std::int32_t*) noexcept> {
+    #else
         std::function<xaml_result(xaml_interface_t<T>, std::int32_t*)>{
+    #endif // SUPPORT_FUNCTION2
             [](xaml_interface_t<T> value, std::int32_t* phash) noexcept -> xaml_result {
                 static std::hash<xaml_interface_var_t<T>> hasher{};
                 std::size_t const std_hash = hasher(value);
@@ -191,7 +211,11 @@ xaml_result XAML_CALL xaml_hasher_new(xaml_hasher<T>** ptr) noexcept
     #endif
                 return XAML_S_OK;
             } },
+    #ifdef SUPPORT_FUNCTION2
+        fu2::unique_function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*) noexcept> {
+    #else
         std::function<xaml_result(xaml_interface_t<T>, xaml_interface_t<T>, bool*)>{
+    #endif // SUPPORT_FUNCTION2
             [](xaml_interface_t<T> lvalue, xaml_interface_t<T> rvalue, bool* pb) noexcept -> xaml_result {
                 *pb = lvalue == rvalue;
                 return XAML_S_OK;

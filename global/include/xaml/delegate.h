@@ -5,6 +5,9 @@
     #include <functional>
     #include <xaml/box.h>
     #include <xaml/ptr.hpp>
+    #ifdef SUPPORT_FUNCTION2
+        #include <function2/function2.hpp>
+    #endif // SUPPORT_FUNCTION2
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -50,7 +53,11 @@ struct xaml_type_guid<xaml_delegate<Args...>>
 template <typename... Args>
 struct __xaml_delegate_implement : xaml_implement<__xaml_delegate_implement<Args...>, xaml_delegate<Args...>>
 {
+    #ifdef SUPPORT_FUNCTION2
+    using func_type = fu2::unique_function<xaml_result(xaml_interface_t<Args>...) noexcept>;
+    #else
     using func_type = std::function<xaml_result(xaml_interface_t<Args>...)>;
+    #endif // SUPPORT_FUNCTION2
 
     func_type m_func;
 

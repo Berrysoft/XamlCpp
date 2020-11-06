@@ -23,7 +23,7 @@ int main()
     XAML_THROW_IF_FAILED(xaml_observable_vector_new(&vec));
     xaml_ptr<xaml_delegate<xaml_object, xaml_vector_changed_args<int32_t>>> callback;
     XAML_THROW_IF_FAILED((xaml_delegate_new<xaml_object, xaml_vector_changed_args<int32_t>>(
-        [](xaml_object*, xaml_vector_changed_args<int32_t>* args) -> xaml_result {
+        [](xaml_object*, xaml_vector_changed_args<int32_t>* args) noexcept -> xaml_result {
             xaml_vector_changed_action action;
             XAML_RETURN_IF_FAILED(args->get_action(&action));
             switch (action)

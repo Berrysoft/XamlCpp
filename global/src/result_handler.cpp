@@ -20,6 +20,8 @@
 #include <xaml/event.h>
 #include <xaml/result_handler.h>
 
+#include <function.hpp>
+
 #ifdef NDEBUG
     #define XAML_DEFAULT_HANDLER xaml_result_handler_empty
 #else
@@ -28,7 +30,7 @@
 
 using namespace std;
 
-static function<__xaml_result_handler_prototype> s_handler = XAML_DEFAULT_HANDLER;
+static fu2::function<__xaml_result_handler_prototype_noexcept> s_handler = XAML_DEFAULT_HANDLER;
 
 void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line) noexcept
 {
@@ -87,13 +89,24 @@ void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_lev
     }
 }
 
-xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept
+xaml_result XAML_CALL xaml_result_handler_set(fu2::function<__xaml_result_handler_prototype_noexcept> const& handler) noexcept
 try
 {
     if (!handler)
         s_handler = XAML_DEFAULT_HANDLER;
     else
         s_handler = handler;
+    return XAML_S_OK;
+}
+XAML_CATCH_RETURN()
+
+xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept
+try
+{
+    if (!handler)
+        s_handler = XAML_DEFAULT_HANDLER;
+    else
+        s_handler = xaml_function_wrap(handler);
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()

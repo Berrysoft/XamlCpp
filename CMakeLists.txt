@@ -165,7 +165,9 @@ elseif(${BUILD_QT5})
 endif()
 
 option(BUILD_TESTS "Build tests." OFF)
-option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers" OFF)
+option(INSTALL_RAPIDXML_HEADERS "Install (modified) rapidxml headers." OFF)
+option(SUPPORT_FUNCTION2 "Export function2 support APIs." OFF)
+option(INSTALL_FUNCTION2_HEADERS "Install function2 headers." OFF)
 option(BUILD_PARSER "Build XAML parser." ON)
 option(BUILD_WEBVIEW "Build webview." ON)
 option(BUILD_CANVAS "Build canvas." ON)
@@ -203,6 +205,8 @@ list(APPEND _XAML_TARGETS stream_format)
 
 add_subdirectory(nowide)
 list(APPEND _XAML_TARGETS nowide)
+
+add_subdirectory(function2)
 
 if(${BUILD_PARSER})
     add_subdirectory(rapidxml)

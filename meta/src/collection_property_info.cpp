@@ -1,17 +1,20 @@
 #include <xaml/meta/collection_property_info.h>
 
+#include <function.hpp>
+
 using namespace std;
 
 struct xaml_collection_property_info_impl : xaml_implement<xaml_collection_property_info_impl, xaml_collection_property_info>
 {
-private:
+    using adder_func = fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>;
+    using remover_func = fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>;
+
     xaml_ptr<xaml_string> m_name;
     xaml_guid m_type;
-    function<xaml_result(xaml_object*, xaml_object*)> m_adder;
-    function<xaml_result(xaml_object*, xaml_object*)> m_remover;
+    adder_func m_adder;
+    remover_func m_remover;
 
-public:
-    xaml_collection_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover) noexcept
+    xaml_collection_property_info_impl(xaml_ptr<xaml_string>&& name, xaml_guid const& type, adder_func&& adder, remover_func&& remover) noexcept
         : m_name(move(name)), m_type(type), m_adder(move(adder)), m_remover(move(remover)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
@@ -56,12 +59,22 @@ public:
     }
 };
 
-xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_object*), xaml_result(XAML_CALL* remover)(xaml_object*, xaml_object*), xaml_collection_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, xaml_result(XAML_CALL* adder)(xaml_object*, xaml_object*) noexcept, xaml_result(XAML_CALL* remover)(xaml_object*, xaml_object*) noexcept, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new_catch<xaml_collection_property_info_impl>(ptr, name, type, adder, remover);
 }
 
-xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&& adder, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&& remover, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, move(adder), move(remover));
 }
+
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
+try
+{
+    return xaml_object_new<xaml_collection_property_info_impl>(
+        ptr, name, type,
+        xaml_function_wrap_unique(adder),
+        xaml_function_wrap_unique(remover));
+}
+XAML_CATCH_RETURN()
