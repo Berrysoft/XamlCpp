@@ -6,6 +6,9 @@
     #include <xaml/box.h>
     #include <xaml/meta/conv.hpp>
     #include <xaml/ptr.hpp>
+    #ifdef XAML_SUPPORT_FUNCTION2
+        #include <function2/function2.hpp>
+    #endif // XAML_SUPPORT_FUNCTION2
 #endif // __cplusplus
 
 #include <xaml/object.h>
@@ -30,7 +33,13 @@ XAML_DECL_INTERFACE_(xaml_property_info, xaml_object)
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object*, xaml_object**) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, xaml_object*) XAML_NOEXCEPT, xaml_property_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
+    #ifdef XAML_SUPPORT_FUNCTION2
+XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid const&, fu2::unique_function<xaml_result(xaml_object*, xaml_object**) noexcept>&&, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&&, xaml_property_info**) noexcept;
+    #endif // XAML_SUPPORT_FUNCTION2
+
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
+    #endif
 
 template <typename T, typename = void>
 struct __xaml_wrapper

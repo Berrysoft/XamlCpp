@@ -203,10 +203,10 @@
     #endif // __cplusplus
 #endif // !XAML_NOEXCEPT
 
-#ifndef SUPPORT_FUNCTION2
+#ifndef XAML_SUPPORT_FUNCTION2
     #ifdef XAML_BUILD
-        #define SUPPORT_FUNCTION2
+        #define XAML_SUPPORT_FUNCTION2
     #endif // XAML_BUILD
-#endif // !SUPPORT_FUNCTION2
+#endif // !XAML_SUPPORT_FUNCTION2
 
 #endif // !XAML_UTILITY_HPP

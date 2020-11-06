@@ -1,14 +1,18 @@
 #include <xaml/meta/method_info.h>
 
+#include <function.hpp>
+
 using namespace std;
 
 struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method_info>
 {
+    using func_type = fu2::unique_function<xaml_result(xaml_vector_view<xaml_object>*) noexcept>;
+
     xaml_ptr<xaml_string> m_name;
-    function<xaml_result(xaml_vector_view<xaml_object>*)> m_func;
+    func_type m_func;
     xaml_ptr<xaml_vector_view<xaml_guid>> m_param_types;
 
-    xaml_method_info_impl(xaml_ptr<xaml_string>&& name, function<xaml_result(xaml_vector_view<xaml_object>*)>&& func, xaml_ptr<xaml_vector_view<xaml_guid>>&& param_types) noexcept
+    xaml_method_info_impl(xaml_ptr<xaml_string>&& name, func_type&& func, xaml_ptr<xaml_vector_view<xaml_guid>>&& param_types) noexcept
         : m_name(move(name)), m_func(move(func)), m_param_types(move(param_types)) {}
 
     xaml_result XAML_CALL get_name(xaml_string** ptr) noexcept override
@@ -27,15 +31,22 @@ struct xaml_method_info_impl : xaml_implement<xaml_method_info_impl, xaml_method
     }
 };
 
-xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view<xaml_object>*), xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, xaml_result(XAML_CALL* func)(xaml_vector_view<xaml_object>*) noexcept, xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
 {
     return xaml_object_new_catch<xaml_method_info_impl>(ptr, name, func, param_types);
 }
 
-xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_vector_view<xaml_object>*)>&& func, xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, fu2::unique_function<xaml_result(xaml_vector_view<xaml_object>*) noexcept>&& func, xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
 {
     return xaml_object_new<xaml_method_info_impl>(ptr, name, move(func), param_types);
 }
+
+xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, function<xaml_result(xaml_vector_view<xaml_object>*)>&& func, xaml_vector_view<xaml_guid>* param_types, xaml_method_info** ptr) noexcept
+try
+{
+    return xaml_object_new<xaml_method_info_impl>(ptr, name, xaml_function_wrap_unique(move(func)), param_types);
+}
+XAML_CATCH_RETURN()
 
 struct xaml_constructor_info_impl : xaml_implement<xaml_constructor_info_impl, xaml_constructor_info>
 {

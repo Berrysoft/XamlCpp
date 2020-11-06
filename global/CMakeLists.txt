@@ -42,7 +42,7 @@ target_compile_definitions(xaml_global
 )
 
 if(${SUPPORT_FUNCTION2})
-    target_compile_definitions(xaml_global PUBLIC "SUPPORT_FUNCTION2")
+    target_compile_definitions(xaml_global PUBLIC "XAML_SUPPORT_FUNCTION2")
 endif()
 
 if(${BUILD_SHARED_LIBS})

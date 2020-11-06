@@ -22,7 +22,13 @@ XAML_DECL_INTERFACE_(xaml_event_info, xaml_object)
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, xaml_result(XAML_CALL*)(xaml_object*, xaml_method_info*, XAML_STD int32_t*) XAML_NOEXCEPT, xaml_result(XAML_CALL*)(xaml_object*, XAML_STD int32_t) XAML_NOEXCEPT, xaml_event_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
+    #ifdef XAML_SUPPORT_FUNCTION2
+XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, fu2::unique_function<xaml_result(xaml_object*, xaml_method_info*, std::int32_t*) noexcept>&&, fu2::unique_function<xaml_result(xaml_object*, std::int32_t) noexcept>&&, xaml_event_info**) noexcept;
+    #endif // XAML_SUPPORT_FUNCTION2
+
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_event_info_new(xaml_string*, std::function<xaml_result(xaml_object*, xaml_method_info*, std::int32_t*)>&&, std::function<xaml_result(xaml_object*, std::int32_t)>&&, xaml_event_info**) noexcept;
+    #endif
 
 template <typename T, typename TS, typename TE>
 inline xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(xaml_delegate<TS, TE>*, std::int32_t*) noexcept, xaml_result (XAML_CALL T::*remover)(std::int32_t) noexcept, xaml_event_info** ptr) noexcept

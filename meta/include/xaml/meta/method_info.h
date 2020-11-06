@@ -2,6 +2,7 @@
 #define XAML_META_METHOD_INFO_H
 
 #include <xaml/box.h>
+#include <xaml/delegate.h>
 #include <xaml/object.h>
 #include <xaml/vector.h>
 
@@ -41,7 +42,13 @@ XAML_DECL_INTERFACE_(xaml_method_info, xaml_object)
 EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, xaml_result(XAML_CALL*)(XAML_VECTOR_VIEW_1_NAME(xaml_object) *) XAML_NOEXCEPT, XAML_VECTOR_VIEW_1_NAME(xaml_guid) *, xaml_method_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
+    #ifdef XAML_SUPPORT_FUNCTION2
+XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, fu2::unique_function<xaml_result(xaml_vector_view<xaml_object>*) noexcept>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
+    #endif // XAML_SUPPORT_FUNCTION2
+
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view<xaml_object>*)>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
+    #endif
 
 template <typename Return, typename... Args, typename F>
 Return XAML_CALL __xaml_method_info_noexcept_invoke(F&& f, xaml_result* pres, Args&&... args) noexcept
