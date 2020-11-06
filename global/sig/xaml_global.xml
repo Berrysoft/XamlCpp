@@ -6,32 +6,29 @@
     <method name="release" ret="u32" preserve="true"/>
     <property name="guid" type="guid" readonly="true"/>
   </interface>
-  <interface name="xaml_box" guid="9a9177c7-cf5f-31ab-8495-96f58ac5df3a" inherits="xaml_object">
-    <property name="type" type="guid" readonly="true"/>
-    <property name="data" type="const void*" readonly="true"/>
-    <property name="size" type="i32" readonly="true"/>
-    <method name="set_data" args="const guid&amp;,const void*,i32"/>
+  <interface name="xaml_box_1" guid="9a9177c7-cf5f-31ab-8495-96f58ac5df3a" template="T" inherits="xaml_object">
+    <property name="value" type="T"/>
   </interface>
   <interface name="xaml_string" guid="c8386ec4-d28d-422f-9e44-36aa776339d3" inherits="xaml_object">
     <property name="length" type="i32" readonly="true"/>
     <property name="data" type="const char*" readonly="true"/>
   </interface>
-  <interface name="xaml_enumerator" guid="4f706e46-5b78-4504-bc4c-4a0c7d349e11" inherits="xaml_object">
+  <interface name="xaml_enumerator_1" guid="4f706e46-5b78-4504-bc4c-4a0c7d349e11" template="T" inherits="xaml_object">
     <method name="move_next" ret="bool"/>
-    <property name="current" type="xaml_object" readonly="true"/>
+    <property name="current" type="T" readonly="true"/>
   </interface>
-  <interface name="xaml_enumerable" guid="7d0d584f-9d47-4375-8a4b-ab090fc2b095" inherits="xaml_object">
-    <property name="enumerator" type="xaml_enumerator" readonly="true"/>
+  <interface name="xaml_enumerable_1" guid="7d0d584f-9d47-4375-8a4b-ab090fc2b095" template="T" inherits="xaml_object">
+    <property name="enumerator" type="xaml_enumerator_1" type_template="T" readonly="true"/>
   </interface>
-  <interface name="xaml_vector_view" guid="8960a280-ddbb-4b5b-b4eb-276dd3906ed6" inherits="xaml_enumerable">
-    <indexer ret="xaml_object" arg="i32" readonly="true"/>
-    <method name="index_of" ret="i32" args="xaml_object"/>
+  <interface name="xaml_vector_view" guid="8960a280-ddbb-4b5b-b4eb-276dd3906ed6" template="T" inherits="xaml_enumerable" inherits_template="T">
+    <indexer ret="T" arg="i32" readonly="true"/>
+    <method name="index_of" ret="i32" args="T"/>
     <property name="size" type="i32" readonly="true"/>
   </interface>
-  <interface name="xaml_vector" guid="ad5e7c14-969d-4e76-976e-c317b441125e" inherits="xaml_vector_view">
-    <indexer ret="xaml_object" arg="i32"/>
-    <method name="append" args="xaml_object"/>
-    <method name="insert_at" args="i32,xaml_object"/>
+  <interface name="xaml_vector" guid="ad5e7c14-969d-4e76-976e-c317b441125e" template="T" inherits="xaml_vector_view" inherits_template="T">
+    <indexer ret="T" arg="i32"/>
+    <method name="append" args="T"/>
+    <method name="insert_at" args="i32,T"/>
     <method name="remove_at" args="i32"/>
     <method name="remove_at_end"/>
     <method name="clear"/>
