@@ -41,7 +41,7 @@ struct xaml_grid_internal : xaml_layout_base_internal
         return XAML_S_OK;
     }
 
-    xaml_result XAML_CALL draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept override;
+    xaml_result XAML_CALL draw_impl(xaml_rectangle const&, fu2::function<xaml_result(xaml_control*, xaml_rectangle const&) noexcept>) noexcept override;
 
     xaml_result XAML_CALL init() noexcept override;
 };

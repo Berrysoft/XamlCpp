@@ -50,14 +50,35 @@ struct xaml_type_guid<xaml_delegate<Args...>>
 #define XAML_DELEGATE_2_TYPE(t1, t2) __XAML_DELEGATE_2_TYPE(t1, t2)
 
 #ifdef __cplusplus
+template <typename Func>
+struct __xaml_function_wrapper_traits;
+
+    #ifdef XAML_SUPPORT_FUNCTION2
+template <typename Return, typename... Args>
+struct __xaml_function_wrapper_traits<Return(Args...) noexcept>
+{
+    using function_type = fu2::function<Return(Args...) noexcept>;
+    using unique_function_type = fu2::unique_function<Return(Args...) noexcept>;
+};
+    #else
+template <typename Return, typename... Args>
+struct __xaml_function_wrapper_traits<Return(Args...) noexcept>
+{
+    using function_type = std::function<Return(Args...)>;
+    using unique_function_type = std::function<Return(Args...)>;
+};
+    #endif // XAML_SUPPORT_FUNCTION2
+
+template <typename Func>
+using __xaml_function_wrapper_t = typename __xaml_function_wrapper_traits<Func>::function_type;
+
+template <typename Func>
+using __xaml_unique_function_wrapper_t = typename __xaml_function_wrapper_traits<Func>::unique_function_type;
+
 template <typename... Args>
 struct __xaml_delegate_implement : xaml_implement<__xaml_delegate_implement<Args...>, xaml_delegate<Args...>>
 {
-    #ifdef XAML_SUPPORT_FUNCTION2
-    using func_type = fu2::unique_function<xaml_result(xaml_interface_t<Args>...) noexcept>;
-    #else
-    using func_type = std::function<xaml_result(xaml_interface_t<Args>...)>;
-    #endif // XAML_SUPPORT_FUNCTION2
+    using func_type = __xaml_unique_function_wrapper_t<xaml_result(xaml_interface_t<Args>...) noexcept>;
 
     func_type m_func;
 
@@ -76,15 +97,15 @@ xaml_result XAML_CALL xaml_delegate_new(F&& func, xaml_delegate<Args...>** ptr) 
 }
 
 template <typename T, typename Return, typename... Args>
-constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...), T* obj) noexcept
+constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...) noexcept, T* obj) noexcept
 {
-    return [=](Args... args) -> Return { return (obj->*f)(std::forward<Args>(args)...); };
+    return [=](Args... args) noexcept -> Return { return (obj->*f)(std::forward<Args>(args)...); };
 }
 
 template <typename T, typename Return, typename... Args>
-constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...)) noexcept
+constexpr decltype(auto) xaml_mem_fn(Return (XAML_CALL T::*f)(Args...) noexcept) noexcept
 {
-    return [=](T* obj, Args... args) -> Return { return (obj->*f)(std::forward<Args>(args)...); };
+    return [=](T* obj, Args... args) noexcept -> Return { return (obj->*f)(std::forward<Args>(args)...); };
 }
 #endif // __cplusplus
 

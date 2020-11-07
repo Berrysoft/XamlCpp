@@ -17,7 +17,7 @@ using __xaml_result_handler_prototype_noexcept = void(xaml_result, xaml_result_r
 XAML_API xaml_result XAML_CALL xaml_result_handler_set(fu2::function<__xaml_result_handler_prototype_noexcept> const&) XAML_NOEXCEPT;
     #endif // XAML_SUPPORT_FUNCTION2
 
-    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_GLOBAL_BUILD)
 using __xaml_result_handler_prototype = void(xaml_result, xaml_result_raise_level, char const*);
 XAML_API xaml_result XAML_CALL xaml_result_handler_set(std::function<__xaml_result_handler_prototype> const&) XAML_NOEXCEPT;
     #endif

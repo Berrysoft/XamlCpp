@@ -41,6 +41,8 @@ target_compile_definitions(xaml_global
         $<BUILD_INTERFACE:"XAML_BUILD">
 )
 
+target_compile_definitions(xaml_global PRIVATE "XAML_GLOBAL_BUILD")
+
 if(${SUPPORT_FUNCTION2})
     target_compile_definitions(xaml_global PUBLIC "XAML_SUPPORT_FUNCTION2")
 endif()

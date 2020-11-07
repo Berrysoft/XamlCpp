@@ -38,29 +38,31 @@ EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(x
 XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string*, xaml_guid const&, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&&, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&&, xaml_collection_property_info**) noexcept;
     #endif // XAML_SUPPORT_FUNCTION2
 
-    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_META_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_collection_property_info**) noexcept;
     #endif
 
 template <typename TValue, typename T, typename TValueAdd, typename TValueRemove = TValueAdd>
-inline xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
+inline xaml_result XAML_CALL __xaml_collection_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*adder)(TValueAdd) noexcept, xaml_result (XAML_CALL T::*remover)(TValueRemove) noexcept, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_collection_property_info_new(
         name, xaml_type_guid_v<TValue>,
-        [adder](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueAdd>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueAdd>>>{}(obj, &value));
-            return (self.get()->*adder)(value);
-        },
-        [remover](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueRemove>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueRemove>>>{}(obj, &value));
-            return (self.get()->*remover)(value);
-        },
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>(
+            [adder](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueAdd>> value;
+                XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueAdd>>>{}(obj, &value));
+                return (self.get()->*adder)(value);
+            }),
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>(
+            [remover](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueRemove>> value;
+                XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueRemove>>>{}(obj, &value));
+                return (self.get()->*remover)(value);
+            }),
         ptr);
 }
 #endif // __cplusplus

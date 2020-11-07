@@ -28,7 +28,7 @@ int main()
     xaml_ptr<xaml_method_info> handler;
     XAML_THROW_IF_FAILED((xaml_method_info_new<xaml_test_calculator, int>(
         nullptr,
-        [](xaml_test_calculator*, int i) -> xaml_result {
+        [](xaml_test_calculator*, int i) noexcept -> xaml_result {
             sf::println(nowide::cout, "Value changed: {}", i);
             return XAML_S_OK;
         },

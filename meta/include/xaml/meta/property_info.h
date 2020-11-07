@@ -37,7 +37,7 @@ EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*
 XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid const&, fu2::unique_function<xaml_result(xaml_object*, xaml_object**) noexcept>&&, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&&, xaml_property_info**) noexcept;
     #endif // XAML_SUPPORT_FUNCTION2
 
-    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_META_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_property_info_new(xaml_string*, xaml_guid const&, std::function<xaml_result(xaml_object*, xaml_object**)>&&, std::function<xaml_result(xaml_object*, xaml_object*)>&&, xaml_property_info**) noexcept;
     #endif
 
@@ -57,62 +57,68 @@ template <typename T>
 using __xaml_wrapper_t = typename __xaml_wrapper<T>::type;
 
 template <typename TValue, typename T, typename TValueGet, typename TValueSet = TValueGet>
-xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
+xaml_result XAML_CALL __xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_result (XAML_CALL T::*setter)(TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<TValue>,
-        [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueGet>> value;
-            XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
-            return xaml_box_value(value, ptr);
-        },
-        [setter](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueSet>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
-            return (self.get()->*setter)(value);
-        },
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object**) noexcept>(
+            [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueGet>> value;
+                XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
+                return xaml_box_value(value, ptr);
+            }),
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>(
+            [setter](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueSet>> value;
+                XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
+                return (self.get()->*setter)(value);
+            }),
         ptr);
 }
 
 template <typename TValue, typename T, typename TValueGet, typename TValueSet = TValueGet>
-xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result(XAML_CALL* getter)(T*, TValueGet*) noexcept, xaml_result(XAML_CALL* setter)(T*, TValueSet) noexcept, xaml_property_info** ptr) noexcept
+xaml_result XAML_CALL __xaml_property_info_new(xaml_string* name, xaml_result(XAML_CALL* getter)(T*, TValueGet*) noexcept, xaml_result(XAML_CALL* setter)(T*, TValueSet) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<TValue>,
-        [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueGet>> value;
-            XAML_RETURN_IF_FAILED(getter(self, &value));
-            return xaml_box_value(value, ptr);
-        },
-        [setter](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueSet>> value;
-            XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
-            return setter(self, value);
-        },
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object**) noexcept>(
+            [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueGet>> value;
+                XAML_RETURN_IF_FAILED(getter(self, &value));
+                return xaml_box_value(value, ptr);
+            }),
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>(
+            [setter](xaml_object* target, xaml_object* obj) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueSet>> value;
+                XAML_RETURN_IF_FAILED(__xaml_converter<__xaml_wrapper_t<std::decay_t<TValueSet>>>{}(obj, &value));
+                return setter(self, value);
+            }),
         ptr);
 }
 
 template <typename TValue, typename T, typename TValueGet>
-xaml_result XAML_CALL xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
+xaml_result XAML_CALL __xaml_property_info_new(xaml_string* name, xaml_result (XAML_CALL T::*getter)(TValueGet*) noexcept, xaml_property_info** ptr) noexcept
 {
     return xaml_property_info_new(
         name, xaml_type_guid_v<TValue>,
-        [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
-            xaml_ptr<T> self;
-            XAML_RETURN_IF_FAILED(target->query(&self));
-            __xaml_wrapper_t<std::decay_t<TValueGet>> value;
-            XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
-            return xaml_box_value(value, ptr);
-        },
-        nullptr, ptr);
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object**) noexcept>(
+            [getter](xaml_object* target, xaml_object** ptr) noexcept -> xaml_result {
+                xaml_ptr<T> self;
+                XAML_RETURN_IF_FAILED(target->query(&self));
+                __xaml_wrapper_t<std::decay_t<TValueGet>> value;
+                XAML_RETURN_IF_FAILED((self.get()->*getter)(&value));
+                return xaml_box_value(value, ptr);
+            }),
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>(),
+        ptr);
 }
 #endif // __cplusplus
 

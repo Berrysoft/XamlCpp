@@ -2,7 +2,6 @@
 #import <cocoa/XamlCanvasView.h>
 #include <cocoa/drawing_mask.hpp>
 #include <cocoa/nsstring.hpp>
-#include <functional>
 #include <shared/canvas.hpp>
 #include <tuple>
 #include <xaml/ui/cocoa/controls/brush.h>

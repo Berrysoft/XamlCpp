@@ -5,7 +5,7 @@
 
 using namespace std;
 
-xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
+xaml_result xaml_stack_panel_internal::draw_impl(xaml_rectangle const& region, fu2::function<xaml_result(xaml_control*, xaml_rectangle const&) noexcept> func) noexcept
 {
     XAML_RETURN_IF_FAILED(xaml_layout_base_internal::draw_impl(region, func));
     xaml_rectangle real = region - m_margin;

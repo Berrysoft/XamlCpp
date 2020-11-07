@@ -4,7 +4,7 @@
 
 using namespace std;
 
-xaml_result xaml_uniform_grid_internal::draw_impl(xaml_rectangle const& region, function<xaml_result(xaml_control*, xaml_rectangle const&)> const& func) noexcept
+xaml_result xaml_uniform_grid_internal::draw_impl(xaml_rectangle const& region, fu2::function<xaml_result(xaml_control*, xaml_rectangle const&) noexcept> func) noexcept
 {
     int32_t size;
     XAML_RETURN_IF_FAILED(m_children->get_size(&size));

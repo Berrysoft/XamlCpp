@@ -19,6 +19,8 @@ target_include_directories(xaml_meta
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
+target_compile_definitions(xaml_meta PRIVATE "XAML_META_BUILD")
+
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_meta PRIVATE "XAML_META_API=__XAML_EXPORT")
 endif()

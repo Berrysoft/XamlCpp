@@ -3,7 +3,7 @@
 
 using namespace std;
 
-xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const&, std::function<xaml_result(xaml_control*, xaml_rectangle const&)> const&) noexcept
+xaml_result xaml_layout_base_internal::draw_impl(xaml_rectangle const&, fu2::function<xaml_result(xaml_control*, xaml_rectangle const&) noexcept>) noexcept
 {
     XAML_FOREACH_START(xaml_control, cc, m_children);
     {

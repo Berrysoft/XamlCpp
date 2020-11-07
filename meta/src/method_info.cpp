@@ -51,9 +51,9 @@ XAML_CATCH_RETURN()
 struct xaml_constructor_info_impl : xaml_implement<xaml_constructor_info_impl, xaml_constructor_info>
 {
     xaml_guid m_type;
-    function<xaml_result(xaml_object**)> m_func;
+    fu2::unique_function<xaml_result(xaml_object**) noexcept> m_func;
 
-    xaml_constructor_info_impl(xaml_guid const& type, function<xaml_result(xaml_object**)>&& func) noexcept
+    xaml_constructor_info_impl(xaml_guid const& type, fu2::unique_function<xaml_result(xaml_object**) noexcept>&& func) noexcept
         : m_type(type), m_func(move(func)) {}
 
     xaml_result XAML_CALL invoke(xaml_object** ptr) noexcept override
@@ -68,12 +68,19 @@ struct xaml_constructor_info_impl : xaml_implement<xaml_constructor_info_impl, x
     }
 };
 
-xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const& type, xaml_result(XAML_CALL* func)(xaml_object**), xaml_constructor_info** ptr) noexcept
+xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const& type, xaml_result(XAML_CALL* func)(xaml_object**) noexcept, xaml_constructor_info** ptr) noexcept
 {
     return xaml_object_new_catch<xaml_constructor_info_impl>(ptr, type, func);
 }
 
-xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const& type, function<xaml_result(xaml_object**)>&& func, xaml_constructor_info** ptr) noexcept
+xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const& type, fu2::unique_function<xaml_result(xaml_object**) noexcept>&& func, xaml_constructor_info** ptr) noexcept
 {
     return xaml_object_new<xaml_constructor_info_impl>(ptr, type, move(func));
 }
+
+xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const& type, function<xaml_result(xaml_object**)>&& func, xaml_constructor_info** ptr) noexcept
+try
+{
+    return xaml_object_new<xaml_constructor_info_impl>(ptr, type, xaml_function_wrap_unique(move(func)));
+}
+XAML_CATCH_RETURN()

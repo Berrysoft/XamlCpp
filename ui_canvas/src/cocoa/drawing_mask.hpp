@@ -1,11 +1,11 @@
 #ifndef XAML_UI_CANVAS_COCOA_DRAWING_MASK_HPP
 #define XAML_UI_CANVAS_COCOA_DRAWING_MASK_HPP
 
-#include <functional>
+#include <function2/function2.hpp>
 #include <xaml/ui/cocoa/objc.h>
 #include <xaml/ui/controls/canvas.h>
 
-inline xaml_result XAML_CALL draw_mask(xaml_size const& size, std::function<xaml_result()> mask, std::function<xaml_result()> fill) noexcept
+inline xaml_result XAML_CALL draw_mask(xaml_size const& size, fu2::unique_function<xaml_result() noexcept> mask, fu2::unique_function<xaml_result() noexcept> fill) noexcept
 {
     xaml_result hr;
 

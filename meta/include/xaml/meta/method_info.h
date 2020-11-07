@@ -46,7 +46,7 @@ EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, 
 XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, fu2::unique_function<xaml_result(xaml_vector_view<xaml_object>*) noexcept>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
     #endif // XAML_SUPPORT_FUNCTION2
 
-    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_BUILD)
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_META_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_method_info_new(xaml_string*, std::function<xaml_result(xaml_vector_view<xaml_object>*)>&&, xaml_vector_view<xaml_guid>*, xaml_method_info**) noexcept;
     #endif
 
@@ -60,7 +60,7 @@ Return XAML_CALL __xaml_method_info_noexcept_invoke(F&& f, xaml_result* pres, Ar
 }
 
 template <typename... Args, std::int32_t... Indicies>
-xaml_result XAML_CALL __xaml_method_info_noexcept_impl_invoke_void_impl(std::function<xaml_result(Args...)> const& func, xaml_vector_view<xaml_object>* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
+xaml_result XAML_CALL __xaml_method_info_noexcept_impl_invoke_void_impl(__xaml_unique_function_wrapper_t<xaml_result(Args...) noexcept>&& func, xaml_vector_view<xaml_object>* args, std::integer_sequence<std::int32_t, Indicies...>) noexcept
 {
     xaml_result __hr = XAML_S_OK;
     XAML_RETURN_IF_FAILED(func(__xaml_method_info_noexcept_invoke<Args>(
@@ -74,27 +74,27 @@ xaml_result XAML_CALL __xaml_method_info_noexcept_impl_invoke_void_impl(std::fun
 }
 
 template <typename... Args>
-xaml_result XAML_CALL __xaml_method_info_noexcept_impl_invoke_void(std::function<xaml_result(Args...)> const& func, xaml_vector_view<xaml_object>* args)
+xaml_result XAML_CALL __xaml_method_info_noexcept_impl_invoke_void(__xaml_unique_function_wrapper_t<xaml_result(Args...) noexcept>&& func, xaml_vector_view<xaml_object>* args) noexcept
 {
-    return __xaml_method_info_noexcept_impl_invoke_void_impl<Args...>(func, args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
+    return __xaml_method_info_noexcept_impl_invoke_void_impl<Args...>(std::move(func), args, std::make_integer_sequence<std::int32_t, sizeof...(Args)>{});
 }
 
 template <typename... Args>
-inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, std::function<xaml_result(xaml_interface_t<Args>...)> func, xaml_method_info** ptr) noexcept
+inline xaml_result XAML_CALL xaml_method_info_new(xaml_string* name, __xaml_function_wrapper_t<xaml_result(xaml_interface_t<Args>...) noexcept> func, xaml_method_info** ptr) noexcept
 {
     if (!func) return XAML_E_INVALIDARG;
     xaml_ptr<xaml_vector<xaml_guid>> param_types;
     XAML_RETURN_IF_FAILED(xaml_vector_new<xaml_guid>({ xaml_type_guid_v<Args>... }, &param_types));
     return xaml_method_info_new(
         name,
-        std::function<xaml_result(xaml_vector_view<xaml_object>*)>{
-            [func](xaml_vector_view<xaml_object>* args) noexcept -> xaml_result {
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_vector_view<xaml_object>*) noexcept>{
+            [func](xaml_vector_view<xaml_object>* args) mutable noexcept -> xaml_result {
                 std::int32_t size;
                 XAML_RETURN_IF_FAILED(args->get_size(&size));
                 if (size < sizeof...(Args)) return XAML_E_INVALIDARG;
                 return __xaml_method_info_noexcept_impl_invoke_void<xaml_interface_t<Args>...>(
-                    std::function<xaml_result(xaml_interface_t<Args>...)>{
-                        [func](xaml_interface_t<Args>... args) noexcept -> xaml_result {
+                    __xaml_unique_function_wrapper_t<xaml_result(xaml_interface_t<Args>...) noexcept>{
+                        [func](xaml_interface_t<Args>... args) mutable noexcept -> xaml_result {
                             return func(std::forward<xaml_interface_t<Args>>(args)...);
                         } },
                     args);
@@ -149,18 +149,24 @@ XAML_DECL_INTERFACE_(xaml_constructor_info, xaml_object)
     XAML_DECL_VTBL(xaml_constructor_info, XAML_CONSTRUCTOR_INFO_VTBL);
 };
 
-EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object**), xaml_constructor_info**) XAML_NOEXCEPT;
+EXTERN_C XAML_META_API xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid XAML_CONST_REF, xaml_result(XAML_CALL*)(xaml_object**) XAML_NOEXCEPT, xaml_constructor_info**) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
+    #ifdef XAML_SUPPORT_FUNCTION2
+XAML_META_API xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const&, fu2::unique_function<xaml_result(xaml_object**) noexcept>&&, xaml_constructor_info**) noexcept;
+    #endif // XAML_SUPPORT_FUNCTION2
+
+    #if !defined(XAML_SUPPORT_FUNCTION2) || defined(XAML_META_BUILD)
 XAML_META_API xaml_result XAML_CALL xaml_constructor_info_new(xaml_guid const&, std::function<xaml_result(xaml_object**)>&&, xaml_constructor_info**) noexcept;
+    #endif
 
 template <typename T>
 xaml_result XAML_CALL xaml_constructor_info_new(xaml_result(XAML_CALL* ctor)(T**), xaml_constructor_info** ptr) noexcept
 {
     return xaml_constructor_info_new(
         xaml_type_guid_v<T>,
-        std::function<xaml_result(xaml_object**)>{
-            [ctor](xaml_object** ptr) -> xaml_result {
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_object**) noexcept>{
+            [ctor](xaml_object** ptr) noexcept -> xaml_result {
                 xaml_ptr<T> instance;
                 XAML_RETURN_IF_FAILED(ctor(&instance));
                 return instance.query(ptr);
