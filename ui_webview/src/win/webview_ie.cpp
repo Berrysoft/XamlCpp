@@ -77,7 +77,7 @@ STDMETHODIMP WebBrowserSink::Invoke(DISPID dispIdMember, REFIID riid, LCID, WORD
     return S_OK;
 }
 
-xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
+xaml_result xaml_webview_ie::create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept
 {
     RECT r = xaml_to_native<RECT>(rect);
     m_container.Create(parent, &r, 0, WS_CHILD | WS_VISIBLE);

@@ -52,7 +52,7 @@ struct ArrayViewBuffer : RuntimeClass<RuntimeClassFlags<WinRtClassicComMix>, IBu
     }
 };
 
-xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
+xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept
 {
     if (!XamlInitializeWinRTFunc()) return XAML_E_NOTIMPL;
     wil::com_ptr_nothrow<IWebViewControlProcess> process;
@@ -61,14 +61,14 @@ xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& r
     XAML_RETURN_IF_FAILED(process->CreateWebViewControlAsync((INT64)parent, { (float)rect.x, (float)rect.y, (float)rect.width, (float)rect.height }, &task));
     HRESULT __hr = task->put_Completed(
         Callback<IAsyncOperationCompletedHandler<WebViewControl*>>(
-            [this, callback](IAsyncOperation<WebViewControl*>* operation, AsyncStatus status) {
+            [this, callback](IAsyncOperation<WebViewControl*>* operation, AsyncStatus status) mutable noexcept -> HRESULT {
                 if (status == AsyncStatus::Completed)
                 {
                     RETURN_IF_FAILED(operation->GetResults(m_view.put()));
                     EventRegistrationToken token;
                     RETURN_IF_FAILED(m_view->add_NavigationCompleted(
                         Callback<ITypedEventHandler<IWebViewControl*, WebViewControlNavigationCompletedEventArgs*>>(
-                            [this](IWebViewControl*, IWebViewControlNavigationCompletedEventArgs* args) {
+                            [this](IWebViewControl*, IWebViewControlNavigationCompletedEventArgs* args) noexcept -> HRESULT {
                                 wil::com_ptr_nothrow<IUriRuntimeClass> uri;
                                 RETURN_IF_FAILED(args->get_Uri(&uri));
                                 HString absuri;
@@ -79,7 +79,7 @@ xaml_result xaml_webview_edge::create_async(HWND parent, xaml_rectangle const& r
                         &token));
                     RETURN_IF_FAILED(m_view->add_WebResourceRequested(
                         Callback<ITypedEventHandler<IWebViewControl*, WebViewControlWebResourceRequestedEventArgs*>>(
-                            [this](IWebViewControl*, IWebViewControlWebResourceRequestedEventArgs* e) {
+                            [this](IWebViewControl*, IWebViewControlWebResourceRequestedEventArgs* e) noexcept -> HRESULT {
                                 wil::com_ptr_nothrow<IDeferral> deferral;
                                 RETURN_IF_FAILED(e->GetDeferral(&deferral));
                                 wil::com_ptr_nothrow<IHttpRequestMessage> req;

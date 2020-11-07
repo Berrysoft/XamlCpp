@@ -2,14 +2,14 @@
 #define XAML_UI_WEBVIEW_NATIVE_WEBVIEW_HPP
 
 #include <Windows.h>
-#include <functional>
+#include <function2/function2.hpp>
 #include <xaml/ui/controls/webview.h>
 
 struct xaml_win32_webview
 {
 public:
     virtual ~xaml_win32_webview() {}
-    virtual xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback = {}) noexcept = 0;
+    virtual xaml_result create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback = {}) noexcept = 0;
     virtual operator bool() const noexcept = 0;
     virtual xaml_result navigate(char const* uri) noexcept = 0;
     virtual xaml_result set_visible(bool vis) noexcept = 0;
@@ -21,21 +21,21 @@ public:
     virtual xaml_result get_can_go_back(bool*) noexcept = 0;
     virtual xaml_result go_back() noexcept = 0;
 
-#define __NATIVE_WEBVIEW_EVENT(name, arg)                                \
-private:                                                                 \
-    std::function<xaml_result(arg)> m_##name{};                          \
-                                                                         \
-public:                                                                  \
-    void set_##name(std::function<xaml_result(arg)>&& callback) noexcept \
-    {                                                                    \
-        m_##name = std::move(callback);                                  \
-    }                                                                    \
-    xaml_result invoke_##name(arg a) noexcept                            \
-    {                                                                    \
-        if (m_##name)                                                    \
-            return m_##name(a);                                          \
-        else                                                             \
-            return XAML_S_OK;                                            \
+#define __NATIVE_WEBVIEW_EVENT(name, arg)                                                \
+private:                                                                                 \
+    fu2::unique_function<xaml_result(arg) noexcept> m_##name{};                          \
+                                                                                         \
+public:                                                                                  \
+    void set_##name(fu2::unique_function<xaml_result(arg) noexcept>&& callback) noexcept \
+    {                                                                                    \
+        m_##name = std::move(callback);                                                  \
+    }                                                                                    \
+    xaml_result invoke_##name(arg a) noexcept                                            \
+    {                                                                                    \
+        if (m_##name)                                                                    \
+            return m_##name(a);                                                          \
+        else                                                                             \
+            return XAML_S_OK;                                                            \
     }
 
     __NATIVE_WEBVIEW_EVENT(navigated, wchar_t const*)

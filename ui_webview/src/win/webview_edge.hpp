@@ -7,7 +7,7 @@ struct xaml_webview_edge : xaml_win32_webview
 {
     wil::com_ptr_nothrow<ABI::Windows::Web::UI::IWebViewControl> m_view{ nullptr };
 
-    xaml_result create_async(HWND parent, xaml_rectangle const& rect, std::function<xaml_result()>&& callback) noexcept override;
+    xaml_result create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept override;
 
     operator bool() const noexcept override { return (bool)m_view; }
 

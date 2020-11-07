@@ -10,16 +10,16 @@
 using namespace std;
 using namespace Microsoft::WRL;
 
-xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& rect, function<xaml_result()>&& callback) noexcept
+xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept
 {
     HRESULT __hr = CreateCoreWebView2Environment(
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-            [=](HRESULT result, ICoreWebView2Environment* env) -> HRESULT {
+            [=](HRESULT result, ICoreWebView2Environment* env) mutable noexcept -> HRESULT {
                 RETURN_IF_FAILED(result);
                 RETURN_IF_FAILED(env->CreateCoreWebView2Controller(
                     parent,
                     Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
-                        [=](HRESULT result, ICoreWebView2Controller* webview) -> HRESULT {
+                        [=](HRESULT result, ICoreWebView2Controller* webview) mutable noexcept -> HRESULT {
                             RETURN_IF_FAILED(result);
                             m_host = webview;
                             RETURN_IF_FAILED(m_host->put_Bounds(xaml_to_native<RECT>(rect)));
