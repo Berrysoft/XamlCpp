@@ -16,7 +16,7 @@ XAML_HASHER_1_TYPE(XAML_T_V(int32_t))
 XAML_MAP_2_TYPE(XAML_T_V(int32_t), XAML_T_O(xaml_object))
 
 EXTERN_C xaml_result XAML_CALL xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string_new(
-    xaml_result (*p)(xaml_object*, xaml_vector_changed_args_1__xaml_string*),
+    xaml_result (*p)(xaml_object*, xaml_vector_changed_args_1__xaml_string*) XAML_NOEXCEPT,
     xaml_delegate_2__xaml_object__xaml_vector_changed_args_1__xaml_string**) XAML_NOEXCEPT;
 
 EXTERN_C xaml_result XAML_CALL xaml_observable_vector_1__xaml_string_new(xaml_observable_vector_1__xaml_string** ptr) XAML_NOEXCEPT;
