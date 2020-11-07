@@ -1,17 +1,11 @@
 #include <QPainterPath>
 #include <QWidget>
 #include <cmath>
+#include <numbers>
 #include <qt5/qstring.hpp>
 #include <shared/canvas.hpp>
 #include <xaml/ui/qt5/controls/brush.hpp>
 #include <xaml/ui/qt5/controls/pen.hpp>
-
-#if __has_include(<numbers>)
-    #include <numbers>
-using std::numbers::pi;
-#else
-    #define pi M_PI
-#endif // __has_include(<numbers>)
 
 using namespace std;
 
@@ -42,7 +36,7 @@ static xaml_result set_pen(QPainter* handle, xaml_pen* pen, xaml_rectangle const
 
 static int get_drawing_angle(double angle) noexcept
 {
-    return (int)round(-angle * 180 / pi * 16);
+    return (int)round(-angle * 180 / numbers::pi * 16);
 }
 
 xaml_result xaml_drawing_context_impl::draw_arc(xaml_pen* pen, xaml_rectangle const& region, double start_angle, double end_angle) noexcept

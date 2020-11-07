@@ -2,6 +2,7 @@
 #import <cocoa/XamlCanvasView.h>
 #include <cocoa/drawing_mask.hpp>
 #include <cocoa/nsstring.hpp>
+#include <numbers>
 #include <shared/canvas.hpp>
 #include <tuple>
 #include <xaml/ui/cocoa/controls/brush.h>
@@ -85,13 +86,6 @@ static xaml_point get_mouse_location(NSView* view) noexcept
 }
 @end
 
-#if __has_include(<numbers>)
-    #include <numbers>
-using std::numbers::pi;
-#else
-    #define pi M_PI
-#endif // __has_include(<numbers>)
-
 using namespace std;
 
 static xaml_result set_pen(NSBezierPath* path, xaml_pen* pen, xaml_size const& size, xaml_rectangle const& region) noexcept
@@ -121,8 +115,8 @@ static NSBezierPath* path_arc(xaml_size const& base_size, xaml_rectangle const& 
     [path moveToPoint:NSMakePoint(startp.x, (base_size.height - startp.y) / rate)];
     [path appendBezierPathWithArcWithCenter:NSMakePoint(centerp.x, (base_size.height - centerp.y) / rate)
                                      radius:radius.width
-                                 startAngle:-start_angle / pi * 180
-                                   endAngle:-end_angle / pi * 180
+                                 startAngle:-start_angle / numbers::pi * 180
+                                   endAngle:-end_angle / numbers::pi * 180
                                   clockwise:YES];
     return path;
 }

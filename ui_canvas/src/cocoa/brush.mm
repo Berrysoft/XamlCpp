@@ -1,17 +1,11 @@
 #include <cmath>
 #include <cocoa/drawing_mask.hpp>
+#include <numbers>
 #include <shared/brush.hpp>
 #include <shared/point.hpp>
 #include <vector>
 #include <xaml/ui/controls/brush.h>
 #include <xaml/ui/drawing_conv.hpp>
-
-#if __has_include(<numbers>)
-    #include <numbers>
-using std::numbers::pi;
-#else
-    #define pi M_PI
-#endif // __has_include(<numbers>)
 
 using namespace std;
 
@@ -44,7 +38,7 @@ xaml_result xaml_linear_gradient_brush_impl::draw(NSBezierPath* path, xaml_size 
     NSGradient* gradient;
     XAML_RETURN_IF_FAILED(get_Gradient(m_gradient_stops, &gradient));
     xaml_point dir = m_end_point - m_start_point;
-    [gradient drawInBezierPath:path angle:-atan(dir.y / dir.x) / pi * 180.0];
+    [gradient drawInBezierPath:path angle:-atan(dir.y / dir.x) / numbers::pi * 180.0];
     return XAML_S_OK;
 }
 

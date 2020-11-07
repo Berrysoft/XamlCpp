@@ -13,7 +13,6 @@
 #include <CommCtrl.h>
 
 using namespace std;
-using std::numbers::pi;
 
 static constexpr D2D1_COLOR_F get_COLOR(xaml_color c) noexcept
 {
@@ -60,7 +59,7 @@ static HRESULT get_arc_geo(wil::com_ptr_nothrow<ID2D1Factory> const& d2d, xaml_r
     auto [radius, centerp, startp, endp] = get_arc(region, start_angle, end_angle);
     sink->BeginFigure(xaml_to_native<D2D1_POINT_2F>(startp), D2D1_FIGURE_BEGIN_HOLLOW);
     if (close) sink->AddLine(xaml_to_native<D2D1_POINT_2F>(startp));
-    sink->AddArc(D2D1::ArcSegment(xaml_to_native<D2D1_POINT_2F>(endp), xaml_to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
+    sink->AddArc(D2D1::ArcSegment(xaml_to_native<D2D1_POINT_2F>(endp), xaml_to_native<D2D1_SIZE_F>(radius), 0, D2D1_SWEEP_DIRECTION_CLOCKWISE, ((end_angle - start_angle) > numbers::pi) ? D2D1_ARC_SIZE_LARGE : D2D1_ARC_SIZE_SMALL));
     sink->EndFigure(close ? D2D1_FIGURE_END_CLOSED : D2D1_FIGURE_END_OPEN);
     RETURN_IF_FAILED(sink->Close());
     return geo.copy_to(ptr);

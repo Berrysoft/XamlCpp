@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <numbers>
 #include <test_window.h>
 #include <xaml/ui/application.h>
 #include <xaml/ui/controls/button.h>
@@ -22,13 +23,6 @@ namespace colors
 {
 #include <xaml/ui/colors.h>
 }
-
-#if __has_include(<numbers>)
-    #include <numbers>
-using std::numbers::pi;
-#else
-    #define pi M_PI
-#endif // __has_include(<numbers>)
 
 using namespace std;
 
@@ -431,7 +425,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_object* sender, xaml_dr
     auto r = (min)(cx, cy) - 2;
     xaml_ptr<xaml_brush_pen> pen1;
     XAML_RETURN_IF_FAILED(xaml_brush_pen_new_solid(is_dark ? colors::white : colors::black, 1, &pen1));
-    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r, cy - r, r * 2, r * 2 }, pi, 2 * pi));
+    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r, cy - r, r * 2, r * 2 }, numbers::pi, 2 * numbers::pi));
     XAML_RETURN_IF_FAILED(dc->draw_line(pen1, { cx - r, cy }, { cx + r, cy }));
     xaml_ptr<xaml_linear_gradient_brush> brush2;
     XAML_RETURN_IF_FAILED(xaml_linear_gradient_brush_new(&brush2));
@@ -442,7 +436,7 @@ xaml_result xaml_test_window_impl::on_canvas_redraw(xaml_object* sender, xaml_dr
     xaml_ptr<xaml_brush_pen> pen2;
     XAML_RETURN_IF_FAILED(xaml_brush_pen_new(brush2, 1, &pen2));
     XAML_RETURN_IF_FAILED(dc->draw_round_rect(pen2, { cx - r - 1, cy - r - 1, r * 2 + 2, r * 1.618 + 2 }, { r / 10, r / 10 }));
-    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r - 1 + r / 10, cy + r * 0.618 + 1 - r * 0.382 / 2, r * 2 - r / 5, r * 0.382 }, 0, pi));
+    XAML_RETURN_IF_FAILED(dc->draw_arc(pen1, { cx - r - 1 + r / 10, cy + r * 0.618 + 1 - r * 0.382 / 2, r * 2 - r / 5, r * 0.382 }, 0, numbers::pi));
     xaml_ptr<xaml_string> text;
     XAML_RETURN_IF_FAILED(xaml_string_new(U("Hello world!"), &text));
     xaml_ptr<xaml_radial_gradient_brush> brush3;

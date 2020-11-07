@@ -1,16 +1,10 @@
 #include <cairo.h>
 #include <cmath>
+#include <numbers>
 #include <shared/canvas.hpp>
 #include <xaml/ui/controls/canvas.h>
 #include <xaml/ui/gtk3/controls/brush.h>
 #include <xaml/ui/gtk3/controls/pen.h>
-
-#if __has_include(<numbers>)
-    #include <numbers>
-using std::numbers::pi;
-#else
-    #define pi M_PI
-#endif // __has_include(<numbers>)
 
 using namespace std;
 
@@ -57,12 +51,12 @@ xaml_result xaml_drawing_context_impl::fill_pie(xaml_brush* brush, xaml_rectangl
 
 xaml_result xaml_drawing_context_impl::draw_ellipse(xaml_pen* pen, xaml_rectangle const& region) noexcept
 {
-    return draw_arc(pen, region, 0, 2 * pi);
+    return draw_arc(pen, region, 0, 2 * numbers::pi);
 }
 
 xaml_result xaml_drawing_context_impl::fill_ellipse(xaml_brush* brush, const xaml_rectangle& region) noexcept
 {
-    return fill_pie(brush, region, 0, 2 * pi);
+    return fill_pie(brush, region, 0, 2 * numbers::pi);
 }
 
 xaml_result xaml_drawing_context_impl::draw_line(xaml_pen* pen, xaml_point const& startp, xaml_point const& endp) noexcept
@@ -105,10 +99,10 @@ static void path_round_rect(cairo_t* handle, xaml_rectangle const& rect, xaml_si
     cairo_get_matrix(handle, &save_matrix);
     cairo_scale(handle, 1, round.height / round.width);
     cairo_new_sub_path(handle);
-    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + round.height, round.width, -pi / 2, 0);
-    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + rect.height - round.height, round.width, 0, pi / 2);
-    cairo_arc(handle, rect.x + round.width, rect.y + rect.height - round.height, round.width, pi / 2, pi);
-    cairo_arc(handle, rect.x + round.width, rect.y + round.height, round.width, pi, pi / 2 * 3);
+    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + round.height, round.width, -numbers::pi / 2, 0);
+    cairo_arc(handle, rect.x + rect.width - round.width, rect.y + rect.height - round.height, round.width, 0, numbers::pi / 2);
+    cairo_arc(handle, rect.x + round.width, rect.y + rect.height - round.height, round.width, numbers::pi / 2, numbers::pi);
+    cairo_arc(handle, rect.x + round.width, rect.y + round.height, round.width, numbers::pi, numbers::pi / 2 * 3);
     cairo_close_path(handle);
     cairo_set_matrix(handle, &save_matrix);
 }
