@@ -115,6 +115,6 @@ xaml_result XAML_CALL xaml_result_handler_set(xaml_result_handler handler) noexc
 try
 {
     if (!handler) handler = XAML_DEFAULT_HANDLER;
-    return xaml_result_handler_set(function<__xaml_result_handler_prototype>{ handler });
+    return xaml_result_handler_set(fu2::function<__xaml_result_handler_prototype_noexcept>{ handler });
 }
 XAML_CATCH_RETURN()
