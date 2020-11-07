@@ -4,10 +4,10 @@
 #include <function2/function2.hpp>
 #include <functional>
 
-template <template <typename> typename Wrapper, typename Func>
+template <template <typename...> typename Wrapper, typename Func>
 struct xaml_function_wrap_helper;
 
-template <template <typename> typename Wrapper, typename Return, typename... Args>
+template <template <typename...> typename Wrapper, typename Return, typename... Args>
 struct xaml_function_wrap_helper<Wrapper, Return(Args...)>
 {
     Wrapper<Return(Args...) noexcept> operator()(std::function<Return(Args...)>&& func) const
