@@ -7,7 +7,7 @@
 
 struct xaml_layout_base_internal : xaml_multicontainer_internal
 {
-    virtual xaml_result XAML_CALL draw_impl(xaml_rectangle const& region, __xaml_function_wrapper_t<xaml_result(xaml_control*, xaml_rectangle const&) noexcept>) noexcept;
+    virtual xaml_result XAML_CALL draw_impl(xaml_rectangle const& region, __xaml_function_view_wrapper_t<xaml_result(xaml_control*, xaml_rectangle const&) noexcept>) noexcept;
 
     xaml_result XAML_CALL draw(xaml_rectangle const& region) noexcept override;
 };
