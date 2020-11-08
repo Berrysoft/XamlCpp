@@ -34,7 +34,11 @@ target_include_directories(xaml_global
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 )
 
-target_link_libraries(xaml_global PRIVATE stream_format nowide PUBLIC function2)
+target_link_libraries(xaml_global PRIVATE stream_format nowide)
+
+if(${USE_FUNCTION2})
+    target_link_libraries(xaml_global PUBLIC function2)
+endif()
 
 target_compile_definitions(xaml_global
     PUBLIC
