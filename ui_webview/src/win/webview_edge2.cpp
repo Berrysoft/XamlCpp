@@ -10,7 +10,7 @@
 using namespace std;
 using namespace Microsoft::WRL;
 
-xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept
+xaml_result xaml_webview_edge2::create_async(HWND parent, xaml_rectangle const& rect, __xaml_function_wrapper_t<xaml_result() noexcept> callback) noexcept
 {
     HRESULT __hr = CreateCoreWebView2Environment(
         Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(

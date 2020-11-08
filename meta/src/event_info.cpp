@@ -7,8 +7,8 @@ using namespace std;
 
 struct xaml_event_info_impl : xaml_implement<xaml_event_info_impl, xaml_event_info>
 {
-    using adder_func = fu2::unique_function<xaml_result(xaml_object*, xaml_method_info*, int32_t*) noexcept>;
-    using remover_func = fu2::unique_function<xaml_result(xaml_object*, int32_t) noexcept>;
+    using adder_func = __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_method_info*, int32_t*) noexcept>;
+    using remover_func = __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, int32_t) noexcept>;
 
     xaml_ptr<xaml_string> m_name;
     adder_func m_adder;
@@ -46,14 +46,16 @@ xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, xaml_result(XAML_CA
     return xaml_object_new_catch<xaml_event_info_impl>(ptr, name, adder, remover);
 }
 
-xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, fu2::unique_function<xaml_result(xaml_object*, xaml_method_info*, int32_t*) noexcept>&& adder, fu2::unique_function<xaml_result(xaml_object*, int32_t) noexcept>&& remover, xaml_event_info** ptr) noexcept
+xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_method_info*, int32_t*) noexcept>&& adder, __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, int32_t) noexcept>&& remover, xaml_event_info** ptr) noexcept
 {
     return xaml_object_new<xaml_event_info_impl>(ptr, name, move(adder), move(remover));
 }
 
+#ifdef XAML_FUNCTION2
 xaml_result XAML_CALL xaml_event_info_new(xaml_string* name, function<xaml_result(xaml_object*, xaml_method_info*, int32_t*)>&& adder, function<xaml_result(xaml_object*, int32_t)>&& remover, xaml_event_info** ptr) noexcept
 try
 {
     return xaml_object_new<xaml_event_info_impl>(ptr, name, xaml_function_wrap_unique(move(adder)), xaml_function_wrap_unique(move(remover)));
 }
 XAML_CATCH_RETURN()
+#endif // XAML_FUNCTION2

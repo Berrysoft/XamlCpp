@@ -56,7 +56,7 @@ struct xaml_webview_ie : xaml_win32_webview
     wil::com_ptr_nothrow<IWebBrowser2> m_browser{ nullptr };
     wil::com_ptr_nothrow<WebBrowserSink> m_sink{ nullptr };
 
-    xaml_result create_async(HWND parent, xaml_rectangle const& rect, fu2::function<xaml_result() noexcept> callback) noexcept override;
+    xaml_result create_async(HWND parent, xaml_rectangle const& rect, __xaml_function_wrapper_t<xaml_result() noexcept> callback) noexcept override;
 
     operator bool() const noexcept override { return (bool)m_browser; }
 

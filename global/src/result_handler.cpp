@@ -30,7 +30,7 @@
 
 using namespace std;
 
-static fu2::function<__xaml_result_handler_prototype_noexcept> s_handler = XAML_DEFAULT_HANDLER;
+static __xaml_function_wrapper_t<__xaml_result_handler_prototype_noexcept> s_handler = XAML_DEFAULT_HANDLER;
 
 void XAML_CALL xaml_result_raise(xaml_result hr, xaml_result_raise_level level, char const* file, int32_t line) noexcept
 {
@@ -89,7 +89,7 @@ void XAML_CALL xaml_result_handler_default(xaml_result hr, xaml_result_raise_lev
     }
 }
 
-xaml_result XAML_CALL xaml_result_handler_set(fu2::function<__xaml_result_handler_prototype_noexcept> const& handler) noexcept
+xaml_result XAML_CALL xaml_result_handler_set(__xaml_function_wrapper_t<__xaml_result_handler_prototype_noexcept> const& handler) noexcept
 try
 {
     if (!handler)
@@ -100,6 +100,7 @@ try
 }
 XAML_CATCH_RETURN()
 
+#ifdef XAML_FUNCTION2
 xaml_result XAML_CALL xaml_result_handler_set(function<__xaml_result_handler_prototype> const& handler) noexcept
 try
 {
@@ -110,11 +111,12 @@ try
     return XAML_S_OK;
 }
 XAML_CATCH_RETURN()
+#endif // XAML_FUNCTION2
 
 xaml_result XAML_CALL xaml_result_handler_set(xaml_result_handler handler) noexcept
 try
 {
     if (!handler) handler = XAML_DEFAULT_HANDLER;
-    return xaml_result_handler_set(fu2::function<__xaml_result_handler_prototype_noexcept>{ handler });
+    return xaml_result_handler_set(__xaml_function_wrapper_t<__xaml_result_handler_prototype_noexcept>{ handler });
 }
 XAML_CATCH_RETURN()

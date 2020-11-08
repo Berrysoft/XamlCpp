@@ -59,6 +59,7 @@ struct __xaml_function_wrapper_traits<Return(Args...) noexcept>
 {
     using function_type = fu2::function<Return(Args...) noexcept>;
     using unique_function_type = fu2::unique_function<Return(Args...) noexcept>;
+    using function_view_type = fu2::function_view<Return(Args...) noexcept>;
 };
     #else
 template <typename Return, typename... Args>
@@ -66,6 +67,7 @@ struct __xaml_function_wrapper_traits<Return(Args...) noexcept>
 {
     using function_type = std::function<Return(Args...)>;
     using unique_function_type = std::function<Return(Args...)>;
+    using function_view_type = std::function<Return(Args...)>;
 };
     #endif // XAML_SUPPORT_FUNCTION2
 
@@ -74,6 +76,9 @@ using __xaml_function_wrapper_t = typename __xaml_function_wrapper_traits<Func>:
 
 template <typename Func>
 using __xaml_unique_function_wrapper_t = typename __xaml_function_wrapper_traits<Func>::unique_function_type;
+
+template <typename Func>
+using __xaml_function_view_wrapper_t = typename __xaml_function_wrapper_traits<Func>::function_view_type;
 
 template <typename... Args>
 struct __xaml_delegate_implement : xaml_implement<__xaml_delegate_implement<Args...>, xaml_delegate<Args...>>

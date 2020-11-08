@@ -6,8 +6,8 @@ using namespace std;
 
 struct xaml_collection_property_info_impl : xaml_implement<xaml_collection_property_info_impl, xaml_collection_property_info>
 {
-    using adder_func = fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>;
-    using remover_func = fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>;
+    using adder_func = __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>;
+    using remover_func = __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>;
 
     xaml_ptr<xaml_string> m_name;
     xaml_guid m_type;
@@ -64,14 +64,16 @@ xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_
     return xaml_object_new_catch<xaml_collection_property_info_impl>(ptr, name, type, adder, remover);
 }
 
-xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&& adder, fu2::unique_function<xaml_result(xaml_object*, xaml_object*) noexcept>&& remover, xaml_collection_property_info** ptr) noexcept
+xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>&& adder, __xaml_unique_function_wrapper_t<xaml_result(xaml_object*, xaml_object*) noexcept>&& remover, xaml_collection_property_info** ptr) noexcept
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, move(adder), move(remover));
 }
 
+#ifdef XAML_FUNCTION2
 xaml_result XAML_CALL xaml_collection_property_info_new(xaml_string* name, xaml_guid const& type, function<xaml_result(xaml_object*, xaml_object*)>&& adder, function<xaml_result(xaml_object*, xaml_object*)>&& remover, xaml_collection_property_info** ptr) noexcept
 try
 {
     return xaml_object_new<xaml_collection_property_info_impl>(ptr, name, type, xaml_function_wrap_unique(move(adder)), xaml_function_wrap_unique(move(remover)));
 }
 XAML_CATCH_RETURN()
+#endif // XAML_FUNCTION2

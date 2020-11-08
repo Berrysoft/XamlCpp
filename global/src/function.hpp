@@ -1,8 +1,9 @@
 #ifndef XAML_GLOBAL_INTERNAL_FUNCTION_HPP
 #define XAML_GLOBAL_INTERNAL_FUNCTION_HPP
 
-#include <function2/function2.hpp>
-#include <functional>
+#ifdef XAML_FUNCTION2
+    #include <function2/function2.hpp>
+    #include <functional>
 
 template <template <typename...> typename Wrapper, typename Func>
 struct xaml_function_wrap_helper;
@@ -27,5 +28,6 @@ inline auto xaml_function_wrap_unique(std::function<Func> func)
 {
     return xaml_function_wrap_helper<fu2::unique_function, Func>{}(std::move(func));
 }
+#endif // XAML_FUNCTION2
 
 #endif // !XAML_GLOBAL_INTERNAL_FUNCTION_HPP

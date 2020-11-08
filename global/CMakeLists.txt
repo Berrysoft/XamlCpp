@@ -43,10 +43,6 @@ target_compile_definitions(xaml_global
 
 target_compile_definitions(xaml_global PRIVATE "XAML_GLOBAL_BUILD")
 
-if(${SUPPORT_FUNCTION2})
-    target_compile_definitions(xaml_global PUBLIC "XAML_SUPPORT_FUNCTION2")
-endif()
-
 if(${BUILD_SHARED_LIBS})
     target_compile_definitions(xaml_global PRIVATE "XAML_API=__XAML_EXPORT")
 endif()

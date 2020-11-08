@@ -5,7 +5,7 @@ using namespace std;
 xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher<xaml_string>** ptr) noexcept
 {
     return xaml_hasher_new<xaml_string>(
-        fu2::unique_function<xaml_result(xaml_string*, std::int32_t*) noexcept>{
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_string*, std::int32_t*) noexcept>{
             [](xaml_string* value, int32_t* phash) noexcept -> xaml_result {
                 static hash<std::string_view> hasher{};
                 string_view data;
@@ -23,7 +23,7 @@ xaml_result XAML_CALL xaml_hasher_string_default(xaml_hasher<xaml_string>** ptr)
 #endif
                 return XAML_S_OK;
             } },
-        fu2::unique_function<xaml_result(xaml_string*, xaml_string*, bool*) noexcept>{
+        __xaml_unique_function_wrapper_t<xaml_result(xaml_string*, xaml_string*, bool*) noexcept>{
             [](xaml_string* lvalue, xaml_string* rvalue, bool* pb) noexcept -> xaml_result {
                 return xaml_string_equals(lvalue, rvalue, pb);
             } },

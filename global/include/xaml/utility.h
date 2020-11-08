@@ -204,9 +204,9 @@
 #endif // !XAML_NOEXCEPT
 
 #ifndef XAML_SUPPORT_FUNCTION2
-    #ifdef XAML_BUILD
+    #if defined(XAML_BUILD) && defined(XAML_FUNCTION2)
         #define XAML_SUPPORT_FUNCTION2
-    #endif // XAML_BUILD
+    #endif // XAML_BUILD && XAML_FUNCTION2
 #endif // !XAML_SUPPORT_FUNCTION2
 
 #endif // !XAML_UTILITY_HPP
