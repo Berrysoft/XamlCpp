@@ -40,7 +40,7 @@ if(${BUILD_WINDOWS})
 
         if(NOT EXISTS "${CMAKE_BINARY_DIR}/webview2.nupkg")
             message(STATUS "Downloading WebView2...")
-            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/0.9.579 ${CMAKE_BINARY_DIR}/webview2.nupkg)
+            file(DOWNLOAD https://www.nuget.org/api/v2/package/Microsoft.Web.WebView2/1.0.674-prerelease ${CMAKE_BINARY_DIR}/webview2.nupkg)
             message(STATUS "Downloading WebView2... done")
         endif()
 
