@@ -195,6 +195,7 @@ endif()
 set(_XAML_TARGETS
     xaml_global
     xaml_meta xaml_markup
+    xaml_async
     xaml_ui xaml_ui_appmain
 )
 
@@ -226,6 +227,7 @@ xaml_fix_char8_t_flags()
 add_subdirectory(global)
 add_subdirectory(helpers)
 add_subdirectory(meta)
+add_subdirectory(async)
 add_subdirectory(markup)
 add_subdirectory(ui)
 if(${BUILD_PARSER})
