@@ -1,33 +1,34 @@
+#include <chrono>
 #include <nowide/iostream.hpp>
 #include <sf/format.hpp>
 #include <thread>
 #include <xaml/async/action.h>
 
-auto operator co_await(std::chrono::system_clock::duration duration)
+auto get_awaitable(std::chrono::system_clock::duration duration)
 {
     struct awaitable
     {
-        std::chrono::system_clock::duration duration;
+        std::chrono::system_clock::duration m_duration;
+        std::thread m_thread;
 
         explicit awaitable(std::chrono::system_clock::duration d)
-            : duration(d)
+            : m_duration(d),
+              m_thread(
+                  [d] {
+                      if (d.count() > 0) std::this_thread::sleep_for(d);
+                  })
         {
         }
 
         bool await_ready() const
         {
-            return duration.count() <= 0;
+            return m_duration.count() <= 0;
         }
 
-        void await_suspend(std::coroutine_handle<> h)
+        auto await_suspend(std::coroutine_handle<> h)
         {
-            std::thread t{
-                [h, this] {
-                    std::this_thread::sleep_for(duration);
-                    h.resume();
-                }
-            };
-            t.detach();
+            m_thread.join();
+            return h;
         }
 
         void await_resume() {}
@@ -41,8 +42,10 @@ using namespace std::chrono_literals;
 
 xaml_ptr<xaml_async_action> foo()
 {
-    co_await 1s;
+    auto task = get_awaitable(1s);
     println(cout, "Here is in foo.");
+    co_await task;
+    println(cout, "Here is also in foo.");
 }
 
 xaml_ptr<xaml_async_action> bar()
@@ -50,7 +53,6 @@ xaml_ptr<xaml_async_action> bar()
     println(cout, "Here is in bar.");
     auto task = foo();
     println(cout, "Here is also in bar.");
-    std::this_thread::sleep_for(1.5s);
     co_await task;
     println(cout, "Now back to bar once again.");
     throw std::bad_alloc{};
