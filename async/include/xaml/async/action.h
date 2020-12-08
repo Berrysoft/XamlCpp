@@ -4,6 +4,7 @@
 #include <xaml/async/info.h>
 #include <xaml/delegate.h>
 #include <xaml/meta/meta_macros.h>
+#include <xaml/vector.h>
 
 #ifdef __cplusplus
     #include <atomic>
@@ -27,7 +28,17 @@ XAML_DECL_INTERFACE_(xaml_async_action, xaml_async_info)
     XAML_DECL_VTBL(xaml_async_action, XAML_ASYNC_ACTION_VTBL);
 };
 
-EXTERN_C XAML_ASYNC_API xaml_result XAML_CALL xaml_async_action_wait(xaml_async_action*) XAML_NOEXCEPT;
+#ifndef xaml_enumerator_1__xaml_async_action_defined
+    #define xaml_enumerator_1__xaml_async_action_defined
+XAML_ENUMERATOR_1_TYPE(XAML_T_O(xaml_async_action))
+#endif // !xaml_enumerator_1__xaml_async_action_defined
+
+#ifndef xaml_vector_view_1__xaml_async_action_defined
+    #define xaml_vector_view_1__xaml_async_action_defined
+XAML_VECTOR_VIEW_1_TYPE(XAML_T_O(xaml_async_action))
+#endif // !xaml_vector_view_1__xaml_async_action_defined
+
+EXTERN_C XAML_ASYNC_API xaml_result XAML_CALL xaml_async_action_wait_all(XAML_VECTOR_VIEW_1_NAME(xaml_async_action) *) XAML_NOEXCEPT;
 
 #ifdef __cplusplus
 template <typename T, typename I>
@@ -37,12 +48,14 @@ struct xaml_async_promise_base : xaml_implement<T, I>
     std::atomic<xaml_async_status> m_status{};
     xaml_ptr<xaml_delegate<I, xaml_async_status>> m_handler{};
 
+    std::coroutine_handle<T> get_handle() { return std::coroutine_handle<T>::from_promise(*static_cast<T*>(this)); }
+
     std::uint32_t XAML_CALL release() noexcept override
     {
         std::int32_t res = --this->m_ref_count;
         if (res == 0)
         {
-            std::coroutine_handle<T>::from_promise(*static_cast<T*>(this)).destroy();
+            get_handle().destroy();
         }
         return res;
     }
@@ -72,7 +85,7 @@ struct xaml_async_promise_base : xaml_implement<T, I>
     }
 
     xaml_ptr<I> get_return_object() noexcept { return this; }
-    std::suspend_never initial_suspend() const noexcept { return {}; }
+    std::suspend_always initial_suspend() const noexcept { return {}; }
     auto final_suspend() noexcept
     {
         struct awaitable
@@ -84,11 +97,11 @@ struct xaml_async_promise_base : xaml_implement<T, I>
 
             bool await_suspend(std::coroutine_handle<>) const noexcept
             {
-                if (m_promise->m_status == xaml_async_started) m_promise->m_status = xaml_async_completed;
                 m_promise->invoke_completed();
                 return m_promise->release() > 0;
             }
         };
+        if (m_status == xaml_async_started) m_status = xaml_async_completed;
         return awaitable{ this };
     }
 
@@ -109,6 +122,8 @@ struct xaml_async_promise_base : xaml_implement<T, I>
     xaml_result XAML_CALL get_error() noexcept override
     try
     {
+        auto handle = get_handle();
+        while (!handle.done()) handle.resume();
         rethrow_if_failed();
         return XAML_S_OK;
     }
@@ -138,6 +153,7 @@ auto operator co_await(xaml_ptr<xaml_async_action> action)
 
         void await_suspend(std::coroutine_handle<> h) const
         {
+            auto action = m_action;
             xaml_ptr<xaml_delegate<xaml_async_action, xaml_async_status>> handler;
             XAML_THROW_IF_FAILED(xaml_delegate_new(
                 [h](xaml_ptr<xaml_async_action> const&, xaml_async_status) noexcept -> xaml_result {
@@ -149,7 +165,8 @@ auto operator co_await(xaml_ptr<xaml_async_action> action)
                     XAML_CATCH_RETURN()
                 },
                 &handler));
-            XAML_THROW_IF_FAILED(m_action->set_completed(handler));
+            XAML_THROW_IF_FAILED(action->set_completed(handler));
+            XAML_THROW_IF_FAILED(action->get_error());
         }
     };
     return awaitable{ action };

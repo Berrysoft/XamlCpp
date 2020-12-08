@@ -4,7 +4,7 @@
 #include <thread>
 #include <xaml/async/action.h>
 
-auto get_awaitable(std::chrono::system_clock::duration duration)
+auto operator co_await(std::chrono::system_clock::duration duration)
 {
     struct awaitable
     {
@@ -42,9 +42,8 @@ using namespace std::chrono_literals;
 
 xaml_ptr<xaml_async_action> foo()
 {
-    auto task = get_awaitable(1s);
     println(cout, "Here is in foo.");
-    co_await task;
+    co_await 1s;
     println(cout, "Here is also in foo.");
 }
 
@@ -63,7 +62,7 @@ int main()
     auto action = bar();
     try
     {
-        XAML_THROW_IF_FAILED(xaml_async_action_wait(action));
+        XAML_THROW_IF_FAILED(action->get_error());
     }
     catch (xaml_result_error const& e)
     {
