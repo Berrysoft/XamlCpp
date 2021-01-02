@@ -329,6 +329,7 @@ ASALocalRun/
 
 # clangd
 .clangd
+.cache
 
 # ccls
 .ccls*
