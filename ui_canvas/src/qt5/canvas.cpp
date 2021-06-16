@@ -234,7 +234,7 @@ static constexpr xaml_mouse_button get_mouse_button(Qt::MouseButton button) noex
         return xaml_mouse_button_left;
     case Qt::RightButton:
         return xaml_mouse_button_right;
-    case Qt::MidButton:
+    case Qt::MiddleButton:
         return xaml_mouse_button_middle;
     default:
         return xaml_mouse_button_other;
