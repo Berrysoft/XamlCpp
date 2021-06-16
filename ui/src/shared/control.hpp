@@ -165,7 +165,7 @@ struct xaml_control_internal
     XAML_PROP_IMPL(handle, QWidget*, QWidget**, QWidget*)
 
     template <typename T, typename... Args>
-    xaml_result XAML_CALL create(Args&&... args)
+    xaml_result XAML_CALL create(Args&&... args) noexcept
     {
         QWidget* handle = nullptr;
         xaml_ptr<xaml_element_base> parent;
@@ -177,13 +177,13 @@ struct xaml_control_internal
         }
         if (handle)
         {
-            m_handle = new T(std::forward<Args>(args)..., handle);
+            m_handle = new (std::nothrow) T(std::forward<Args>(args)..., handle);
         }
         else
         {
-            m_handle = new T(std::forward<Args>(args)...);
+            m_handle = new (std::nothrow) T(std::forward<Args>(args)...);
         }
-        return XAML_S_OK;
+        return m_handle ? XAML_S_OK : XAML_E_OUTOFMEMORY;
     }
 #endif // XAML_UI_WINDOWS
 
