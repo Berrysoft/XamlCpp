@@ -1,20 +1,20 @@
 #ifndef XAML_UI_SHARED_WINDOW_HPP
 #define XAML_UI_SHARED_WINDOW_HPP
 
-#include <atomic>
-#include <shared/container.hpp>
-#include <xaml/ui/window.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/window.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/window.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/window.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <QMainWindow>
     #include <xaml/ui/qt5/window.hpp>
 #endif // XAML_UI_WINDOWS
+
+#include <atomic>
+#include <shared/container.hpp>
+#include <xaml/ui/window.h>
 
 struct xaml_window_internal : xaml_container_internal
 {
@@ -107,7 +107,7 @@ struct xaml_window_internal : xaml_container_internal
     static void on_destroy(GtkWidget*, xaml_window_internal*) noexcept;
     static gboolean on_delete_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
     static gboolean on_configure_event(GtkWidget*, GdkEvent*, xaml_window_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     void on_resize_event(QResizeEvent* event) noexcept;
     void on_move_event(QMoveEvent* event) noexcept;
     void on_close_event(QCloseEvent* event) noexcept;
@@ -186,7 +186,7 @@ struct xaml_window_implement : xaml_container_implement<T, Internal, Base>
     } m_native_window;
 
     using native_window_type = xaml_gtk3_window;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     struct xaml_qt5_window_impl : xaml_qt5_control_implement<xaml_qt5_window_impl, T, xaml_qt5_window>
     {
     } m_native_window;

@@ -1,5 +1,5 @@
-#ifndef XAML_UI_QT5_WINDOW_H
-#define XAML_UI_QT5_WINDOW_H
+#ifndef XAML_UI_QT_WINDOW_H
+#define XAML_UI_QT_WINDOW_H
 
 #include <xaml/ui/qt5/control.hpp>
 #include <xaml/ui/window.h>
@@ -13,4 +13,4 @@ XAML_DECL_INTERFACE_(xaml_qt5_window, xaml_qt5_control)
     XAML_DECL_VTBL(xaml_qt5_window, XAML_QT5_WINDOW_VTBL);
 };
 
-#endif // !XAML_UI_QT5_WINDOW_H
+#endif // !XAML_UI_QT_WINDOW_H

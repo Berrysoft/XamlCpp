@@ -1,5 +1,5 @@
 #include <QLabel>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/label.hpp>
 
 xaml_result xaml_label_internal::draw(xaml_rectangle const& region) noexcept

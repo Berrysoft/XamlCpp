@@ -1,9 +1,6 @@
 #ifndef XAML_UI_SHARED_MENU_BAR_HPP
 #define XAML_UI_SHARED_MENU_BAR_HPP
 
-#include <shared/container.hpp>
-#include <xaml/ui/menu_bar.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <wil/resource.h>
     #include <xaml/ui/win/menu_bar.h>
@@ -11,9 +8,12 @@
     #include <xaml/ui/cocoa/menu_bar.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/menu_bar.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <xaml/ui/qt5/menu_bar.hpp>
 #endif // XAML_UI_WINDOWS
+
+#include <shared/container.hpp>
+#include <xaml/ui/menu_bar.h>
 
 struct xaml_menu_bar_internal : xaml_multicontainer_internal
 {
@@ -44,7 +44,7 @@ public:
     XAML_PROP_IMPL(menu, OBJC_OBJECT(NSMenu), OBJC_OBJECT(NSMenu)*, OBJC_OBJECT(NSMenu))
 #elif defined(XAML_UI_GTK3)
     XAML_PROP_IMPL(menu, GtkMenuBar*, GtkMenuBar**, GtkMenuBar*)
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     xaml_result XAML_CALL draw_visible() noexcept override;
 
     XAML_PROP_IMPL(menu, QMenuBar*, QMenuBar**, QMenuBar*)
@@ -83,7 +83,7 @@ struct xaml_menu_bar_impl : xaml_multicontainer_implement<xaml_menu_bar_impl, xa
     } m_native_menu_bar;
 
     using native_menu_bar_type = xaml_gtk3_menu_bar;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     XAML_PROP_INTERNAL_IMPL(menu, QMenuBar**, QMenuBar*)
 
     struct xaml_qt5_menu_bar_impl : xaml_inner_implement<xaml_qt5_menu_bar_impl, xaml_menu_bar_impl, xaml_qt5_menu_bar>

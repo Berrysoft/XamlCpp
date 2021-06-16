@@ -1,5 +1,5 @@
-#ifndef XAML_UI_QT5_CONTROL_H
-#define XAML_UI_QT5_CONTROL_H
+#ifndef XAML_UI_QT_CONTROL_H
+#define XAML_UI_QT_CONTROL_H
 
 #include <QWidget>
 #include <memory>
@@ -16,4 +16,4 @@ XAML_DECL_INTERFACE_(xaml_qt5_control, xaml_object)
     XAML_DECL_VTBL(xaml_qt5_control, XAML_QT5_CONTROL_VTBL);
 };
 
-#endif // !XAML_UI_QT5_CONTROL_H
+#endif // !XAML_UI_QT_CONTROL_H

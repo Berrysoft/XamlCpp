@@ -1,17 +1,17 @@
 #ifndef XAML_UI_CANVAS_SHARED_PEN_HPP
 #define XAML_UI_CANVAS_SHARED_PEN_HPP
 
-#include <xaml/ui/controls/pen.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/controls/pen.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/controls/pen.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/controls/pen.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <xaml/ui/qt5/controls/pen.hpp>
 #endif // XAML_UI_WINDOWS
+
+#include <xaml/ui/controls/pen.h>
 
 template <typename T, typename Base>
 struct xaml_pen_implement : xaml_implement<T, Base>
@@ -45,7 +45,7 @@ struct xaml_pen_implement : xaml_implement<T, Base>
     } m_native_pen;
 
     using native_pen_type = xaml_gtk3_pen;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     virtual xaml_result XAML_CALL create(xaml_rectangle const&, QPen*) noexcept = 0;
 
     struct xaml_qt5_pen_impl : xaml_inner_implement<xaml_qt5_pen_impl, T, xaml_qt5_pen>
@@ -86,7 +86,7 @@ struct xaml_brush_pen_impl : xaml_pen_implement<xaml_brush_pen_impl, xaml_brush_
     xaml_result XAML_CALL draw(OBJC_OBJECT(NSBezierPath), xaml_size const&, xaml_rectangle const&) noexcept override;
 #elif defined(XAML_UI_GTK3)
     xaml_result XAML_CALL set(cairo_t*, xaml_rectangle const&) noexcept override;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     xaml_result XAML_CALL create(xaml_rectangle const&, QPen*) noexcept override;
 #endif // XAML_UI_WINDOWS
 

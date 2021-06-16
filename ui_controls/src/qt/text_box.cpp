@@ -1,5 +1,5 @@
 #include <QTextEdit>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/text_box.hpp>
 
 using namespace std;

@@ -27,6 +27,8 @@ elseif(${BUILD_GTK3})
     target_link_libraries(xaml_test gtk3)
 elseif(${BUILD_QT5})
     target_link_libraries(xaml_test Qt5::Widgets)
+elseif(${BUILD_QT6})
+    target_link_libraries(xaml_test Qt6::Widgets)
 endif()
 
 target_include_directories(xaml_test PUBLIC include)

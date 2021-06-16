@@ -1,20 +1,20 @@
 #ifndef XAML_UI_SHARED_CONTROL_HPP
 #define XAML_UI_SHARED_CONTROL_HPP
 
-#include <xaml/event.h>
-#include <xaml/ui/application.h>
-#include <xaml/ui/control.h>
-#include <xaml/ui/drawing_conv.hpp>
-
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/control.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/control.h>
 #elif defined(XAML_UI_GTK3)
     #include <xaml/ui/gtk3/control.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <xaml/ui/qt5/control.hpp>
 #endif // XAML_UI_WINDOWS
+
+#include <xaml/event.h>
+#include <xaml/ui/application.h>
+#include <xaml/ui/control.h>
+#include <xaml/ui/drawing_conv.hpp>
 
 struct xaml_control_internal
 {
@@ -161,7 +161,7 @@ struct xaml_control_internal
 
     XAML_UI_API static gboolean on_button_event(GtkWidget*, GdkEventButton*, xaml_control_internal*) noexcept;
     XAML_UI_API static gboolean on_button_motion(GtkWidget*, GdkEventMotion*, xaml_control_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     XAML_PROP_IMPL(handle, QWidget*, QWidget**, QWidget*)
 
     template <typename T, typename... Args>
@@ -226,7 +226,7 @@ struct xaml_gtk3_control_implement : xaml_inner_implement<T2, D, Base2>
     xaml_result XAML_CALL get_handle(GtkWidget** pvalue) noexcept override { return this->m_outer->get_handle(pvalue); }
     xaml_result XAML_CALL set_handle(GtkWidget* value) noexcept override { return this->m_outer->set_handle(value); }
 };
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
 template <typename T2, typename D, typename Base2>
 struct xaml_qt5_control_implement : xaml_inner_implement<T2, D, Base2>
 {
@@ -309,7 +309,7 @@ struct xaml_control_implement : xaml_weak_implement<T, Base>
     } m_native_control;
 
     using native_control_type = xaml_gtk3_control;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     XAML_PROP_INTERNAL_IMPL(handle, QWidget**, QWidget*)
 
     struct xaml_qt5_control_impl : xaml_qt5_control_implement<xaml_qt5_control_impl, T, xaml_qt5_control>

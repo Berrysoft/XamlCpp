@@ -1,5 +1,5 @@
 #include <QLineEdit>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/entry.hpp>
 
 using namespace std;

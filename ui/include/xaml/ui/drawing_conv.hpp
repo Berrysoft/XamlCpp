@@ -9,7 +9,7 @@
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <gtk/gtk.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <QPoint>
     #include <QRect>
     #include <QSize>
@@ -114,7 +114,7 @@ inline NSColor* xaml_to_native<NSColor*, xaml_color>(xaml_color const& c) noexce
 {
     return [NSColor colorWithCalibratedRed:(c.r / 255.0) green:(c.g / 255.0) blue:(c.b / 255.0) alpha:(c.a / 255.0)];
 }
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
 constexpr xaml_size xaml_from_native(QSize const& s) noexcept
 {
     return { (double)s.width(), (double)s.height() };

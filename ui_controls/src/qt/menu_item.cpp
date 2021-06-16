@@ -1,5 +1,5 @@
 #include <QMenu>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/menu_item.hpp>
 #include <xaml/ui/qt5/control.hpp>
 #include <xaml/ui/qt5/menu_bar.hpp>

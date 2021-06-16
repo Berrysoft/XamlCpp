@@ -1,27 +1,27 @@
 #ifndef XAML_UI_SHARED_APPLICATION_HPP
 #define XAML_UI_SHARED_APPLICATION_HPP
 
-#include <atomic>
-#include <xaml/event.h>
-#include <xaml/ui/application.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <xaml/ui/win/font_provider.h>
 #elif defined(XAML_UI_GTK3)
     #include <gtk/gtk.h>
     #include <gtk3/resources.hpp>
     #include <xaml/ui/gtk3/application.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <QApplication>
     #include <memory>
 #endif
+
+#include <atomic>
+#include <xaml/event.h>
+#include <xaml/ui/application.h>
 
 struct xaml_application_impl : xaml_implement<xaml_application_impl, xaml_application>
 {
 protected:
 #ifdef XAML_UI_GTK3
     g_object_unique_ptr<GtkApplication> m_native_app{};
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     int m_argc{};
     std::unique_ptr<QApplication> m_native_app{};
 #endif

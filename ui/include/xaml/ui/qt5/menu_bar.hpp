@@ -1,5 +1,5 @@
-#ifndef XAML_UI_QT5_MENU_BAR_H
-#define XAML_UI_QT5_MENU_BAR_H
+#ifndef XAML_UI_QT_MENU_BAR_H
+#define XAML_UI_QT_MENU_BAR_H
 
 #include <QMenuBar>
 #include <xaml/meta/meta_macros.h>
@@ -16,4 +16,4 @@ XAML_DECL_INTERFACE_(xaml_qt5_menu_bar, xaml_object)
     XAML_DECL_VTBL(xaml_qt5_menu_bar, XAML_QT5_MENU_BAR_VTBL);
 };
 
-#endif // !XAML_UI_QT5_MENU_BAR_H
+#endif // !XAML_UI_QT_MENU_BAR_H

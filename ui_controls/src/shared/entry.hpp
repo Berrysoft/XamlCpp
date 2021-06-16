@@ -29,7 +29,7 @@ struct xaml_entry_internal : xaml_control_internal
     xaml_result XAML_CALL size_to_fit() noexcept override;
 
     static void on_changed(GtkWidget*, xaml_entry_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     void on_text_changed_event(QString const&) noexcept;
 #endif // XAML_UI_WINDOWS
 

@@ -6,7 +6,7 @@
 #include <QScreen>
 #include <QStatusBar>
 #include <QWindow>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/atomic_guard.hpp>
 #include <shared/window.hpp>
 

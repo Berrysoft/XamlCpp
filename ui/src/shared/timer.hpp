@@ -1,19 +1,19 @@
 #ifndef XMAL_UI_SHARED_TIMER_HPP
 #define XMAL_UI_SHARED_TIMER_HPP
 
-#include <atomic>
-#include <xaml/event.h>
-#include <xaml/ui/timer.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <Windows.h>
 #elif defined(XAML_UI_COCOA)
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <gtk/gtk.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <QTimer>
 #endif // XAML_UI_WINDOWS
+
+#include <atomic>
+#include <xaml/event.h>
+#include <xaml/ui/timer.h>
 
 struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer>
 {
@@ -36,7 +36,7 @@ struct xaml_timer_impl : xaml_implement<xaml_timer_impl, xaml_timer>
     void on_tick() noexcept;
 #elif defined(XAML_UI_GTK3)
     static gboolean on_timeout(xaml_timer_impl* self) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     QTimer m_handle{};
 #endif // XAML_UI_WINDOWS
 

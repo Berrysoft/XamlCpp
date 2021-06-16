@@ -2,7 +2,7 @@
 #include <QWidget>
 #include <cmath>
 #include <numbers>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/canvas.hpp>
 #include <xaml/ui/qt5/controls/brush.hpp>
 #include <xaml/ui/qt5/controls/pen.hpp>
@@ -223,7 +223,7 @@ void xaml_canvas_internal::on_paint_event(QPaintEvent*) noexcept
 
 void xaml_canvas_internal::on_mouse_move_event(QMouseEvent* event) noexcept
 {
-    XAML_ASSERT_SUCCEEDED(m_mouse_move->invoke(m_outer_this, xaml_from_native(event->localPos())));
+    XAML_ASSERT_SUCCEEDED(m_mouse_move->invoke(m_outer_this, xaml_from_native(event->position())));
 }
 
 static constexpr xaml_mouse_button get_mouse_button(Qt::MouseButton button) noexcept

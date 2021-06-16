@@ -29,7 +29,7 @@ struct xaml_button_internal : xaml_control_internal
     void on_action() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_clicked(GtkWidget*, xaml_button_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     void on_clicked(bool) noexcept;
 #endif // XAML_UI_WINDOWS
 

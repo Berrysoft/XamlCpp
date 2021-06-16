@@ -1,6 +1,6 @@
 #include <QComboBox>
 #include <QStringListModel>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/combo_box.hpp>
 
 using namespace std;

@@ -7,7 +7,9 @@ xaml_result xaml_application_impl::init(int argc, char** argv) noexcept
     XAML_RETURN_IF_FAILED(xaml_event_new(&m_activate));
     XAML_RETURN_IF_FAILED(xaml_vector_new(&m_cmd_lines));
     m_argc = argc;
+#ifdef XAML_UI_QT5
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
     m_native_app.reset(new QApplication(m_argc, argv));
     m_native_app->setFont(QApplication::font("QMenu"));
     QObject::connect(m_native_app.get(), &QGuiApplication::lastWindowClosed, m_native_app.get(), &QCoreApplication::quit, Qt::QueuedConnection);

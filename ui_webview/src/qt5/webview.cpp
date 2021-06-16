@@ -1,6 +1,6 @@
 #include <QScreen>
 #include <QWindow>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/webview.hpp>
 
 #ifdef XAML_UI_WEBVIEW_WEBKIT

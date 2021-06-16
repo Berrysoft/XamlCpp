@@ -1,9 +1,6 @@
 #ifndef XAML_UI_CANVAS_SHARED_CANVAS_HPP
 #define XAML_UI_CANVAS_SHARED_CANVAS_HPP
 
-#include <shared/control.hpp>
-#include <xaml/ui/controls/canvas.h>
-
 #ifdef XAML_UI_WINDOWS
     #include <Windows.h>
     #include <d2d1.h>
@@ -20,10 +17,13 @@ HRESULT DWriteCreateFactory(DWRITE_FACTORY_TYPE factoryType, Factory** factory) 
     #include <xaml/ui/cocoa/objc.h>
 #elif defined(XAML_UI_GTK3)
     #include <cairo.h>
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     #include <QPaintEvent>
     #include <QPainter>
 #endif // XAML_UI_GTK3
+
+#include <shared/control.hpp>
+#include <xaml/ui/controls/canvas.h>
 
 struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xaml_drawing_context>
 {
@@ -42,7 +42,7 @@ struct xaml_drawing_context_impl : xaml_implement<xaml_drawing_context_impl, xam
     cairo_t* m_handle;
 
     xaml_drawing_context_impl(cairo_t* handle) noexcept : m_handle(handle) {}
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     QPainter* m_handle;
 
     xaml_drawing_context_impl(QPainter* handle) noexcept : m_handle(handle) {}
@@ -79,7 +79,7 @@ struct xaml_canvas_internal : xaml_control_internal
     void on_draw_rect() noexcept;
 #elif defined(XAML_UI_GTK3)
     static gboolean on_draw(GtkWidget*, cairo_t*, xaml_canvas_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     void on_paint_event(QPaintEvent*) noexcept;
     void on_mouse_move_event(QMouseEvent*) noexcept;
     void on_mouse_press_event(QMouseEvent*) noexcept;

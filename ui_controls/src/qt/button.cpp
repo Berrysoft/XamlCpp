@@ -1,5 +1,5 @@
 #include <QPushButton>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <shared/button.hpp>
 
 using namespace std;

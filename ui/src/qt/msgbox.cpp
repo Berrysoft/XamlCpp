@@ -2,7 +2,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <map>
-#include <qt5/qstring.hpp>
+#include <qt/qstring.hpp>
 #include <xaml/ui/msgbox.h>
 #include <xaml/ui/qt5/control.hpp>
 

@@ -23,7 +23,7 @@ struct xaml_radio_box_internal : xaml_button_internal
     xaml_result XAML_CALL on_state_changed() noexcept;
 #elif defined(XAML_UI_GTK3)
     static void on_toggled(GtkWidget*, xaml_radio_box_internal*) noexcept;
-#elif defined(XAML_UI_QT5)
+#elif defined(XAML_UI_QT)
     void on_toggled(bool) noexcept;
 #endif // XAML_UI_WINDOWS
 
