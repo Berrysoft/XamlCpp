@@ -49,13 +49,13 @@
     #define XAML_META_API __XAML_IMPORT
 #endif // !XAML_META_API
 
+#ifndef XAML_ASYNC_API
+    #define XAML_ASYNC_API __XAML_IMPORT
+#endif // !XAML_ASYNC_API
+
 #ifndef XAML_UI_API
     #define XAML_UI_API __XAML_IMPORT
 #endif // !XAML_UI_API
-
-#ifndef XAML_UI_META_API
-    #define XAML_UI_META_API __XAML_META_IMPORT
-#endif // !XAML_UI_META_API
 
 #ifndef XAML_UI_CONTROLS_API
     #define XAML_UI_CONTROLS_API __XAML_IMPORT
