@@ -89,7 +89,9 @@ xaml_result XAML_CALL xaml_vector_changed_args_new(xaml_vector_changed_action ac
 
 XAML_TYPE_BASE(xaml_observable_vector_1, { 0xc84cb35f, 0x0a1c, 0x40e2, { 0x8e, 0x1c, 0x2c, 0x43, 0x0b, 0x1b, 0xb6, 0xcf } })
 
-#define __XAML_DELEGATE_2_NAME(a, b) XAML_DELEGATE_2_NAME(a, b)
+#ifndef __XAML_DELEGATE_2_NAME
+    #define __XAML_DELEGATE_2_NAME(a, b) XAML_DELEGATE_2_NAME(a, b)
+#endif // !__XAML_DELEGATE_2_NAME
 
 #define XAML_OBSERVABLE_VECTOR_1_VTBL(type, TN, TI)                                                                                      \
     XAML_VTBL_INHERIT(XAML_VECTOR_1_VTBL(type, TN, TI));                                                                                 \
